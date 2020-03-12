@@ -44,22 +44,22 @@
         </BaseFlexTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
-            <div class="item-group">
+            <!-- <div class="item-group"> -->
 
-                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
                 && 'Can only change own name. Only admins can change the name of others.'"
                 @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
                     <span><u>R</u>ename User</span>
-                </BaseContextMenuItem>
+                </BaseContextMenuItem> -->
 
-                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
                 && 'Can only change own e-mail. Only admins can change the e-mail of others.'"
                 @click="$refs['userRow-'+slotProps.item.id][0].editEmail = true">
                     <span><u>E</u>dit User Email</span>
-                </BaseContextMenuItem>
-            </div>
+                </BaseContextMenuItem> -->
+            <!-- </div> -->
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
@@ -75,12 +75,18 @@
                     <span>Change Workspace <u>R</u>ole</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
+                <BaseContextMenuItem iconClass="far fa-lock" :disabled="slotProps.item.id != authUser.id" 
+                v-tooltip="slotProps.item.id != authUser.id 
+                && 'Can only set password of self'"
+                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
+                    <span>Set <u>P</u>assword</span>
+                </BaseContextMenuItem>
+                <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
                 && 'Can only set password of self. Admins can set the password of others'"
                 @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
                     <span>Set <u>P</u>assword</span>
-                </BaseContextMenuItem>
+                </BaseContextMenuItem> -->
             </div>
             <div class="item-group">
                 <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"

@@ -223,21 +223,32 @@ export default {
                     commit('setProductStatus', 'error')
                 })
         },
-        async insertProducts({ commit }, { file, products, addToState }) {
-            if (addToState) commit('insertProducts', { products, method: 'add' })
-            const apiUrl = `/files/${file.id}/products`
-            await axios
-                .post(apiUrl, {
-                    method: 'Add',
-                    products: products,
-                })
-                .then(response => {
-                    // Add the created ID to the product, if we only have 1 product
-                    if (products.length <= 1) {
-                        const product = products[0]
-                        product.id = response.data.added_product_id_map[product.datasource_id]
-                    }
-                })
+        async insertProducts({ commit, dispatch }, { file, products, addToState }) {
+            return new Promise((resolve, reject) => {
+                if (addToState) commit('insertProducts', { products, method: 'add' })
+                const apiUrl = `/files/${file.id}/products`
+                axios
+                    .post(apiUrl, {
+                        method: 'Add',
+                        products: products,
+                    })
+                    .then(response => {
+                        // Add the created ID to the product, if we only have 1 product
+                        if (products.length <= 1) {
+                            const product = products[0]
+                            product.id = response.data.added_product_id_map[product.datasource_id]
+                        }
+                        resolve(response)
+                    })
+                    .catch(err => {
+                        reject(err)
+                        dispatch(
+                            'alerts/showAlert',
+                            'Something went wrong when creating the product. Please try again.',
+                            { root: true }
+                        )
+                    })
+            })
         },
         instantiateNewProduct({ commit }) {
             return {
@@ -275,41 +286,64 @@ export default {
             commit('setCurrentProduct', product)
             commit('setSingleVisisble', true)
         },
-        async updateProduct({ commit }, product) {
-            commit('updateProduct', product)
-
-            const apiUrl = `/products/${product.id}`
-            axios.put(apiUrl, product)
+        async updateProduct({ commit, dispatch }, product) {
+            return new Promise((resolve, reject) => {
+                const apiUrl = `/products/${product.id}`
+                axios
+                    .put(apiUrl, product)
+                    .then(response => {
+                        commit('updateProduct', product)
+                        resolve(response)
+                    })
+                    .catch(err => {
+                        reject(err)
+                        dispatch(
+                            'alerts/showAlert',
+                            'Something went wrong when updating the product. Please try again.',
+                            { root: true }
+                        )
+                    })
+            })
         },
         async uploadImage({ commit, dispatch }, { file, product, variant, image, callback }) {
-            // First generate presigned URL we can put the image to from the API
-            const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
-            let presignedUrl
-            await axios.get(apiUrl).then(response => {
-                presignedUrl = response.data
-            })
+            return new Promise(async (resolve, reject) => {
+                // First generate presigned URL we can put the image to from the API
+                const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
+                let presignedUrl
+                await axios
+                    .get(apiUrl)
+                    .then(response => {
+                        presignedUrl = response.data
+                    })
+                    .catch(err => {
+                        reject(err)
+                    })
 
-            // Next configure a request to the presigned URL
-            const uploadUrl = presignedUrl.presigned_url
+                // Next configure a request to the presigned URL
+                const uploadUrl = presignedUrl.presigned_url
 
-            let blob = new Blob([image], { type: image.type })
-            let xhr = new XMLHttpRequest()
-            await new Promise((resolve, reject) => {
-                xhr.open('PUT', uploadUrl)
-                xhr.setRequestHeader('x-amz-acl', 'public-read')
-                xhr.setRequestHeader('Content-Type', 'image/jpeg')
-                xhr.upload.onprogress = event => {
-                    return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
-                }
-                xhr.onload = () => resolve(xhr)
-                xhr.onerror = () => reject(xhr)
-                xhr.send(blob)
-            })
-                .then(response => {
-                    // On success, set the image on the variant
-                    variant.image = presignedUrl.url
+                let blob = new Blob([image], { type: image.type })
+                let xhr = new XMLHttpRequest()
+                await new Promise((resolve, reject) => {
+                    xhr.open('PUT', uploadUrl)
+                    xhr.setRequestHeader('x-amz-acl', 'public-read')
+                    xhr.setRequestHeader('Content-Type', 'image/jpeg')
+                    xhr.upload.onprogress = event => {
+                        return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                    }
+                    xhr.onload = () => resolve(xhr)
+                    xhr.onerror = () => reject(xhr)
+                    xhr.send(blob)
                 })
-                .catch(err => {})
+                    .then(response => {
+                        // On success, set the image on the variant
+                        variant.image = presignedUrl.url
+                        resolve(response)
+                    })
+                    .catch(err => {
+                        reject(err)
+                    })
+            })
         },
         async deleteImages({ commit }, imagesToDelete) {
             await axios

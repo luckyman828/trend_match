@@ -9,7 +9,7 @@ export default {
         currentTeam: null,
         currentTeamStatus: 'loading',
         availableTeamIds: [],
-        teams: null,
+        teams: [],
         availableTeamRoles: [
             {
                 role: 'Member',
@@ -73,7 +73,7 @@ export default {
             while (tryCount-- > 0 && !succes) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
-                    state.teams = response.data
+                    Vue.set(state, 'teams', response.data)
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
@@ -101,7 +101,6 @@ export default {
         },
         async insertOrUpdateTeam({ commit, rootGetters, dispatch }, team) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
-            let succes
 
             let teamToPush = {
                 title: team.title,
@@ -122,15 +121,11 @@ export default {
             })
                 .then(response => {
                     if (!team.id) team.id = response.data.id
-                    succes = true
-                    commit('updateTeam', teamToPush)
+                    commit('insertOrUpdateTeam', response.data)
                 })
                 .catch(err => {
                     console.log(err)
-                    console.log(err.response)
-                    succes = false
                 })
-            return succes
         },
         async deleteTeam({ commit }, team) {
             commit('deleteTeam', team)
@@ -223,7 +218,16 @@ export default {
         setAvailableTeamIds(state, ids) {
             state.availableTeamIds = ids
         },
-        updateTeam(state, team) {},
+        insertOrUpdateTeam(state, team) {
+            if (team.id && state.teams.find(x => x.id == team.id)) {
+                Object.assign(
+                    state.teams.find(x => x.id == team.id),
+                    team
+                )
+            } else {
+                state.teams.push(team)
+            }
+        },
         deleteTeam(state, team) {
             const index = state.teams.findIndex(x => x.id == team.id)
             state.teams.splice(index, 1)

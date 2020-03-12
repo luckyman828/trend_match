@@ -1,25 +1,33 @@
 <template>
     <BaseFlyin class="edit-product-single" :show="show" @close="onCloseSingle" :columns=2>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="product.title" :next="nextProduct" :prev="prevProduct"
+            <BaseFlyinHeader v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
-                <div class="item-group">
-                    <div class="last-update" v-if="product.created_at != product.updated_at">
-                        <span>Changes saved</span>
-                        <span>{{product.updated_at}}</span>
+                <template v-slot:left>
+                    <div class="item-group product-title-wrapper">
+                        <h3>{{`#${product.datasource_id}: ${product.title}`}}</h3>
+                        <span class="product-count">Product 
+                            {{availableProducts.findIndex(x => x.id == product.id)+1}} 
+                            of 
+                            {{availableProducts.length}}</span>
                     </div>
-                    <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
-                        <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
-                        <button v-if="!updatingProduct && gettingImagesFromURL <= 0" class="ghost" :class="{disabled: !saveActive}"
-                        @click="saveActive && onUpdateProduct()"><i class="far fa-save">
-                            </i><span>Save</span>
-                        </button>
-                        <button v-else class="ghost disabled">
-                            <BaseLoader/>
-                        </button>
-                        <span class="hotkey"><span class="key">S</span> Save</span>
+                </template>
+                <template v-slot:right>
+                    <div class="item-group">
+                        <div class="last-update" v-if="product.created_at != product.updated_at">
+                            <span>Changes saved</span>
+                            <span>{{product.updated_at}}</span>
+                        </div>
+                        <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
+                            <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
+                            <button class="ghost save-button" :class="{disabled: !saveActive}"
+                            @click="saveActive && onUpdateProduct()"><i class="far fa-save">
+                                </i><span>Save</span>
+                            </button>
+                            <span class="hotkey"><span class="key">S</span> Save</span>
+                        </div>
                     </div>
-                </div>
+                </template>
             </BaseFlyinHeader>
         </template>
         <template v-slot v-if="show">
@@ -296,7 +304,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products']),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
         ...mapGetters('files', ['currentFile']),
         product () {
             return this.productToEdit
@@ -418,23 +426,34 @@ export default {
             const vm = this
             this.updatingProduct = true
 
-            this.productToEdit.updated_at = new Date()
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ')
+            // this.productToEdit.updated_at = new Date()
+            //     .toISOString()
+            //     .slice(0, 19)
+            //     .replace('T', ' ')
+            const productToEdit = this.productToEdit
 
-            const productToUpload = this.productToEdit
 
             let productIsNew = false
 
             // Check if the product has not yet been saved. If true, save it, since we cannot upload images to an unsaved product.
-            if (!productToUpload.id) {
+            let insertError = false
+            if (!productToEdit.id) {
                 productIsNew = true
-                await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+                const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
+                productToUpload.variants = []
+                await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true}).catch(err => {
+                    insertError = true
+                })
+                productToEdit.id = productToUpload.id
+            }
+            if (insertError) {
+                this.updatingProduct = false
+                return
             }
 
             // Check if we have any files (images) we need to upload
-            const variants = productToUpload.variants
+            const variants = productToEdit.variants
+            let variantError = false
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
@@ -446,27 +465,33 @@ export default {
                     // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
                     await this.uploadImage({
                         file: this.currentFile, 
-                        product: productToUpload,
+                        product: productToEdit,
                         variant: editVariant,
                         image: editVariant.imageToUpload.file, 
                         callback: progress => {
                             editVariant.imageToUpload.progress = progress
                         }
-                    })
-                    // Remove the image to upload
-                    delete variant.imageToUpload
+                    }).then(response => {
+                        // Remove the image to upload
+                        delete variant.imageToUpload
+                    }).catch(err => {variantError = true})
                 }
+            }
+            if (variantError) {
+                this.updatingProduct = false
+                return
             }
 
             // Update the product
-            console.log('update product')
-            await this.updateProduct(productToUpload)
-            if (productIsNew) {
-                this.setCurrentProduct(productToUpload)
-                // Resort the products to include the new product
-                this.$emit('onSort')
-            }
-            this.initProduct()
+            await this.updateProduct(productToEdit)
+            .then(response => {
+                if (productIsNew) {
+                    this.setCurrentProduct(productToEdit)
+                    // Resort the products to include the new product
+                    this.$emit('onSort')
+                }
+                this.initProduct()
+            }).catch(err => {})
             this.updatingProduct = false
         },
         calculateMarkup({price, whs, rrp} = {}) {
@@ -621,6 +646,19 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+.product-title-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    .product-count {
+        font-size: 12px;
+        line-height: 1;
+    }
+}
+
+    .save-button {
+        min-width: 72px;
+    }
     .product-variants {
         margin-top: 12px;
         white-space: nowrap;

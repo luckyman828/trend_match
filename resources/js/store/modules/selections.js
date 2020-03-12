@@ -251,10 +251,9 @@ export default {
             dispatch('calculateSelectionUsers', selection)
         },
         async calculateSelectionUsers({ commit, dispatch }, selection) {
-            console.log('Calculate all selection users')
-            console.log(selection)
             // This functions finds all the users who have access to the selection and adds them to the users array on the selection
-            await dispatch('fetchSelection', { selectionId: selection.id })
+            const newSelection = await dispatch('fetchSelection', { selectionId: selection.id })
+            commit('setSelectionUsers', { selection, users: newSelection.users })
 
             // const usersToReturn = selection.users || []
             // console.log(usersToReturn)
