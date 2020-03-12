@@ -10,12 +10,9 @@
                     </div>
                     <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
                         <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
-                        <button v-if="!updatingProduct && gettingImagesFromURL <= 0" class="ghost" :class="{disabled: !saveActive}"
+                        <button class="ghost save-button" :class="{disabled: !saveActive}"
                         @click="saveActive && onUpdateProduct()"><i class="far fa-save">
                             </i><span>Save</span>
-                        </button>
-                        <button v-else class="ghost disabled">
-                            <BaseLoader/>
                         </button>
                         <span class="hotkey"><span class="key">S</span> Save</span>
                     </div>
@@ -418,26 +415,34 @@ export default {
             const vm = this
             this.updatingProduct = true
 
-            this.productToEdit.updated_at = new Date()
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ')
+            // this.productToEdit.updated_at = new Date()
+            //     .toISOString()
+            //     .slice(0, 19)
+            //     .replace('T', ' ')
             const productToEdit = this.productToEdit
 
 
             let productIsNew = false
 
             // Check if the product has not yet been saved. If true, save it, since we cannot upload images to an unsaved product.
+            let insertError = false
             if (!productToEdit.id) {
                 productIsNew = true
                 const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
                 productToUpload.variants = []
-                await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+                await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true}).catch(err => {
+                    insertError = true
+                })
                 productToEdit.id = productToUpload.id
+            }
+            if (insertError) {
+                this.updatingProduct = false
+                return
             }
 
             // Check if we have any files (images) we need to upload
             const variants = productToEdit.variants
+            let variantError = false
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
@@ -455,20 +460,27 @@ export default {
                         callback: progress => {
                             editVariant.imageToUpload.progress = progress
                         }
-                    })
-                    // Remove the image to upload
-                    delete variant.imageToUpload
+                    }).then(response => {
+                        // Remove the image to upload
+                        delete variant.imageToUpload
+                    }).catch(err => {variantError = true})
                 }
+            }
+            if (variantError) {
+                this.updatingProduct = false
+                return
             }
 
             // Update the product
             await this.updateProduct(productToEdit)
-            if (productIsNew) {
-                this.setCurrentProduct(productToEdit)
-                // Resort the products to include the new product
-                this.$emit('onSort')
-            }
-            this.initProduct()
+            .then(response => {
+                if (productIsNew) {
+                    this.setCurrentProduct(productToEdit)
+                    // Resort the products to include the new product
+                    this.$emit('onSort')
+                }
+                this.initProduct()
+            }).catch(err => {})
             this.updatingProduct = false
         },
         calculateMarkup({price, whs, rrp} = {}) {
@@ -623,6 +635,9 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+    .save-button {
+        min-width: 72px;
+    }
     .product-variants {
         margin-top: 12px;
         white-space: nowrap;
