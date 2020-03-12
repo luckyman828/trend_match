@@ -20,7 +20,7 @@
                 <div class="form-element">
                     <label :for="'new-user-password-'+index">Password *</label>
                     <BaseInputField ref="passwordInput" type="text" :id="'new-user-password-'+index" autocomplete="new-password"
-                    v-model="usersToAdd[index].password" @blur="validateInput($event.target)"/>
+                    v-model="usersToAdd[index].password" @blur="validateInput($event.target)" @input.native="onPasswordInput($event, index)"/>
                 </div>
             </div>
             <div class="form-element">
@@ -63,12 +63,24 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace']),
     },
     methods: {
+        onPasswordInput(e, fieldIndex) {
+            // In password input, check if we should attempt to validate the input field
+            if (e.target.value.length >= 8) {
+                this.validateInput(e.target)
+            }
+        },
         ...mapActions('users', ['addUsersToWorkspace']),
         onAddUser() {
             this.usersToAdd.push(JSON.parse(JSON.stringify(this.userDefaultObject)))
+            this.$nextTick(() => { this.$nextTick(() => {
+                this.validateInput(true)
+            })})
         },
         onRemoveUser(index) {
             this.usersToAdd.splice(index, 1)
+            this.$nextTick(() => { this.$nextTick(() => {
+                this.validateInput(true)
+            })})
         },
         onPaste(e, index) {
             // e.preventDefault()
