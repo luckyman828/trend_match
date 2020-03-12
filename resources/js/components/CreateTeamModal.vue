@@ -43,6 +43,10 @@ export default {
             this.insertOrUpdateTeam(this.teamToCreate).then(response => {
                 this.$emit('close')
             })
+            this.teamToCreate = {
+                title: '',
+                currency: null
+            }
         },
     },
 }
