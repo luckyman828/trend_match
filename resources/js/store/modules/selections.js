@@ -204,6 +204,13 @@ export default {
             })
             dispatch('calculateSelectionUsers', selection)
         },
+        async updateSelectionSettings({ commit, dispatch }, selection) {
+            // Send request to API
+            const apiUrl = `/selections/${selection.id}/metadata`
+            await axios.put(apiUrl, selection.settings).catch(err => {
+                dispatch('alerts/showAlert', 'Something went wrong trying to save selection settings. Please try again.', {root: true})
+            })
+        },
         async updateSelectionUsers({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
             await commit('updateSelectionUsers', { selection, users })

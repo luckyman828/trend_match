@@ -29,7 +29,7 @@
                         :selectionToEdit="selectionToEdit" :isMaster="true"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
-                        @endMoveSelection="endMoveSelection" @showOptionsContext="showOptionsContext" @onClick="rowClick"/>
+                        @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"/>
                     </template>
                     <!-- No selections  -->
                     <template v-else>
@@ -71,10 +71,6 @@
                     <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
                     <u>M</u>embers and Access
                 </div>
-                <div class="item" @click.stop="showOptionsContext(contextMouseEvent, contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-cog"></i></div>
-                    <u>S</u>ettings
-                </div>
                 <div class="item" @click="onNewSelection(contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-plus"></i></div>
                     <u>C</u>reate sub-selection
@@ -83,6 +79,12 @@
                 @click="onMoveSelection(contextSelection, contextSelectionParent)">
                     <div class="icon-wrapper"><i class="far fa-file"><i class="fas fa-long-arrow-alt-right"></i></i></div>
                     <u>M</u>ove selection
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click.stop="showSettingsContext(contextMouseEvent, contextSelection)">
+                    <div class="icon-wrapper"><i class="far fa-cog"></i></div>
+                    <u>S</u>ettings
                 </div>
             </div>
             <div class="item-group" @click="onDeleteSelection(contextSelection, contextSelectionParent)">
@@ -196,7 +198,7 @@
 
                             <div class="item-wrapper">
                                 <label class="settings-label">Broadcast to Siblings</label>
-                                <BaseCheckboxInputField :value="contextSelection.settings.feedback.broadcast.sibling">
+                                <BaseCheckboxInputField v-model="contextSelection.settings.feedback.broadcast.sibling">
                                     <span>Broadcast to Siblings</span>
                                 </BaseCheckboxInputField>
                             </div>
@@ -223,7 +225,7 @@
 
                             <div class="item-wrapper">
                                 <label class="settings-label">Listen to Siblings</label>
-                                <BaseCheckboxInputField :value="contextSelection.settings.feedback.listen.sibling">
+                                <BaseCheckboxInputField v-model="contextSelection.settings.feedback.listen.sibling">
                                     <span>Listen to Siblings</span>
                                 </BaseCheckboxInputField>
                             </div>
@@ -232,7 +234,7 @@
                         <div class="item-group">
                             <div class="item-wrapper">
                                 <label class="settings-label">Anonymize Feedback</label>
-                                <BaseCheckboxInputField :value="contextSelection.settings.anonymize_feedback">
+                                <BaseCheckboxInputField v-model="contextSelection.settings.anonymize_feedback">
                                     <span>Anonymize Feedback</span>
                                 </BaseCheckboxInputField>
                             </div>                            
@@ -241,7 +243,7 @@
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper" style="text-align: right;">
-                        <button class="primary" @click="slotProps.hide()"><span>Save</span></button>
+                        <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                     </div>
                 </div>
@@ -349,7 +351,7 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
-        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings']),
+        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings', 'updateSelectionSettings']),
         ...mapMutations('selections', ['insertSelections']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
@@ -362,13 +364,30 @@ export default {
                 this.endMoveSelection(component.selection, component)
             }
         },
+        async showSettingsContext(e, selection) {
+            // Load the selections settings
+            this.loadingSelectionSettings = true
+            await this.fetchSelectionSettings(selection)
+            this.loadingSelectionSettings = false
+
+            const contextMenu = this.$refs.contextMenuOptions
+            this.contextSelection = selection
+            // Position the contextual menu
+            contextMenu.show(e)
+        },
         showParentLevelContext(e, option) {
             this.contextSelectionOption = option
+            this.$refs.contextChildLevel.hide()
             this.$refs.contextParentLevel.show(e)
         },
         showChildLevelContext(e, option) {
             this.contextSelectionOption = option
+            this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.show(e)
+        },
+        onSaveSelectionSettings() {
+            // Send API request to update the selections settings.
+            this.updateSelectionSettings(this.contextSelection)
         },
         showContextMenuSelection(e, selection, component, parent) {
             // Set the current context menu item
@@ -452,19 +471,6 @@ export default {
             this.contextMouseEvent = e
             // Position the contextual menu
             moveContext.show(e)
-        },
-        async showOptionsContext(e, selection) {
-            // Check if we have loaded the selections settings
-            if (!selection.settings) {
-                this.loadingSelectionSettings = true
-                await this.fetchSelectionSettings(selection)
-                this.loadingSelectionSettings = false
-            }
-
-            const contextMenu = this.$refs.contextMenuOptions
-            this.contextSelection = selection
-            // Position the contextual menu
-            contextMenu.show(e)
         },
         async onNewSelection(parent) {
             // First check that we don't already have an unsaved new selection
