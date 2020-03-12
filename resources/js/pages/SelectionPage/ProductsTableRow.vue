@@ -169,6 +169,7 @@ export default {
             if (key == 'ArrowRight')
                 this.focusNextRow(event)
             if (key == 'Enter') {
+                document.activeElement.blur()
                 this.$emit('onViewSingle', this.product)
             }
         },
