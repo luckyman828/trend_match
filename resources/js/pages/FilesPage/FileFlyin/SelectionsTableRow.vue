@@ -39,7 +39,7 @@
                     <i class="far" :class="selection.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
             </td>
             <td class="action">
-                <button class="invisible ghost-hover" @click="$emit('showOptionsContext', $event, selection)"><i class="fas fa-cog"></i></button>
+                <button class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
                 <button class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
             </td>
         </tr>
@@ -47,7 +47,8 @@
             <selectionsTableRow v-for="selection in selection.children" :parent="selection" :selection="selection" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
-            @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)"/>
+            @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" 
+            @showSettingsContext="($event, selection) => {$emit('showSettingsContext', $event, selection)}"/>
         </template>
     </div>
 </template>
