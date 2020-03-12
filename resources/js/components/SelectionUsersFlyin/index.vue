@@ -59,12 +59,11 @@ export default {
     methods: {
         ...mapActions('users', ['fetchUsers']),
         ...mapActions('teams', ['fetchTeams', 'fetchTeamUsers']),
-        ...mapActions('selections', ['fetchSelection', 'calculateAllSelectionUsers']),
+        ...mapActions('selections', ['fetchSelection']),
         async fetchData() {
             this.fetchingData = true
             await this.fetchSelection({selectionId: this.selection.id}) // Fetches selection with users and teams
             // await this.fetchSelectionTeamsUsers(this.selection.teams)
-            // await this.calculateAllSelectionUsers(this.selection)
             this.fetchingData = false
         },
         async fetchSelectionTeamsUsers(teams) {

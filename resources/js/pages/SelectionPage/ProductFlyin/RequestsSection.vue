@@ -8,7 +8,7 @@
         </template>
 
         <template v-slot>
-            <div class="comments-wrapper">
+            <div class="requests-wrapper">
                 <div class="selection-request" v-if="selectionRequest">
                     <request :request="selectionRequest"/>
                 </div>
@@ -18,8 +18,8 @@
                 </div>
             </div>
 
-
-            <div class="form-wrapper">
+            <!-- Deny access for feedback -->
+            <div class="form-wrapper" v-if="currentSelectionMode == 'Alignment'">
                 <strong class="form-header">Your Request</strong>
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
@@ -94,7 +94,7 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode']),
         submitDisabled () {
             return this.newRequest.content.length < 1 
             || (this.selectionRequest && this.newRequest.content == this.selectionRequest.content)
@@ -169,9 +169,11 @@ export default {
             this.resizeTextareas()
         },
         resizeTextareas() {
-            this.$nextTick(() => {
-                this.$refs.requestField.resize()
-            })
+            if (this.currentSelectionMode == 'Alignment') {
+                this.$nextTick(() => {
+                    this.$refs.requestField.resize()
+                })
+            }
         },
         hotkeyHandler(e) {
             const key = e.code
@@ -223,7 +225,7 @@ export default {
     .requests {
         background: $bg;
     }
-    .comments-wrapper {
+    .requests-wrapper {
         height: 100%;
         overflow-y: auto;
         padding: 16px 16px 64px;

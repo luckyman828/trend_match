@@ -422,19 +422,22 @@ export default {
                 .toISOString()
                 .slice(0, 19)
                 .replace('T', ' ')
+            const productToEdit = this.productToEdit
 
-            const productToUpload = this.productToEdit
 
             let productIsNew = false
 
             // Check if the product has not yet been saved. If true, save it, since we cannot upload images to an unsaved product.
-            if (!productToUpload.id) {
+            if (!productToEdit.id) {
                 productIsNew = true
+                const productToUpload = JSON.parse(JSON.stringify(this.productToEdit))
+                productToUpload.variants = []
                 await this.insertProducts({file: this.currentFile, products: [productToUpload], addToState: true})
+                productToEdit.id = productToUpload.id
             }
 
             // Check if we have any files (images) we need to upload
-            const variants = productToUpload.variants
+            const variants = productToEdit.variants
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
@@ -446,7 +449,7 @@ export default {
                     // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
                     await this.uploadImage({
                         file: this.currentFile, 
-                        product: productToUpload,
+                        product: productToEdit,
                         variant: editVariant,
                         image: editVariant.imageToUpload.file, 
                         callback: progress => {
@@ -459,10 +462,9 @@ export default {
             }
 
             // Update the product
-            console.log('update product')
-            await this.updateProduct(productToUpload)
+            await this.updateProduct(productToEdit)
             if (productIsNew) {
-                this.setCurrentProduct(productToUpload)
+                this.setCurrentProduct(productToEdit)
                 // Resort the products to include the new product
                 this.$emit('onSort')
             }

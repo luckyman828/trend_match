@@ -13,7 +13,7 @@
         </td>
         <td class="title" v-else>
             <i class="fas fa-user"></i>
-            <span>{{user.name}}{{isSelf && ` (You)`}}</span>
+            <span>{{user.name}}{{isSelf ? ` (You)` : ''}}</span>
         </td>
         <td class="email" v-if="editEmail">
             <BaseEditInputWrapper ref="editEmail" :activateOnMount="true" :type="'text'"
