@@ -1,17 +1,19 @@
 <template>
     <div class="select-button">
         <span v-if="header" class="header" v-html="header"></span>
-        <label class="select-button" :class="{'has-description': $slots.default}">
-            <BaseRadiobox v-if="type == 'radio'" :value="value"/>
-            <BaseCheckbox v-else :value="value" @change="$emit('input', $event)"/>
+        <div class="button-wrapper">
+            <label class="select-button" :class="{'has-description': $slots.default}">
+                <BaseRadiobox v-if="type == 'radio'" :value="value"/>
+                <BaseCheckbox v-else :value="value" @change="$emit('input', $event)"/>
 
-            <div class="label">
-                {{label}}
-                <p class="description">
-                    <slot/>
-                </p>
-            </div>
-        </label>
+                <div class="label">
+                    {{label}}
+                    <p class="description">
+                        <slot/>
+                    </p>
+                </div>
+            </label>
+        </div>
     </div>
 </template>
 

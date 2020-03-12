@@ -124,40 +124,119 @@
                 Settings for {{contextSelection.name}}
             </template>
             <template v-slot="slotProps">
-                <div class="columns">
-                    <div class="item-group">
+                <!-- If loading -->
+                <div class="loading-wrapper" v-if="loadingSelectionSettings">
+                    <BaseLoader/>
+                </div>
+                <!-- if ready -->
+                <div class="columns" v-else>
+                    <!-- <div class="item-group">
                         <strong class="header">Comments</strong>
                         <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors', 'siblings']"
-                        v-model="contextSelection.options.comments.broadcast" :submitOnChange="true"/>
+                        v-model="contextSelection.settings.comment.broadcast" :submitOnChange="true"/>
                         <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.comments.listen" :submitOnChange="true"/>
-                        <BaseSelectButton header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.options.comments.anonymize" 
-                        v-model="contextSelection.options.comments.anonymize"/>
+                        v-model="contextSelection.settings.comment.listen" :submitOnChange="true"/>
+                        <BaseSelectButton header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.anonymize_comment" 
+                        v-model="contextSelection.settings.anonymize_comment"/>
                     </div>
                     <div class="item-group">
                         <strong class="header">Requests</strong>
                         <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.requests.broadcast" :submitOnChange="true"/>
+                        v-model="contextSelection.settings.request.broadcast" :submitOnChange="true"/>
                         <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.requests.listen" :submitOnChange="true"/>
+                        v-model="contextSelection.settings.request.listen" :submitOnChange="true"/>
                     </div>
                     <div class="item-group">
                         <strong class="header">Actions</strong>
                         <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.actions.broadcast" :submitOnChange="true"/>
+                        v-model="contextSelection.settings.action.broadcast" :submitOnChange="true"/>
                         <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.actions.listen" :submitOnChange="true"/>
-                        <BaseSelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.options.actions.anonymize" 
-                        v-model="contextSelection.options.actions.anonymize"/>
-                    </div>
-                    <div class="item-group">
+                        v-model="contextSelection.settings.action.listen" :submitOnChange="true"/>
+                        <BaseSelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.anonymize_action" 
+                        v-model="contextSelection.settings.anonymize_action"/>
+                    </div> -->
+                    <!-- <div class="item-group">
                         <strong class="header">Feedback</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants', 'parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.feedback.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants', 'parent', 'ancestors','siblings']"
-                        v-model="contextSelection.options.feedback.listen" :submitOnChange="true"/>
-                        <BaseSelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.options.feedback.anonymize" 
-                        v-model="contextSelection.options.feedback.anonymize"/>
+                        <BaseSelectButtons header="Broadcast Up" :type="'radio'" :options="['Ancestors','Parent','None']"
+                        v-model="contextSelection.settings.feedback.broadcast.parent_level" :submitOnChange="true"/>
+                        <BaseSelectButtons header="Broadcast Down" :type="'radio'" :options="['Descendants','Children','None']"
+                        v-model="contextSelection.settings.feedback.broadcast.child_level" :submitOnChange="true"/>
+                        <BaseSelectButton header="Broadcast to Siblings" class="item-wrapper" label="Broadcast" :value="contextSelection.settings.feedback.broadcast.sibling" 
+                        v-model="contextSelection.settings.feedback.broadcast.sibling"/>
+                        <BaseSelectButtons header="Listen Up" :type="'checkbox'" :options="['Ancestors','Parent','None']"
+                        v-model="contextSelection.settings.feedback.listen.parent_level" :submitOnChange="true"/>
+                        <BaseSelectButtons header="Listen Down" :type="'checkbox'" :options="['Descendants','Children','None']"
+                        v-model="contextSelection.settings.feedback.listen.child_level" :submitOnChange="true"/>
+                        <BaseSelectButton header="Listen to Siblings" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.feedback.listen.sibling" 
+                        v-model="contextSelection.settings.feedback.listen.sibling"/>
+                        <BaseSelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.anonymize_feedback" 
+                        v-model="contextSelection.settings.anonymize_feedback"/>
+                    </div> -->
+                    <div class="item-group">
+                        <div class="item-group">
+                            <strong class="header">Feedback</strong>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.feedback.broadcast.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.feedback.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.feedback.broadcast.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.feedback.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast to Siblings</label>
+                                <BaseCheckboxInputField :value="contextSelection.settings.feedback.broadcast.sibling">
+                                    <span>Broadcast to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.feedback.listen.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.feedback.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.feedback.listen.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.feedback.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen to Siblings</label>
+                                <BaseCheckboxInputField :value="contextSelection.settings.feedback.listen.sibling">
+                                    <span>Listen to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Anonymize Feedback</label>
+                                <BaseCheckboxInputField :value="contextSelection.settings.anonymize_feedback">
+                                    <span>Anonymize Feedback</span>
+                                </BaseCheckboxInputField>
+                            </div>                            
+                        </div>
                     </div>
                 </div>
                 <div class="item-group">
@@ -166,8 +245,23 @@
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                     </div>
                 </div>
+
+                <BaseContextMenu ref="contextParentLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    v-model="contextSelectionOption.parent_level" @submit="slotProps.hide"
+                    :options="parentLevelOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
+
+                <BaseContextMenu ref="contextChildLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    v-model="contextSelectionOption.child_level" @submit="slotProps.hide"
+                    :options="childLevelOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
             </template>
         </BaseContextMenu>
+
 
         <div ref="moveSelectionIndicator" class="move-selection-indicator" :class="{'active': moveSelectionActive}">
             <span>Click selection to move to</span>
@@ -219,13 +313,43 @@ export default {
         selectionToMove: null,
         selectionToMoveParent: null,
         fileToClone: null,
+        loadingSelectionSettings: false,
+        contextSelectionOption: null,
+        parentLevelOptions: [
+            {
+                value: 'Ancestors',
+                label: 'All'
+            },
+            {
+                value: 'Parent',
+                label: 'Parent'
+            },
+            {
+                value: 'None',
+                label: 'None'
+            },
+        ],
+        childLevelOptions: [
+            {
+                value: 'Descendants',
+                label: 'All'
+            },
+            {
+                value: 'Children',
+                label: 'Children'
+            },
+            {
+                value: 'None',
+                label: 'None'
+            },
+        ]
     }},
     computed: {
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
-        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection']),
+        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings']),
         ...mapMutations('selections', ['insertSelections']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
@@ -237,6 +361,14 @@ export default {
                 e.stopPropagation()
                 this.endMoveSelection(component.selection, component)
             }
+        },
+        showParentLevelContext(e, option) {
+            this.contextSelectionOption = option
+            this.$refs.contextParentLevel.show(e)
+        },
+        showChildLevelContext(e, option) {
+            this.contextSelectionOption = option
+            this.$refs.contextChildLevel.show(e)
         },
         showContextMenuSelection(e, selection, component, parent) {
             // Set the current context menu item
@@ -321,7 +453,14 @@ export default {
             // Position the contextual menu
             moveContext.show(e)
         },
-        showOptionsContext(e, selection) {
+        async showOptionsContext(e, selection) {
+            // Check if we have loaded the selections settings
+            if (!selection.settings) {
+                this.loadingSelectionSettings = true
+                await this.fetchSelectionSettings(selection)
+                this.loadingSelectionSettings = false
+            }
+
             const contextMenu = this.$refs.contextMenuOptions
             this.contextSelection = selection
             // Position the contextual menu
@@ -505,6 +644,11 @@ export default {
         }
         > *:not(:last-child) {
             margin-bottom: 24px;
+        }
+    }
+    .context-menu.context-options {
+        .item-wrapper {
+            display: block;
         }
     }
     

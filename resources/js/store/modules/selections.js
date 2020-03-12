@@ -110,6 +110,13 @@ export default {
                 })
             return selection
         },
+        async fetchSelectionSettings({ commit, dispatch }, selection) {
+            // Get users for selection
+            const apiUrl = `/selections/${selection.id}/metadata`
+            await axios.get(apiUrl).then(response => {
+                commit('setSelectionSettings', { selection, settings: response.data })
+            })
+        },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
             // Get users for selection
             commit('setUsersStatus', 'loading')
@@ -389,6 +396,9 @@ export default {
         updateSelection(state, selection) {
             // const oldFile = state.files.find(x => x.id == file.id)
             // Object.assign(oldFile, file)
+        },
+        setSelectionSettings(state, { selection, settings }) {
+            Vue.set(selection, 'settings', settings)
         },
         addUsersToSelection(state, { selection, users }) {
             // Instantiate the users object as a reactive object if it doesnt already exist
