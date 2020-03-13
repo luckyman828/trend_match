@@ -39,9 +39,12 @@
 
         <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
             <template v-slot:header v-if="currentTeam">
-                <BaseFlyinHeader :title="currentTeam.title" @close="teamFlyInVisible = false" class="flyin-header" 
+                <BaseFlyinHeader @close="teamFlyInVisible = false" class="flyin-header" 
                 :next="nextTeamId" :prev="prevTeamId"
                 @next="showNext" @prev="showPrev">
+                    <template v-slot:left>
+                        <h3>{{currentTeam.title}}</h3>
+                    </template>
                 </BaseFlyinHeader>
             </template>
             <template v-slot v-if="currentTeam">

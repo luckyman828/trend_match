@@ -1,7 +1,9 @@
 <template>
     <BaseFlyin :show="show" @close="$emit('close')">
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show && file" :title="`${file.type} Owners: ${file.name}`" disableNavigation=true @close="$emit('close')"/>
+            <BaseFlyinHeader v-if="show && file" disableNavigation=true @close="$emit('close')">
+                <template v-slot:left><h3>{{file.type}} Owners: {{file.name}}</h3></template>
+            </BaseFlyinHeader>
         </template>
         <template v-slot>
             <FileOwnersTable v-if="show && file" :file="file"/>
