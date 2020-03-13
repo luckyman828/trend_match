@@ -75,7 +75,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['setCurrentFolder']),
+        ...mapActions('files', ['setCurrentFolder', 'fetchFile', 'fetchFolder']),
         ...mapMutations('files', ['setCurrentFile']),
         showSingleFile(file) {
             // Set the current file id
@@ -112,10 +112,25 @@ export default {
             }
         },
     },
-    created() {
-        // If we have a current folder set, set that folder as current
-        if (this.currentFolder) {
-            this.onSetCurrentFolder(this.currentFolder)
+    async created() {
+        // If the route has a fileId param set, then show that file in a flyin and set the current folder to the files parent
+        const routeFileId = this.$route.params.fileId
+        if (routeFileId) {
+            // Set the file as current file
+            // Check if we already have the file fetched as current
+            let file
+            if (!this.currentFile || this.currentFile.id != routeFileId) {
+                file = await this.fetchFile(routeFileId)
+            } else {
+                file = this.currentFile
+            }
+            // Show the file flyin
+            this.showSingleFile(file)
+        }
+        const routeFolderId = this.$route.params.folderId
+        if (routeFolderId) {
+            const folder = await this.fetchFolder(routeFolderId)
+            this.setCurrentFolder(folder)
         }
     }
 }

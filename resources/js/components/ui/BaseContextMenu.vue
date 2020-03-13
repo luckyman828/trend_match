@@ -73,7 +73,7 @@ export default {
                     contextMenu.style.right='auto'
                 }
 
-                if (mouseY + menuHeight > windowHeight) {
+                if (mouseY + menuHeight + offset > windowHeight) {
                     contextMenu.style.bottom=offset+'px'
                     contextMenu.style.top='auto'
                 } else {
@@ -155,7 +155,6 @@ export default {
         .columns {
             display: flex;
             border-top: solid 1px $divider;
-            padding: 0 0 20px;
             > * {
                 width: 240px;
                 border-top: none;
@@ -163,11 +162,14 @@ export default {
                     border-top: none;
                 }
             }
-            .item-group {
+            > .item-group {
                 border-top: none;
-                border-left: solid 1px $divider;
+                border-left: solid 2px $divider;
                 &:first-child {
                     border-left: none;
+                }
+                &:last-child {
+                    padding-bottom: 24px;
                 }
             }
         }
