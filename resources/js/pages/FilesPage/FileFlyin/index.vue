@@ -52,6 +52,7 @@ export default {
     watch: {
         show: function(newVal, oldVal) {
             if (newVal) {
+                console.log('fetch data')
                 if (!this.loadingData) this.fetchData()
             }
         },
@@ -90,6 +91,11 @@ export default {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
     },
+    created() {
+        if (this.currentFile) {
+            this.fetchData()
+        }
+    }
 }
 </script>
 

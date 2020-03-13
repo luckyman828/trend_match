@@ -226,9 +226,6 @@ export default {
             }
         }
     },
-    // created() {
-    //     document.body.addEventListener('keydown', this.hotkeyHandler)
-    // },
     destroyed() {
         document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
