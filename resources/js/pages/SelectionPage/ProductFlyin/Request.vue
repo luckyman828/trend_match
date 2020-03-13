@@ -6,7 +6,7 @@
         </div>
         <div class="request">
             <strong class="sender">
-                <!-- {{request.selection.name}} |  -->
+                {{request.selection.name}} | 
                 {{own ? 'You' : request.author.name}}</strong>
             <span class="content">{{request.content}}</span>
             <small class="id">Request ID: {{request.id}}</small>

@@ -3,7 +3,7 @@
 
         <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true">
             <template v-slot:tabs>
-                <BaseTableTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+                <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -39,9 +39,12 @@
 
         <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
             <template v-slot:header v-if="currentTeam">
-                <BaseFlyinHeader :title="currentTeam.title" @close="teamFlyInVisible = false" class="flyin-header" 
+                <BaseFlyinHeader @close="teamFlyInVisible = false" class="flyin-header" 
                 :next="nextTeamId" :prev="prevTeamId"
                 @next="showNext" @prev="showPrev">
+                    <template v-slot:left>
+                        <h3>{{currentTeam.title}}</h3>
+                    </template>
                 </BaseFlyinHeader>
             </template>
             <template v-slot v-if="currentTeam">
@@ -147,11 +150,11 @@ export default {
             get () {
                 const routeName = this.$route.name
                 if (routeName == 'teams') return 'Teams'
-                if (routeName == 'users') return 'Members'
+                if (routeName == 'users') return 'Users'
             },
             set (newVal) {
                 if (newVal == 'Teams') this.$router.push({name: 'teams'})
-                if (newVal == 'Members') this.$router.push({name: 'users'})
+                if (newVal == 'Users') this.$router.push({name: 'users'})
             }
         }
     },

@@ -2,8 +2,12 @@
     <BaseFlyin ref="flyin" :show="show" :loading="loading"
     @close="$emit('close')">
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :title="'Selection Users: '+selection.name" disableNavigation=true 
-            @close="$emit('close')"/>
+            <BaseFlyinHeader v-if="show" disableNavigation=true 
+            @close="$emit('close')">
+                <template v-slot:left>
+                    <h3>Selection Users: {{selection.name}}</h3>
+                </template>
+            </BaseFlyinHeader>
         </template>
         <template v-slot>
             <SelectionTeamsTable v-if="show && !loading" :selection="selection"/>

@@ -1,9 +1,9 @@
 <template>
     <div class="users-table">
 
-        <BaseFlexTable v-if="currentTab == 'Members'" stickyHeader="true">
+        <BaseFlexTable v-if="currentTab == 'Users'" stickyHeader="true">
             <template v-slot:tabs>
-                <BaseTableTabs :tabs="['Teams','Members']" v-model="currentTab" :activeTab="currentTab"/>
+                <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -79,7 +79,7 @@
                 v-tooltip="slotProps.item.id != authUser.id 
                 && 'Can only set password of self'"
                 @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
-                    <span>Set <u>P</u>assword</span>
+                    <span>Change <u>P</u>assword</span>
                 </BaseContextMenuItem>
                 <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
@@ -146,7 +146,8 @@
 
         <BaseContextMenu ref="contextMenuUserPassword" class="context-password">
             <template v-slot:header>
-                Change User's Password
+                <!-- Change User's Password -->
+                <span>Change Password</span>
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
@@ -157,7 +158,7 @@
                             placeholder="New password" v-model="newUserPassword"/>
                         </div>
                     </div>
-                    <div class="item-wrapper" v-if="authUserWorkspaceRole != 'Admin'">
+                    <div class="item-wrapper">
                         <div>
                             <label>Old password</label>
                             <BaseInputField type="text" placeholder="Old password" v-model="oldUserPassword"/>
@@ -218,11 +219,11 @@ export default {
             get () {
                 const routeName = this.$route.name
                 if (routeName == 'teams') return 'Teams'
-                if (routeName == 'users') return 'Members'
+                if (routeName == 'users') return 'Users'
             },
             set (newVal) {
                 if (newVal == 'Teams') this.$router.push({name: 'teams'})
-                if (newVal == 'Members') this.$router.push({name: 'users'})
+                if (newVal == 'Users') this.$router.push({name: 'users'})
             }
         }
     },

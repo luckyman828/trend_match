@@ -132,51 +132,10 @@
                 </div>
                 <!-- if ready -->
                 <div class="columns" v-else>
-                    <!-- <div class="item-group">
-                        <strong class="header">Comments</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors', 'siblings']"
-                        v-model="contextSelection.settings.comment.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.settings.comment.listen" :submitOnChange="true"/>
-                        <BaseSelectButton header="Anomyze comments" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.anonymize_comment" 
-                        v-model="contextSelection.settings.anonymize_comment"/>
-                    </div>
-                    <div class="item-group">
-                        <strong class="header">Requests</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.settings.request.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.settings.request.listen" :submitOnChange="true"/>
-                    </div>
-                    <div class="item-group">
-                        <strong class="header">Actions</strong>
-                        <BaseSelectButtons header="Broadcast" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.settings.action.broadcast" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen" :type="'checkbox'" :options="['all','children','descendants','parent', 'ancestors','siblings']"
-                        v-model="contextSelection.settings.action.listen" :submitOnChange="true"/>
-                        <BaseSelectButton header="Anomyze actions" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.anonymize_action" 
-                        v-model="contextSelection.settings.anonymize_action"/>
-                    </div> -->
-                    <!-- <div class="item-group">
-                        <strong class="header">Feedback</strong>
-                        <BaseSelectButtons header="Broadcast Up" :type="'radio'" :options="['Ancestors','Parent','None']"
-                        v-model="contextSelection.settings.feedback.broadcast.parent_level" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Broadcast Down" :type="'radio'" :options="['Descendants','Children','None']"
-                        v-model="contextSelection.settings.feedback.broadcast.child_level" :submitOnChange="true"/>
-                        <BaseSelectButton header="Broadcast to Siblings" class="item-wrapper" label="Broadcast" :value="contextSelection.settings.feedback.broadcast.sibling" 
-                        v-model="contextSelection.settings.feedback.broadcast.sibling"/>
-                        <BaseSelectButtons header="Listen Up" :type="'checkbox'" :options="['Ancestors','Parent','None']"
-                        v-model="contextSelection.settings.feedback.listen.parent_level" :submitOnChange="true"/>
-                        <BaseSelectButtons header="Listen Down" :type="'checkbox'" :options="['Descendants','Children','None']"
-                        v-model="contextSelection.settings.feedback.listen.child_level" :submitOnChange="true"/>
-                        <BaseSelectButton header="Listen to Siblings" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.feedback.listen.sibling" 
-                        v-model="contextSelection.settings.feedback.listen.sibling"/>
-                        <BaseSelectButton header="Anomyze feedback" class="item-wrapper" label="Anonymize" :value="contextSelection.settings.anonymize_feedback" 
-                        v-model="contextSelection.settings.anonymize_feedback"/>
-                    </div> -->
+                    <!-- Feedback -->
                     <div class="item-group">
                         <div class="item-group">
-                            <strong class="header">Feedback</strong>
+                            <strong class="header">Feedback Actions</strong>
 
                             <div class="item-wrapper">
                                 <label class="settings-label">Broadcast Up</label>
@@ -230,18 +189,226 @@
                                 </BaseCheckboxInputField>
                             </div>
                         </div>
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Share with selection members</label>
+                                <BaseCheckboxInputField>
+                                    <span>Share with members</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="item-group">
+                        <div class="item-group">
+                            <strong class="header">Alignment Actions</strong>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.action.broadcast.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.action.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.action.broadcast.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.action.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast to Siblings</label>
+                                <BaseCheckboxInputField v-model="contextSelection.settings.action.broadcast.sibling">
+                                    <span>Broadcast to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
 
                         <div class="item-group">
                             <div class="item-wrapper">
-                                <label class="settings-label">Anonymize Feedback</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.anonymize_feedback">
-                                    <span>Anonymize Feedback</span>
+                                <label class="settings-label">Listen Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.action.listen.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.action.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.action.listen.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.action.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen to Siblings</label>
+                                <BaseCheckboxInputField v-model="contextSelection.settings.action.listen.sibling">
+                                    <span>Listen to Siblings</span>
                                 </BaseCheckboxInputField>
-                            </div>                            
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Share with selection members</label>
+                                <BaseCheckboxInputField>
+                                    <span>Share with members</span>
+                                </BaseCheckboxInputField>
+                            </div>
                         </div>
                     </div>
+                    <!-- Comments -->
+                    <div class="item-group">
+                        <div class="item-group">
+                            <strong class="header">Comments</strong>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.comment.broadcast.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.comment.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.comment.broadcast.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.comment.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast to Siblings</label>
+                                <BaseCheckboxInputField v-model="contextSelection.settings.comment.broadcast.sibling">
+                                    <span>Broadcast to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.comment.listen.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.comment.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.comment.listen.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.comment.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen to Siblings</label>
+                                <BaseCheckboxInputField v-model="contextSelection.settings.comment.listen.sibling">
+                                    <span>Listen to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Share with selection members</label>
+                                <BaseCheckboxInputField>
+                                    <span>Share with members</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Requests -->
+                    <div class="item-group">
+                        <div class="item-group">
+                            <strong class="header">Requests</strong>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.request.broadcast.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.request.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.request.broadcast.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.request.broadcast)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Broadcast to Siblings</label>
+                                <BaseCheckboxInputField v-model="contextSelection.settings.request.broadcast.sibling">
+                                    <span>Broadcast to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Up</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="parentLevelOptions.find(x => x.value == contextSelection.settings.request.listen.parent_level).label"
+                                @click="showParentLevelContext($event, contextSelection.settings.request.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen Down</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="childLevelOptions.find(x => x.value == contextSelection.settings.request.listen.child_level).label"
+                                @click="showChildLevelContext($event, contextSelection.settings.request.listen)">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+
+                            <div class="item-wrapper">
+                                <label class="settings-label">Listen to Siblings</label>
+                                <BaseCheckboxInputField v-model="contextSelection.settings.request.listen.sibling">
+                                    <span>Listen to Siblings</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <label class="settings-label">Share with selection members</label>
+                                <BaseCheckboxInputField>
+                                    <span>Share with members</span>
+                                </BaseCheckboxInputField>
+                            </div>
+                        </div>
+                    </div>
+                    
                 </div>
-                <div class="item-group">
+                <div class="item-group footer">
+                    <div class="item-wrapper">
+                        <label class="settings-label">Limit who can see the authors of actions and comments made in this selection</label>
+                        <BaseInputField disabled=true type="select" 
+                        @click="showDisplayLevelContext($event, contextSelection.settings)">
+                            <i class="fas fa-caret-down"></i>
+                        </BaseInputField>
+                    </div>                            
                     <div class="item-wrapper" style="text-align: right;">
                         <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
@@ -259,6 +426,13 @@
                     <BaseSelectButtons type="radio" :submitOnChange="true"
                     v-model="contextSelectionOption.child_level" @submit="slotProps.hide"
                     :options="childLevelOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
+
+                <BaseContextMenu ref="contextDisplayLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    @submit="slotProps.hide"
+                    :options="displayLevelOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
             </template>
@@ -317,6 +491,7 @@ export default {
         fileToClone: null,
         loadingSelectionSettings: false,
         contextSelectionOption: null,
+        contextSelectionSettings: null,
         parentLevelOptions: [
             {
                 value: 'Ancestors',
@@ -343,6 +518,20 @@ export default {
             {
                 value: 'None',
                 label: 'None'
+            },
+        ],
+        displayLevelOptions: [
+            {
+                value: 'All',
+                label: 'Everyone'
+            },
+            {
+                value: 'Owners',
+                label: 'Owners'
+            },
+            {
+                value: 'None',
+                label: 'No one'
             },
         ]
     }},
@@ -378,12 +567,20 @@ export default {
         showParentLevelContext(e, option) {
             this.contextSelectionOption = option
             this.$refs.contextChildLevel.hide()
+            this.$refs.contextDisplayLevel.hide()
             this.$refs.contextParentLevel.show(e)
         },
         showChildLevelContext(e, option) {
             this.contextSelectionOption = option
             this.$refs.contextParentLevel.hide()
+            this.$refs.contextDisplayLevel.hide()
             this.$refs.contextChildLevel.show(e)
+        },
+        showDisplayLevelContext(e, settings) {
+            this.contextSelectionSettings = settings
+            this.$refs.contextParentLevel.hide()
+            this.$refs.contextChildLevel.hide()
+            this.$refs.contextDisplayLevel.show(e)
         },
         onSaveSelectionSettings() {
             // Send API request to update the selections settings.
@@ -661,6 +858,13 @@ export default {
     .context-menu.context-options {
         .item-wrapper {
             display: block;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            .input-field {
+                max-width: 208px;
+            }
         }
     }
     

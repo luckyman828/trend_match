@@ -76,20 +76,33 @@ export default {
             return files
         },
         async fetchFile({ commit, state, rootGetters }, fileid) {
-            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setFilesStatus', 'loading')
 
             const apiUrl = `/files/${fileid}`
+            let file
             await axios
                 .get(apiUrl)
                 .then(response => {
-                    commit('setCurrentFile', response.data)
+                    file = response.data
+                    commit('setCurrentFile', file)
                     commit('setFilesStatus', 'success')
                 })
                 .catch(err => {
                     commit('setFilesStatus', 'error')
                 })
+            return file
+        },
+        async fetchFolder({ commit }, folderId) {
+            const apiUrl = `/files/${folderId}`
+            let folder
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    folder = response.data
+                })
+                .catch(err => {})
+            return folder
         },
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id

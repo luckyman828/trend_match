@@ -2,16 +2,21 @@
     <BaseFlyin ref="fileSingleFlyin" :show="show" :disableKeyHandler="SelectionUsersFlyinVisible"
     @close="$emit('close')">
         <template v-slot:header v-if="file && show">
-            <BaseFlyinHeader :title="'File Overview: '+file.name" :next="nextFile" :prev="prevFile"
+            <BaseFlyinHeader :next="nextFile" :prev="prevFile"
             :disableNavigation="SelectionUsersFlyinVisible"
             @close="$emit('close')" @next="showNext" @prev="showPrev">
-                <div class="item-group">
-                    <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
-                        <i class="far fa-user-shield"></i>
-                        <span>{{file.owner_count || 0}} File owners</span>
-                    </button>
-                    <button class="ghost" @click="goToEditSingle"><span>View / Edit products</span></button>
-                </div>
+                <template v-slot:left>
+                    <h3>File Overview: {{file.name}}</h3>
+                </template>
+                <template v-slot:right>
+                    <div class="item-group">
+                        <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
+                            <i class="far fa-user-shield"></i>
+                            <span>{{file.owner_count || 0}} File owners</span>
+                        </button>
+                        <button class="ghost" @click="goToEditSingle"><span>View / Edit products</span></button>
+                    </div>
+                </template>
             </BaseFlyinHeader>
         </template>
         <template v-if="file && show" v-slot>
@@ -47,6 +52,7 @@ export default {
     watch: {
         show: function(newVal, oldVal) {
             if (newVal) {
+                console.log('fetch data')
                 if (!this.loadingData) this.fetchData()
             }
         },
@@ -85,6 +91,11 @@ export default {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
     },
+    created() {
+        if (this.currentFile) {
+            this.fetchData()
+        }
+    }
 }
 </script>
 
