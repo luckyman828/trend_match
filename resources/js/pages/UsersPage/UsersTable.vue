@@ -79,7 +79,7 @@
                 v-tooltip="slotProps.item.id != authUser.id 
                 && 'Can only set password of self'"
                 @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
-                    <span>Set <u>P</u>assword</span>
+                    <span>Change <u>P</u>assword</span>
                 </BaseContextMenuItem>
                 <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
@@ -146,7 +146,8 @@
 
         <BaseContextMenu ref="contextMenuUserPassword" class="context-password">
             <template v-slot:header>
-                Change User's Password
+                <!-- Change User's Password -->
+                <span>Change Password</span>
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
@@ -157,7 +158,7 @@
                             placeholder="New password" v-model="newUserPassword"/>
                         </div>
                     </div>
-                    <div class="item-wrapper" v-if="authUserWorkspaceRole != 'Admin'">
+                    <div class="item-wrapper">
                         <div>
                             <label>Old password</label>
                             <BaseInputField type="text" placeholder="Old password" v-model="oldUserPassword"/>
