@@ -472,7 +472,7 @@ export default {
             // Process the uploaded files
             this.newFile.files.forEach(file => {
                 const fileReader = new FileReader()
-                fileReader.readAsText(file)
+                fileReader.readAsText(file, 'ISO-8859-4')
                 fileReader.onload = e => this.loadHandler(e, file.name)
             })
         },
