@@ -48,10 +48,10 @@
                     </div>
                 </div>
             </form>
-            <button class="ghost md full-width" style="margin-bottom: 20px;" 
+            <!-- <button class="ghost md full-width" style="margin-bottom: 20px;" 
             @click="previewPdf = true">
                 Preview PDF
-            </button>
+            </button> -->
             <BaseLoader v-if="exportingPDF"/>
             <button v-else-if="!generatedPDF" class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
             <template v-else>
