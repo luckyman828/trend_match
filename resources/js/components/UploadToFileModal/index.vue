@@ -15,7 +15,7 @@
         <MapFieldsScreen v-if="currentScreenIndex == 2"
         :fields="fieldsToMatch" :availableFiles="availableFiles"
         :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
-        :replacePrices="replacePrices"
+        :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
         @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
         @addCurrency="addCurrency" @removeCurrency="removeCurrency"/>
 
@@ -57,7 +57,7 @@ export default {
         currentScreenIndex: 0,
         availableFiles: [],
         filePreviews: [],
-        singleCurrencyFile: true,
+        singleCurrencyFile: false,
         replacePrices: false,
         fieldsToReplace: [
             {name: 'title', displayName: 'Name', enabled: false},
