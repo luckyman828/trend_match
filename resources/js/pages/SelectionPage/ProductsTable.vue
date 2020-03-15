@@ -92,13 +92,13 @@
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader :sortKey="'ins'" :currentSortKey="sortKey"
+                <BaseTableHeader :sortKey="['focus', 'ins']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'outs'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nds'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="'requests'" :currentSortKey="sortKey"
+                <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
