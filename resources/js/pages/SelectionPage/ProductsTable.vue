@@ -118,7 +118,7 @@
                     @onViewSingle="onViewSingle" @updateAction="(product, action) => $emit('updateAction', product, action)"/>
                 </RecycleScroller>
 
-                <tr v-if="products.length <= 0">
+                <tr v-if="productsFilteredBySearch.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
                         No products to show. Try changing your filters.</p>
                 </tr>

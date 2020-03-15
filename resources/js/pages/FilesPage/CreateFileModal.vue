@@ -122,7 +122,7 @@
                             <h3>Map currencies</h3>
                             <table class="single-currency-file-table">
                                 <tr>
-                                    <td><BaseCheckbox :value="singleCurrencyFile" v-model="singleCurrencyFile"/></td>
+                                    <td><BaseCheckbox :value="true" v-model="singleCurrencyFile"/></td>
                                     <td><p>One CSV contains all currencies in a single header <span class="small">(i.e. there is a header like "currency" in a csv)</span></p></td>
                                 </tr>
                             </table>
@@ -269,7 +269,7 @@ export default {
         uploadingFile: false,
         availableFiles: [],
         filePreviews: [],
-        singleCurrencyFile: true,
+        singleCurrencyFile: false,
         fieldsToMatch: [
             {name: 'title', displayName: 'Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['title','name','style name','product name' ,'style_name', 'product_name']},
@@ -857,7 +857,7 @@ export default {
         },
         reset() {
             this.availableFiles = []
-            this.singleCurrencyFile = true
+            this.singleCurrencyFile = false
             this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
             this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))

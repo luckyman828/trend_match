@@ -59,7 +59,8 @@
                 <h3>Map currencies</h3>
                 <table class="single-currency-file-table">
                     <tr>
-                        <td><BaseCheckbox :value="singleCurrencyFile" v-model="singleCurrencyFile"/></td>
+                        <td><BaseCheckbox :value="true" :modelValue="singleCurrencyFile"
+                        @change="checked => $emit('update:singleCurrencyFile', checked)"/></td>
                         <td><p>One CSV contains all currencies in a single header <span class="small">(i.e. there is a header like "currency" in a csv)</span></p></td>
                     </tr>
                 </table>
@@ -186,10 +187,10 @@ export default {
         'fields',
         'availableFiles',
         'replacePrices',
-        'currenciesToMatch'
+        'currenciesToMatch',
+        'singleCurrencyFile'
     ],
     data: function () { return {
-        singleCurrencyFile: false,
     }},
     computed: {
         submitValid() {
@@ -351,9 +352,6 @@ export default {
             contextMenu.item = currency
             contextMenu.show(e)
         },
-        reset() {
-            this.singleCurrencyFile = true
-        }
     },
     created() {
         // Attempt to auto map our headers, every time this screen is shown

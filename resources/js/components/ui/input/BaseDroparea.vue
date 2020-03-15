@@ -50,7 +50,10 @@ export default {
             this.$emit('input', e.target.files)
             // Reset the file input, to allow adding the same file multiple times
             e.target.value = ""
-        }
+        },
+        // reset() {
+        //     this.$refs.fileInput
+        // }
     }
 }
 </script>

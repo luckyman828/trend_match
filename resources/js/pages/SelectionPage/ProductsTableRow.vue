@@ -25,7 +25,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Focus">
                     <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                    :label="action.selection_name" :value="action.user.name"/>
+                    :label="action.selection.name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -36,7 +36,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Ins">
                     <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                    :label="action.selection_name" :value="action.user.name"/>
+                    :label="action.selection.name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -47,7 +47,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Outs">
                     <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                    :label="action.selection_name" :value="action.user.name"/>
+                    :label="action.selection.name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -58,7 +58,7 @@
             <template slot="popover">
                 <BaseTooltipList header="Not decided">
                     <BaseTooltipListItem v-for="(user, index) in product.nds" :key="index"
-                    :label="user.selection_name" :value="user.name"/>
+                    :label="user.selection.name" :value="user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>

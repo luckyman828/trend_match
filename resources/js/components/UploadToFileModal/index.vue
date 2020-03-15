@@ -3,7 +3,7 @@
     ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
         <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
-        @goToNextScreen="currentScreenIndex++; processFilesToUpload()"
+        @goToNextScreen="currentScreenIndex++; processFilesToUpload()" ref="uploadFileScreen"
         @addFileToUpload="addFileToUpload" @removeFileToUpload="removeFileToUpload"
         @processFile="processFile"/>
 
@@ -15,7 +15,7 @@
         <MapFieldsScreen v-if="currentScreenIndex == 2"
         :fields="fieldsToMatch" :availableFiles="availableFiles"
         :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
-        :replacePrices="replacePrices"
+        :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
         @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
         @addCurrency="addCurrency" @removeCurrency="removeCurrency"/>
 
@@ -57,7 +57,7 @@ export default {
         currentScreenIndex: 0,
         availableFiles: [],
         filePreviews: [],
-        singleCurrencyFile: true,
+        singleCurrencyFile: false,
         replacePrices: false,
         fieldsToReplace: [
             {name: 'title', displayName: 'Name', enabled: false},
@@ -69,7 +69,6 @@ export default {
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
-            {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'assortments', displayName: 'Assortments', enabled: false},
             {name: 'variants', displayName: 'Variants', enabled: false},
             {name: 'eans', displayName: 'Product EANs', enabled: false},
@@ -202,12 +201,11 @@ export default {
             this.filesToUpload.forEach(file => {
                 // Read the file into memory
                 const fileReader = new FileReader()
-                fileReader.readAsText(file)
+                fileReader.readAsText(file, 'ISO-8859-4') // The default UTF-8 encoding was failing at scandinavian characters. This works for some reason.
                 fileReader.onload = e => this.processFile(e.target.result, file.name)
             })
         },
         processFile(csv, fileName) {
-
             // Split the csv into lines by line breaks
             // NB: This regex is magic
             // It matches strings seperated by linebreaks (CLRF (windows,max,linux shouldb be supported)) 
@@ -386,10 +384,10 @@ export default {
                         }
 
                         // VARIANTS
+                        let variant = null
                         if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
                             // Find / Instantiate this lines variant
                             let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
-                            let variant = null
                             // Check that the variant key is from this file
                             if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
                                 // Find the variant keys index
@@ -603,6 +601,7 @@ export default {
         },
         reset() {
             this.availableFiles = []
+            this.filesToUpload = []
             this.singleCurrencyFile = false
             this.currentScreenIndex = 0
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]

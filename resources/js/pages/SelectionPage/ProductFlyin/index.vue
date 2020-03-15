@@ -158,9 +158,12 @@ export default {
         },
         show(newVal, oldVal) {
             if (newVal) {
+                document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
+                document.body.addEventListener('keydown', this.keydownHandler)
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
+                document.body.removeEventListener('keydown', this.keydownHandler)
             }
         }
     },
@@ -209,12 +212,6 @@ export default {
 
                 if (key == 'Escape')
                     this.onCloseSingle()
-                if (key == 'ArrowUp')
-                    event.preventDefault(),
-                    this.cycleImage(true)
-                if (key == 'ArrowDown')
-                    event.preventDefault(),
-                    this.cycleImage(false)
                 if ( true ) {
                     if (key == 'KeyI')
                         this.onUpdateAction(this.product, 'In')
@@ -224,10 +221,22 @@ export default {
                         this.onUpdateAction(this.product, 'Focus')
                 }
             }
+        },
+        keydownHandler(e) {
+            const key = event.code
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+                if (key == 'ArrowUp')
+                    e.preventDefault(),
+                    this.cycleImage(true)
+                if (key == 'ArrowDown')
+                    e.preventDefault(),
+                    this.cycleImage(false)
+            }
         }
     },
     destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('keydown', this.keydownHandler)
     }
 }
 </script>
