@@ -93,13 +93,13 @@
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
                 <BaseTableHeader :sortKey="'ins'" :currentSortKey="sortKey"
-                @sort="onSort">In</BaseTableHeader>
+                @sort="onSort" :descDefault="true">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'outs'" :currentSortKey="sortKey"
-                @sort="onSort">Out</BaseTableHeader>
+                @sort="onSort" :descDefault="true">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nds'" :currentSortKey="sortKey"
-                @sort="onSort">ND</BaseTableHeader>
+                @sort="onSort" :descDefault="true">ND</BaseTableHeader>
                 <BaseTableHeader :sortKey="'requests'" :currentSortKey="sortKey"
-                @sort="onSort">Requests</BaseTableHeader>
+                @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -207,14 +207,15 @@ export default {
             this.setSingleVisisble(true)
         },
         onSort(sortAsc, sortKey) {
+            console.log('sort')
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            this.sortArray(this.stateProducts, sortKey, sortKey)
+            this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
     },
     created () {
         // Initially sort the products
-        this.onSort(this.sortKey, true)
+        this.onSort(true, this.sortKey)
 
         // Setup event broadcast listening
 

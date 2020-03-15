@@ -41,7 +41,11 @@ export default {
     methods: {
         sort() {
             // If this header is already active, flip the sort order
-            if (this.active) this.sortAsc = !this.sortAsc
+            if (this.active) {
+                this.sortAsc = !this.sortAsc
+            } else {
+                this.sortAsc =  this.descDefault ? false : true
+            }
             this.$emit('sort', this.sortAsc, this.sortKey)
         }
     },
