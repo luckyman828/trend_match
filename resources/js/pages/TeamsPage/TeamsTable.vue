@@ -40,7 +40,7 @@
         <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
             <template v-slot:header v-if="currentTeam">
                 <BaseFlyinHeader @close="teamFlyInVisible = false" class="flyin-header" 
-                :next="nextTeamId" :prev="prevTeamId"
+                :next="nextTeam" :prev="prevTeam"
                 @next="showNext" @prev="showPrev">
                     <template v-slot:left>
                         <h3>{{currentTeam.title}}</h3>
@@ -145,7 +145,7 @@ export default {
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles']),
-        ...mapGetters('teams', ['currentTeam', 'nextTeamId', 'prevTeamId']),
+        ...mapGetters('teams', ['currentTeam', 'nextTeam', 'prevTeam']),
         currentTab: {
             get () {
                 const routeName = this.$route.name
@@ -161,14 +161,14 @@ export default {
     methods: {
         ...mapActions('teams', ['removeUserFromTeam']),
         ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam']),
-        ...mapMutations('teams', ['setCurrentTeam', 'setAvailableTeamIds']),
+        ...mapMutations('teams', ['setCurrentTeam', 'setAvailableTeams']),
         showNext() {
-            if (this.nextTeamId)
-                this.setCurrentTeam(this.teams.find(x => x.id == this.nextTeamId))
+            if (this.nextTeam)
+                this.setCurrentTeam(this.nextTeam)
         },
         showPrev() {
-            if (this.prevTeamId)
-                this.setCurrentTeam(this.teams.find(x => x.id == this.prevTeamId))
+            if (this.prevTeam)
+                this.setCurrentTeam(this.prevTeam)
         },
         onEditTeamCurrency(mouseEvent, team) {
             const contextMenu = this.$refs.contextMenuTeamCurrency
@@ -224,7 +224,7 @@ export default {
             
         },
         showSingleTeam(team) {
-            this.setAvailableTeamIds(this.teams.map(x => x.id))
+            this.setAvailableTeams(this.teams)
             this.setCurrentTeam(team)
             this.teamFlyInVisible = true
         },
