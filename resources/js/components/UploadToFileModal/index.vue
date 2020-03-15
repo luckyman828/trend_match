@@ -66,7 +66,6 @@ export default {
             {name: 'category', displayName: 'Category', enabled: false},
             {name: 'min_order', displayName: 'Minimum Order Quantity', enabled: false},
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
-            {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
             {name: 'assortments', displayName: 'Assortments', enabled: false},
