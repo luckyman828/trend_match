@@ -672,7 +672,7 @@ export default {
     }
     .prices {
         .col-5 {
-            grid-template-columns: 200px repeat(3, 1fr) 32px;
+            grid-template-columns: 140px repeat(3, 1fr) 32px;
         }
     }
     .form-section {

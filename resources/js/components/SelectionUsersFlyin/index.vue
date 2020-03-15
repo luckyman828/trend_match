@@ -79,9 +79,9 @@ export default {
     },
     created() {
         // Check if we have any workspace users, else fetch them
-        if (this.users == null && !this.loadingUsers) this.fetchUsers()
+        if (!this.loadingUsers) this.fetchUsers()
         // Check if we have any workspace teams, else fetch them
-        if (this.teams == null && !this.loadingTeams) this.fetchTeams()
+        if (!this.loadingTeams) this.fetchTeams()
     }
 }
 </script>

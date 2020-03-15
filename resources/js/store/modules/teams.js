@@ -8,7 +8,7 @@ export default {
         loading: false,
         currentTeam: null,
         currentTeamStatus: 'loading',
-        availableTeamIds: [],
+        availableTeams: [],
         teams: [],
         availableTeamRoles: [
             {
@@ -25,36 +25,29 @@ export default {
 
     getters: {
         loadingTeams: state => state.loading,
-        currentTeamId: state => state.currentTeamId,
-        availableTeamIds: state => state.availableTeamIds,
+        currentTeamId: state => state.currentTeam.id,
+        availableTeams: state => state.availableTeams,
         teams: state => state.teams,
         availableTeamRoles: state => state.availableTeamRoles,
         currentTeam: state => state.currentTeam,
         currentTeamStatus: state => state.currentTeamStatus,
-        // currentTeam: (state, getters) => {
-        //     const teamId = getters.currentTeamId
-        //     const teams = getters.teams
-        //     if (teamId && teams.length) {
-        //         return teams.find(x => x.id == teamId)
-        //     }
-        // },
-        nextTeamId: (state, getters) => {
-            const availableIds = getters.availableTeamIds
-            const currentId = getters.currentTeamId
-            if (currentId && availableIds.length > 0) {
-                const currentIndex = availableIds.findIndex(x => x == currentId)
-                if (currentIndex < availableIds.length - 1) {
-                    return availableIds[currentIndex + 1]
+        nextTeam: (state, getters) => {
+            const available = getters.availableTeams
+            const currentId = getters.currentTeam.id
+            if (currentId && available.length > 0) {
+                const currentIndex = available.findIndex(x => x.id == currentId)
+                if (currentIndex < available.length - 1) {
+                    return available[currentIndex + 1]
                 }
             }
         },
-        prevTeamId: (state, getters) => {
-            const availableIds = getters.availableTeamIds
-            const currentId = getters.currentTeamId
-            if (currentId && availableIds.length > 0) {
-                const currentIndex = availableIds.findIndex(x => x == currentId)
+        prevTeam: (state, getters) => {
+            const available = getters.availableTeams
+            const currentId = getters.currentTeam.id
+            if (currentId && available.length > 0) {
+                const currentIndex = available.findIndex(x => x.id == currentId)
                 if (currentIndex != 0) {
-                    return availableIds[currentIndex - 1]
+                    return available[currentIndex - 1]
                 }
             }
         },
@@ -215,8 +208,8 @@ export default {
         setCurrentTeam(state, team) {
             state.currentTeam = team
         },
-        setAvailableTeamIds(state, ids) {
-            state.availableTeamIds = ids
+        setAvailableTeams(state, teams) {
+            state.availableTeams = teams
         },
         insertOrUpdateTeam(state, team) {
             if (team.id && state.teams.find(x => x.id == team.id)) {

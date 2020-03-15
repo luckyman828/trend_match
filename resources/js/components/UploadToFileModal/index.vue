@@ -66,7 +66,6 @@ export default {
             {name: 'category', displayName: 'Category', enabled: false},
             {name: 'min_order', displayName: 'Minimum Order Quantity', enabled: false},
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
-            {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
             {name: 'assortments', displayName: 'Assortments', enabled: false},
@@ -408,10 +407,10 @@ export default {
                         }
 
                         // Assortments
+                        let assortment = null
                         if (this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) {
                             // Find / Instantiate this lines assortments
                             let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
-                            let assortment = null
                             // Check that the assortment key is from this file
                             if (assortmentKeyField.newValue.fileIndex == fileIndex) {
                                 // Find the assortment keys index
@@ -432,9 +431,9 @@ export default {
                         }
 
                         // CURRENCIES
+                        let currency = null
                         if (this.replacePrices) {
                             // Find / Instantiate this lines currencies
-                            let currency = null
                             let currencies = this.currenciesToMatch
                             
                             // Check if we have single file containing all currencies

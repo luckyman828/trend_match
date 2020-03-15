@@ -151,7 +151,7 @@ export default {
         margin: auto;
         width: 100%;
         height: 100%;
-        // visibility: hidden;
+        visibility: hidden;
         .overlay {
             display: block;
             z-index: 0

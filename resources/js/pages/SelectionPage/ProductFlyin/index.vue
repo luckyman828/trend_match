@@ -120,9 +120,14 @@
 
             <DistributionSection :product="currentProduct"/>
 
-            <RequestsSection class="comments" :product="product" :selection="currentSelection"/>
+            <RequestsSection class="comments" ref="requestsSection"
+            :product="product" :selection="currentSelection"
+            @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
-            <CommentsSection class="comments" :product="product" :selection="currentSelection"/>
+            <CommentsSection class="comments" ref="commentsSection"
+            :product="product" :selection="currentSelection"
+            @activateRequestWrite="$refs.requestsSection.activateWrite()"
+            @hotkeyEnter="hotkeyEnterHandler"/>
         </template>
     </BaseFlyin>
 </template>
@@ -169,7 +174,7 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
-        ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionModeAction']),
+        ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionMode', 'currentSelectionModeAction']),
         product () {
             return this.currentProduct
         },
@@ -220,6 +225,14 @@ export default {
                     if (key == 'KeyF' || key == 'KeyU')
                         this.onUpdateAction(this.product, 'Focus')
                 }
+            }
+        },
+        hotkeyEnterHandler(e) {
+            // If the current mode is Alignment, focus the request field. Else focus comment
+            if (this.currentSelectionMode == 'Alignment') {
+                this.$refs.requestsSection.activateWrite()
+            } else {
+                this.$refs.commentsSection.activateWrite()
             }
         },
         keydownHandler(e) {

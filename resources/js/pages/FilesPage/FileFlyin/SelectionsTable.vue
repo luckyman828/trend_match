@@ -679,6 +679,7 @@ export default {
                 type: 'Master',
                 currency: null,
                 user_count: 0,
+                team_count: 0,
                 children: [],
             }
             // Push new selection to the parent

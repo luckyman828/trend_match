@@ -20,14 +20,20 @@ export default {
     props: [
         'sortKey',
         'currentSortKey',
-        'descDefault'
+        'descDefault',
     ],
     data: function() { return {
-        sortAsc: this.descDefault ? false : true
+        sortAsc: this.descDefault ? false : true,
+        sortKeyIndex: 0,
     }},
     computed: {
         active () {
-            return this.sortKey == this.currentSortKey
+            if (Array.isArray(this.sortKey)) {
+                return JSON.stringify(this.sortKey) == JSON.stringify(this.currentSortKey)
+                // return this.sortKey.includes(this.currentSortKey)
+            } else {
+                return this.sortKey == this.currentSortKey
+            }
         }
     },
     watch: {
@@ -41,8 +47,16 @@ export default {
     methods: {
         sort() {
             // If this header is already active, flip the sort order
-            if (this.active) this.sortAsc = !this.sortAsc
-            this.$emit('sort', this.sortAsc, this.sortKey)
+            if (this.active) {
+                this.sortAsc = !this.sortAsc
+            } else {
+                this.sortAsc =  this.descDefault ? false : true
+            }
+            // if (Array.isArray(this.sortKey)) {
+            //     this.$emit('sort', this.sortAsc, this.sortKey)
+            // } else {
+                this.$emit('sort', this.sortAsc, this.sortKey)
+            // }
         }
     },
     mounted () {
