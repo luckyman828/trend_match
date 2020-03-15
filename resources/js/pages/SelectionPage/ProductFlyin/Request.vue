@@ -64,10 +64,14 @@ export default {
     }
     .request {
         padding: 12px;
-        background: $light2;
         border-radius: 6px;
         display: flex;
         flex-direction: column;
+        background: $dark1;
+        color: white;
+        strong {
+            color: white;
+        }
         .sender {
             font-size: 12px;
         }
