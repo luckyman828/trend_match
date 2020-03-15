@@ -3,7 +3,7 @@
     ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
         <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
-        @goToNextScreen="currentScreenIndex++; processFilesToUpload()"
+        @goToNextScreen="currentScreenIndex++; processFilesToUpload()" ref="uploadFileScreen"
         @addFileToUpload="addFileToUpload" @removeFileToUpload="removeFileToUpload"
         @processFile="processFile"/>
 
@@ -69,7 +69,6 @@ export default {
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
-            {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'assortments', displayName: 'Assortments', enabled: false},
             {name: 'variants', displayName: 'Variants', enabled: false},
             {name: 'eans', displayName: 'Product EANs', enabled: false},
@@ -602,6 +601,7 @@ export default {
         },
         reset() {
             this.availableFiles = []
+            this.filesToUpload = []
             this.singleCurrencyFile = false
             this.currentScreenIndex = 0
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]

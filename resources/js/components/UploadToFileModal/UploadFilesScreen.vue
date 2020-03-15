@@ -84,31 +84,9 @@ export default {
         removeFile(index) {
             this.$emit('removeFileToUpload', index)
         },
-        // onGoToNextScreen() {
-        //     // Process the uploaded files
-        //     this.filesToUpload.forEach(file => {
-        //         // Read the file into memory
-        //         const fileReader = new FileReader()
-        //         fileReader.readAsText(file)
-        //         fileReader.onload = e => this.fileLoadHandler(e, file.name)
-        //     })
-        //     // Change the current screen
-        //     this.$emit('goToNextScreen')
-        //     this.$emit('test', 'gototonext')
-        //     this.emitTest('Emit test')
-        // },
-        // fileLoadHandler(event, fileName) {
-        //     const csv = event.target.result
-
-        //     // Read the files and process them
-        //     this.emitTest('Emit test from file loader')
-        //     this.$emit('test', 'fileloader')
-        //     this.$emit('processFile', csv, fileName)
-        //     // this.processFile(csv, fileName)
-        // },
-        emitTest(msg) {
-            this.$emit('test', msg)
-        }
+        // reset() {
+        //     this.$refs.droparea.reset()
+        // }
     },
 }
 </script>
