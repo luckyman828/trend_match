@@ -408,10 +408,10 @@ export default {
                         }
 
                         // Assortments
+                        let assortment = null
                         if (this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) {
                             // Find / Instantiate this lines assortments
                             let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
-                            let assortment = null
                             // Check that the assortment key is from this file
                             if (assortmentKeyField.newValue.fileIndex == fileIndex) {
                                 // Find the assortment keys index
@@ -432,9 +432,9 @@ export default {
                         }
 
                         // CURRENCIES
+                        let currency = null
                         if (this.replacePrices) {
                             // Find / Instantiate this lines currencies
-                            let currency = null
                             let currencies = this.currenciesToMatch
                             
                             // Check if we have single file containing all currencies
