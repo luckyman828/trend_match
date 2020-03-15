@@ -7,7 +7,7 @@
         </div> -->
         <NavbarFiles v-if="$route.name == 'files'"/>
         <NavbarSelection v-if="$route.name == 'selection' && currentFile"/>
-        <NavbarEditFile v-if="$route.name == 'editFile'"/>
+        <NavbarEditFile v-if="$route.name == 'editFile' && currentFile"/>
         <NavbarTeams v-if="$route.name == 'teams'"/>
         <NavbarUsers v-if="$route.name == 'users'"/>
   </nav>

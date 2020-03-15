@@ -158,6 +158,7 @@ export default {
         },
         show(newVal, oldVal) {
             if (newVal) {
+                document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
@@ -203,6 +204,7 @@ export default {
             }
         },
         hotkeyHandler(event) {
+            console.log(event)
             const key = event.code
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
