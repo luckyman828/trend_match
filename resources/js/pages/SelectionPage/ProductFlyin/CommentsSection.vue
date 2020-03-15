@@ -146,8 +146,11 @@ export default {
             const key = e.code
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Enter') {
-                    // e.preventDefault()
-                    // this.activateWrite()
+                    this.$emit('hotkeyEnter', e)
+                }
+                if (key == 'Tab' && e.shiftKey && this.writeActive) {
+                    this.deactivateWrite()
+                    this.$emit('activateRequestWrite')
                 }
             }
         },

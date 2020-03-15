@@ -177,12 +177,15 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            // if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
-            //     if (key == 'Enter') {
-            //         e.preventDefault()
-            //         this.activateWrite()
-            //     }
-            // }
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (key == 'Enter') {
+                    this.$emit('hotkeyEnter', e)
+                }
+                if (key == 'Tab' && this.writeActive) {
+                    this.deactivateWrite()
+                    this.$emit('activateCommentWrite')
+                }
+            }
         },
     },
     mounted() {
