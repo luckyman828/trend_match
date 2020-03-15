@@ -77,7 +77,7 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode']),
         submitDisabled () {
             return this.newComment.content.length < 1 || this.submitting
         },
@@ -148,7 +148,7 @@ export default {
                 if (key == 'Enter') {
                     this.$emit('hotkeyEnter', e)
                 }
-                if (key == 'Tab' && e.shiftKey && this.writeActive) {
+                if (key == 'Tab' && e.shiftKey && this.writeActive && this.currentSelectionMode == 'Alignment') {
                     this.deactivateWrite()
                     this.$emit('activateRequestWrite')
                 }
