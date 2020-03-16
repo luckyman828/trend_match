@@ -17,7 +17,7 @@
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader>
                 <BaseTableHeader :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
                 <BaseTableHeader :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
-                <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -123,7 +123,7 @@
 
         <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4">
             <template v-slot:header v-if="contextSelection">
-                Settings for {{contextSelection.name}}
+                Settings: {{contextSelection.name}}
             </template>
             <template v-slot="slotProps">
                 <!-- If loading -->
@@ -191,10 +191,20 @@
                         </div>
                         <div class="item-group">
                             <div class="item-wrapper">
-                                <label class="settings-label">Share with selection members</label>
-                                <BaseCheckboxInputField>
-                                    <span>Share with members</span>
-                                </BaseCheckboxInputField>
+                                <label class="settings-label">Limit who can see feedback</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.feedback_visible).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'feedback_visible')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+                            <div class="item-wrapper">
+                                <label class="settings-label">Display feedback authors for:</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_feedback')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
                             </div>
                         </div>
                     </div>
@@ -258,10 +268,20 @@
 
                         <div class="item-group">
                             <div class="item-wrapper">
-                                <label class="settings-label">Share with selection members</label>
-                                <BaseCheckboxInputField>
-                                    <span>Share with members</span>
-                                </BaseCheckboxInputField>
+                                <label class="settings-label">Limit who can see alignment actions</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.action_visible).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'action_visible')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+                            <div class="item-wrapper">
+                                <label class="settings-label">Display alignment action authors for:</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_action')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
                             </div>
                         </div>
                     </div>
@@ -325,10 +345,20 @@
 
                         <div class="item-group">
                             <div class="item-wrapper">
-                                <label class="settings-label">Share with selection members</label>
-                                <BaseCheckboxInputField>
-                                    <span>Share with members</span>
-                                </BaseCheckboxInputField>
+                                <label class="settings-label">Limit who can see comments</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.comment_visible).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'comment_visible')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
+                            <div class="item-wrapper">
+                                <label class="settings-label">Display comment authors for:</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_comment')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
                             </div>
                         </div>
                     </div>
@@ -392,23 +422,33 @@
 
                         <div class="item-group">
                             <div class="item-wrapper">
-                                <label class="settings-label">Share with selection members</label>
-                                <BaseCheckboxInputField>
-                                    <span>Share with members</span>
-                                </BaseCheckboxInputField>
+                                <label class="settings-label">Limit who can see requests</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.request_visible).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'request_visible')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
                             </div>
+                            <!-- <div class="item-wrapper">
+                                <label class="settings-label">Display feedback authors for:</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
+                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div> -->
                         </div>
                     </div>
                     
                 </div>
                 <div class="item-group footer">
-                    <div class="item-wrapper">
+                    <!-- <div class="item-wrapper">
                         <label class="settings-label">Limit who can see the authors of actions and comments made in this selection</label>
                         <BaseInputField disabled=true type="select" 
                         @click="showDisplayLevelContext($event, contextSelection.settings)">
                             <i class="fas fa-caret-down"></i>
                         </BaseInputField>
-                    </div>                            
+                    </div>                             -->
                     <div class="item-wrapper" style="text-align: right;">
                         <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
@@ -431,7 +471,7 @@
 
                 <BaseContextMenu ref="contextDisplayLevel" v-slot="slotProps">
                     <BaseSelectButtons type="radio" :submitOnChange="true"
-                    @submit="slotProps.hide"
+                    v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
                     :options="displayLevelOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
@@ -492,6 +532,7 @@ export default {
         loadingSelectionSettings: false,
         contextSelectionOption: null,
         contextSelectionSettings: null,
+        contextSelectionSettingsKey: null,
         parentLevelOptions: [
             {
                 value: 'Ancestors',
@@ -522,11 +563,11 @@ export default {
         ],
         displayLevelOptions: [
             {
-                value: 'All',
+                value: 'Member',
                 label: 'Everyone'
             },
             {
-                value: 'Owners',
+                value: 'Owner',
                 label: 'Owners'
             },
             {
@@ -576,8 +617,9 @@ export default {
             this.$refs.contextDisplayLevel.hide()
             this.$refs.contextChildLevel.show(e)
         },
-        showDisplayLevelContext(e, settings) {
+        showDisplayLevelContext(e, settings, key) {
             this.contextSelectionSettings = settings
+            this.contextSelectionSettingsKey = key
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.show(e)
@@ -811,8 +853,8 @@ export default {
                     max-width: 48px
                 }
                 &.title { // Title
-                    min-width: 340px;
-                    max-width: 340px;
+                    min-width: 400px;
+                    max-width: 400px;
                 }
                 &.status { // Status
                     min-width: 202px;

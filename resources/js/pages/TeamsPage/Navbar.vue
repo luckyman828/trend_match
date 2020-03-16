@@ -9,7 +9,11 @@
             </div>
             <div class="items-right">
 
-                <button class="primary" @click="addTeamModalVisible = true"><span>Add new: Team</span></button>
+                <BaseButton :buttonClass="'primary'" @click="addTeamModalVisible = true"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'">
+                    <span>Add new: Team</span>
+                </BaseButton>
 
             </div>
         </div>
@@ -30,6 +34,9 @@ export default {
     }},
     components: {
         CreateTeamModal,
+    },
+    computed: {
+        ...mapGetters('workspaces', ['authUserWorkspaceRole'])
     },
 };
 </script>

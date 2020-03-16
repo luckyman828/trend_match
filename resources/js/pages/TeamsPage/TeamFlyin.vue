@@ -25,7 +25,14 @@
                     @editCurrency="onEditUserCurrency($event, user)"/>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add User(s) to Team</span></button></td>
+                <td>
+                    <BaseButton buttonClass="primary invisible"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add team members'"
+                    @click="onAddUser($event)">
+                        <i class="far fa-plus"></i><span>Add User(s) to Team</span>
+                    </BaseButton>
+                </td>
             </template>
         </BaseFlexTable>
 
@@ -167,6 +174,7 @@ export default {
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('teams', ['currentTeamStatus', 'availableTeamRoles']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         availableUsers() {
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
@@ -190,6 +198,7 @@ export default {
             this.sortArray(this.team.users, this.sortAsc, this.sortKey)
         },
         showUserContext(e, user) {
+            if (this.authUserWorkspaceRole != 'Admin') return
             this.contextUser = user
             this.contextMouseEvent = e
             const contextMenu = this.$refs.contextMenuUser
