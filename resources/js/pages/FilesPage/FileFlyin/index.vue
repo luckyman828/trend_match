@@ -52,7 +52,6 @@ export default {
     watch: {
         show: function(newVal, oldVal) {
             if (newVal) {
-                console.log('fetch data')
                 if (!this.loadingData) this.fetchData()
             }
         },
