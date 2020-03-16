@@ -49,7 +49,13 @@
                 </div>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onNewSelection()"><i class="far fa-plus"></i><span>Add new: Master Selection</span></button></td>
+                <td>
+                    <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                    @click="onNewSelection()">
+                        <i class="far fa-plus"></i><span>Add new: Master Selection</span>
+                    </BaseButton>
+                </td>
             </template>
         </BaseFlexTable>
 
@@ -578,6 +584,7 @@ export default {
     }},
     computed: {
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
@@ -629,6 +636,7 @@ export default {
             this.updateSelectionSettings(this.contextSelection)
         },
         showContextMenuSelection(e, selection, component, parent) {
+            if (this.authUserWorkspaceRole != 'Admin') return
             // Set the current context menu item
             this.contextSelection = selection
             this.contextSelectionComponent = component
@@ -865,8 +873,8 @@ export default {
                 //     max-width: 72px;
                 // }
                 &.action { // Actions
-                    min-width: 76px;
-                    max-width: 76px;
+                    min-width: 108px;
+                    max-width: 108px;
                 }
             }
         }

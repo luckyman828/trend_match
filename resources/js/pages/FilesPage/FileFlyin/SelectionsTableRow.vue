@@ -39,8 +39,9 @@
                     <i class="far" :class="selection.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
             </td> -->
             <td class="action">
-                <button class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
-                <button class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
+                <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
+                <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
+                <button v-else class="sm invisible ghost-hover" @click="onGoToSelection"><span>Go to Selection</span></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
@@ -76,13 +77,14 @@ export default {
         childrenExpanded: true
     }},
     computed: {
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         indent() {
             const baseIndent = 48
             const indentAmount = 20
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 340
+            const baseWidth = 400
             const indentAmount = 20
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         }
