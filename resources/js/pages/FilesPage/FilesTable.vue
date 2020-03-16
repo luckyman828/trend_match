@@ -17,7 +17,7 @@
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'modified'" :currentSortKey="sortKey" @sort="onSort">Modified</BaseTableHeader>
                 <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
-                <BaseTableHeader :sortKey="'owners'" :currentSortKey="sortKey" @sort="onSort">Owners</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'owners'" :currentSortKey="sortKey" @sort="onSort">Owners</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -35,11 +35,11 @@
                     <td class="modified">-</td>
                     <!-- <td class="deadline">-</td> -->
                     <td class="items">{{folder.children_count || '-'}}</td>
-                    <td class="owners">
+                    <!-- <td class="owners">
                         <button class="ghost editable sm" @click="showFileOwnersFlyin(folder)">
                             <i class="far fa-user"></i><span>{{folder.owner_count || 0}}</span>
                         </button>
-                    </td>
+                    </td> -->
                     <!-- <td class="status">-</td> -->
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
@@ -56,11 +56,11 @@
                     <td class="modified">-</td>
                     <!-- <td class="deadline">{{file.end_date}}</td> -->
                     <td class="items">{{file.children_count || '-'}}</td>
-                    <td class="owners">
+                    <!-- <td class="owners">
                         <button class="ghost editable sm" @click="showFileOwnersFlyin(file)">
                             <i class="far fa-user"></i><span>{{file.owner_count || 0}}</span>
                         </button>
-                    </td>
+                    </td> -->
                     <!-- <td class="status">-</td> -->
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
@@ -145,10 +145,10 @@
 
         <BaseContextMenu ref="contextMenuFolder" class="context-folder" v-slot
         @keybind-o="setCurrentFolder(contextMenuItem)"
-        @keybind-r="onEditField(contextMenuItem, 'folder', 'title')"
-        @keybind-a="showFileOwnersFlyin(contextMenuItem)"
-        @keybind-m="onMoveTo(contextMenuItem, 'folder')"
-        @keybind-d="onDeleteFolder(contextMenuItem.id)">
+        @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'folder', 'title')"
+        @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
+        @keybind-m="false && onMoveTo(contextMenuItem, 'folder')"
+        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
                 <div class="item" @click="setCurrentFolder(contextMenuItem)">
                     <div class="icon-wrapper">
@@ -158,42 +158,45 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onEditField(contextMenuItem, 'folder', 'title')">
-                    <div class="icon-wrapper">
-                        <i class="far fa-pen"></i>
-                    </div>
-                    <u>R</u>ename
-                </div>
-                <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
+                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename folders'"
+                @click="onEditField(contextMenuItem, 'folder', 'title')">
+                    <span><u>R</u>ename</span>
+                </BaseContextMenuItem>
+                <!-- <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-user-plus"></i>
                     </div>
                     <u>A</u>dd owner(s)
-                </div>
-                <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
+                </div> -->
+                <!-- <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move folders'"
+                @click="onMoveTo(contextMenuItem, 'folder')">
+                    <span><u>M</u>ove to</span>
+                </BaseContextMenuItem> -->
+                <!-- <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
                     <u>M</u>ove to
-                </div>
+                </div> -->
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteFolder(contextMenuItem.id)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-trash-alt"></i>
-                    </div>
-                    <u>D</u>elete folder
-                </div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete folders'"
+                @click="onDeleteFolder(contextMenuItem.id)">
+                    <span><u>D</u>elete folder</span>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuFile" class="context-file" v-slot
         @keybind-v="viewSingle(contextMenuItem.id)"
-        @keybind-e="onGoToEditFile(contextMenuItem.id)"
-        @keybind-r="onEditField(contextMenuItem, 'file', 'title')"
-        @keybind-a="showFileOwnersFlyin(contextMenuItem)"
-        @keybind-m="onMoveTo(contextMenuItem, 'file')"
-        @keybind-d="onDeleteFile(contextMenuItem.id)">
+        @keybind-e="authUserWorkspaceRole == 'Admin' && onGoToEditFile(contextMenuItem.id)"
+        @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'file', 'title')"
+        @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
+        @keybind-m="false && onMoveTo(contextMenuItem, 'file')"
+        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
                 <div class="item" @click="showSingleFile(contextMenuItem)">
                     <div class="icon-wrapper">
@@ -201,21 +204,20 @@
                     </div>
                     <u>V</u>iew file
                 </div>
-                <div class="item" @click="onGoToEditFile(contextMenuItem.id)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-file-edit"></i>
-                    </div>
-                    View / <u>e</u>dit products
-                </div>
+                <BaseContextMenuItem iconClass="far fa-file-edit" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can edit files'"
+                @click="onGoToEditFile(contextMenuItem.id)">
+                    <span>View / <u>e</u>dit products</span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onEditField(contextMenuItem, 'file', 'title')">
-                    <div class="icon-wrapper">
-                        <i class="far fa-pen"></i>
-                    </div>
-                    <u>R</u>ename
-                </div>
-                <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
+                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename files'"
+                @click="onEditField(contextMenuItem, 'file', 'title')">
+                    <span><u>R</u>ename</span>
+                </BaseContextMenuItem>
+                <!-- Not implemented yet -->
+                <!-- <div class="item" @click="showFileOwnersFlyin(contextMenuItem)">
                     <div class="icon-wrapper">
                         <i class="far fa-user-plus"></i>
                     </div>
@@ -226,15 +228,14 @@
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
                     <u>M</u>ove to
-                </div>
+                </div> -->
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteFile(contextMenuItem.id)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-trash-alt"></i>
-                    </div>
-                    <u>D</u>elete file
-                </div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete files'"
+                @click="onDeleteFile(contextMenuItem.id)">
+                    <span><u>D</u>elete file</span>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
     </div>
@@ -275,7 +276,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         foldersToShow() {
             return this.files.filter(x => x.type =='Folder')
         },

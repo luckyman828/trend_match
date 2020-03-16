@@ -33,7 +33,14 @@
                 @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"/>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onNewTeam"><i class="far fa-plus"></i><span>Add new: Team</span></button></td>
+                <td>
+                    <BaseButton :buttonClass="'primary invisible'"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'"
+                    @click="onNewTeam">
+                        <i class="far fa-plus"></i><span>Add new: Team</span>
+                    </BaseButton>
+                </td>
             </template>
         </BaseFlexTable>
 
@@ -62,20 +69,26 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true; slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                <BaseContextMenuItem :iconClass="'far fa-pen'"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename teams'"
+                @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true">
                     <span><u>R</u>ename</span>
-                </div>
-                <div class="item" @click.stop="onEditTeamCurrency(slotProps.mouseEvent, slotProps.item)">
-                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
+                </BaseContextMenuItem>
+                <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
+                @click.stop="onEditTeamCurrency(slotProps.mouseEvent, slotProps.item)">
                     <span><u>C</u>hange currency</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteTeam(slotProps.item); slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
+                @click="onDeleteTeam(slotProps.item)">
                     <span><u>D</u>elete team</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
@@ -144,7 +157,7 @@ export default {
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
-        ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
         ...mapGetters('teams', ['currentTeam', 'nextTeam', 'prevTeam']),
         currentTab: {
             get () {

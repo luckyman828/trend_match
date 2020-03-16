@@ -10,11 +10,15 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
+                        <!-- <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
                             <i class="far fa-user-shield"></i>
                             <span>{{file.owner_count || 0}} File owners</span>
-                        </button>
-                        <button class="ghost" @click="goToEditSingle"><span>View / Edit products</span></button>
+                        </button> -->
+                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
+                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can edit files'"
+                        @click="goToEditSingle">
+                            <span>View / Edit products</span>
+                        </BaseButton>
                     </div>
                 </template>
             </BaseFlyinHeader>
@@ -52,7 +56,6 @@ export default {
     watch: {
         show: function(newVal, oldVal) {
             if (newVal) {
-                console.log('fetch data')
                 if (!this.loadingData) this.fetchData()
             }
         },
@@ -65,6 +68,7 @@ export default {
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
         ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
     },
     methods: {
         ...mapMutations('files', ['setCurrentFile']),

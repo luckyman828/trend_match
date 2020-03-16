@@ -32,15 +32,16 @@
                     <i class="far fa-user"></i><span>{{selection.user_count}}</span>
                 </button>
             </td>
-            <td class="status">
+            <!-- <td class="status">
                 <button class="editable ghost" @click="onToggleLocked(selection)"><span>{{selection.locked ? 'Locked' : 'Open'}}</span>
                     <i class="far" :class="selection.locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
                 <button class="editable ghost" @click="onToggleHidden(selection)"><span>{{selection.hidden ? 'Hidden' : 'Visible'}}</span>
                     <i class="far" :class="selection.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
-            </td>
+            </td> -->
             <td class="action">
-                <button class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
-                <button class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
+                <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
+                <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
+                <button v-else class="sm invisible ghost-hover" @click="onGoToSelection"><span>Go to Selection</span></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
@@ -76,13 +77,14 @@ export default {
         childrenExpanded: true
     }},
     computed: {
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         indent() {
             const baseIndent = 48
             const indentAmount = 20
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 340
+            const baseWidth = 400
             const indentAmount = 20
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         }
