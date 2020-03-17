@@ -435,26 +435,19 @@
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
-                            <!-- <div class="item-wrapper">
+                            <div class="item-wrapper">
                                 <label class="settings-label">Display feedback authors for:</label>
                                 <BaseInputField disabled=true type="select" 
                                 :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
                                 @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                     
                 </div>
-                <div class="item-group footer">
-                    <!-- <div class="item-wrapper">
-                        <label class="settings-label">Limit who can see the authors of actions and comments made in this selection</label>
-                        <BaseInputField disabled=true type="select" 
-                        @click="showDisplayLevelContext($event, contextSelection.settings)">
-                            <i class="fas fa-caret-down"></i>
-                        </BaseInputField>
-                    </div>                             -->
+                <div class="item-group footer">                          -->
                     <div class="item-wrapper" style="text-align: right;">
                         <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
