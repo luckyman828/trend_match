@@ -4,68 +4,141 @@
             <div class="tab-headers">
                 <span :class="{active: currentTab == 'all'}" class="tab" 
                 @click="currentTab = 'all'"> ALL
-                    <span class="count">{{totalActionInputCount}}</span>
+                    <span class="count">{{totalInputCount}}</span>
                 </span>
                 <span :class="{active: currentTab == 'ins'}" class="tab" 
                 @click="currentTab = 'ins'"> IN
-                    <span class="count">{{product.ins.length + product.focus.length}}</span>
+                    <span class="count">{{product.ins.length + product.focus.length + product.alignmentIns.length + product.alignmentFocus.length}}</span>
                 </span>
                 <span :class="{active: currentTab == 'outs'}" class="tab" 
                 @click="currentTab = 'outs'"> OUT
-                    <span class="count">{{product.outs.length}}</span>
+                    <span class="count">{{product.outs.length + product.alignmentOuts.length}}</span>
                 </span>
                 <span :class="{active: currentTab == 'nds'}" class="tab" 
                 @click="currentTab = 'nds'"> ND
-                    <span class="count">{{product.nds.length}}</span>
+                    <span class="count">{{product.nds.length + product.alignmentNds.length}}</span>
                 </span>
             </div>
         </template>
         <template v-slot>
             <div class="tab-body">
-                <div class="distribution-bar">
-                    <svg>
-                        <rect class="bg" height="8px" width="100%"/>
-                        <rect class="focus" height="8px" :style="focusStyle"/>
-                        <rect class="in" height="8px" :style="inStyle"/>
-                        <rect class="out" height="8px" :style="outStyle"/>
-                    </svg>
-                </div>
-                <!-- Focus users -->
-                <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                    <div class="focus" v-for="action in product.focus" :key="action.user.id">
-                        <div>
-                            <span class="user">{{action.user.name}}</span>
-                            <span class="email">{{action.user.email}}</span>
-                        </div>
-                        <span class="focus">Focus <i class="fas fa-star"></i></span>
+                <!-- Totals -->
+                <template v-if="totalFeedbackInputCount > 0 && totalActionInputCount > 0">
+                    <h4 style="margin-top: 0;">Total</h4>
+                    <div class="distribution-bar">
+                        <svg>
+                            <rect class="bg" height="8px" width="100%"/>
+                            <rect class="focus" height="8px" :style="totalFocusStyle"/>
+                            <rect class="in" height="8px" :style="totalInStyle"/>
+                            <rect class="out" height="8px" :style="totalOutStyle"/>
+                        </svg>
                     </div>
                 </template>
-                <!-- In users -->
-                <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                    <div class="in" v-for="action in product.ins" :key="action.user.id">
-                        <div>
-                            <span class="user">{{action.user.name}}</span>
-                            <span class="email">{{action.user.email}}</span>
-                        </div>
+
+                <!-- Alignment -->
+                <template v-if="totalActionInputCount > 0">
+                    <h4>Alignment</h4>
+                    <div class="distribution-bar">
+                        <svg>
+                            <rect class="bg" height="8px" width="100%"/>
+                            <rect class="focus" height="8px" :style="alignmentFocusStyle"/>
+                            <rect class="in" height="8px" :style="alignmentInStyle"/>
+                            <rect class="out" height="8px" :style="alignmentOutStyle"/>
+                        </svg>
                     </div>
+                    <!-- Focus users -->
+                    <template v-if="currentTab == 'all' || currentTab == 'ins'">
+                        <div class="focus" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
+                            </div>
+                            <span class="focus">Focus <i class="fas fa-star"></i></span>
+                        </div>
+                    </template>
+                    <!-- In users -->
+                    <template v-if="currentTab == 'all' || currentTab == 'ins'">
+                        <div class="in" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Out users -->
+                    <template v-if="currentTab == 'all' || currentTab == 'outs'">
+                        <div class="out" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Nds -->
+                    <template v-if="currentTab == 'all' || currentTab == 'nds'">
+                        <div class="nd" v-for="selection in product.alignmentNds" :key="`alignment-${selection.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                            </div>
+                        </div>
+                    </template>
                 </template>
-                <!-- Out users -->
-                <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                    <div class="out" v-for="action in product.outs" :key="action.user.id">
-                        <div>
-                            <span class="user">{{action.user.name}}</span>
-                            <span class="email">{{action.user.email}}</span>
-                        </div>
+
+                <!-- Feedback -->
+                <template v-if="totalFeedbackInputCount > 0">
+                    <h4>Feedback</h4>
+                    <div class="distribution-bar">
+                        <svg>
+                            <rect class="bg" height="8px" width="100%"/>
+                            <rect class="focus" height="8px" :style="focusStyle"/>
+                            <rect class="in" height="8px" :style="inStyle"/>
+                            <rect class="out" height="8px" :style="outStyle"/>
+                        </svg>
                     </div>
-                </template>
-                <!-- Nds -->
-                <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                    <div class="nd" v-for="user in product.nds" :key="user.id">
-                        <div>
-                            <span class="user">{{user.name}}</span>
-                            <span class="email">{{user.email}}</span>
+                    <!-- Focus users -->
+                    <template v-if="currentTab == 'all' || currentTab == 'ins'">
+                        <div class="focus" v-for="action in product.focus" :key="`${action.selection_id}-${action.user.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
+                            </div>
+                            <span class="focus">Focus <i class="fas fa-star"></i></span>
                         </div>
-                    </div>
+                    </template>
+                    <!-- In users -->
+                    <template v-if="currentTab == 'all' || currentTab == 'ins'">
+                        <div class="in" v-for="action in product.ins" :key="`${action.selection_id}-${action.user.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Out users -->
+                    <template v-if="currentTab == 'all' || currentTab == 'outs'">
+                        <div class="out" v-for="action in product.outs" :key="`${action.selection_id}-${action.user.id}`">
+                            <div>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- Nds -->
+                    <template v-if="currentTab == 'all' || currentTab == 'nds'">
+                        <div class="nd" v-for="user in product.nds" :key="user.id">
+                            <div>
+                                <span class="selection">{{user.selection.name}}</span>
+                                <span class="user">{{user.name}}</span>
+                                <span class="email">{{user.email}}</span>
+                            </div>
+                        </div>
+                    </template>
                 </template>
             </div>
         </template>
@@ -83,11 +156,17 @@ export default {
             currentImgIndex: 0,
     }},
     computed: {
-        totalActionInputCount() {
+        totalFeedbackInputCount() {
             return this.product.feedbacks.length + this.product.nds.length
         },
+        totalActionInputCount() {
+            return this.product.actions.length + this.product.alignmentNds.length
+        },
+        totalInputCount() {
+            return this.totalFeedbackInputCount + this.totalActionInputCount
+        },
         focusStyle() {
-            const width = this.totalActionInputCount ? this.product.focus.length / this.totalActionInputCount : 0
+            const width = this.totalFeedbackInputCount ? this.product.focus.length / this.totalFeedbackInputCount : 0
             return {
                 calcX: 0,
                 calcWidth: width,
@@ -97,7 +176,7 @@ export default {
         },
         inStyle() {
             const x = this.focusStyle.calcX + this.focusStyle.calcWidth
-            const width = this.totalActionInputCount ? this.product.ins.length / this.totalActionInputCount : 0
+            const width = this.totalFeedbackInputCount ? this.product.ins.length / this.totalFeedbackInputCount : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -107,7 +186,65 @@ export default {
         },
         outStyle() {
             const x = this.inStyle.calcX + this.inStyle.calcWidth
-            const width = this.totalActionInputCount ? this.product.outs.length / this.totalActionInputCount : 0
+            const width = this.totalFeedbackInputCount ? this.product.outs.length / this.totalFeedbackInputCount : 0
+            return {
+                calcX: x,
+                calcWidth: width,
+                x: `${x * 100}%`,
+                width: `${width * 100}%`,
+            }
+        },
+        alignmentFocusStyle() {
+            const width = this.totalActionInputCount ? this.product.alignmentFocus.length / this.totalActionInputCount : 0
+            return {
+                calcX: 0,
+                calcWidth: width,
+                x: 0,
+                width: `${width * 100}%`,
+            }
+        },
+        alignmentInStyle() {
+            const x = this.alignmentFocusStyle.calcX + this.alignmentFocusStyle.calcWidth
+            const width = this.totalActionInputCount ? this.product.alignmentIns.length / this.totalActionInputCount : 0
+            return {
+                calcX: x,
+                calcWidth: width,
+                x: `${x * 100}%`,
+                width: `${width * 100}%`,
+            }
+        },
+        alignmentOutStyle() {
+            const x = this.alignmentInStyle.calcX + this.alignmentInStyle.calcWidth
+            const width = this.totalActionInputCount ? this.product.alignmentOuts.length / this.totalActionInputCount : 0
+            return {
+                calcX: x,
+                calcWidth: width,
+                x: `${x * 100}%`,
+                width: `${width * 100}%`,
+            }
+        },
+        totalFocusStyle() {
+            const width = this.totalInputCount ? (this.product.alignmentFocus.length + this.product.focus.length) / this.totalInputCount : 0
+            return {
+                calcX: 0,
+                calcWidth: width,
+                x: 0,
+                width: `${width * 100}%`,
+            }
+        },
+        totalInStyle() {
+            const x = this.totalFocusStyle.calcX + this.totalFocusStyle.calcWidth
+            const width = this.totalInputCount ? (this.product.alignmentIns.length + this.product.ins.length) / this.totalInputCount : 0
+            return {
+                calcX: x,
+                calcWidth: width,
+                x: `${x * 100}%`,
+                width: `${width * 100}%`,
+            }
+        },
+        totalOutStyle() {
+            const x = this.totalInStyle.calcX + this.totalInStyle.calcWidth
+            const width = this.totalInputCount ? (this.product.alignmentOuts.length + this.product.outs.length) / this.totalInputCount : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -162,7 +299,7 @@ export default {
     .tab-body {
         .distribution-bar {
             padding: 12px;
-            margin-bottom: 8px;
+            // margin-bottom: 8px;
             svg {
                 height: 8px;
                 border-radius: 4px;
@@ -212,6 +349,11 @@ export default {
             &.out {
                 box-shadow: -8px 0 inset $red;
             }
+        }
+        .selection {
+            font-size: 12px;
+            font-weight: 500;
+            color: $font;
         }
         .email {
             font-size: 12px;

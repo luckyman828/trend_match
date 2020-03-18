@@ -16,9 +16,9 @@ export default {
 
     .header {
         padding: 12px 8px 8px;
-        color: $dark2;
-        font-size: 14px;
-        font-weight: 400;
+        font-size: 12px;
+        color: $primary;
+        font-weight: 700;
         text-align: center;
     }
 

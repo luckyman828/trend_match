@@ -436,7 +436,7 @@
                                 </BaseInputField>
                             </div>
                             <div class="item-wrapper">
-                                <label class="settings-label">Display feedback authors for:</label>
+                                <label class="settings-label">Display request authors for:</label>
                                 <BaseInputField disabled=true type="select" 
                                 :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
                                 @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
@@ -447,7 +447,7 @@
                     </div>
                     
                 </div>
-                <div class="item-group footer">                          -->
+                <div class="item-group footer">
                     <div class="item-wrapper" style="text-align: right;">
                         <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
@@ -905,7 +905,7 @@ export default {
         }
         .footer {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             .input-field {
                 max-width: 208px;
             }

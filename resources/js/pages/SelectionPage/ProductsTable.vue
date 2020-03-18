@@ -289,7 +289,7 @@ export default {
                 flex: 0 1 auto;
             }
             tr {
-                > * {
+                th, td {
                     &.title {
                         min-width: 220px;
                         max-width: 220px;
@@ -307,13 +307,17 @@ export default {
                         min-width: 48px;
                         max-width: 48px;
                     }
-                    &.focus, &.ins, &.nds {
-                        min-width: 48px;
-                        max-width: 48px;
+                    &.focus, &.ins {
+                        min-width: 52px;
+                        max-width: 52px;
                     }
-                    &.outs{
+                    &.outs {
                         min-width: 56px;
                         max-width: 56px;
+                    }
+                    &.nds {
+                        min-width: 48px;
+                        max-width: 48px;
                     }
                     &.requests {
                         margin-left: 32px;

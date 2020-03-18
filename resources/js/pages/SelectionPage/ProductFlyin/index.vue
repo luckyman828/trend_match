@@ -98,11 +98,11 @@
 
                 <div class="col-2 minimum">
                     <div>
-                        <label>Order minimum (pcs)</label>
+                        <label>Order min. (pcs)</label>
                         <BaseInputField readOnly=true :value="product.quantity"/>
                     </div>
                     <div>
-                        <label>Variant minimum (pcs)</label>
+                        <label>Variant min. (pcs)</label>
                         <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
                     </div>
                 </div>

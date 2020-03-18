@@ -8,7 +8,6 @@ export default {
                     key.forEach(theKey => {
                         // Check that we have not already found a tie-breaker
                         if (returnValue != 0) {
-                            console.log('return early')
                             return sortAsc ? returnValue : returnValue * -1
                         }
                         // console.log(a[theKey])

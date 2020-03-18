@@ -498,6 +498,7 @@ export default {
                 })
 
                 // Actions
+                // Feedback Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')
@@ -514,6 +515,23 @@ export default {
                     },
                 })
                 Vue.set(product, 'nds', [])
+                // Alignment Actions
+                Object.defineProperty(product, 'alignmentIns', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentOuts', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentFocus', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'Focus')
+                    },
+                })
+                Vue.set(product, 'alignmentNds', [])
 
                 // Comments / Requests
                 // Remove deleted comments
