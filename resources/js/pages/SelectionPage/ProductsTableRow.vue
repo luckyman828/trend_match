@@ -18,42 +18,54 @@
             <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
         </span></td>
         
-        <v-popover class="focus" :disabled="product.focus.length <= 0" tabindex="-1">
+        <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
             <td class="focus tooltip-target">
-                <button tabindex="-1" class="ghost sm"><span>{{product.focus.length}}</span><i class="far fa-star"></i></button>
+                <button tabindex="-1" class="ghost sm"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></button>
             </td>
             <template slot="popover">
-                <BaseTooltipList header="Focus">
+                <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
+                    :label="action.selection.name" :value="action.user.name"/>
+                </BaseTooltipList>
+                <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
                     :label="action.selection.name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
-        <v-popover class="in" :disabled="product.ins.length <= 0">
-            <td class="in tooltip-target">
-                <button class="ghost sm"><span>{{product.ins.length}}</span><i class="far fa-heart"></i></button>
+        <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
+            <td class="ins tooltip-target">
+                <button class="ghost sm"><span>{{product.alignmentIns.length + product.ins.length}}</span><i class="far fa-heart"></i></button>
             </td>
             <template slot="popover">
-                <BaseTooltipList header="Ins">
+                <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
+                    :label="action.selection.name" :value="action.user.name"/>
+                </BaseTooltipList>
+                <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
                     :label="action.selection.name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
-        <v-popover class="out" :disabled="product.outs.length <= 0">
-            <td class="out tooltip-target">
-                <button class="ghost sm"><span>{{product.outs.length}}</span><i class="far fa-times-circle"></i></button>
+        <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
+            <td class="outs tooltip-target">
+                <button class="ghost sm"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></button>
             </td>
             <template slot="popover">
-                <BaseTooltipList header="Outs">
+                <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
+                    :label="action.selection.name" :value="action.user.name"/>
+                </BaseTooltipList>
+                <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
                     :label="action.selection.name" :value="action.user.name"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
-        <v-popover class="nd" :disabled="product.nds.length <= 0">
-            <td class="nd tooltip-target">
-                <button class="ghost sm"><span>{{product.nds.length}}</span></button>
+        <v-popover class="nds" :disabled="product.nds.length <= 0">
+            <td class="nds tooltip-target">
+                <button class="ghost sm"><span>{{product.alignmentNds.length+ product.nds.length}}</span></button>
             </td>
             <template slot="popover">
                 <BaseTooltipList header="Not decided">

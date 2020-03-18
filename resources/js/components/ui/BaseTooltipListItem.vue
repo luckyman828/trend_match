@@ -1,11 +1,7 @@
 <template>
-    <div class="tooltip-list-item">
-
-        <p class="row">
+    <div class="tooltip-list-item row">
             <span v-if="label" class="label">{{label}}</span>
             <strong class="value">{{value}}</strong>
-        </p>
-
     </div>
 </template>
 
@@ -24,14 +20,17 @@ export default {
 
     .row {
         font-size: 12px;
-        padding: 0 12px;
+        padding: 4px 12px;
         margin: 0;
-        border: solid 1px $darkAlt;
-        height: 32px;
-        line-height: 32px;
+        border-bottom: solid 1px $divider;
         display: flex;
-        justify-content: space-between;
         min-width: 152px;
+        &:first-child {
+            border-top: solid 1px $divider;;
+        }
+        > * {
+            width: 50%;
+        }
         .label {
             margin-right: 16px;
             + .value {

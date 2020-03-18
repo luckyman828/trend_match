@@ -23,14 +23,17 @@ export default {
 @import '~@/_variables.scss';
 
     .tooltip-list {
+        &:not(:last-child) {
+            margin-bottom: 12px;
+        }
         .body {
             max-height: 186px;
             overflow-x: hidden;
             overflow-y: auto;
-            background: $darkAlt;
-            &:not(:first-child) {
-                background: $darkAlt2;
-            }
+            // background: $whtie;
+            // &:not(:first-child) {
+            //     background: $darkAlt2;
+            // }
         }
     }
 

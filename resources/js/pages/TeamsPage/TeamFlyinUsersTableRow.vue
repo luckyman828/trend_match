@@ -13,13 +13,14 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="role">
-            <button class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
+            <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
+            <span v-else>{{user.role}}</span>
         </td>
-        <td class="currency">
+        <!-- <td class="currency">
             <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set user currency'}}</span></button>
-        </td>
+        </td> -->
         <td class="action">
-            <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
+            <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
         </td>
     </tr>
 </template>
@@ -38,6 +39,9 @@ export default {
         editName: false,
         userToEdit: this.user,
     }},
+    computed: {
+        ...mapGetters('workspaces', ['authUserWorkspaceRole'])
+    },
     methods: {
         ...mapActions('users', ['updateUser']),
     },

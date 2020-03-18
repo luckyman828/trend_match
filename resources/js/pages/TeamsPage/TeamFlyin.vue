@@ -16,7 +16,7 @@
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</BaseTableHeader>
-                <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -37,21 +37,24 @@
         </BaseFlexTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
+        @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
+        @keybind-d="onRemoveUserFromTeam(contextUser)">
+        <!-- <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
         @keybind-r="$refs['userRow-'+contextUser.id][0].editName = true"
         @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
         @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onRemoveUserFromTeam(contextUser)">
-            <div class="item-group">
+        @keybind-d="onRemoveUserFromTeam(contextUser)"> -->
+            <!-- <div class="item-group">
                 <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <span><u>R</u>ename User</span>
                 </div>
-            </div>
+            </div> -->
             <div class="item-group">
-                <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
+                <!-- <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
                     <span><u>C</u>hange User Currency</span>
-                </div>
+                </div> -->
                 <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
                     <span>Change <u>T</u>eam Role</span>
@@ -65,7 +68,7 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateUser(userToEdit)">
+        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUser(userToEdit)">
             <template v-slot:header>
                 Change User Currency
             </template>
