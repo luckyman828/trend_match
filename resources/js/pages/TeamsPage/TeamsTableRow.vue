@@ -21,11 +21,21 @@
             </v-popover>
         </td> -->
         <td class="currency">
-            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, team)"><span>{{team.currency ? team.currency : 'Set currency'}}</span></button>
+            <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" 
+            @click.stop="$emit('editCurrency', $event, team)">
+                <span>{{team.currency ? team.currency : 'Set currency'}}</span>
+            </button>
+            <span v-else>{{team.currency ? team.currency : 'No currency set'}}</span>
         </td>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="showSingle()"><span>View / Edit</span></button>
-            <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, team)"><i class="far fa-ellipsis-h medium"></i></button>
+            <button class="invisible ghost-hover primary" 
+            @click="showSingle()">
+                <span>View{{authUserWorkspaceRole == 'Admin' ? '/ Edit' : ''}}</span>
+            </button>
+            <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" 
+            @click.stop="$emit('showContextMenu', $event, team)">
+                <i class="far fa-ellipsis-h medium"></i>
+            </button>
         </td>
     </tr>
 </template>
@@ -48,7 +58,7 @@ export default {
         teamToEdit: this.team,
     }},
     computed: {
-        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         localSelectedTeams: {
             get() { return this.selectedTeams },
             set(localSelectedTeams) {this.$emit('input', localSelectedTeams)}
