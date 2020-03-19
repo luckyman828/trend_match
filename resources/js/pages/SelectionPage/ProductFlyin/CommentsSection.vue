@@ -12,8 +12,8 @@
                 <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" :class="{own: comment.user_id == authUser.id}">
                     <comment :product="product" :comment="comment"/>
                     <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">
-                        {{comment.selection.name}} 
-                        {{(comment.user_id == authUser.id) ? '| You' : comment.user.name}}
+                        <strong>{{comment.selection.name}}</strong> | 
+                        {{(comment.user_id == authUser.id) ? 'You' : comment.user.name}}
                     </div>
                 </div>
             </div>

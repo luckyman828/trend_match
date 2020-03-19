@@ -69,7 +69,12 @@
             </template>
             <template v-slot:footer>
                 <!-- <td><button class="primary invisible icon-left context-right" @click="onNewFolder"><i class="far fa-plus"></i>Add new: Folder <i class="fas fa-caret-down context"></i></button></td> -->
-                <td><button class="primary invisible" @click="onNewFolder"><i class="far fa-plus"></i><span>Add new: Folder</span></button></td>
+                <td><BaseButton :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new folders'" 
+                buttonClass="primary invisible" 
+                @click="onNewFolder">
+                    <i class="far fa-plus"></i><span>Add new: Folder</span>
+                </BaseButton></td>
             </template>
         </BaseFlexTable>
 

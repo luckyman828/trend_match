@@ -13,9 +13,7 @@
                     <request :request="selectionRequest"/>
                 </div>
                 <div v-if="product.requests.find(x => x.selection_id != currentSelection.id)" class="break-line">Showing requests from other selections(s)</div>
-                <div class="requests-wrapper">
-                    <request :request="request" v-for="request in product.requests.filter(x => x.selection_id != currentSelection.id)" :key="request.id"/>
-                </div>
+                <request :request="request" v-for="request in product.requests.filter(x => x.selection_id != currentSelection.id)" :key="request.id"/>
             </div>
 
             <!-- Deny access for feedback -->

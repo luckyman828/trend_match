@@ -93,6 +93,23 @@ export default {
                 this.sticky = false
             }
         },
+        resizeHeader(event) {
+            // Fix table header to screen
+            // Initialize the header
+            this.initScrollHeader()
+            const desiredOffset = 16
+            // Get scrollparent offset from top
+            const scrollParent = this.scrollParent
+            // const parentTopDist = this.getYPos(scrollParent)
+            const parentTopDist = scrollParent.getBoundingClientRect().top
+            let scrollDist = scrollParent.scrollTop
+            const threshold = this.distToTop - parentTopDist - desiredOffset
+            const tableWidth = this.$refs.table.getBoundingClientRect().width
+            // if (scrollDist > threshold) {
+                this.$refs.stickyHeader.style.width = `${tableWidth}px`
+                this.$refs.stickyBg.style.width = `${tableWidth}px`
+            // }
+        },
         initScrollHeader() {
             if (this.stickyHeader && !this.scrollHeaderInitialized) {
                 this.distToTop =  this.getYPos(this.$refs.stickyHeader)
@@ -102,7 +119,7 @@ export default {
     },
     created () {
         if (this.stickyHeader) {
-            window.addEventListener('resize', this.handleScroll)
+            window.addEventListener('resize', this.resizeHeader)
         }
     },
     destroyed () {

@@ -7,7 +7,7 @@
         <div class="request">
             <strong class="sender">
                 {{request.selection.name}} | 
-                {{own ? 'You' : request.author.name}}</strong>
+                {{request.author_id == authUser.id ? 'You' : request.author.name}}</strong>
             <span class="content">{{request.content}}</span>
             <small class="id">Request ID: {{request.id}}</small>
         </div>        
@@ -24,8 +24,9 @@ export default {
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['currentSelection']),
         own() {
-            return this.request.author_id == this.authUser.id
+            return this.request.selection_id == this.currentSelection.id
         }
     },
     methods: {
@@ -39,8 +40,12 @@ export default {
     .request-wrapper {
         margin-bottom: 4px;
         position: relative;
+        transition: margin-bottom .2s;
         &.has-traits {
             margin-top: 24px;
+        }
+        &:hover {
+            margin-bottom: 32px;
         }
     }
     .traits {

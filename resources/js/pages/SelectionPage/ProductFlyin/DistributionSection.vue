@@ -131,11 +131,11 @@
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="nd" v-for="user in product.nds" :key="user.id">
+                        <div class="nd" v-for="action in product.nds" :key="`${action.selection_id}-${action.user.id}`">
                             <div>
-                                <span class="selection">{{user.selection.name}}</span>
-                                <span class="user">{{user.name}}</span>
-                                <span class="email">{{user.email}}</span>
+                                <span class="selection">{{action.selection.name}}</span>
+                                <span class="user">{{action.user.name}}</span>
+                                <span class="email">{{action.user.email}}</span>
                             </div>
                         </div>
                     </template>
@@ -154,13 +154,16 @@ export default {
     data: function () { return {
             currentTab: 'all',
             currentImgIndex: 0,
+            // includeNdsInTotalBar: true,
+            // includeNdsInAlignmentBar: true,
+            // includeNdsInFeedbackBar: true,
     }},
     computed: {
         totalFeedbackInputCount() {
-            return this.product.feedbacks.length + this.product.nds.length
+            return this.product.feedbacks.length
         },
         totalActionInputCount() {
-            return this.product.actions.length + this.product.alignmentNds.length
+            return this.product.actions.length
         },
         totalInputCount() {
             return this.totalFeedbackInputCount + this.totalActionInputCount
@@ -348,6 +351,9 @@ export default {
             }
             &.out {
                 box-shadow: -8px 0 inset $red;
+            }
+            &.nd {
+                box-shadow: -8px 0 inset $grey2;
             }
         }
         .selection {

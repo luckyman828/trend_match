@@ -8,12 +8,12 @@
         <div class="comment" :class="[{important: comment.important}, {failed: comment.error}]">
             <span v-if="!editActive" class="body">{{comment.content}}</span>
             <span v-else class="body">
-                <BaseInputTextArea v-model="comment.content"
+                <BaseInputTextArea ref="commentInputField" v-model="comment.content"
                 @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
             </span>
 
             <!-- Comment Controls -->
-            <div class="controls">
+            <div class="controls" v-if="!editActive">
 
                 <!-- comment error -->
                 <span v-if="comment.error" class="failed clickable" v-tooltip.top="!comment.id ? 'Retry submit' : 'Retry edit'" @click="retrySubmitComment">
@@ -29,14 +29,15 @@
                     @click="onDeleteComment">
                         <i class="far fa-trash-alt"></i></button>
                     <button v-tooltip.top="'Edit'" class="button true-square invisible ghost dark-hover"
-                    @click="editActive = true">
+                    @click="onEditComment">
                         <i class="far fa-pen"></i></button>
                 </template>
                 
             </div>
         </div>
         <div class="save-controls" v-if="editActive">
-            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px">
+            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
+            @click="onUpdateComment">
                 <span>Save</span>
             </BaseButton>
             <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
@@ -84,6 +85,12 @@ export default {
         onUpdateComment() {
             this.insertOrUpdateComment({product: this.product, comment: this.comment})
             this.editActive = false
+        },
+        onEditComment() {
+            this.editActive = true
+            this.$nextTick(() => {
+                this.$refs.commentInputField.focus()
+            })
         }
     }
 }
@@ -98,12 +105,14 @@ export default {
         max-width: calc(100% - 64px);
         &.edit-active {
             width: 100%;
-            margin-bottom: 80px;
+            max-width: none;
+            margin-bottom: 44px;
             .comment {
                 padding: 2px;
                 ::v-deep {
                     .input-wrapper {
                         border: none;
+                        min-height: 160px;
                     }
                 }
             }

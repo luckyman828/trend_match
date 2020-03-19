@@ -68,10 +68,18 @@
                 <button class="ghost sm"><span>{{product.alignmentNds.length+ product.nds.length}}</span></button>
             </td>
             <template slot="popover">
-                <BaseTooltipList header="Not decided">
+                <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.alignmentNds" :key="index"
+                    :label="action.selection.name"/>
+                </BaseTooltipList>
+                <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
+                    :label="action.selection.name" :value="action.user.name"/>
+                </BaseTooltipList>
+                <!-- <BaseTooltipList header="Not decided">
                     <BaseTooltipListItem v-for="(user, index) in product.nds" :key="index"
                     :label="user.selection.name" :value="user.name"/>
-                </BaseTooltipList>
+                </BaseTooltipList> -->
             </template>
         </v-popover>
 
@@ -79,26 +87,33 @@
             <button class="ghost sm" @click="$emit('onViewSingle',product)">
                 <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
             </button>
-            <button class="ghost sm" @click="$emit('onViewSingle',product)">
+            <button class="requests-button ghost sm" @click="$emit('onViewSingle',product)">
                 <span>{{product.requests.length}}</span><i class="far fa-clipboard-check"></i>
+                <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
             </button>
         </td>
         <td class="action">
-            <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'" 
+            <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+            :disabled="currentSelectionMode == 'Approval'" 
+            v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
             @click="onUpdateAction(product, 'Focus')">
                 <i class="far fa-star"></i>
-            </button>
-            <button :class="product[currentAction] != 'In' ? 'ghost': 'green'" 
+            </BaseButton>
+            <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+            :disabled="currentSelectionMode == 'Approval'" 
+            v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
             @click="onUpdateAction(product, 'In')">
                 <i class="far fa-heart"></i>
                 <span>In</span>
-            </button>
-            <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+            </BaseButton>
+            <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+            :disabled="currentSelectionMode == 'Approval'"
+            v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
             @click="onUpdateAction(product, 'Out')">
                 <i class="far fa-times-circle"></i>
                 <span>out</span>
-            </button>
-            <button class="invisible ghost-hover" 
+            </BaseButton>
+            <button class="invisible ghost-hover primary" 
             @click="$emit('onViewSingle',product)"><span>View</span></button>
         </td>
 
@@ -187,12 +202,14 @@ export default {
         },
         keypressHandler(event) {
             const key = event.code
-            if (key == 'KeyI')
-                this.onUpdateAction(this.product, 'In')
-            if (key == 'KeyO')
-                this.onUpdateAction(this.product, 'Out')
-            if (key == 'KeyF' || key == 'KeyU')
-                this.onUpdateAction(this.product, 'Focus')
+            if (this.currentSelectionMode != 'Approval') {
+                if (key == 'KeyI')
+                    this.onUpdateAction(this.product, 'In')
+                if (key == 'KeyO')
+                    this.onUpdateAction(this.product, 'Out')
+                if (key == 'KeyF' || key == 'KeyU')
+                    this.onUpdateAction(this.product, 'Focus')
+            }
         }
     },
 }
@@ -219,6 +236,21 @@ export default {
                 width: 100%;
                 height: 100%;
                 object-fit: contain;
+            }
+        }
+    }
+    .requests-button {
+        position: relative;
+        .own-request {
+            position: absolute;
+            right: -10px;
+            bottom: -8px;
+            color:  $primary;
+            border-radius: 20px;
+            font-size: 16px;
+            &::before {
+                background: white;
+                border-radius: 20px;
             }
         }
     }

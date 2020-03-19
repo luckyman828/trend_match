@@ -14,20 +14,26 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'" 
+                        <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                        :disabled="currentSelectionMode == 'Approval'" 
+                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
                         @click="onUpdateAction(product, 'Focus')">
                             <i class="far fa-star"></i>
-                        </button>
-                        <button :class="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                        </BaseButton>
+                        <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
+                        :disabled="currentSelectionMode == 'Approval'" 
+                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
                         @click="onUpdateAction(product, 'In')">
                             <i class="far fa-heart"></i>
                             <span>In</span>
-                        </button>
-                        <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                        </BaseButton>
+                        <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
+                        :disabled="currentSelectionMode == 'Approval'" 
+                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
                         @click="onUpdateAction(product, 'Out')">
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
-                        </button>
+                        </BaseButton>
                     </div>
                 </template>
             </BaseFlyinHeader>
@@ -217,7 +223,7 @@ export default {
 
                 if (key == 'Escape')
                     this.onCloseSingle()
-                if ( true ) {
+                if ( this.currentSelectionMode != 'Approval' ) {
                     if (key == 'KeyI')
                         this.onUpdateAction(this.product, 'In')
                     if (key == 'KeyO')

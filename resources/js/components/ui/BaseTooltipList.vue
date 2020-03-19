@@ -27,6 +27,8 @@ export default {
             margin-bottom: 12px;
         }
         .body {
+            min-width: 200px;
+            max-width: 300px;
             max-height: 186px;
             overflow-x: hidden;
             overflow-y: auto;

@@ -4,7 +4,11 @@
 
         </div>
         <div class="item-right">
-            <button class="primary" @click="createFileModalVisible = true"><span>Add file</span></button>
+            <BaseButton buttonClass="primary" :disabled="authUserWorkspaceRole != 'Admin'"
+            v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
+            @click="createFileModalVisible = true">
+                <span>Add file</span>
+            </BaseButton>
         </div>
 
         <CreateFileModal :show="createFileModalVisible" ref="createFileModal" 
@@ -25,6 +29,7 @@ export default {
         createFileModalVisible: false,
     }},
     computed: {
+        ...mapGetters('workspaces', ['authUserWorkspaceRole'])
     },
     methods: {
     }

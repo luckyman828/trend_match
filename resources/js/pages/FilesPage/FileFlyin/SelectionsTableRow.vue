@@ -41,7 +41,7 @@
             <td class="action">
                 <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
                 <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
-                <button v-else class="sm invisible ghost-hover" @click="onGoToSelection"><span>Go to Selection</span></button>
+                <button v-else class="invisible ghost-hover primary" @click="onGoToSelection"><span>Go to Selection</span></button>
             </td>
         </tr>
         <template v-if="childrenExpanded">
