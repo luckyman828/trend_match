@@ -68,10 +68,18 @@
                 <button class="ghost sm"><span>{{product.alignmentNds.length+ product.nds.length}}</span></button>
             </td>
             <template slot="popover">
-                <BaseTooltipList header="Not decided">
+                <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.alignmentNds" :key="index"
+                    :label="action.selection.name"/>
+                </BaseTooltipList>
+                <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
+                    <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
+                    :label="action.selection.name" :value="action.user.name"/>
+                </BaseTooltipList>
+                <!-- <BaseTooltipList header="Not decided">
                     <BaseTooltipListItem v-for="(user, index) in product.nds" :key="index"
                     :label="user.selection.name" :value="user.name"/>
-                </BaseTooltipList>
+                </BaseTooltipList> -->
             </template>
         </v-popover>
 
