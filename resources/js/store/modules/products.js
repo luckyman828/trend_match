@@ -207,7 +207,7 @@ export default {
                     commit('setProductStatus', 'error')
                 })
         },
-        async fetchSelectionProducts({ commit }, selectionId) {
+        async fetchSelectionProducts({ commit, dispatch }, selectionId) {
             commit('setProductStatus', 'loading')
 
             const apiUrl = `/selections/${selectionId}/products`
@@ -216,7 +216,7 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     commit('insertProducts', { products: response.data, method: 'set' })
-                    commit('procesSelectionProducts')
+                    dispatch('procesSelectionProducts')
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
@@ -377,6 +377,91 @@ export default {
                     console.log(err.response)
                     commit('alertError')
                 })
+        },
+        procesSelectionProducts({ commit, state, rootGetters }) {
+            const authUser = rootGetters['auth/authUser']
+            const products = state.products
+            products.map(product => {
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function() {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                        }
+                        // If nothing else worked, return the first available price
+                        return product.prices[0]
+                    },
+                })
+
+                // Actions
+                // Feedback Actions
+                Object.defineProperty(product, 'ins', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'outs', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'focus', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'nds', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'None')
+                    },
+                })
+                // Alignment Actions
+                Object.defineProperty(product, 'alignmentIns', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentOuts', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentFocus', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentNds', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'None')
+                    },
+                })
+
+                // Comments / Requests
+                Object.defineProperty(product, 'hasAuthUserRequest', {
+                    get: function() {
+                        return !!product.requests.find(x => x.author_id == authUser.id)
+                    },
+                })
+                // Remove deleted comments
+                Vue.set(
+                    product,
+                    'comments',
+                    product.comments.filter(x => !x.is_deleted)
+                )
+            })
         },
     },
 
@@ -542,6 +627,11 @@ export default {
                 })
 
                 // Comments / Requests
+                Object.defineProperty(product, 'hasAuthUserRequest', {
+                    get: function() {
+                        return !!product.requests.find(x => x.author_id == 'None')
+                    },
+                })
                 // Remove deleted comments
                 Vue.set(
                     product,

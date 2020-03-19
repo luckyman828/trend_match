@@ -104,10 +104,11 @@ export default {
             const parentTopDist = scrollParent.getBoundingClientRect().top
             let scrollDist = scrollParent.scrollTop
             const threshold = this.distToTop - parentTopDist - desiredOffset
-            if (scrollDist > threshold) {
-                this.$refs.stickyHeader.style.width = `${this.$refs.table.scrollWidth}px`
-                this.$refs.stickyBg.style.width = `${this.$refs.table.scrollWidth}px`
-            }
+            const tableWidth = this.$refs.table.getBoundingClientRect().width
+            // if (scrollDist > threshold) {
+                this.$refs.stickyHeader.style.width = `${tableWidth}px`
+                this.$refs.stickyBg.style.width = `${tableWidth}px`
+            // }
         },
         initScrollHeader() {
             if (this.stickyHeader && !this.scrollHeaderInitialized) {

@@ -40,8 +40,12 @@ export default {
     .request-wrapper {
         margin-bottom: 4px;
         position: relative;
+        transition: margin-bottom .2s;
         &.has-traits {
             margin-top: 24px;
+        }
+        &:hover {
+            margin-bottom: 32px;
         }
     }
     .traits {
