@@ -113,7 +113,7 @@
                 <i class="far fa-times-circle"></i>
                 <span>out</span>
             </BaseButton>
-            <button class="invisible ghost-hover" 
+            <button class="invisible ghost-hover primary" 
             @click="$emit('onViewSingle',product)"><span>View</span></button>
         </td>
 

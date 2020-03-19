@@ -866,8 +866,8 @@ export default {
                 //     max-width: 72px;
                 // }
                 &.action { // Actions
-                    min-width: 108px;
-                    max-width: 108px;
+                    min-width: 112px;
+                    max-width: 112px;
                 }
             }
         }
