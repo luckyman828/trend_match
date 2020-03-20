@@ -20,7 +20,7 @@
 
 
             <div class="form-wrapper">
-                <strong class="form-header">Write comment..</strong>
+                <strong class="form-header">Write comment</strong>
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
                     <div class="input-parent comment">

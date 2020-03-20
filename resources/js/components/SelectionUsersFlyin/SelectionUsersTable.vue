@@ -30,10 +30,11 @@
                     </td>
                     <td class="email">{{user.email}}</td>
                     <td class="role">
-                        <button class="ghost editable sm" 
+                        <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" 
                         @click="showRoleContext($event, user)">
                             <span>{{user.role}}</span>
                         </button>
+                        <span v-else>{{user.role}}</span>
                     </td>
                     <td class="action">
                         <button class="invisible ghost-hover" @click="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
@@ -134,6 +135,7 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         filteredAvailableSelectionRoles() {
             return this.availableSelectionRoles.filter(x => {
                 return this.selection.type != 'Master' ? x.role != 'Approver' : true
