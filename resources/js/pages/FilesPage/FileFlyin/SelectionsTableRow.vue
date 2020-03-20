@@ -18,10 +18,10 @@
                 <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
-            <td class="items">-</td>
+            <!-- <td class="items">-</td>
             <td class="in">-</td>
             <td class="out">-</td>
-            <td class="nd">-</td>
+            <td class="nd">-</td> -->
             <td class="teams">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-users"></i><span>{{selection.team_count}}</span>

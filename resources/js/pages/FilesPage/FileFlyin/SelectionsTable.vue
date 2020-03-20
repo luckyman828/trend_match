@@ -11,10 +11,10 @@
             <template v-slot:header>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader>
+                <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
                 <BaseTableHeader :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader> -->

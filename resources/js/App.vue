@@ -4,11 +4,11 @@
             <router-view></router-view>
         </transition>
     </div>
-    <div class="app" id="app-component" v-else-if="authUser && currentWorkspace">
+    <div class="app" id="app-component" v-else-if="authUser && currentWorkspace" :class="{'hide-nav': hideNav}">
         <TheNavbarLogo/>
         <TheNavbar/>
         <TheSidebar/>
-        <div class="main" id="main" ref="main">
+        <div class="main" id="main" ref="main" @scroll="scrollHandler">
             <div class="container">
                 <transition name="fade">
                     <router-view></router-view>
@@ -44,6 +44,11 @@ export default{
     },
     data: function() { return {
         error: false,
+        didScroll: false,
+        lastScrollTop: 0,
+        scrollRef: 0,
+        scrollDir: null,
+        hideNav: false,
     }},
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
@@ -68,7 +73,10 @@ export default{
         // Watch router changes
         $route(to, from) {
             // Reset main window scroll on navigation
-            this.$refs.main.scrollTo(0,0)
+            if (this.$refs.main) {
+                this.$refs.main.scrollTo(0,0)
+                this.hideNav = false
+            }
         }
     },
     methods: {
@@ -85,6 +93,56 @@ export default{
                     this.setCurrentWorkspaceIndex(0)
                 }
             })
+        },
+        // onScroll(e) {
+        //     this.didScroll = true
+        //     // on scroll, let the interval function know the user has scrolled
+        //     $(window).scroll(function(event){
+        //     didScroll = true;
+        //     });
+        //     // run hasScrolled() and reset didScroll status
+        //     setInterval(function() {
+        //         if (didScroll) {
+        //             this.scrollHandler();
+        //             didScroll = false;
+        //         }
+        //     }, 250);
+        // }
+        scrollHandler(e) {
+            // this.didScroll = false
+            let scrollDiff = 0
+            const threshold = 100
+            const el = e.target
+            const scrollDist = el.scrollTop
+            // Check if we are scrolling up or down
+
+            // Scrolling down
+            if (this.lastScrollTop < scrollDist) {
+                // Save a reference to the current scroll position
+                if (this.scrollDir != 'down') {
+                    this.scrollDir = 'down'
+                    this.scrollRef = scrollDist
+                }
+                // console.log('scroll down')
+                // Check if we have scrolled further than the threshold
+                if (scrollDist > this.scrollRef + threshold && !this.hideNav) {
+                    this.hideNav = true
+                }
+            }
+            // Scrolling up
+            else {
+                // Save a reference to the current scroll position
+                if (this.scrollDir != 'up') {
+                    this.scrollDir = 'up'
+                    this.scrollRef = scrollDist
+                }
+                if (scrollDist < this.scrollRef - threshold && this.hideNav) {
+                    this.hideNav = false
+                }
+            }
+            // Save this as the new lastScrollTop
+            this.lastScrollTop = scrollDist
+
         }
     },
     async created() {
@@ -147,6 +205,7 @@ export default{
         display: grid;
         min-height: 100vh;
         min-width: 100vw;
+        transition: .3s;
         grid-template-columns: 160px auto;
         grid-template-rows: 72px auto;
         grid-template-areas: 
@@ -161,6 +220,10 @@ export default{
         }
         @media screen and (max-width: $screenSmall) {
             grid-template-columns: 80px auto;
+        }
+        &.hide-nav {
+            // grid-template-rows: 0 auto;
+            // margin-top: -72px;
         }
     }
     .main {

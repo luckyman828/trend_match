@@ -2,7 +2,7 @@
   <div class="vue-component-sidebar sidebar">
     <div class="nav">
         <div class="top-items">
-            <router-link to="/files" class="link"><i class="fas fa-signal-alt-3"></i> Files</router-link>
+            <router-link to="/files" class="link"><i class="fas fa-folder"></i> Files</router-link>
             <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
             <router-link to="/users" class="link"><i class="fas fa-user"></i> Users</router-link>
       </div>
