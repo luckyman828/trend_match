@@ -8,7 +8,7 @@
         <TheNavbarLogo/>
         <TheNavbar/>
         <TheSidebar/>
-        <div class="main" id="main">
+        <div class="main" id="main" ref="main">
             <div class="container">
                 <transition name="fade">
                     <router-view></router-view>
@@ -64,6 +64,11 @@ export default{
             if (this.$route.name == 'selection' || this.$route.name == 'editFile') {
                 this.$router.push({name: 'files'})
             }
+        },
+        // Watch router changes
+        $route(to, from) {
+            // Reset main window scroll on navigation
+            this.$refs.main.scrollTo(0,0)
         }
     },
     methods: {
@@ -104,6 +109,9 @@ export default{
             // Get some snowflake IDs now we're at it
             this.getUids()
         }
+        // this.$router.afterEach((to, from, next) => {
+        //     console.log('router')
+        // })
     },
 }
 </script>
