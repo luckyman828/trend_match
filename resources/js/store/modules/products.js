@@ -496,6 +496,7 @@ export default {
         },
         setCurrentProduct(state, product) {
             state.currentProduct = product
+            console.log('Done settings current product')
         },
         setCurrentFocusIndex(state, index) {
             state.currentFocusIndex = index
@@ -525,6 +526,10 @@ export default {
             // Replace the product with the new
             let stateProduct = state.products.find(x => x.id == product.id)
             Object.assign(stateProduct, product)
+            // Check if we also need to update the current product
+            if (state.currentProduct.id == product.id) {
+                Object.assign(state.currentProduct, product)
+            }
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')
