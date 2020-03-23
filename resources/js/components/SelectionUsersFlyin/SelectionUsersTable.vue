@@ -37,12 +37,21 @@
                         <span v-else>{{user.role}}</span>
                     </td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
+                        <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" 
+                        @click="showUserContext($event, user)">
+                            <i class="far fa-ellipsis-h medium"></i>
+                        </button>
                     </td>
                 </tr>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add Users(s) to Selection</span></button></td>
+                <td>
+                    <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add users to selections'"
+                    @click="onAddUser($event)">
+                        <i class="far fa-plus"></i><span>Add Users(s) to Selection</span>
+                    </BaseButton>
+                </td>
             </template>
         </BaseFlexTable>
 
