@@ -34,16 +34,23 @@
                     <!-- No selections  -->
                     <template v-else>
                         <div class="setup-wrapper">
-                            <button class="primary lg"
-                            @click="onShowCloneSetupContext">
-                                <i class="fas fa-clone"></i>
-                                <span>Copy Setup From Existing File</span>
-                            </button>
-                            <button class="primary ghost lg"
-                            @click="onNewSelection()">
-                                <i class="fas fa-plus"></i>
-                                <span>Manually add new Master Selection</span>
-                            </button>
+                            <!-- Admin -->
+                            <template v-if="authUserWorkspaceRole == 'Admin'">
+                                <button class="primary lg"
+                                @click="onShowCloneSetupContext">
+                                    <i class="fas fa-clone"></i>
+                                    <span>Copy Setup From Existing File</span>
+                                </button>
+                                <button class="primary ghost lg"
+                                @click="onNewSelection()">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Manually add new Master Selection</span>
+                                </button>
+                            </template>
+                            <!-- No Access -->
+                            <template v-else>
+                                <h3>You don't have access to any selections in this file</h3>
+                            </template>
                         </div>
                     </template>
                 </div>
