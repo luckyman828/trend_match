@@ -489,8 +489,9 @@ export default {
                     this.setCurrentProduct(productToEdit)
                     // Resort the products to include the new product
                     this.$emit('onSort')
+                } else {
+                    this.initProduct()
                 }
-                this.initProduct()
             }).catch(err => {})
             this.updatingProduct = false
         },
