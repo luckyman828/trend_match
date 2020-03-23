@@ -26,7 +26,7 @@
                     <template v-if="selections.length > 0">
                         <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections" :key="selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                        :selectionToEdit="selectionToEdit" :isMaster="true"
+                        :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                         @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"/>
@@ -212,7 +212,10 @@
                                 </BaseInputField>
                             </div>
                             <div class="item-wrapper">
-                                <label class="settings-label">Display feedback authors for:</label>
+                                <label class="settings-label">Display feedback authors for
+                                    <i class="far fa-info-circle" 
+                                    v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
+                                :</label>
                                 <BaseInputField disabled=true type="select" 
                                 :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
                                 @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_feedback')">
@@ -289,7 +292,10 @@
                                 </BaseInputField>
                             </div>
                             <div class="item-wrapper">
-                                <label class="settings-label">Display alignment action authors for:</label>
+                                <label class="settings-label">Display alignment authors for
+                                    <i class="far fa-info-circle" 
+                                    v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
+                                :</label>
                                 <BaseInputField disabled=true type="select" 
                                 :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
                                 @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_action')">
@@ -366,7 +372,10 @@
                                 </BaseInputField>
                             </div>
                             <div class="item-wrapper">
-                                <label class="settings-label">Display comment authors for:</label>
+                                <label class="settings-label">Display comment authors for
+                                    <i class="far fa-info-circle" 
+                                    v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
+                                :</label>
                                 <BaseInputField disabled=true type="select" 
                                 :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
                                 @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_comment')">
@@ -443,7 +452,10 @@
                                 </BaseInputField>
                             </div>
                             <div class="item-wrapper">
-                                <label class="settings-label">Display request authors for:</label>
+                                <label class="settings-label">Display request authors for
+                                    <i class="far fa-info-circle" 
+                                    v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
+                                :</label>
                                 <BaseInputField disabled=true type="select" 
                                 :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
                                 @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
