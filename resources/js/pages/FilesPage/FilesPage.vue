@@ -21,6 +21,8 @@
                 </template>
             </div>
         </div>
+        <h1>Files</h1>
+        <div class="underline"></div>
 
         <FilesTable :files="files" :folder="currentFolder" :selected="selected" 
         @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"

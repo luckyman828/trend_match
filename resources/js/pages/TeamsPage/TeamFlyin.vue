@@ -103,28 +103,15 @@
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuAddUsers" class="context-add-users">
-            <template v-slot:header>
-                Add User(s) to Team
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'checkbox'" :options="availableUsers"
-                    v-model="usersToAdd" :submitOnChange="true" :optionDescriptionKey="'email'"
-                    :optionNameKey="'name'" :search="true"/>
-                </div>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <button class="primary" :class="{disabled: usersToAdd.length < 1}" style="margin-right: 8px;" 
-                        @click="addUsersToTeam({team, users: usersToAdd});usersToAdd = [];slotProps.hide()">
-                            <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
-                            </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide(); usersToAdd = []"><span>Cancel</span></button>
-                    </div>
-                </div>
-            </template>
-        </BaseContextMenu>
-
+        <BaseSelectButtonsContextMenu ref="contextMenuAddUsers" 
+        header="Add User(s) to Team"
+        :type="'checkbox'" :options="availableUsers" v-model="usersToAdd" :submitOnChange="true" 
+        :optionDescriptionKey="'email'" :optionNameKey="'name'" :search="true" 
+        :submitText="`Add ${usersToAdd.length} users${usersToAdd.length > 0 ? 's' : ''}`"
+        :submitDisabled="usersToAdd.length < 1"
+        @submit="addUsersToTeam({team, users: usersToAdd});usersToAdd = [];"
+        @cancel="usersToAdd = []"
+        />
     </div>
     <BaseLoader v-else-if="currentTeamStatus == 'loading'"/>
     <div v-else class="error-wrapper">
