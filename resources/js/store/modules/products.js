@@ -77,8 +77,9 @@ export default {
             let uniqueCategories = []
             products.forEach(product => {
                 if (product.category) {
-                    const found = uniqueCategories.includes(product.category)
-                    if (!found) uniqueCategories.push(product.category)
+                    const theCategory = product.category.toLowerCase()
+                    const found = uniqueCategories.includes(theCategory)
+                    if (!found) uniqueCategories.push(theCategory)
                 }
             })
             return uniqueCategories
@@ -150,7 +151,7 @@ export default {
             // First filter by category
             if (categories.length > 0) {
                 const filteredByCategory = productsToReturn.filter(product => {
-                    return Array.from(categories).includes(product.category)
+                    return product.category && Array.from(categories).includes(product.category.toLowerCase())
                 })
                 productsToReturn = filteredByCategory
             }
