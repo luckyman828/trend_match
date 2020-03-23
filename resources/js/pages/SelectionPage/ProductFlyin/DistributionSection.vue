@@ -48,32 +48,32 @@
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="focus" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user.id}`">
+                        <div class="focus" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                             <span class="focus">Focus <i class="fas fa-star"></i></span>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="in" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user.id}`">
+                        <div class="in" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="out" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user.id}`">
+                        <div class="out" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
                     </template>
@@ -100,42 +100,42 @@
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="focus" v-for="action in product.focus" :key="`${action.selection_id}-${action.user.id}`">
+                        <div class="focus" v-for="action in product.focus" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                             <span class="focus">Focus <i class="fas fa-star"></i></span>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="in" v-for="action in product.ins" :key="`${action.selection_id}-${action.user.id}`">
+                        <div class="in" v-for="action in product.ins" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="out" v-for="action in product.outs" :key="`${action.selection_id}-${action.user.id}`">
+                        <div class="out" v-for="action in product.outs" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="nd" v-for="action in product.nds" :key="`${action.selection_id}-${action.user.id}`">
+                        <div class="nd" v-for="action in product.nds" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user.name}}</span>
-                                <span class="email">{{action.user.email}}</span>
+                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
                     </template>

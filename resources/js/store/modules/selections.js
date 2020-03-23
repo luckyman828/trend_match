@@ -7,6 +7,7 @@ export default {
     state: {
         loading: true,
         status: null,
+        currentSelectionStatus: null,
         usersStatus: null,
         teamsStatus: null,
         currentSelection: null,
@@ -31,6 +32,7 @@ export default {
     getters: {
         loadingSelections: state => state.loading,
         selectionsStatus: state => state.status,
+        currentSelectionStatus: state => state.currentSelectionStatus,
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelection,
@@ -60,7 +62,7 @@ export default {
             }
             for (i = 0; i < list.length; i += 1) {
                 node = list[i]
-                if (node.parent_id != 0) {
+                if (node.parent_id != 0 && map[node.parent_id]) {
                     // if you have dangling branches check that map[node.parentId] exists
                     list[map[node.parent_id]].children.push(node)
                 } else {
@@ -79,20 +81,29 @@ export default {
 
     actions: {
         async fetchSelections({ commit }, { file, addToState = true }) {
-            commit('setLoading', true)
-            const apiUrl = `/files/${file.id}/selections/flat`
-            let selections
-            await axios.get(apiUrl).then(response => {
-                selections = response.data
-                if (addToState) {
-                    commit('insertSelections', { selections, method: 'set' })
-                }
+            return new Promise(async (resolve, reject) => {
+                commit('setLoading', true)
+                commit('setStatus', 'loading')
+                const apiUrl = `/files/${file.id}/selections/flat`
+                let selections
+                await axios
+                    .get(apiUrl)
+                    .then(response => {
+                        selections = response.data
+                        if (addToState) {
+                            commit('insertSelections', { selections, method: 'set' })
+                        }
+                        commit('setStatus', 'success')
+                    })
+                    .catch(err => {
+                        commit('setStatus', 'error')
+                    })
+                commit('setLoading', false)
+                resolve(selections)
             })
-            commit('setLoading', false)
-            return selections
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
-            commit('setStatus', 'loading')
+            commit('setCurrentSelectionStatus', 'loading')
 
             const apiUrl = `/selections/${selectionId}`
             let selection
@@ -103,10 +114,10 @@ export default {
                     if (addToState) {
                         commit('setCurrentSelection', selection)
                     }
-                    commit('setStatus', 'success')
+                    commit('setCurrentSelectionStatus', 'success')
                 })
                 .catch(err => {
-                    commit('setStatus', 'error')
+                    commit('setCurrentSelectionStatus', 'error')
                 })
             return selection
         },
@@ -208,7 +219,11 @@ export default {
             // Send request to API
             const apiUrl = `/selections/${selection.id}/metadata`
             await axios.put(apiUrl, selection.settings).catch(err => {
-                dispatch('alerts/showAlert', 'Something went wrong trying to save selection settings. Please try again.', {root: true})
+                dispatch(
+                    'alerts/showAlert',
+                    'Something went wrong trying to save selection settings. Please try again.',
+                    { root: true }
+                )
             })
         },
         async updateSelectionUsers({ commit, dispatch }, { selection, users }) {
@@ -381,6 +396,9 @@ export default {
         },
         setStatus(state, status) {
             state.status = status
+        },
+        setCurrentSelectionStatus(state, status) {
+            state.currentSelectionStatus = status
         },
         setTeamsStatus(state, status) {
             state.teamsStatus = status

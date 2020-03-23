@@ -4,45 +4,83 @@
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported</h3>
             <form @submit.prevent>
-                <!-- <div class="form-section">
-                    <h4>Export Current Selection Actions and Requests</h4> -->
-                    <button class="ghost md full-width form-element" @click="exportCurrentSelection">
-                        <span>Export Current Selection Actions & Requests</span>
-                    </button>
-                <!-- </div> -->
+                <div class="form-element">
+                    <label for="currency-selector">Choose Currency to export</label>
+                    <BaseInputField id="currency-selector" type="select" :disabled="true"
+                    :value="currencyToExport || 'Choose currency to export'"
+                    @click="showCurrencyContext($event)">
+                        <i class="far fa-chevron-down"></i>
+                    </BaseInputField>
+                </div>
 
-                <!-- <div class="form-section">
-                    <h4>Export Current Selection Feedback</h4> -->
-                    <button class="ghost md full-width form-element" @click="exportCurrentSelectionFeedback">
-                        <span>Export Current Selection Feedback</span>
-                    </button>
-                <!-- </div> -->
+                <div class="form-section">
+                    <h4>Export Current Selection</h4>
+                    <BaseRadioInputField class="form-element" :value="'currentRequests'" v-model="exportOption">
+                        <span>Export Alignment & Requests</span>
+                    </BaseRadioInputField>
 
-                <!-- <div class="form-section">
-                    <h4>Export Actions from All Selections</h4> -->
-                    <!-- <div class="form-element">
-                        <BaseCheckboxInputField v-model="includeCurrentSelection">
-                            Include Current Selection
-                        </BaseCheckboxInputField>
-                    </div> -->
-                    <button class="ghost md full-width form-element" @click="exportActionsPerSelection">
-                        <span>Export Actions for all Selections</span>
-                    </button>
-                <!-- </div> -->
+                    <BaseRadioInputField class="form-element" :value="'currentFeedback'" v-model="exportOption">
+                        <span>Export Alignment & Feedback</span>
+                    </BaseRadioInputField>
+                </div>
+                <div class="form-section">
+                    <h4>Export Multiple Selections</h4>
 
-                <!-- <div class="form-section">
-                    <h4>Export Requests</h4> -->
-                    <button class="ghost md full-width form-element" @click="exportRequestsPerSelection">
-                        <span>Export Requests for all Selections</span>
-                    </button>
-                    <button class="ghost md full-width form-element" @click="exportCommentsPerSelection">
-                        <span>Export Comments for all Selections</span>
-                    </button>
-                    <!-- <button class="ghost md full-width form-element" @click="exportCommentsPerSelection">
-                        <span>Export Comments per Selection</span>
-                    </button> -->
-                <!-- </div> -->
+                    <div class="form-element">
+                        <label for="selections-selector">Choose selections to export</label>
+                        <BaseInputField id="selections-selector" type="select" :disabled="true"
+                        :value="`Exporting from ${selectionsToExport.length} Selections`"
+                        @click="showSelectionsContext($event)">
+                            <i class="far fa-chevron-down"></i>
+                        </BaseInputField>
+                    </div>
+
+                    <BaseRadioInputField class="form-element" :value="'alignments'" v-model="exportOption">
+                        <span>Export Alignments</span>
+                    </BaseRadioInputField>
+
+                    <BaseRadioInputField class="form-element" :value="'requests'" v-model="exportOption">
+                        <span>Export Requests</span>
+                    </BaseRadioInputField>
+
+                    <BaseRadioInputField class="form-element" :value="'comments'" v-model="exportOption">
+                        <span>Export Comments</span>
+                    </BaseRadioInputField>
+
+
+                    <BaseButton style="width: 100%" buttonClass="dark full-width lg" :disabled="!exportOption"
+                    v-tooltip="!exportOption && 'Please choose an export option'"
+                    @click="onExport">
+                        <span>Export</span>
+                    </BaseButton>
+                </div>
+
             </form>
+            <BaseContextMenu ref="selectionsContext">
+                <template v-slot:header>
+                    <span>Choose selections to export</span>
+                </template>
+                <template v-slot="slotProps">
+                    <BaseSelectButtons :options="selections" optionNameKey="name"
+                    v-model="selectionsToExport" :submitOnChange="true"/>
+                    <div class="item-wrapper">
+                        <button style="margin-bottom: 8px; margin-top: -8px;" @click="slotProps.hide()" class="ghost full-width"><span>Apply & Close</span></button>
+                    </div>
+                </template>
+            </BaseContextMenu>
+
+            <BaseContextMenu ref="currencyContext">
+                <template v-slot:header>
+                    <span>Choose currency to export</span>
+                </template>
+                <template v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :options="availaleCurrencies"
+                    v-model="currencyToExport" :submitOnChange="true"/>
+                    <div class="item-wrapper">
+                        <button style="margin-bottom: 8px; margin-top: -8px;" @click="slotProps.hide()" class="ghost full-width"><span>Apply & Close</span></button>
+                    </div>
+                </template>
+            </BaseContextMenu>
         </template>
     </BaseModal>
 </template>
@@ -61,43 +99,84 @@ export default {
         exportToCsv
     ],
     data: function () { return {
-        // includeCurrentSelection: true,
-
-        onlyWithRequests: false,
+        selectionsToExport: [],
+        currencyToExport: null,
+        exportOption: null,
+        defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus']),
         ...mapGetters('products', ['productsFiltered']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.productsFiltered
-            if (this.onlyWithRequests) {
-                return products.filter(product => product.requests.length > 0)
-            } else return products
+            return products
+        },
+        availaleCurrencies() {
+            const currenciesToReturn = []
+            const products = this.productsFiltered
+            products.forEach(product => {
+                product.prices.forEach(price => {
+                    if (!currenciesToReturn.includes(price.currency))
+                        currenciesToReturn.push(price.currency)
+                })
+            })
+            return currenciesToReturn
         }
     },
     methods: {
+        ...mapActions('selections', ['fetchSelections']),
+        async showSelectionsContext(e) {
+            this.$refs.selectionsContext.show(e)
+        },
+        async showCurrencyContext(e) {
+            this.$refs.currencyContext.show(e)
+        },
+        onExport() {
+            const option = this.exportOption
+            if (option == 'currentRequests')
+                this.exportCurrentSelection()
+            if (option == 'currentFeedback')
+                this.exportCurrentSelectionFeedback()
+            if (option == 'alignments')
+                this.exportActionsPerSelection()
+            if (option == 'requests')
+                this.exportRequestsPerSelection()
+            if (option == 'comments')
+                this.exportCommentsPerSelection()
+
+        },
+        getDefaultProductRowData(product) {
+            let priceToReturn = {}
+            if (product.prices && product.prices.length > 0) {
+                if (this.currencyToExport && product.prices.find(x => x.currency == this.currencyToExport)) {
+                    priceToReturn = product.prices.find(x => x.currency == this.currencyToExport)
+                } else {
+                    priceToReturn = product.prices[0]
+                }
+            }
+            return [
+                product.datasource_id, 
+                product.title, 
+                product.category, 
+                product.min_order, 
+                product.min_variant_order, 
+                product.delivery_date,
+                priceToReturn.currency || '',
+                priceToReturn.wholesale_price || '',
+                priceToReturn.recommended_retail_price || '',
+                priceToReturn.mark_up || '',
+            ]
+        },
         exportActionsPerSelection() {
-            const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', this.currentSelection.name]
-            const selectionHeaders = []
+            const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
+            // Add a header for each selection to export
+            const selectionHeaders = [...this.selectionsToExport.map(x => x.name)]
             const rows = []
-            // Loop through the products and generate headers
-            this.productsToExport.forEach(product => {
-                // Add the product's ID and Name to the the row array
-
-                // Loop through the product's actions
-                product.actions.forEach(action => {
-                    // Test if we need to add their selection to the headers
-                    if (!selectionHeaders.includes(action.selection.name) && action.selection_id != this.currentSelection.id) {
-                        selectionHeaders.push(action.selection.name)
-                    }
-
-                })
-            })
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
-                const rowToPush = [product.datasource_id, product.title, product.category, product.min_order, product.min_variant_order, product.delivery_date, product.action || 'None']
+                const rowToPush = this.getDefaultProductRowData(product)
                 // Add the action input to the row
                 selectionHeaders.forEach(header => {
                     const selectionAction = product.actions.find(x => x.selection.name == header)
@@ -173,7 +252,8 @@ export default {
         },
         exportRequestsPerSelection() {
             const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery']
-            const selectionHeaders = []
+            // Add a header for each selection to export
+            const selectionHeaders = [...this.selectionsToExport.map(x => x.name)]
             const rows = []
             // Loop through the products
             this.productsToExport.forEach(product => {
@@ -187,14 +267,6 @@ export default {
                     product.delivery_date, 
                 ]
 
-                // Loop through the product's requests
-                product.requests.forEach(request => {
-                    // Test if we need to add their selection to the headers
-                    if (!selectionHeaders.includes(`${request.selection.name}`)) {
-                        selectionHeaders.push(`${request.selection.name}`)
-                    }
-
-                })
                 // Add the request input to the row
                 selectionHeaders.forEach(header => {
                     const selectionRequest = product.requests.find(x => `${x.selection.name}` == header)
@@ -212,21 +284,10 @@ export default {
         },
         exportCommentsPerSelection() {
             const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery']
-            const selectionHeaders = []
+            // Add a header for each selection to export
+            const selectionHeaders = [...this.selectionsToExport.map(x => x.name)]
             const rows = []
-             // Loop through the products and generate headers
-            this.productsToExport.forEach(product => {
-                // Add the product's ID and Name to the the row array
 
-                // Loop through the product's comments
-                product.comments.forEach(comment => {
-                    // Test if we need to add their selection to the headers
-                    if (!selectionHeaders.includes(`${comment.user.name} (${comment.selection.name})`)) {
-                        selectionHeaders.push(`${comment.user.name} (${comment.selection.name})`)
-                    }
-
-                })
-            })
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
                 // Add the product's ID and Name to the the row array
@@ -305,6 +366,17 @@ export default {
 
         },
     },
+    mounted() {
+        this.currencyToExport = this.availaleCurrencies[0]
+    },
+    created() {
+        if (this.selectionsStatus != 'success' && this.selectionsStatus != 'loading') {
+            this.fetchSelections({file: this.currentFile}).then(selections => {
+                // Preset the selections to export to all selections
+                this.selectionsToExport = selections
+            })
+        }
+    }
 };
 </script>
 

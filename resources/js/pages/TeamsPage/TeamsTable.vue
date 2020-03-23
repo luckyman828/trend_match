@@ -45,7 +45,7 @@
         </BaseFlexTable>
 
         <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
-            <template v-slot:header v-if="currentTeam">
+            <template v-slot:header v-if="currentTeam && teamFlyInVisible">
                 <BaseFlyinHeader @close="teamFlyInVisible = false" class="flyin-header" 
                 :next="nextTeam" :prev="prevTeam"
                 @next="showNext" @prev="showPrev">
@@ -54,7 +54,7 @@
                     </template>
                 </BaseFlyinHeader>
             </template>
-            <template v-slot v-if="currentTeam">
+            <template v-slot v-if="currentTeam && teamFlyInVisible">
                 <TeamFlyin :team="currentTeam" :workspaceUsers="users"/>
             </template>
         </BaseFlyin>

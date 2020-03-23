@@ -13,14 +13,14 @@
                     <comment :product="product" :comment="comment"/>
                     <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">
                         <strong>{{comment.selection.name}}</strong> | 
-                        {{(comment.user_id == authUser.id) ? 'You' : comment.user.name}}
+                        {{(comment.user_id == authUser.id) ? 'You' : comment.user ? comment.user.name : 'Anonymous'}}
                     </div>
                 </div>
             </div>
 
 
             <div class="form-wrapper">
-                <strong class="form-header">Write comment..</strong>
+                <strong class="form-header">Write comment</strong>
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
                     <div class="input-parent comment">

@@ -7,7 +7,7 @@
         <div class="request">
             <strong class="sender">
                 {{request.selection.name}} | 
-                {{request.author_id == authUser.id ? 'You' : request.author.name}}</strong>
+                {{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</strong>
             <span class="content">{{request.content}}</span>
             <small class="id">Request ID: {{request.id}}</small>
         </div>        

@@ -33,7 +33,11 @@
                 </tr>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onAddTeam($event)"><i class="far fa-plus"></i><span>Add Teams(s) to Selection</span></button></td>
+                <td><BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add users to selections'"
+                @click="onAddTeam($event)">
+                    <i class="far fa-plus"></i><span>Add Teams(s) to Selection</span>
+                </BaseButton></td>
             </template>
         </BaseFlexTable>
 
@@ -90,6 +94,7 @@ export default {
     }},
     computed: {
         ...mapGetters('teams', ['teams']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         availableTeams() {
             const allTeams = this.teams
             // return allTeams

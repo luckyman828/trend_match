@@ -20,9 +20,9 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productsStatus']),
-        ...mapGetters('selections', ['selectionsStatus']),
+        ...mapGetters('selections', ['currentSelectionStatus']),
         loading () {
-            return (this.productsStatus != 'success' || this.selectionsStatus != 'success' || this.loadingData)
+            return (this.productsStatus != 'success' || this.currentSelectionStatus != 'success' || this.loadingData)
         },
     },
     methods: {

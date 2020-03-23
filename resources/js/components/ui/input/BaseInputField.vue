@@ -102,6 +102,7 @@ export default {
         input {
             border: none;
             background: inherit;
+            width: 100%;
         }
             
     }

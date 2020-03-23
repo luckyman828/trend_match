@@ -3,39 +3,39 @@
     @close="$emit('close')" :show="show">
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported</h3>
-            <form>
+            <form @submit.prevent>
 
-            <!-- Selection export options -->
-            <template v-if="$route.name == 'selection'">
-                <h4>Requests & comments</h4>
-                <div class="form-element">
-                    <BaseCheckboxInputField v-model="exportComments">
-                        Include Requests and comments
-                    </BaseCheckboxInputField>
-                </div>
-                <div class="form-element" v-if="exportComments">
-                    <BaseCheckboxInputField v-model="currentSelectionOnly">
-                        Only include requests/comments from the current selection
-                    </BaseCheckboxInputField>
-                </div>
-                <div class="form-element">
-                    <BaseCheckboxInputField v-model="onlyWithRequests">
-                        Only include Products with Requests
-                    </BaseCheckboxInputField>
-                </div>
+                <!-- Selection export options -->
+                <template v-if="$route.name == 'selection'">
+                    <h4>Requests & comments</h4>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportComments">
+                            Include Requests and comments
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element" v-if="exportComments">
+                        <BaseCheckboxInputField v-model="currentSelectionOnly">
+                            Only include requests/comments from the current selection
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="onlyWithRequests">
+                            Only include Products with Requests
+                        </BaseCheckboxInputField>
+                    </div>
 
-                <h4>Distribution</h4>
-                <div class="form-element">
-                    <BaseCheckboxInputField v-model="includeDistribution">
-                        Include distribution (In/Out/Focus)
-                    </BaseCheckboxInputField>
-                </div>
-                <div class="form-element" v-if="includeDistribution">
-                    <BaseCheckboxInputField v-model="includeNotDecided">
-                        Include "Not Decided" in distribution
-                    </BaseCheckboxInputField>
-                </div>
-            </template>
+                    <h4>Distribution</h4>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="includeDistribution">
+                            Include distribution (In/Out/Focus)
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element" v-if="includeDistribution">
+                        <BaseCheckboxInputField v-model="includeNotDecided">
+                            Include "Not Decided" in distribution
+                        </BaseCheckboxInputField>
+                    </div>
+                </template>
 
                 <div class="form-element">
                     <h4>Export details</h4>
@@ -47,17 +47,17 @@
                         </p>
                     </div>
                 </div>
+                <BaseLoader v-if="exportingPDF"/>
+                <button v-else-if="!generatedPDF" class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
+                <template v-else>
+                    <Button class="button lg dark full-width" @click="printToPdf"><span>Generate New PDF</span></Button>
+                    <a class="button lg ghost dark full-width" style="margin-top: 20px;" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
+                </template>
             </form>
             <!-- <button class="ghost md full-width" style="margin-bottom: 20px;" 
             @click="previewPdf = true">
                 Preview PDF
             </button> -->
-            <BaseLoader v-if="exportingPDF"/>
-            <button v-else-if="!generatedPDF" class="button lg dark full-width" @click="printToPdf"><span>Export as PDF</span></button>
-            <template v-else>
-                <Button class="button lg dark full-width" @click="printToPdf"><span>Generate New PDF</span></Button>
-                <a class="button lg ghost dark full-width" style="margin-top: 20px;" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
-            </template>
 
             <ExportPdf ref="exportToPdf" v-if="previewPdf" :products="productsToExport"
             :includeDistribution="includeDistribution" :exportComments="exportComments"

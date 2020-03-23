@@ -1146,7 +1146,9 @@ form {
     .form-element {
         display: block;
         width: 100%;
-        margin-bottom: 24px;
+        &:not(:last-child) {
+            margin-bottom: 24px;
+        }
         > .label {
             cursor: pointer;
             display: inline-block;

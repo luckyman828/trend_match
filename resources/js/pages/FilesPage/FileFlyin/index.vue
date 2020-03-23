@@ -25,7 +25,7 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable v-if="!loadingSelections" :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin($event)"/>
+                <SelectionsTable v-if="!loadingSelections" :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
                 <SelectionUsersFlyin v-if="!loadingSelections" :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>

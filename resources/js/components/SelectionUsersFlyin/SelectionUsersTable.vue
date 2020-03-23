@@ -30,18 +30,28 @@
                     </td>
                     <td class="email">{{user.email}}</td>
                     <td class="role">
-                        <button class="ghost editable sm" 
+                        <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" 
                         @click="showRoleContext($event, user)">
                             <span>{{user.role}}</span>
                         </button>
+                        <span v-else>{{user.role}}</span>
                     </td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click="showUserContext($event, user)"><i class="far fa-ellipsis-h medium"></i></button>
+                        <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" 
+                        @click="showUserContext($event, user)">
+                            <i class="far fa-ellipsis-h medium"></i>
+                        </button>
                     </td>
                 </tr>
             </template>
             <template v-slot:footer>
-                <td><button class="primary invisible" @click="onAddUser($event)"><i class="far fa-plus"></i><span>Add Users(s) to Selection</span></button></td>
+                <td>
+                    <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add users to selections'"
+                    @click="onAddUser($event)">
+                        <i class="far fa-plus"></i><span>Add Users(s) to Selection</span>
+                    </BaseButton>
+                </td>
             </template>
         </BaseFlexTable>
 
@@ -134,6 +144,7 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         filteredAvailableSelectionRoles() {
             return this.availableSelectionRoles.filter(x => {
                 return this.selection.type != 'Master' ? x.role != 'Approver' : true
