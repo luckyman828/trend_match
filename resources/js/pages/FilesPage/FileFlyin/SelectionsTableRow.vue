@@ -6,16 +6,18 @@
                     <i class="fas fa-caret-down"></i>
                 </span>
             </td>
+            <!-- Editing -->
             <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == selection.id && selectionToEdit.field == 'name'" :style="selectionWidth">
-                <i v-if="isMaster" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
-                <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
+                <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
+                <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <BaseEditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
                 @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', selection)"/>
             </td>
+            <!-- Viewing -->
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
-                <i v-if="isMaster" class="fa-file-certificate master" :class="selection.id ? 'fad' : 'far'"></i> 
-                <i v-else class="fa-file light-2" :class="selection.id ? 'fas' : 'far'"></i> 
+                <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
+                <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
             <!-- <td class="items">-</td>
@@ -155,7 +157,16 @@ export default {
             font-size: 16px;
             color: $dark2;
             &.master {
-                --fa-primary-color: #3b86ff;
+                position: relative;
+                i {
+                    position: absolute;
+                    left: -2px;
+                    bottom: 5px;
+                    font-size: 10px;
+                    color: #3b86ff;
+                    margin: 0;
+                    width: auto;
+                 } 
                 &::after {
                     opacity: 1;
                 }

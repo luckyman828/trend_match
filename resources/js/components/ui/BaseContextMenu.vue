@@ -155,6 +155,8 @@ export default {
         .columns {
             display: flex;
             border-top: solid 1px $divider;
+            max-height: calc(100vh - 160px);
+            overflow: auto;
             > * {
                 width: 240px;
                 border-top: none;
