@@ -88,11 +88,11 @@
                     <div class="icon-wrapper"><i class="far fa-plus"></i></div>
                     <u>C</u>reate sub-selection
                 </div>
-                <div class="item" v-if="contextSelection && !contextSelection.master"
+                <!-- <div class="item" v-if="contextSelection && !contextSelection.master"
                 @click="onMoveSelection(contextSelection, contextSelectionParent)">
                     <div class="icon-wrapper"><i class="far fa-file"><i class="fas fa-long-arrow-alt-right"></i></i></div>
                     <u>M</u>ove selection
-                </div>
+                </div> -->
             </div>
             <div class="item-group">
                 <div class="item" @click.stop="showSettingsContext(contextMouseEvent, contextSelection)">
