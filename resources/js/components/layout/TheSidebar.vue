@@ -10,8 +10,8 @@
         <BaseDropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="workspaces.length > 1">
             <template v-slot:button="slotProps">
               <div class="link" @click="slotProps.toggle">
-                  <i class="far fa-building"></i>
-                  <span>Workspace</span>
+                  <i class="fas fa-building"></i>
+                  <span>{{currentWorkspace.title | truncate(12)}}</span>
               </div>
             </template>
             <template v-slot:header>
@@ -32,8 +32,8 @@
                 <p class="role">{{authUserWorkspaceRole}}</p>
             </div>
             <div class="show-screen-sm flex-center">
-                <i class="fas fa-user"></i>
-                <span>User</span>
+                <i class="fas primary" :class="authUserWorkspaceRole == 'Admin' ? 'fa-crown' : 'fa-user'"></i>
+                <span class="user">{{authUser.name}}</span>
             </div>
         </div>
       <div class="drawer">
@@ -95,14 +95,15 @@ export default {
     display: block;
     color: #a8a8a8;
     padding: 16px;
+    padding-left: 20px;
     text-decoration: none;
-    border-left: solid 5px white;
     cursor: pointer;
     width: 100%;
+    font-size: 12px;
     &.router-link-active {
       background-color: #f9f9f9;
       color: #1b1c1d;
-      border-left: 5px solid #4facfe;
+      box-shadow: 5px 0 0px 0 $primary inset;
       i {
         color: $primary;
       }
@@ -126,14 +127,20 @@ export default {
     } 
     .header {
       padding: 16px;
+      padding-left: 20px;
       cursor: pointer;
+      font-size: 12px;
+      i {
+        font-size: 16px;
+      }
       &:hover {
         background: $light;
       }
     }
     .user {
-      font-size: 14px;
-      font-weight: 500;
+      // font-size: 12px;
+      line-height: 1.3;
+      text-align: center;
     }
     .role {
       margin: auto;
@@ -170,11 +177,15 @@ export default {
   }
   // SMALL SCREENS AND HIGH DPI
     @media screen and (max-width: $screenSmall) {
+      .header {
+        padding: 16px 4px;
+      }
         .link {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            padding: 16px 0;
             i {
                 margin: 0;
                 margin-bottom: 8px;

@@ -512,6 +512,10 @@ input[type='submit'] {
 i {
     position: relative;
     color: $fontIcon;
+    &.fad {
+        --fa-secondary-color: #3b86ff;
+        --fa-secondary-opacity: 1;
+    }
     &.xs {
         font-size: 10px;
     }
