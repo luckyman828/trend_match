@@ -69,27 +69,73 @@
                             justify-content: space-between; align-items: space-between;"
                             :style="{width: exportComments ? 'calc(50% - 6px)' : 'calc(33% - 6px)'}">
                                 <div class="input" v-if="includeDistribution || exportComments">
-                                    <div class="row" v-for="(user, index) in currentSelection.allUsers" :key="index"
-                                    style="display: flex; flex-direction: row; width: 100%; align-items: center; border-bottom: solid 1px #E4E4E4;">
-                                        <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
-                                            <td style="font-size: 7px;">
-                                                <span style="font-size: 7px;">{{user.name || 'Unknown user'}}</span>
-                                            </td>
+                                    <!-- Alignment -->
+                                    <div class="alignment-wrapper" style="margin-bottom: 12px; border-bottom: solid 1px #E4E4E4;">
+                                        <strong style="font-size: 8px;">Alignment & Requests</strong>
+                                        <div class="row" v-for="(action, index) 
+                                        in product.actions.filter(x => includeNotDecided ? true : (x.action != 'None' || x.requests.length > 0))" 
+                                        :key="'alignment-'+index"
+                                        style="display: flex; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
+                                            <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
+                                                <td style="font-size: 7px;">
+                                                    <span style="font-size: 7px;">{{action.selection.name}}</span>
+                                                </td>
+                                            </div>
+                                            <div v-if="includeDistribution" 
+                                            style="font-size: 7px; max-width: 24px; min-width: 24px; margin-left: 8px;" 
+                                            :style="{textAlign: product.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}">
+                                                <span>
+                                                    {{product.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'O' 
+                                                    : product.actions.find(x => x.selection_id == action.selection_id).action == 'Focus' ? 'F' 
+                                                    : product.actions.find(x => x.selection_id == action.selection_id).action == 'In' ? 'I' : ''}}
+                                                </span>
+                                            </div>
+                                            <!-- Requests -->
+                                            <div v-if="exportComments" 
+                                            style="font-size: 7px; flex: 1; margin-left: 12px;">
+                                                <span style="font-size: 7px; display: block;" 
+                                                v-for="(request, index) in product.requests.filter(x => x.selection_id == action.selection_id)" 
+                                                :key="'request-'+index">
+                                                    {{request.content}}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div v-if="includeDistribution" 
-                                        style="font-size: 7px; max-width: 24px; min-width: 24px; margin-left: 8px;" 
-                                        :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
-                                        && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
-                                            <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
-                                            && product.feedbacks.find(x => x.user_id == user.id).action != 'None'"
-                                            style="font-size: 7px;">
-                                                {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
-                                                : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
-                                            </span>
-                                        </div>
-                                        <div v-if="exportComments" 
-                                        style="font-size: 7px; flex: 1; margin-left: 12px;">
-                                            <span style="font-size: 7px;">I am supposed to be a comment</span>
+                                    </div>
+
+
+                                    <!-- Feedback -->
+                                    <div class="feedback-wrapper" style="border-bottom: solid 1px #E4E4E4;">
+                                        <strong style="font-size: 8px;">Feedback & Comments</strong>
+                                        <div class="row" v-for="(user, index) 
+                                        in currentSelection.users.filter(user => includeNotDecided ? true
+                                        : (product.feedbacks.find(x => x.user_id == user.id) && product.feedbacks.find(x => x.user_id == user.id).action != 'None')
+                                        || product.comments.filter(x => x.user_id == user.id).length > 0)" 
+                                        :key="index"
+                                        style="display: flex; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
+                                            <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
+                                                <td style="font-size: 7px;">
+                                                    <span style="font-size: 7px;">{{user.name || 'Unknown user'}}</span>
+                                                </td>
+                                            </div>
+                                            <div v-if="includeDistribution" 
+                                            style="font-size: 7px; max-width: 24px; min-width: 24px; margin-left: 8px;" 
+                                            :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
+                                            && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
+                                                <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
+                                                && product.feedbacks.find(x => x.user_id == user.id).action != 'None'"
+                                                style="font-size: 7px;">
+                                                    {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
+                                                    : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
+                                                </span>
+                                            </div>
+                                            <div v-if="exportComments" 
+                                            style="font-size: 7px; flex: 1; margin-left: 12px;">
+                                                <span style="font-size: 7px; display: block;" 
+                                                v-for="(comments, index) in product.comments.filter(x => x.user_id == user.id)" 
+                                                :key="'comment-'+index">
+                                                    {{comments.content}}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -118,6 +164,7 @@ export default {
         'products',
         'exportComments',
         'includeDistribution',
+        'includeNotDecided',
     ],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
@@ -136,7 +183,7 @@ export default {
                 }
             }
             return chunkedArr;
-        }
+        },
     }
 }
 </script>

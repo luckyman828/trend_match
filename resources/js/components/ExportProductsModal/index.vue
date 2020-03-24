@@ -13,11 +13,6 @@
                             Include Requests and comments
                         </BaseCheckboxInputField>
                     </div>
-                    <div class="form-element" v-if="exportComments">
-                        <BaseCheckboxInputField v-model="currentSelectionOnly">
-                            Only include requests/comments from the current selection
-                        </BaseCheckboxInputField>
-                    </div>
                     <div class="form-element">
                         <BaseCheckboxInputField v-model="onlyWithRequests">
                             Only include Products with Requests
@@ -61,6 +56,7 @@
 
             <ExportPdf ref="exportToPdf" v-if="previewPdf" :products="productsToExport"
             :includeDistribution="includeDistribution" :exportComments="exportComments"
+            :includeNotDecided="includeNotDecided"
             @close="previewPdf = false"/>
         </template>
     </BaseModal>
@@ -89,9 +85,8 @@ export default {
         exportComments: this.$route.name == 'selection' ? true : false,
         generatedPDF: null,
         onlyWithRequests: false,
-        includeDistribution: false,
+        includeDistribution: true,
         includeNotDecided: false,
-        currentSelectionOnly: false,
         previewPdf: false,
     }},
     computed: {

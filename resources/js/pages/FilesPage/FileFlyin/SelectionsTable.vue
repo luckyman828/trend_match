@@ -791,7 +791,6 @@ export default {
             this.selectionToEdit = null
         },
         clearUnsaved({selection, parent}) {
-            console.log('Clear unsaved')
             // Check if the selection is saved
             if (!selection.id) {
                 this.REMOVE_SELECTION(selection)
