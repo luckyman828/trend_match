@@ -178,7 +178,7 @@ export default {
         color: $primary;
     }
     .select-buttons .wrapper {
-        max-height: 340px;
+        max-height: 320px;
         overflow: hidden auto;
         .option-group {
             padding-top: 16px;
