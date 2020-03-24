@@ -313,8 +313,6 @@ export default {
     @import '~@/_variables.scss';
 
     .users-table {
-        margin-top: 52px;
-        padding-top: 0;
         ::v-deep {
             td, th {
                 &.title {

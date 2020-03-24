@@ -82,12 +82,12 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         indent() {
             const baseIndent = 48
-            const indentAmount = 20
+            const indentAmount = 24
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 400
-            const indentAmount = 20
+            const baseWidth = 500
+            const indentAmount = 24
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         }
     },
@@ -156,6 +156,9 @@ export default {
             width: 24px;
             font-size: 16px;
             color: $dark2;
+            &:first-child {
+                margin-right: 8px;
+            }
             &.master {
                 position: relative;
                 i {

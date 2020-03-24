@@ -124,9 +124,12 @@ export default {
         async fetchSelectionSettings({ commit, dispatch }, selection) {
             // Get users for selection
             const apiUrl = `/selections/${selection.id}/metadata`
+            let settings
             await axios.get(apiUrl).then(response => {
-                commit('setSelectionSettings', { selection, settings: response.data })
+                settings = response.data
+                commit('setSelectionSettings', { selection, settings })
             })
+            return settings
         },
         async fetchSelectionUsers({ commit, dispatch }, selection) {
             // Get users for selection

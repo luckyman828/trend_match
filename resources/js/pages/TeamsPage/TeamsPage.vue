@@ -12,7 +12,6 @@
             </div> -->
         </div>
         <h1>Teams</h1>
-        <div class="underline"></div>
         <TeamsTable :teams="teams" :users="users" :authUser="authUser"
         @onNewUser="setAddNewUserModalVisible(true)"/>
     </div>

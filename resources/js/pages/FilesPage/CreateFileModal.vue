@@ -618,7 +618,7 @@ export default {
             contextMenu.item = currency
             contextMenu.show(e)
         },
-        instantiateProducts(fileId) {
+        instantiateProducts() {
             const productsToReturn = []
             
             // STEP 1) Loop through each of our available files and instantiate our products by key
@@ -845,7 +845,7 @@ export default {
             await this.insertOrUpdateFile(newFile)
 
             // Then we will instantiate the products and attempt to upload them
-            const newProducts = this.instantiateProducts(newFile.id)
+            const newProducts = this.instantiateProducts().filter(x => !!x.datasource_id)
             await this.insertProducts({file: newFile, products: newProducts, addToState: false})
             .then(() => {
                 this.$emit('close')

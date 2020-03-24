@@ -15,8 +15,8 @@
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader> -->
-                <BaseTableHeader :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
-                <BaseTableHeader :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
+                <BaseTableHeader class="teams" :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
+                <BaseTableHeader class="users" :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -467,9 +467,17 @@
                     
                 </div>
                 <div class="item-group footer">
-                    <div class="item-wrapper" style="text-align: right;">
-                        <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
+                    <div class="item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                        <div>
+                            <button class="ghost primary"
+                            @click="onCloneSettings">
+                                <i class="far fa-clone"></i><span>Clone settings from another Selection</span>
+                            </button>
+                        </div>
+                        <div style="text-align: right;">
+                            <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
+                            <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
+                        </div>
                     </div>
                 </div>
 
@@ -505,16 +513,42 @@
             <template v-slot:header>
                 <span>Select file to copy selections from</span>
             </template>
-            <div class="item-group">
-                <BaseSelectButtons type="radio" search="true" :options="allFiles.filter(x => x.type == 'File')"
-                optionNameKey="name" v-model="fileToClone" :submitOnChange="true"/>
-            </div>
-            <div class="item-group">
-                <div class="item-wrapper">
-                    <button class="primary" @click="onClone(fileToClone)"><span>Clone</span></button>
-                    <button class="invisible ghost-hover" style="margin-left: 8px;"><span>Cancel</span></button>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons type="radio" search="true" :options="allFiles.filter(x => x.type == 'File')"
+                    optionNameKey="name" v-model="fileToClone" :submitOnChange="true"/>
                 </div>
-            </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" @click="onClone(fileToClone)"><span>Clone</span></button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide()">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextCloneSettings" class="context-clone-settings">
+            <template v-slot:header>
+                <span>Select selections to copy settings from</span>
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons type="radio" search="true" :options="allSelections.filter(x => x.id != contextSelection.id)"
+                    optionNameKey="name" v-model="selectionToCloneSettingsFrom" :submitOnChange="true"/>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary" @click="cloneSettings();slotProps.hide()"><span>Clone</span></button>
+                        <button class="invisible ghost-hover" style="margin-left: 8px;"
+                        @click="slotProps.hide()">
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </template>
         </BaseContextMenu>
         
     </div>
@@ -551,6 +585,7 @@ export default {
         contextSelectionOption: null,
         contextSelectionSettings: null,
         contextSelectionSettingsKey: null,
+        selectionToCloneSettingsFrom: null,
         parentLevelOptions: [
             {
                 value: 'Ancestors',
@@ -597,6 +632,7 @@ export default {
     computed: {
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('selections', {allSelections: ['selections']}),
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
@@ -642,6 +678,15 @@ export default {
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.show(e)
+        },
+        onCloneSettings(e) {
+            this.$refs.contextCloneSettings.show(e)
+        },
+        async cloneSettings() {
+            // Fetch the settings of the selection to clone from
+            const settingsToClone = await this.fetchSelectionSettings(this.selectionToCloneSettingsFrom)
+            // Set the settings on the context selection
+            this.$set(this.contextSelection, 'settings', settingsToClone)
         },
         onSaveSelectionSettings() {
             // Send API request to update the selections settings.
@@ -858,27 +903,40 @@ export default {
     
     .selections-table {
         // Target child style
-        ::v-deep tr {
-            > * {
-                &.expand { // Title
-                    min-width: 48px;
-                    max-width: 48px
-                }
-                &.title { // Title
-                    min-width: 400px;
-                    max-width: 400px;
-                }
-                &.status { // Status
-                    min-width: 202px;
-                    max-width: 202px;
-                }
-                // &.items, &.in, &.out, &.nd {
-                //     min-width: 72px;
-                //     max-width: 72px;
-                // }
-                &.action { // Actions
-                    min-width: 112px;
-                    max-width: 112px;
+        ::v-deep {
+            .flex-table tr:not(.table-top-bar) > * {
+                flex: 0 1 auto;
+            }
+            tr {
+                > * {
+                    &.expand { // Title
+                        min-width: 48px;
+                        max-width: 48px
+                    }
+                    &.title { // Title
+                        min-width: 500px;
+                        max-width: 500px;
+                    }
+                    &.teams {
+                        margin-left: auto;
+                    }
+                    &.teams, &.users {
+                        min-width: 80px;
+                        max-width: 80px;
+                    }
+                    &.status { // Status
+                        min-width: 202px;
+                        max-width: 202px;
+                    }
+                    // &.items, &.in, &.out, &.nd {
+                    //     min-width: 72px;
+                    //     max-width: 72px;
+                    // }
+                    &.action { // Actions
+                        min-width: 112px;
+                        max-width: 112px;
+                        margin-left: auto;
+                    }
                 }
             }
         }
