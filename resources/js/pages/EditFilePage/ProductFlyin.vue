@@ -209,6 +209,26 @@
                         </button>
                     </div>
                 </div>
+
+                <div class="EANs form-section">
+                    <h3>EANs <i class="far fa-info-circle" v-tooltip="'EANs added here can be scanned with the Kollekt mobile App to find this product'"></i></h3>
+                    <div class="col-2 form-element" v-for="(ean, index) in product.eans" :key="index">
+                        <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
+                        :oldValue="originalProduct.eans[index]" 
+                        v-model="product.eans[index]" :value="ean"/>
+
+                        <div style="display: flex; align-items: center;">
+                            <button class="invisible ghost-hover" @click="removeEAN(index)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-element">
+                        <button class="ghost" @click="addEAN">
+                            <i class="far fa-plus"></i><span>Add EAN</span>
+                        </button>
+                    </div>
+                </div>
             </BaseFlyinColumn>
 
             <BaseContextMenu ref="contextVariant" class="context-variant"
@@ -398,6 +418,12 @@ export default {
         },
         removeAssortment(index) {  
             this.productToEdit.assortments.splice(index, 1)
+        },
+        addEAN() {  
+            this.productToEdit.eans.push(null)
+        },
+        removeEAN(index) {  
+            this.productToEdit.eans.splice(index, 1)
         },
         onCloseSingle() {
             // Emit event to parent
