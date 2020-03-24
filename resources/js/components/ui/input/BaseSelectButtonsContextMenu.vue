@@ -5,15 +5,16 @@
         </template>
         <template v-slot>
             <div class="item-group">
-                <BaseSelectButtons :type="type" :options="options" :optionValueKey="optionValueKey"
-                v-model="localValue" :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey"
-                :optionNameKey="optionNameKey" :search="search" @submit="$event => localValue = $event"/>
+                <BaseSelectButtons v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
+                :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey"
+                :multipleOptionArrays="multipleOptionArrays" :optionGroupNameKey="optionGroupNameKey" :optionGroupOptionsKey="optionGroupOptionsKey"
+                :optionNameKey="optionNameKey" :search="search" @submit="$event => localValue = $event" @unset="$emit('unset')"/>
             </div>
         </template>
         <template v-slot:footer="slotProps">
             <div class="item-wrapper">
                 <button class="primary" :class="{disabled: submitDisabled}" style="margin-right: 8px;" 
-                @click="submit();slotProps.hide()">
+                @click="submit() ;slotProps.hide();">
                     <span>{{submitText || 'Save'}}</span>
                 </button>
                 <button class="invisible ghost-hover" @click="slotProps.hide(); $emit('cancel')"><span>Cancel</span></button>
@@ -36,7 +37,10 @@ export default {
         'search',
         'value',
         'submitDisabled',
-        'submitText'
+        'submitText',
+        'multipleOptionArrays',
+        'optionGroupNameKey',
+        'optionGroupOptionsKey',
     ],
     computed: {
         localValue: {
@@ -53,7 +57,7 @@ export default {
         },
         submit() {
             this.$emit('submit', this.localValue)
-            this.$emit('input', this.localValue)
+            // this.$emit('input', this.localValue)
         }
     }
 }

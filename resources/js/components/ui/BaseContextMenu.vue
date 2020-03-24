@@ -76,7 +76,7 @@ export default {
                 const menuWidth = contextMenu.scrollWidth
                 const windowWidth = window.innerWidth
                 const windowHeight = window.innerHeight
-                const maxHeight = 500
+                const maxHeight = this.columns > 1 ? windowHeight-2*offset : 500
                 if (mouseX + menuWidth > windowWidth) {
                     contextMenu.style.right=offset+'px'
                     contextMenu.style.left='auto'

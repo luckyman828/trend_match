@@ -107,9 +107,9 @@
         header="Add User(s) to Team"
         :type="'checkbox'" :options="availableUsers" v-model="usersToAdd" :submitOnChange="true" 
         :optionDescriptionKey="'email'" :optionNameKey="'name'" :search="true" 
-        :submitText="`Add ${usersToAdd.length} users${usersToAdd.length > 0 ? 's' : ''}`"
+        :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
         :submitDisabled="usersToAdd.length < 1"
-        @submit="addUsersToTeam({team, users: usersToAdd});usersToAdd = [];"
+        @submit="addUsersToTeam({team, users: usersToAdd}); usersToAdd = []"
         @cancel="usersToAdd = []"
         />
     </div>

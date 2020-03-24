@@ -107,8 +107,9 @@ export default {
             let unique = []
             products.forEach(product => {
                 if (product.buying_group) {
-                    const found = unique.includes(product.buying_group)
-                    if (!found) unique.push(product.buying_group)
+                    const theBuyingGroup = product.buying_group.toLowerCase()
+                    const found = unique.includes(theBuyingGroup)
+                    if (!found) unique.push(theBuyingGroup)
                 }
             })
             return unique
@@ -165,7 +166,7 @@ export default {
             // Filter by buyer group
             if (buyerGroups.length > 0) {
                 const filteredByBuyerGroups = productsToReturn.filter(product => {
-                    return Array.from(buyerGroups).includes(product.buying_group)
+                    return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
                 })
                 productsToReturn = filteredByBuyerGroups
             }
