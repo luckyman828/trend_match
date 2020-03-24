@@ -418,6 +418,10 @@ export default {
                 state.selections.push(...selections)
             }
         },
+        REMOVE_SELECTION(state, selection) {
+            const index = state.selections.findIndex(x => x.id == selection.id)
+            state.selections.splice(index, 1)
+        },
         updateSelection(state, selection) {
             // const oldFile = state.files.find(x => x.id == file.id)
             // Object.assign(oldFile, file)

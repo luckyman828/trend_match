@@ -601,7 +601,7 @@ export default {
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
         'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings', 'updateSelectionSettings']),
-        ...mapMutations('selections', ['insertSelections']),
+        ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
@@ -790,18 +790,11 @@ export default {
             // Clear the current edit
             this.selectionToEdit = null
         },
-        clearUnsaved(selection) {
+        clearUnsaved({selection, parent}) {
+            console.log('Clear unsaved')
             // Check if the selection is saved
             if (!selection.id) {
-                // Check if the current selection has a parent
-                if (selection.parent_id) {
-                    const parent = this.selections.find(x => x.id == selection.id)
-                    const unsavedSelectionIndex = parent.children.findIndex(x => x.id == null)
-                    parent.children.splice(unsavedSelectionIndex, 1)
-                } else {
-                    const unsavedSelectionIndex = this.selections.findIndex(x => x.id == null)
-                    this.selections.splice(unsavedSelectionIndex, 1)
-                }
+                this.REMOVE_SELECTION(selection)
             }
         },
         async onShowCloneSetupContext(e) {
