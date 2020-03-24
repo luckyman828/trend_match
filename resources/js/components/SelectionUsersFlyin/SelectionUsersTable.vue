@@ -91,7 +91,7 @@
                     v-model="usersToAdd" :submitOnChange="true" :optionDescriptionKey="'email'"
                     :optionNameKey="'name'" :search="true"/>
                 </div>
-                <div class="item-group">
+                <!-- <div class="item-group">
                     <div class="item-wrapper">
                         <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
                         @click="onAddUsersToSelection();usersToAdd = [];slotProps.hide()">
@@ -102,6 +102,18 @@
                             <span>Cancel</span>
                         </button>
                     </div>
+                </div> -->
+            </template>
+            <template v-slot:footer="slotProps">
+                <div class="item-wrapper">
+                    <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
+                    @click="onAddUsersToSelection();usersToAdd = [];slotProps.hide()">
+                        <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
+                        </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
+                    <button class="invisible ghost-hover" style="margin-left: 8px;"
+                    @click="slotProps.hide(); usersToAdd = []">
+                        <span>Cancel</span>
+                    </button>
                 </div>
             </template>
         </BaseContextMenu>

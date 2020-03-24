@@ -21,6 +21,8 @@
                 </template>
             </div>
         </div>
+        <h1>Files</h1>
+        <div class="underline"></div>
 
         <FilesTable :files="files" :folder="currentFolder" :selected="selected" 
         @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
@@ -153,22 +155,6 @@ export default {
     .item-filter-button {
         min-width: 120px;
         background: $light2;
-    }
-    .breadcrumbs {
-        display: flex;
-        // Before Bracket
-        > *:not(:first-child)::before {
-            content: "\F105";
-            font-family: "Font Awesome 5 Pro";
-            font-weight: 400;
-            -webkit-font-smoothing: antialiased;
-            display: inline-block;
-            font-style: normal;
-            font-variant: normal;
-            text-rendering: auto;
-            line-height: 1;
-            padding: 0 8px 0 2px;
-        }
     }
     
 </style>

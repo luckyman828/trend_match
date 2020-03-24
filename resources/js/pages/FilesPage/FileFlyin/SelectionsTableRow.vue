@@ -12,7 +12,7 @@
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <BaseEditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
-                @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', selection)"/>
+                @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', {selection, parent})"/>
             </td>
             <!-- Viewing -->
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
@@ -47,8 +47,8 @@
             </td>
         </tr>
         <template v-if="childrenExpanded">
-            <selectionsTableRow v-for="selection in selection.children" :parent="selection" :selection="selection" :path="path.concat(selection.id)"
-            :selectionToEdit="selectionToEdit" :key="selection.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
+            <selectionsTableRow v-for="selectionChild in selection.children" :parent="selection" :selection="selectionChild" :path="path.concat(selection.id)"
+            :selectionToEdit="selectionToEdit" :key="selectionChild.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
             @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" 
             @showSettingsContext="($event, selection) => {$emit('showSettingsContext', $event, selection)}"/>

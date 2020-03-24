@@ -6,8 +6,15 @@
             </strong>
             <button class="circle close" @click="hide"><i class="fal fa-times"></i></button>
         </div>
+
+        <div class="body">
+            <slot :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
+        </div>
         
-        <slot :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
+
+        <div class="item-group footer" v-if="hasFooter">
+            <slot name="footer" :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
+        </div>
     </div>
 </template>
 
@@ -28,6 +35,10 @@ export default {
         hasHeader() {
             // Check if the header slot has any content
             return !!this.$slots.header || !!this.$scopedSlots.header
+        },
+        hasFooter() {
+            // Check if the footer slot has any content
+            return !!this.$slots.footer || !!this.$scopedSlots.footer
         },
         menuWidth() {
             // if (this.columns) {
@@ -65,6 +76,7 @@ export default {
                 const menuWidth = contextMenu.scrollWidth
                 const windowWidth = window.innerWidth
                 const windowHeight = window.innerHeight
+                const maxHeight = this.columns > 1 ? windowHeight-2*offset : 500
                 if (mouseX + menuWidth > windowWidth) {
                     contextMenu.style.right=offset+'px'
                     contextMenu.style.left='auto'
@@ -73,12 +85,23 @@ export default {
                     contextMenu.style.right='auto'
                 }
 
-                if (mouseY + menuHeight + offset > windowHeight) {
-                    contextMenu.style.bottom=offset+'px'
-                    contextMenu.style.top='auto'
-                } else {
+                // If there is not enough space below the mouseY
+                if (mouseY + menuHeight + offset > windowHeight && mouseY + maxHeight + offset > windowHeight) {
+                    // Test if we have space to display the entire menu
+                    if (menuHeight + offset*2 < windowHeight) { // Offset * 2 to have space above and below
+                        contextMenu.style.maxHeight=`${maxHeight}px`
+                        contextMenu.style.top=`${windowHeight - menuHeight - offset*2}px`
+                        // contextMenu.style.top=`${windowHeight - menuHeight - offset*2}px`
+                    } else {
+                        const finalHeight = windowHeight - offset*2 < maxHeight ? windowHeight - offset*2 : maxHeight
+                        contextMenu.style.top=`${windowHeight - finalHeight - offset}px`
+                        contextMenu.style.maxHeight=`${finalHeight}px`
+                    }
+                }
+                // If there is enough space below mouseY
+                else {
                     contextMenu.style.top=mouseY+'px'
-                    contextMenu.style.bottom='auto'
+                    contextMenu.style.maxHeight=maxHeight+'px'
                 }
 
                 // contextMenu.style.top=mouseY+'px'
@@ -152,6 +175,9 @@ export default {
         box-shadow: 0 3px 30px rgba(black, .3);
         z-index: 1;
         position: fixed;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
         .columns {
             display: flex;
             border-top: solid 1px $divider;
