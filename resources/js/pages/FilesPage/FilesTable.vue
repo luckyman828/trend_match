@@ -15,8 +15,8 @@
             <template v-slot:header>
                 <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'modified'" :currentSortKey="sortKey" @sort="onSort">Modified</BaseTableHeader>
-                <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
+                <!-- <BaseTableHeader :sortKey="'modified'" :currentSortKey="sortKey" @sort="onSort">Modified</BaseTableHeader> -->
+                <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader> -->
                 <!-- <BaseTableHeader :sortKey="'owners'" :currentSortKey="sortKey" @sort="onSort">Owners</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -30,11 +30,11 @@
                             :value="toEdit.item.name" :oldValue="folder.name" v-model="toEdit.item.name"
                             @submit="removeUnsavedFolders(); insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
                         </td>
-                    <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i> {{folder.name}}</td>
-                    <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i> {{folder.name}}</td>
-                    <td class="modified">-</td>
+                    <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i><span>{{folder.name}}</span></td>
+                    <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i><span>{{folder.name}}</span></td>
+                    <!-- <td class="modified">-</td> -->
                     <!-- <td class="deadline">-</td> -->
-                    <td class="items">{{folder.children_count || '-'}}</td>
+                    <!-- <td class="items">{{folder.children_count || '-'}}</td> -->
                     <!-- <td class="owners">
                         <button class="ghost editable sm" @click="showFileOwnersFlyin(folder)">
                             <i class="far fa-user"></i><span>{{folder.owner_count || 0}}</span>
@@ -52,10 +52,10 @@
                             :value="toEdit.item.name" :oldValue="file.name" v-model="toEdit.item.name"
                             @submit="insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
-                    <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i> {{file.name}}</td>
-                    <td class="modified">-</td>
+                    <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i><span>{{file.name}}</span></td>
+                    <!-- <td class="modified">-</td> -->
                     <!-- <td class="deadline">{{file.end_date}}</td> -->
-                    <td class="items">{{file.children_count || '-'}}</td>
+                    <!-- <td class="items">{{file.children_count || '-'}}</td> -->
                     <!-- <td class="owners">
                         <button class="ghost editable sm" @click="showFileOwnersFlyin(file)">
                             <i class="far fa-user"></i><span>{{file.owner_count || 0}}</span>
@@ -475,8 +475,6 @@ export default {
 @import '~@/_variables.scss';
 
 .folders-table {
-    margin-top: 52px;
-    padding-top: 0;
     position: relative;
     th, td {
         &.title {

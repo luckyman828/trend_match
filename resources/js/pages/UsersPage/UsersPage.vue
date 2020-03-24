@@ -12,7 +12,6 @@
             </div> -->
         </div>
         <h1>Users</h1>
-        <div class="underline"></div>
         <UsersTable :users="users.filter(x => authUserWorkspaceRole == 'Admin' ? true : x.id == authUser.id)"
         @onNewUser="setAddNewUserModalVisible(true)"/>
         <AddUserModal ref="addUserModal" :show="addNewUserModalVisible" 

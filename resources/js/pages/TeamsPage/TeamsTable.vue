@@ -283,8 +283,6 @@ export default {
     @import '~@/_variables.scss';
 
     .teams-table {
-        margin-top: 52px;
-        padding-top: 0;
         ::v-deep {
             td, th {
                 &.title {

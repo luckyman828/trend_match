@@ -13,20 +13,20 @@
 
         </div>
 
-        <div class="items-center">
-        </div>
+        <!-- <div class="items-center">
+        </div> -->
 
         <div class="items-right">
 
-            <button class="button dark" @click="onExport"><span>Export PDF</span></button>
-            <button class="button dark" @click="onExportCsv"><span>Export CSV</span></button>
+            <!-- <button class="button dark" @click="onExport"><span>Export PDF</span></button>
+            <button class="button dark" @click="onExportCsv"><span>Export CSV</span></button> -->
             <button class="button primary" @click="onUploadToFile"><span>Upload CSV to file</span></button>
             <button class="button primary" @click="onNewProduct"><span>Create new product</span></button>
 
         </div>
 
-        <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
-        <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
+        <!-- <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
+        <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/> -->
         <UploadToFileModal v-if="currentFile" :show="uploadToFileModalVisible" @close="uploadToFileModalVisible = false"/>
     </div>
 </template>
@@ -52,10 +52,11 @@ export default {
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
+        ...mapGetters('products', ['products']),
     },
     methods: {
         ...mapActions('products', ['setAvailableProducts', 'instantiateNewProduct']),
-        ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble']),
+        ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble', 'updateProduct']),
         async onNewProduct() {
             const newProduct = await this.instantiateNewProduct()
             this.setCurrentProduct(newProduct)
@@ -69,7 +70,7 @@ export default {
         },
         onUploadToFile() {
             this.uploadToFileModalVisible =true
-        }
+        },
     },
 };
 </script>

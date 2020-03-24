@@ -99,7 +99,6 @@ export default {
     text-decoration: none;
     cursor: pointer;
     width: 100%;
-    font-size: 12px;
     &.router-link-active {
       background-color: #f9f9f9;
       color: #1b1c1d;
@@ -117,6 +116,7 @@ export default {
     i {
         font-size: 16px;
         margin-right: 8px;
+        width: 20px;
     }
   }
   .bottom-drawer {
@@ -129,7 +129,6 @@ export default {
       padding: 16px;
       padding-left: 20px;
       cursor: pointer;
-      font-size: 12px;
       i {
         font-size: 16px;
       }
@@ -179,6 +178,7 @@ export default {
     @media screen and (max-width: $screenSmall) {
       .header {
         padding: 16px 4px;
+        font-size: 12px;
       }
         .link {
             display: flex;
@@ -186,6 +186,7 @@ export default {
             align-items: center;
             flex-direction: column;
             padding: 16px 0;
+            font-size: 12px;
             i {
                 margin: 0;
                 margin-bottom: 8px;

@@ -528,7 +528,7 @@ export default {
             let stateProduct = state.products.find(x => x.id == product.id)
             Object.assign(stateProduct, product)
             // Check if we also need to update the current product
-            if (state.currentProduct.id == product.id) {
+            if (state.currentProduct && state.currentProduct.id == product.id) {
                 Object.assign(state.currentProduct, product)
             }
         },
