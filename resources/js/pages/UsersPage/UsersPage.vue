@@ -1,5 +1,16 @@
 <template>
     <div class="users">
+        <div class="breadcrumbs">
+            <button class="invisible white-hover">
+                <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
+            </button>
+            <!-- <div class="breadcrumb">
+                <button class="invisible white-hover">
+                    <i class="far fa-folder-open"></i>
+                    <span>Teams</span>
+                </button>
+            </div> -->
+        </div>
         <h1>Users</h1>
         <div class="underline"></div>
         <UsersTable :users="users.filter(x => authUserWorkspaceRole == 'Admin' ? true : x.id == authUser.id)"
@@ -25,7 +36,7 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('users', ['addNewUserModalVisible', 'users']),
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole', 'currentWorkspace']),
     },
     methods: {
         ...mapMutations('users', ['setAddNewUserModalVisible']),

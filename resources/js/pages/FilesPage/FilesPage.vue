@@ -156,21 +156,5 @@ export default {
         min-width: 120px;
         background: $light2;
     }
-    .breadcrumbs {
-        display: flex;
-        // Before Bracket
-        > *:not(:first-child)::before {
-            content: "\F105";
-            font-family: "Font Awesome 5 Pro";
-            font-weight: 400;
-            -webkit-font-smoothing: antialiased;
-            display: inline-block;
-            font-style: normal;
-            font-variant: normal;
-            text-rendering: auto;
-            line-height: 1;
-            padding: 0 8px 0 2px;
-        }
-    }
     
 </style>
