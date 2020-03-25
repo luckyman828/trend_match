@@ -13,14 +13,14 @@
         </td>
         <td class="title" v-else>
             <i class="fas fa-user"></i>
-            <span>{{user.name}}{{isSelf ? ` (You)` : ''}}</span>
+            <span v-tooltip="user.name.length > 26 && user.name">{{user.name | truncate(26)}}{{isSelf ? ` (You)` : ''}}</span>
         </td>
         <td class="email" v-if="editEmail">
             <BaseEditInputWrapper ref="editEmail" :activateOnMount="true" :type="'text'"
                 :value="userToEdit.email" :oldValue="user.email" v-model="userToEdit.email"
                 @submit="updateUser(userToEdit); editEmail = false" @cancel="$emit('cancelEditEmail'); editEmail = false;"/>
         </td>
-        <td class="email" v-else>{{user.email}}</td>
+        <td class="email" v-else v-tooltip="user.email.length > 34 && user.email">{{user.email | truncate(34)}}</td>
         <td class="role">
             <!-- Admin -->
             <button v-if="authUserWorkspaceRole == 'Admin'" 

@@ -109,7 +109,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection']),
+        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection']),
         ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
@@ -121,14 +121,13 @@ export default {
             contextMenu.show(e)
         },
         async onAddTeamsToSelection(teams) {
-            // Fetch the users for the team, then add it to the selection
-            // Use of promise and map to fetch users for all teams in parallel
-            await Promise.all(this.teamsToAdd.map(async team => {
-                // Check that we have not already fetched the users for the team
-                if (!team.users) {
-                    await this.fetchTeamUsers(team)
-                }
-            }))
+            // If it is the first team added to the selection and the selection doesnt already have a currency set
+            // -> set the selection currency = the team currency
+            if (this.selection.teams.length <= 0 && !this.selection.currency && !!teams[0].currency) {
+                this.selection.currency = teams[0].currency
+                this.updateSelection(this.selection)
+            }
+            // Add the team to the selection
             this.addTeamsToSelection({selection: this.selection, teams})
         },
         sortTeams(method, key) {

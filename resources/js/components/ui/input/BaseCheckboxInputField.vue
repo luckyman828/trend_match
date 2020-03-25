@@ -30,6 +30,10 @@ export default {
         align-items: center;
         height: auto;
         min-height: 40px;
+        &.small {
+            min-height: 32px;
+            width: auto;
+        }
     }
     .checkbox {
         margin-right: 8px;

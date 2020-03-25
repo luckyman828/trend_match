@@ -17,59 +17,53 @@
                         <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
                         v-model="productsFilteredBySearch"/>
 
-                        <BaseDropdown class="dropdown-parent left">
-                            <template v-slot:button="slotProps">
-                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                                    <span>Category </span>
-                                    <i class="far fa-chevron-down"></i>
-                                    <span v-if="selectedCategories.length > 0" class="bubble">
-                                        {{selectedCategories.length}}
-                                    </span>
-                                </div>
-                            </template>
-                            <template v-slot:body>
-                                <BaseSelectButtons header="Filter by category" submitOnChange="true" 
+                        <v-popover trigger="click">
+                            <button class="ghost">
+                                <span>Category </span>
+                                <i class="far fa-chevron-down"></i>
+                                <span v-if="selectedCategories.length > 0" class="circle primary xs">
+                                    <span>{{selectedCategories.length}}</span>
+                                </span>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
                                 :options="availableCategories" v-model="selectedCategories"/>
                             </template>
-                        </BaseDropdown>
+                        </v-popover>
 
-                        <BaseDropdown class="dropdown-parent left">
-                            <template v-slot:button="slotProps">
-                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                                    <span>Delivery</span>
-                                    <i class="far fa-chevron-down"></i>
-                                    <span v-if="selectedDeliveryDates.length > 0" class="bubble">
-                                        {{selectedDeliveryDates.length}}
-                                    </span>
-                                </div>
-                            </template>
-                            <template v-slot:body>
-                                <BaseSelectButtons header="Filter by delivery date" submitOnChange="true" 
+                        <v-popover trigger="click">
+                            <button class="ghost">
+                                <span>Delivery</span>
+                                <i class="far fa-chevron-down"></i>
+                                <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
+                                    <span>{{selectedDeliveryDates.length}}</span>
+                                </span>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons submitOnChange="true" 
                                 :options="availableDeliveryDates" :optionNameKey="'name'" 
                                 :optionValueKey="'value'" v-model="selectedDeliveryDates"/>
                             </template>
-                        </BaseDropdown>
+                        </v-popover>
 
-                        <BaseDropdown class="dropdown-parent left">
-                            <template v-slot:button="slotProps">
-                                <div class="dropdown-button dropdown-parent item-filter-button" @click="slotProps.toggle">
-                                    <span>Buyer group </span>
-                                    <i class="far fa-chevron-down"></i>
-                                    <span v-if="selectedBuyerGroups.length > 0" class="bubble">
-                                        {{selectedBuyerGroups.length}}
-                                    </span>
-                                </div>
-                            </template>
-                            <template v-slot:header>
-                                <span>Filter by buyer group</span>
-                            </template>
-                            <template v-slot:body>
-                                <BaseSelectButtons header="Filter by buyer group" submitOnChange="true" 
+                        <v-popover trigger="click">
+                            <button class="ghost">
+                                <span>Buyer group </span>
+                                <i class="far fa-chevron-down"></i>
+                                <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
+                                    <span>{{selectedBuyerGroups.length}}</span>
+                                </span>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons submitOnChange="true" 
                                 :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
                             </template>
-                        </BaseDropdown>
+                        </v-popover>
 
-                        <BaseSelectButton type="checkbox" :value="unreadOnly" v-model="unreadOnly" label="Show UNREAD only"/>
+                        <!-- Temp. disabled until the functionality gets hooked up -->
+                        <!-- <BaseCheckboxInputField class="small" v-model="unreadOnly">
+                            <span>Unread only</span>
+                        </BaseCheckboxInputField> -->
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>

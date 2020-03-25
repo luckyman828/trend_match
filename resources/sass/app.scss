@@ -799,6 +799,10 @@ i {
         }
     }
 }
+// POPOVER
+.popover {
+    min-width: 200px;
+}
 
 // V-TOOLTIP
 .tooltip {
@@ -1199,11 +1203,11 @@ form {
         outline: none;
     }
     &.small {
-        min-height: 30px;
+        min-height: 32px;
         padding: 4px 12px;
         font-size: 13px;
         &:not(.multiline) {
-            height: 30px;
+            height: 32px;
         }
     }
     &.check-button {

@@ -316,11 +316,14 @@ export default {
         ::v-deep {
             td, th {
                 &.title {
-                    min-width: 248px;
-                    max-width: 248px;
+                    min-width: 264px;
+                    max-width: 264px;
                     display: flex;
                     align-items: center;
                 }
+            }
+            tr:not(.table-top-bar) > .email {
+                flex: 2;
             }
         }
     }
