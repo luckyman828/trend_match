@@ -86,7 +86,7 @@
 
         <BaseSelectButtonsContextMenu ref="contextMenuAddUsers" header="Add User(s) to Selection" 
         v-model="usersToAdd" :options="availableUsers" :submitDisabled="usersToAdd.length < 1"
-        :submitOnChange="true" optionDescriptionKey="email" optionNameKey="name" :search="true"
+        :emitOnChange="true" optionDescriptionKey="email" optionNameKey="name" :search="true"
         :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
         @submit="onAddUsersToSelection();usersToAdd = []" @cancel="usersToAdd = []"/>
 

@@ -54,7 +54,7 @@
 
         <BaseSelectButtonsContextMenu ref="contextMenuAddTeams" header="Add Team(s) to Selection" 
         v-model="teamsToAdd" :options="availableTeams" :submitDisabled="teamsToAdd.length < 1"
-        :submitOnChange="true" optionNameKey="title" :search="true"
+        :emitOnChange="true" optionNameKey="title" :search="true"
         :submitText="`Add ${teamsToAdd.length} team${teamsToAdd.length > 1 ? 's' : ''}`"
         @submit="onAddTeamsToSelection(teamsToAdd);teamsToAdd = []" @cancel="teamsToAdd = []"/>
 
