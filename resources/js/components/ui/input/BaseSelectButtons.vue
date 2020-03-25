@@ -189,7 +189,8 @@ export default {
     }
     .select-buttons .wrapper {
         max-height: 300px;
-        overflow: hidden auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         .option-group {
             padding-top: 16px;
             margin-top: 8px;

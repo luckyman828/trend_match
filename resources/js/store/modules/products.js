@@ -89,15 +89,17 @@ export default {
             let uniqueDeliveryDates = []
             products.forEach(product => {
                 if (product.delivery_date) {
-                    const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
+                    // const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
+                    const found = uniqueDeliveryDates.find(x => x == product.delivery_date)
                     if (!found)
-                        uniqueDeliveryDates.push({
-                            name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                                month: 'long',
-                                year: 'numeric',
-                            }),
-                            value: product.delivery_date,
-                        })
+                        // uniqueDeliveryDates.push({
+                        //     name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        //         month: 'long',
+                        //         year: 'numeric',
+                        //     }),
+                        //     value: product.delivery_date,
+                        // })
+                        uniqueDeliveryDates.push(product.delivery_date)
                 }
             })
             return uniqueDeliveryDates
