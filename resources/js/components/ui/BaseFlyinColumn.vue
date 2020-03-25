@@ -25,8 +25,8 @@ export default {
             border-right: solid 2px $divider;
         }
         &.has-header {
-            display: grid;
-            grid-template-rows: 60px 1fr;
+            display: flex;
+            flex-direction: column;
         }
     }
     .header {
@@ -39,5 +39,6 @@ export default {
         padding: 16px 16px 64px;
         overflow-y: auto;
         height: 100%;
+        flex: 1;
     }
 </style>
