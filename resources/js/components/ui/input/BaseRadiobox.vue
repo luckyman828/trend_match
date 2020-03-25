@@ -1,6 +1,6 @@
 <template>
     <div class="radiobox">
-        <input type="radio" :value="value" :checked="shouldBeChecked" @change="updateInput">
+        <input ref="radiobox" type="radio" :value="value" :checked="shouldBeChecked" @change="updateInput">
         <span class="radiomark"></span>
     </div>
 </template>
@@ -31,6 +31,9 @@ export default {
     methods: {
         updateInput() {
             this.$emit('change', this.value)
+        },
+        check() {
+            this.$refs.radiobox.click()
         }
     }
 }

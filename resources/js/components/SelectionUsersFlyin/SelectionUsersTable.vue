@@ -55,13 +55,16 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
+        :hotkeys="['KeyC', 'KeyR']"
+        @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
+        @keybind-r="onRemoveUser(contextUser)">
             <!-- Manually added users  -->
             <template v-if="!contextUser.added_by_team">
                 <div class="item-group">
-                    <div class="item" @click.stop="showRoleContext(slotProps.mouseEvent, contextUser)">
+                    <div class="item" @click.stop="showRoleContext(contextMouseEvent, contextUser)">
                         <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                        <span>Change <u>R</u>ole</span>
+                        <span><u>C</u>hange role</span>
                     </div>
                 </div>
                 <div class="item-group">
@@ -81,42 +84,11 @@
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuAddUsers" class="context-add-users">
-            <template v-slot:header>
-                Add User(s) to Selection
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'checkbox'" :options="availableUsers"
-                    v-model="usersToAdd" :submitOnChange="true" :optionDescriptionKey="'email'"
-                    :optionNameKey="'name'" :search="true"/>
-                </div>
-                <!-- <div class="item-group">
-                    <div class="item-wrapper">
-                        <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
-                        @click="onAddUsersToSelection();usersToAdd = [];slotProps.hide()">
-                            <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
-                            </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
-                        <button class="invisible ghost-hover" style="margin-left: 8px;"
-                        @click="slotProps.hide(); usersToAdd = []">
-                            <span>Cancel</span>
-                        </button>
-                    </div>
-                </div> -->
-            </template>
-            <template v-slot:footer="slotProps">
-                <div class="item-wrapper">
-                    <button class="primary" :class="{disabled: usersToAdd.length < 1}" 
-                    @click="onAddUsersToSelection();usersToAdd = [];slotProps.hide()">
-                        <span>Add <template v-if="usersToAdd.length > 0">{{usersToAdd.length}} 
-                        </template>user<template v-if="usersToAdd.length > 1">s</template></span></button>
-                    <button class="invisible ghost-hover" style="margin-left: 8px;"
-                    @click="slotProps.hide(); usersToAdd = []">
-                        <span>Cancel</span>
-                    </button>
-                </div>
-            </template>
-        </BaseContextMenu>
+        <BaseSelectButtonsContextMenu ref="contextMenuAddUsers" header="Add User(s) to Selection" 
+        v-model="usersToAdd" :options="availableUsers" :submitDisabled="usersToAdd.length < 1"
+        :submitOnChange="true" optionDescriptionKey="email" optionNameKey="name" :search="true"
+        :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
+        @submit="onAddUsersToSelection();usersToAdd = []" @cancel="usersToAdd = []"/>
 
         <BaseContextMenu ref="contextMenuRole" class="context-role">
             <template v-slot:header>
@@ -153,6 +125,7 @@ export default {
         usersToAdd: [],
         userToEdit: null,
         contextUser: null,
+        contextMouseEvent: null,
     }},
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles']),
@@ -173,6 +146,7 @@ export default {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
+            this.contextMouseEvent = e
             this.contextUser = user
             contextMenu.show(e)
         },

@@ -114,7 +114,7 @@ export default {
             return array.filter(x => {
                 // Convert the value to match to a string so we can search it
                 const valueToMatch = x.toString().toLowerCase()
-                valueToMatch.search(searchString) >= 0
+                return valueToMatch.search(searchString) >= 0
             })
         }
     },

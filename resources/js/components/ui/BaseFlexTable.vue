@@ -1,7 +1,7 @@
 <template>
     <table class="flex-table" ref="table" :class="{'sticky': sticky}">
-        <div ref="stickyHeader" class="sticky-header">
-            <div ref="stickyBg" class="sticky-bg"></div>
+        <div ref="stickyHeader" class="sticky-header" :style="tableWidth">
+            <div ref="stickyBg" class="sticky-bg" :style="tableWidth"></div>
             <div ref="stickyInner" class="inner">
                 <div class="tabs" v-if="$slots.tabs">
                     <slot name="tabs"/>
@@ -32,7 +32,9 @@ export default {
         sticky: false,
         distToTop: null,
         scrollParent: null,
+        scrollTable: null,
         scrollHeaderInitialized: false,
+        tableWidth: null,
     }},
     props: [
         'stickyHeader'
@@ -81,34 +83,31 @@ export default {
                 // // Set width of sticky elements
                 if (this.sticky == false) {
                     stickyThis.style.top = `${desiredOffset + parentTopDist}px`
-                    stickyThis.style.width = `${this.$refs.table.scrollWidth}px`
                     this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
                     // Set the position and size of the scroll bg
-                    this.$refs.stickyBg.style.width = `${this.$refs.table.scrollWidth}px`
                     this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset}px`
                     this.$refs.stickyBg.style.top = `${parentTopDist}px`
+
+                    const tableWidth = this.scrollTable.getBoundingClientRect().width
+                    this.tableWidth = `width: ${tableWidth}px`
                 }
                 this.sticky = true
             } else if (this.sticky == true) {
                 this.sticky = false
             }
         },
-        resizeHeader(event) {
+        resizeHeader() {
             // Fix table header to screen
             // Initialize the header
             this.initScrollHeader()
             const desiredOffset = 16
             // Get scrollparent offset from top
             const scrollParent = this.scrollParent
-            // const parentTopDist = this.getYPos(scrollParent)
             const parentTopDist = scrollParent.getBoundingClientRect().top
             let scrollDist = scrollParent.scrollTop
             const threshold = this.distToTop - parentTopDist - desiredOffset
-            const tableWidth = this.$refs.table.getBoundingClientRect().width
-            // if (scrollDist > threshold) {
-                this.$refs.stickyHeader.style.width = `${tableWidth}px`
-                this.$refs.stickyBg.style.width = `${tableWidth}px`
-            // }
+            const tableWidth = this.scrollTable.getBoundingClientRect().width
+            this.tableWidth = `width: ${tableWidth}px`
         },
         initScrollHeader() {
             if (this.stickyHeader && !this.scrollHeaderInitialized) {
@@ -131,7 +130,9 @@ export default {
     mounted() {
         if (this.stickyHeader) {
             this.scrollParent = this.getScrollParent(this.$el, false)
+            this.scrollTable = this.$refs.table
             this.scrollParent.addEventListener('scroll', this.handleScroll)
+            this.resizeHeader()
         }
     }
 }

@@ -15,6 +15,7 @@
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader> -->
+                <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" @sort="onSort">Currency</BaseTableHeader>
                 <BaseTableHeader class="teams" :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
                 <BaseTableHeader class="users" :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader> -->
@@ -29,7 +30,8 @@
                         :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
-                        @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"/>
+                        @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"
+                        @showSelectionCurrencyContext="showSelectionCurrencyContext"/>
                     </template>
                     <!-- No selections  -->
                     <template v-else>
@@ -66,7 +68,14 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuSelection" class="context-selection">
+        <BaseContextMenu ref="contextMenuSelection" class="context-selection"
+        :hotkeys="['KeyG', 'KeyR', 'KeyM', 'KeyC', 'KeyS', 'KeyD']"
+        @keybind-g="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})"
+        @keybind-r="selectionToEdit = {selection: contextSelection, field: 'name'}"
+        @keybind-m="$emit('showSelectionUsersFlyin', contextSelection)"
+        @keybind-c="onNewSelection(contextSelection)"
+        @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
+        @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
             <div class="item-group">
                 <div class="item" @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
                     <div class="icon-wrapper">
@@ -550,6 +559,12 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseSelectButtonsContextMenu v-if="contextSelection" ref="contextCurrency" 
+        header="Change Selection Currency"
+        v-model="contextSelection.currency" unsetOption="Clear" :unsetValue="null"
+        type="radio" :options="availableCurrencies" :search="true"
+        @submit="updateSelection(contextSelection)"/>
         
     </div>
 </template>
@@ -630,12 +645,13 @@ export default {
         ]
     }},
     computed: {
+        ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('selections', {allSelections: ['selections']}),
     },
     methods: {
-        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 
+        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 'updateSelection', 
         'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings', 'updateSelectionSettings']),
         ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
@@ -659,6 +675,12 @@ export default {
             this.contextSelection = selection
             // Position the contextual menu
             contextMenu.show(e)
+        },
+        showSelectionCurrencyContext({selection, e}) {
+            this.contextSelection = selection
+            this.$nextTick(() => {
+                this.$refs.contextCurrency.show(e)
+            })
         },
         showParentLevelContext(e, option) {
             this.contextSelectionOption = option
@@ -919,6 +941,10 @@ export default {
                     }
                     &.teams {
                         margin-left: auto;
+                    }
+                    &.currency {
+                        min-width: 100px;
+                        max-width: 100px;
                     }
                     &.teams, &.users {
                         min-width: 80px;

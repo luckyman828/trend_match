@@ -41,16 +41,24 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuTeam" class="context-team"
+        :hotkeys="['KeyR']"
+        @keybind-r="onRemoveTeam(contextTeam)">
             <div class="item-group">
-                <div class="item" @click="onRemoveTeam(slotProps.item); slotProps.hide()">
+                <div class="item" @click="onRemoveTeam(contextTeam)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>R</u>emove Team
                 </div>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuAddTeams" class="context-add-teams">
+        <BaseSelectButtonsContextMenu ref="contextMenuAddTeams" header="Add Team(s) to Selection" 
+        v-model="teamsToAdd" :options="availableTeams" :submitDisabled="teamsToAdd.length < 1"
+        :submitOnChange="true" optionNameKey="title" :search="true"
+        :submitText="`Add ${teamsToAdd.length} team${teamsToAdd.length > 1 ? 's' : ''}`"
+        @submit="onAddTeamsToSelection(teamsToAdd);teamsToAdd = []" @cancel="teamsToAdd = []"/>
+
+        <!-- <BaseContextMenu ref="contextMenuAddTeams" class="context-add-teams">
             <template v-slot:header>
                 Add Team(s) to Selection
             </template>
@@ -70,7 +78,7 @@
                     </div>
                 </div>
             </template>
-        </BaseContextMenu>
+        </BaseContextMenu> -->
     </div>
 </template>
 
@@ -91,6 +99,7 @@ export default {
         sortAsc: true,
         selected: [],
         teamsToAdd: [],
+        contextTeam: null,
     }},
     computed: {
         ...mapGetters('teams', ['teams']),
@@ -103,11 +112,11 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection']),
+        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection']),
         ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
-            contextMenu.item = team
+            this.contextTeam = team
             contextMenu.show(e)
         },
         onAddTeam(e) {
@@ -115,14 +124,13 @@ export default {
             contextMenu.show(e)
         },
         async onAddTeamsToSelection(teams) {
-            // Fetch the users for the team, then add it to the selection
-            // Use of promise and map to fetch users for all teams in parallel
-            await Promise.all(this.teamsToAdd.map(async team => {
-                // Check that we have not already fetched the users for the team
-                if (!team.users) {
-                    await this.fetchTeamUsers(team)
-                }
-            }))
+            // If it is the first team added to the selection and the selection doesnt already have a currency set
+            // -> set the selection currency = the team currency
+            if (this.selection.teams.length <= 0 && !this.selection.currency && !!teams[0].currency) {
+                this.selection.currency = teams[0].currency
+                this.updateSelection(this.selection)
+            }
+            // Add the team to the selection
             this.addTeamsToSelection({selection: this.selection, teams})
         },
         sortTeams(method, key) {
@@ -139,6 +147,7 @@ export default {
             this.sortArray(this.selection.teams, this.sortAsc, this.sortKey)
         },
         onRemoveTeam(team) {
+            console.log('on remove team')
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed team
             this.removeTeamsFromSelection({selection: this.selection, teams: [team]})

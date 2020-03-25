@@ -5,10 +5,10 @@
         </template>
         <template v-slot>
             <div class="item-group">
-                <BaseSelectButtons v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
-                :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey"
+                <BaseSelectButtons ref="selectButtons" v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
+                :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey" :unsetOption="unsetOption" :unsetValue="unsetValue"
                 :multipleOptionArrays="multipleOptionArrays" :optionGroupNameKey="optionGroupNameKey" :optionGroupOptionsKey="optionGroupOptionsKey"
-                :optionNameKey="optionNameKey" :search="search" @submit="$event => localValue = $event" @unset="$emit('unset')"/>
+                :optionNameKey="optionNameKey" :search="search" @submit="submit" @unset="$emit('unset')"/>
             </div>
         </template>
         <template v-slot:footer="slotProps">
@@ -41,7 +41,12 @@ export default {
         'multipleOptionArrays',
         'optionGroupNameKey',
         'optionGroupOptionsKey',
+        'unsetOption',
+        'unsetValue'
     ],
+    // data: function() {return {
+    //     currentValue
+    // }},
     computed: {
         localValue: {
             get() { return this.value },
@@ -56,8 +61,9 @@ export default {
             this.$refs.contextMenu.hide()
         },
         submit() {
-            this.$emit('submit', this.localValue)
-            // this.$emit('input', this.localValue)
+            this.$emit('input', this.$refs.selectButtons.selection)
+            this.$emit('submit', this.$refs.selectButtons.selection)
+            this.hide()
         }
     }
 }
@@ -77,6 +83,9 @@ export default {
                 height: 100%;
             }
         }
+    }
+    .select-buttons .wrapper {
+        max-height: 340px;
     }
 }
 </style>

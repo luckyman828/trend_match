@@ -24,6 +24,12 @@
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td> -->
+            <td class="currency">
+                <button class="ghost editable sm" @click="$event => $emit('showSelectionCurrencyContext', {selection, e: $event})" v-if="authUserWorkspaceRole == 'Admin'">
+                    <span>{{selection.currency || 'Set currency'}}</span>
+                </button>
+                <span v-else>{{selection.currency || 'No currency set'}}</span>
+            </td>
             <td class="teams">
                 <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-users"></i><span>{{selection.team_count}}</span>
@@ -50,7 +56,7 @@
             <selectionsTableRow v-for="selectionChild in selection.children" :parent="selection" :selection="selectionChild" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selectionChild.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
-            @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" 
+            @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" @showSelectionCurrencyContext="$emit('showSelectionCurrencyContext', $event)" 
             @showSettingsContext="($event, selection) => {$emit('showSettingsContext', $event, selection)}"/>
         </template>
     </div>

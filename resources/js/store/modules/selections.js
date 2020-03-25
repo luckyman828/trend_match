@@ -426,8 +426,10 @@ export default {
             state.selections.splice(index, 1)
         },
         updateSelection(state, selection) {
-            // const oldFile = state.files.find(x => x.id == file.id)
-            // Object.assign(oldFile, file)
+            const stateSelection = state.selections.find(x => x.id == selection.id)
+            if (stateSelection) {
+                Object.assign(stateSelection, selection)
+            }
         },
         setSelectionSettings(state, { selection, settings }) {
             Vue.set(selection, 'settings', settings)

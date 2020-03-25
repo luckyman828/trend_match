@@ -67,7 +67,9 @@ export default {
             })
                 .then(response => {
                     // Set the given ID to the comment if we were posting a new comment
-                    if (!comment.id) comment.id = response.data.id
+                    // if (!comment.id) comment.id = response.data.id
+                    if (!comment.id) Object.assign(comment, response.data)
+                    Vue.set(comment, 'role', 'Approver')
                 })
                 .catch(err => {
                     // On error, set error on the comment
