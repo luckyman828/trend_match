@@ -85,11 +85,11 @@
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader :sortKey="['focus', 'ins']" :currentSortKey="sortKey"
+                <BaseTableHeader :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'outs'" :currentSortKey="sortKey"
+                <BaseTableHeader :sortKey="'allOuts'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'nds'" :currentSortKey="sortKey"
+                <BaseTableHeader :sortKey="'allNds'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">ND</BaseTableHeader>
                 <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Requests</BaseTableHeader>

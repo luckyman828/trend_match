@@ -173,6 +173,22 @@ export default {
             if (selection.your_role == 'Owner') {
                 Vue.set(product, 'action', action)
                 Vue.set(product, 'action_author', user)
+                // Check if the action already exists in the products actions array
+                const existingAction = product.actions.find(
+                    x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
+                )
+                if (!existingAction) {
+                    product.actions.push({
+                        action: action,
+                        product_id: product.id,
+                        selection: selection,
+                        selection_id: selection.id,
+                        user_id: user.id,
+                        user: user,
+                    })
+                } else {
+                    existingAction.action = action
+                }
             }
         },
         insertOrUpdateActions(state, { productActions, selection, user }) {
