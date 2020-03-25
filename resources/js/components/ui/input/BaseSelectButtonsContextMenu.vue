@@ -5,7 +5,7 @@
         </template>
         <template v-slot>
             <div class="item-group">
-                <BaseSelectButtons v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
+                <BaseSelectButtons ref="selectButtons" v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
                 :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey"
                 :multipleOptionArrays="multipleOptionArrays" :optionGroupNameKey="optionGroupNameKey" :optionGroupOptionsKey="optionGroupOptionsKey"
                 :optionNameKey="optionNameKey" :search="search" @submit="$event => localValue = $event" @unset="$emit('unset')"/>
@@ -42,6 +42,9 @@ export default {
         'optionGroupNameKey',
         'optionGroupOptionsKey',
     ],
+    // data: function() {return {
+    //     currentValue
+    // }},
     computed: {
         localValue: {
             get() { return this.value },
@@ -56,8 +59,8 @@ export default {
             this.$refs.contextMenu.hide()
         },
         submit() {
-            this.$emit('submit', this.localValue)
-            // this.$emit('input', this.localValue)
+            this.$emit('input', this.$refs.selectButtons.selection)
+            this.$emit('submit', this.$refs.selectButtons.selection)
         }
     }
 }
