@@ -117,6 +117,7 @@ export default {
         font-size: 16px;
         margin-right: 8px;
         width: 20px;
+        text-align: center;
     }
   }
   .bottom-drawer {

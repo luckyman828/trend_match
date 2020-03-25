@@ -50,7 +50,13 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuAddTeams" class="context-add-teams">
+        <BaseSelectButtonsContextMenu ref="contextMenuAddTeams" header="Add Team(s) to Selection" 
+        v-model="teamsToAdd" :options="availableTeams" :submitDisabled="teamsToAdd.length < 1"
+        :submitOnChange="true" optionNameKey="title" :search="true"
+        :submitText="`Add ${teamsToAdd.length} team${teamsToAdd.length > 1 ? 's' : ''}`"
+        @submit="onAddTeamsToSelection(teamsToAdd);teamsToAdd = []" @cancel="teamsToAdd = []"/>
+
+        <!-- <BaseContextMenu ref="contextMenuAddTeams" class="context-add-teams">
             <template v-slot:header>
                 Add Team(s) to Selection
             </template>
@@ -70,7 +76,7 @@
                     </div>
                 </div>
             </template>
-        </BaseContextMenu>
+        </BaseContextMenu> -->
     </div>
 </template>
 

@@ -78,5 +78,8 @@ export default {
             }
         }
     }
+    .select-buttons .wrapper {
+        max-height: 340px;
+    }
 }
 </style>
