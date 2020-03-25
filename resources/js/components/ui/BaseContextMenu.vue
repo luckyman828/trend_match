@@ -22,8 +22,13 @@
 export default {
     name: 'contextMenu',
     props: [
-        'columns'
+        'columns',
     ],
+    props: {
+        hotkeys: {
+            default: () => []
+        }
+    },
     data: function() {
         return {
             visible: false,
@@ -121,13 +126,14 @@ export default {
             document.body.removeEventListener('click', this.clickHandler)
         },
         hotkeyHandler(event) {
-            // Only listen if the contextMenu is visible
+            // Only listen if the contextMenu is visible & we are not typing in an input field
             if(this.visible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 const key = event.code
-                if (key != 'Tab' && key != 'ShiftKey') {
+                // Check if we hit a hotkey
+                if (this.hotkeys.includes(key) || key == 'Escape') {
+                    this.$emit('keybind-'+event.key,event)
                     this.hide()
                     // Get the key name and emit it
-                    this.$emit('keybind-'+event.key,event)
                 }
             }
         },

@@ -43,55 +43,61 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
+        :hotkeys="['KeyC', 'KeyR', 'KeyP', 'KeyD']"
+        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
+        @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
+        @keybind-p="contextUser.id == authUser.id && onSetUserPassword(contextMouseEvent, contextUser)"
+        @keybind-d="onDeleteUser(contextUser)"
+        >
             <!-- <div class="item-group"> -->
 
-                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only change own name. Only admins can change the name of others.'"
-                @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
+                @click="$refs['userRow-'+contextUser.id][0].editName = true">
                     <span><u>R</u>ename User</span>
                 </BaseContextMenuItem> -->
 
-                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only change own e-mail. Only admins can change the e-mail of others.'"
-                @click="$refs['userRow-'+slotProps.item.id][0].editEmail = true">
+                @click="$refs['userRow-'+contextUser.id][0].editEmail = true">
                     <span><u>E</u>dit User Email</span>
                 </BaseContextMenuItem> -->
             <!-- </div> -->
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only set own currency. Only admins can change currency of others.'"
-                @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
+                @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
                     <span><u>C</u>hange Currency</span>
                 </BaseContextMenuItem>
 
                 <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
                 v-tooltip="authUserWorkspaceRole != 'Admin'
                 && 'Only admins can change workspace role'"
-                @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
+                @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
                     <span>Change Workspace <u>R</u>ole</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-lock" :disabled="slotProps.item.id != authUser.id" 
-                v-tooltip="slotProps.item.id != authUser.id 
+                <BaseContextMenuItem iconClass="far fa-lock" :disabled="contextUser.id != authUser.id" 
+                v-tooltip="contextUser.id != authUser.id 
                 && 'Can only set password of self'"
-                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
+                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
                     <span>Change <u>P</u>assword</span>
                 </BaseContextMenuItem>
-                <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && slotProps.item.id != authUser.id 
+                <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only set password of self. Admins can set the password of others'"
-                @click.stop="onSetUserPassword(slotProps.mouseEvent, slotProps.item)">
+                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
                     <span>Set <u>P</u>assword</span>
                 </BaseContextMenuItem> -->
             </div>
             <div class="item-group">
                 <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
-                @click="onDeleteUser(slotProps.item)">
+                @click="onDeleteUser(contextUser)">
                     <span><u>D</u>elete User from Workspace</span>
                 </BaseContextMenuItem>
             </div>
@@ -168,7 +174,7 @@
                 <div class="item-group">
                     <div class="item-wrapper">
                         <button class="primary" :class="{disabled: passwordSubmitDisabled}" style="margin-right: 8px;"
-                        @click="setUserPassword(slotProps.item);slotProps.hide()">
+                        @click="setUserPassword(contextUser);slotProps.hide()">
                             <span>Save</span></button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                     </div>
@@ -207,6 +213,8 @@ export default {
         newUserPassword: '',
         oldUserPassword: '',
         selectedUsers: [],
+        contextUser: null,
+        contextMouseEvent: null,
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
@@ -272,11 +280,11 @@ export default {
         },
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
-            contextMenu.item = user
+            this.contextUser = user
+            this.contextMouseEvent = e
             contextMenu.show(e)
         },
         onDeleteUser(user) {
-            console.log('on delete user')
             if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
             }

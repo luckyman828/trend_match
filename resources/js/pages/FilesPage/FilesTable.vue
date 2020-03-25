@@ -149,6 +149,7 @@
         </BaseModal>
 
         <BaseContextMenu ref="contextMenuFolder" class="context-folder" v-slot
+        :hotkeys="['KeyO', 'KeyR', 'KeyA', 'KeyM', 'KeyD']"
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'folder', 'title')"
         @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"

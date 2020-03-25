@@ -68,7 +68,14 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuSelection" class="context-selection">
+        <BaseContextMenu ref="contextMenuSelection" class="context-selection"
+        :hotkeys="['KeyG', 'KeyR', 'KeyM', 'KeyC', 'KeyS', 'KeyD']"
+        @keybind-g="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})"
+        @keybind-r="selectionToEdit = {selection: contextSelection, field: 'name'}"
+        @keybind-m="$emit('showSelectionUsersFlyin', contextSelection)"
+        @keybind-c="onNewSelection(contextSelection)"
+        @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
+        @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
             <div class="item-group">
                 <div class="item" @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
                     <div class="icon-wrapper">

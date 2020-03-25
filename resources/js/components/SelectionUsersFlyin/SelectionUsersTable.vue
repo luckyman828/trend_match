@@ -55,13 +55,16 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
+        :hotkeys="['KeyC', 'KeyR']"
+        @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
+        @keybind-r="onRemoveUser(contextUser)">
             <!-- Manually added users  -->
             <template v-if="!contextUser.added_by_team">
                 <div class="item-group">
-                    <div class="item" @click.stop="showRoleContext(slotProps.mouseEvent, contextUser)">
+                    <div class="item" @click.stop="showRoleContext(contextMouseEvent, contextUser)">
                         <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                        <span>Change <u>R</u>ole</span>
+                        <span><u>C</u>hange role</span>
                     </div>
                 </div>
                 <div class="item-group">
@@ -122,6 +125,7 @@ export default {
         usersToAdd: [],
         userToEdit: null,
         contextUser: null,
+        contextMouseEvent: null,
     }},
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles']),
@@ -142,6 +146,7 @@ export default {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
+            this.contextMouseEvent = e
             this.contextUser = user
             contextMenu.show(e)
         },

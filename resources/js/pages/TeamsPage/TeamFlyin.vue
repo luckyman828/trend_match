@@ -37,6 +37,7 @@
         </BaseFlexTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
+        :hotkeys="['KeyT', 'KeyD']"
         @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
         @keybind-d="onRemoveUserFromTeam(contextUser)">
         <!-- <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"

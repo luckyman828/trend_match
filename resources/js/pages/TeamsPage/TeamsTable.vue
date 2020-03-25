@@ -59,9 +59,16 @@
             </template>
         </BaseFlyin>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps"
+        :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyC', 'KeyD']"
+        @keybind-v="showSingleTeam(contextTeam)"
+        @keybind-e="showSingleTeam(contextTeam)"
+        @keybind-r="$refs['teamRow-'+contextTeam.id][0].editTitle = true"
+        @keybind-c="onEditTeamCurrency(contextMouseEvent, contextTeam)"
+        @keybind-d="onDeleteTeam(contextTeam)"
+        >
             <div class="item-group">
-                <div class="item" @click="showSingleTeam(slotProps.item); slotProps.hide()">
+                <div class="item" @click="showSingleTeam(contextTeam)">
                     <div class="icon-wrapper">
                         <i class="far fa-users"></i>
                     </div>
@@ -72,13 +79,13 @@
                 <BaseContextMenuItem :iconClass="'far fa-pen'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename teams'"
-                @click="$refs['teamRow-'+slotProps.item.id][0].editTitle = true">
+                @click="$refs['teamRow-'+contextTeam.id][0].editTitle = true">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
                 <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
-                @click.stop="onEditTeamCurrency(slotProps.mouseEvent, slotProps.item)">
+                @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
                     <span><u>C</u>hange currency</span>
                 </BaseContextMenuItem>
             </div>
@@ -86,7 +93,7 @@
                 <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
-                @click="onDeleteTeam(slotProps.item)">
+                @click="onDeleteTeam(contextTeam)">
                     <span><u>D</u>elete team</span>
                 </BaseContextMenuItem>
             </div>
@@ -154,6 +161,8 @@ export default {
         teamsFilteredBySearch: [],
         selectedTeams: [],
         teamFlyInVisible: false,
+        contextTeam: null,
+        contextMouseEvent: null,
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
@@ -243,7 +252,8 @@ export default {
         },
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
-            contextMenu.item = team
+            this.contextTeam = team
+            this.contextMouseEvent = e
             contextMenu.show(e)
         },
         onDeleteTeam(team) {

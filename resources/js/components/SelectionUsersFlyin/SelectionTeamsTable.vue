@@ -41,9 +41,11 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
+        <BaseContextMenu ref="contextMenuTeam" class="context-team"
+        :hotkeys="['KeyR']"
+        @keybind-r="onRemoveTeam(contextTeam)">
             <div class="item-group">
-                <div class="item" @click="onRemoveTeam(slotProps.item); slotProps.hide()">
+                <div class="item" @click="onRemoveTeam(contextTeam)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <u>R</u>emove Team
                 </div>
@@ -97,6 +99,7 @@ export default {
         sortAsc: true,
         selected: [],
         teamsToAdd: [],
+        contextTeam: null,
     }},
     computed: {
         ...mapGetters('teams', ['teams']),
@@ -113,7 +116,7 @@ export default {
         ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
-            contextMenu.item = team
+            this.contextTeam = team
             contextMenu.show(e)
         },
         onAddTeam(e) {
@@ -144,6 +147,7 @@ export default {
             this.sortArray(this.selection.teams, this.sortAsc, this.sortKey)
         },
         onRemoveTeam(team) {
+            console.log('on remove team')
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed team
             this.removeTeamsFromSelection({selection: this.selection, teams: [team]})

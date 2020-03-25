@@ -5,14 +5,14 @@
 
         <div class="search-wrapper" v-if="search">
             <!-- <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/> -->
-            <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" 
+            <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" @keydown.enter.native="onSelectOption"
             :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"/>
         </div>
         <div class="wrapper">
             <span class="header" v-html="header" v-if="header"></span>
 
             <div class="option unset-option" v-if="unsetOption" @click="onUnset">
-                <label>
+                <label tabindex="0">
                     <i class="far fa-trash-alt"></i>
                     <div class="label">
                         {{unsetOption}}
@@ -28,7 +28,7 @@
                     {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
                     : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
-                        <label>
+                        <label tabindex="0">
                             <BaseRadiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
                             <BaseCheckbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
 
@@ -55,10 +55,10 @@
                 {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
                 : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
-                    <label>
-                        <BaseRadiobox v-if="type == 'radio'" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
+                    <label tabindex="0">
+                        <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
                         v-model="selection" @change="change"/>
-                        <BaseCheckbox v-else :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
+                        <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
                         :modelValue="selection" v-model="selection" @change="change"/>
 
                         <div class="label">
@@ -150,6 +150,9 @@ export default {
         },
         onUnset() {
             this.$emit('unset')
+        },
+        onSelectOption() {
+            this.$refs.selectBox[0].check()
         }
     },
     mounted() {
