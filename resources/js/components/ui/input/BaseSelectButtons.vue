@@ -5,14 +5,15 @@
 
         <div class="search-wrapper" v-if="search">
             <!-- <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/> -->
-            <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" @keydown.enter.native="onSelectOption"
+            <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" @keydown.enter.exact.native="onSelectOption" 
+            @keydown.enter.ctrl.native="submit"
             :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"/>
         </div>
         <div class="wrapper">
             <span class="header" v-html="header" v-if="header"></span>
 
-            <div class="option unset-option" v-if="unsetOption" @click="onUnset">
-                <label tabindex="0">
+            <div class="option unset-option" v-if="unsetOption && optionsFilteredBySearch.length == options.length" @click="onUnset">
+                <label tabindex="0" @keydown.enter.exact="onUnset" @keydown.enter.ctrl="submit">
                     <i class="far fa-trash-alt"></i>
                     <div class="label">
                         {{unsetOption}}
@@ -28,9 +29,9 @@
                     {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
                     : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
-                        <label tabindex="0">
-                            <BaseRadiobox v-if="type == 'radio'" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
-                            <BaseCheckbox v-else :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                        <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
+                            <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                            <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
 
                             <div class="label">
                                 <template v-if="optionNameKey">
@@ -55,7 +56,7 @@
                 {'active': type == 'radio' ? (option[optionValueKey] ? option[optionValueKey] == selection : option == selection) 
                 : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
-                    <label tabindex="0">
+                    <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
                         <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
                         v-model="selection" @change="change"/>
                         <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? optionValueKey == 'index' ? index : option[optionValueKey] : option" 
@@ -98,6 +99,7 @@ export default {
         'optionGroupNameKey',
         'optionGroupOptionsKey',
         'unsetOption',
+        'unsetValue',
         'value',
     ],
     data: function () { return {
@@ -149,10 +151,15 @@ export default {
             }
         },
         onUnset() {
+            if (typeof this.unsetValue != 'undefined') this.selection = this.unsetValue
             this.$emit('unset')
         },
         onSelectOption() {
             this.$refs.selectBox[0].check()
+        },
+        onEnter(index) {
+            const selectbox = this.$refs.selectBox[index]
+            selectbox.check()
         }
     },
     mounted() {
@@ -281,7 +288,9 @@ export default {
     }
     .unset-option {
         i {
-            margin-right: 8px;
+            width: 22px;
+            margin-right: 10px;
+            text-align: center;
         }
     }
 

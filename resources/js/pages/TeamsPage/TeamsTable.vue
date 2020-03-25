@@ -99,29 +99,10 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuTeamCurrency" class="context-currency">
-            <template v-slot:header>
-                Change Team Currency
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseRadioButtons ref="teamCurrencySelector" :options="availableCurrencies" 
-                    :currentOptionId="originalTeam.currency" :search="true" v-model="teamToEdit.currency" :submitOnChange="true"/>
-                </div>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <button class="primary" :disabled="teamToEdit.currency == originalTeam.currency"
-                        @click="insertOrUpdateTeam(teamToEdit);slotProps.hide()">
-                            <span>Save</span>
-                        </button>
-                        <button class="invisible invisible ghost" style="margin-left: 8px;"
-                        @click="slotProps.hide()">
-                            <span>Cancel</span>
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </BaseContextMenu>
+        <BaseSelectButtonsContextMenu ref="contextMenuTeamCurrency" v-if="teamToEdit"
+        header="Change Team Currency" v-model="teamToEdit.currency" type="radio"
+        :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
+        @submit="insertOrUpdateTeam(teamToEdit)"/>
 
     </div>
 </template>
@@ -157,7 +138,6 @@ export default {
             id: '',
             title: ''
         },
-        originalTeam: null,
         teamsFilteredBySearch: [],
         selectedTeams: [],
         teamFlyInVisible: false,
@@ -193,15 +173,12 @@ export default {
                 this.setCurrentTeam(this.prevTeam)
         },
         onEditTeamCurrency(mouseEvent, team) {
-            const contextMenu = this.$refs.contextMenuTeamCurrency
-            contextMenu.item = team;
             this.teamToEdit = team;
-            this.originalTeam = JSON.parse(JSON.stringify(team));
-            contextMenu.show(mouseEvent)
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
-                // Set focus to the search field
-                this.$refs.teamCurrencySelector.focusSearch()
+                const contextMenu = this.$refs.contextMenuTeamCurrency
+                contextMenu.item = team;
+                contextMenu.show(mouseEvent)
             })
         },
         removeUnsavedTeam() {

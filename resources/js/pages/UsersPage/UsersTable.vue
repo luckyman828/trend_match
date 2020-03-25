@@ -103,29 +103,10 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency">
-            <template v-slot:header>
-                Change User Currency
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseRadioButtons ref="userCurrencySelector" :options="availableCurrencies" 
-                    :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
-                </div>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <button class="primary" :disabled="userToEdit.currency == originalUser.currency"
-                        @click="updateWorkspaceUser(userToEdit);slotProps.hide()">
-                            <span>Save</span>
-                        </button>
-                        <button class="invisible invisible ghost" style="margin-left: 8px;"
-                        @click="slotProps.hide()">
-                            <span>Cancel</span>
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </BaseContextMenu>
+        <BaseSelectButtonsContextMenu ref="contextMenuUserCurrency" v-if="userToEdit"
+        header="Change User Currency" v-model="userToEdit.currency" type="radio"
+        :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
+        @submit="updateWorkspaceUser(userToEdit)"/>
 
         <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role">
             <template v-slot:header>
@@ -258,13 +239,11 @@ export default {
         onEditUserCurrency(mouseEvent, user) {
             this.userToEdit = JSON.parse(JSON.stringify(user));
             this.originalUser = user;
-            const contextMenu = this.$refs.contextMenuUserCurrency
-            contextMenu.item = user;
-            contextMenu.show(mouseEvent)
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
-                // Set focus to the search field
-                this.$refs.userCurrencySelector.focusSearch()
+                const contextMenu = this.$refs.contextMenuUserCurrency
+                contextMenu.item = user;
+                contextMenu.show(mouseEvent)
             })
         },
         onEditUserRole(mouseEvent, user) {

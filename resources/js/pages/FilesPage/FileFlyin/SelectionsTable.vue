@@ -562,32 +562,9 @@
 
         <BaseSelectButtonsContextMenu v-if="contextSelection" ref="contextCurrency" 
         header="Change Selection Currency"
-        v-model="contextSelection.currency"
+        v-model="contextSelection.currency" unsetOption="Clear" :unsetValue="null"
         type="radio" :options="availableCurrencies" :search="true"
         @submit="updateSelection(contextSelection)"/>
-        <!-- <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency">
-            <template v-slot:header>
-                Change User Currency
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseRadioButtons ref="userCurrencySelector" :options="availableCurrencies" 
-                    :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
-                </div>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <button class="primary" :disabled="userToEdit.currency == originalUser.currency"
-                        @click="updateWorkspaceUser(userToEdit);slotProps.hide()">
-                            <span>Save</span>
-                        </button>
-                        <button class="invisible invisible ghost" style="margin-left: 8px;"
-                        @click="slotProps.hide()">
-                            <span>Cancel</span>
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </BaseContextMenu> -->
         
     </div>
 </template>
