@@ -41,8 +41,7 @@
                             </button>
                             <template slot="popover">
                                 <BaseSelectButtons submitOnChange="true" 
-                                :options="availableDeliveryDates" :optionNameKey="'name'" 
-                                :optionValueKey="'value'" v-model="selectedDeliveryDates"/>
+                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
                             </template>
                         </v-popover>
 
