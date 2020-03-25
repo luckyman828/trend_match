@@ -1,6 +1,7 @@
 <template>
     <div class="checkbox" :class="{'disabled': disabled}">
-        <input ref="checkbox" type="checkbox" :value="value" :checked="shouldBeChecked" :disabled="disabled"
+        <input ref="checkbox" type="checkbox" tabindex="-1" :value="value" 
+        :checked="shouldBeChecked" :disabled="disabled"
         @change="updateInput">
         <span class="checkmark solid"><i class="fas fa-check"></i></span>
     </div>

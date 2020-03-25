@@ -95,6 +95,7 @@ export default {
         'optionDescriptionKey',
         'search',
         'submitOnChange',
+        'emitOnChange',
         'multipleOptionArrays',
         'optionGroupNameKey',
         'optionGroupOptionsKey',
@@ -137,13 +138,16 @@ export default {
         },
         change() {
             this.$emit('change', this.selection)
+            if(this.emitOnChange) {
+                this.$emit('input', this.selection)
+            }
             if (this.submitOnChange) {
                 this.submit()
             }
         },
         clear () {
             this.selection = []
-            this.$emit('input', this.selected)
+            this.$emit('input', this.selection)
         },
         focusSearch() {
             if (this.search) {

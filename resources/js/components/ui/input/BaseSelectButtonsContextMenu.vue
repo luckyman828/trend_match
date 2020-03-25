@@ -7,6 +7,7 @@
             <div class="item-group">
                 <BaseSelectButtons ref="selectButtons" v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
                 :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey" :unsetOption="unsetOption" :unsetValue="unsetValue"
+                :emitOnChange="emitOnChange"
                 :multipleOptionArrays="multipleOptionArrays" :optionGroupNameKey="optionGroupNameKey" :optionGroupOptionsKey="optionGroupOptionsKey"
                 :optionNameKey="optionNameKey" :search="search" @submit="submit" @unset="$emit('unset')"/>
             </div>
@@ -42,7 +43,8 @@ export default {
         'optionGroupNameKey',
         'optionGroupOptionsKey',
         'unsetOption',
-        'unsetValue'
+        'unsetValue',
+        'emitOnChange',
     ],
     // data: function() {return {
     //     currentValue
