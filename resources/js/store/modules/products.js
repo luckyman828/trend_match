@@ -383,6 +383,7 @@ export default {
                 })
         },
         procesSelectionProducts({ commit, state, rootGetters }) {
+            console.log('process products')
             const authUser = rootGetters['auth/authUser']
             const products = state.products
             products.map(product => {
@@ -409,10 +410,11 @@ export default {
                     },
                 })
 
-                // Actions
+                // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
+                        console.log('getting ins')
                         return product.feedbacks.filter(x => x.action == 'In')
                     },
                 })
@@ -473,6 +475,55 @@ export default {
                         return product.nds.length + product.alignmentNds.length
                     },
                 })
+
+                // Hard Set Actions
+                // Feedback Actions
+                // Vue.set(
+                //     product,
+                //     'ins',
+                //     product.feedbacks.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'outs',
+                //     product.feedbacks.filter(x => x.action == 'Outs')
+                // )
+                // Vue.set(
+                //     product,
+                //     'focus',
+                //     product.feedbacks.filter(x => x.action == 'Focus')
+                // )
+                // Vue.set(
+                //     product,
+                //     'nds',
+                //     product.feedbacks.filter(x => x.action == 'None')
+                // )
+                // // Alignment Actions
+                // Vue.set(
+                //     product,
+                //     'alignmentIns',
+                //     product.actions.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentOuts',
+                //     product.actions.filter(x => x.action == 'Outs')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentFocus',
+                //     product.actions.filter(x => x.action == 'Focus')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentNds',
+                //     product.actions.filter(x => x.action == 'None')
+                // )
+                // // All Actions
+                // Vue.set(product, 'allIns', product.ins.length + product.alignmentIns.length)
+                // Vue.set(product, 'allOuts', product.outs.length + product.alignmentOuts.length)
+                // Vue.set(product, 'allFocus', product.focus.length + product.alignmentFocus.length)
+                // Vue.set(product, 'allNds', product.nds.length + product.alignmentNds.length)
 
                 // Comments / Requests
                 Object.defineProperty(product, 'hasAuthUserRequest', {

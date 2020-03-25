@@ -200,15 +200,12 @@ export default {
             this.setSingleVisisble(true)
         },
         onSort(sortAsc, sortKey) {
-            console.log('sort')
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
     },
     created () {
-        // Initially sort the products
-        this.onSort(true, this.sortKey)
 
         // Setup event broadcast listening
 
