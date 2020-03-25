@@ -21,10 +21,8 @@
 <script>
 export default {
     name: 'contextMenu',
-    props: [
-        'columns',
-    ],
     props: {
+        columns: {},
         hotkeys: {
             default: () => []
         }

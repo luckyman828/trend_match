@@ -452,6 +452,27 @@ export default {
                         return product.actions.filter(x => x.action == 'None')
                     },
                 })
+                // All Actions
+                Object.defineProperty(product, 'allIns', {
+                    get: function() {
+                        return product.ins.length + product.alignmentIns.length
+                    },
+                })
+                Object.defineProperty(product, 'allOuts', {
+                    get: function() {
+                        return product.outs.length + product.alignmentOuts.length
+                    },
+                })
+                Object.defineProperty(product, 'allFocus', {
+                    get: function() {
+                        return product.focus.length + product.alignmentFocus.length
+                    },
+                })
+                Object.defineProperty(product, 'allNds', {
+                    get: function() {
+                        return product.nds.length + product.alignmentNds.length
+                    },
+                })
 
                 // Comments / Requests
                 Object.defineProperty(product, 'hasAuthUserRequest', {
