@@ -804,13 +804,8 @@ i {
 .tooltip {
     // min-width: 200px;
     max-width: 300px;
-    border-radius: 4px;
-    border: 1px solid $divider;
     font-size: 12px;
 
-    background-color: white;
-    // color: white;
-    box-shadow: 0 10px 10px rgba($dark, 20%);
     z-index: 99999999;
     // strong,
     // span,
@@ -819,6 +814,12 @@ i {
     // u {
     //     color: white;
     // }
+    .wrapper {
+        border-radius: 4px;
+        border: 1px solid $divider;
+        background-color: white;
+        box-shadow: 0 10px 10px rgba($dark, 20%);
+    }
 
     &-inner:not(.popover-inner) {
         padding: 8px 12px;
@@ -840,12 +841,12 @@ i {
     }
 
     &[x-placement^='top'] {
-        margin-bottom: 5px;
+        padding-bottom: 5px;
 
         .tooltip-arrow {
             border-bottom-width: 0;
             border-top-color: $divider;
-            bottom: -5px;
+            bottom: 0;
             left: 0;
 
             &::after {
@@ -858,12 +859,12 @@ i {
     }
 
     &[x-placement^='bottom'] {
-        margin-top: 5px;
+        padding-top: 5px;
 
         .tooltip-arrow {
             border-top-width: 0;
             border-bottom-color: $divider;
-            top: -5px;
+            top: 0;
             // left: 50%;
             // 实战bug3： x-arrow自动会计算
             // transform: translateX(-50%);
@@ -879,13 +880,13 @@ i {
     }
 
     &[x-placement^='right'] {
-        margin-left: 5px;
+        padding-left: 5px;
 
         .tooltip-arrow {
             border-left-width: 0;
             border-right-color: $divider;
             top: 0;
-            left: -5px;
+            left: 0;
 
             &::after {
                 border-left-width: 0;
@@ -897,13 +898,13 @@ i {
     }
 
     &[x-placement^='left'] {
-        margin-right: 5px;
+        padding-right: 5px;
 
         .tooltip-arrow {
             border-right-width: 0;
             border-left-color: $divider;
             top: 0;
-            right: -5px;
+            right: 0;
 
             &::after {
                 border-right-width: 0;
