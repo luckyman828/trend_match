@@ -154,11 +154,11 @@ export default {
             if (selection.your_role == 'Member') {
                 product.your_feedback = action
                 // Check if the action already exists in the products selection_feedback array
-                const existingAction = product.selection_feedback.find(
+                const existingAction = product.feedbacks.find(
                     x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
                 )
                 if (!existingAction) {
-                    product.selection_feedback.push({
+                    product.feedbacks.push({
                         action: action,
                         product_id: product.id,
                         selection: selection,
@@ -174,11 +174,11 @@ export default {
                 Vue.set(product, 'action', action)
                 Vue.set(product, 'action_author', user)
                 // Check if the action already exists in the products actions array
-                const existingAction = product.alignment_actions.find(
+                const existingAction = product.actions.find(
                     x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
                 )
                 if (!existingAction) {
-                    product.alignment_actions.push({
+                    product.actions.push({
                         action: action,
                         product_id: product.id,
                         selection: selection,
@@ -197,14 +197,14 @@ export default {
                 productActions.forEach(productAction => {
                     productAction.product.your_feedback = productAction.action
                     // Check if the action already exists in the products selection_feedback array
-                    const existingAction = productAction.product.selection_feedback.find(
+                    const existingAction = productAction.product.feedbacks.find(
                         x =>
                             x.product_id == productAction.product.id &&
                             x.selection_id == selection.id &&
                             x.user_id == user.id
                     )
                     if (!existingAction) {
-                        productAction.product.selection_feedback.push({
+                        productAction.product.feedbacks.push({
                             action: productAction.action,
                             product_id: productAction.product.id,
                             selection: selection,

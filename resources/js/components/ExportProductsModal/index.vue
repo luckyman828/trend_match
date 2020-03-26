@@ -37,7 +37,7 @@
                     <div class="input-wrapper multiline disabled">
                         <p>{{productsToExport.length}} products <br>
                             <template v-if="exportComments">{{productsToExport.reduce((acc, x) => acc + x.requests.length > 0 ? 1 : 0, 0)}} with requests</template><br>
-                            <template v-if="includeDistribution">with {{productsToExport.reduce((acc, x) => acc + x.selection_feedback.length, 0)}} actions</template><br>
+                            <template v-if="includeDistribution">with {{productsToExport.reduce((acc, x) => acc + x.feedbacks.length, 0)}} actions</template><br>
                             <template v-if="includeNotDecided">and {{productsToExport.reduce((acc, x) => acc + x.nds.length, 0)}} not decided</template>
                         </p>
                     </div>
