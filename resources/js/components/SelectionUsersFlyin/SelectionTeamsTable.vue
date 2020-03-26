@@ -12,14 +12,19 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selected = selection.teams : selected = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Users</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="team in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow" @contextmenu.prevent="showTeamContext($event, team)">
-                    <td class="select"><BaseCheckbox/></td>
+                <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow"
+                @click.ctrl="$refs.selectBox[index].check()"
+                @contextmenu.prevent="showTeamContext($event, team)">
+                    <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
                     <td class="title">
                         <i class="fas fa-users"></i>
                         <span>{{team.title}}</span>
@@ -43,11 +48,14 @@
 
         <BaseContextMenu ref="contextMenuTeam" class="context-team"
         :hotkeys="['KeyR']"
-        @keybind-r="onRemoveTeam(contextTeam)">
+        @keybind-r="onRemoveTeams(contextTeam)">
+            <template v-slot:header v-if="selected.length > 0">
+                <span>Choose action for {{selected.length}} teams</span>
+            </template>
             <div class="item-group">
-                <div class="item" @click="onRemoveTeam(contextTeam)">
+                <div class="item" @click="onRemoveTeams(contextTeam)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                    <u>R</u>emove Team
+                    <u>R</u>emove Team{{selected.length > 1 ? 's' : ''}}
                 </div>
             </div>
         </BaseContextMenu>
@@ -116,7 +124,7 @@ export default {
         ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
             const contextMenu = this.$refs.contextMenuTeam
-            this.contextTeam = team
+            this.contextTeam = this.selected.length > 0 ? this.selected[0] : team
             contextMenu.show(e)
         },
         onAddTeam(e) {
@@ -146,11 +154,16 @@ export default {
 
             this.sortArray(this.selection.teams, this.sortAsc, this.sortKey)
         },
-        onRemoveTeam(team) {
-            console.log('on remove team')
+        onRemoveTeams(team) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed team
-            this.removeTeamsFromSelection({selection: this.selection, teams: [team]})
+            let teamsToRemove
+            if (this.selected.length > 0) {
+                teamsToRemove = JSON.parse(JSON.stringify(this.selected))
+            } else {
+                teamsToRemove = [team]
+            }
+            this.removeTeamsFromSelection({selection: this.selection, teams: teamsToRemove})
         },
     }
 }

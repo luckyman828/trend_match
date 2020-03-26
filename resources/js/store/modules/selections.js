@@ -295,7 +295,7 @@ export default {
         },
         async removeTeamsFromSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
-            await commit('removeTeamsFromSelection', { selection, teams })
+            commit('removeTeamsFromSelection', { selection, teams })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/teams`
             await axios.post(apiUrl, {
