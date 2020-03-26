@@ -383,6 +383,7 @@ export default {
                 })
         },
         procesSelectionProducts({ commit, state, rootGetters }) {
+            console.log('process products')
             const authUser = rootGetters['auth/authUser']
             const products = state.products
             products.map(product => {
@@ -409,47 +410,47 @@ export default {
                     },
                 })
 
-                // Actions
+                // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'In')
+                        return product.selection_feedback.filter(x => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Out')
+                        return product.selection_feedback.filter(x => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'focus', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Focus')
+                        return product.selection_feedback.filter(x => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'nds', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'None')
+                        return product.selection_feedback.filter(x => x.action == 'None')
                     },
                 })
                 // Alignment Actions
                 Object.defineProperty(product, 'alignmentIns', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'In')
+                        return product.alignment_actions.filter(x => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'Out')
+                        return product.alignment_actions.filter(x => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'Focus')
+                        return product.alignment_actions.filter(x => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'alignmentNds', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'None')
+                        return product.alignment_actions.filter(x => x.action == 'None')
                     },
                 })
                 // All Actions
@@ -473,6 +474,55 @@ export default {
                         return product.nds.length + product.alignmentNds.length
                     },
                 })
+
+                // Hard Set Actions
+                // Feedback Actions
+                // Vue.set(
+                //     product,
+                //     'ins',
+                //     product.selection_feedback.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'outs',
+                //     product.selection_feedback.filter(x => x.action == 'Outs')
+                // )
+                // Vue.set(
+                //     product,
+                //     'focus',
+                //     product.selection_feedback.filter(x => x.action == 'Focus')
+                // )
+                // Vue.set(
+                //     product,
+                //     'nds',
+                //     product.selection_feedback.filter(x => x.action == 'None')
+                // )
+                // // Alignment Actions
+                // Vue.set(
+                //     product,
+                //     'alignmentIns',
+                //     product.alignment_actions.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentOuts',
+                //     product.alignment_actions.filter(x => x.action == 'Outs')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentFocus',
+                //     product.alignment_actions.filter(x => x.action == 'Focus')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentNds',
+                //     product.alignment_actions.filter(x => x.action == 'None')
+                // )
+                // // All Actions
+                // Vue.set(product, 'allIns', product.ins.length + product.alignmentIns.length)
+                // Vue.set(product, 'allOuts', product.outs.length + product.alignmentOuts.length)
+                // Vue.set(product, 'allFocus', product.focus.length + product.alignmentFocus.length)
+                // Vue.set(product, 'allNds', product.nds.length + product.alignmentNds.length)
 
                 // Comments / Requests
                 Object.defineProperty(product, 'hasAuthUserRequest', {
@@ -616,43 +666,43 @@ export default {
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'In')
+                        return product.selection_feedback.filter(x => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Out')
+                        return product.selection_feedback.filter(x => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'focus', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Focus')
+                        return product.selection_feedback.filter(x => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'nds', {
                     get: function() {
-                        return product.feedbacks.filter(x => x.action == 'None')
+                        return product.selection_feedback.filter(x => x.action == 'None')
                     },
                 })
                 // Alignment Actions
                 Object.defineProperty(product, 'alignmentIns', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'In')
+                        return product.alignment_actions.filter(x => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'Out')
+                        return product.alignment_actions.filter(x => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'Focus')
+                        return product.alignment_actions.filter(x => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'alignmentNds', {
                     get: function() {
-                        return product.actions.filter(x => x.action == 'None')
+                        return product.alignment_actions.filter(x => x.action == 'None')
                     },
                 })
 

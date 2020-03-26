@@ -10,8 +10,6 @@ export default {
                         if (returnValue != 0) {
                             return sortAsc ? returnValue : returnValue * -1
                         }
-                        // console.log(a[theKey])
-                        // console.log(b[theKey])
 
                         // If both a and b has a key
                         if (a[theKey] && b[theKey]) {

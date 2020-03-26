@@ -103,10 +103,52 @@
             </div>
         </BaseContextMenu>
 
+        <!-- <BaseContextMenu ref="contextMenuSelectedUsers" v-slot
+        :hotkeys="['KeyC', 'KeyR', 'KeyP', 'KeyD']"
+        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
+        @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
+        @keybind-p="contextUser.id == authUser.id && onSetUserPassword(contextMouseEvent, contextUser)"
+        @keybind-d="onDeleteUser(contextUser)"
+        >
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
+                && 'Can only set own currency. Only admins can change currency of others.'"
+                @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
+                    <span><u>C</u>hange Currency</span>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
+                v-tooltip="authUserWorkspaceRole != 'Admin'
+                && 'Only admins can change workspace role'"
+                @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                    <span>Change Workspace <u>R</u>ole</span>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-lock" :disabled="contextUser.id != authUser.id" 
+                v-tooltip="contextUser.id != authUser.id 
+                && 'Can only set password of self'"
+                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
+                    <span>Change <u>P</u>assword</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group">
+                <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
+                @click="onDeleteUser(contextUser)">
+                    <span><u>D</u>elete User from Workspace</span>
+                </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu> -->
+
         <BaseSelectButtonsContextMenu ref="contextMenuUserCurrency" v-if="userToEdit"
         header="Change User Currency" v-model="userToEdit.currency" type="radio"
         :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
         @submit="updateWorkspaceUser(userToEdit)"/>
+        <!-- <BaseSelectButtonsContextMenu ref="contextMenuUserCurrency" v-if="userToEdit"
+        header="Change User Currency" v-model="userToEdit.currency" type="radio"
+        :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
+        @submit="onUpdateUsersCurrency(userToEdit)"/> -->
 
         <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role">
             <template v-slot:header>
@@ -217,7 +259,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('users', ['updateWorkspaceUser', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        ...mapActions('users', ['updateWorkspaceUser', 'updateWorkspaceUsers' , 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
             contextMenu.item = user;
@@ -252,6 +294,14 @@ export default {
             const contextMenu = this.$refs.contextMenuWorkspaceRole
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
+        },
+        onUpdateUsersCurrency() {
+            // Define the user to base the new currency to set on
+            const baseUser = this.userToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            
+            // Update all users
         },
         onNewUser() {
             // emit open new user modal

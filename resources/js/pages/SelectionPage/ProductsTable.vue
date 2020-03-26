@@ -200,15 +200,12 @@ export default {
             this.setSingleVisisble(true)
         },
         onSort(sortAsc, sortKey) {
-            console.log('sort')
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
     },
     created () {
-        // Initially sort the products
-        this.onSort(true, this.sortKey)
 
         // Setup event broadcast listening
 
@@ -223,7 +220,7 @@ export default {
         //     // console.log('%cPusher: Action Deleted', 'font-weight: 900')
         //     this.destroyAction(action)
         // })
-        // .listen('.actions.many.updated', (e) => {
+        // .listen('.alignment_actions.many.updated', (e) => {
         //     const request = e.request
         //     // console.log('%cPusher: Action Many Updated', 'font-weight: 900')
         //     this.setManyActions({ 
@@ -234,8 +231,8 @@ export default {
         //         is_task_action: request.is_task_action,
         //     })
         // })
-        // .listen('.actions.many.created', (e) => {
-        //     const actions = e.actions
+        // .listen('.alignment_actions.many.created', (e) => {
+        //     const actions = e.alignment_actions
         //     // console.log('%cPusher: Action Many Created', 'font-weight: 900')
         //     this.setManyActions({
         //         productIds: actions.map(x => x.product_id),

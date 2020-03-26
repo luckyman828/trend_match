@@ -73,7 +73,7 @@
                                     <div class="alignment-wrapper" style="margin-bottom: 12px; border-bottom: solid 1px #E4E4E4;">
                                         <strong style="font-size: 8px;">Alignment & Requests</strong>
                                         <div class="row" v-for="(action, index) 
-                                        in product.actions.filter(x => includeNotDecided ? true : (x.action != 'None' || x.requests.length > 0))" 
+                                        in product.alignment_actions.filter(x => includeNotDecided ? true : (x.action != 'None' || x.requests.length > 0))" 
                                         :key="'alignment-'+index"
                                         style="display: flex; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
                                             <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
@@ -83,11 +83,11 @@
                                             </div>
                                             <div v-if="includeDistribution" 
                                             style="font-size: 7px; max-width: 24px; min-width: 24px; margin-left: 8px;" 
-                                            :style="{textAlign: product.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}">
+                                            :style="{textAlign: product.alignment_actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}">
                                                 <span>
-                                                    {{product.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'O' 
-                                                    : product.actions.find(x => x.selection_id == action.selection_id).action == 'Focus' ? 'F' 
-                                                    : product.actions.find(x => x.selection_id == action.selection_id).action == 'In' ? 'I' : ''}}
+                                                    {{product.alignment_actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'O' 
+                                                    : product.alignment_actions.find(x => x.selection_id == action.selection_id).action == 'Focus' ? 'F' 
+                                                    : product.alignment_actions.find(x => x.selection_id == action.selection_id).action == 'In' ? 'I' : ''}}
                                                 </span>
                                             </div>
                                             <!-- Requests -->
@@ -108,7 +108,7 @@
                                         <strong style="font-size: 8px;">Feedback & Comments</strong>
                                         <div class="row" v-for="(user, index) 
                                         in currentSelection.users.filter(user => includeNotDecided ? true
-                                        : (product.feedbacks.find(x => x.user_id == user.id) && product.feedbacks.find(x => x.user_id == user.id).action != 'None')
+                                        : (product.selection_feedback.find(x => x.user_id == user.id) && product.selection_feedback.find(x => x.user_id == user.id).action != 'None')
                                         || product.comments.filter(x => x.user_id == user.id).length > 0)" 
                                         :key="index"
                                         style="display: flex; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
@@ -119,13 +119,13 @@
                                             </div>
                                             <div v-if="includeDistribution" 
                                             style="font-size: 7px; max-width: 24px; min-width: 24px; margin-left: 8px;" 
-                                            :style="{textAlign: !!product.feedbacks.find(x => x.user_id == user.id) 
-                                            && product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
-                                                <span v-if="!!product.feedbacks.find(x => x.user_id == user.id) 
-                                                && product.feedbacks.find(x => x.user_id == user.id).action != 'None'"
+                                            :style="{textAlign: !!product.selection_feedback.find(x => x.user_id == user.id) 
+                                            && product.selection_feedback.find(x => x.user_id == user.id).action == 'Out' ? 'right' : 'left'}">
+                                                <span v-if="!!product.selection_feedback.find(x => x.user_id == user.id) 
+                                                && product.selection_feedback.find(x => x.user_id == user.id).action != 'None'"
                                                 style="font-size: 7px;">
-                                                    {{product.feedbacks.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
-                                                    : product.feedbacks.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
+                                                    {{product.selection_feedback.find(x => x.user_id == user.id).action == 'Out' ? 'O' 
+                                                    : product.selection_feedback.find(x => x.user_id == user.id).action == 'Focus' ? 'F' : 'I'}}
                                                 </span>
                                             </div>
                                             <div v-if="exportComments" 

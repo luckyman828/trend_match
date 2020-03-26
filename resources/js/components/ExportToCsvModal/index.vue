@@ -179,7 +179,7 @@ export default {
                 const rowToPush = this.getDefaultProductRowData(product)
                 // Add the action input to the row
                 selectionHeaders.forEach(header => {
-                    const selectionAction = product.actions.find(x => x.selection.name == header)
+                    const selectionAction = product.alignment_actions.find(x => x.selection.name == header)
                     if (selectionAction) rowToPush.push(selectionAction.action)
                     else rowToPush.push('None')
                 })
@@ -201,7 +201,7 @@ export default {
                 // Add the product's ID and Name to the the row array
 
                 // Loop through the product's actions
-                product.feedbacks.forEach(feedback => {
+                product.selection_feedback.forEach(feedback => {
                     // Test if we need to add their selection to the headers
                     if (!selectionHeaders.includes(feedback.user.name) && feedback.selection_id == this.currentSelection.id){
                         selectionHeaders.push(feedback.user.name)
@@ -214,7 +214,7 @@ export default {
                 const rowToPush = [product.datasource_id, product.title, product.category, product.min_order, product.min_variant_order, product.delivery_date, product.action || 'None']
                 // Add the feedback input to the row
                 selectionHeaders.forEach(header => {
-                    const selectionFeedback = product.feedbacks.find(x => `${x.user.name}` == header)
+                    const selectionFeedback = product.selection_feedback.find(x => `${x.user.name}` == header)
                     if (selectionFeedback) rowToPush.push(selectionFeedback.action)
                     else rowToPush.push('None')
                 })

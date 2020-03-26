@@ -10,7 +10,8 @@
         </td>
         <td class="image clickable" @click="$emit('onViewSingle',product)">
             <div class="img-wrapper">
-                <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                <!-- <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])"> -->
             </div>
         </td>
         <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
@@ -18,6 +19,7 @@
             <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
         </span></td>
         
+        <!-- Start Distribution -->
         <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
             <td class="focus tooltip-target">
                 <button tabindex="-1" class="ghost sm"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></button>
@@ -76,12 +78,9 @@
                     <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
                     :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
-                <!-- <BaseTooltipList header="Not decided">
-                    <BaseTooltipListItem v-for="(user, index) in product.nds" :key="index"
-                    :label="user.selection.name" :value="user.name"/>
-                </BaseTooltipList> -->
             </template>
         </v-popover>
+        <!-- End Distribution -->
 
         <td class="requests">
             <button class="ghost sm" @click="$emit('onViewSingle',product)">
