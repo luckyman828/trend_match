@@ -69,7 +69,7 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUser(userToEdit)">
+        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUsers([userToEdit])">
             <template v-slot:header>
                 Change User Currency
             </template>
@@ -173,7 +173,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('users', ['updateWorkspaceUser']),
+        ...mapActions('users', ['updateWorkspaceUsers']),
         ...mapActions('teams', ['removeUserFromTeam', 'updateTeamUser', 'addUsersToTeam', 'fetchTeamUsers']),
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order

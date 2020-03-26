@@ -1,8 +1,8 @@
 <template>
     <tr class="user-row table-row" ref="userRow" :class="{self: isSelf}"
-    @contextmenu.prevent="$emit('showContextMenu', $event, user)">
+    @contextmenu.prevent="$emit('showContextMenu', $event, user)" @click.ctrl="selectUser">
         <td class="select">
-            <BaseCheckbox :value="user" :modelValue="selectedUsers" 
+            <BaseCheckbox ref="selectBox" :value="user" :modelValue="selectedUsers" 
             @change="$emit('update:selectedUsers', $event)"/>
         </td>
         <td class="title" v-if="editName">
@@ -69,8 +69,10 @@ export default {
         }
     },
     methods: {
-        ...mapActions('users', ['updateWorkspaceUser', 'updateUser']),
-    },
+        selectUser() {
+            this.$refs.selectBox.check()
+        }
+    }
 }
 </script>
 

@@ -28,9 +28,9 @@ export default {
                 commit('setLoading', false)
             })
         },
-        async updateWorkspaceUser({ commit, rootGetters }, userToUpdate) {
+        async updateWorkspaceUsers({ commit, rootGetters }, usersToUpdate) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
-            commit('updateUser', userToUpdate)
+            commit('updateUsers', usersToUpdate)
 
             let succes
             const apiUrl = `/workspaces/${workspaceId}/users`
@@ -40,12 +40,12 @@ export default {
                 url: apiUrl,
                 data: {
                     method: 'Add',
-                    users: [userToUpdate],
+                    users: usersToUpdate,
                 },
             })
                 .then(response => {
                     succes = true
-                    commit('addUsers', usersToAdd)
+                    // commit('addUsers', usersToAdd)
                 })
                 .catch(err => {
                     console.log(err.response)
@@ -99,7 +99,7 @@ export default {
             return success
         },
         async updateUser({ commit }, user) {
-            commit('updateUser', user)
+            commit('updateUsers', [user])
 
             const apiUrl = `/admins/users/${user.id}`
             axios.put(apiUrl, { name: user.name, email: user.email })
@@ -145,10 +145,12 @@ export default {
         addUsers(state, users) {
             state.users = state.users.concat(users)
         },
-        updateUser(state, user) {
+        updateUsers(state, users) {
             // Replace the user with the new
-            let oldUser = state.users.find(x => x.id == user.id)
-            Object.assign(oldUser, user)
+            users.forEach(user => {
+                let oldUser = state.users.find(x => x.id == user.id)
+                Object.assign(oldUser, user)
+            })
         },
         setAddNewUserModalVisible(state, bool) {
             state.addNewUserModalVisible = bool
