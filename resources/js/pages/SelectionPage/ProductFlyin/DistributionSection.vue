@@ -160,10 +160,10 @@ export default {
     }},
     computed: {
         totalFeedbackInputCount() {
-            return this.product.feedbacks.length
+            return this.product.selection_feedback.length
         },
         totalActionInputCount() {
-            return this.product.actions.length
+            return this.product.alignment_actions.length
         },
         totalInputCount() {
             return this.totalFeedbackInputCount + this.totalActionInputCount

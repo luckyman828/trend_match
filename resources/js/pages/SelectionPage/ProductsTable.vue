@@ -220,7 +220,7 @@ export default {
         //     // console.log('%cPusher: Action Deleted', 'font-weight: 900')
         //     this.destroyAction(action)
         // })
-        // .listen('.actions.many.updated', (e) => {
+        // .listen('.alignment_actions.many.updated', (e) => {
         //     const request = e.request
         //     // console.log('%cPusher: Action Many Updated', 'font-weight: 900')
         //     this.setManyActions({ 
@@ -231,8 +231,8 @@ export default {
         //         is_task_action: request.is_task_action,
         //     })
         // })
-        // .listen('.actions.many.created', (e) => {
-        //     const actions = e.actions
+        // .listen('.alignment_actions.many.created', (e) => {
+        //     const actions = e.alignment_actions
         //     // console.log('%cPusher: Action Many Created', 'font-weight: 900')
         //     this.setManyActions({
         //         productIds: actions.map(x => x.product_id),
