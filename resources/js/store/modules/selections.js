@@ -90,6 +90,8 @@ export default {
                     .get(apiUrl)
                     .then(response => {
                         selections = response.data
+                        // Process the selections
+                        commit('PROCESS_SELECTIONS', selections)
                         if (addToState) {
                             commit('insertSelections', { selections, method: 'set' })
                         }
@@ -492,6 +494,44 @@ export default {
                 Vue.set(stateSelection, 'users', users)
                 Vue.set(stateSelection, 'user_count', users.length)
             }
+        },
+        PROCESS_SELECTIONS(state, selections) {
+            selections.map(selection => {
+                // Visible
+                Object.defineProperty(selection, 'is_visible', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.visible_from
+                        const to = selection.visible_to
+                        return (!from || now > from) && (!to || now < to)
+                    },
+                })
+                // Locked
+                Object.defineProperty(selection, 'is_locked', {
+                    get: () => {
+                        const now = new Date()
+                        const from = selection.feedback_lock_from
+                        const to = selection.feedback_lock_to
+                        return (
+                            (!to && !!from && now > from) ||
+                            (!from && !!to && now < to) ||
+                            (!!from && !!to && now > from && now < to)
+                        )
+                    },
+                })
+                // Completed
+                Object.defineProperty(selection, 'is_completed', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.completed_at
+                        return !!from && now > from
+                    },
+                })
+            })
         },
     },
 }

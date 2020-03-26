@@ -40,16 +40,20 @@
                     <i class="far fa-user"></i><span>{{selection.user_count}}</span>
                 </button>
             </td>
-            <!-- <td class="status">
-                <button class="editable ghost" @click="onToggleLocked(selection)"><span>{{selection.locked ? 'Locked' : 'Open'}}</span>
-                    <i class="far" :class="selection.locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
-                <button class="editable ghost" @click="onToggleHidden(selection)"><span>{{selection.hidden ? 'Hidden' : 'Visible'}}</span>
-                    <i class="far" :class="selection.hidden ? 'fa-eye-slash' : 'fa-eye'"></i></button>
-            </td> -->
+            <td class="status" v-if="authUserWorkspaceRole == 'Admin'">
+                <button class="editable ghost" @click="onToggleLocked(selection)"><span>{{selection.is_locked ? 'Locked' : 'Open'}}</span>
+                    <i class="far" :class="selection.is_locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
+                <button class="editable ghost" @click="onToggleHidden(selection)"><span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
+                    <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+            </td>
             <td class="action">
                 <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
                 <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
-                <button v-else class="invisible ghost-hover primary" @click="onGoToSelection"><span>Go to Selection</span></button>
+                <BaseButton v-else buttonClass="invisible ghost-hover primary"
+                :disabled="selection.is_locked" v-tooltip="selection.is_locked && 'Selection is currently locked. Admins can lock/unlock selections'"
+                @click="onGoToSelection">
+                    <span>Go to Selection</span>
+                </BaseButton>
             </td>
         </tr>
         <template v-if="childrenExpanded">
@@ -92,7 +96,7 @@ export default {
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 500
+            const baseWidth = 400
             const indentAmount = 24
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         }
@@ -128,16 +132,26 @@ export default {
 
         },
         onToggleLocked(selection) {
-            // Dispatch action in store
-            selection.locked = !selection.locked
-            // Temp fix to display change
-            this.$forceUpdate() // <-- Remember to remove
+            // Check if the selection is locked
+            if (selection.is_locked) {
+                // Set To to now
+                selection.feedback_lock_to = new Date()
+            } else {
+                selection.feedback_lock_from = new Date()
+                selection.feedback_lock_to = null
+            }
+            this.updateSelection(selection)
         },
         onToggleHidden(selection) {
-            // Dispatch action in store
-            selection.hidden = !selection.hidden
-            // Temp fix to display change
-            this.$forceUpdate() // <-- Remember to remove
+            // Check if the selection is visible
+            if (selection.is_visible) {
+                // Set To to now
+                selection.visible_to = new Date()
+            } else {
+                selection.visible_from = new Date()
+                selection.visible_to = null
+            }
+            this.updateSelection(selection)
         },
         onUpdateSelection(selection) {
             // Check if we are inserting or updating
