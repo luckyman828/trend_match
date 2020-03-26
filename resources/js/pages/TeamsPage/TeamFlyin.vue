@@ -12,7 +12,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selectedUsers = team.users : selectedUsers = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</BaseTableHeader>
@@ -21,8 +24,8 @@
             </template>
             <template v-slot:body>
                 <TeamFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
-                :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)"
-                    @editCurrency="onEditUserCurrency($event, user)"/>
+                :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)" v-model="selectedUsers" :selectedUsers="selectedUsers"
+                @editCurrency="onEditUserCurrency($event, user)"/>
             </template>
             <template v-slot:footer>
                 <td>
@@ -69,6 +72,30 @@
             </div>
         </BaseContextMenu>
 
+        <BaseContextMenu ref="contextMenuSelectedUsers"
+        :hotkeys="['KeyT', 'KeyD']"
+        @keybind-c="onEditUserRole(contextMouseEvent, contextUser)"
+        @keybind-d="onRemoveUsersFromTeam(contextUser)"
+        @keybind-r="onRemoveUsersFromTeam(contextUser)">
+        <template v-slot:header>
+            <span>Choose action for {{selectedUsers.length}} users</span>
+        </template>
+        <template v-slot="slotProps">
+            <div class="item-group">
+                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, selectedUsers[0])">
+                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                    <span>Change <u>T</u>eam Roles</span>
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onRemoveUsersFromTeam">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <span><u>D</u>elete Users from Team</span>
+                </div>
+            </div>
+        </template>
+        </BaseContextMenu>
+
         <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUsers([userToEdit])">
             <template v-slot:header>
                 Change User Currency
@@ -94,7 +121,7 @@
                 <div class="item-group">
                     <div class="item-wrapper">
                         <button class="primary" :class="{disabled: userToEdit.role == originalUser.role}" 
-                        @click="updateTeamUser({team, user: userToEdit});slotProps.hide()">
+                        @click="onUpdateUsersRole();slotProps.hide()">
                             <span>Save</span>
                         </button>
                         <button class="invisible ghost-hover" style="margin-left: 8px;"
@@ -106,7 +133,7 @@
 
         <BaseSelectButtonsContextMenu ref="contextMenuAddUsers" 
         header="Add User(s) to Team"
-        :type="'checkbox'" :options="availableUsers" v-model="usersToAdd" :submitOnChange="true" 
+        :type="'checkbox'" :options="availableUsers" v-model="usersToAdd" :emitOnChange="true" 
         :optionDescriptionKey="'email'" :optionNameKey="'name'" :search="true" 
         :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
         :submitDisabled="usersToAdd.length < 1"
@@ -144,7 +171,7 @@ export default {
     data: function() { return {
         sortKey: null,
         sortAsc: true,
-        selected: [],
+        selectedUsers: [],
         userToEdit: null,
         originalUser: null,
         usersToAdd: [],
@@ -174,7 +201,7 @@ export default {
     },
     methods: {
         ...mapActions('users', ['updateWorkspaceUsers']),
-        ...mapActions('teams', ['removeUserFromTeam', 'updateTeamUser', 'addUsersToTeam', 'fetchTeamUsers']),
+        ...mapActions('teams', ['removeUsersFromTeam', 'updateTeamUser', 'addUsersToTeam', 'fetchTeamUsers']),
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
             if (this.sortKey == key) {
@@ -190,10 +217,17 @@ export default {
         },
         showUserContext(e, user) {
             if (this.authUserWorkspaceRole != 'Admin') return
-            this.contextUser = user
+
+            // If we have a selection, show context menu for that selection instead
+            let contextMenu
+            if (this.selectedUsers.length > 0) {
+                contextMenu = this.$refs.contextMenuSelectedUsers
+                this.contextUser = this.selectedUsers[0]
+            } else {
+                contextMenu = this.$refs.contextMenuUser
+                this.contextUser = user
+            }
             this.contextMouseEvent = e
-            const contextMenu = this.$refs.contextMenuUser
-            contextMenu.item = user
             contextMenu.show(e)
         },
         onAddUser(e) {
@@ -212,9 +246,28 @@ export default {
                 this.$refs.userCurrencySelector.focusSearch()
             })
         },
+        onUpdateUsersRole() {
+            // Define the user to base the new role to set on
+            const baseUser = this.userToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            let usersToPost
+            if (this.selectedUsers.length > 0) {
+                usersToPost = this.selectedUsers.map(user => {
+                    user.role = baseUser.role
+                    return user
+                })
+            } else usersToPost = [baseUser]
+            // Update all users
+            this.updateWorkspaceUsers(usersToPost)
+        },
         onRemoveUserFromTeam(user) {
             // if ( confirm("Are you sure you want to remove this user from this team?") )
-                this.removeUserFromTeam({user: user, team: this.team})
+                this.removeUsersFromTeam({users: [user], team: this.team})
+        },
+        onRemoveUsersFromTeam() {
+            if ( confirm(`Are you sure you want to remove ${this.selectedUsers.length} from this team?`) )
+                this.removeUsersFromTeam({users: this.selectedUsers, team: this.team})
         },
         onEditUserRole(mouseEvent, user) {
             this.userToEdit = user;
