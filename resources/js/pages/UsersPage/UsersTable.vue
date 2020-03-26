@@ -71,7 +71,7 @@
                 v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only set own currency. Only admins can change currency of others.'"
                 @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
-                    <span><u>C</u>hange Currency</span>
+                    <span><u>C</u>hange <u>C</u>urrency</span>
                 </BaseContextMenuItem>
 
                 <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
@@ -103,52 +103,50 @@
             </div>
         </BaseContextMenu>
 
-        <!-- <BaseContextMenu ref="contextMenuSelectedUsers" v-slot
-        :hotkeys="['KeyC', 'KeyR', 'KeyP', 'KeyD']"
+        <BaseContextMenu ref="contextMenuSelectedUsers"
+        :hotkeys="['KeyC', 'KeyR', 'KeyD']"
         @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
         @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-p="contextUser.id == authUser.id && onSetUserPassword(contextMouseEvent, contextUser)"
-        @keybind-d="onDeleteUser(contextUser)"
-        >
-            <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
-                && 'Can only set own currency. Only admins can change currency of others.'"
-                @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
-                    <span><u>C</u>hange Currency</span>
-                </BaseContextMenuItem>
+        @keybind-d="onDeleteUser(contextUser)">
+            <template v-slot:header>
+                <span>Choose action for {{selectedUsers.length}} users</span>
+            </template>
+            <template v-slot>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-times" 
+                    @click="selectedUsers = []">
+                        <span>Clear Selection</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
+                    && 'Can only set own currency. Only admins can change currency of others.'"
+                    @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
+                        <span><u>C</u>hange <u>C</u>urrency</span>
+                    </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
-                v-tooltip="authUserWorkspaceRole != 'Admin'
-                && 'Only admins can change workspace role'"
-                @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
-                    <span>Change Workspace <u>R</u>ole</span>
-                </BaseContextMenuItem>
-
-                <BaseContextMenuItem iconClass="far fa-lock" :disabled="contextUser.id != authUser.id" 
-                v-tooltip="contextUser.id != authUser.id 
-                && 'Can only set password of self'"
-                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
-                    <span>Change <u>P</u>assword</span>
-                </BaseContextMenuItem>
-            </div>
-            <div class="item-group">
-                <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
-                @click="onDeleteUser(contextUser)">
-                    <span><u>D</u>elete User from Workspace</span>
-                </BaseContextMenuItem>
-            </div>
-        </BaseContextMenu> -->
+                    <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
+                    v-tooltip="authUserWorkspaceRole != 'Admin'
+                    && 'Only admins can change workspace role'"
+                    @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                        <span>Change Workspace <u>R</u>ole</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
+                    @click="onDeleteUsers">
+                        <span><u>D</u>elete UsersPage from Workspace</span>
+                    </BaseContextMenuItem>
+                </div>
+            </template>
+        </BaseContextMenu>
 
         <BaseSelectButtonsContextMenu ref="contextMenuUserCurrency" v-if="userToEdit"
         header="Change User Currency" v-model="userToEdit.currency" type="radio"
         :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
-        @submit="updateWorkspaceUser(userToEdit)"/>
-        <!-- <BaseSelectButtonsContextMenu ref="contextMenuUserCurrency" v-if="userToEdit"
-        header="Change User Currency" v-model="userToEdit.currency" type="radio"
-        :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
-        @submit="onUpdateUsersCurrency(userToEdit)"/> -->
+        @submit="onUpdateUsersCurrency"/>
 
         <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role">
             <template v-slot:header>
@@ -162,8 +160,8 @@
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <button class="primary" :class="{disabled: userToEdit.role == originalUser.role}" 
-                        @click="updateWorkspaceUser(userToEdit);slotProps.hide()">
+                        <button class="primary" 
+                        @click="onUpdateUsersRole(); slotProps.hide()">
                             <span>Save</span>
                         </button>
                         <button class="invisible ghost-hover" style="margin-left: 8px;"
@@ -259,7 +257,10 @@ export default {
         }
     },
     methods: {
-        ...mapActions('users', ['updateWorkspaceUser', 'updateWorkspaceUsers' , 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        ...mapActions('users', ['updateWorkspaceUsers', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        aClick(e) {
+            console.log(e)
+        },
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
             contextMenu.item = user;
@@ -300,22 +301,56 @@ export default {
             const baseUser = this.userToEdit
             // Check if we have a selection of users
             // If so, set the currency for all the selected users
-            
+            let usersToPost
+            if (this.selectedUsers.length > 0) {
+                usersToPost = this.selectedUsers.map(user => {
+                    user.currency = baseUser.currency
+                    return user
+                })
+            } else usersToPost = [baseUser]
             // Update all users
+            this.updateWorkspaceUsers(usersToPost)
+        },
+        onUpdateUsersRole() {
+            // Define the user to base the new role to set on
+            const baseUser = this.userToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            let usersToPost
+            if (this.selectedUsers.length > 0) {
+                usersToPost = this.selectedUsers.map(user => {
+                    user.role = baseUser.role
+                    return user
+                })
+            } else usersToPost = [baseUser]
+            // Update all users
+            this.updateWorkspaceUsers(usersToPost)
         },
         onNewUser() {
             // emit open new user modal
             this.$emit('onNewUser')
         },
         showUserContext(e, user) {
-            const contextMenu = this.$refs.contextMenuUser
-            this.contextUser = user
+            // If we have a selection, show context menu for that selection instead
+            let contextMenu = this.$refs.contextMenuUser
+            if (this.selectedUsers.length > 0) {
+                contextMenu = this.$refs.contextMenuSelectedUsers
+                this.contextUser = this.selectedUsers[0]
+            } else {
+                contextMenu = this.$refs.contextMenuUser
+                this.contextUser = user
+            }
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
         onDeleteUser(user) {
             if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
+            }
+        },
+        onDeleteUsers() {
+            if (window.confirm(`Are you sure you want to remove ${this.selectedUsers.length} users from the workspace?`)) {
+                this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: this.selectedUsers})
             }
         },
         sortUsers(method, key) {

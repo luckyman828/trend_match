@@ -1,6 +1,7 @@
 <template>
-    <tr class="team-row table-row" ref="teamRow" @contextmenu.prevent="$emit('showContextMenu', $event, team)">
-        <td class="select"><BaseCheckbox :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"/></td>
+    <tr class="team-row table-row" ref="teamRow" @contextmenu.prevent="$emit('showContextMenu', $event, team)"
+    @click.ctrl="$refs.selectBox.check()">
+        <td class="select"><BaseCheckbox ref="selectBox" :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"/></td>
         <td v-if="editTitle" class="title">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"
@@ -13,7 +14,7 @@
             <span>{{team.title}}</span>
         </td>
         <!-- <td class="owner">{{team.owner}}</td> -->
-        <td class="members clickable" @click="showSingle()"><span>{{team.user_count}} Members</span></td>
+        <td class="members"><span>{{team.user_count}} Members</span></td>
         <!-- <td class="files">
             <v-popover :aria-disabled="team.files.length <= 0" style="display: inline-block">
                 <span class="tooltip-target">{{team.files.length}} <i class="far fa-info-circle"/></span>

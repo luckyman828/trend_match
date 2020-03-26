@@ -183,9 +183,9 @@ export default {
                 },
             })
         },
-        async removeUserFromTeam({ commit, dispatch }, { team, user }) {
+        async removeUsersFromTeam({ commit, dispatch }, { team, users }) {
             // Update state
-            commit('removeUserFromTeam', { team, user })
+            commit('removeUsersFromTeam', { team, users })
 
             // Update API
             const apiUrl = `/teams/${team.id}/users`
@@ -194,7 +194,7 @@ export default {
                 url: apiUrl,
                 data: {
                     method: 'Remove',
-                    users: [user],
+                    users: users,
                 },
             })
         },
@@ -233,10 +233,12 @@ export default {
             }
             team.user_count = team.users.length
         },
-        removeUserFromTeam(state, { team, user }) {
-            const index = team.users.findIndex(x => x.id == user.id)
-            team.users.splice(index, 1)
-            team.user_count = team.users.length
+        removeUsersFromTeam(state, { team, users }) {
+            users.forEach(user => {
+                const index = team.users.findIndex(x => x.id == user.id)
+                team.users.splice(index, 1)
+                team.user_count = team.users.length
+            })
         },
     },
 }

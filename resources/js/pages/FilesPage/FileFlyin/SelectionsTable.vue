@@ -10,15 +10,15 @@
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="expand"></BaseTableHeader>
-                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
+                <BaseTableHeader class="title">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader> -->
-                <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" @sort="onSort">Currency</BaseTableHeader>
-                <BaseTableHeader class="teams" :sortKey="'team_count'" :currentSortKey="sortKey" @sort="onSort">Teams</BaseTableHeader>
-                <BaseTableHeader class="users" :sortKey="'user_count'" :currentSortKey="sortKey" @sort="onSort">Users</BaseTableHeader>
-                <!-- <BaseTableHeader :sortKey="'status'" :currentSortKey="sortKey" @sort="onSort">Status</BaseTableHeader> -->
+                <BaseTableHeader class="currency">Currency</BaseTableHeader>
+                <BaseTableHeader class="teams">Teams</BaseTableHeader>
+                <BaseTableHeader class="users">Users</BaseTableHeader>
+                <BaseTableHeader v-if="authUserWorkspaceRole == 'Admin'" class="status">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -936,8 +936,8 @@ export default {
                         max-width: 48px
                     }
                     &.title { // Title
-                        min-width: 500px;
-                        max-width: 500px;
+                        min-width: 400px;
+                        max-width: 400px;
                     }
                     &.teams {
                         margin-left: auto;
@@ -947,12 +947,12 @@ export default {
                         max-width: 100px;
                     }
                     &.teams, &.users {
-                        min-width: 80px;
-                        max-width: 80px;
+                        min-width: 76px;
+                        max-width: 76px;
                     }
                     &.status { // Status
-                        min-width: 202px;
-                        max-width: 202px;
+                        min-width: 180px;
+                        max-width: 180px;
                     }
                     // &.items, &.in, &.out, &.nd {
                     //     min-width: 72px;

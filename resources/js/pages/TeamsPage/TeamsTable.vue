@@ -99,10 +99,42 @@
             </div>
         </BaseContextMenu>
 
+        <BaseContextMenu ref="contextMenuSelectedTeams"
+        :hotkeys="['KeyC', 'KeyD']"
+        @keybind-c="onEditTeamCurrency(contextMouseEvent, selectedTeams[0])"
+        @keybind-d="onDeleteTeams">
+            <template v-slot:header>
+                <span>Choose action for {{selectedTeams.length}} teams</span>
+            </template>
+            <template v-slot="slotProps">
+
+                <BaseContextMenuItem :iconClass="'far fa-times'"
+                @click="selectedTeams = []">
+                    <span>Clear selection</span>
+                </BaseContextMenuItem>
+                <div class="item-group">
+                    <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
+                    @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                        <span><u>C</u>hange currency</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
+                    @click="onDeleteTeams">
+                        <span><u>D</u>elete teams</span>
+                    </BaseContextMenuItem>
+                </div>
+            </template>
+        </BaseContextMenu>
+
         <BaseSelectButtonsContextMenu ref="contextMenuTeamCurrency" v-if="teamToEdit"
         header="Change Team Currency" v-model="teamToEdit.currency" type="radio"
         :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
-        @submit="insertOrUpdateTeam(teamToEdit)"/>
+        @submit="onUpdateTeamsCurrency"/>
 
     </div>
 </template>
@@ -228,8 +260,15 @@ export default {
             this.teamFlyInVisible = true
         },
         showTeamContext(e, team) {
-            const contextMenu = this.$refs.contextMenuTeam
-            this.contextTeam = team
+            // If we have a selection, show context menu for that selection instead
+            let contextMenu
+            if (this.selectedTeams.length > 0) {
+                contextMenu = this.$refs.contextMenuSelectedTeams
+                this.contextTeam = this.selectedTeams[0]
+            } else {
+                contextMenu = this.$refs.contextMenuTeam
+                this.contextTeam = team
+            }
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
@@ -237,6 +276,30 @@ export default {
             (window.confirm(
                 'Are you sure you want to delete this team?\nIt will be permanently deleted.'))
             ? this.deleteTeam(team) : false
+        },
+        onDeleteTeams() {
+            if (window.confirm(`Are you sure you want to delete ${this.selectedTeams.length} teams?\nIt will be permanently deleted.`)) {
+                this.selectedTeams.forEach(team => {
+                    this.deleteTeam(team)
+                })
+            }
+        },
+        onUpdateTeamsCurrency() {
+            // Define the team to base the new currency to set on
+            const baseTeam = this.teamToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            let teamsToPost
+            if (this.selectedTeams.length > 0) {
+                teamsToPost = this.selectedTeams.map(team => {
+                    team.currency = baseTeam.currency
+                    return team
+                })
+            } else teamsToPost = [baseTeam]
+            // Update all teams
+            teamsToPost.forEach(team => {
+                this.insertOrUpdateTeam(team)
+            })
         },
         sortTeams(method, key) {
             this.onSortArray(this.teams, method, key)

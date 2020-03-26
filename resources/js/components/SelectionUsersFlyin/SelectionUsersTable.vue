@@ -22,8 +22,10 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="user in users" :key="user.id" class="user-row table-row" ref="userRow" @contextmenu.prevent="showUserContext($event, user)">
-                    <td class="select"><BaseCheckbox :value="user" v-model="selected"/></td>
+                <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow"
+                @click.ctrl="$refs.selectBox[index].check()"
+                @contextmenu.prevent="showUserContext($event, user)">
+                    <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
                     <td class="title">
                         <i class="fas fa-user"></i>
                         <span>{{user.name}}</span>
@@ -55,30 +57,25 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
+        <BaseContextMenu ref="contextMenuUser" class="context-user"
         :hotkeys="['KeyC', 'KeyR']"
         @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
-        @keybind-r="onRemoveUser(contextUser)">
+        @keybind-r="onRemoveUsers(contextUser)">
             <!-- Manually added users  -->
-            <template v-if="!contextUser.added_by_team">
+            <template v-slot:header v-if="selected.length > 0">
+                <span>Choose action for {{selected.length}} users</span>
+            </template>
+            <template v-slot>
                 <div class="item-group">
                     <div class="item" @click.stop="showRoleContext(contextMouseEvent, contextUser)">
                         <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                        <span><u>C</u>hange role</span>
+                        <span><u>C</u>hange role{{selected.length > 0 ? 's' : ''}}</span>
                     </div>
                 </div>
                 <div class="item-group">
-                    <div class="item" @click="onRemoveUser(contextUser)">
+                    <div class="item" @click="onRemoveUsers(contextUser)">
                         <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                        <span><u>R</u>emove User</span>
-                    </div>
-                </div>
-            </template>
-            <!-- Team added users  -->
-            <template v-else>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <span>User added through team. Edit user on team to make changes.</span>
+                        <span><u>R</u>emove User{{selected.length > 0 ? 's' : ''}}</span>
                     </div>
                 </div>
             </template>
@@ -99,7 +96,7 @@
                     <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="filteredAvailableSelectionRoles"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
                     :optionNameKey="'role'" :optionValueKey="'role'"
-                    @submit="onUpdateSelectionUser();slotProps.hide()"/>
+                    @submit="onUpdateSelectionUsersRole();slotProps.hide()"/>
                 </div>
             </template>
         </BaseContextMenu>
@@ -147,7 +144,7 @@ export default {
         showUserContext(e, user) {
             const contextMenu = this.$refs.contextMenuUser
             this.contextMouseEvent = e
-            this.contextUser = user
+            this.contextUser = this.selected.length > 0 ? this.selected[0] : user
             contextMenu.show(e)
         },
         showRoleContext(e, user) {
@@ -163,10 +160,20 @@ export default {
         onAddUsersToSelection(usersToAdd) {
             this.addUsersToSelection({selection: this.selection, users: this.usersToAdd})
         },
-        onUpdateSelectionUser() {
-            // // Update state
-            // this.contextUser.role = this.userToEdit.role
-            this.updateSelectionUsers({selection: this.selection, users: [this.userToEdit]})
+        onUpdateSelectionUsersRole() {
+            // Define the user to base the new role to set on
+            const baseUser = this.userToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            let usersToPost
+            if (this.selected.length > 0) {
+                usersToPost = this.selected.map(user => {
+                    user.role = baseUser.role
+                    return user
+                })
+            } else usersToPost = [baseUser]
+            // Update users
+            this.updateSelectionUsers({selection: this.selection, users: usersToPost})
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
@@ -174,10 +181,16 @@ export default {
 
             this.sortArray(this.users, method, key)
         },
-        onRemoveUser(user) {
+        onRemoveUsers(user) {
             // If we have a selection, loop through the selection and remove those
             // Else, remove the parsed user
-            this.removeUsersFromSelection({selection: this.selection, users: [user]})
+            let usersToRemove
+            if (this.selected.length > 0) {
+                usersToRemove = JSON.parse(JSON.stringify(this.selected))
+            } else {
+                usersToRemove = [user]
+            }
+            this.removeUsersFromSelection({selection: this.selection, users: usersToRemove})
         },
     }
 }

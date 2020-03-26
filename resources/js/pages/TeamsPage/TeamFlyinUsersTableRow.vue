@@ -1,6 +1,7 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)">
-        <td class="select"><BaseCheckbox/></td>
+    <tr class="user-row table-row" ref="userRow" @contextmenu.prevent="$emit('showContextMenu', $event, user)"
+    @click.ctrl="$refs.selectBox.check()">
+        <td class="select"><BaseCheckbox ref="selectBox" :value="user" :modelValue="localSelectedUsers" v-model="localSelectedUsers"/></td>
         <td v-if="editName" class="title">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
@@ -33,14 +34,19 @@ export default {
     props: [
         'user',
         'team',
-        'index'
+        'index',
+        'selectedUsers'
     ],
     data: function() { return {
         editName: false,
         userToEdit: this.user,
     }},
     computed: {
-        ...mapGetters('workspaces', ['authUserWorkspaceRole'])
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        localSelectedUsers: {
+            get() { return this.selectedUsers },
+            set(localSelectedUsers) {this.$emit('input', localSelectedUsers)}
+        }
     },
     methods: {
         ...mapActions('users', ['updateUser']),
