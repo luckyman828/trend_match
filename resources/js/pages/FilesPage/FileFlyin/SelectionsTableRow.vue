@@ -9,13 +9,14 @@
             <!-- Editing -->
             <td class="title" v-if="selectionToEdit && selectionToEdit.selection.id == selection.id && selectionToEdit.field == 'name'" :style="selectionWidth">
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
-                <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
+                <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i>
                 <BaseEditInputWrapper activateOnMount=true type="text"
                 :value="selectionToEdit.selection.name" :oldValue="selection.name" v-model="selectionToEdit.selection.name"
                 @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', {selection, parent})"/>
             </td>
             <!-- Viewing -->
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
+                <i class="far fa-lock" v-if="selection.is_locked"></i>
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
@@ -41,9 +42,13 @@
                 </button>
             </td>
             <td class="status" v-if="authUserWorkspaceRole == 'Admin'">
-                <button class="editable ghost" @click="onToggleLocked(selection)"><span>{{selection.is_locked ? 'Locked' : 'Open'}}</span>
+                <button class="editable" :class="!selection.is_locked && 'ghost'" 
+                @click="onToggleLocked(selection)">
+                    <span>{{selection.is_locked ? 'Locked' : 'Open'}}</span>
                     <i class="far" :class="selection.is_locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
-                <button class="editable ghost" @click="onToggleHidden(selection)"><span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
+                <button class="editable" :class="selection.is_visible && 'ghost'"
+                @click="onToggleHidden(selection)">
+                    <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
                     <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i></button>
             </td>
             <td class="action">

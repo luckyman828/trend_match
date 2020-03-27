@@ -503,8 +503,8 @@ export default {
                         // Return true if we are after visible_from, or it isn't set
                         // And before visible_to or it isn't set¨
                         const now = new Date()
-                        const from = selection.visible_from
-                        const to = selection.visible_to
+                        const from = selection.visible_from && new Date(selection.visible_from)
+                        const to = selection.visible_to && new Date(selection.visible_to)
                         return (!from || now > from) && (!to || now < to)
                     },
                 })
@@ -512,8 +512,8 @@ export default {
                 Object.defineProperty(selection, 'is_locked', {
                     get: () => {
                         const now = new Date()
-                        const from = selection.feedback_lock_from
-                        const to = selection.feedback_lock_to
+                        const from = selection.feedback_lock_from && new Date(selection.feedback_lock_from)
+                        const to = selection.feedback_lock_to && new Date(selection.feedback_lock_to)
                         return (
                             (!to && !!from && now > from) ||
                             (!from && !!to && now < to) ||
