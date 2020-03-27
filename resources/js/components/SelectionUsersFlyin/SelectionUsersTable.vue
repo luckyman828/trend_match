@@ -24,7 +24,7 @@
             <template v-slot:body>
                 <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow"
                 @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu.prevent="showUserContext($event, user)">
+                @contextmenu="showUserContext($event, user)">
                     <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
                     <td class="title">
                         <i class="fas fa-user"></i>
@@ -32,14 +32,14 @@
                     </td>
                     <td class="email">{{user.email}}</td>
                     <td class="role">
-                        <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" 
+                        <button v-if="userHasEditAccess" class="ghost editable sm" 
                         @click="showRoleContext($event, user)">
                             <span>{{user.role}}</span>
                         </button>
                         <span v-else>{{user.role}}</span>
                     </td>
                     <td class="action">
-                        <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" 
+                        <button v-if="userHasEditAccess" class="invisible ghost-hover" 
                         @click="showUserContext($event, user)">
                             <i class="far fa-ellipsis-h medium"></i>
                         </button>
@@ -48,8 +48,8 @@
             </template>
             <template v-slot:footer>
                 <td>
-                    <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add users to selections'"
+                    <BaseButton buttonClass="primary invisible" :disabled="!userHasEditAccess"
+                    v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                     @click="onAddUser($event)">
                         <i class="far fa-plus"></i><span>Add Users(s) to Selection</span>
                     </BaseButton>
@@ -125,8 +125,11 @@ export default {
         contextMouseEvent: null,
     }},
     computed: {
-        ...mapGetters('selections', ['availableSelectionRoles']),
+        ...mapGetters('selections', ['availableSelectionRoles', 'getAuthUserHasSelectionEditAccess']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        userHasEditAccess() {
+            return this.getAuthUserHasSelectionEditAccess(this.selection)
+        },
         filteredAvailableSelectionRoles() {
             return this.availableSelectionRoles.filter(x => {
                 return this.selection.type != 'Master' ? x.role != 'Approver' : true
@@ -142,6 +145,8 @@ export default {
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
         showUserContext(e, user) {
+            if (this.authUserWorkspaceRole != 'Admin') return
+            e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser
             this.contextMouseEvent = e
             this.contextUser = this.selected.length > 0 ? this.selected[0] : user

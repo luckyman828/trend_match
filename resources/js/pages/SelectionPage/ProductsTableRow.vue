@@ -93,21 +93,21 @@
         </td>
         <td class="action">
             <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
-            :disabled="currentSelectionMode == 'Approval'" 
-            v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
+            :disabled="!userWriteAccess.actions.has_access" 
+            v-tooltip="!userWriteAccess.actions.has_access && userWriteAccess.actions.msg"
             @click="onUpdateAction(product, 'Focus')">
                 <i class="far fa-star"></i>
             </BaseButton>
             <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
-            :disabled="currentSelectionMode == 'Approval'" 
-            v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
+            :disabled="!userWriteAccess.actions.has_access" 
+            v-tooltip="!userWriteAccess.actions.has_access && userWriteAccess.actions.msg"
             @click="onUpdateAction(product, 'In')">
                 <i class="far fa-heart"></i>
                 <span>In</span>
             </BaseButton>
             <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
-            :disabled="currentSelectionMode == 'Approval'"
-            v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
+            :disabled="!userWriteAccess.actions.has_access" 
+            v-tooltip="!userWriteAccess.actions.has_access && userWriteAccess.actions.msg"
             @click="onUpdateAction(product, 'Out')">
                 <i class="far fa-times-circle"></i>
                 <span>out</span>
@@ -147,8 +147,11 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('selections', ['currentSelectionMode']),
+        ...mapGetters('selections', ['currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('products', ['currentFocusIndex']),
+        userWriteAccess () {
+            return this.getAuthUserSelectionWriteAccess(this.selection)
+        },
         localSelectedProducts: {
             get() { return this.selectedProducts },
             set(localSelectedProducts) {this.$emit('input', localSelectedProducts)}

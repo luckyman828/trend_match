@@ -67,9 +67,9 @@
                 </BaseContextMenuItem> -->
             <!-- </div> -->
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
-                && 'Can only set own currency. Only admins can change currency of others.'"
+                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin'" 
+                v-tooltip="authUserWorkspaceRole != 'Admin'
+                && 'Only admins can change currency of others.'"
                 @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
                     <span><u>C</u>hange <u>C</u>urrency</span>
                 </BaseContextMenuItem>

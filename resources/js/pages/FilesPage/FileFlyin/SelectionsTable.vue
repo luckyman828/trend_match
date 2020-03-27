@@ -9,6 +9,7 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
+                <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
@@ -18,7 +19,7 @@
                 <BaseTableHeader class="currency">Currency</BaseTableHeader>
                 <BaseTableHeader class="teams">Teams</BaseTableHeader>
                 <BaseTableHeader class="users">Users</BaseTableHeader>
-                <BaseTableHeader v-if="authUserWorkspaceRole == 'Admin'" class="status">Status</BaseTableHeader>
+                <BaseTableHeader class="status">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -649,10 +650,12 @@ export default {
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('selections', {allSelections: ['selections']}),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
     },
     methods: {
-        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 'updateSelection', 
-        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings', 'updateSelectionSettings']),
+        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
+        'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
+        'fetchSelectionSettings', 'updateSelectionSettings']),
         ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
@@ -715,7 +718,8 @@ export default {
             this.updateSelectionSettings(this.contextSelection)
         },
         showContextMenuSelection(e, selection, component, parent) {
-            if (this.authUserWorkspaceRole != 'Admin') return
+            if (!this.getAuthUserHasSelectionEditAccess(selection)) return
+            e.preventDefault()
             // Set the current context menu item
             this.contextSelection = selection
             this.contextSelectionComponent = component
@@ -931,6 +935,14 @@ export default {
             }
             tr {
                 > * {
+                    &.locked { // Title
+                        min-width: 16px;
+                        max-width: 16px;
+                        margin: 0;
+                        i {
+                            margin: 0;
+                        }
+                    }
                     &.expand { // Title
                         min-width: 48px;
                         max-width: 48px

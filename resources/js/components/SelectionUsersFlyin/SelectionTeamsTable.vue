@@ -23,7 +23,7 @@
             <template v-slot:body>
                 <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow"
                 @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu.prevent="showTeamContext($event, team)">
+                @contextmenu="showTeamContext($event, team)">
                     <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
                     <td class="title">
                         <i class="fas fa-users"></i>
@@ -33,13 +33,16 @@
                         <span>{{team.user_count}}</span>
                     </td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click="showTeamContext($event, team)"><i class="far fa-ellipsis-h medium"></i></button>
+                        <button class="invisible ghost-hover" v-if="userHasEditAccess" 
+                        @click="showTeamContext($event, team)">
+                            <i class="far fa-ellipsis-h medium"></i>
+                        </button>
                     </td>
                 </tr>
             </template>
             <template v-slot:footer>
-                <td><BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add users to selections'"
+                <td><BaseButton buttonClass="primary invisible" :disabled="!userHasEditAccess"
+                v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                 @click="onAddTeam($event)">
                     <i class="far fa-plus"></i><span>Add Teams(s) to Selection</span>
                 </BaseButton></td>
@@ -111,7 +114,10 @@ export default {
     }},
     computed: {
         ...mapGetters('teams', ['teams']),
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        userHasEditAccess() {
+            return this.getAuthUserHasSelectionEditAccess(this.selection)
+        },
         availableTeams() {
             const allTeams = this.teams
             // return allTeams
@@ -123,6 +129,8 @@ export default {
         ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection']),
         ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
+            if (!this.userHasEditAccess) return
+            e.preventDefault()
             const contextMenu = this.$refs.contextMenuTeam
             this.contextTeam = this.selected.length > 0 ? this.selected[0] : team
             contextMenu.show(e)

@@ -33,7 +33,7 @@
         </td>
         <td class="currency">
             <!-- Admin or self -->
-            <button v-if="authUserWorkspaceRole == 'Admin' || isSelf"
+            <button v-if="authUserWorkspaceRole == 'Admin'"
             class="ghost editable sm" 
             @click.stop="$emit('editCurrency', $event, user)">
                 <span>{{user.currency ? user.currency : 'Set currency'}}</span>
@@ -81,8 +81,10 @@ export default {
 
     .user-row {
         &.self {
-            i {
-                color: $primary;
+            .title {
+                i {
+                    color: $primary;
+                }
             }
             font-weight: 500;
         }
