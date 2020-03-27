@@ -370,10 +370,6 @@ export default {
             this.sortArray(array, this.sortAsc, this.sortKey)
         }
     },
-    updated() {
-        // Set the filteredbySearch arrays if we have a change
-        this.usersFilteredBySearch = this.users
-    },
     mounted() {
         // Initially set the filteredbySearch arrays
         this.usersFilteredBySearch = this.users
