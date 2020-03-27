@@ -1,6 +1,6 @@
 <template>
     <div class="subfile">
-        <ThePageHeader :title="`${selection.name || 'Untitled Selection'}: 
+        <ThePageHeader :title="`${selection.is_locked ? '[Locked]' : ''} ${selection.name || 'Untitled Selection'}: 
         ${selection.your_role == 'Owner' ? 'Alignment' 
         : selection.your_role == 'Approver' ? 'Approval'
         : selection.your_role == 'Member' ? 'Feedback' 

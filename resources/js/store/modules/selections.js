@@ -81,6 +81,22 @@ export default {
             const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
             return authUserWorkspaceRole == 'Admin' || selection.your_role == 'Owner'
         },
+        getAuthUserSelectionWriteAccess: () => selection => {
+            return {
+                actions: {
+                    has_access: !selection.is_locked && selection.your_role != 'Approver',
+                    msg: selection.is_locked ? 'Selection is locked' : 'Only selection owners can decide action',
+                },
+                requests: {
+                    has_access: !selection.is_locked && selection.your_role == 'Owner',
+                    msg: selection.is_locked ? 'Selection is locked' : 'Only selection owners can make requests',
+                },
+                comments: {
+                    has_access: !selection.is_locked,
+                    msg: selection.is_locked && 'Selection is locked',
+                },
+            }
+        },
     },
 
     actions: {
@@ -117,6 +133,7 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     selection = response.data
+                    commit('PROCESS_SELECTIONS', [selection])
                     if (addToState) {
                         commit('setCurrentSelection', selection)
                     }

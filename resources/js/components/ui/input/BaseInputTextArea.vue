@@ -1,6 +1,7 @@
 <template>
-    <div class="input-textarea">
+    <div class="input-textarea" :class="{'read-only': disabled}">
         <textarea class="input-wrapper focus-visible" ref="textarea" :placeholder="placeholder"
+        :class="{disabled: disabled}" :disabled="disabled"
         @input="resize(); $emit('input', $event.target.value)" :value="value"/>
     </div>
 </template>
@@ -10,7 +11,8 @@ export default {
     name: 'baseInputTextArea',
     props: [
         'placeholder',
-        'value'
+        'value',
+        'disabled'
     ],
     methods: {
         resize() {
@@ -38,6 +40,18 @@ export default {
 
 <style <style lang="scss" scoped>
 @import '~@/_variables.scss';
+.input-textarea {
+    &.read-only {
+        .input-wrapper {
+            cursor: text;
+            background: $grey;
+            &.disabled {
+                color: $fontBody;
+            }
+        }
+    }
+}
+
 textarea {
     resize: none;
     max-height: 400px;

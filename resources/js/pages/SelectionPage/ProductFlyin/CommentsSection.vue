@@ -24,9 +24,11 @@
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
                     <div class="input-parent comment">
-                        <BaseInputTextArea ref="commentField"
-                        placeholder="Write your comment here..." v-model="newComment.content" 
-                        @click.native="activateWrite" @keydown.native.enter.exact.prevent  
+                        <BaseInputTextArea ref="commentField" :disabled="!userWriteAccess.comments.has_access"
+                        v-tooltip="!userWriteAccess.comments.has_access && userWriteAccess.comments.msg"
+                        :placeholder="userWriteAccess.comments.has_access ? 'Write your comment here...' : userWriteAccess.comments.msg" 
+                        v-model="newComment.content" 
+                        @click.native="userWriteAccess.comments.has_access && activateWrite()" @keydown.native.enter.exact.prevent  
                         @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                     </div>
                     <div class="flex-wrapper" v-if="writeActive">
@@ -77,9 +79,12 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode']),
+        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         submitDisabled () {
             return this.newComment.content.length < 1 || this.submitting
+        },
+        userWriteAccess () {
+            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
         },
     },
     methods: {
