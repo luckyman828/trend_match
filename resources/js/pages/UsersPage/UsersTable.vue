@@ -137,7 +137,7 @@
                     <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
                     @click="onDeleteUsers">
-                        <span><u>D</u>elete UsersPage from Workspace</span>
+                        <span><u>D</u>elete Users from Workspace</span>
                     </BaseContextMenuItem>
                 </div>
             </template>
