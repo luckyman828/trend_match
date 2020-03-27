@@ -24,7 +24,7 @@
             <template v-slot:body>
                 <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow"
                 @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu.prevent="showUserContext($event, user)">
+                @contextmenu="showUserContext($event, user)">
                     <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
                     <td class="title">
                         <i class="fas fa-user"></i>
@@ -142,6 +142,8 @@ export default {
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
         showUserContext(e, user) {
+            if (this.authUserWorkspaceRole != 'Admin') return
+            e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser
             this.contextMouseEvent = e
             this.contextUser = this.selected.length > 0 ? this.selected[0] : user

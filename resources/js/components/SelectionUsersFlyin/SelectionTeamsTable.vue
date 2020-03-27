@@ -23,7 +23,7 @@
             <template v-slot:body>
                 <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow"
                 @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu.prevent="showTeamContext($event, team)">
+                @contextmenu="showTeamContext($event, team)">
                     <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
                     <td class="title">
                         <i class="fas fa-users"></i>
@@ -33,7 +33,10 @@
                         <span>{{team.user_count}}</span>
                     </td>
                     <td class="action">
-                        <button class="invisible ghost-hover" @click="showTeamContext($event, team)"><i class="far fa-ellipsis-h medium"></i></button>
+                        <button class="invisible ghost-hover" v-if="authUserWorkspaceRole == 'Admin'" 
+                        @click="showTeamContext($event, team)">
+                            <i class="far fa-ellipsis-h medium"></i>
+                        </button>
                     </td>
                 </tr>
             </template>
@@ -123,6 +126,8 @@ export default {
         ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection']),
         ...mapActions('teams', ['fetchTeamUsers']),
         showTeamContext(e, team) {
+            if (this.authUserWorkspaceRole != 'Admin') return
+            e.preventDefault()
             const contextMenu = this.$refs.contextMenuTeam
             this.contextTeam = this.selected.length > 0 ? this.selected[0] : team
             contextMenu.show(e)

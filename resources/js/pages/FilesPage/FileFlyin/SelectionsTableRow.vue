@@ -1,6 +1,8 @@
 <template>
     <div class="selections-table-row">
-        <tr class="selection" @contextmenu.prevent="emitShowContext" @click="onClick">
+        <tr class="selection" :class="{'is-hidden': isHidden}"
+        @contextmenu="emitShowContext" @click="onClick">
+            <td class="locked"><i class="far fa-lock" v-if="selection.is_locked" v-tooltip="'Locked: Selection is read-only'"></i></td>
             <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
@@ -16,7 +18,6 @@
             </td>
             <!-- Viewing -->
             <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
-                <i class="far fa-lock" v-if="selection.is_locked"></i>
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
@@ -55,7 +56,6 @@
                 <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
                 <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
                 <BaseButton v-else buttonClass="invisible ghost-hover primary"
-                :disabled="selection.is_locked" v-tooltip="selection.is_locked && 'Selection is currently locked. Admins can lock/unlock selections'"
                 @click="onGoToSelection">
                     <span>Go to Selection</span>
                 </BaseButton>
@@ -63,7 +63,7 @@
         </tr>
         <template v-if="childrenExpanded">
             <selectionsTableRow v-for="selectionChild in selection.children" :parent="selection" :selection="selectionChild" :path="path.concat(selection.id)"
-            :selectionToEdit="selectionToEdit" :key="selectionChild.id" :depth="depth+1" :moveSelectionActive="moveSelectionActive"
+            :selectionToEdit="selectionToEdit" :key="selectionChild.id" :depth="selectionDepth" :moveSelectionActive="moveSelectionActive"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
             @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" @showSelectionCurrencyContext="$emit('showSelectionCurrencyContext', $event)" 
             @showSettingsContext="($event, selection) => {$emit('showSettingsContext', $event, selection)}"/>
@@ -104,6 +104,14 @@ export default {
             const baseWidth = 400
             const indentAmount = 24
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
+        },
+        isHidden() {
+            return this.authUserWorkspaceRole != 'Admin' && !this.selection.is_visible
+        },
+        selectionDepth() {
+            // If the selection is not visible to the user, then set the depth equal to the previous depth
+            if (this.isHidden) return this.depth
+            else return this.depth+1
         }
     },
     methods: {
@@ -172,6 +180,12 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
+
+.selection {
+    &.is-hidden {
+        display: none;
+    }
+}
 
     .title {
         display: flex;

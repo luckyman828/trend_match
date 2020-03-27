@@ -9,6 +9,7 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
+                <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
@@ -716,6 +717,7 @@ export default {
         },
         showContextMenuSelection(e, selection, component, parent) {
             if (this.authUserWorkspaceRole != 'Admin') return
+            e.preventDefault()
             // Set the current context menu item
             this.contextSelection = selection
             this.contextSelectionComponent = component
@@ -931,6 +933,14 @@ export default {
             }
             tr {
                 > * {
+                    &.locked { // Title
+                        min-width: 16px;
+                        max-width: 16px;
+                        margin: 0;
+                        i {
+                            margin: 0;
+                        }
+                    }
                     &.expand { // Title
                         min-width: 48px;
                         max-width: 48px

@@ -81,8 +81,10 @@ export default {
 
     .user-row {
         &.self {
-            i {
-                color: $primary;
+            .title {
+                i {
+                    color: $primary;
+                }
             }
             font-weight: 500;
         }
