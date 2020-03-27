@@ -107,7 +107,7 @@
         :hotkeys="['KeyC', 'KeyR', 'KeyD']"
         @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
         @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onDeleteUser(contextUser)">
+        @keybind-d="onDeleteUsers">
             <template v-slot:header>
                 <span>Choose action for {{selectedUsers.length}} users</span>
             </template>
