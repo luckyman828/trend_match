@@ -42,6 +42,10 @@
                     </td> -->
                     <!-- <td class="status">-</td> -->
                     <td class="action">
+                        <button class="invisible ghost-hover primary" 
+                        @click="setCurrentFolder(folder)">
+                            <span>Open folder</span>
+                        </button>
                         <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
@@ -63,6 +67,10 @@
                     </td> -->
                     <!-- <td class="status">-</td> -->
                     <td class="action">
+                        <button class="invisible ghost-hover primary" 
+                        @click="showSingleFile(file)">
+                            <span>View file</span>
+                        </button>
                         <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
