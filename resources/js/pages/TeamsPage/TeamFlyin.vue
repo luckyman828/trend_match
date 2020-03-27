@@ -39,7 +39,7 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
+        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
         :hotkeys="['KeyT', 'KeyD']"
         @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
         @keybind-d="onRemoveUserFromTeam(contextUser)">
@@ -59,13 +59,13 @@
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
                     <span><u>C</u>hange User Currency</span>
                 </div> -->
-                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, slotProps.item)">
+                <div class="item" @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
                     <span>Change <u>T</u>eam Role</span>
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="onRemoveUserFromTeam(slotProps.item)">
+                <div class="item" @click="onRemoveUserFromTeam(contextUser)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <span><u>D</u>elete User from Team</span>
                 </div>
@@ -96,7 +96,7 @@
         </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUsers([userToEdit])">
+        <!-- <BaseContextMenu ref="contextMenuUserCurrency" class="context-currency" @hide="userToEdit.currency != originalUser.currency && updateWorkspaceUsers([userToEdit])">
             <template v-slot:header>
                 Change User Currency
             </template>
@@ -106,7 +106,7 @@
                     :currentOptionId="originalUser.currency" :search="true" v-model="userToEdit.currency" :submitOnChange="true"/>
                 </div>
             </template>
-        </BaseContextMenu>
+        </BaseContextMenu> -->
 
         <BaseContextMenu ref="contextMenuTeamRole" class="context-role">
             <template v-slot:header>
@@ -200,8 +200,8 @@ export default {
         }
     },
     methods: {
-        ...mapActions('users', ['updateWorkspaceUsers']),
-        ...mapActions('teams', ['removeUsersFromTeam', 'updateTeamUser', 'addUsersToTeam', 'fetchTeamUsers']),
+        // ...mapActions('users', ['updateWorkspaceUsers']),
+        ...mapActions('teams', ['removeUsersFromTeam', 'updateTeamUsers', 'addUsersToTeam', 'fetchTeamUsers']),
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
             if (this.sortKey == key) {
@@ -259,7 +259,7 @@ export default {
                 })
             } else usersToPost = [baseUser]
             // Update all users
-            this.updateWorkspaceUsers(usersToPost)
+            this.updateTeamUsers({team: this.team, users: usersToPost})
         },
         onRemoveUserFromTeam(user) {
             // if ( confirm("Are you sure you want to remove this user from this team?") )

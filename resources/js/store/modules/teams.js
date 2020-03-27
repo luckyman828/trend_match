@@ -171,7 +171,7 @@ export default {
                 })
             return succes
         },
-        async updateTeamUser({ commit }, { team, user }) {
+        async updateTeamUsers({ commit }, { team, users }) {
             const apiUrl = `/teams/${team.id}/users`
 
             await axios({
@@ -179,11 +179,13 @@ export default {
                 url: apiUrl,
                 data: {
                     method: 'Add',
-                    users: [user],
+                    users: users,
                 },
             })
         },
         async removeUsersFromTeam({ commit, dispatch }, { team, users }) {
+            console.log(team)
+            console.log(users)
             // Update state
             commit('removeUsersFromTeam', { team, users })
 
