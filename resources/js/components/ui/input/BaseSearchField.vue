@@ -2,7 +2,7 @@
     <div class="search">
         <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
         @click.stop @input="$emit('input', result)" @keydown.esc="onEsc">
-        <span v-if="searchString.length > 0" class="close" @click.stop="clear()">
+        <span v-if="searchString.length > 0" class="close" @click.stop="clear();setFocus()">
             <i class="fas fa-times"></i>
         </span>
     </div>
@@ -124,8 +124,7 @@ export default {
             this.$refs.searchField.select()
         },
         clear() {
-            this.searchString = '',
-            this.setFocus()
+            this.searchString = ''
             this.$emit('input', this.result)
         },
         onEsc(e) {
