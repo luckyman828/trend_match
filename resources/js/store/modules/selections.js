@@ -77,6 +77,10 @@ export default {
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
         },
+        getAuthUserHasSelectionEditAccess: (state, getters, rootState, rootGetters) => selection => {
+            const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
+            return authUserWorkspaceRole == 'Admin' || selection.your_role == 'Owner'
+        },
     },
 
     actions: {

@@ -19,7 +19,7 @@
                 <BaseTableHeader class="currency">Currency</BaseTableHeader>
                 <BaseTableHeader class="teams">Teams</BaseTableHeader>
                 <BaseTableHeader class="users">Users</BaseTableHeader>
-                <BaseTableHeader v-if="authUserWorkspaceRole == 'Admin'" class="status">Status</BaseTableHeader>
+                <BaseTableHeader class="status">Status</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -650,10 +650,12 @@ export default {
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('selections', {allSelections: ['selections']}),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
     },
     methods: {
-        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection', 'updateSelection', 
-        'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 'fetchSelectionSettings', 'updateSelectionSettings']),
+        ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
+        'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
+        'fetchSelectionSettings', 'updateSelectionSettings']),
         ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
@@ -716,7 +718,7 @@ export default {
             this.updateSelectionSettings(this.contextSelection)
         },
         showContextMenuSelection(e, selection, component, parent) {
-            if (this.authUserWorkspaceRole != 'Admin') return
+            if (!this.getAuthUserHasSelectionEditAccess(selection)) return
             e.preventDefault()
             // Set the current context menu item
             this.contextSelection = selection

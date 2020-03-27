@@ -27,34 +27,41 @@
             <td class="out">-</td>
             <td class="nd">-</td> -->
             <td class="currency">
-                <button class="ghost editable sm" @click="$event => $emit('showSelectionCurrencyContext', {selection, e: $event})" v-if="authUserWorkspaceRole == 'Admin'">
+                <button class="ghost editable sm" @click="$event => $emit('showSelectionCurrencyContext', {selection, e: $event})" v-if="userHasEditAccess">
                     <span>{{selection.currency || 'Set currency'}}</span>
                 </button>
                 <span v-else>{{selection.currency || 'No currency set'}}</span>
             </td>
             <td class="teams">
-                <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
+                <button class="ghost editable sm" v-if="userHasEditAccess"
+                @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-users"></i><span>{{selection.team_count}}</span>
                 </button>
+                <span v-else>-</span>
             </td>
             <td class="users">
-                <button class="ghost editable sm" @click="$emit('showSelectionUsersFlyin', selection)">
+                <button class="ghost editable sm" v-if="userHasEditAccess"
+                @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-user"></i><span>{{selection.user_count}}</span>
                 </button>
+                <span v-else>-</span>
             </td>
-            <td class="status" v-if="authUserWorkspaceRole == 'Admin'">
-                <button class="editable" :class="!selection.is_locked && 'ghost'" 
-                @click="onToggleLocked(selection)">
-                    <span>{{selection.is_locked ? 'Locked' : 'Open'}}</span>
-                    <i class="far" :class="selection.is_locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
-                <button class="editable" :class="selection.is_visible && 'ghost'"
-                @click="onToggleHidden(selection)">
-                    <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
-                    <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+            <td class="status">
+                <template v-if="userHasEditAccess">
+                    <button class="editable" :class="!selection.is_locked && 'ghost'" 
+                    @click="onToggleLocked(selection)">
+                        <span>{{selection.is_locked ? 'Locked' : 'Open'}}</span>
+                        <i class="far" :class="selection.is_locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
+                    <button class="editable" :class="selection.is_visible && 'ghost'"
+                    @click="onToggleHidden(selection)">
+                        <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
+                        <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                </template>
+                <span v-else>-</span>
             </td>
             <td class="action">
-                <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
-                <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
+                <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
+                <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
                 <BaseButton v-else buttonClass="invisible ghost-hover primary"
                 @click="onGoToSelection">
                     <span>Go to Selection</span>
@@ -94,7 +101,7 @@ export default {
         childrenExpanded: true
     }},
     computed: {
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
         indent() {
             const baseIndent = 48
             const indentAmount = 24
@@ -106,12 +113,15 @@ export default {
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         },
         isHidden() {
-            return this.authUserWorkspaceRole != 'Admin' && !this.selection.is_visible
+            return !this.userHasEditAccess && !this.selection.is_visible
         },
         selectionDepth() {
             // If the selection is not visible to the user, then set the depth equal to the previous depth
             if (this.isHidden) return this.depth
             else return this.depth+1
+        },
+        userHasEditAccess() {
+            return this.getAuthUserHasSelectionEditAccess(this.selection)
         }
     },
     methods: {
