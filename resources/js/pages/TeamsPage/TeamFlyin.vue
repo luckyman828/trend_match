@@ -60,7 +60,7 @@
                     <span><u>C</u>hange User Currency</span>
                 </div> -->
                 <div class="item" @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
-                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
+                    <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
                     <span>Change <u>T</u>eam Role</span>
                 </div>
             </div>
