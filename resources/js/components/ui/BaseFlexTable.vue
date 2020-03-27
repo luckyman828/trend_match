@@ -132,7 +132,6 @@ export default {
             this.scrollParent = this.getScrollParent(this.$el, false)
             this.scrollTable = this.$refs.table
             this.scrollParent.addEventListener('scroll', this.handleScroll)
-            this.resizeHeader()
         }
     }
 }
