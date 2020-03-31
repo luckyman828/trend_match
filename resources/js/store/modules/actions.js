@@ -175,7 +175,7 @@ export default {
                 Vue.set(product, 'action_author', user)
                 // Check if the action already exists in the products actions array
                 const existingAction = product.actions.find(
-                    x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
+                    x => x.product_id == product.id && x.selection_id == selection.id
                 )
                 if (!existingAction) {
                     product.actions.push({
