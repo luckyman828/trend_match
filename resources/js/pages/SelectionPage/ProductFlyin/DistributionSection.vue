@@ -265,7 +265,7 @@ export default {
 @import '~@/_variables.scss';
 
 .distribution {
-    background: $bgContentAlt;
+    background: $bg;
     .tab-headers {
         display: flex;
         height: 100%;
@@ -275,7 +275,7 @@ export default {
         justify-content: center;
         align-items: center;
         flex: 1;
-        background: $bgContentAlt;
+        background: $bg;
         height: 100%;
         text-align: center;
         font-weight: 700;

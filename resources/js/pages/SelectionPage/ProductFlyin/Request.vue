@@ -1,5 +1,5 @@
 <template>
-    <div class="request-wrapper" :class="[{own: own}, 
+    <div class="request-wrapper" :class="[{own: isOwn}, {master: isMaster}, 
     {'has-traits': request.focus}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
@@ -25,8 +25,11 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection']),
-        own() {
+        isOwn() {
             return this.request.selection_id == this.currentSelection.id
+        },
+        isMaster() {
+            return this.request.selection.type == 'Master'
         }
     },
     methods: {
@@ -72,11 +75,7 @@ export default {
         border-radius: 6px;
         display: flex;
         flex-direction: column;
-        background: $dark1;
-        color: white;
-        strong {
-            color: white;
-        }
+        background: white;
         .sender {
             font-size: 12px;
         }
@@ -84,11 +83,16 @@ export default {
             font-size: 12px;
             font-weight: 500;
         }
-        .own & {
+        .own:not(.master) & {
             background: $primary;
             color: white;
             strong {
                 color: white;
+            }
+        }
+        .master & {
+            background: $yellow;
+            strong {
             }
         }
         .content {

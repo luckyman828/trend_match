@@ -61,7 +61,7 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        own() {
+        isOwn() {
             return this.comment.user_id == this.authUser.id
         },
         hasTraits() {
@@ -144,16 +144,19 @@ export default {
     .comment {
         position: relative;
         padding: 12px;
-        background: $light2;
+        background: white;
         border-radius: 6px;
         width: 100%;
         z-index: 1;
         .failed {
             color: $red;
         }
-        .own & {
+        .own:not(.master) & {
             background: $primary;
             color: white;
+        }
+        .master & {
+            background: $yellow;
         }
         .body {
             white-space: pre-wrap;
