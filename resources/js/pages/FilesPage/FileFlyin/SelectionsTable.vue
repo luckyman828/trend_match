@@ -557,7 +557,7 @@
                             <span>Cancel</span>
                         </button>
                     </div>
-                </div>
+                </div>s
             </template>
         </BaseContextMenu>
 
