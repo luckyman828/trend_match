@@ -816,11 +816,8 @@ export default {
                 children: [],
                 visible_from: null,
                 visible_to: null,
-                feedback_lock_from: null,
-                feedback_lock_to: null,
-                // is_visible: false,
-                // is_locked: false,
-                // is_completed: false,
+                open_from: null,
+                open_to: null,
             }
             // Push new selection to the parent
             if (parent) {
