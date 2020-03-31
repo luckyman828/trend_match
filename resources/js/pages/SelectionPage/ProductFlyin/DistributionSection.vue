@@ -79,7 +79,7 @@
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="nd" v-for="selection in product.alignmentNds" :key="`alignment-${selection.id}`">
+                        <div class="nd" v-for="action in product.alignmentNds" :key="`alignment-${action.selection_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
                             </div>
