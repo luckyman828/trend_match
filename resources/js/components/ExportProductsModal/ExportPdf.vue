@@ -73,7 +73,9 @@
                                     <div class="alignment-wrapper" style="margin-bottom: 12px; border-bottom: solid 1px #E4E4E4;">
                                         <strong style="font-size: 8px;">Alignment & Requests</strong>
                                         <div class="row" v-for="(action, index) 
-                                        in product.actions.filter(x => includeNotDecided ? true : (x.action != 'None' || x.requests.length > 0))" 
+                                        in product.actions.filter(
+                                            x => includeNotDecided ? true : (x.action != 'None' 
+                                            || product.requests.find(request => request.selection_id == x.selection_id)))" 
                                         :key="'alignment-'+index"
                                         style="display: flex; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
                                             <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
