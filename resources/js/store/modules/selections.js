@@ -188,6 +188,7 @@ export default {
             }
             await axios.post(apiUrl, selection).then(async response => {
                 selection.id = response.data.id
+                commit('PROCESS_SELECTIONS', [selection])
                 if (addToState) {
                     commit('insertSelections', { file, selections: [selection] })
                 }
@@ -526,7 +527,8 @@ export default {
                         const now = new Date()
                         const from = selection.visible_from && new Date(selection.visible_from)
                         const to = selection.visible_to && new Date(selection.visible_to)
-                        return (!from || now > from) && (!to || now < to)
+                        // return (!from || now > from) && (!to || now < to) // Visible is no visible from is set
+                        return !!from && now > from && (!to || now < to) // Hidden if no visible from is set
                     },
                 })
                 // Locked
