@@ -111,7 +111,8 @@ export default {
     name: 'selectionUsersTable',
     props: [
         'selection',
-        'users'
+        'users',
+        'authUserIsOwner',
     ],
     mixins: [
         sortArray
@@ -128,7 +129,7 @@ export default {
         ...mapGetters('selections', ['availableSelectionRoles', 'getAuthUserHasSelectionEditAccess']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         userHasEditAccess() {
-            return this.getAuthUserHasSelectionEditAccess(this.selection)
+            return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
         filteredAvailableSelectionRoles() {
             return this.availableSelectionRoles.filter(x => {
