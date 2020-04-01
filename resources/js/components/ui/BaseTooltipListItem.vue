@@ -1,8 +1,8 @@
 <template>
-    <div class="tooltip-list-item row">
-            <span v-if="label" class="label">{{label}}</span>
-            <strong class="value">{{value}}</strong>
-    </div>
+    <tr class="tooltip-list-item row">
+        <td><span v-if="label" class="label">{{label}}</span></td>
+        <td><strong class="value">{{value}}</strong></td>
+    </tr>
 </template>
 
 <script>
@@ -23,16 +23,17 @@ export default {
         padding: 4px 12px;
         margin: 0;
         border-bottom: solid 1px $divider;
-        display: flex;
+        // display: flex;
         min-width: 152px;
         &:first-child {
-            border-top: solid 1px $divider;;
+            border-top: solid 1px $divider;
         }
         > * {
-            width: 50%;
+            // width: 50%;
+            border-top: solid 1px $divider;
+            padding: 4px 12px;
         }
         .label {
-            margin-right: 16px;
             + .value {
                 text-align: right;
             }
