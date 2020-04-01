@@ -39,7 +39,6 @@ export default {
         },
 
         async insertOrUpdateAction({ commit, dispatch }, { product, action, selection, user }) {
-            // type = action|feedback
             let apiUrl
             let requestBody
             let oldAction
