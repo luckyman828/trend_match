@@ -222,6 +222,7 @@ export default {
         },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
             // Commit mutation to state
+            console.log(users)
             await commit('addUsersToSelection', {
                 selection,
                 users: users.map(user => {

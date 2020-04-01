@@ -2,14 +2,14 @@
     <div class="products-table-wrapper">
         <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="productTotals.all" :modelValue="currentProductFilter"
-                value="overview" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" :modelValue="currentProductFilter"
-                value="ins" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`Out`" :count="productTotals.outs" :modelValue="currentProductFilter"
-                value="outs" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`Nds`" :count="productTotals.nds" :modelValue="currentProductFilter"
-                value="nds" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`Overview`" :count="productTotals.all" :value="currentProductFilter"
+                modelValue="overview" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" :value="currentProductFilter"
+                modelValue="ins" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`Out`" :count="productTotals.outs" :value="currentProductFilter"
+                modelValue="outs" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`Nds`" :count="productTotals.nds" :value="currentProductFilter"
+                modelValue="nds" @change="setCurrentProductFilter($event)"/>
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>

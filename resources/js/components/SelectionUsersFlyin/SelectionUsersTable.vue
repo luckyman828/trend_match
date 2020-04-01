@@ -1,6 +1,14 @@
 <template>
     <div class="selection-users-table">
         <BaseFlexTable :stickyHeader="false">
+            <template v-slot:tabs>
+                <BaseTableTab label="Members" :count="selection.users.length" 
+                modelValue="Members" v-model="currentUsersTableTab" 
+                @change="selected = []"/>
+                <BaseTableTab label="Excluded" :count="selection.denied_users.length"
+                modelValue="Excluded" v-model="currentUsersTableTab" 
+                @change="selected = []"/>
+            </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
@@ -14,40 +22,66 @@
             <template v-slot:header>
                 <BaseTableHeader class="select">
                     <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selected = users : selected = []"/>
+                    @change="(checked) => !!checked
+                    ? currentUsersTableTab == 'Members'
+                    ? selected = users
+                    : selected = selection.denied_users
+                    : selected = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
-                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
+                <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow"
-                @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu="showUserContext($event, user)">
-                    <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
-                    <td class="title">
-                        <i class="fas fa-user"></i>
-                        <span>{{user.name}}</span>
-                    </td>
-                    <td class="email">{{user.email}}</td>
-                    <td class="role">
-                        <button v-if="userHasEditAccess" class="ghost editable sm" 
-                        @click="showRoleContext($event, user)">
-                            <span>{{user.role}}</span>
-                        </button>
-                        <span v-else>{{user.role}}</span>
-                    </td>
-                    <td class="action">
-                        <button v-if="userHasEditAccess" class="invisible ghost-hover" 
-                        @click="showUserContext($event, user)">
-                            <i class="far fa-ellipsis-h medium"></i>
-                        </button>
-                    </td>
-                </tr>
+                <!-- Selection Members -->
+                <template v-if="currentUsersTableTab == 'Members'">
+                    <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow"
+                    @click.ctrl="$refs.selectBox[index].check()"
+                    @contextmenu="showUserContext($event, user)">
+                        <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
+                        <td class="title">
+                            <i class="fas fa-user"></i>
+                            <span>{{user.name}}</span>
+                        </td>
+                        <td class="email">{{user.email}}</td>
+                        <td class="role">
+                            <button v-if="userHasEditAccess" class="ghost editable sm" 
+                            @click="showRoleContext($event, user)">
+                                <span>{{user.role}}</span>
+                            </button>
+                            <span v-else>{{user.role}}</span>
+                        </td>
+                        <td class="action">
+                            <button v-if="userHasEditAccess" class="invisible ghost-hover" 
+                            @click="showUserContext($event, user)">
+                                <i class="far fa-ellipsis-h medium"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+                <!-- Excluded Users -->
+                <template v-if="currentUsersTableTab == 'Excluded'">
+                    <tr v-for="(user, index) in selection.denied_users" :key="user.id" class="user-row table-row" ref="userRow"
+                    @click.ctrl="$refs.selectBox[index].check()"
+                    @contextmenu="showExcludedUserContext($event, user)">
+                        <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
+                        <td class="title">
+                            <i class="fas fa-user"></i>
+                            <span>{{user.name}}</span>
+                        </td>
+                        <td class="email">{{user.email}}</td>
+                        <td class="action">
+                            <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
+                            @click="onAddUsersToSelection(selected.length > 0 ? selected : [user])">
+                                <span>Re-add user</span>
+                            </button>
+                        </td>
+                    </tr>
+                </template>
             </template>
             <template v-slot:footer>
-                <td>
+                <td v-if="currentUsersTableTab == 'Members'">
                     <BaseButton buttonClass="primary invisible" :disabled="!userHasEditAccess"
                     v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                     @click="onAddUser($event)">
@@ -58,9 +92,10 @@
         </BaseFlexTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user"
-        :hotkeys="['KeyC', 'KeyR']"
+        :hotkeys="['KeyC', 'KeyR', 'KeyE']"
         @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
-        @keybind-r="onRemoveUsers(contextUser)">
+        @keybind-r="onRemoveUsers(contextUser)"
+        @keybind-e="onRemoveUsers(contextUser)">
             <!-- Manually added users  -->
             <template v-slot:header v-if="selected.length > 0">
                 <span>Choose action for {{selected.length}} users</span>
@@ -74,8 +109,33 @@
                 </div>
                 <div class="item-group">
                     <div class="item" @click="onRemoveUsers(contextUser)">
-                        <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                        <span><u>R</u>emove User{{selected.length > 0 ? 's' : ''}}</span>
+                        <div class="icon-wrapper" v-if="contextUser.inherit_from_teams || selected.length > 1">
+                            <i class="far fa-user-times"></i>
+                        </div>
+                        <div class="icon-wrapper" v-else>
+                            <i class="far fa-trash-alt"></i>
+                        </div>
+                        <span>
+                            <span v-if="selected.length > 1"><u>R</u>emove / <u>E</u>xclude </span>
+                            <span v-else-if="contextUser.inherit_from_teams"><u>E</u>xclude </span>
+                            <span v-else><u>R</u>emove </span>
+                            User{{selected.length > 1 ? 's' : ''}}</span>
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuExcludedUser" class="context-user"
+        :hotkeys="['KeyR']"
+        @keybind-r="onAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
+            <template v-slot:header v-if="selected.length > 0">
+                <span>Choose action for {{selected.length}} users</span>
+            </template>
+            <template v-slot>
+                <div class="item-group">
+                    <div class="item" @click="onAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
+                        <div class="icon-wrapper"><i class="far fa-user-plus"></i></div>
+                        <span><u>R</u>e-add User{{selected.length > 0 ? 's' : ''}}</span>
                     </div>
                 </div>
             </template>
@@ -85,7 +145,7 @@
         v-model="usersToAdd" :options="availableUsers" :submitDisabled="usersToAdd.length < 1"
         :emitOnChange="true" optionDescriptionKey="email" optionNameKey="name" :search="true"
         :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
-        @submit="onAddUsersToSelection();usersToAdd = []" @cancel="usersToAdd = []"/>
+        @submit="onAddUsersToSelection(usersToAdd);usersToAdd = []" @cancel="usersToAdd = []"/>
 
         <BaseContextMenu ref="contextMenuRole" class="context-role">
             <template v-slot:header>
@@ -124,6 +184,7 @@ export default {
         userToEdit: null,
         contextUser: null,
         contextMouseEvent: null,
+        currentUsersTableTab: 'Members'
     }},
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles', 'getAuthUserHasSelectionEditAccess']),
@@ -146,9 +207,15 @@ export default {
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
         showUserContext(e, user) {
-            if (this.authUserWorkspaceRole != 'Admin') return
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser
+            this.contextMouseEvent = e
+            this.contextUser = this.selected.length > 0 ? this.selected[0] : user
+            contextMenu.show(e)
+        },
+        showExcludedUserContext(e, user) {
+            e.preventDefault()
+            const contextMenu = this.$refs.contextMenuExcludedUser
             this.contextMouseEvent = e
             this.contextUser = this.selected.length > 0 ? this.selected[0] : user
             contextMenu.show(e)
@@ -164,7 +231,7 @@ export default {
             contextMenu.show(e)
         },
         onAddUsersToSelection(usersToAdd) {
-            this.addUsersToSelection({selection: this.selection, users: this.usersToAdd})
+            this.addUsersToSelection({selection: this.selection, users: usersToAdd})
         },
         onUpdateSelectionUsersRole() {
             // Define the user to base the new role to set on
