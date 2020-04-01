@@ -538,7 +538,7 @@ i {
     @each $color in $brand-colors {
         &.#{nth($color,1)},
         &.#{nth($color,1)}-hover:hover {
-            color: nth($color, 2);
+            color: nth($color, 2) !important;
         }
     }
     // Icons in icons
@@ -818,6 +818,47 @@ i {
     // u {
     //     color: white;
     // }
+    .item-group {
+        > .header {
+            padding: 8px 16px;
+            line-height: 1;
+        }
+        padding: 8px 0;
+        &:not(:first-child) {
+            border-top: solid 1px $divider;
+        }
+        &.actions {
+            display: flex;
+            padding: 8px 16px;
+            > *:not(:first-child) {
+                margin-left: 8px;
+            }
+        }
+    }
+    .item,
+    .item-wrapper {
+        padding: 8px 16px;
+        color: $dark05;
+        display: flex;
+        align-items: center;
+        &:not(.item-wrapper):not(.context-menu-item) {
+            cursor: pointer;
+            &:hover {
+                background: $light1;
+            }
+        }
+        .icon-wrapper {
+            width: 32px;
+            display: block;
+            color: $dark15;
+            i {
+                font-size: 16px;
+                i {
+                    font-size: 9px;
+                }
+            }
+        }
+    }
     .tooltip-inner {
         border-radius: 4px;
         border: 1px solid $divider;

@@ -13,6 +13,7 @@ export default {
         currentSelection: null,
         currentSelectionUsers: null,
         selections: [],
+        currentSelections: [],
         availableSelectionRoles: [
             {
                 role: 'Member',
@@ -36,6 +37,8 @@ export default {
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelection,
+        getCurrentSelections: state => state.currentSelections,
+        getSelections: state => state.selections,
         currentSelectionMode: state => {
             if (state.currentSelection) {
                 return state.currentSelection.your_role == 'Member'
@@ -136,6 +139,7 @@ export default {
                     commit('PROCESS_SELECTIONS', [selection])
                     if (addToState) {
                         commit('setCurrentSelection', selection)
+                        commit('SET_CURRENT_SELECTIONS', [selection])
                     }
                     commit('setCurrentSelectionStatus', 'success')
                 })
@@ -433,8 +437,10 @@ export default {
             state.usersStatus = status
         },
         setCurrentSelection(state, selection) {
-            // Update the current selection if we already have one
             state.currentSelection = selection
+        },
+        SET_CURRENT_SELECTIONS(state, selections) {
+            state.currentSelections = selections
         },
         insertSelections(state, { selections, method }) {
             // Check if we have already instantiated selections

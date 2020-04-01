@@ -10,6 +10,32 @@
                 value="outs" @change="setCurrentProductFilter($event)"/>
                 <BaseTableTab :label="`Nds`" :count="productTotals.nds" :modelValue="currentProductFilter"
                 value="nds" @change="setCurrentProductFilter($event)"/>
+
+                <!-- Selection Selector -->
+                <div class="selection-selector">
+                    <v-popover trigger="click">
+                        <button class="white">
+                            <i class="fas fa-users-class primary"></i>
+                            <span>{{currentSelections[0].name}} {{`${currentSelections.length > 1 ? '+ ' + Math.abs(currentSelections.length - 1) : ''}`}}</span>
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                        <template slot="popover">
+                            <BaseSelectButtons style="width: 200px; padding-top: 8px;"
+                            :options="availableSelections.filter(x => x.your_role == 'Owner' && x.is_visible)" 
+                            v-model="selectedSelections" optionNameKey="name" :emitOnChange="true"/>
+                            <div class="item-group actions">
+                                <button class="primary" v-close-popover @click="onSetCurrentSelections"><span>Apply</span></button>
+                                <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
+                            </div>
+                        </template>
+                    </v-popover>
+                    
+                    <!-- <button class="white">
+                        <i class="far fa-user"></i>
+                    </button> -->
+                </div>
+                <!-- Selection Selector Ends -->
+
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -100,15 +126,16 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="78"
+                    :item-size="currentSelections.length > 1 ? 100 : 78"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
                 >
-                    <ProductsTableRow class="product-row flex-table-row"
-                    :selection="selection" :currentAction="currentAction"
-                    :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    @onViewSingle="onViewSingle" @updateAction="(product, action) => $emit('updateAction', product, action)"/>
+                    <ProductsTableRow class="multi-selection-input-row flex-table-row"
+                    :product="item" :index="index" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
+
+                    <ProductsTableMultiSelectionInputRow class="product-row flex-table-row"/>
+                    
                 </RecycleScroller>
 
                 <tr v-if="productsFilteredBySearch.length <= 0">
@@ -143,10 +170,18 @@ export default {
         sortKey: 'datasource_id',
         selectedProducts: [],
         productsFilteredBySearch: this.products,
+        selectedSelections: [],
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelections']),
         ...mapState('products', {stateProducts: 'products'}),
+        currentSelections() {
+            return this.getCurrentSelections
+        },
+        availableSelections() {
+            return this.getSelections
+        },
         currentProductFilter: {
             get () {
                 return this.$store.getters['products/currentProductFilter']
@@ -193,11 +228,23 @@ export default {
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapActions('selections', ['fetchSelection']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.setAvailableProducts(this.products) // Save array of available products
             this.setSingleVisisble(true)
+        },
+        async onSetCurrentSelections() {
+            const selections = this.selectedSelections
+            // Fetch data for all the selections
+            // Process all their data
+            await Promise.all(selections.map(async selection => {
+                await this.fetchSelection({selectionId: selection.id, addToState: false})
+            }))
+            // Set them as current
+            this.SET_CURRENT_SELECTIONS(selections)
         },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
@@ -337,6 +384,14 @@ export default {
         }
         &.action-0 {
             box-shadow: 4px 0 $red inset
+        }
+    }
+
+    .selection-selector {
+        display: flex;
+        margin-left: auto;
+        > *:not(:first-child) {
+            margin-left: 8px;
         }
     }
 
