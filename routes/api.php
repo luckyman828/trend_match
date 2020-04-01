@@ -135,7 +135,7 @@ Route::middleware('auth:api')->group( function(){
     // xxx TASKS xxx
     Route::put('task/complete', 'TaskController@markComplete');
     Route::delete('task/complete', 'TaskController@undoMarkComplete');
-    // Route::post('files/feedback-status', 'TaskController@selection_feedbacktatus');
+    // Route::post('files/feedback-status', 'TaskController@feedbackstatus');
 
 
     // xxx USERS xxx
@@ -183,11 +183,11 @@ Route::middleware('auth:api')->group( function(){
 
 // For external API
 Route::middleware('client')->group( function(){
-    Route::post('files/feedback-status', 'TaskController@selection_feedbacktatus');
+    Route::post('files/feedback-status', 'TaskController@feedbackstatus');
 });
 
-// Route::post('/files/feedback-status', 'TaskController@selection_feedbacktatus')->middleware('client');
-// Route::post('/files/feedback-status', 'TaskController@selection_feedbacktatus');
+// Route::post('/files/feedback-status', 'TaskController@feedbackstatus')->middleware('client');
+// Route::post('/files/feedback-status', 'TaskController@feedbackstatus');
 
 
 // Public requests
