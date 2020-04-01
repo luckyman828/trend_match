@@ -557,7 +557,7 @@
                             <span>Cancel</span>
                         </button>
                     </div>
-                </div>
+                </div>s
             </template>
         </BaseContextMenu>
 
@@ -814,6 +814,10 @@ export default {
                 user_count: 0,
                 team_count: 0,
                 children: [],
+                visible_from: null,
+                visible_to: null,
+                open_from: null,
+                open_to: null,
             }
             // Push new selection to the parent
             if (parent) {

@@ -9,7 +9,8 @@
 
         <template v-slot>
             <div class="comments-wrapper">
-                <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" :class="{own: comment.user_id == authUser.id}">
+                <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" 
+                :class="[{own: comment.user_id == authUser.id}, {master: comment.selection.type == 'Master'}]">
                     <comment :product="product" :comment="comment"/>
                     <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">
                         <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
@@ -194,7 +195,7 @@ export default {
         }
     }
     .comments {
-        background: $bgContentAlt;
+        background: $bg;
     }
     .comments-wrapper {
         height: 100%;
@@ -204,7 +205,7 @@ export default {
             display: block;
             font-size: 12px;
             font-weight: 500;
-            color: $dark2;
+            color: $font;
         }
     }
     .form-wrapper {

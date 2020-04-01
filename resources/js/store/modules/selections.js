@@ -87,16 +87,16 @@ export default {
         getAuthUserSelectionWriteAccess: () => selection => {
             return {
                 actions: {
-                    has_access: !selection.is_locked && selection.your_role != 'Approver',
-                    msg: selection.is_locked ? 'Selection is locked' : 'Only selection owners can decide action',
+                    has_access: selection.is_open && selection.your_role != 'Approver',
+                    msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can decide action',
                 },
                 requests: {
-                    has_access: !selection.is_locked && selection.your_role == 'Owner',
-                    msg: selection.is_locked ? 'Selection is locked' : 'Only selection owners can make requests',
+                    has_access: selection.is_open && selection.your_role == 'Owner',
+                    msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can make requests',
                 },
                 comments: {
-                    has_access: !selection.is_locked,
-                    msg: selection.is_locked && 'Selection is locked',
+                    has_access: selection.is_open,
+                    msg: !selection.is_open && 'Selection is locked',
                 },
             }
         },
@@ -192,6 +192,7 @@ export default {
             }
             await axios.post(apiUrl, selection).then(async response => {
                 selection.id = response.data.id
+                commit('PROCESS_SELECTIONS', [selection])
                 if (addToState) {
                     commit('insertSelections', { file, selections: [selection] })
                 }
@@ -225,6 +226,7 @@ export default {
         },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
             // Commit mutation to state
+            console.log(users)
             await commit('addUsersToSelection', {
                 selection,
                 users: users.map(user => {
@@ -240,6 +242,28 @@ export default {
                     return {
                         id: user.id,
                         role: ignoreRole ? 'Member' : user.role,
+                    }
+                }),
+            })
+            dispatch('calculateSelectionUsers', selection)
+        },
+        async reAddUsersToSelection({ commit, dispatch }, { selection, users }) {
+            // Commit mutation to state
+            await commit('addUsersToSelection', {
+                selection,
+                users: users.map(user => {
+                    user.role = 'Member'
+                    return user
+                }),
+            })
+            // Send request to API
+            const apiUrl = `/selections/${selection.id}/users`
+            await axios.post(apiUrl, {
+                method: 'Remove',
+                users: users.map(user => {
+                    return {
+                        id: user.id,
+                        role: 'Member',
                     }
                 }),
             })
@@ -532,20 +556,16 @@ export default {
                         const now = new Date()
                         const from = selection.visible_from && new Date(selection.visible_from)
                         const to = selection.visible_to && new Date(selection.visible_to)
-                        return (!from || now > from) && (!to || now < to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
                     },
                 })
                 // Locked
-                Object.defineProperty(selection, 'is_locked', {
+                Object.defineProperty(selection, 'is_open', {
                     get: () => {
                         const now = new Date()
-                        const from = selection.feedback_lock_from && new Date(selection.feedback_lock_from)
-                        const to = selection.feedback_lock_to && new Date(selection.feedback_lock_to)
-                        return (
-                            (!to && !!from && now > from) ||
-                            (!from && !!to && now < to) ||
-                            (!!from && !!to && now > from && now < to)
-                        )
+                        const from = selection.open_from && new Date(selection.open_from)
+                        const to = selection.open_to && new Date(selection.open_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
                     },
                 })
                 // Completed

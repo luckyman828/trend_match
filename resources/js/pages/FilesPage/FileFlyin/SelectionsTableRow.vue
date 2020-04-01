@@ -2,7 +2,7 @@
     <div class="selections-table-row">
         <tr class="selection" :class="{'is-hidden': isHidden}"
         @contextmenu="emitShowContext" @click="onClick">
-            <td class="locked"><i class="far fa-lock" v-if="selection.is_locked" v-tooltip="'Locked: Selection is read-only'"></i></td>
+            <td class="locked"><i class="far fa-lock" v-if="!selection.is_open" v-tooltip="'Locked: Selection is read-only'"></i></td>
             <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="selection.children.length > 0">
                     <i class="fas fa-caret-down"></i>
@@ -48,10 +48,10 @@
             </td>
             <td class="status">
                 <template v-if="userHasEditAccess">
-                    <button class="editable" :class="!selection.is_locked && 'ghost'" 
+                    <button class="editable" :class="selection.is_open && 'ghost'" 
                     @click="onToggleLocked(selection)">
-                        <span>{{selection.is_locked ? 'Locked' : 'Open'}}</span>
-                        <i class="far" :class="selection.is_locked ? 'fa-lock' : 'fa-lock-open'"></i></button>
+                        <span>{{selection.is_open ? 'Open' : 'Locked'}}</span>
+                        <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i></button>
                     <button class="editable" :class="selection.is_visible && 'ghost'"
                     @click="onToggleHidden(selection)">
                         <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
@@ -156,12 +156,13 @@ export default {
         },
         onToggleLocked(selection) {
             // Check if the selection is locked
-            if (selection.is_locked) {
+            if (selection.is_open) {
+                selection.open_from = new Date("9999")
                 // Set To to now
-                selection.feedback_lock_to = new Date()
-            } else {
-                selection.feedback_lock_from = new Date()
-                selection.feedback_lock_to = null
+                selection.open_to = null
+                } else {
+                selection.open_from = null
+                selection.open_to = null
             }
             this.updateSelection(selection)
         },
@@ -169,9 +170,10 @@ export default {
             // Check if the selection is visible
             if (selection.is_visible) {
                 // Set To to now
-                selection.visible_to = new Date()
+                selection.visible_from = new Date("9999")
+                selection.visible_to = null
             } else {
-                selection.visible_from = new Date()
+                selection.visible_from = null
                 selection.visible_to = null
             }
             this.updateSelection(selection)

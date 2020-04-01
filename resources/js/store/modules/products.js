@@ -570,7 +570,6 @@ export default {
         },
         setCurrentProduct(state, product) {
             state.currentProduct = product
-            console.log('Done settings current product')
         },
         setCurrentFocusIndex(state, index) {
             state.currentFocusIndex = index

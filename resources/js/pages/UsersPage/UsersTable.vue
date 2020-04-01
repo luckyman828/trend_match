@@ -2,7 +2,7 @@
     <div class="users-table">
 
         <BaseFlexTable v-if="currentTab == 'Users'" stickyHeader="true">
-            <template v-slot:tabs>
+            <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
             <template v-slot:topBar>

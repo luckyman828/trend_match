@@ -13,7 +13,10 @@
                     <request :request="selectionRequest"/>
                 </div>
                 <div v-if="product.requests.find(x => x.selection_id != currentSelection.id)" class="break-line">Showing requests from other selections(s)</div>
-                <request :request="request" v-for="request in product.requests.filter(x => x.selection_id != currentSelection.id)" :key="request.id"/>
+                <request :request="request" :key="request.id" 
+                v-for="request in product.requests
+                .filter(x => x.selection_id != currentSelection.id)
+                .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)"/>
             </div>
 
             <!-- Deny access for feedback -->
@@ -374,7 +377,7 @@ export default {
         &::before {
             margin-right: 12px;
         }
-        color: $dark2;
+        color: $font;
         font-size: 12px;
         font-weight: 500;
         display: flex;

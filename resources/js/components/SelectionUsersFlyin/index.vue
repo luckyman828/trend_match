@@ -10,8 +10,9 @@
             </BaseFlyinHeader>
         </template>
         <template v-slot>
-            <SelectionTeamsTable v-if="show && !loading" :selection="selection"/>
-            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="selection.users"/>
+            <SelectionTeamsTable v-if="show && !loading" :selection="selection" :authUserIsOwner="authUserIsOwner"/>
+            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="selection.users"
+            :authUserIsOwner="authUserIsOwner"/>
         </template>
     </BaseFlyin>
 </template>
@@ -34,6 +35,7 @@ export default {
         loadingSelectionTeamUsers: false,
         loadingSelection: false,
         fetchingData: true,
+        authUserIsOwner: false,
     }},
     watch: {
         // selection: async function(newVal, oldVal) {
@@ -66,6 +68,8 @@ export default {
         ...mapActions('selections', ['fetchSelection']),
         async fetchData() {
             this.fetchingData = true
+            // Save a reference to our role, since the fetchSelection request will overwrite our role with our job
+            this.authUserIsOwner = this.selection.your_role
             await this.fetchSelection({selectionId: this.selection.id}) // Fetches selection with users and teams
             // await this.fetchSelectionTeamsUsers(this.selection.teams)
             this.fetchingData = false

@@ -65,7 +65,7 @@
                 </BaseTooltipList>
             </template>
         </v-popover>
-        <v-popover class="nds" :disabled="product.nds.length <= 0">
+        <v-popover class="nds" :disabled="product.nds.length <= 0 && product.alignmentNds <= 0">
             <td class="nds tooltip-target">
                 <button class="ghost sm"><span>{{product.alignmentNds.length+ product.nds.length}}</span></button>
             </td>

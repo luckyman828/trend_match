@@ -23,8 +23,8 @@ export default {
     },
     methods: {
         change() {
-            this.$emit('input', this.value)
-            this.$emit('change', this.value)
+            this.$emit('input', this.modelValue)
+            this.$emit('change', this.modelValue)
         }
     }
 }

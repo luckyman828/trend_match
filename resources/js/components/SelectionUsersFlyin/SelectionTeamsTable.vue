@@ -100,7 +100,8 @@ import sortArray from '../../mixins/sortArray'
 export default {
     name: 'selectionTeamsTable',
     props: [
-        'selection'
+        'selection',
+        'authUserIsOwner'
     ],
     mixins: [
         sortArray
@@ -116,7 +117,7 @@ export default {
         ...mapGetters('teams', ['teams']),
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
         userHasEditAccess() {
-            return this.getAuthUserHasSelectionEditAccess(this.selection)
+            return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
         availableTeams() {
             const allTeams = this.teams
