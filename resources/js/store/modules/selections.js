@@ -243,6 +243,28 @@ export default {
             })
             dispatch('calculateSelectionUsers', selection)
         },
+        async reAddUsersToSelection({ commit, dispatch }, { selection, users }) {
+            // Commit mutation to state
+            await commit('addUsersToSelection', {
+                selection,
+                users: users.map(user => {
+                    user.role = 'Member'
+                    return user
+                }),
+            })
+            // Send request to API
+            const apiUrl = `/selections/${selection.id}/users`
+            await axios.post(apiUrl, {
+                method: 'Remove',
+                users: users.map(user => {
+                    return {
+                        id: user.id,
+                        role: 'Member',
+                    }
+                }),
+            })
+            dispatch('calculateSelectionUsers', selection)
+        },
         async updateSelectionSettings({ commit, dispatch }, selection) {
             // Send request to API
             const apiUrl = `/selections/${selection.id}/metadata`

@@ -73,7 +73,7 @@
                         <td class="email">{{user.email}}</td>
                         <td class="action">
                             <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
-                            @click="onAddUsersToSelection(selected.length > 0 ? selected : [user])">
+                            @click="onReAddUsersToSelection(selected.length > 0 ? selected : [user])">
                                 <span>Re-add user</span>
                             </button>
                         </td>
@@ -127,13 +127,13 @@
 
         <BaseContextMenu ref="contextMenuExcludedUser" class="context-user"
         :hotkeys="['KeyR']"
-        @keybind-r="onAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
+        @keybind-r="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
             <template v-slot:header v-if="selected.length > 0">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
-                    <div class="item" @click="onAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
+                    <div class="item" @click="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
                         <div class="icon-wrapper"><i class="far fa-user-plus"></i></div>
                         <span><u>R</u>e-add User{{selected.length > 0 ? 's' : ''}}</span>
                     </div>
@@ -205,7 +205,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection']),
+        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
         showUserContext(e, user) {
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser
@@ -232,6 +232,9 @@ export default {
         },
         onAddUsersToSelection(usersToAdd) {
             this.addUsersToSelection({selection: this.selection, users: usersToAdd})
+        },
+        onReAddUsersToSelection(usersToAdd) {
+            this.reAddUsersToSelection({selection: this.selection, users: usersToAdd})
         },
         onUpdateSelectionUsersRole() {
             // Define the user to base the new role to set on
