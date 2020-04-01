@@ -157,11 +157,11 @@ export default {
         onToggleLocked(selection) {
             // Check if the selection is locked
             if (selection.is_open) {
-                selection.open_from = null
+                selection.open_from = new Date("9999")
                 // Set To to now
-                selection.open_to = new Date()
+                selection.open_to = null
                 } else {
-                selection.open_from = new Date()
+                selection.open_from = null
                 selection.open_to = null
             }
             this.updateSelection(selection)
@@ -170,10 +170,10 @@ export default {
             // Check if the selection is visible
             if (selection.is_visible) {
                 // Set To to now
-                selection.visible_from = null
-                selection.visible_to = new Date()
+                selection.visible_from = new Date("9999")
+                selection.visible_to = null
             } else {
-                selection.visible_from = new Date()
+                selection.visible_from = null
                 selection.visible_to = null
             }
             this.updateSelection(selection)
