@@ -39,7 +39,6 @@ export default {
         },
 
         async insertOrUpdateAction({ commit, dispatch }, { product, action, selection, user }) {
-            // type = action|feedback
             let apiUrl
             let requestBody
             let oldAction
@@ -47,7 +46,7 @@ export default {
                 oldAction = product.your_feedback
                 apiUrl = `/selections/${selection.id}/feedback`
                 requestBody = {
-                    selection_feedback: [
+                    feedbacks: [
                         {
                             product_id: product.id,
                             feedback: action,
@@ -101,7 +100,7 @@ export default {
                 })
                 apiUrl = `/selections/${selection.id}/feedback`
                 requestBody = {
-                    selection_feedback: products.map(product => {
+                    feedbacks: products.map(product => {
                         return {
                             product_id: product.id,
                             feedback: action,
@@ -153,7 +152,7 @@ export default {
         insertOrUpdateAction(state, { product, action, selection, user }) {
             if (selection.your_role == 'Member') {
                 product.your_feedback = action
-                // Check if the action already exists in the products selection_feedback array
+                // Check if the action already exists in the products feedbacks array
                 const existingAction = product.feedbacks.find(
                     x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
                 )
@@ -196,7 +195,7 @@ export default {
             if (selection.your_role == 'Member') {
                 productActions.forEach(productAction => {
                     productAction.product.your_feedback = productAction.action
-                    // Check if the action already exists in the products selection_feedback array
+                    // Check if the action already exists in the products feedbacks array
                     const existingAction = productAction.product.feedbacks.find(
                         x =>
                             x.product_id == productAction.product.id &&

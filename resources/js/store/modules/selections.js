@@ -312,23 +312,27 @@ export default {
             })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
-            await axios.post(apiUrl, {
-                method: 'Remove',
-                users: usersToRemove.map(x => {
-                    return {
-                        id: x.id,
-                    }
-                }),
-            })
-            await axios.post(apiUrl, {
-                method: 'Add',
-                users: usersToDeny.map(x => {
-                    return {
-                        id: x.id,
-                        role: 'Denied',
-                    }
-                }),
-            })
+            if (usersToRemove.length > 0) {
+                await axios.post(apiUrl, {
+                    method: 'Remove',
+                    users: usersToRemove.map(x => {
+                        return {
+                            id: x.id,
+                        }
+                    }),
+                })
+            }
+            if (usersToDeny.length > 0) {
+                await axios.post(apiUrl, {
+                    method: 'Add',
+                    users: usersToDeny.map(x => {
+                        return {
+                            id: x.id,
+                            role: 'Denied',
+                        }
+                    }),
+                })
+            }
             dispatch('calculateSelectionUsers', selection)
         },
         async addTeamsToSelection({ commit, dispatch }, { selection, teams }) {

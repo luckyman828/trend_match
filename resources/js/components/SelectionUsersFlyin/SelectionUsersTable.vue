@@ -74,7 +74,7 @@
                         <td class="action">
                             <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
                             @click="onReAddUsersToSelection(selected.length > 0 ? selected : [user])">
-                                <span>Re-add user</span>
+                                <span>Add user</span>
                             </button>
                         </td>
                     </tr>
@@ -234,7 +234,8 @@ export default {
             this.addUsersToSelection({selection: this.selection, users: usersToAdd})
         },
         onReAddUsersToSelection(usersToAdd) {
-            this.reAddUsersToSelection({selection: this.selection, users: usersToAdd})
+            // this.reAddUsersToSelection({selection: this.selection, users: usersToAdd})
+            this.addUsersToSelection({selection: this.selection, users: usersToAdd})
         },
         onUpdateSelectionUsersRole() {
             // Define the user to base the new role to set on

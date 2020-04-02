@@ -864,6 +864,8 @@ i {
         border: 1px solid $divider;
         background-color: white;
         box-shadow: 0 10px 10px rgba($dark, 20%);
+        max-height: 70vh;
+        overflow-y: auto;
     }
 
     &-inner:not(.popover-inner) {

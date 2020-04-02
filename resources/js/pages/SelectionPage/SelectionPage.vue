@@ -25,9 +25,9 @@
                 @click="OutNoInStyles()" style="margin-right: 8px;">
                     <span>'OUT' styles with no IN ({{productsNoIn.length}})</span>
                 </button>
-                <button class="invisible ghost-hover md" @click="setHideQuickIn(); setHideQuickOut()">
+                <!-- <button class="invisible ghost-hover md" @click="setHideQuickIn(); setHideQuickOut()">
                     <span>Hide quick actions</span><i class="far fa-times-circle"></i>
-                </button>
+                </button> -->
             </div>
 
             <ProductsTable ref="productsComponent" :file="currentFile" :products="productsFiltered"

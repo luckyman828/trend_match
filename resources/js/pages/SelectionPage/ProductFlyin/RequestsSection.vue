@@ -96,7 +96,7 @@ export default {
         ...mapGetters('selections', ['currentSelection', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         submitDisabled () {
             return this.newRequest.content.length < 1 
-            || (this.selectionRequest && this.newRequest.content == this.selectionRequest.content)
+            // || (this.selectionRequest && this.newRequest.content == this.selectionRequest.content)
         },
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.currentSelection)
