@@ -14,6 +14,7 @@ export default {
         currentSelectionUsers: null,
         selections: [],
         currentSelections: [],
+        selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
             {
                 role: 'Member',
@@ -39,6 +40,7 @@ export default {
         currentSelection: state => state.currentSelection,
         getCurrentSelections: state => state.currentSelections,
         getSelections: state => state.selections,
+        getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
         currentSelectionMode: state => {
             if (state.currentSelection) {
                 return state.currentSelection.your_role == 'Member'
@@ -103,11 +105,12 @@ export default {
     },
 
     actions: {
-        async fetchSelections({ commit }, { file, addToState = true }) {
+        async fetchSelections({ commit }, { fileId, addToState = true }) {
+            console.log('fetching selections!')
             return new Promise(async (resolve, reject) => {
                 commit('setLoading', true)
                 commit('setStatus', 'loading')
-                const apiUrl = `/files/${file.id}/selections/flat`
+                const apiUrl = `/files/${fileId}/selections/flat`
                 let selections
                 await axios
                     .get(apiUrl)
@@ -126,6 +129,23 @@ export default {
                 commit('setLoading', false)
                 resolve(selections)
             })
+        },
+        async filterSelectionsByAvailabilityForAlignment({ commit, state, dispatch }, selections) {
+            const selectionsToReturn = []
+            await Promise.all(
+                selections.map(async selection => {
+                    const fetchedSelection = await dispatch('fetchSelection', {
+                        selectionId: selection.id,
+                        addToState: false,
+                    })
+                    selectionsToReturn.push(fetchedSelection)
+                })
+            )
+            const selectionsFiltered = selectionsToReturn.filter(selection => {
+                return selection.is_open && selection.is_visible && selection.your_role == 'Owner'
+            })
+            state.selectionsAvailableForAlignment = selectionsFiltered
+            return selectionsFiltered
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
             commit('setCurrentSelectionStatus', 'loading')

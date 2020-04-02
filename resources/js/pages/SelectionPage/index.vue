@@ -28,7 +28,7 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchSelectionProducts']),
-        ...mapActions('selections', ['fetchSelection']),
+        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment']),
         ...mapActions('teams', ['fetchTeamUsers']),
         async fetchSelectionTeamsUsers(teams) {
             // Use of promise and map to fetch users for all teams in parallel
@@ -48,8 +48,10 @@ export default {
         let selection
         selection = await this.fetchSelection({selectionId}),
         this.fetchSelectionProducts(selectionId)
-        console.log(selection)
-        // await this.fetchSelectionTeamsUsers(selection.teams)
+
+        const selections = await this.fetchSelections({fileId})
+        this.filterSelectionsByAvailabilityForAlignment(selections)
+
         this.loadingData = false
     },
 }

@@ -21,8 +21,8 @@
             <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
         </div>
 
-        <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
-        <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
+        <ExportProductsModal v-if="exportModalVisible" :show="exportModalVisible" @close="exportModalVisible = false"/>
+        <ExportToCsvModal v-if="exportCsvModalVisible" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
     </div>
 </template>
 

@@ -21,7 +21,7 @@
                         </button>
                         <template slot="popover">
                             <BaseSelectButtons style="width: 200px; padding-top: 8px;"
-                            :options="availableSelections.filter(x => x.your_role == 'Owner' && x.is_visible)" 
+                            :options="availableSelections" 
                             v-model="selectedSelections" optionNameKey="name" :emitOnChange="true"/>
                             <div class="item-group actions">
                                 <button class="primary" v-close-popover @click="onSetCurrentSelections"><span>Apply</span></button>
@@ -174,13 +174,13 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelections']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment']),
         ...mapState('products', {stateProducts: 'products'}),
         currentSelections() {
             return this.getCurrentSelections
         },
         availableSelections() {
-            return this.getSelections
+            return this.getSelectionsAvailableForAlignment
         },
         currentProductFilter: {
             get () {
@@ -241,9 +241,6 @@ export default {
             // Fetch data for all the selections
             // Process all their data
             await this.fetchProductsForMultipleSelections(selections)
-            // await Promise.all(selections.map(async selection => {
-            //     await this.fetchSelection({selectionId: selection.id, addToState: false})
-            // }))
             // Set them as current
             this.SET_CURRENT_SELECTIONS(selections)
         },

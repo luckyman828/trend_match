@@ -883,7 +883,7 @@ export default {
             // console.log(file)
             // Clone selections and their users to the new file
             // Fetch file selections
-            const selections = await this.fetchSelections({file, addToState: false})
+            const selections = await this.fetchSelections({fileId: file.id, addToState: false})
             // We have to copy the selection structure as well
             // This means we have to insert one level of selections at a time
             // Transform the selections into a tree structure 

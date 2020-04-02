@@ -106,7 +106,7 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus']),
+        ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus', 'getSelections']),
         ...mapGetters('products', ['productsFiltered']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
@@ -371,10 +371,12 @@ export default {
     },
     created() {
         if (this.selectionsStatus != 'success' && this.selectionsStatus != 'loading') {
-            this.fetchSelections({file: this.currentFile}).then(selections => {
+            this.fetchSelections({fileId: this.currentFile.id}).then(selections => {
                 // Preset the selections to export to all selections
                 this.selectionsToExport = selections
             })
+        } else {
+            this.selectionsToExport = this.getSelections
         }
     }
 };
