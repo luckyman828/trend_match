@@ -3,7 +3,7 @@ name: BranchTest
 on:
   push:
     branches:
-      - feat/*
+      - 'feat/*'
 
 jobs:
   build:
