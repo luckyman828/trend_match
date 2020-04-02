@@ -1,6 +1,8 @@
 <template>
     <div class="subfile">
-        <ThePageHeader :title="`${!selection.is_open ? '[Locked]' : ''} ${selection.name || 'Untitled Selection'}: 
+        <ThePageHeader :title="`${currentFile.name}: 
+        ${!currentSelections[0].is_open ? '[Locked]' : ''} ${currentSelections[0].name || 'Untitled Selection'
+        }${currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}: 
         ${selection.your_role == 'Owner' ? 'Alignment' 
         : selection.your_role == 'Approver' ? 'Approval'
         : selection.your_role == 'Member' ? 'Feedback' 

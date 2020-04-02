@@ -227,6 +227,28 @@ export default {
                     commit('setProductStatus', 'error')
                 })
         },
+        async fetchProductsForMultipleSelections({ commit, dispatch }, selections) {
+            commit('setProductStatus', 'loading')
+
+            // Loop through the selections and fetch all the products
+            await Promise.all(
+                selections.map(async selection => {
+                    const apiUrl = `/selections/${selection.id}/products`
+                    await axios.get(apiUrl).then(async response => {
+                        const products = response.data
+                        selection.products = products
+                        await commit('PROCESS_SELECTION_PRODUCTS', products)
+                    })
+                })
+            )
+                .then(async response => {
+                    await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', selections)
+                    commit('setProductStatus', 'success')
+                })
+                .catch(err => {
+                    commit('setProductStatus', 'error')
+                })
+        },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
                 if (addToState) commit('insertProducts', { products, method: 'add' })
@@ -635,8 +657,7 @@ export default {
                 })
             })
         },
-        procesSelectionProducts: state => {
-            const products = state.products
+        PROCESS_SELECTION_PRODUCTS(state, products) {
             products.map(product => {
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
@@ -661,7 +682,7 @@ export default {
                     },
                 })
 
-                // Actions
+                // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
@@ -704,11 +725,25 @@ export default {
                         return product.actions.filter(x => x.action == 'None')
                     },
                 })
-
-                // Comments / Requests
-                Object.defineProperty(product, 'hasAuthUserRequest', {
+                // All Actions
+                Object.defineProperty(product, 'allIns', {
                     get: function() {
-                        return !!product.requests.find(x => x.author_id == 'None')
+                        return product.ins.length + product.alignmentIns.length
+                    },
+                })
+                Object.defineProperty(product, 'allOuts', {
+                    get: function() {
+                        return product.outs.length + product.alignmentOuts.length
+                    },
+                })
+                Object.defineProperty(product, 'allFocus', {
+                    get: function() {
+                        return product.focus.length + product.alignmentFocus.length
+                    },
+                })
+                Object.defineProperty(product, 'allNds', {
+                    get: function() {
+                        return product.nds.length + product.alignmentNds.length
                     },
                 })
                 // Remove deleted comments
@@ -718,6 +753,77 @@ export default {
                     product.comments.filter(x => !x.is_deleted)
                 )
             })
+        },
+        PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, selections) {
+            // Add an array of these selections to each product
+            // The selection object should include the input data for the given selection
+            // let productIndex = 0
+            // selections[0].products.map(product => {
+            //     // Dynamically Calculated Actions
+            //     // Feedback Actions
+            //     Object.defineProperty(product, 'ins', {
+            //         get: function() {
+            //             return product.feedbacks.filter(x => x.action == 'In')
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'outs', {
+            //         get: function() {
+            //             return product.feedbacks.filter(x => x.action == 'Out')
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'focus', {
+            //         get: function() {
+            //             return product.feedbacks.filter(x => x.action == 'Focus')
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'nds', {
+            //         get: function() {
+            //             return product.feedbacks.filter(x => x.action == 'None')
+            //         },
+            //     })
+            //     // Alignment Actions
+            //     Object.defineProperty(product, 'alignmentIns', {
+            //         get: function() {
+            //             return product.actions.filter(x => x.action == 'In')
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'alignmentOuts', {
+            //         get: function() {
+            //             return product.actions.filter(x => x.action == 'Out')
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'alignmentFocus', {
+            //         get: function() {
+            //             return product.actions.filter(x => x.action == 'Focus')
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'alignmentNds', {
+            //         get: function() {
+            //             return product.actions.filter(x => x.action == 'None')
+            //         },
+            //     })
+            //     // All Actions
+            //     Object.defineProperty(product, 'allIns', {
+            //         get: function() {
+            //             return product.ins.length + product.alignmentIns.length
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'allOuts', {
+            //         get: function() {
+            //             return product.outs.length + product.alignmentOuts.length
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'allFocus', {
+            //         get: function() {
+            //             return product.focus.length + product.alignmentFocus.length
+            //         },
+            //     })
+            //     Object.defineProperty(product, 'allNds', {
+            //         get: function() {
+            //             return product.nds.length + product.alignmentNds.length
+            //         },
+            //     })
+            // })
         },
     },
 }

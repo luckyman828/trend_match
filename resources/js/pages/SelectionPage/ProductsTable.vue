@@ -126,15 +126,15 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 100 : 78"
+                    :item-size="currentSelections.length > 1 ? 186 : 78"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
                 >
-                    <ProductsTableRow class="multi-selection-input-row flex-table-row"
-                    :product="item" :index="index" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
-
-                    <ProductsTableMultiSelectionInputRow class="product-row flex-table-row"/>
+                    <ProductsTableRow class="product-row flex-table-row"
+                    :selection="selection" :currentAction="currentAction"
+                    :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
+                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
 
@@ -228,7 +228,7 @@ export default {
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
-        ...mapActions('selections', ['fetchSelection']),
+        ...mapActions('products', ['fetchProductsForMultipleSelections']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         onViewSingle(product) {
@@ -240,9 +240,10 @@ export default {
             const selections = this.selectedSelections
             // Fetch data for all the selections
             // Process all their data
-            await Promise.all(selections.map(async selection => {
-                await this.fetchSelection({selectionId: selection.id, addToState: false})
-            }))
+            await this.fetchProductsForMultipleSelections(selections)
+            // await Promise.all(selections.map(async selection => {
+            //     await this.fetchSelection({selectionId: selection.id, addToState: false})
+            // }))
             // Set them as current
             this.SET_CURRENT_SELECTIONS(selections)
         },

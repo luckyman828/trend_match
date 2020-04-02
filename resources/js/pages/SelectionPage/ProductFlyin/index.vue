@@ -17,20 +17,20 @@
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                         :disabled="currentSelectionMode == 'Approval'" 
                         v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'Focus')">
+                        @click="onUpdateAction(product, 'Focus', selection)">
                             <i class="far fa-star"></i>
                         </BaseButton>
                         <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
                         :disabled="currentSelectionMode == 'Approval'" 
                         v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'In')">
+                        @click="onUpdateAction(product, 'In', selection)">
                             <i class="far fa-heart"></i>
                             <span>In</span>
                         </BaseButton>
                         <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
                         :disabled="currentSelectionMode == 'Approval'" 
                         v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'Out')">
+                        @click="onUpdateAction(product, 'Out', selection)">
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
                         </BaseButton>
@@ -190,8 +190,8 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
-        onUpdateAction(product, action) {
-            this.$emit('updateAction', product, action)
+        onUpdateAction(product, action, selection) {
+            this.$emit('updateAction', product, action, selection)
         },
         imgError (variant) {
              variant.error = true
@@ -225,11 +225,11 @@ export default {
                     this.onCloseSingle()
                 if ( this.currentSelectionMode != 'Approval' ) {
                     if (key == 'KeyI')
-                        this.onUpdateAction(this.product, 'In')
+                        this.onUpdateAction(this.product, 'In', this.selection)
                     if (key == 'KeyO')
-                        this.onUpdateAction(this.product, 'Out')
+                        this.onUpdateAction(this.product, 'Out', this.selection)
                     if (key == 'KeyF' || key == 'KeyU')
-                        this.onUpdateAction(this.product, 'Focus')
+                        this.onUpdateAction(this.product, 'Focus', this.selection)
                 }
             }
         },
