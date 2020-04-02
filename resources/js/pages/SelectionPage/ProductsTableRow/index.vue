@@ -1,5 +1,5 @@
 <template>
-    <tr class="products-table-row" tabindex="0"
+    <tr class="products-table-row" tabindex="0" @focus="onRowFocus"
     @keydown="hotkeyHandler($event)" @keyup="keypressHandler($event)" ref="row">
 
         <div class="product-details">
@@ -123,7 +123,8 @@
         </div>
 
         <MultiSelectionInputRow v-if="currentSelections.length > 1"
-        :product="product" @updateAction="onUpdateAction" :currentAction="currentAction"/>
+        :product="product" :focusGroupIndex="focusGroupIndex" :currentAction="currentAction"
+        @updateAction="onUpdateAction"/>
 
     </tr>
 </template>
@@ -159,9 +160,12 @@ export default {
             return content.length > length ? content.slice(0, length) + clamp : content
         }
     },
+    data: function() { return {
+        focusGroupIndex: null,
+    }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
-        ...mapGetters('products', ['currentFocusIndex']),
+        ...mapGetters('products', ['currentFocusRowIndex']),
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },
@@ -175,7 +179,7 @@ export default {
     },
     watch: {
         // Watch for changes to the current focus index 
-        currentFocusIndex: function(newVal, oldVal) {
+        currentFocusRowIndex: function(newVal, oldVal) {
             // console.log(newVal)
             if (newVal == this.index) {
                 // console.log('focus this row')
@@ -186,28 +190,76 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('products', ['setCurrentFocusIndex']),
+        ...mapMutations('products', ['setCurrentFocusRowIndex']),
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
+        },
+        onRowFocus() {
+            this.focusGroupIndex = null
+        },
+        focusNext(event) {
+            console.log('focus next')
+            if (this.currentSelections.length <= 1) {
+                this.focusNextRow(event)
+                return
+            }
+            event.preventDefault()
+            // If the current focus is a row
+            if (this.focusGroupIndex == null) {
+                // Focus the first group
+                this.focusGroupIndex = 0
+            }
+            // If the focused group is the last group
+            else if (this.focusGroupIndex == this.currentSelections.length-1) {
+                this.focusNextRow(event)
+            } else {
+                this.focusGroupIndex++
+            }
+        },
+        focusPrev(event) {
+            if (this.currentSelections.length <= 1) {
+                this.focusPrevRow(event)
+                return
+            }
+            event.preventDefault()
+            // If the current focus is a row
+            if (this.focusGroupIndex == null) {
+                // Focus the last group of the last row
+                // this.focusGroupIndex = this.currentSelections.length-1
+                this.focusPrevRow(event)
+            }
+            // If the current focus is the first group
+            else if (this.focusGroupIndex == 0) {
+                // Focus the current row
+                this.$refs.row.focus()
+                this.focusGroupIndex = null
+            } else {
+                this.focusGroupIndex--
+            }
         },
         focusNextRow(event) {
             // Get the next row
             event.preventDefault()
-            this.setCurrentFocusIndex(this.index+1)
+            this.setCurrentFocusRowIndex(this.index+1)
         },
         focusPrevRow(event) {
             // Get the previous row
             event.preventDefault()
-            this.setCurrentFocusIndex(this.index-1)
+            this.setCurrentFocusRowIndex(this.index-1)
         },
         hotkeyHandler(event) {
             const key = event.code
             if (key == 'Tab') {
                 if (event.shiftKey) {
-                    this.focusPrevRow(event)
+                    this.focusPrev(event)
                 } else {
-                    this.focusNextRow(event)
+                    this.focusNext(event)
                 }
+            }
+            // Check if the key pressed is a number
+            if (isFinite(event.key)) {
+                // Focus the seleciton input group corresponding to the pressed number
+                this.focusGroupIndex = event.key-1
             }
             if (key == 'ArrowLeft')
                 this.focusPrevRow(event)
@@ -220,7 +272,7 @@ export default {
         },
         keypressHandler(event) {
             const key = event.code
-            if (this.currentSelectionMode != 'Approval') {
+            if (this.currentSelectionMode != 'Approval' && this.currentSelections.length <= 1) {
                 if (key == 'KeyI')
                     this.onUpdateAction(this.product, 'In', this.selection)
                 if (key == 'KeyO')

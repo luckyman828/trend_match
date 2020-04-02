@@ -1,22 +1,24 @@
 <template>
     <div class="multi-selection-input-row flex-table-row">
-        <SelectionInputButtons v-for="theSelection in currentSelections" :key="theSelection.id"
-        :selection="theSelection" :product="product" :currentAction="currentAction"
+        <SelectionInputGroup v-for="(theSelection, index) in currentSelections" :key="theSelection.id"
+        :selection="theSelection" :product="product" :index="index"
+        :currentAction="currentAction" :focusGroupIndex="focusGroupIndex"
         @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import SelectionInputButtons from './SelectionInputButtons'
+import SelectionInputGroup from './SelectionInputGroup'
 export default {
     name: 'multiSelectionInputRow',
     props: [
         'product',
         'currentAction',
+        'focusGroupIndex',
     ],
     components: {
-        SelectionInputButtons
+        SelectionInputGroup
     },
     computed: {
         ...mapGetters('selections', ['getCurrentSelections']),
