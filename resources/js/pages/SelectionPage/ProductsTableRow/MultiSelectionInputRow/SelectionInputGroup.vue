@@ -1,5 +1,6 @@
 <template>
-    <div class="selection-input-buttons" v-if="selectionProduct">
+    <div class="selection-input-group" v-if="selectionProduct" tabindex="0" ref="selectionInputGroup"
+    @keyup="keypressHandler($event)">
         <span class="name">{{selection.name}}</span>
         <div class="selection-action-buttons">
 
@@ -71,19 +72,39 @@
 
 <script>
 export default {
-    name: 'selectionInputButtons',
+    name: 'selectionInputGroup',
     props: [
+        'index',
         'product',
         'selection',
         'currentAction',
+        'focusGroupIndex',
     ],
     data: function() { return {
         selectionProduct: null,
     }},
+    watch: {
+        // Watch for changes to the current focus index 
+        focusGroupIndex: function(newVal, oldVal) {
+            if (newVal == this.index) {
+                console.log('focus me')
+                this.$refs.selectionInputGroup.focus()
+            }
+        }
+    },
     methods: {
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
+        keypressHandler(event) {
+            const key = event.code
+            if (key == 'KeyI')
+                this.onUpdateAction(this.selectionProduct, 'In', this.selection)
+            if (key == 'KeyO')
+                this.onUpdateAction(this.selectionProduct, 'Out', this.selection)
+            if (key == 'KeyF' || key == 'KeyU')
+                this.onUpdateAction(this.selectionProduct, 'Focus', this.selection)
+        }
     },
     created() {
         this.selectionProduct = this.selection.products.find(x => x.id == this.product.id)
@@ -94,7 +115,7 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-.selection-input-buttons {
+.selection-input-group {
     margin-left: 20px;
     text-align: center;
     &:first-child {

@@ -15,14 +15,14 @@ export default {
         singleVisible: false,
         products: [],
         status: null,
-        currentFocusIndex: null,
+        currentFocusRowIndex: null,
     },
 
     getters: {
         loadingProducts: state => state.loading,
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
-        currentFocusIndex: state => state.currentFocusIndex,
+        currentFocusRowIndex: state => state.currentFocusRowIndex,
         availableProducts: state => {
             return state.availableProducts
         },
@@ -593,8 +593,8 @@ export default {
         setCurrentProduct(state, product) {
             state.currentProduct = product
         },
-        setCurrentFocusIndex(state, index) {
-            state.currentFocusIndex = index
+        setCurrentFocusRowIndex(state, index) {
+            state.currentFocusRowIndex = index
         },
         setAvailableProducts(state, products) {
             state.availableProducts = products
