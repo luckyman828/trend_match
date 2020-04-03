@@ -911,6 +911,16 @@ export default {
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0) 
                 this.addUsersToSelection({selection: newSelection, users: selectionWithTeamsAndUsers.users, ignoreRole: false})
+                // Add denied users
+                this.addUsersToSelection({
+                    selection: newSelection, 
+                    users: selectionWithTeamsAndUsers.denied_users.map(user => {
+                        user.role = 'Denied'
+                        return user
+                    }), 
+                    ignoreRole: false
+                })
+
             if (selectionWithTeamsAndUsers.teams.length > 0) 
                 this.addTeamsToSelection({selection: newSelection, teams: selectionWithTeamsAndUsers.teams})
 

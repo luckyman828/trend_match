@@ -78,13 +78,13 @@ export default{
         productsNoIn() {
             return this.products.filter(product => {
                 return (!product[this.currentAction] || product[this.currentAction] == 'None') 
-                && product.ins.length <= 0 && product.focus.length <= 0
+                && product.ins.length <= 0 && product.focus.length <= 0 && product.alignmentIns.length <= 0 && product.alignmentFocus.length <= 0
             })
         },
         productsNoOutNoComment() {
             return this.products.filter(product => {
                 return (!product[this.currentAction] || product[this.currentAction] == 'None') 
-                && product.comments.length < 1 && product.outs.length < 1 && product.requests.length < 1
+                && product.comments.length <= 0 && product.outs.length <= 0 && product.requests.length <= 0 && product.alignmentOuts.length <= 0
             })
         },
     },
