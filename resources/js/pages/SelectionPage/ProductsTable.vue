@@ -15,7 +15,7 @@
                 <div class="selection-selector">
                     <v-popover trigger="click">
                         <button class="white">
-                            <i class="fas fa-users-class primary"></i>
+                            <i class="fas primary" :class="currentSelections.length > 1 ? 'fa-users-class' : 'fa-user'"></i>
                             <span>{{currentSelections[0].name}} {{`${currentSelections.length > 1 ? '+ ' + Math.abs(currentSelections.length - 1) : ''}`}}</span>
                             <i class="fas fa-caret-down"></i>
                         </button>

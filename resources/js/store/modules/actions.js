@@ -38,11 +38,14 @@ export default {
             }
         },
 
-        async insertOrUpdateAction({ commit, dispatch }, { product, action, selection, user }) {
+        async insertOrUpdateAction({ commit, dispatch, rootGetters }, { product, action, selection, user }) {
+            console.log('Update action for: ' + selection.name)
+            const type =
+                selection.your_role == 'Member' ? 'Feedback' : selection.your_role == 'Owner' ? 'Alignment' : ''
             let apiUrl
             let requestBody
             let oldAction
-            if (selection.your_role == 'Member') {
+            if (type == 'Feedback') {
                 oldAction = product.your_feedback
                 apiUrl = `/selections/${selection.id}/feedback`
                 requestBody = {
@@ -53,7 +56,7 @@ export default {
                         },
                     ],
                 }
-            } else if (selection.your_role == 'Owner') {
+            } else if (type == 'Alignment') {
                 oldAction = product.your_action
                 apiUrl = `/selections/${selection.id}/actions`
                 requestBody = {
@@ -67,11 +70,26 @@ export default {
             }
 
             // Update state
-            commit('insertOrUpdateAction', { product, action, selection, user })
+            commit('insertOrUpdateAction', { product, action, selection, user, type, authorIsAuthUser: true })
+            // Check if we need to update all current selections
+            const currentSelections = rootGetters['selections/getCurrentSelections']
+            if (currentSelections.length > 1) {
+                currentSelections.forEach(currentSelection => {
+                    const selectionProduct = currentSelection.products.find(x => x.id == product.id)
+                    commit('UPDATE_ACTIONS', { product: selectionProduct, action, selection, user, type })
+                })
+            }
 
             await axios.post(apiUrl, requestBody).catch(err => {
                 // Return the action to the old
-                commit('insertOrUpdateAction', { product, action: oldAction, selection, user })
+                commit('insertOrUpdateAction', {
+                    product,
+                    action: oldAction,
+                    selection,
+                    user,
+                    type,
+                    authorIsAuthUser: true,
+                })
                 // Dispatch an error alert
                 dispatch(
                     'alerts/showAlert',
@@ -149,9 +167,9 @@ export default {
         alertError: state => {
             window.alert('Network error. Please check your connection')
         },
-        insertOrUpdateAction(state, { product, action, selection, user }) {
-            if (selection.your_role == 'Member') {
-                product.your_feedback = action
+        insertOrUpdateAction(state, { product, action, selection, user, type, authorIsAuthUser }) {
+            if (type == 'Feedback') {
+                if (authorIsAuthUser) product.your_feedback = action
                 // Check if the action already exists in the products feedbacks array
                 const existingAction = product.feedbacks.find(
                     x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
@@ -169,7 +187,7 @@ export default {
                     existingAction.action = action
                 }
             }
-            if (selection.your_role == 'Owner') {
+            if (type == 'Alignment') {
                 Vue.set(product, 'action', action)
                 Vue.set(product, 'action_author', user)
                 // Check if the action already exists in the products actions array
@@ -222,6 +240,23 @@ export default {
                     Vue.set(productAction.product, 'action', productAction.action)
                     Vue.set(productAction.product, 'action_author', user)
                 })
+            }
+        },
+        UPDATE_ACTIONS(state, { product, action, selection, user, type }) {
+            if (type == 'Feedback') {
+                const existingAction = product.feedbacks.find(
+                    x => x.selection_id == selection.id && x.user_id == user.id
+                )
+                if (!!existingAction) {
+                    existingAction.action = action
+                }
+            }
+            if (type == 'Alignment') {
+                console.log('Update alignment actions for: ' + selection.name)
+                const existingAction = product.actions.find(x => x.selection_id == selection.id)
+                if (!!existingAction) {
+                    existingAction.action = action
+                }
             }
         },
     },

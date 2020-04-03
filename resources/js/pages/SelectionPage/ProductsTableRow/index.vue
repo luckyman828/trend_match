@@ -38,7 +38,7 @@
             </v-popover>
             <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
                 <td class="ins tooltip-target">
-                    <button class="ghost sm"><span>{{product.alignmentIns.length + product.ins.length}}</span><i class="far fa-heart"></i></button>
+                    <button class="ghost sm"><span>{{product.allIns}}</span><i class="far fa-heart"></i></button>
                 </td>
                 <template slot="popover">
                     <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">

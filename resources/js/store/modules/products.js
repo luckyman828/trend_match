@@ -242,10 +242,13 @@ export default {
                 })
             )
                 .then(async response => {
-                    await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', selections)
+                    // Make a fresh copy of products to use
+                    const products = JSON.parse(JSON.stringify(selections[0].products))
+                    await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products })
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
+                    console.log(err)
                     commit('setProductStatus', 'error')
                 })
         },
@@ -438,63 +441,75 @@ export default {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'Out')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'focus', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'Focus')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'nds', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'None')
                     },
+                    configurable: true,
                 })
                 // Alignment Actions
                 Object.defineProperty(product, 'alignmentIns', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'In')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'Out')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'Focus')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'alignmentNds', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'None')
                     },
+                    configurable: true,
                 })
                 // All Actions
                 Object.defineProperty(product, 'allIns', {
                     get: function() {
                         return product.ins.length + product.alignmentIns.length
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'allOuts', {
                     get: function() {
                         return product.outs.length + product.alignmentOuts.length
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'allFocus', {
                     get: function() {
                         return product.focus.length + product.alignmentFocus.length
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'allNds', {
                     get: function() {
                         return product.nds.length + product.alignmentNds.length
                     },
+                    configurable: true,
                 })
 
                 // Hard Set Actions
@@ -688,6 +703,7 @@ export default {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
@@ -754,76 +770,137 @@ export default {
                 )
             })
         },
-        PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, selections) {
-            // Add an array of these selections to each product
-            // The selection object should include the input data for the given selection
-            // let productIndex = 0
-            // selections[0].products.map(product => {
-            //     // Dynamically Calculated Actions
-            //     // Feedback Actions
-            //     Object.defineProperty(product, 'ins', {
-            //         get: function() {
-            //             return product.feedbacks.filter(x => x.action == 'In')
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'outs', {
-            //         get: function() {
-            //             return product.feedbacks.filter(x => x.action == 'Out')
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'focus', {
-            //         get: function() {
-            //             return product.feedbacks.filter(x => x.action == 'Focus')
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'nds', {
-            //         get: function() {
-            //             return product.feedbacks.filter(x => x.action == 'None')
-            //         },
-            //     })
-            //     // Alignment Actions
-            //     Object.defineProperty(product, 'alignmentIns', {
-            //         get: function() {
-            //             return product.actions.filter(x => x.action == 'In')
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'alignmentOuts', {
-            //         get: function() {
-            //             return product.actions.filter(x => x.action == 'Out')
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'alignmentFocus', {
-            //         get: function() {
-            //             return product.actions.filter(x => x.action == 'Focus')
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'alignmentNds', {
-            //         get: function() {
-            //             return product.actions.filter(x => x.action == 'None')
-            //         },
-            //     })
-            //     // All Actions
-            //     Object.defineProperty(product, 'allIns', {
-            //         get: function() {
-            //             return product.ins.length + product.alignmentIns.length
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'allOuts', {
-            //         get: function() {
-            //             return product.outs.length + product.alignmentOuts.length
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'allFocus', {
-            //         get: function() {
-            //             return product.focus.length + product.alignmentFocus.length
-            //         },
-            //     })
-            //     Object.defineProperty(product, 'allNds', {
-            //         get: function() {
-            //             return product.nds.length + product.alignmentNds.length
-            //         },
-            //     })
-            // })
+        PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { selections, products }) {
+            console.log('process products for multiple slectons')
+
+            products.map(product => {
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function() {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                        }
+                        // If nothing else worked, return the first available price
+                        return product.prices[0]
+                    },
+                })
+                // Dynamically Calculated Actions
+                // Feedback Actions
+                Object.defineProperty(product, 'allFeedback', {
+                    get: function() {
+                        return selections.reduce((acc, selection) => {
+                            return acc.concat(
+                                selection.products
+                                    .find(selectionProduct => selectionProduct.id == product.id)
+                                    .feedbacks.filter(
+                                        action =>
+                                            !acc.find(
+                                                existingAction =>
+                                                    existingAction.selection_id == action.selection_id &&
+                                                    existingAction.user_id == action.user_id
+                                            )
+                                    )
+                            )
+                        }, [])
+                    },
+                })
+                Object.defineProperty(product, 'allAlignment', {
+                    get: function() {
+                        return selections.reduce((acc, selection) => {
+                            return acc.concat(
+                                selection.products
+                                    .find(selectionProduct => selectionProduct.id == product.id)
+                                    .actions.filter(
+                                        action =>
+                                            !acc.find(
+                                                existingAction => existingAction.selection_id == action.selection_id
+                                            )
+                                    )
+                            )
+                        }, [])
+                    },
+                })
+                Object.defineProperty(product, 'ins', {
+                    get: function() {
+                        return product.allFeedback.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'outs', {
+                    get: function() {
+                        return product.allFeedback.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'focus', {
+                    get: function() {
+                        return product.allFeedback.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'nds', {
+                    get: function() {
+                        return product.allFeedback.filter(x => x.action == 'None')
+                    },
+                })
+                // Alignment Actions
+                Object.defineProperty(product, 'alignmentIns', {
+                    get: function() {
+                        return product.allAlignment.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentOuts', {
+                    get: function() {
+                        return product.allAlignment.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentFocus', {
+                    get: function() {
+                        return product.allAlignment.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentNds', {
+                    get: function() {
+                        return product.allAlignment.filter(x => x.action == 'None')
+                    },
+                })
+                // All Actions
+                Object.defineProperty(product, 'allIns', {
+                    get: function() {
+                        return product.ins.length + product.alignmentIns.length
+                    },
+                })
+                Object.defineProperty(product, 'allOuts', {
+                    get: function() {
+                        return product.outs.length + product.alignmentOuts.length
+                    },
+                })
+                Object.defineProperty(product, 'allFocus', {
+                    get: function() {
+                        return product.focus.length + product.alignmentFocus.length
+                    },
+                })
+                Object.defineProperty(product, 'allNds', {
+                    get: function() {
+                        return product.nds.length + product.alignmentNds.length
+                    },
+                })
+                // Remove deleted comments
+                Vue.set(
+                    product,
+                    'comments',
+                    product.comments.filter(x => !x.is_deleted)
+                )
+            })
+            state.products = products
         },
     },
 }
