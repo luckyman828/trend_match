@@ -1,14 +1,14 @@
 <template>
     <div class="multi-selection-input-row flex-table-row">
-        <SelectionInputGroup v-for="(theSelection, index) in currentSelections" :key="theSelection.id"
-        :selection="theSelection" :product="product" :index="index"
+        <SelectionInputGroup v-for="(selectionInput, index) in product.selectionInputArray" :key="selectionInput.selection.id"
+        :selection="selectionInput.selection" :product="selectionInput.product" :index="index"
         :currentAction="currentAction" :focusGroupIndex="focusGroupIndex"
-        @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
+        @updateAction="(product, action, selection) => onUpdateAction(product, action, selection)"/>
     </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import SelectionInputGroup from './SelectionInputGroup'
 export default {
     name: 'multiSelectionInputRow',
@@ -21,10 +21,23 @@ export default {
         SelectionInputGroup
     },
     computed: {
-        ...mapGetters('selections', ['getCurrentSelections']),
-        currentSelections() {
-            return this.getCurrentSelections
-        },
+        ...mapGetters('auth', ['authUser'])
+    },
+    methods: {
+        ...mapMutations('actions', ['UPDATE_ACTIONS']),
+        onUpdateAction(product, action, selection) {
+            this.$emit('updateAction', product, action, selection)
+            // Update all actions
+            this.product.selectionInputArray.forEach(selectionProductPair => {
+                this.UPDATE_ACTIONS({
+                    product: selectionProductPair.product,
+                    action,
+                    selection,
+                    user: this.authUser,
+                    type: 'Alignment'
+                })
+            })
+        }
     }
 }
 </script>

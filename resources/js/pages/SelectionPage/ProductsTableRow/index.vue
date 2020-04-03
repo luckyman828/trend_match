@@ -198,7 +198,6 @@ export default {
             this.focusGroupIndex = null
         },
         focusNext(event) {
-            console.log('focus next')
             if (this.currentSelections.length <= 1) {
                 this.focusNextRow(event)
                 return

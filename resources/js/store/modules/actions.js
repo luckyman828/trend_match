@@ -71,14 +71,6 @@ export default {
 
             // Update state
             commit('insertOrUpdateAction', { product, action, selection, user, type, authorIsAuthUser: true })
-            // Check if we need to update all current selections
-            const currentSelections = rootGetters['selections/getCurrentSelections']
-            if (currentSelections.length > 1) {
-                currentSelections.forEach(currentSelection => {
-                    const selectionProduct = currentSelection.products.find(x => x.id == product.id)
-                    commit('UPDATE_ACTIONS', { product: selectionProduct, action, selection, user, type })
-                })
-            }
 
             await axios.post(apiUrl, requestBody).catch(err => {
                 // Return the action to the old
@@ -252,7 +244,7 @@ export default {
                 }
             }
             if (type == 'Alignment') {
-                console.log('Update alignment actions for: ' + selection.name)
+                // console.log('Update alignment actions for: ' + selection.name)
                 const existingAction = product.actions.find(x => x.selection_id == selection.id)
                 if (!!existingAction) {
                     existingAction.action = action
