@@ -26,17 +26,17 @@ export default {
     methods: {
         ...mapMutations('actions', ['UPDATE_ACTIONS']),
         onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
             // Update all actions
             this.product.selectionInputArray.forEach(selectionProductPair => {
                 this.UPDATE_ACTIONS({
                     product: selectionProductPair.product,
-                    action,
+                    action: product.action == action ? 'None' : action,
                     selection,
                     user: this.authUser,
                     type: 'Alignment'
                 })
             })
+            this.$emit('updateAction', product, action, selection)
         }
     }
 }
