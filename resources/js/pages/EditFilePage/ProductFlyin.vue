@@ -18,8 +18,11 @@
                             <span>Changes saved</span>
                             <span>{{product.updated_at}}</span>
                         </div>
+                        <button @click="onDeleteProduct" class="ghost">
+                            <i class="far fa-trash-alt"></i>
+                            <span>Delete</span>
+                        </button>
                         <div class="hotkey-wrapper" v-tooltip="{content: !productToEdit.datasource_id && 'Product must have an ID'}">
-                            <!-- <h3><BaseEditable :value="product.title" :type="'text'" v-model="product.title"/></h3> -->
                             <button class="ghost save-button" :class="{disabled: !saveActive}"
                             @click="saveActive && onUpdateProduct()"><i class="far fa-save">
                                 </i><span>Save</span>
@@ -372,8 +375,14 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
+        onDeleteProduct() {
+            if (confirm('Are you sure you want to delete this product?')) {
+                this.deleteProducts({file: this.currentFile, products: [this.product]})
+                this.onCloseSingle()
+            }
+        },
         validateProductId(value) {
             // Check if the value already exists on a product
             const existingProduct = this.products.find(x => x.datasource_id == value)

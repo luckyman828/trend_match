@@ -17,8 +17,9 @@
         <td class="title clickable" @click="$emit('onViewSingle',product)"><span>{{product.title}}</span></td>
 
         <td class="action">
-            <button class="invisible ghost-hover" 
+            <button class="invisible ghost-hover primary" 
             @click="$emit('onViewSingle',product)"><span>View / Edit</span></button>
+            <button class="invisible ghost-hover" @click="$emit('showContextMenu', $event, product)"><i class="far fa-ellipsis-h"></i></button>
         </td>
 
     </tr>

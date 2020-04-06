@@ -46,7 +46,7 @@
                         @click="setCurrentFolder(folder)">
                             <span>Open folder</span>
                         </button>
-                        <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="fas fa-ellipsis-h"></i></button>
+                        <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="far fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
                 <tr v-for="file in filesToShow" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
@@ -71,7 +71,7 @@
                         @click="showSingleFile(file)">
                             <span>View file</span>
                         </button>
-                        <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="fas fa-ellipsis-h"></i></button>
+                        <button class="invisible ghost-hover" @click="showContextMenu($event, file, 'file')"><i class="far fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
             </template>
