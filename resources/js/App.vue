@@ -149,7 +149,7 @@ export default{
         // Set up a request intercepter that checks if the user is still authenticated
         axios.interceptors.response.use(response => response, (error) => {
             if (this.$route.name != 'login') {
-                if (error.response.status === 401) {
+                if (!!error.response && error.response.status === 401) {
                     // if you ever get an unauthorized, logout the user
                     this.logout()
                 }

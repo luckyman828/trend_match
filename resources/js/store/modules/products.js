@@ -19,54 +19,54 @@ export default {
     },
 
     getters: {
-        loadingProducts: state => state.loading,
-        productsStatus: state => state.status,
-        currentProduct: state => state.currentProduct,
-        currentFocusIndex: state => state.currentFocusIndex,
-        availableProducts: state => {
+        loadingProducts: (state) => state.loading,
+        productsStatus: (state) => state.status,
+        currentProduct: (state) => state.currentProduct,
+        currentFocusIndex: (state) => state.currentFocusIndex,
+        availableProducts: (state) => {
             return state.availableProducts
         },
-        nextProduct: state => {
+        nextProduct: (state) => {
             // Find the index of the current product
-            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            const index = state.availableProducts.findIndex((x) => x.id == state.currentProduct.id)
             // Check that the current is not the last in the array
             if (index + 1 < state.availableProducts.length) {
                 return state.availableProducts[index + 1]
             }
         },
-        prevProduct: state => {
+        prevProduct: (state) => {
             // Find the index of the current product
-            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            const index = state.availableProducts.findIndex((x) => x.id == state.currentProduct.id)
             // Check that the current is not the first in the array
             if (index > 0) {
                 return state.availableProducts[index - 1]
             }
         },
-        selectedCategories: state => {
+        selectedCategories: (state) => {
             return state.selectedCategories
         },
-        selectedDeliveryDates: state => {
+        selectedDeliveryDates: (state) => {
             return state.selectedDeliveryDates
         },
-        selectedBuyerGroups: state => {
+        selectedBuyerGroups: (state) => {
             return state.selectedBuyerGroups
         },
-        unreadOnly: state => {
+        unreadOnly: (state) => {
             return state.unreadOnly
         },
-        currentProductFilter: state => {
+        currentProductFilter: (state) => {
             return state.currentProductFilter
         },
-        singleVisible: state => {
+        singleVisible: (state) => {
             return state.singleVisible
         },
-        actionsUpdated: state => {
+        actionsUpdated: (state) => {
             return state.actionsUpdated
         },
-        commentsUpdated: state => {
+        commentsUpdated: (state) => {
             return state.commentsUpdated
         },
-        commentsCreated: state => {
+        commentsCreated: (state) => {
             return state.commentsCreated
         },
         products: (state, getters, rootState, rootGetters) => {
@@ -75,7 +75,7 @@ export default {
         availableCategories(state, getters) {
             const products = getters.products
             let uniqueCategories = []
-            products.forEach(product => {
+            products.forEach((product) => {
                 if (product.category) {
                     const theCategory = product.category.toLowerCase()
                     const found = uniqueCategories.includes(theCategory)
@@ -87,10 +87,10 @@ export default {
         availableDeliveryDates(state, getters) {
             const products = getters.products
             let uniqueDeliveryDates = []
-            products.forEach(product => {
+            products.forEach((product) => {
                 if (product.delivery_date) {
                     // const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
-                    const found = uniqueDeliveryDates.find(x => x == product.delivery_date)
+                    const found = uniqueDeliveryDates.find((x) => x == product.delivery_date)
                     if (!found)
                         // uniqueDeliveryDates.push({
                         //     name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
@@ -107,7 +107,7 @@ export default {
         availableBuyerGroups(state, getters) {
             const products = getters.products
             let unique = []
-            products.forEach(product => {
+            products.forEach((product) => {
                 if (product.buying_group) {
                     const theBuyingGroup = product.buying_group.toLowerCase()
                     const found = unique.includes(theBuyingGroup)
@@ -132,7 +132,7 @@ export default {
             totals.all = products.length
 
             if (selection) {
-                products.forEach(product => {
+                products.forEach((product) => {
                     if (!product[currentAction] || product[currentAction] == 'None') totals.nds++
                     if (product[currentAction] == 'In') totals.ins++
                     if (product[currentAction] == 'Out') totals.outs++
@@ -153,21 +153,21 @@ export default {
 
             // First filter by category
             if (categories.length > 0) {
-                const filteredByCategory = productsToReturn.filter(product => {
+                const filteredByCategory = productsToReturn.filter((product) => {
                     return product.category && Array.from(categories).includes(product.category.toLowerCase())
                 })
                 productsToReturn = filteredByCategory
             }
             // Filter by delivery date
             if (deliveryDates.length > 0) {
-                const filteredByDeliveryDate = productsToReturn.filter(product => {
+                const filteredByDeliveryDate = productsToReturn.filter((product) => {
                     return Array.from(deliveryDates).includes(product.delivery_date)
                 })
                 productsToReturn = filteredByDeliveryDate
             }
             // Filter by buyer group
             if (buyerGroups.length > 0) {
-                const filteredByBuyerGroups = productsToReturn.filter(product => {
+                const filteredByBuyerGroups = productsToReturn.filter((product) => {
                     return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
                 })
                 productsToReturn = filteredByBuyerGroups
@@ -175,13 +175,13 @@ export default {
 
             // Filer by unread
             if (unreadOnly) {
-                const filteredByUnread = productsToReturn.filter(product => product.newComment)
+                const filteredByUnread = productsToReturn.filter((product) => product.newComment)
                 productsToReturn = filteredByUnread
             }
 
             // Filter by actions
             if (['ins', 'outs', 'nds'].includes(actionFilter)) {
-                const filteredByAction = productsToReturn.filter(product => {
+                const filteredByAction = productsToReturn.filter((product) => {
                     if (actionFilter == 'nds') return !product[currentAction] || product[currentAction] == 'None'
                     if (actionFilter == 'outs') return product[currentAction] == 'Out'
                     if (actionFilter == 'ins')
@@ -195,19 +195,19 @@ export default {
     },
 
     actions: {
-        async fetchProducts({ commit }, fileId) {
+        async fetchProducts({ commit, dispatch }, fileId) {
             commit('setProductStatus', 'loading')
 
             const apiUrl = `/files/${fileId}/products`
 
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then((response) => {
                     commit('insertProducts', { products: response.data, method: 'set' })
                     commit('procesProducts')
                     commit('setProductStatus', 'success')
                 })
-                .catch(err => {
+                .catch((err) => {
                     commit('setProductStatus', 'error')
                 })
         },
@@ -218,12 +218,12 @@ export default {
 
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then((response) => {
                     commit('insertProducts', { products: response.data, method: 'set' })
                     dispatch('procesSelectionProducts')
                     commit('setProductStatus', 'success')
                 })
-                .catch(err => {
+                .catch((err) => {
                     commit('setProductStatus', 'error')
                 })
         },
@@ -236,7 +236,7 @@ export default {
                         method: 'Add',
                         products: products,
                     })
-                    .then(response => {
+                    .then((response) => {
                         // Add the created ID to the product, if we only have 1 product
                         if (products.length <= 1) {
                             const product = products[0]
@@ -244,7 +244,7 @@ export default {
                         }
                         resolve(response)
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         reject(err)
                         dispatch(
                             'alerts/showAlert',
@@ -295,11 +295,11 @@ export default {
                 const apiUrl = `/products/${product.id}`
                 axios
                     .put(apiUrl, product)
-                    .then(response => {
+                    .then((response) => {
                         commit('updateProduct', product)
                         resolve(response)
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         reject(err)
                         dispatch(
                             'alerts/showAlert',
@@ -316,10 +316,10 @@ export default {
                 let presignedUrl
                 await axios
                     .get(apiUrl)
-                    .then(response => {
+                    .then((response) => {
                         presignedUrl = response.data
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         reject(err)
                     })
 
@@ -332,19 +332,19 @@ export default {
                     xhr.open('PUT', uploadUrl)
                     xhr.setRequestHeader('x-amz-acl', 'public-read')
                     xhr.setRequestHeader('Content-Type', 'image/jpeg')
-                    xhr.upload.onprogress = event => {
+                    xhr.upload.onprogress = (event) => {
                         return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
                     }
                     xhr.onload = () => resolve(xhr)
                     xhr.onerror = () => reject(xhr)
                     xhr.send(blob)
                 })
-                    .then(response => {
+                    .then((response) => {
                         // On success, set the image on the variant
                         variant.image = presignedUrl.url
                         resolve(response)
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         reject(err)
                     })
             })
@@ -356,40 +356,45 @@ export default {
                         ids: imagesToDelete,
                     },
                 })
-                .then(response => {
+                .then((response) => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err.response)
                 })
         },
-        async deleteProduct({ commit }, productId) {
-            console.log('Deleting product in store')
-
-            await axios
-                .delete(`/api/product`, {
-                    data: {
-                        id: productId,
-                    },
-                })
-                .then(response => {
-                    console.log('product deleted!')
-                    Product.delete(productId)
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    commit('alertError')
-                })
+        async deleteProducts({ commit, dispatch }, { file, products }) {
+            return new Promise((resolve, reject) => {
+                commit('DELETE_PRODUCTS', products)
+                const apiUrl = `/files/${file.id}/products`
+                axios
+                    .post(apiUrl, {
+                        method: 'Remove',
+                        products: products,
+                    })
+                    .then((response) => {
+                        // Add the created ID to the product, if we only have 1 product
+                        resolve(response)
+                    })
+                    .catch((err) => {
+                        reject(err)
+                        // Re-add the products
+                        commit('insertProducts', { products, method: 'add' })
+                        dispatch(
+                            'alerts/showAlert',
+                            'Something went wrong when creating the product. Please try again.',
+                            { root: true }
+                        )
+                    })
+            })
         },
         procesSelectionProducts({ commit, state, rootGetters }) {
-            console.log('process products')
             const authUser = rootGetters['auth/authUser']
             const products = state.products
-            products.map(product => {
+            products.map((product) => {
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
-                    get: function() {
+                    get: function () {
                         // Check if the product has any prices
                         if (product.prices.length <= 0) {
                             // If no prices are available, return a default empty price object
@@ -402,7 +407,7 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find((x) => (x.currency = product.preferred_currency))
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
@@ -413,64 +418,64 @@ export default {
                 // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'In')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'outs', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Out')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'focus', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Focus')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'nds', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'None')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'None')
                     },
                 })
                 // Alignment Actions
                 Object.defineProperty(product, 'alignmentIns', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'In')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'Out')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'Focus')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'alignmentNds', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'None')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'None')
                     },
                 })
                 // All Actions
                 Object.defineProperty(product, 'allIns', {
-                    get: function() {
+                    get: function () {
                         return product.ins.length + product.alignmentIns.length
                     },
                 })
                 Object.defineProperty(product, 'allOuts', {
-                    get: function() {
+                    get: function () {
                         return product.outs.length + product.alignmentOuts.length
                     },
                 })
                 Object.defineProperty(product, 'allFocus', {
-                    get: function() {
+                    get: function () {
                         return product.focus.length + product.alignmentFocus.length
                     },
                 })
                 Object.defineProperty(product, 'allNds', {
-                    get: function() {
+                    get: function () {
                         return product.nds.length + product.alignmentNds.length
                     },
                 })
@@ -526,15 +531,15 @@ export default {
 
                 // Comments / Requests
                 Object.defineProperty(product, 'hasAuthUserRequest', {
-                    get: function() {
-                        return !!product.requests.find(x => x.author_id == authUser.id)
+                    get: function () {
+                        return !!product.requests.find((x) => x.author_id == authUser.id)
                     },
                 })
                 // Remove deleted comments
                 Vue.set(
                     product,
                     'comments',
-                    product.comments.filter(x => !x.is_deleted)
+                    product.comments.filter((x) => !x.is_deleted)
                 )
             })
         },
@@ -550,7 +555,7 @@ export default {
         },
         insertProducts(state, { products, method }) {
             // Loop through the products and format their data as necessary
-            products.forEach(product => {
+            products.forEach((product) => {
                 // Cast datasource_if to a number
                 product.datasource_id = parseInt(product.datasource_id)
                 // Format delivery_date
@@ -567,6 +572,12 @@ export default {
             } else {
                 state.products = products
             }
+        },
+        DELETE_PRODUCTS(state, products) {
+            products.forEach((product) => {
+                const index = state.products.findIndex((x) => x.id == product.id)
+                state.products.splice(index, 1)
+            })
         },
         setCurrentProduct(state, product) {
             state.currentProduct = product
@@ -597,22 +608,22 @@ export default {
         },
         updateProduct(state, product) {
             // Replace the product with the new
-            let stateProduct = state.products.find(x => x.id == product.id)
+            let stateProduct = state.products.find((x) => x.id == product.id)
             Object.assign(stateProduct, product)
             // Check if we also need to update the current product
             if (state.currentProduct && state.currentProduct.id == product.id) {
                 Object.assign(state.currentProduct, product)
             }
         },
-        alertError: state => {
+        alertError: (state) => {
             window.alert('Network error. Please check your connection')
         },
-        procesProducts: state => {
+        procesProducts: (state) => {
             const products = state.products
-            products.map(product => {
+            products.map((product) => {
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
-                    get: function() {
+                    get: function () {
                         // Check if the product has any prices
                         if (product.prices.length <= 0) {
                             // If no prices are available, return a default empty price object
@@ -625,7 +636,7 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find((x) => (x.currency = product.preferred_currency))
                             if (preferredPrice) return preferredPrice
                             else return product.prices[0]
                         } else {
@@ -635,12 +646,12 @@ export default {
                 })
             })
         },
-        procesSelectionProducts: state => {
+        procesSelectionProducts: (state) => {
             const products = state.products
-            products.map(product => {
+            products.map((product) => {
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
-                    get: function() {
+                    get: function () {
                         // Check if the product has any prices
                         if (product.prices.length <= 0) {
                             // If no prices are available, return a default empty price object
@@ -653,7 +664,7 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find((x) => (x.currency = product.preferred_currency))
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
@@ -664,58 +675,58 @@ export default {
                 // Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'In')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'outs', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Out')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'focus', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Focus')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'nds', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'None')
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'None')
                     },
                 })
                 // Alignment Actions
                 Object.defineProperty(product, 'alignmentIns', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'In')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'In')
                     },
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'Out')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Out')
                     },
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'Focus')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Focus')
                     },
                 })
                 Object.defineProperty(product, 'alignmentNds', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'None')
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'None')
                     },
                 })
 
                 // Comments / Requests
                 Object.defineProperty(product, 'hasAuthUserRequest', {
-                    get: function() {
-                        return !!product.requests.find(x => x.author_id == 'None')
+                    get: function () {
+                        return !!product.requests.find((x) => x.author_id == 'None')
                     },
                 })
                 // Remove deleted comments
                 Vue.set(
                     product,
                     'comments',
-                    product.comments.filter(x => !x.is_deleted)
+                    product.comments.filter((x) => !x.is_deleted)
                 )
             })
         },

@@ -906,7 +906,6 @@ export default {
             await this.fetchSelectionSettings(selection)
             // Save selection settings to the new selection
             newSelection.settings = selection.settings
-            console.log(newSelection)
             this.updateSelectionSettings(newSelection)
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0) 

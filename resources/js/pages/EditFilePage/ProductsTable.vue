@@ -93,7 +93,13 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenu" v-slot>
+        <BaseContextMenu ref="contextMenu" v-slot
+        :hotkeys="['KeyV', 'KeyE', 'KeyA', 'KeyD']"
+        @keybind-v="onViewSingle(contextItem)"
+        @keybind-e="onViewSingle(contextItem)"
+        @keybind-a="onNewProduct()"
+        @keybind-d="deleteProduct({file, products: [contextItem]})"
+        >
             <div class="item-group">
                 <div class="item" @click="onViewSingle(contextItem)">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
@@ -107,7 +113,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item">
+                <div class="item" @click="deleteProducts({file, products: [contextItem]})">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <span><u>D</u>elete Product</span>
                 </div>
@@ -163,7 +169,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct']),
+        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct', 'deleteProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
