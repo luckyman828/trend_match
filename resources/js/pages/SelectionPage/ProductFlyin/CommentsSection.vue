@@ -25,11 +25,11 @@
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
                     <div class="input-parent comment">
-                        <BaseInputTextArea ref="commentField" :disabled="!userWriteAccess.comments.has_access"
-                        v-tooltip="!userWriteAccess.comments.has_access && userWriteAccess.comments.msg"
-                        :placeholder="userWriteAccess.comments.has_access ? 'Write your comment here...' : userWriteAccess.comments.msg" 
+                        <BaseInputTextArea ref="commentField" :disabled="!userWriteAccess.comments.hasAccess"
+                        v-tooltip="!userWriteAccess.comments.hasAccess && userWriteAccess.comments.msg"
+                        :placeholder="userWriteAccess.comments.hasAccess ? 'Write your comment here...' : userWriteAccess.comments.msg" 
                         v-model="newComment.content" 
-                        @click.native="userWriteAccess.comments.has_access && activateWrite()" @keydown.native.enter.exact.prevent  
+                        @click.native="userWriteAccess.comments.hasAccess && activateWrite()" @keydown.native.enter.exact.prevent  
                         @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                     </div>
                     <div class="flex-wrapper" v-if="writeActive">

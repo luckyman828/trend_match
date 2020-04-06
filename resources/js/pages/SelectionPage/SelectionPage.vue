@@ -31,10 +31,10 @@
             </div>
 
             <ProductsTable ref="productsComponent" :file="currentFile" :products="productsFiltered"
-            :selection="currentSelection" :currentAction="currentAction"
+            :selection="selection" :currentAction="currentAction"
             @updateAction="onUpdateAction"/>
 
-            <ProductFlyin :show="singleVisible" :selection="currentSelection" :currentAction="currentAction"
+            <ProductFlyin :show="singleVisible" :selection="selection" :currentAction="currentAction"
             @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
         </template>
 
@@ -66,7 +66,7 @@ export default{
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelections', 'currentSelectionMode', 'currentSelectionModeAction']),
         ...mapGetters('auth', ['authUser']),
         selection() {
-            return this.currentSelection
+            return this.currentSelections[0]
         },
         currentSelections() {
             return this.getCurrentSelections

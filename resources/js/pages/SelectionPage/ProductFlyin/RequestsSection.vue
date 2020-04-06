@@ -32,11 +32,11 @@
                     </button> -->
 
                     <div class="input-parent request">
-                        <BaseInputTextArea ref="requestField" :disabled="!userWriteAccess.requests.has_access"
-                        v-tooltip="!userWriteAccess.requests.has_access && userWriteAccess.requests.msg"
-                        :placeholder="userWriteAccess.comments.has_access ? 'Write your request here...' : userWriteAccess.requests.msg"
+                        <BaseInputTextArea ref="requestField" :disabled="!userWriteAccess.requests.hasAccess"
+                        v-tooltip="!userWriteAccess.requests.hasAccess && userWriteAccess.requests.msg"
+                        :placeholder="userWriteAccess.comments.hasAccess ? 'Write your request here...' : userWriteAccess.requests.msg"
                         v-model="newRequest.content" 
-                        @keydown.native.enter.exact.prevent @click.native="userWriteAccess.requests.has_access && activateWrite()"
+                        @keydown.native.enter.exact.prevent @click.native="userWriteAccess.requests.hasAccess && activateWrite()"
                         @keyup.native.esc="deactivateWrite(); cancelRequest()" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                     </div>
                     <div class="flex-wrapper" v-if="writeActive">

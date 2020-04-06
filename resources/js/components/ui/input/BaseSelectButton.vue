@@ -1,16 +1,13 @@
 <template>
-    <div class="select-button">
+    <div class="select-button" tabindex="0">
         <span v-if="header" class="header" v-html="header"></span>
         <div class="button-wrapper">
-            <label class="select-button" :class="{'has-description': $slots.default}">
+            <label class="select-button">
                 <BaseRadiobox v-if="type == 'radio'" :value="value"/>
-                <BaseCheckbox v-else :value="value" @change="$emit('input', $event)"/>
+                <BaseCheckbox v-else :value="modelValue" :modelValue="value" @change="$emit('input', $event)"/>
 
                 <div class="label">
-                    {{label}}
-                    <p class="description">
-                        <slot/>
-                    </p>
+                    <slot/>
                 </div>
             </label>
         </div>
@@ -23,6 +20,7 @@ export default {
     props: [
         'type',
         'value',
+        'modelValue',
         'label',
         'header'
     ],
@@ -44,6 +42,7 @@ export default {
             display: inline-block;
         }
         label {
+            padding: 8px 16px;
             font-weight: 400;
             font-size: 12px;
             cursor: pointer;
@@ -63,12 +62,6 @@ export default {
             }
             &:hover, &.active {
                 background: $bgContentActive;
-            }
-            &.has-description {
-                align-items: flex-start;
-                .radiomark, .checkbox {
-                    margin-top: 4px;
-                }
             }
         }
         .checkbox {

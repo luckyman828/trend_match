@@ -15,14 +15,20 @@
                 <div class="selection-selector">
                     <v-popover trigger="click">
                         <button class="white">
-                            <i class="fas primary" :class="currentSelections.length > 1 ? 'fa-users-class' : 'fa-user'"></i>
+                            <!-- <i class="fas primary" :class="currentSelections.length > 1 ? 'fa-users-class' : 'fa-user'"></i> -->
+                            <i class="fas primary fa-users-class"></i>
                             <span>{{currentSelections[0].name}} {{`${currentSelections.length > 1 ? '+ ' + Math.abs(currentSelections.length - 1) : ''}`}}</span>
                             <i class="fas fa-caret-down"></i>
                         </button>
                         <template slot="popover">
-                            <BaseSelectButtons style="width: 200px; padding-top: 8px;"
-                            :options="availableSelections" 
-                            v-model="selectedSelections" optionNameKey="name" :emitOnChange="true"/>
+                            <BaseSelectButton v-for="theSelection in availableSelections" :key="theSelection.id"
+                            :modelValue="theSelection" v-model="selectedSelections">
+                                <i v-if="!theSelection.is_visible" class="far fa-eye-slash" style="margin-right: 4px;"
+                                v-tooltip="'Selection is <strong>Hidden</strong>. You can still make new input, even though the selection is hidden'"></i>
+                                <i v-if="!theSelection.is_open" class="far fa-lock" style="margin-right: 4px;"
+                                v-tooltip="'Selection is <strong>Locked</strong>. You can view input from a locked selection, but not make any new'"></i>
+                                {{theSelection.name}}
+                            </BaseSelectButton>
                             <div class="item-group actions">
                                 <button class="primary" v-close-popover @click="onSetCurrentSelections"><span>Apply</span></button>
                                 <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>

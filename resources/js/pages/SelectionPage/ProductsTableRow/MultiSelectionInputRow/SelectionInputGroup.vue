@@ -5,10 +5,12 @@
         <div class="selection-action-buttons">
 
             <div class="selection-action">
-                <button :class="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                :disabled="!userWriteAccess.actions.hasAccess" 
+                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @click="onUpdateAction(product, 'Focus', selection)">
                     <span>F</span>
-                </button>
+                </BaseButton>
 
                 <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
                     <span>{{product.alignmentFocus.length +product.focus.length}}</span>
@@ -26,10 +28,12 @@
             </div>
 
             <div class="selection-action">
-                <button :class="product[currentAction] != 'In' ? 'ghost': 'green'"
+                <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                :disabled="!userWriteAccess.actions.hasAccess" 
+                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @click="onUpdateAction(product, 'In', selection)">
                     <span>I</span>
-                </button>
+                </BaseButton>
 
                 <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
                     <span>{{product.alignmentIns.length + product.ins.length}}</span>
@@ -47,10 +51,12 @@
             </div>
 
             <div class="selection-action">
-                <button :class="product[currentAction] != 'Out' ? 'ghost': 'red'"
+                <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                :disabled="!userWriteAccess.actions.hasAccess" 
+                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @click="onUpdateAction(product, 'Out', selection)">
                     <span>O</span>
-                </button>
+                </BaseButton>
                 
                 <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
                     <span>{{product.alignmentOuts.length + product.outs.length}}</span>
@@ -66,11 +72,13 @@
                     </template>
                 </v-popover>
             </div>
+
         </div>
     </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     name: 'selectionInputGroup',
     props: [
@@ -84,10 +92,15 @@ export default {
         // Watch for changes to the current focus index 
         focusGroupIndex: function(newVal, oldVal) {
             if (newVal == this.index) {
-                console.log('focus me')
                 this.$refs.selectionInputGroup.focus()
             }
         }
+    },
+    computed: {
+        ...mapGetters('selections', ['getAuthUserSelectionWriteAccess']),
+        userWriteAccess () {
+            return this.getAuthUserSelectionWriteAccess(this.selection)
+        },
     },
     methods: {
         onUpdateAction(product, action, selection) {
@@ -95,12 +108,14 @@ export default {
         },
         keypressHandler(event) {
             const key = event.code
-            if (key == 'KeyI')
-                this.onUpdateAction(this.product, 'In', this.selection)
-            if (key == 'KeyO')
-                this.onUpdateAction(this.product, 'Out', this.selection)
-            if (key == 'KeyF' || key == 'KeyU')
-                this.onUpdateAction(this.product, 'Focus', this.selection)
+            if (this.userWriteAccess.actions.hasAccess) {
+                if (key == 'KeyI')
+                    this.onUpdateAction(this.product, 'In', this.selection)
+                if (key == 'KeyO')
+                    this.onUpdateAction(this.product, 'Out', this.selection)
+                if (key == 'KeyF' || key == 'KeyU')
+                    this.onUpdateAction(this.product, 'Focus', this.selection)
+            }
         }
     }
 }
@@ -117,21 +132,25 @@ export default {
     }
     .selection-action-buttons {
         display: flex;
-        .selection-action {
-            button {
-                width: 32px;
-                max-width: 32px;
-                border-radius: 0;
-                margin: 8px 0 4px;
-            }
-            &:first-child button {
-                border-radius: 4px 0 0 4px;
-            }
-            &:last-child button {
-                border-radius: 0 4px 4px 0;
-            }
-            .v-popover .trigger {
-                cursor: pointer;
+        ::v-deep {
+            .selection-action {
+                button {
+                    width: 32px;
+                    max-width: 32px;
+                    border-radius: 0;
+                    margin: 8px 0 4px;
+                }
+                &:first-child button {
+                    border-radius: 4px 0 0 4px;
+                }
+                &:last-child button {
+                    border-radius: 0 4px 4px 0;
+                }
+                .v-popover .trigger {
+                    &:hover {
+                        font-weight: 500;
+                    }
+                }
             }
         }
     }

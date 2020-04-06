@@ -96,21 +96,21 @@
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
                     <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
-                    :disabled="!userWriteAccess.actions.has_access" 
-                    v-tooltip="!userWriteAccess.actions.has_access && userWriteAccess.actions.msg"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Focus', selection)">
                         <i class="far fa-star"></i>
                     </BaseButton>
                     <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
-                    :disabled="!userWriteAccess.actions.has_access" 
-                    v-tooltip="!userWriteAccess.actions.has_access && userWriteAccess.actions.msg"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'In', selection)">
                         <i class="far fa-heart"></i>
                         <span>In</span>
                     </BaseButton>
                     <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
-                    :disabled="!userWriteAccess.actions.has_access" 
-                    v-tooltip="!userWriteAccess.actions.has_access && userWriteAccess.actions.msg"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Out', selection)">
                         <i class="far fa-times-circle"></i>
                         <span>out</span>
@@ -271,7 +271,10 @@ export default {
         },
         keypressHandler(event) {
             const key = event.code
-            if (this.currentSelectionMode != 'Approval' && this.currentSelections.length <= 1) {
+            if (this.currentSelectionMode != 'Approval' 
+            && this.currentSelections.length <= 1 // Check that we are not doing multi selection input
+            && this.userWriteAccess.actions.hasAccess // Check if the user has write access
+            ) {
                 if (key == 'KeyI')
                     this.onUpdateAction(this.product, 'In', this.selection)
                 if (key == 'KeyO')

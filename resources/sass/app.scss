@@ -805,6 +805,12 @@ i {
 }
 
 // V-TOOLTIP
+i.has-tooltip {
+    &:hover {
+        font-weight: 900;
+        color: $font;
+    }
+}
 .tooltip {
     // min-width: 200px;
     max-width: 300px;

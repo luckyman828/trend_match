@@ -39,7 +39,6 @@ export default {
         },
 
         async insertOrUpdateAction({ commit, dispatch, rootGetters }, { product, action, selection, user }) {
-            console.log('Update action for: ' + selection.name)
             const type =
                 selection.your_role == 'Member' ? 'Feedback' : selection.your_role == 'Owner' ? 'Alignment' : ''
             let apiUrl
@@ -160,8 +159,6 @@ export default {
             window.alert('Network error. Please check your connection')
         },
         insertOrUpdateAction(state, { product, action, selection, user, type, authorIsAuthUser }) {
-            console.log('Insert or Update action')
-            console.log(action)
             if (type == 'Feedback') {
                 if (authorIsAuthUser) product.your_feedback = action
                 // Check if the action already exists in the products feedbacks array
@@ -237,7 +234,6 @@ export default {
             }
         },
         UPDATE_ACTIONS(state, { product, action, selection, user, type }) {
-            console.log('Update actions')
             if (type == 'Feedback') {
                 const existingAction = product.feedbacks.find(
                     (x) => x.selection_id == selection.id && x.user_id == user.id
@@ -247,10 +243,8 @@ export default {
                 }
             }
             if (type == 'Alignment') {
-                // console.log('Update alignment actions for: ' + selection.name)
                 const existingAction = product.actions.find((x) => x.selection_id == selection.id)
                 if (!!existingAction) {
-                    console.log('new action: ' + action)
                     existingAction.action = action
                 }
             }
