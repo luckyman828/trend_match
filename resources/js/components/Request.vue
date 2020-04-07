@@ -1,12 +1,14 @@
 <template>
-    <div class="request-wrapper" :class="[{own: (request.user_id == authUser.id)}, 
+    <div class="request-wrapper" :class="[{own: isOwn}, {master: isMaster}, 
     {'has-traits': request.focus}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request">
-            <strong class="sender">{{request.task.title}} | {{(request.user_id == authUser.id) ? 'You' : request.user.name}}</strong>
-            <span class="body">{{request.comment}}</span>
+            <strong class="sender">
+                {{request.selection.name}} | 
+                {{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</strong>
+            <span class="content">{{request.content}}</span>
             <small class="id">Request ID: {{request.id}}</small>
         </div>        
     </div>
@@ -22,7 +24,14 @@ export default {
         'request'
     ],
     computed: {
-        ...mapGetters('persist', ['authUser', 'userPermissionLevel', 'currentTask']),
+        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['currentSelection']),
+        isOwn() {
+            return this.request.selection_id == this.currentSelection.id
+        },
+        isMaster() {
+            return this.request.selection.type == 'Master'
+        }
     },
     methods: {
     }
@@ -35,8 +44,12 @@ export default {
     .request-wrapper {
         margin-bottom: 4px;
         position: relative;
+        transition: margin-bottom .2s;
         &.has-traits {
             margin-top: 24px;
+        }
+        &:hover {
+            margin-bottom: 32px;
         }
     }
     .traits {
@@ -60,29 +73,33 @@ export default {
     }
     .request {
         padding: 12px;
-        background: $light2;
         border-radius: 6px;
         display: flex;
         flex-direction: column;
+        background: white;
         .sender {
             font-size: 12px;
         }
         .id {
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 500;
         }
-        .own & {
+        .own:not(.master) & {
             background: $primary;
             color: white;
+            strong {
+                color: white;
+            }
         }
         .master & {
-            background: $dark;
-            color: white;
+            background: $yellow;
+            strong {
+            }
         }
-        .body {
+        .content {
             white-space: pre-wrap;
             word-wrap: break-word;
-            margin: 16px 0;
+            margin: 12px 0;
         }
     }
 </style>

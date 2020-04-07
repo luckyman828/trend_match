@@ -1,6 +1,5 @@
 import axios from 'axios'
-import Comment from '../models/Comment'
-import { uuid } from 'vue-uuid'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -42,119 +41,53 @@ export default {
                 }
             }
         },
-        async createComment({ commit, dispatch }, { comment }) {
-            commit('setSubmitting', true)
+        async insertOrUpdateComment({ commit, dispatch }, { product, comment }) {
+            // Update our state
+            commit('insertOrUpdateComment', { product, comment })
+            let requestMethod
+            let apiUrl
+            // check if the provided comment should be posted or updates
+            if (comment.id != null) {
+                requestMethod = 'put'
+                apiUrl = `/comments/${comment.id}`
+            } else {
+                requestMethod = 'post'
+                // Add the new comment to our product
+                apiUrl = `/selections/${comment.selection_id}/products/${product.id}/comments`
+            }
 
-            let team_id = '0'
-            if (comment.team_id) team_id = comment.team_id
-
-            // Save a reference to the temporary id generated for the comment
-            const tempId = comment.id
-
-            // Set our comment to not failed as default
-            comment.failed = false
-            // Insert the comment in our store with the temp id
-            await Comment.insert({ data: comment })
-
-            // Set the comments id to null so we can generate one in the database instead
-            comment.id = null
-            dispatch('entities/products/updateComments', comment.product_id, { root: true })
-            commit('setSubmitting', false)
-
-            let success
-            await axios
-                .post(`/api/comment`, {
-                    id: comment.id,
-                    user_id: comment.user_id,
-                    product_id: comment.product_id,
-                    task_id: comment.task_id,
-                    team_id: team_id,
-                    phase_id: comment.phase,
-                    comment_body: comment.comment,
-                    important: comment.important,
-                    is_request: comment.is_request,
-                })
-                .then(async response => {
-                    success = true
-                    // Get and set the comment id equal to the id given by the database
-
-                    // Find our comment by its temporary id
-                    // Update the ID on the comment
-                    await Comment.update({
-                        where: tempId,
-                        data: { id: response.data.id, failed: false },
-                    })
-                    // Delete the temp comment
-                    await Comment.delete(tempId)
-                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    success = false
-                    commit('alertError')
-                    Comment.find(tempId).failed = true
-                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
-                })
-
-            // commit('setSubmitting', false)
-            return success
-        },
-        async updateComment({ commit, dispatch }, comment) {
-            // Set our comment as not failed as default
-            comment.failed = false
-
-            await axios
-                .put(`/api/comment/${comment.id}`, {
-                    comment: comment,
-                })
-                .then(async response => {
-                    console.log(response.data)
-                    // Commit to store
-                    await Comment.insert({ data: response.data })
-
-                    // Dispatch an action to update this product
-                    dispatch('entities/products/updateComments', comment.product_id, { root: true })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    comment.failed = true
-                })
-        },
-        async deleteComment({ commit, dispatch }, id) {
-            // Find the comment so we can know what product it belongs to
-            const comment = Comment.find(id)
-            const productId = comment.product_id
-            await commit('deleteComment', id)
-            console.log(comment)
-
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateComments', productId, { root: true })
-
-            await axios
-                .delete(`/api/comment/${id}`, {
-                    data: {
-                        id: id,
-                    },
-                })
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                // data: comment,
+                data: {
+                    content: comment.content,
+                    is_important: false,
+                },
+            })
                 .then(response => {
-                    console.log(response.data)
+                    // Set the given ID to the comment if we were posting a new comment
+                    // if (!comment.id) comment.id = response.data.id
+                    if (!comment.id) Object.assign(comment, response.data)
                 })
                 .catch(err => {
-                    console.log(err.response)
-                    // On a failure, alert the user and recreate the comment
-                    commit('alertError')
-                    dispatch('setComment', comment)
+                    // On error, set error on the comment
+                    Vue.set(comment, 'error', true)
+                    // Alert the user
+                    dispatch(
+                        'alerts/showAlert',
+                        'Error on comment. Please try again. If the error persists, please contact Kollekt support',
+                        { root: true }
+                    )
                 })
         },
-        async setComment({ dispatch }, comment) {
-            await Comment.insert({ data: comment })
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateComments', comment.product_id, { root: true })
-        },
-        async destroyComment({ dispatch }, comment) {
-            await Comment.delete(comment.id)
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateComments', comment.product_id, { root: true })
+        async deleteComment({ commit }, { product, comment }) {
+            // Delete the comment from our state
+            commit('deleteComment', { product, comment })
+
+            // Config API endpoint
+            const apiUrl = `/comments/${comment.id}`
+            await axios.delete(apiUrl)
         },
     },
 
@@ -166,11 +99,25 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        setComment: (state, { comment }) => {
-            // Submit new comment
-            Comment.insert({
-                data: comment,
-            })
+        insertOrUpdateComment(state, { product, comment }) {
+            // First see if the comment already exists
+            const existingCommentIndex = product.comments.findIndex(x => x.id == comment.id)
+            if (existingCommentIndex >= 0) {
+                Vue.set(product.comments, existingCommentIndex, comment)
+            }
+            // Else insert the comment
+            else {
+                product.comments.push(comment)
+            }
+        },
+        deleteComment(state, { product, comment }) {
+            // If a product has been provided. use that, else find the product from our state
+            const commentProduct = product
+                ? product
+                : this.state.entities.products.products.find(x => x.id == comment.product_id)
+
+            const commentIndex = commentProduct.comments.findIndex(x => x.id == comment.id)
+            commentProduct.comments.splice(commentIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

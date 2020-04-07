@@ -1,9 +1,3 @@
-import Workspace from '../../store/models/Workspace'
-import Team from '../../store/models/Team'
-import File from '../../store/models/Collection'
-import Action from '../../store/models/Action'
-import AuthUser from '../../store/models/AuthUser'
-import { RootGetters } from '@vuex-orm/core'
 import axios from 'axios'
 
 export default {
@@ -21,6 +15,14 @@ export default {
         viewAdminPermissionLevel: 3,
         adminPermissionLevel: 4,
         availableCurrencies: [
+            'EUR',
+            'GBP',
+            'DKK',
+            'NOK',
+            'SEK',
+            'CHF',
+            'USD',
+            'AUD',
             'AED',
             'AFN',
             'ALL',
@@ -28,7 +30,6 @@ export default {
             'ANG',
             'AOA',
             'ARS',
-            'AUD',
             'AWG',
             'AZN',
             'BAM',
@@ -49,7 +50,6 @@ export default {
             'BZD',
             'CAD',
             'CDF',
-            'CHF',
             'CLF',
             'CLP',
             'CNH',
@@ -61,16 +61,13 @@ export default {
             'CVE',
             'CZK',
             'DJF',
-            'DKK',
             'DOP',
             'DZD',
             'EGP',
             'ERN',
             'ETB',
-            'EUR',
             'FJD',
             'FKP',
-            'GBP',
             'GEL',
             'GGP',
             'GHS',
@@ -128,7 +125,6 @@ export default {
             'NAD',
             'NGN',
             'NIO',
-            'NOK',
             'NPR',
             'NZD',
             'OMR',
@@ -148,7 +144,6 @@ export default {
             'SBD',
             'SCR',
             'SDG',
-            'SEK',
             'SGD',
             'SHP',
             'SLL',
@@ -171,7 +166,6 @@ export default {
             'TZS',
             'UAH',
             'UGX',
-            'USD',
             'UYU',
             'UZS',
             'VEF',
@@ -351,6 +345,17 @@ export default {
     },
 
     actions: {
+        async getUids({ commit, state }) {
+            const apiUrl = `/snowflake/ids?count=2000`
+            await axios.get(apiUrl).then(response => {
+                state.uids = state.uids.concat(response.data)
+            })
+        },
+        async useUid({ commit, state }) {
+            const uid = state.uids[state.uids.length - 1]
+            state.uids.pop()
+            return uid
+        },
         setCurrentTeam({ commit }, id) {
             commit('setCurrentTeam', id)
         },

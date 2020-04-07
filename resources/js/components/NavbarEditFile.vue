@@ -3,67 +3,73 @@
 
         <div class="items-left">
 
-            <router-link :to="{name: 'files'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
+            <router-link :to="{name: 'files', params: {fileId: currentFile.id, folderId: currentFile.parent_id}}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to File</span></router-link>
             <div class="breadcrumbs">
-                <router-link class="text-link" :to="{name: 'files'}">Files</router-link>
-                <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
+                <router-link class="text-link" :to="{name: 'files', params: {folderId: currentFile.parent_id}}">Files</router-link>
+                <router-link class="text-link current" :to="{name: 'files', params: {fileId: currentFile.id, folderId: currentFile.parent_id}}">
+                    <strong>{{currentFile ? currentFile.name : 'Fetching..'}}</strong>
+                </router-link>
             </div>
 
         </div>
 
-        <div class="items-center">
-            <!-- <input type="search" class="input-wrapper"> -->
-            <div class="input-wrapper small clickable" @click="openSearch">
-                <i class="fas fa-search"></i>
-                Search..
-            </div>
-        </div>
+        <!-- <div class="items-center">
+        </div> -->
 
         <div class="items-right">
 
-            <button class="button primary wide" @click="showNewProduct">Create new product</button>
+            <!-- <button class="button dark" @click="onExport"><span>Export PDF</span></button>
+            <button class="button dark" @click="onExportCsv"><span>Export CSV</span></button> -->
+            <button class="button primary" @click="onUploadToFile"><span>Upload CSV to file</span></button>
+            <button class="button primary" @click="onNewProduct"><span>Create new product</span></button>
 
         </div>
 
-        <SearchModal ref="searchModal"/>
+        <!-- <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
+        <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/> -->
+        <UploadToFileModal v-if="currentFile" :show="uploadToFileModalVisible" @close="uploadToFileModalVisible = false"/>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { mapActions, mapGetters } from 'vuex'
-import SearchModal from './SearchModal'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import ExportProductsModal from '../../components/ExportProductsModal'
+import ExportToCsvModal from '../../components/ExportToCsvModal'
+import UploadToFileModal from '../../components/UploadToFileModal'
 
 export default {
     name: "navbarFile",
     components: {
-        SearchModal
+        ExportProductsModal,
+        ExportToCsvModal,
+        UploadToFileModal,
     },
     data: function () { return {
+        exportModalVisible: false,
+        exportCsvModalVisible: false,
+        uploadToFileModalVisible: false,
     }},
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentWorkspace']),
-        productsToExport() {
-            const products = this.products
-            if (this.onlyWithRequests) {
-                return products.filter(product => product.requests.length > 0)
-            } else return products
-        }
+        ...mapGetters('files', ['currentFile']),
+        ...mapGetters('products', ['products']),
     },
     methods: {
-        ...mapActions('entities/products', ['showSingle', 'setAvailableProductIds', 'instantiateNewProduct']),
-        openSearch() {
-            this.$refs.searchModal.toggle()
+        ...mapActions('products', ['setAvailableProducts', 'instantiateNewProduct']),
+        ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble', 'updateProduct']),
+        async onNewProduct() {
+            const newProduct = await this.instantiateNewProduct()
+            this.setCurrentProduct(newProduct)
+            this.setSingleVisisble(true)
         },
-        showNewProduct() {
-            // Generate UUID for new product
-            console.log('show new product')
-            const newUUID = this.$uuid.v4()
-            this.instantiateNewProduct({id: newUUID, fileId: this.currentFile.id})
-            // Show single with the new ID
-            this.showSingle(newUUID)
-            // Set the available products to only the new id, to disable going to prev/next product.
-            this.setAvailableProductIds([newUUID])
+        onExport() {
+            this.exportModalVisible = true
+        },
+        onExportCsv() {
+            this.exportCsvModalVisible = true
+        },
+        onUploadToFile() {
+            this.uploadToFileModalVisible =true
         },
     },
 };
@@ -75,7 +81,6 @@ export default {
     .navbar-file {
         width: 100%;
         padding: 8px 60px;
-        padding-right: 77px;
         display: flex;
         justify-content: space-between;
         > * {

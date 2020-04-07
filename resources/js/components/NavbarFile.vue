@@ -3,10 +3,12 @@
 
         <div class="items-left">
 
-            <router-link :to="{name: 'files'}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to Files</span></router-link>
+            <router-link :to="{name: 'files', params: {fileId: currentFile.id, folderId: currentFile.parent_id}}" class="back-link"><span class="circle primary"><i class="far fa-arrow-left"></i></span><span>Back to File</span></router-link>
             <div class="breadcrumbs">
-                <router-link class="text-link" :to="{name: 'files'}">Files</router-link>
-                <span class="current"><strong>{{(currentFile != null) ? currentFile.title : 'Fetching..'}}</strong></span>
+                <router-link class="text-link" :to="{name: 'files', params: {folderId: currentFile.parent_id}}">Files</router-link>
+                <router-link class="text-link current" :to="{name: 'files', params: {fileId: currentFile.id, folderId: currentFile.parent_id}}">
+                    <strong>{{currentFile ? currentFile.name : 'Fetching..'}}</strong>
+                </router-link>
             </div>
 
         </div>
@@ -20,366 +22,56 @@
         </div>
 
         <div class="items-right">
-
-            <template v-if="userPermissionLevel >= 2 && userPermissionLevel != 3">
-                <span class="button wide light-2" v-if="submittingTaskComplete"><Loader/></span>
-                <span class="button wide red" v-else-if="currentTask.completed.find(x => x.file_id == currentFile.id)" @click="onUndoCompleteTask(currentFile.id, currentTask.id)">Reopen task</span>
-                <template v-else>
-                    <span class="button wide primary" v-if="currentTask.isActive" @click="onCompleteTask(currentFile.id, currentTask.id)">Complete task</span>
-                </template>
-            </template>
-            <span v-if="userPermissionLevel >= 2" class="button wide primary" @click="$refs.exportModal.toggle(); setPageHeight()">Export to PDF</span>
-
+            <button class="button dark wide" @click="onExport"><span>Export PDF</span></button>
+            <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
         </div>
 
-        <!-- PDF FOR EXPORT MARKUP -->
-        <div class="example-pdf" ref="exportToPdf" v-if="userPermissionLevel >= 2 && this.productsToExport.length > 0" 
-            style="font-family: arial, helvetica, sans-serif;">
-            <div ref="pdfWrapper" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
-                <div style="height: 1040px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center;">
-                    <span style="font-size: 28px; font-weight: 700; margin-top: 20px;">{{currentWorkspace.name}}</span>
-                    <div>
-                        <span style="font-size: 28px; font-weight: 700; display: block; margin-bottom: 20px;">{{currentFile.title}}</span>
-                        <span style="color: #3B86FF; font-size: 20px; font-weight: 700; display: block;">{{productsToExport.length}} style{{productsToExport.length > 1 ? 's' : ''}}</span>
-                    </div>
-                    <img style="display: block; margin: 0 auto; width: 150px;" src="https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/kollekt_logo_color.png">
-                </div>
-                <div v-for="(product, index) in productsToExport" :key="product.id" style="min-height: 1040px; width: 100%;" ref="productPage">
-                    <span style="display: block; color: #3B86FF; font-size: 20px; font-weight: 700; padding-top: 20px; box-sizing: border-box; margin-bottom: 8px;">#{{index+1}} of {{productsToExport.length}} styles</span>
-                    <span style="display: block; font-size: 24px; margin-bottom: 12px;">{{product.title}}</span>
-                    <div style="display: flex; margin-bottom: 12px;">
-                        <img height="400px; width: auto;" v-if="product.color_variants[0] != null" :src="variantImg(product.color_variants[0])">
-                        <div style="margin-left: 16px;">
-                            <span style="display: block; font-size: 14px; font-weight: 700;">Style number</span>
-                            <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.datasource_id}}</span>
-                            <span style="display: block; font-size: 14px; font-weight: 700;">Category</span>
-                            <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.category}}</span>
-                            <span style="display: block; font-size: 14px; font-weight: 700;">Minimum production</span>
-                            <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.quantity}} Units</span>
-                            <span style="display: block; font-size: 14px; font-weight: 700;">WHS ({{product.userPrices.currency}})</span>
-                            <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.userPrices.wholesale_price}}</span>
-                            <span style="display: block; font-size: 14px; font-weight: 700;">RPP ({{product.userPrices.currency}})</span>
-                            <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.userPrices.recommended_retail_price}}</span>
-                            <span style="display: block; font-size: 14px; font-weight: 700;">MU</span>
-                            <span style="display: block; font-size: 14px;">{{product.userPrices.markup}}</span>
-                        </div>
-                    </div>
-
-                    <span style="display: block; font-size: 14px; font-weight: 700;">Composition</span>
-                    <span style="display: block; margin-bottom: 12px; font-size: 14px;">{{product.composition}}</span>
-                    <span style="display: block; font-size: 14px; font-weight: 700;">Delivery date</span>
-                    <span style="display: block; font-size: 14px;">{{new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})}}</span>
-
-                    <div style="display: flex; height: 150px; overflow: hidden; margin-left: -8px; margin-right: -8px;">
-                        <div v-for="(variant, index) in product.color_variants" :key="index" style="flex: 1; overflow: hidden; padding: 8px; box-sizing: border-box; max-width: 100px;">
-                            <div style="width: 100%; height: 100%;">
-                                <div style="padding-top: 110%; width: 100%; position: relative; overflow: hidden;">
-                                    <img style="position: absolute; top: 0; left: 0; height:100%; width: 100%; object-fit: cover;" :src="variantImg(variant)">
-                                </div>
-                            </div>
-                            <span style="font-size: 10px; font-weight: 500;">{{variant.color}}</span>
-                        </div>
-                    </div>
-
-                    <div class="comments-wrapper" v-if="exportComments && (product.requests.length > 0 || product.commentsScoped.length > 0)">
-                        <h2>Requests & Comments</h2>
-                        <template v-if="currentTaskOnly">
-                            <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
-                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                            </div>
-                            <div v-for="comment in product.commentsScoped.filter(x => x.task_id == currentTask.id)" :key="comment.id">
-                                <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
-                                <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div v-for="request in product.requests.filter(x => x.task_id == currentTask.id)" :key="request.id" style="border-radius: 6px; background: #f3e959; color: black; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
-                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                            </div>
-                            <div v-for="request in product.requests.filter(x => x.task_id != currentTask.id)" :key="request.id" style="border-radius: 6px; background: #3B86FF; color: white; padding: 8px 12px; margin-bottom: 16px; max-width: calc(100% - 120px);">
-                                <p style="font-size: 12px; font-weight: 700; margin: 0;">{{request.task.title}} | {{request.user ? request.user.name : 'Unknown user'}}</p>
-                                <p style="white-space: pre-wrap; word-wrap: break-word;">{{request.comment}}</p>
-                                <p style="font-size: 10px; font-weight: 500; margin: 0;">Request ID: {{request.id}}</p>
-                            </div>
-                            <div v-for="comment in product.commentsScoped" :key="comment.id">
-                                <p style="border-radius: 6px; background: #DFDFDF; color: #1B1C1D; padding: 8px 12px; display: inline-block; white-space: pre-wrap; word-wrap: break-word; margin-bottom: 0; max-width: calc(100% - 120px);">{{comment.comment}}</p>
-                                <p style="font-size: 12px; font-weight: 500; color: #A8A8A8; margin-bottom: 16px; margin-top: 0">{{comment.task.title}} | {{comment.user ? comment.user.name : 'Unknown user'}}</p>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="distribution-wrapper" v-if="includeDistribution">
-                        <h2>Distribution</h2>
-                        <h3>IN ({{product.ins.length + product.focus.length}})</h3>
-                        <div v-for="(action, index) in product.focus" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                Impact ({{action.user.impact}}) 
-                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
-                            </span>
-                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
-                            <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
-                        </div>
-                        <div v-for="(action, index) in product.ins" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                Impact ({{action.user.impact}}) 
-                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
-                            </span>
-                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
-                            <span style="margin-left: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #3b86ff;" v-if="action.action == 2">Focus</span>
-                        </div>
-                        <h3>OUT ({{product.outs.length}})</h3>
-                        <div v-for="(action, index) in product.outs" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                            <span class="impact" v-if="action.user && action.user.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                Impact ({{action.user.impact}}) 
-                                <span v-if="action.user.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                <span v-if="action.user.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
-                            </span>
-                            <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{action.task ? action.task.title : 'Uknown task'}} | {{action.user ? action.user.name : 'Unknown user'}} {{action.user ? '('+action.user.email+')' : ''}}</p>
-                        </div>
-                        <template v-if="includeNotDecided">
-                            <h3>Not decided ({{product.nds.length}})</h3>
-                            <div v-for="(nd, index) in product.nds" :key="index" style="max-width: calc(100% - 120px); display: flex; align-items: center;">
-                                <span class="impact" v-if="nd.impact" style="width: 80px; font-size: 10px; font-weight: 500; display: inline-flex; align-items: center;">
-                                    Impact ({{nd.impact}}) 
-                                    <span v-if="nd.impact == 1" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #ff6565; margin-left: 4px;"></span>
-                                    <span v-if="nd.impact == 2" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #f6993f; margin-left: 4px;"></span>
-                                    <span v-if="nd.impact == 3" style="display: inline-block; height: 12px; width: 12px; border-radius: 50%; background: #5ee2a0; margin-left: 4px;"></span>
-                                </span>
-                                <p style="font-size: 12px; font-weight: 700; margin: 0; display: inline-block;">{{nd.task ? nd.task.title : 'Uknown task'}} | {{nd.name != null ? nd.name +' '+ ((nd.email) ? '('+nd.email+')' : '') : nd.title}}</p>
-                            </div>
-                        </template>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!-- PDF ENDS  -->
-
-
-        <Modal ref="exportModal" :header="'Export <strong>' + currentFile.title + '</strong> to PDF'" :subHeader="'The products in your current view will be exported'">
-            <template v-slot:body>
-                <form>
-                    <label>Requests & comments</label>
-                    <div class="form-element">
-                        <label class="input-wrapper check-button">
-                            <div class="checkbox">
-                                <input type="checkbox" v-model="exportComments">
-                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                            </div>
-                            <span>Include Requests and comments</span>
-                        </label>
-                    </div>
-                    <div class="form-element" v-if="exportComments">
-                        <label class="input-wrapper check-button">
-                            <div class="checkbox">
-                                <input type="checkbox" v-model="currentTaskOnly">
-                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                            </div>
-                            <span>Only include requests/comments from the current task</span>
-                        </label>
-                    </div>
-                    <div class="form-element">
-                        <label class="input-wrapper check-button">
-                            <div class="checkbox">
-                                <input type="checkbox" v-model="onlyWithRequests">
-                                <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                            </div>
-                            <span>Only include Products with Requests</span>
-                        </label>
-                    </div>
-                    <template v-if="userPermissionLevel >= 4">
-                        <label>Distribution</label>
-                        <div class="form-element">
-                            <label class="input-wrapper check-button">
-                                <div class="checkbox">
-                                    <input type="checkbox" v-model="includeDistribution">
-                                    <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                                </div>
-                                <span>Include distribution (In/Out/Focus)</span>
-                            </label>
-                        </div>
-                        <div class="form-element" v-if="includeDistribution">
-                            <label class="input-wrapper check-button">
-                                <div class="checkbox">
-                                    <input type="checkbox" v-model="includeNotDecided">
-                                    <span class="checkmark solid"><i class="fas fa-check"></i></span>
-                                </div>
-                                <span>Include "Not Decided" in distribution</span>
-                            </label>
-                        </div>
-                    </template>
-                    <div class="form-element">
-                        <label>Export details</label>
-                        <div class="input-wrapper disabled">
-                            <p>{{productsToExport.length}} products 
-                                <template v-if="exportComments">, {{productsToExport.filter(x => x.requests.length > 0).length}} with requests</template>
-                                <template v-if="includeDistribution">, with {{productsToExport.reduce((acc, el) => acc + el.actions.length, 0)}} actions</template>
-                                <template v-if="includeNotDecided">, and {{productsToExport.reduce((acc, el) => acc + el.nds.length, 0)}} not decided</template>
-                            </p>
-                        </div>
-                    </div>
-                </form>
-                <span v-if="exportingPDF" class="button xl dark disabled"><Loader/></span>
-                <template v-else-if="generatedPDF">
-                    <a class="button xl primary" :href="generatedPDF" target="_blank" :download="(currentWorkspace.name + '_' + currentFile.title).replace(/ /g, '_') + '.pdf'">Download PDF</a>
-                    <span style="margin-top: 32px;" class="button xl dark" @click="printToPdf">Generate new PDF</span>
-                </template>
-                <span v-else class="button xl dark" @click="printToPdf">Export as PDF</span>
-            </template>
-        </Modal>
-
-        <SearchModal ref="searchModal"/>
+        <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
+        <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import { mapActions, mapGetters } from 'vuex'
-import SearchModal from './SearchModal'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import ExportProductsModal from '../../components/ExportProductsModal'
+import ExportToCsvModal from '../../components/ExportToCsvModal'
 
 export default {
-    name: "navbarFile",
+    name: "editFilePageNavbar",
     components: {
-        SearchModal
+        ExportProductsModal,
+        ExportToCsvModal,
     },
     data: function () { return {
-        submittingTaskComplete: false,
-        exportingPDF: false,
-        exportComments: true,
-        generatedPDF: null,
-        onlyWithRequests: false,
-        includeDistribution: false,
-        includeNotDecided: false,
-        currentTaskOnly: false,
+        exportModalVisible: false,
+        exportCsvModalVisible: false,
     }},
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel', 'currentFile', 'currentTask', 'currentWorkspace']),
-        // ...mapGetters('entities/products', ['productsScopedFiltered']),
-        ...mapGetters('entities/products', {products: 'productsScopedFiltered'}),
-        ...mapGetters('entities/tasks', ['userTasks']),
-        productsToExport() {
-            const products = this.products
-            if (this.onlyWithRequests) {
-                return products.filter(product => product.requests.length > 0)
-            } else return products
-        }
+        ...mapGetters('files', ['currentFile']),
     },
     methods: {
-        ...mapActions('entities/tasks', ['completeTask', 'undoCompleteTask']),
-        ...mapActions('persist', ['setCurrentTaskId']),
-        variantImg (variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
+        onExport() {
+            this.exportModalVisible = true
         },
-        printToPdf: async function(event) {
-            const vm = this
-            var endpoint = "https://v2018.api2pdf.com/chrome/html"
-            var apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58" //Replace this API key from portal.api2pdf.com
-            var config = {
-                headers: {
-                Authorization: apiKey
-                }
-            }
-            var payload = {
-                html: `<head><title>Flemming</title><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet"></head><body>${this.$refs.exportToPdf.innerHTML}</body>`, //Use your own HTML
-                inlinePdf: true,
-                fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
-                options: {
-                    displayHeaderFooter: true,
-                    preferCSSPageSize: true,
-                    footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
-                }
-            }
-            this.exportingPDF = true
-            this.$refs.exportToPdf.style.display = 'block'; // Show the pdf element for sizing purposes
-            await this.setPageHeight()
-
-            await axios.post(endpoint, payload, config)
-                .then(function(response) {
-                    window.open(response.data.pdf)
-                    vm.generatedPDF = response.data.pdf
-                })
-                .catch(function(error) {
-                    console.log(error);
-                });
-            this.$refs.exportToPdf.style.display = 'none'; // Hide the pdf element again
-            this.exportingPDF = false
-        },
-        async onCompleteTask(file_id, task_id) {
-            this.submittingTaskComplete = true
-            await this.completeTask({file_id: file_id, task_id: task_id})
-            .then(success => {
-                // Skip to next task
-                if (this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1] && success) {
-                    this.setCurrentTaskId(this.userTasks[this.userTasks.findIndex(x => x.id == this.currentTask.id) + 1].id)
-                }
-            })
-            this.submittingTaskComplete = false
-        },
-        async onUndoCompleteTask(file_id, task_id) {
-            this.submittingTaskComplete = true
-            await this.undoCompleteTask({file_id: file_id, task_id: task_id})
-            this.submittingTaskComplete = false
-        },
-        setPageHeight() {
-            const pages = this.$refs.productPage
-            console.log(pages)
-            let nextPageIndex = 1
-            pages.forEach(page => {
-                // const pageHeight = 1040
-                const pageHeight = 1000
-                const heightDif = pageHeight - (page.clientHeight - pageHeight)
-                if (heightDif > 0 && nextPageIndex < pages.length) {
-                    pages[nextPageIndex].style.marginTop = heightDif + 'px'
-                }
-                nextPageIndex++
-            })
-        },
-        openSearch() {
-            this.$refs.searchModal.toggle()
+        onExportCsv() {
+            this.exportCsvModalVisible = true
         }
     },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
     .navbar-file {
         width: 100%;
         padding: 8px 60px;
-        padding-right: 77px;
         display: flex;
         justify-content: space-between;
         > * {
             display: flex;
             align-items: center;
-        }
-        .example-pdf {
-            display: none;
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 1000px;
-            height: 90vh;
-            top: 5vh;
-            background: white;
-            box-shadow: 0 0 20px rgba(black,50%);
-            z-index: -99;
-            overflow-x: hidden;
-            overflow-y: auto;
         }
     }
     .items-center {

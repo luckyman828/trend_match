@@ -5,18 +5,11 @@
                 <img src="/images/kollekt-logo-color-1.svg" />
             </router-link>
         </div> -->
-        <template v-if="$route.name == 'files'">
-            <NavbarFiles/>
-        </template>
-        <template v-if="$route.name == 'file' && currentTask && !loadingProducts">
-            <NavbarFile/>
-        </template>
-        <template v-if="$route.name == 'editFile'">
-            <NavbarEditFile/>
-        </template>
-        <template v-if="$route.name == 'teams'">
-            <NavbarTeam/>
-        </template>
+        <NavbarFiles v-if="$route.name == 'files'"/>
+        <NavbarSelection v-if="$route.name == 'selection' && currentFile"/>
+        <NavbarEditFile v-if="$route.name == 'editFile' && currentFile"/>
+        <NavbarTeams v-if="$route.name == 'teams'"/>
+        <NavbarUsers v-if="$route.name == 'users'"/>
   </nav>
 </template>
 
@@ -41,17 +34,8 @@ export default {
         NavbarEditFile,
     },
     computed: {
-        ...mapGetters('persist', ['currentTask']),
-        ...mapGetters('entities/products', ['products']),
-        loadingProducts() {
-            if (this.products) {
-                if (this.products.length > 0)
-                    return false
-            }
-        }
+        ...mapGetters('files', ['currentFile'])
     },
-    methods: {
-    }
 };
 </script>
 

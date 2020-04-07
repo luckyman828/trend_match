@@ -1,10 +1,14 @@
-require('./bootstrap')
+// require('./bootstrap')
 
 window.Vue = require('vue')
 import store from './store/index'
 
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
+
+window.axios = require('axios')
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+window.axios.defaults.baseURL = 'https://dev-platform.kollekt.dk/v1'
 
 // import VueDragscroll from 'vue-dragscroll'
 // Vue.use(VueDragscroll)
@@ -15,10 +19,10 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
-// import directive from './directive'
-// Vue.use(directive)
-import dragscrollDirective from './dragscrollDirective'
+import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
+import clickOutsideDirective from './directives//clickOutsideDirective'
+Vue.use(clickOutsideDirective)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'

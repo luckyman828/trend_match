@@ -1,32 +1,46 @@
 <template>
-    <div class="comment-wrapper" :class="[{'has-traits': comment.important || comment.votes.length > 0 || comment.focus}, {'edit-active': editActive}]">
+    <div class="comment-wrapper" :class="[{'has-traits': hasTraits}, {'edit-active': editActive}]">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
             <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
-            <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span>
+            <!-- <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span> -->
         </div>
-        <div class="comment" :class="[{important: comment.important}, {failed: comment.failed}]">
-            <span v-if="!own || typeof comment.id != 'number'" class="body">{{comment.comment}}</span>
-            <span v-else class="body"><EditableTextarea ref="editCommentInput" :hideEditButton="true" @activate="setEditActive" :value="commentToEdit.comment" v-model="commentToEdit.comment" @submit="updateComment(commentToEdit)"/></span>
-            <div class="controls">
-                <template v-if="comment.failed">
-                    <span v-if="typeof comment.id != 'number'" class="failed clickable" v-tooltip.top="'Retry submit'" @click="retrySubmitComment">
-                        <i class="far fa-exclamation-circle"></i> Failed</span>
-                    <span v-else class="failed clickable" v-tooltip.top="'Retry edit'" @click="updateComment(commentToEdit)">
-                        <i class="far fa-exclamation-circle"></i> Failed</span>
-                </template>
-                <template v-else-if="typeof comment.id == 'number'">
+        <div class="comment" :class="[{important: comment.important}, {failed: comment.error}]">
+            <span v-if="!editActive" class="body">{{comment.content}}</span>
+            <span v-else class="body">
+                <BaseInputTextArea ref="commentInputField" v-model="comment.content"
+                @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
+            </span>
+
+            <!-- Comment Controls -->
+            <div class="controls" v-if="!editActive">
+
+                <!-- comment error -->
+                <span v-if="comment.error" class="failed clickable" v-tooltip.top="!comment.id ? 'Retry submit' : 'Retry edit'" @click="retrySubmitComment">
+                    <i class="far fa-exclamation-circle"></i> Failed
+                </span>
+
+                <!-- comment posting -->
+                <BaseLoader v-else-if="!comment.id" :message="'posting..'"/>
+
+                <!-- regular comment -->
+                <template v-else>
                     <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
                     @click="onDeleteComment">
                         <i class="far fa-trash-alt"></i></button>
                     <button v-tooltip.top="'Edit'" class="button true-square invisible ghost dark-hover"
-                    @click="$refs.editCommentInput.activate()">
+                    @click="onEditComment">
                         <i class="far fa-pen"></i></button>
                 </template>
-                <template v-else>
-                    <Loader :message="'posting..'"/>
-                </template>
+                
             </div>
+        </div>
+        <div class="save-controls" v-if="editActive">
+            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
+            @click="onUpdateComment">
+                <span>Save</span>
+            </BaseButton>
+            <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
         </div>
     </div>
 </template>
@@ -53,16 +67,18 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('persist', ['authUser', 'userPermissionLevel']),
-        authUser() {
-            return AuthUser.query().first()
-        },
-        own() {
+        ...mapGetters('auth', ['authUser']),
+        isOwn() {
             return this.comment.user_id == this.authUser.id
+        },
+        hasTraits() {
+            return this.comment.important 
+            // || this.comment.votes.length > 0 
+            || this.comment.focus
         }
     },
     methods: {
-        ...mapActions('entities/comments', ['updateComment', 'deleteComment', 'createComment']),
+        ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
         onDeleteComment() {
             window.confirm(
                 'Are you sure you want to delete this comment?'
@@ -70,11 +86,18 @@ export default {
                 ? this.deleteComment(this.comment.id)
                 : false
         },
-        setEditActive(boolean) {
-            this.editActive = boolean
-        },
         retrySubmitComment() {
-            this.createComment({comment: this.comment})
+            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+        },
+        onUpdateComment() {
+            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+            this.editActive = false
+        },
+        onEditComment() {
+            this.editActive = true
+            this.$nextTick(() => {
+                this.$refs.commentInputField.focus()
+            })
         }
     }
 }
@@ -89,16 +112,28 @@ export default {
         max-width: calc(100% - 64px);
         &.edit-active {
             width: 100%;
+            max-width: none;
+            margin-bottom: 44px;
+            .comment {
+                padding: 2px;
+                ::v-deep {
+                    .input-wrapper {
+                        border: none;
+                        min-height: 160px;
+                    }
+                }
+            }
         }
         &.has-traits {
             margin-top: 16px;
         }
     }
-    .pill {
-        i {
-            font-size: 8px;
-            margin-right: 4px;
-        }
+    .save-controls {
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        transform: translateY(100%);
+        display: flex;
     }
     .traits {
         position: absolute;
@@ -116,16 +151,19 @@ export default {
     .comment {
         position: relative;
         padding: 12px;
-        background: $light2;
+        background: white;
         border-radius: 6px;
         width: 100%;
         z-index: 1;
         .failed {
             color: $red;
         }
-        .own & {
+        .own:not(.master) & {
             background: $primary;
             color: white;
+        }
+        .master & {
+            background: $yellow;
         }
         .body {
             white-space: pre-wrap;

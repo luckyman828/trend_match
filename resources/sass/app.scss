@@ -46,6 +46,9 @@ textarea {
     font-size: inherit;
     line-height: inherit;
 }
+.clickable {
+    cursor: pointer;
+}
 a {
     text-decoration: none;
     color: inherit;
@@ -79,7 +82,7 @@ textarea {
 .container {
     margin: auto;
     width: 100%;
-    max-width: 1440px;
+    // max-width: 1440px;
 }
 
 .login-wrapper {
@@ -262,16 +265,27 @@ textarea {
             background: transparent;
         }
     }
-    &.green,
-    &.green-hover:hover,
-    &.role-4 {
-        border-color: $green;
-        background: $green;
-        color: white;
-        &.invisible,
-        &.ghost {
-            color: $green;
-            background: transparent;
+    &:not(.ghost):not(.invisible) i {
+        &.fa,
+        &.fas,
+        &.far,
+        &.fal,
+        &.fad,
+        &.fab {
+            font-weight: 900;
+        }
+    }
+    i {
+        &.fa,
+        &.fas,
+        &.far,
+        &.fal,
+        &.fad,
+        &.fab {
+            width: 32px - 4px;
+            text-align: center;
+            font-size: 14px;
+            color: inherit;
         }
     }
     &.red,
@@ -286,15 +300,43 @@ textarea {
             background: transparent;
         }
     }
-    &.yellow,
-    &.yellow-hover:hover {
-        border-color: $yellow;
-        background: $yellow;
-        color: $dark;
-        &.invisible,
-        &.ghost {
-            color: $yellow;
-            background: transparent;
+    @each $size in $button-sizes {
+        &.#{nth($size,1)} {
+            height: nth($size, 2);
+            font-size: nth($size, 3);
+            i {
+                &.fa,
+                &.fas,
+                &.far,
+                &.fal,
+                &.fad,
+                &.fab {
+                    width: nth($size, 2) - 4px;
+                    font-size: nth($size, 3) + 2px;
+                }
+            }
+            &.ghost i {
+                &.fa,
+                &.fas,
+                &.far,
+                &.fal,
+                &.fad,
+                &.fab {
+                    width: nth($size, 2) - 4px;
+                }
+            }
+            > span:first-child {
+                margin-left: nth($size, 4);
+                &:not(:last-child) {
+                    margin-right: 2px;
+                }
+            }
+            > span:last-child {
+                margin-right: nth($size, 4);
+                &:not(:first-child) {
+                    margin-left: 2px;
+                }
+            }
         }
     }
     &.yellow-green,
@@ -342,17 +384,13 @@ textarea {
             background: transparent;
         }
     }
-    &.light-2,
-    &.light-2-hover:hover,
-    &.role-3 {
-        border-color: $light2;
-        background: $light2;
-        color: $dark05;
-        &.invisible,
-        &.ghost {
-            color: $dark05;
-            border-color: $light2;
-            background: transparent;
+    &.ghost {
+        &:hover {
+            padding: 0;
+            border: solid 2px $primary;
+            i {
+                font-weight: 900;
+            }
         }
     }
     &.invisible {
@@ -491,26 +529,41 @@ textarea {
         margin-right: 2px;
     }
 }
+.pill {
+    min-width: 32px;
+}
 
-// CLOSE BUTTONS / ICONS
-.close {
-    transition: 0.3s;
-    &.circle {
-        height: 40px;
-        width: 40px;
-        display: block;
-        text-align: center;
-        background: $light2;
-        border-radius: 20px;
-        cursor: pointer;
-        color: $dark05;
-        i {
-            font-size: 21px;
-            line-height: 40px;
-        }
-        &:hover {
-            color: $red;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+// ICONS
+i {
+    position: relative;
+    color: $fontIcon;
+    &.fad {
+        --fa-secondary-color: #3b86ff;
+        --fa-secondary-opacity: 1;
+    }
+    &.xs {
+        font-size: 10px;
+    }
+    &.sm {
+        font-size: 12px;
+    }
+    &.md {
+        font-size: 18px;
+    }
+    &.lg {
+        font-size: 40px;
+    }
+    &.xl {
+        font-size: 64px;
+    }
+    &.medium {
+        font-size: 18px;
+    }
+    // COLORS
+    @each $color in $brand-colors {
+        &.#{nth($color,1)},
+        &.#{nth($color,1)}-hover:hover {
+            color: nth($color, 2);
         }
     }
 }
@@ -825,18 +878,33 @@ textarea {
         }
     }
 }
+// POPOVER
+.popover {
+    min-width: 200px;
+}
 
 // V-TOOLTIP
 .tooltip {
-    max-width: 200px;
-    border-radius: 4px;
-    border: 1px solid $dark;
+    // min-width: 200px;
+    max-width: 300px;
     font-size: 12px;
 
-    background-color: $darkAlt;
-    color: white;
-    box-shadow: 0 10px 10px -5px rgba($dark, 10%);
     z-index: 99999999;
+    // strong,
+    // span,
+    // p,
+    // i,
+    // u {
+    //     color: white;
+    // }
+    .tooltip-inner {
+        border-radius: 4px;
+        border: 1px solid $divider;
+        background-color: white;
+        box-shadow: 0 10px 10px rgba($dark, 20%);
+        max-height: 70vh;
+        overflow-y: auto;
+    }
 
     &-inner:not(.popover-inner) {
         padding: 8px 12px;
@@ -858,17 +926,17 @@ textarea {
     }
 
     &[x-placement^='top'] {
-        margin-bottom: 5px;
+        padding-bottom: 5px;
 
         .tooltip-arrow {
             border-bottom-width: 0;
-            border-top-color: $dark;
-            bottom: -5px;
+            border-top-color: $divider;
+            bottom: 0;
             left: 0;
 
             &::after {
                 border-bottom-width: 0;
-                border-top-color: $darkAlt;
+                border-top-color: white;
                 bottom: 1px;
                 left: -5px;
             }
@@ -876,12 +944,12 @@ textarea {
     }
 
     &[x-placement^='bottom'] {
-        margin-top: 5px;
+        padding-top: 5px;
 
         .tooltip-arrow {
             border-top-width: 0;
-            border-bottom-color: $dark;
-            top: -5px;
+            border-bottom-color: $divider;
+            top: 0;
             // left: 50%;
             // 实战bug3： x-arrow自动会计算
             // transform: translateX(-50%);
@@ -889,7 +957,7 @@ textarea {
 
             &::after {
                 border-top-width: 0;
-                border-bottom-color: $darkAlt;
+                border-bottom-color: white;
                 top: 1px;
                 left: -5px;
             }
@@ -897,17 +965,17 @@ textarea {
     }
 
     &[x-placement^='right'] {
-        margin-left: 5px;
+        padding-left: 5px;
 
         .tooltip-arrow {
             border-left-width: 0;
-            border-right-color: $dark;
+            border-right-color: $divider;
             top: 0;
-            left: -5px;
+            left: 0;
 
             &::after {
                 border-left-width: 0;
-                border-right-color: $darkAlt;
+                border-right-color: white;
                 top: -5px;
                 left: 1px;
             }
@@ -915,17 +983,17 @@ textarea {
     }
 
     &[x-placement^='left'] {
-        margin-right: 5px;
+        padding-right: 5px;
 
         .tooltip-arrow {
             border-right-width: 0;
-            border-left-color: $dark;
+            border-left-color: $divider;
             top: 0;
-            right: -5px;
+            right: 0;
 
             &::after {
                 border-right-width: 0;
-                border-left-color: $darkAlt;
+                border-left-color: white;
                 top: -5px;
                 right: 1px;
             }
@@ -1169,12 +1237,19 @@ form {
     .form-element {
         display: block;
         width: 100%;
-        margin-bottom: 24px;
-        .label {
+        &:not(:last-child) {
+            margin-bottom: 24px;
+        }
+        > .label {
             cursor: pointer;
             display: inline-block;
             margin-top: 8px;
         }
+    }
+    .form-section {
+        // border-bottom: solid 2px $divider;
+        padding-bottom: 32px;
+        margin-bottom: 32px;
     }
 }
 .input-wrapper {
@@ -1208,11 +1283,11 @@ form {
         border: solid 2px $primary;
     }
     &.small {
-        min-height: 30px;
+        min-height: 32px;
         padding: 4px 12px;
         font-size: 13px;
         &:not(.multiline) {
-            height: 30px;
+            height: 32px;
         }
     }
     &.check-button {
@@ -1283,14 +1358,14 @@ form {
         }
     }
 }
-.edit-input-wrapper,
-.input-parent,
-.input-wrapper {
-    & + label {
-        display: block;
-        margin-top: 12px;
-    }
-}
+// .edit-input-wrapper,
+// .input-parent,
+// .input-wrapper {
+//     & + label {
+//         display: block;
+//         margin-top: 12px;
+//     }
+// }
 .drop-area {
     outline: 2px dashed $light2;
     outline-offset: -10px;
@@ -1310,6 +1385,46 @@ form {
         position: absolute;
         cursor: pointer;
         z-index: 1;
+    }
+}
+
+// LAYOUT / COLUMNS
+.col-5 {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 8px;
+}
+.col-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 8px;
+}
+.col-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 8px;
+}
+.col-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 8px;
+}
+
+// BREADCRUMBS
+.breadcrumbs {
+    display: flex;
+    // Before Bracket
+    > *:not(:first-child)::before {
+        content: '\F105';
+        font-family: 'Font Awesome 5 Pro';
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        display: inline-block;
+        font-style: normal;
+        font-variant: normal;
+        text-rendering: auto;
+        line-height: 1;
+        padding: 0 8px 0 2px;
     }
 }
 
@@ -1346,6 +1461,9 @@ input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-results-button,
 input[type='search']::-webkit-search-results-decoration {
     -webkit-appearance: none;
+}
+input[type='search'] {
+    -webkit-appearance: textfield;
 }
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {

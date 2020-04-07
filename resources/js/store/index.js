@@ -1,21 +1,39 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexORM from '@vuex-orm/core'
-import database from './database'
-// import authUser from './modules/authUser'
 import persist from './modules/persist'
-import VuexORMisDirtyPlugin from '@vuex-orm/plugin-change-flags'
-VuexORM.use(VuexORMisDirtyPlugin)
+import auth from './modules/auth'
+import workspaces from './modules/workspaces'
+import teams from './modules/teams'
+import users from './modules/users'
+import files from './modules/files'
+import folders from './modules/folders'
+import selections from './modules/selections'
+import products from './modules/products'
+import actions from './modules/actions'
+import alerts from './modules/alerts'
+import comments from './modules/comments'
+import requests from './modules/requests'
 
 // Load Vuex
 Vue.use(Vuex)
 
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
-    plugins: [VuexORM.install(database)],
     modules: {
         // authUser
         persist,
+        auth,
+        workspaces,
+        teams,
+        users,
+        files,
+        folders,
+        selections,
+        products,
+        actions,
+        alerts,
+        comments,
+        requests,
     },
 })
 

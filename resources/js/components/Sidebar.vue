@@ -1,24 +1,17 @@
 <template>
   <div class="vue-component-sidebar sidebar">
     <div class="nav">
-        <div class="top-items" v-if="currentWorkspace">
-            <router-link to="/files" class="link"><i class="fas fa-signal-alt-3"></i> Files</router-link>
-        <!-- <router-link to="/catalogue">Catalogue</router-link> -->
-        <!-- <router-link class="stick-to-bottom" to="/teams"><i class="fas fa-users"></i> Teams</router-link> -->
-
-        <!-- Admin routes -->
-        <template v-if="authUser != null">
-          <template v-if="authUser.role_id >= 2">
-            <router-link to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
-          </template>
-        </template>
+        <div class="top-items">
+            <router-link to="/files" class="link"><i class="fas fa-folder"></i> Files</router-link>
+            <router-link v-if="authUserWorkspaceRole == 'Admin'" to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
+            <router-link to="/users" class="link"><i class="fas fa-user"></i> Users</router-link>
       </div>
       <div class="bottom-items" v-if="authUser && currentWorkspace">
         <Dropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="authUser.workspaces.length > 1">
             <template v-slot:button="slotProps">
               <div class="link" @click="slotProps.toggle">
-                  <i class="far fa-building"></i>
-                  <span>Workspace</span>
+                  <i class="fas fa-building"></i>
+                  <span>{{currentWorkspace.title | truncate(12)}}</span>
               </div>
             </template>
             <template v-slot:header="slotProps">
@@ -33,18 +26,12 @@
     <div class="bottom-drawer" @click="drawerExpanded = !drawerExpanded" :class="{collapsed: !drawerExpanded}">
         <div class="header">
             <div class="hide-screen-sm">
-                <template v-if="!loadingUser">
-                    <strong class="user">{{authUser.name}}</strong>
-                    <p class="role">{{authUser.role.title}}</p>
-                </template>
-                <template v-else>
-                    <strong class="user">Fetching user</strong>
-                    <p class="role">Fethcing role</p>
-                </template>
+                <strong class="user">{{authUser.name}}</strong>
+                <p class="role">{{authUserWorkspaceRole}}</p>
             </div>
             <div class="show-screen-sm flex-center">
-                <i class="fas fa-user"></i>
-                <span>User</span>
+                <i class="fas primary" :class="authUserWorkspaceRole == 'Admin' ? 'fa-crown' : 'fa-user'"></i>
+                <span class="user">{{authUser.name}}</span>
             </div>
         </div>
       <div class="drawer">
@@ -71,20 +58,11 @@ export default {
     drawerExpanded: false,
   }},
   computed: {
-    ...mapGetters('persist', ['currentWorkspace', 'authUser']),
-    loadingUser () {
-      let loading = false
-      if (this.authUser == null) {
-        loading = true
-      } else {
-        if (this.authUser.role == null)
-          loading = true
-      }
-      return loading
-    }
+    ...mapGetters('auth', ['authUser']),
+    ...mapGetters('workspaces', ['workspaces', 'authUserWorkspaceRole', 'currentWorkspace', 'currentWorkspaceIndex']),
   },
   methods: {
-    ...mapActions('persist', ['setCurrentWorkspace']),
+    ...mapActions('workspaces', ['setCurrentWorkspaceIndex']),
   }
 };
 </script>
@@ -118,14 +96,14 @@ export default {
     display: block;
     color: #a8a8a8;
     padding: 16px;
+    padding-left: 20px;
     text-decoration: none;
-    border-left: solid 5px white;
     cursor: pointer;
     width: 100%;
     &.router-link-active {
       background-color: #f9f9f9;
       color: #1b1c1d;
-      border-left: 5px solid #4facfe;
+      box-shadow: 5px 0 0px 0 $primary inset;
       i {
         color: $primary;
       }
@@ -139,6 +117,8 @@ export default {
     i {
         font-size: 16px;
         margin-right: 8px;
+        width: 20px;
+        text-align: center;
     }
   }
   .bottom-drawer {
@@ -149,14 +129,19 @@ export default {
     } 
     .header {
       padding: 16px;
+      padding-left: 20px;
       cursor: pointer;
+      i {
+        font-size: 16px;
+      }
       &:hover {
         background: $light;
       }
     }
     .user {
-      font-size: 14px;
-      font-weight: 500;
+      // font-size: 12px;
+      line-height: 1.3;
+      text-align: center;
     }
     .role {
       margin: auto;
@@ -193,11 +178,17 @@ export default {
   }
   // SMALL SCREENS AND HIGH DPI
     @media screen and (max-width: $screenSmall) {
+      .header {
+        padding: 16px 4px;
+        font-size: 12px;
+      }
         .link {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            padding: 16px 0;
+            font-size: 12px;
             i {
                 margin: 0;
                 margin-bottom: 8px;

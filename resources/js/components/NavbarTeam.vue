@@ -1,6 +1,5 @@
 <template>
     <div class="navbar-team">
-        <ModalCreateTeam ref="createTeamModal"/>
 
         <div class="flex-wrapper">
             <div class="items-left">
@@ -10,42 +9,35 @@
             </div>
             <div class="items-right">
 
-                <span v-if="userPermissionLevel >= 4" class="button wide primary" @click="$refs.createTeamModal.toggle()">Add team</span>
+                <BaseButton :buttonClass="'primary'" @click="addTeamModalVisible = true"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'">
+                    <span>Add new: Team</span>
+                </BaseButton>
 
             </div>
         </div>
 
+        <CreateTeamModal :show="addTeamModalVisible" @close="addTeamModalVisible = false"/>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Modal from './Modal'
-import ModalCreateTeam from './ModalCreateTeam'
-import Team from '../store/models/Team'
+import CreateTeamModal from '../../components/CreateTeamModal'
 
 export default {
     name: "navbar",
     data: function () { return {
         addTeamName: '',
+        addTeamModalVisible: false,
     }},
     components: {
         Modal,
         ModalCreateTeam,
     },
     computed: {
-        ...mapGetters('persist', ['userPermissionLevel']),
-        addTeamValid () {
-            if (this.teams.length <= 0)
-                return false
-                else
-                    if (this.teams.find(x => x.title.toLowerCase() == this.addTeamName.toLowerCase()))
-                        return false
-            return true
-        },
-        teams () {
-            return Team.all()
-        }
+        ...mapGetters('workspaces', ['authUserWorkspaceRole'])
     },
     methods: {
         consoleLog(msg) {
@@ -62,7 +54,6 @@ export default {
     .flex-wrapper {
         width: 100%;
         padding: 8px 60px;
-        padding-right: 77px;
         display: flex;
         justify-content: space-between;
     }

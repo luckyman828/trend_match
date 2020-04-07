@@ -1,0 +1,364 @@
+<template>
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
+        <template v-slot:header>
+            <BaseFlyinHeader v-if="show" :next="nextProduct" :prev="prevProduct"
+            @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
+                <template v-slot:left>
+                    <div class="item-group product-title-wrapper">
+                        <h3>{{`#${product.datasource_id}: ${product.title}`}}</h3>
+                        <span class="product-count">Product 
+                            {{availableProducts.findIndex(x => x.id == product.id)+1}} 
+                            of 
+                            {{availableProducts.length}}</span>
+                    </div>
+                </template>
+                <template v-slot:right>
+                    <div class="item-group">
+                        <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                        :disabled="currentSelectionMode == 'Approval'" 
+                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
+                        @click="onUpdateAction(product, 'Focus')">
+                            <i class="far fa-star"></i>
+                        </BaseButton>
+                        <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
+                        :disabled="currentSelectionMode == 'Approval'" 
+                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
+                        @click="onUpdateAction(product, 'In')">
+                            <i class="far fa-heart"></i>
+                            <span>In</span>
+                        </BaseButton>
+                        <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
+                        :disabled="currentSelectionMode == 'Approval'" 
+                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
+                        @click="onUpdateAction(product, 'Out')">
+                            <i class="far fa-times-circle"></i>
+                            <span>out</span>
+                        </BaseButton>
+                    </div>
+                </template>
+            </BaseFlyinHeader>
+        </template>
+        <template v-slot v-if="show">
+            <BaseFlyinColumn class="details">
+                
+                <div class="main-img" @click="cycleImage(true)">
+                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])" @error="imgError(product.variants[currentImgIndex])">
+                </div>
+
+                <div class="product-variants" v-dragscroll>
+                    <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                        <div class="img-wrapper">
+                            <img :src="variantImage(variant)" @error="imgError(variant)">
+                        </div>
+                        <div class="color-wrapper">
+                            <div class="circle-img"><img :src="variantImage(variant)" @error="imgError(variant)"></div>
+                            <span>{{variant.name}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <label>Style number</label>
+                <BaseInputField readOnly=true :value="product.datasource_id"/> -->
+
+                <div class="col-3 prices">
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>WHS ({{product.yourPrice.currency}}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Wholesale price">
+                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
+                                    :label="price.currency" :value="price.wholesale_price"/>
+                                </BaseTooltipList>
+                            </template>
+                        </v-popover>
+                        <BaseInputField readOnly=true :value="product.yourPrice.wholesale_price"/>
+                    </div>
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>RRP ({{product.yourPrice.currency}}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Recommended retail price">
+                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
+                                    :label="price.currency" :value="price.recommended_retail_price"/>
+                                </BaseTooltipList>
+                            </template>
+                        </v-popover>
+                        <BaseInputField readOnly=true :value="product.yourPrice.recommended_retail_price"/>
+                    </div>
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>Mark up ({{product.yourPrice.currency}}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Mark up">
+                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
+                                    :label="price.currency" :value="price.mark_up"/>
+                                </BaseTooltipList>
+                            </template>
+                        </v-popover>
+                        <BaseInputField readOnly=true :value="product.yourPrice.mark_up"/>
+                    </div>
+                </div>
+
+                <label>Delivery Date</label>
+                <BaseInputField readOnly=true :value="new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})"/>
+
+                <div class="col-2 minimum">
+                    <div>
+                        <label>Order min. (pcs)</label>
+                        <BaseInputField readOnly=true :value="product.quantity"/>
+                    </div>
+                    <div>
+                        <label>Variant min. (pcs)</label>
+                        <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
+                    </div>
+                </div>
+
+                <label>Composition</label>
+                <BaseInputField readOnly=true :value="product.composition"/>
+                <label>Description</label>
+                <BaseInputField readOnly=true :value="product.description"/>
+                <label>Assortments</label>
+                <BaseInputField readOnly=true />
+                <label>Category</label>
+                <BaseInputField readOnly=true :value="product.category"/>
+
+            </BaseFlyinColumn>
+
+            <DistributionSection :product="currentProduct"/>
+
+            <RequestsSection class="comments" ref="requestsSection"
+            :product="product" :selection="currentSelection"
+            @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
+
+            <CommentsSection class="comments" ref="commentsSection"
+            :product="product" :selection="currentSelection"
+            @activateRequestWrite="$refs.requestsSection.activateWrite()"
+            @hotkeyEnter="hotkeyEnterHandler"/>
+        </template>
+    </BaseFlyin>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex'
+import CommentsSection from './CommentsSection'
+import DistributionSection from './DistributionSection'
+import RequestsSection from './RequestsSection'
+import variantImage from '../../../mixins/variantImage'
+
+export default {
+    name: 'productFlyin',
+    props: [
+        'show',
+        'selection',
+    ],
+    mixins: [
+        variantImage
+    ],
+    components: {
+        CommentsSection,
+        DistributionSection,
+        RequestsSection,
+    },
+    data: function () { return {
+            currentImgIndex: 0,
+    }},
+    watch: {
+        product(newVal, oldVal) {
+            if (oldVal && oldVal.id != newVal.id)
+                this.currentImgIndex = 0
+        },
+        show(newVal, oldVal) {
+            if (newVal) {
+                document.activeElement.blur()
+                document.body.addEventListener('keyup', this.hotkeyHandler)
+                document.body.addEventListener('keydown', this.keydownHandler)
+            } else {
+                document.body.removeEventListener('keyup', this.hotkeyHandler)
+                document.body.removeEventListener('keydown', this.keydownHandler)
+            }
+        }
+    },
+    computed: {
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
+        ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionMode', 'currentSelectionModeAction']),
+        product () {
+            return this.currentProduct
+        },
+        currentAction () {
+            return this.currentSelectionModeAction
+        },
+    },
+    methods: {
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
+        onUpdateAction(product, action) {
+            this.$emit('updateAction', product, action)
+        },
+        imgError (variant) {
+             variant.error = true
+        },
+        onCloseSingle() {
+            this.currentImgIndex = 0
+            // Emit event to parent
+            this.$emit('close')
+        },
+        cycleImage(cycleForward = true) {
+            if (cycleForward) {
+                if (this.currentImgIndex + 1 == this.product.variants.length) {
+                    this.currentImgIndex = 0
+                } else {
+                    this.currentImgIndex ++
+                }
+            } else {
+                if (this.currentImgIndex == 0) {
+                this.currentImgIndex = this.product.variants.length - 1
+                } else {
+                    this.currentImgIndex --
+                }
+            }
+        },
+        hotkeyHandler(event) {
+            const key = event.code
+            // Only do these if the current target is not the comment box
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+
+                if (key == 'Escape')
+                    this.onCloseSingle()
+                if ( this.currentSelectionMode != 'Approval' ) {
+                    if (key == 'KeyI')
+                        this.onUpdateAction(this.product, 'In')
+                    if (key == 'KeyO')
+                        this.onUpdateAction(this.product, 'Out')
+                    if (key == 'KeyF' || key == 'KeyU')
+                        this.onUpdateAction(this.product, 'Focus')
+                }
+            }
+        },
+        hotkeyEnterHandler(e) {
+            // If the current mode is Alignment, focus the request field. Else focus comment
+            if (this.currentSelectionMode == 'Alignment') {
+                this.$refs.requestsSection.activateWrite()
+            } else {
+                this.$refs.commentsSection.activateWrite()
+            }
+        },
+        keydownHandler(e) {
+            const key = event.code
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+                if (key == 'ArrowUp')
+                    e.preventDefault(),
+                    this.cycleImage(true)
+                if (key == 'ArrowDown')
+                    e.preventDefault(),
+                    this.cycleImage(false)
+            }
+        }
+    },
+    destroyed() {
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('keydown', this.keydownHandler)
+    }
+}
+</script>
+
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+.product-title-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    .product-count {
+        font-size: 12px;
+        line-height: 1;
+    }
+}
+
+.product-single {
+    .prices {
+        label {
+            white-space: nowrap;
+        }
+    }
+    .details {
+        background: $bgContent;
+        ::v-deep {
+            .body > *:not(:last-child)
+            {
+                margin-bottom: 16px;
+            }
+            .main-img {
+                cursor: pointer;
+                width: 216px;
+                height: 286px;
+                overflow: hidden;
+                border-radius: 4px;
+                border: solid 2px $divider;
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    object-position: center;
+                }
+            }
+            .product-variants {
+                margin-top: 12px;
+                white-space: nowrap;
+                overflow-x: auto;
+                margin-bottom: 8px;
+                .variant {
+                    width: 80px;
+                    display: inline-block;
+                    cursor: pointer;
+                    &:not(:last-child) {
+                        margin-right: 16px;
+                    }
+                    .img-wrapper {
+                        height: 108px;
+                        width: 80px;
+                        border-radius: 4px;
+                        border: solid 2px $divider;
+                        overflow: hidden;
+                        img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                            object-position: center;
+                        }
+                    }
+                    .color-wrapper {
+                        overflow: hidden;
+                        margin-right: 4px;
+                        margin-top: 8px;
+                        display: flex;
+                        align-items: center;
+                        span {
+                            font-size: 10px;
+                            font-weight: 500;
+                            color: $dark2;
+                        }
+                        .circle-img {
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 6px;
+                            border: solid 1px $light1;
+                            position: relative;
+                            overflow: hidden;
+                            margin-right: 4px;
+                            img {
+                                left: 50%;
+                                top: 50%;
+                                transform: translate(-50%, -50%);
+                                position: absolute;
+                            }
+                        }
+                    }
+                    &.active {
+                        .img-wrapper {
+                            border-color: $primary;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Request from '../models/Request'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -35,42 +35,58 @@ export default {
                     succes = true
                 } catch (err) {
                     console.log('API error in requests.js :')
-                    console.log(err)
+                    console.log(err.response)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }
         },
-        async createRequest({ commit }, { request }) {
-            commit('setSubmitting', true)
+        async insertOrUpdateRequest({ commit, dispatch }, { product, request }) {
+            // Update our state
+            commit('insertOrUpdateRequest', { product, request })
+            let requestMethod
+            let apiUrl
+            // check if the provided request should be posted or updates
+            if (request.id != null) {
+                requestMethod = 'put'
+                apiUrl = `/requests/${request.id}`
+            } else {
+                requestMethod = 'post'
+                // Add the new request to our product
+                apiUrl = `/selections/${request.selection_id}/products/${product.id}/requests`
+            }
 
-            const response = await axios.post(`/api/request`, {
-                product_id: request.product_id,
-                task_id: request.task_id,
-                team_id: request.team_id,
-                user_id: request.user_id,
-                body: request.body,
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                // data: request,
+                data: {
+                    content: request.content,
+                    is_important: false,
+                },
             })
-
-            // Get and set the request id equal to the id given by the database
-            request.id = response.data.id
-            commit('addRequest', { request: request })
-            commit('setSubmitting', false)
+                .then(response => {
+                    // Set the given ID to the request if we were posting a new request
+                    if (!request.id) request.id = response.data.id
+                })
+                .catch(err => {
+                    // On error, set error on the request
+                    Vue.set(request, 'error', true)
+                    // Alert the user
+                    dispatch(
+                        'alerts/showAlert',
+                        'Error on request. Please try again. If the error persists, please contact Kollekt support',
+                        { root: true }
+                    )
+                })
         },
-        async updateRequest({ commit }, { request }) {
-            commit('setSubmitting', true)
+        async deleteRequest({ commit }, { product, request }) {
+            // Delete the request from our state
+            commit('deleteRequest', { product, request })
 
-            await axios.put(`/api/request`, {
-                id: request.id,
-                product_id: request.product_id,
-                task_id: request.task_id,
-                team_id: request.team_id,
-                user_id: request.user_id,
-                body: request.body,
-            })
-
-            commit('updateRequest', { request: request })
-            commit('setSubmitting', false)
+            // Config API endpoint
+            const apiUrl = `/requests/${request.id}`
+            await axios.delete(apiUrl)
         },
     },
 
@@ -82,18 +98,23 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        addRequest: (state, { request }) => {
-            // Submit new request
-            Request.insert({
-                data: request,
-            })
+        insertOrUpdateRequest(state, { product, request }) {
+            // First see if the request already exists
+            const existingRequestIndex = product.requests.findIndex(x => x.id == request.id)
+            if (existingRequestIndex >= 0) {
+                Vue.set(product.requests, existingRequestIndex, request)
+            }
+            // Else insert the request
+            else {
+                product.requests.push(request)
+            }
         },
-        updateRequest: (state, { request }) => {
-            // update request
-            Request.update({
-                where: request.id,
-                data: request,
-            })
+        deleteRequest(state, { product, request }) {
+            const requestIndex = product.requests.findIndex(x => x.id == request.id)
+            product.requests.splice(requestIndex, 1)
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
         },
     },
 }

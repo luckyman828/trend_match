@@ -1,17 +1,29 @@
 <template>
     <div class="edit-input-wrapper" :class="{active: editActive}">
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
-            <input ref="input" :id="id" class="input-wrapper" :type="type" :value="value" :placeholder="placeholder"
-            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @keyup="change" step="any" @keydown="validateInput" :maxlength="maxlength" :pattern="pattern">
-            <div class="controls">
-                <span v-if="!editActive" v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span>
-                <span v-if="editActive" class="edit square true-square"><i class="far fa-pen"></i></span>
-                <span v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green">E</span>
+
+            <!-- <BaseInputField class="input" ref="input" :id="id" :type="type" :value="value" 
+            :placeholder="placeholder" 
+            step="any" :pattern="pattern"
+            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" 
+            @keyup="change" @keydown="validateInput" :maxlength="maxlength"/> -->
+            <input ref="input" :id="id" class="input-wrapper" :type="type" v-model="localValue" autocomplete="off"
+            :placeholder="placeholder" :disabled="disabled" :class="{error: error}" v-tooltip="error"
+            step="any" :pattern="pattern" :maxlength="maxlength"
+            @keyup.enter="!error && submit()" @keydown.esc.stop @keyup.esc="cancel" 
+            @keyup="change($event); validateInput($event)" @keydown="validateAndSave">
+
+            <div class="controls" v-if="!editActive && !disabled">
+                <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
+                <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>
             </div>
         </div>
         <div class="buttons">
-            <div class="hotkey-wrapper">
-                <span class="button green" @click="submit">Save</span>
+            <div class="hotkey-wrapper" v-tooltip="error">
+                <button class="green" :disabled="error"
+                @click="submit">
+                    <span>Save</span>
+                </button>
                 <span class="hotkey"><span class="key">Enter</span> Enter</span>
             </div>
             <span class="button ghost" @click="cancel">Cancel</span>
@@ -30,20 +42,33 @@ export default {
         'id',
         'maxlength',
         'pattern',
+        'activateOnMount',
+        'disabled',
+        'error'
     ],
     data: function () { return {
         editActive: false,
+        localValue: this.value,
+        savedValue: null,
     }},
+    watch: {
+        value: function(newVal) {
+            this.localValue = newVal
+        }
+    },
     methods: {
         change(e) {
-            this.$emit('change', e.target.value)
+            // this.$emit('change', e.target.value)
+            this.$emit('change', this.localValue)
         },
         emit() {
-            this.$emit('input', this.$refs.input.value)
+            this.$emit('input', this.localValue)
+            // this.$emit('input', this.$refs.input.value)
         },
         submit() {
             this.emit()
-            this.$emit('submit', this.$refs.input.value)
+            this.$emit('submit', this.localValue)
+            // this.$emit('submit', this.$refs.input.value)
             this.editActive = false
             document.activeElement.blur()
         },
@@ -52,9 +77,11 @@ export default {
             el.focus()
             el.select()
             this.editActive = true
+            this.$emit('activate')
         },
         cancel() {
             this.editActive = false
+            this.localValue = this.value
             document.activeElement.blur()
             this.$emit('cancel')
         },
@@ -63,14 +90,21 @@ export default {
             this.$emit('input', this.oldValue)
             this.$emit('revert')
         },
+        validateAndSave(e) {
+            if(this.pattern) {
+                const regex = new RegExp(this.pattern)
+                if(regex.test(e.target.value)) {
+                    this.savedValue = e.target.value
+                }
+            }
+        },
         validateInput(e) {
-            // First check if the key presses was Enter or Escape and don't do anything if true
-            if (e.key == "Escape" || e.key == "Enter" || e.key == "Backspace") return
             // Then check if we have a pattern. If we do, don't allow anything that doesn't match the pattern to be entered
             if(this.pattern) {
                 const regex = new RegExp(this.pattern)
-                if(!regex.test(e.key))
-                    e.preventDefault()
+                if(!regex.test(e.target.value)) {
+                    this.localValue = this.savedValue
+                }
             }
         }
     }
@@ -81,6 +115,12 @@ export default {
 @import '~@/_variables.scss';
 
     .edit-input-wrapper {
+        line-height: 1.6;
+        .input-wrapper {
+            &.error {
+                border-color: $red;
+            }
+        }
         &:not(.active) {
             cursor: pointer;
             .input-wrapper {

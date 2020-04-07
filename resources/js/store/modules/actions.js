@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Action from '../models/Action'
 
 export default {
     namespaced: true,
@@ -39,348 +38,105 @@ export default {
             }
         },
 
-        // Update the action of for a product for a user
-        async updateAction({ commit, dispatch }, { user_id, task_id, productToUpdate, action_code, is_task_action }) {
-            // Save a reference to the existing action so we can revert to it in case of an error
-            const existingAction = Action.query()
-                .where('user_id', user_id)
-                .where('task_id', task_id)
-                .where('product_id', productToUpdate)
-                .first()
-
-            // Set the action on the product in our ORM loaded state, and wait for the products to recalculate
-            await commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', productToUpdate, { root: true })
-
-            await axios
-                .put(`/api/action`, {
-                    user_id: user_id,
-                    task_id: task_id,
-                    product_id: productToUpdate,
-                    action_code: action_code,
-                    is_task_action: is_task_action,
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(async err => {
-                    console.log(err.response)
-                    // On error restore the action and alert the user
-                    commit('alertError')
-
-                    if (existingAction) {
-                        await commit('setAction', {
-                            user_id,
-                            task_id,
-                            productToUpdate,
-                            action_code: existingAction.action,
-                            is_task_action,
-                        })
-                    } else {
-                        await commit('destroyAction', { productToUpdate, task_id, user_id })
-                    }
-                    // Dispatch an action to update the products actions
-                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
-                })
-        },
-        // Update the action of for a product for a user
-        async createTaskAction(
-            { commit, dispatch },
-            { user_id, task_id, productToUpdate, action_code, is_task_action }
-        ) {
-            // Save a reference to the existing action so we can revert to it in case of an error
-            const existingAction = Action.query()
-                .where('task_id', task_id)
-                .where('product_id', productToUpdate)
-                .first()
-
-            await commit('setAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', productToUpdate, { root: true })
-
-            await axios
-                .put(`/api/task-action`, {
-                    user_id: user_id,
-                    task_id: task_id,
-                    product_id: productToUpdate,
-                    action_code: action_code,
-                    is_task_action: is_task_action,
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(async err => {
-                    console.log(err.response)
-                    // On error restore the action and alert the user
-                    commit('alertError')
-
-                    if (existingAction) {
-                        await commit('setAction', {
-                            user_id,
-                            task_id,
-                            productToUpdate,
-                            action_code: existingAction.action,
-                            is_task_action,
-                        })
-                    } else {
-                        await commit('destroyTaskAction', { productToUpdate, task_id })
-                    }
-
-                    // Dispatch an action to update the products actions
-                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
-                })
-        },
-        async updateTaskAction(
-            { commit, dispatch },
-            { task_id, user_id, productToUpdate, action_code, is_task_action }
-        ) {
-            const existingAction = Action.query()
-                .where('task_id', task_id)
-                .where('product_id', productToUpdate)
-                .first()
-
-            await commit('setTaskAction', { user_id, task_id, productToUpdate, action_code, is_task_action })
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', productToUpdate, { root: true })
-
-            await axios
-                .put(`/api/task-action`, {
-                    user_id: user_id,
-                    task_id: task_id,
-                    product_id: productToUpdate,
-                    action_code: action_code,
-                    is_task_action: is_task_action,
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(async err => {
-                    console.log(err.response)
-                    // On error restore the action and alert the user
-                    commit('alertError')
-
-                    if (existingAction) {
-                        await commit('setAction', {
-                            user_id,
-                            task_id,
-                            productToUpdate,
-                            action_code: existingAction.action,
-                            is_task_action,
-                        })
-                    } else {
-                        await commit('destroyTaskAction', { productToUpdate, task_id })
-                    }
-
-                    // Dispatch an action to update the products actions
-                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
-                })
-        },
-
-        async updateManyActions({ commit, dispatch }, { productIds, task_id, user_id, action_code, is_task_action }) {
-            console.log('updating actions')
-
-            await axios
-                .put(`/api/many-actions`, {
-                    product_ids: productIds,
-                    task_id: task_id,
-                    user_id: user_id,
-                    action_code: action_code,
-                    is_task_action: is_task_action,
-                })
-                .then(async response => {
-                    console.log(response.data)
-                    await commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
-
-                    // Loop through our products and dispatch an update action for each
-                    productIds.forEach(productId => {
-                        // Dispatch an action to update this product
-                        dispatch('entities/products/updateActions', productId, { root: true })
-                    })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    commit('alertError')
-                })
-        },
-        async updateManyTaskActions(
-            { commit, dispatch },
-            { productIds, task_id, user_id, action_code, is_task_action }
-        ) {
-            await axios
-                .put(`/api/many-task-actions`, {
-                    product_ids: productIds,
-                    task_id: task_id,
-                    user_id: user_id,
-                    action_code: action_code,
-                    is_task_action: is_task_action,
-                })
-                .then(async response => {
-                    console.log(response.data)
-                    await commit('setManyActions', { productIds, task_id, user_id, action_code, is_task_action })
-                    // Loop through our products and dispatch an update action for each
-                    productIds.forEach(productId => {
-                        // Dispatch an action to update this product
-                        dispatch('entities/products/updateActions', productId, { root: true })
-                    })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    commit('alertError')
-                })
-        },
-
-        async createManyActions(
-            { commit, dispatch, rootGetters },
-            { productIds, task_id, user_id, action_code, is_task_action }
-        ) {
-            await axios
-                .post(`/api/many-actions`, {
-                    product_ids: productIds,
-                    task_id: task_id,
-                    user_id: user_id,
-                    action_code: action_code,
-                    is_task_action,
-                })
-                .then(async response => {
-                    console.log(response.data)
-                    await commit('setManyTaskActions', { productIds, task_id, user_id, action_code, is_task_action })
-                    // Loop through our products and dispatch an update action for each
-                    productIds.forEach(productId => {
-                        // Dispatch an action to update this product
-                        dispatch('entities/products/updateActions', productId, { root: true })
-                    })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    commit('alertError')
-                })
-        },
-
-        async deleteAction({ commit, dispatch }, { productToUpdate, task_id, user_id }) {
-            const existingAction = Action.query()
-                .where('user_id', user_id)
-                .where('task_id', task_id)
-                .where('product_id', productToUpdate)
-                .first()
-
-            await commit('destroyAction', { productToUpdate, task_id, user_id })
-            // Dispatch an action to update this product
-            dispatch('entities/products/updateActions', productToUpdate, { root: true })
-
-            await axios
-                .delete(`/api/action`, {
-                    data: {
-                        user_id: user_id,
-                        task_id: task_id,
-                        product_id: productToUpdate,
-                    },
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(async err => {
-                    console.log(err.response)
-                    commit('alertError')
-                    // On error restore the action and alert the user
-                    await commit('setAction', {
-                        user_id,
-                        task_id,
-                        productToUpdate,
-                        action_code: existingAction.action,
-                        is_task_action: existingAction.is_task_action,
-                    })
-
-                    // Dispatch an action to update the products actions
-                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
-                })
-        },
-
-        async deleteTaskAction({ commit, dispatch, rootGetters }, { productToUpdate, task_id }) {
-            const existingAction = Action.query()
-                .where('task_id', task_id)
-                .where('product_id', productToUpdate)
-                .first()
-
-            await commit('destroyTaskAction', { productToUpdate, task_id })
-            // Dispatch an action to update the products actions
-            dispatch('entities/products/updateActions', productToUpdate, { root: true })
-
-            await axios
-                .delete(`/api/task-action`, {
-                    data: {
-                        task_id: task_id,
-                        product_id: productToUpdate,
-                    },
-                })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(async err => {
-                    console.log(err.response)
-                    commit('alertError')
-
-                    await commit('setAction', {
-                        user_id: existingAction.user_id,
-                        task_id,
-                        productToUpdate,
-                        action_code: existingAction.action,
-                        is_task_action: existingAction.is_task_action,
-                    })
-
-                    // Dispatch an action to update the products actions
-                    dispatch('entities/products/updateActions', productToUpdate, { root: true })
-                })
-        },
-        async setAction({ dispatch }, action) {
-            await Action.insert({
-                data: action,
-            })
-            // Dispatch an action to update the products actions
-            dispatch('entities/products/updateActions', action.product_id, { root: true })
-        },
-        async destroyAction({ dispatch }, action) {
-            if (!action.is_task_action) {
-                Action.delete(record => {
-                    return (
-                        record.product_id == action.product_id &&
-                        record.user_id == action.user_id &&
-                        record.task_id == action.task_id
-                    )
-                })
-            } else {
-                Action.delete(record => {
-                    return record.product_id == action.product_id && record.task_id == action.task_id
-                })
-            }
-            // Dispatch an action to update the products actions
-            dispatch('entities/products/updateActions', action.product_id, { root: true })
-        },
-        async setManyActions({ dispatch }, { productIds, task_id, user_id, action_code, is_task_action }) {
-            // Prepare the data
-            let data = []
-
-            productIds.forEach(product => {
-                const productData = {
-                    product_id: product,
-                    task_id: task_id,
-                    user_id: user_id,
-                    action: action_code,
-                    is_task_action: is_task_action,
+        async insertOrUpdateAction({ commit, dispatch }, { product, action, selection, user }) {
+            let apiUrl
+            let requestBody
+            let oldAction
+            if (selection.your_role == 'Member') {
+                oldAction = product.your_feedback
+                apiUrl = `/selections/${selection.id}/feedback`
+                requestBody = {
+                    feedbacks: [
+                        {
+                            product_id: product.id,
+                            feedback: action,
+                        },
+                    ],
                 }
-                data.push(productData)
-            })
+            } else if (selection.your_role == 'Owner') {
+                oldAction = product.your_action
+                apiUrl = `/selections/${selection.id}/actions`
+                requestBody = {
+                    actions: [
+                        {
+                            product_id: product.id,
+                            action: action,
+                        },
+                    ],
+                }
+            }
 
-            Action.insert({
-                data: data,
-            })
+            // Update state
+            commit('insertOrUpdateAction', { product, action, selection, user })
 
-            // Loop through the product ids and dispatch an action to update each product
-            productIds.forEach(productId => {
-                // Dispatch an action to update the products actions
-                dispatch('entities/products/updateActions', productId, { root: true })
+            await axios.post(apiUrl, requestBody).catch(err => {
+                // Return the action to the old
+                commit('insertOrUpdateAction', { product, action: oldAction, selection, user })
+                // Dispatch an error alert
+                dispatch(
+                    'alerts/showAlert',
+                    'Something went wrong. Please try again, or contact Kollekt support, if the problem persists',
+                    { root: true }
+                )
+            })
+        },
+        async insertOrUpdateActions({ commit, dispatch }, { products, action, selection, user }) {
+            // type = action|feedback
+            let apiUrl
+            let requestBody
+            let oldActions
+            const productActions = products.map(product => {
+                return {
+                    product,
+                    action,
+                }
+            })
+            if (selection.your_role == 'Member') {
+                oldActions = products.map(product => {
+                    return {
+                        product,
+                        action: product.your_feedback,
+                    }
+                })
+                apiUrl = `/selections/${selection.id}/feedback`
+                requestBody = {
+                    feedbacks: products.map(product => {
+                        return {
+                            product_id: product.id,
+                            feedback: action,
+                        }
+                    }),
+                }
+            } else if (selection.your_role == 'Owner') {
+                oldActions = products.map(product => {
+                    return {
+                        product,
+                        action: product.your_action,
+                    }
+                })
+                apiUrl = `/selections/${selection.id}/actions`
+                requestBody = {
+                    actions: products.map(product => {
+                        return {
+                            product_id: product.id,
+                            action: action,
+                        }
+                    }),
+                }
+            }
+
+            // Update state
+            commit('insertOrUpdateActions', { productActions, selection, user })
+
+            await axios.post(apiUrl, requestBody).catch(err => {
+                // Return the action to the old
+                commit('insertOrUpdateActions', { productActions: oldActions, selection, user })
+                // Dispatch an error alert
+                dispatch(
+                    'alerts/showAlert',
+                    'Something went wrong. Please try again, or contact Kollekt support, if the problem persists',
+                    { root: true }
+                )
             })
         },
     },
@@ -401,70 +157,80 @@ export default {
                 },
             })
         },
-        setTaskAction: (state, { user_id, productToUpdate, task_id, action_code, is_task_action }) => {
-            Action.update({
-                where: action => {
-                    return action.task_id == task_id && action.product_id == productToUpdate
-                },
-                data: {
-                    user_id: user_id,
-                    action: action_code,
-                    product_id: productToUpdate,
-                    task_id: task_id,
-                    is_task_action: is_task_action,
-                },
-            })
-        },
-        destroyAction: (state, { productToUpdate, task_id, user_id }) => {
-            Action.delete(record => {
-                return record.product_id == productToUpdate && record.user_id == user_id && record.task_id == task_id
-            })
-        },
-        destroyTaskAction: (state, { productToUpdate, task_id }) => {
-            Action.delete(record => {
-                return record.product_id == productToUpdate && record.task_id == task_id
-            })
-        },
-        setManyActions: (state, { productIds, task_id, user_id, action_code, is_task_action }) => {
-            // Prepare the data
-            let data = []
-
-            productIds.forEach(product => {
-                const productData = {
-                    product_id: product,
-                    task_id: task_id,
-                    user_id: user_id,
-                    action: action_code,
-                    is_task_action: is_task_action,
+        insertOrUpdateAction(state, { product, action, selection, user }) {
+            if (selection.your_role == 'Member') {
+                product.your_feedback = action
+                // Check if the action already exists in the products feedbacks array
+                const existingAction = product.feedbacks.find(
+                    x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
+                )
+                if (!existingAction) {
+                    product.feedbacks.push({
+                        action: action,
+                        product_id: product.id,
+                        selection: selection,
+                        selection_id: selection.id,
+                        user_id: user.id,
+                        user: user,
+                    })
+                } else {
+                    existingAction.action = action
                 }
-                data.push(productData)
-            })
-
-            Action.insert({
-                data: data,
-            })
-        },
-        setManyTaskActions: (state, { productIds, task_id, user_id, action_code, is_task_action }) => {
-            // Prepare the data
-            let data = []
-
-            productIds.forEach(product => {
-                const productData = {
-                    product_id: product,
-                    task_id: task_id,
-                    user_id: user_id,
-                    action: action_code,
-                    is_task_action: is_task_action,
+            }
+            if (selection.your_role == 'Owner') {
+                Vue.set(product, 'action', action)
+                Vue.set(product, 'action_author', user)
+                // Check if the action already exists in the products actions array
+                const existingAction = product.actions.find(
+                    x => x.product_id == product.id && x.selection_id == selection.id
+                )
+                if (!existingAction) {
+                    product.actions.push({
+                        action: action,
+                        product_id: product.id,
+                        selection: selection,
+                        selection_id: selection.id,
+                        user_id: user.id,
+                        user: user,
+                    })
+                } else {
+                    existingAction.action = action
                 }
-                data.push(productData)
-            })
-
-            Action.insert({
-                data: data,
-            })
+            }
         },
-        alertError: state => {
-            window.alert('Network error. Please check your connection')
+        insertOrUpdateActions(state, { productActions, selection, user }) {
+            // Loop through our products and update their actions
+            if (selection.your_role == 'Member') {
+                productActions.forEach(productAction => {
+                    productAction.product.your_feedback = productAction.action
+                    // Check if the action already exists in the products feedbacks array
+                    const existingAction = productAction.product.feedbacks.find(
+                        x =>
+                            x.product_id == productAction.product.id &&
+                            x.selection_id == selection.id &&
+                            x.user_id == user.id
+                    )
+                    if (!existingAction) {
+                        productAction.product.feedbacks.push({
+                            action: productAction.action,
+                            product_id: productAction.product.id,
+                            selection: selection,
+                            selection_id: selection.id,
+                            user_id: user.id,
+                            user: user,
+                        })
+                    } else {
+                        existingAction.action = productAction.action
+                    }
+                })
+            }
+            if (selection.your_role == 'Owner') {
+                productActions.forEach(productAction => {
+                    productAction.product.action = productAction.action
+                    Vue.set(productAction.product, 'action', productAction.action)
+                    Vue.set(productAction.product, 'action_author', user)
+                })
+            }
         },
     },
 }

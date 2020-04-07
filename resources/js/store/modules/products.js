@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Product from '../models/Product'
 
 export default {
     namespaced: true,
@@ -15,136 +14,105 @@ export default {
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
-        productScope: null,
-        productsStatic: null,
+        products: [],
+        status: null,
+        currentFocusIndex: null,
     },
 
     getters: {
-        loadingProducts: state => {
-            return state.loading
+        loadingProducts: (state) => state.loading,
+        productsStatus: (state) => state.status,
+        currentProduct: (state) => state.currentProduct,
+        currentFocusIndex: (state) => state.currentFocusIndex,
+        availableProducts: (state) => {
+            return state.availableProducts
         },
-        currentSingleProductId: state => {
-            return state.currentSingleProductId
+        nextProduct: (state) => {
+            // Find the index of the current product
+            const index = state.availableProducts.findIndex((x) => x.id == state.currentProduct.id)
+            // Check that the current is not the last in the array
+            if (index + 1 < state.availableProducts.length) {
+                return state.availableProducts[index + 1]
+            }
         },
-        selectedCategories: state => {
+        prevProduct: (state) => {
+            // Find the index of the current product
+            const index = state.availableProducts.findIndex((x) => x.id == state.currentProduct.id)
+            // Check that the current is not the first in the array
+            if (index > 0) {
+                return state.availableProducts[index - 1]
+            }
+        },
+        selectedCategories: (state) => {
             return state.selectedCategories
         },
-        selectedDeliveryDates: state => {
+        selectedDeliveryDates: (state) => {
             return state.selectedDeliveryDates
         },
-        selectedBuyerGroups: state => {
+        selectedBuyerGroups: (state) => {
             return state.selectedBuyerGroups
         },
-        unreadOnly: state => {
+        unreadOnly: (state) => {
             return state.unreadOnly
         },
-        currentProductFilter: state => {
+        currentProductFilter: (state) => {
             return state.currentProductFilter
         },
-        singleVisible: state => {
+        singleVisible: (state) => {
             return state.singleVisible
         },
-        productScope: state => {
-            return state.productScope
-        },
-        actionsUpdated: state => {
+        actionsUpdated: (state) => {
             return state.actionsUpdated
         },
-        commentsUpdated: state => {
+        commentsUpdated: (state) => {
             return state.commentsUpdated
         },
-        commentsCreated: state => {
+        commentsCreated: (state) => {
             return state.commentsCreated
         },
         productsStatic: state => {
             return state.productsStatic
         },
-        productsTest: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit']) {
-                const products = Product.query()
-                    .with(['actions'])
-                    .all()
-                console.log('Products in store saying hello')
-
-                products.forEach(product => {
-                    product.ins = []
-                    product.outs = []
-                    product.focus = []
-                    product.nds = []
-                    product.ndsTotal
-                    product.commentsScoped = []
-                    product.commentsInherited = []
-                    product.outInFilter = false
-
-                    let stateProduct = {}
-                    if (product.isNew || product.actionsUpdated || product.commentsUpdated) {
-                        stateProduct = Product.find(product.id)
-                    }
-                    // Test that the JSON objects are valid JSON
-                    if (product.isNew || product.actionsUpdated) {
-                        stateProduct.actionLength = product.actions.length
-                    }
-
-                    if (product.isNew || product.actionsUpdated || product.commentsUpdated) {
-                        stateProduct.isNew = false
-                        stateProduct.actionsUpdated = false
-                    }
-                })
-                console.log('Products in store done saying hello')
-                return products
-            }
+        availableCategories(state, getters) {
+            const products = getters.products
+            let uniqueCategories = []
+            products.forEach((product) => {
+                if (product.category) {
+                    const theCategory = product.category.toLowerCase()
+                    const found = uniqueCategories.includes(theCategory)
+                    if (!found) uniqueCategories.push(theCategory)
+                }
+            })
+            return uniqueCategories
         },
-        productsRaw: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit']) {
-                const products = Product.query().all()
-                products.forEach(product => {
-                    // Test that the JSON objects are valid JSON
-
-                    if (typeof product.color_variants == 'string' && isJSON(product.color_variants))
-                        product.color_variants = JSON.parse(product.color_variants)
-                    if (typeof product.assortments == 'string' && isJSON(product.assortments))
-                        product.assortments = JSON.parse(product.assortments)
-                    if (typeof product.prices == 'string' && isJSON(product.prices))
-                        product.prices = JSON.parse(product.prices)
-
-                    function isJSON(str) {
-                        try {
-                            return JSON.parse(str) && !!str
-                        } catch (e) {
-                            return false
-                        }
-                    }
-                    if (product.isNew) {
-                        product.anArray = 'test'
-                    }
-                })
-                return products
-            }
-        },
-        products: (state, getters, rootState, rootGetters) => {
-            if (!rootGetters['persist/loadingInit'] && !state.loading && rootGetters['persist/currentTask'] != null) {
-                const products = state.productsStatic
-                return products
-            }
+        availableDeliveryDates(state, getters) {
+            const products = getters.products
+            let uniqueDeliveryDates = []
+            products.forEach((product) => {
+                if (product.delivery_date) {
+                    // const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
+                    const found = uniqueDeliveryDates.find((x) => x == product.delivery_date)
+                    if (!found)
+                        // uniqueDeliveryDates.push({
+                        //     name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        //         month: 'long',
+                        //         year: 'numeric',
+                        //     }),
+                        //     value: product.delivery_date,
+                        // })
+                        uniqueDeliveryDates.push(product.delivery_date)
+                }
+            })
+            return uniqueDeliveryDates
         },
         productsScoped: (state, getters, rootState, rootGetters) => {
             const products = getters.products
-            const currentTask = rootGetters['persist/currentTask']
-            const currentTeam = rootGetters['persist/currentTeam']
-            if (products) {
-                let productsToReturn = []
-                const inheritFromId = currentTask.inherit_from_id
-                productsToReturn = products
-
-                if (currentTeam.category_scope && currentTask.taskTeams.find(x => x.team_id == currentTeam.id)) {
-                    return productsToReturn.filter(product =>
-                        currentTeam.category_scope
-                            .toLowerCase()
-                            .split(',')
-                            .includes(product.category.toLowerCase())
-                    )
-                } else {
-                    return productsToReturn
+            let unique = []
+            products.forEach((product) => {
+                if (product.buying_group) {
+                    const theBuyingGroup = product.buying_group.toLowerCase()
+                    const found = unique.includes(theBuyingGroup)
+                    if (!found) unique.push(theBuyingGroup)
                 }
             } else {
                 return []
@@ -152,156 +120,31 @@ export default {
         },
         productTotals(state, getters, rootState, rootGetters) {
             const products = getters.products
-            const currentTask = rootGetters['persist/currentTask']
-            const data = {
-                products: 0,
+            const selection = rootGetters['selections/currentSelection']
+            const currentAction = rootGetters['selections/currentSelectionModeAction']
+
+            const totals = {
+                all: 0,
                 ins: 0,
+                focus: 0,
                 outs: 0,
                 nds: 0,
-                totalDecisionsToMake: 0,
+                count: 0,
             }
-            if (products) {
-                data.products = products.length
-                products.forEach(product => {
-                    if (product.outInFilter) {
-                        data.outs++
-                    } else if (product.currentAction == null) {
-                        if (currentTask.type == 'approval') {
-                            if (product.requests.length > 0) {
-                                data.nds++
-                            } else {
-                                if (product.inheritedAction && product.inheritedAction.action == 0) {
-                                    data.outs++
-                                } else {
-                                    data.ins++
-                                }
-                            }
-                        } else {
-                            data.nds++
-                        }
-                    } else {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
+            totals.all = products.length
 
-                    // Calculate how many product decisions have to be made in the task
-                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
-                        data.totalDecisionsToMake++
-                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
-                        data.totalDecisionsToMake++
-                    }
+            if (selection) {
+                products.forEach((product) => {
+                    if (!product[currentAction] || product[currentAction] == 'None') totals.nds++
+                    if (product[currentAction] == 'In') totals.ins++
+                    if (product[currentAction] == 'Out') totals.outs++
+                    if (product[currentAction] == 'Focus') totals.focus++
                 })
             }
-            return data
+            return totals
         },
-        productsScopedFilteredTotals(state, getters, rootState, rootGetters) {
-            const products = getters.productsScopedFilteredByCategory
-            const currentTask = rootGetters['persist/currentTask']
-            const data = {
-                products: 0,
-                ins: 0,
-                outs: 0,
-                nds: 0,
-                totalDecisionsToMake: 0,
-            }
-            if (products) {
-                data.products = products.length
-                products.forEach(product => {
-                    if (product.outInFilter) {
-                        data.outs++
-                    } else if (currentTask.type == 'decision') {
-                        if (product.currentAction) {
-                            if (product.currentAction.action == 0) {
-                                data.outs++
-                            } else {
-                                data.ins++
-                            }
-                        } else if (product.inheritedAction) {
-                            if (product.inheritedAction.action == 0) {
-                                data.outs++
-                            } else {
-                                data.ins++
-                            }
-                        }
-                    } else if (product.currentAction == null) {
-                        if (currentTask.type == 'approval') {
-                            if (product.requests.length > 0) {
-                                data.nds++
-                            } else {
-                                if (product.inheritedAction && product.inheritedAction.action == 0) {
-                                    data.outs++
-                                } else {
-                                    data.ins++
-                                }
-                            }
-                        } else {
-                            data.nds++
-                        }
-                    } else {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-
-                    // Calculate how many product decisions have to be made in the task
-                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
-                        data.totalDecisionsToMake++
-                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
-                        // data.totalDecisionsToMake++
-                    }
-                })
-            }
-            return data
-        },
-        productsScopedTotals(state, getters, rootState, rootGetters) {
-            const products = getters.productsScoped
-            const currentTask = rootGetters['persist/currentTask']
-            const data = {
-                products: 0,
-                ins: 0,
-                outs: 0,
-                nds: 0,
-                totalDecisionsToMake: 0,
-            }
-            if (products) {
-                data.products = products.length
-                products.forEach(product => {
-                    if (product.outInFilter) {
-                        data.outs++
-                    } else if (product.currentAction == null) {
-                        if (currentTask.type == 'approval') {
-                            if (product.requests.length > 0) {
-                                data.nds++
-                            } else {
-                                data.ins++
-                            }
-                        } else {
-                            data.nds++
-                        }
-                    } else {
-                        if (product.currentAction.action == 0) {
-                            data.outs++
-                        } else {
-                            data.ins++
-                        }
-                    }
-
-                    // Calculate how many product decisions have to be made in the task
-                    if (currentTask.type == 'approval' && !product.outInFilter && product.requests.length > 0) {
-                        data.totalDecisionsToMake++
-                    } else if (currentTask.type == 'decision' && !product.outInFilter) {
-                        data.totalDecisionsToMake++
-                    }
-                })
-            }
-            return data
-        },
-        productsFilteredByCategory(state, getters, rootState, rootGetters) {
+        productsFiltered(state, getters, rootState, rootGetters) {
+            const currentAction = rootGetters['selections/currentSelectionModeAction']
             const products = getters.products
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
@@ -309,152 +152,41 @@ export default {
             const unreadOnly = getters.unreadOnly
             let productsToReturn = []
 
-            if (products) {
-                productsToReturn = products
-                // First filter by category
-                if (categories.length > 0) {
-                    const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
-                    })
-                    productsToReturn = filteredByCategory
-                }
-                // Filter by delivery date
-                if (deliveryDates.length > 0) {
-                    const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
-                    })
-                    productsToReturn = filteredByDeliveryDate
-                }
-                // Filter by buyer group
-                if (buyerGroups.length > 0) {
-                    const filteredByBuyerGroups = productsToReturn.filter(product => {
-                        return Array.from(buyerGroups).includes(product.buyer_group)
-                    })
-                    productsToReturn = filteredByBuyerGroups
-                }
-
-                // Filer by unread
-                if (unreadOnly) {
-                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                    productsToReturn = filteredByUnread
-                }
+            // First filter by category
+            if (categories.length > 0) {
+                const filteredByCategory = productsToReturn.filter((product) => {
+                    return product.category && Array.from(categories).includes(product.category.toLowerCase())
+                })
+                productsToReturn = filteredByCategory
             }
-
-            return productsToReturn
-        },
-        productsScopedFilteredByCategory(state, getters, rootState, rootGetters) {
-            const products = getters.productsScoped
-            const categories = getters.selectedCategories
-            const deliveryDates = getters.selectedDeliveryDates
-            const buyerGroups = getters.selectedBuyerGroups
-            const unreadOnly = getters.unreadOnly
-            let productsToReturn = []
-
-            if (products) {
-                productsToReturn = products
-                // First filter by category
-                if (categories.length > 0) {
-                    const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
-                    })
-                    productsToReturn = filteredByCategory
-                }
-                // Filter by delivery date
-                if (deliveryDates.length > 0) {
-                    const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
-                    })
-                    productsToReturn = filteredByDeliveryDate
-                }
-                if (buyerGroups.length > 0) {
-                    const filteredByBuyerGroups = productsToReturn.filter(product => {
-                        return Array.from(buyerGroups).includes(product.buyer_group)
-                    })
-                    productsToReturn = filteredByBuyerGroups
-                }
-
-                // Filer by unread
-                if (unreadOnly) {
-                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                    productsToReturn = filteredByUnread
-                }
+            // Filter by delivery date
+            if (deliveryDates.length > 0) {
+                const filteredByDeliveryDate = productsToReturn.filter((product) => {
+                    return Array.from(deliveryDates).includes(product.delivery_date)
+                })
+                productsToReturn = filteredByDeliveryDate
             }
-
-            return productsToReturn
-        },
-        productsFiltered(state, getters, rootState, rootGetters) {
-            const method = getters.currentProductFilter
-            const products = getters.productsFilteredByCategory
-            const currentTask = rootGetters['persist/currentTask']
-            let productsToReturn = products
-
-            // filter by in/out
-            if (['ins', 'outs', 'nds'].includes(method)) {
-                const filteredByAction = products.filter(product => {
-                    if (method == 'nds') {
-                        if (currentTask.type == 'approval') {
-                            return product.currentAction == null && product.requests.length > 0
-                        } else return product.currentAction == null && !product.outInFilter
-                    } else if (method == 'ins') {
-                        return (
-                            ((product.inheritedAction && product.inheritedAction.action >= 1) ||
-                                (product.currentAction && product.currentAction.action >= 1)) &&
-                            !product.outInFilter
-                        )
-                    } else if (method == 'outs') {
-                        return (
-                            (product.inheritedAction && product.inheritedAction.action < 1) ||
-                            (product.currentAction && product.currentAction.action < 1) ||
-                            product.outInFilter
-                        )
-                    }
+            // Filter by buyer group
+            if (buyerGroups.length > 0) {
+                const filteredByBuyerGroups = productsToReturn.filter((product) => {
+                    return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
                 })
                 productsToReturn = filteredByAction
             }
 
-            return productsToReturn
-        },
-        productsScopedFiltered(state, getters, rootState, rootGetters) {
-            const method = getters.currentProductFilter
-            const products = getters.productsScopedFilteredByCategory
-            const currentTask = rootGetters['persist/currentTask']
-            let productsToReturn = products
+            // Filer by unread
+            if (unreadOnly) {
+                const filteredByUnread = productsToReturn.filter((product) => product.newComment)
+                productsToReturn = filteredByUnread
+            }
 
-            // filter by in/out
-            if (['ins', 'outs', 'nds'].includes(method)) {
-                const filteredByAction = products.filter(product => {
-                    if (method == 'nds') {
-                        if (currentTask.type == 'approval') {
-                            return product.currentAction == null && product.requests.length > 0
-                        } else if (currentTask.type == 'decision') {
-                            return false
-                        } else return product.currentAction == null && !product.outInFilter
-                    } else if (method == 'ins') {
-                        if (product.currentAction) return product.currentAction.action >= 1 && !product.outInFilter
-                        else if (currentTask.type == 'decision' && !product.outInFilter) {
-                            if (product.inheritedAction) return product.inheritedAction.action >= 1
-                        } else if (currentTask.type == 'approval') {
-                            return (
-                                ((product.requests.length < 1 &&
-                                    product.inheritedAction &&
-                                    product.inheritedAction.action >= 1) ||
-                                    (product.currentAction && product.currentAction.action >= 1)) &&
-                                !product.outInFilter
-                            )
-                        }
-                    } else if (method == 'outs') {
-                        if (product.outInFilter) return true
-                        else if (product.currentAction) return product.currentAction.action < 1
-                        else if (currentTask.type == 'decision') {
-                            if (product.inheritedAction) return product.inheritedAction.action == 0
-                        } else if (currentTask.type == 'approval') {
-                            return (
-                                (product.inheritedAction && product.inheritedAction.action < 1) ||
-                                (product.currentAction && product.currentAction.action < 1) ||
-                                product.outInFilter
-                            )
-                        }
-                    }
+            // Filter by actions
+            if (['ins', 'outs', 'nds'].includes(actionFilter)) {
+                const filteredByAction = productsToReturn.filter((product) => {
+                    if (actionFilter == 'nds') return !product[currentAction] || product[currentAction] == 'None'
+                    if (actionFilter == 'outs') return product[currentAction] == 'Out'
+                    if (actionFilter == 'ins')
+                        return product[currentAction] == 'In' || product[currentAction] == 'Focus'
                 })
                 productsToReturn = filteredByAction
             }
@@ -494,39 +226,65 @@ export default {
             }
         },
 
-        productsFilteredv1(state, getters, rootState, rootGetters) {
-            const products = getters[getters.productScope]
+    actions: {
+        async fetchProducts({ commit, dispatch }, fileId) {
+            commit('setProductStatus', 'loading')
 
-            const categories = getters.selectedCategories
-            const deliveryDates = getters.selectedDeliveryDates
-            const unreadOnly = getters.unreadOnly
-            let productsToReturn = []
+            const apiUrl = `/files/${fileId}/products`
 
-            if (products) {
-                productsToReturn = products
-                // First filter by category
-                if (categories.length > 0) {
-                    const filteredByCategory = productsToReturn.filter(product => {
-                        return Array.from(categories).includes(product.category)
+            await axios
+                .get(apiUrl)
+                .then((response) => {
+                    commit('insertProducts', { products: response.data, method: 'set' })
+                    commit('procesProducts')
+                    commit('setProductStatus', 'success')
+                })
+                .catch((err) => {
+                    commit('setProductStatus', 'error')
+                })
+        },
+        async fetchSelectionProducts({ commit, dispatch }, selectionId) {
+            commit('setProductStatus', 'loading')
+
+            const apiUrl = `/selections/${selectionId}/products`
+
+            await axios
+                .get(apiUrl)
+                .then((response) => {
+                    commit('insertProducts', { products: response.data, method: 'set' })
+                    dispatch('procesSelectionProducts')
+                    commit('setProductStatus', 'success')
+                })
+                .catch((err) => {
+                    commit('setProductStatus', 'error')
+                })
+        },
+        async insertProducts({ commit, dispatch }, { file, products, addToState }) {
+            return new Promise((resolve, reject) => {
+                if (addToState) commit('insertProducts', { products, method: 'add' })
+                const apiUrl = `/files/${file.id}/products`
+                axios
+                    .post(apiUrl, {
+                        method: 'Add',
+                        products: products,
                     })
-                    productsToReturn = filteredByCategory
-                }
-                // Filter by delivery date
-                if (deliveryDates.length > 0) {
-                    const filteredByDeliveryDate = productsToReturn.filter(product => {
-                        return Array.from(deliveryDates).includes(product.delivery_date)
+                    .then((response) => {
+                        // Add the created ID to the product, if we only have 1 product
+                        if (products.length <= 1) {
+                            const product = products[0]
+                            product.id = response.data.added_product_id_map[product.datasource_id]
+                        }
+                        resolve(response)
                     })
-                    productsToReturn = filteredByDeliveryDate
-                }
-
-                // Filer by unread
-                if (unreadOnly) {
-                    const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                    productsToReturn = filteredByUnread
-                }
-            }
-
-            return productsToReturn
+                    .catch((err) => {
+                        reject(err)
+                        dispatch(
+                            'alerts/showAlert',
+                            'Something went wrong when creating the product. Please try again.',
+                            { root: true }
+                        )
+                    })
+            })
         },
     },
 
@@ -570,108 +328,64 @@ export default {
             commit('setCurrentProductId', id)
             commit('setSingleVisisble', true)
         },
-        instantiateNewProduct({ commit }, { id, fileId }) {
-            console.log('instantiating new product in store with id: ' + id + ', and file id: ' + fileId)
-            Product.insert({
-                data: { id: id, collection_id: fileId, title: 'Unnamed product' },
+        async updateProduct({ commit, dispatch }, product) {
+            return new Promise((resolve, reject) => {
+                const apiUrl = `/products/${product.id}`
+                axios
+                    .put(apiUrl, product)
+                    .then((response) => {
+                        commit('updateProduct', product)
+                        resolve(response)
+                    })
+                    .catch((err) => {
+                        reject(err)
+                        dispatch(
+                            'alerts/showAlert',
+                            'Something went wrong when updating the product. Please try again.',
+                            { root: true }
+                        )
+                    })
             })
-            // Product.insert({ data: product })
         },
-        async updateProduct({ commit }, product) {
-            console.log('updating product in store')
-            product.prices = JSON.stringify(product.prices)
-            product.color_variants = JSON.stringify(product.color_variants)
-            product.assortments = JSON.stringify(product.assortments)
-            commit('updateProduct', product)
+        async uploadImage({ commit, dispatch }, { file, product, variant, image, callback }) {
+            return new Promise(async (resolve, reject) => {
+                // First generate presigned URL we can put the image to from the API
+                const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
+                let presignedUrl
+                await axios
+                    .get(apiUrl)
+                    .then((response) => {
+                        presignedUrl = response.data
+                    })
+                    .catch((err) => {
+                        reject(err)
+                    })
 
-            await axios
-                .put(`/api/product`, {
-                    id: product.id,
-                    title: product.title,
-                    prices: product.prices,
-                    assortments: product.assortments,
-                    color_variants: product.color_variants,
-                    quantity: product.quantity,
-                    delivery_date: product.delivery_date,
-                    composition: product.composition,
-                    category: product.category,
-                    description: product.sale_description,
-                    collection_id: product.collection_id,
-                    datasource_id: product.datasource_id,
+                // Next configure a request to the presigned URL
+                const uploadUrl = presignedUrl.presigned_url
+
+                let blob = new Blob([image], { type: image.type })
+                let xhr = new XMLHttpRequest()
+                await new Promise((resolve, reject) => {
+                    xhr.open('PUT', uploadUrl)
+                    xhr.setRequestHeader('x-amz-acl', 'public-read')
+                    xhr.setRequestHeader('Content-Type', 'image/jpeg')
+                    xhr.upload.onprogress = (event) => {
+                        return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                    }
+                    xhr.onload = () => resolve(xhr)
+                    xhr.onerror = () => reject(xhr)
+                    xhr.send(blob)
                 })
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
-        async rotateImage({ commit }, file) {
-            // Upload images to Blob storage
-            let imageToReturn
-
-            const uploadApiUrl = `/api/product/rotate-img`
-            const axiosConfig = {
-                // headers: {
-                //     'Content-Type': 'multipart/form-data',
-                // },
-            }
-
-            // Append the file
-            let data = new FormData()
-            data.append('file', file)
-            console.log('Send rotate image request from store')
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log('returning image')
-                    imageToReturn = response.data
-                })
-                .catch(err => {
-                    imageToReturn = false
-                    console.log('error')
-                    console.log(err.response)
-                })
-            return imageToReturn
-        },
-        async uploadImages({ commit, dispatch }, { files, callback }) {
-            // Upload images to Blob storage
-            let uploadSucces = false
-            let uploadPercentage = 0
-
-            const uploadApiUrl = `/api/product/images`
-            const axiosConfig = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                onUploadProgress: progressEvent => {
-                    uploadPercentage = parseInt(Math.round((progressEvent.loaded / progressEvent.total) * 100))
-                    return callback(uploadPercentage)
-                },
-            }
-
-            // Append the files
-            let data = new FormData()
-            let count = 0
-            files.forEach(file => {
-                count++
-                data.append('files[' + count + ']', file.file, file.id)
+                    .then((response) => {
+                        // On success, set the image on the variant
+                        variant.image = presignedUrl.url
+                        resolve(response)
+                    })
+                    .catch((err) => {
+                        reject(err)
+                    })
             })
-            console.log(count + ' images sent to API from store')
-
-            await axios
-                .post(uploadApiUrl, data, axiosConfig)
-                .then(response => {
-                    console.log(response.data)
-                    uploadSucces = true
-                })
-                .catch(err => {
-                    console.log('error')
-                    console.log(err.response)
-                    uploadSucces = false
-                })
-            return uploadSucces
         },
         async deleteImages({ commit }, imagesToDelete) {
             await axios
@@ -680,31 +394,192 @@ export default {
                         ids: imagesToDelete,
                     },
                 })
-                .then(response => {
+                .then((response) => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err.response)
                 })
         },
-        async deleteProduct({ commit }, productId) {
-            console.log('Deleting product in store')
-
-            await axios
-                .delete(`/api/product`, {
-                    data: {
-                        id: productId,
+        async deleteProducts({ commit, dispatch }, { file, products }) {
+            return new Promise((resolve, reject) => {
+                commit('DELETE_PRODUCTS', products)
+                const apiUrl = `/files/${file.id}/products`
+                axios
+                    .post(apiUrl, {
+                        method: 'Remove',
+                        products: products,
+                    })
+                    .then((response) => {
+                        // Add the created ID to the product, if we only have 1 product
+                        resolve(response)
+                    })
+                    .catch((err) => {
+                        reject(err)
+                        // Re-add the products
+                        commit('insertProducts', { products, method: 'add' })
+                        dispatch(
+                            'alerts/showAlert',
+                            'Something went wrong when creating the product. Please try again.',
+                            { root: true }
+                        )
+                    })
+            })
+        },
+        procesSelectionProducts({ commit, state, rootGetters }) {
+            const authUser = rootGetters['auth/authUser']
+            const products = state.products
+            products.map((product) => {
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function () {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find((x) => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                        }
+                        // If nothing else worked, return the first available price
+                        return product.prices[0]
                     },
                 })
-                .then(response => {
-                    console.log('product deleted!')
-                    Product.delete(productId)
-                    console.log(response.data)
+
+                // Dynamically Calculated Actions
+                // Feedback Actions
+                Object.defineProperty(product, 'ins', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'In')
+                    },
                 })
-                .catch(err => {
-                    console.log(err.response)
-                    commit('alertError')
+                Object.defineProperty(product, 'outs', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Out')
+                    },
                 })
+                Object.defineProperty(product, 'focus', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'nds', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'None')
+                    },
+                })
+                // Alignment Actions
+                Object.defineProperty(product, 'alignmentIns', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentOuts', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentFocus', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentNds', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'None')
+                    },
+                })
+                // All Actions
+                Object.defineProperty(product, 'allIns', {
+                    get: function () {
+                        return product.ins.length + product.alignmentIns.length
+                    },
+                })
+                Object.defineProperty(product, 'allOuts', {
+                    get: function () {
+                        return product.outs.length + product.alignmentOuts.length
+                    },
+                })
+                Object.defineProperty(product, 'allFocus', {
+                    get: function () {
+                        return product.focus.length + product.alignmentFocus.length
+                    },
+                })
+                Object.defineProperty(product, 'allNds', {
+                    get: function () {
+                        return product.nds.length + product.alignmentNds.length
+                    },
+                })
+
+                // Hard Set Actions
+                // Feedback Actions
+                // Vue.set(
+                //     product,
+                //     'ins',
+                //     product.feedbacks.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'outs',
+                //     product.feedbacks.filter(x => x.action == 'Outs')
+                // )
+                // Vue.set(
+                //     product,
+                //     'focus',
+                //     product.feedbacks.filter(x => x.action == 'Focus')
+                // )
+                // Vue.set(
+                //     product,
+                //     'nds',
+                //     product.feedbacks.filter(x => x.action == 'None')
+                // )
+                // // Alignment Actions
+                // Vue.set(
+                //     product,
+                //     'alignmentIns',
+                //     product.actions.filter(x => x.action == 'In')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentOuts',
+                //     product.actions.filter(x => x.action == 'Outs')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentFocus',
+                //     product.actions.filter(x => x.action == 'Focus')
+                // )
+                // Vue.set(
+                //     product,
+                //     'alignmentNds',
+                //     product.actions.filter(x => x.action == 'None')
+                // )
+                // // All Actions
+                // Vue.set(product, 'allIns', product.ins.length + product.alignmentIns.length)
+                // Vue.set(product, 'allOuts', product.outs.length + product.alignmentOuts.length)
+                // Vue.set(product, 'allFocus', product.focus.length + product.alignmentFocus.length)
+                // Vue.set(product, 'allNds', product.nds.length + product.alignmentNds.length)
+
+                // Comments / Requests
+                Object.defineProperty(product, 'hasAuthUserRequest', {
+                    get: function () {
+                        return !!product.requests.find((x) => x.author_id == authUser.id)
+                    },
+                })
+                // Remove deleted comments
+                Vue.set(
+                    product,
+                    'comments',
+                    product.comments.filter((x) => !x.is_deleted)
+                )
+            })
         },
         instantiateProducts({ state, rootGetters }) {
             const authUser = rootGetters['persist/authUser']
@@ -790,35 +665,16 @@ export default {
             // Save the products to our state
             state.productsStatic = products
         },
-        instantiateProductNDs({ state, rootGetters }) {
-            const currentTask = rootGetters['persist/currentTask']
-            // Get the products from our state
-            const products = state.productsStatic
-            // Loop through the products and calculate their NDs
-            products.forEach(product => {
-                // Reset the products nds
-                product.nds = []
-
-                // START Find Not decideds NDs
-                if (currentTask.type == 'feedback') {
-                    // If type: Feedback -> Find all users with access to the task
-                    product.nds = JSON.parse(JSON.stringify(currentTask.users)).map(x => {
-                        x.task = currentTask
-                        return x
-                    })
-                } else {
-                    // If type = Alignment -> Find the parent tasks
-                    currentTask.parentTasks.forEach(parentTask => {
-                        // if parent type is feedback -> push users
-                        // else -> push task
-                        if (parentTask.type == 'feedback') {
-                            product.nds = product.nds.concat(
-                                JSON.parse(JSON.stringify(parentTask.users)).map(x => {
-                                    x.task = parentTask
-                                    return x
-                                })
-                            )
-                        } else product.nds.push(parentTask)
+        insertProducts(state, { products, method }) {
+            // Loop through the products and format their data as necessary
+            products.forEach((product) => {
+                // Cast datasource_if to a number
+                product.datasource_id = parseInt(product.datasource_id)
+                // Format delivery_date
+                if (product.delivery_date) {
+                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        month: 'long',
+                        year: 'numeric',
                     })
                 }
                 product.ndsTotal = product.nds.length
@@ -1003,137 +859,20 @@ export default {
             // Marks comments as focus
             dispatch('markCommentsAsFocus', { productId: product.id, productToUpdate: productToUpdate })
         },
-        updateActions({ commit, state, rootGetters, dispatch }, productId, staticProduct) {
-            const product = Product.query()
-                .with(['actions.task|user.teams'])
-                .find(productId)
-            const productToUpdate = staticProduct ? staticProduct : state.productsStatic.find(x => x.id == productId)
-
-            const currentTask = rootGetters['persist/currentTask']
-            const authUser = rootGetters['persist/authUser']
-            const userId = authUser.id
-            const inheritFromTask = currentTask.inheritFromTask
-
-            // Reset product action related properties
-            productToUpdate.ins = []
-            productToUpdate.outs = []
-            productToUpdate.focus = []
-            productToUpdate.outInFilter = false
-            productToUpdate.currentAction = null
-            productToUpdate.inheritedAction = null
-
-            // START Group actions by action type (DISTRIBUTION)
-            product.actions.forEach(action => {
-                // START Find OUT Products (Out by filter)
-                if (
-                    currentTask.filter_products_by_ids &&
-                    currentTask.filter_products_by_ids.includes(action.task_id) &&
-                    action.action == 0
-                )
-                    productToUpdate.outInFilter = action
-                // END Find OUT Products
-
-                // START Find current action for the product
-                if (currentTask.type == 'feedback') {
-                    if (action.user_id == userId && action.task_id == currentTask.id)
-                        productToUpdate.currentAction = action
-                } else {
-                    if (action.task_id == currentTask.id) productToUpdate.currentAction = action
-                }
-                // END Find current action for product
-
-                // START Find inherit from task
-                if (currentTask.inherit_from_id) {
-                    productToUpdate.inheritedAction = product.actions.find(
-                        x => x.task_id == currentTask.inherit_from_id
-                    )
-                }
-                // END
-
-                if (currentTask.type == 'decision' && inheritFromTask.type == 'alignment') {
-                    if (inheritFromTask.parentTasks.find(x => x.id == action.task_id)) {
-                        if (action.action == 2) {
-                            productToUpdate.focus.push(action)
-                        } else if (action.action == 1) {
-                            productToUpdate.ins.push(action)
-                        } else if (action.action == 0) {
-                            productToUpdate.outs.push(action)
-                        }
-                    }
-                } else if (currentTask.type == 'feedback') {
-                    if (action.task_id == currentTask.id) {
-                        if (action.action == 2) {
-                            productToUpdate.focus.push(action)
-                        } else if (action.action == 1) {
-                            productToUpdate.ins.push(action)
-                        } else if (action.action == 0) {
-                            productToUpdate.outs.push(action)
-                        }
-                    }
-                } else {
-                    currentTask.parentTasks.forEach(parentTask => {
-                        if (action.task_id == parentTask.id) {
-                            if (action.action == 2) {
-                                productToUpdate.focus.push(action)
-                            } else if (action.action == 1) {
-                                productToUpdate.ins.push(action)
-                            } else if (action.action == 0) {
-                                productToUpdate.outs.push(action)
-                            }
-                        }
-                    })
-                }
-                // START Subtract from NDs
-                if (productToUpdate.nds) {
-                    if (currentTask.type == 'feedback') {
-                        if (action.task_id == currentTask.id) {
-                            let NDUserIndex = productToUpdate.nds.findIndex(user => user.id == action.user_id)
-                            if (NDUserIndex >= 0) productToUpdate.nds.splice(NDUserIndex, 1)
-                        }
-                    } else {
-                        // If type is alignment
-                        currentTask.parentTasks.forEach(parentTask => {
-                            if (parentTask.type == 'feedback') {
-                                // If the parent is type feedback
-                                if (action.task_id == parentTask.id) {
-                                    let NDUserIndex = productToUpdate.nds.findIndex(user => user.id == action.user_id)
-                                    if (NDUserIndex >= 0) productToUpdate.nds.splice(NDUserIndex, 1)
-                                }
-                            } else {
-                                // If the parent is type alignment
-                                if (action.task_id == parentTask.id) {
-                                    let NDTaskIndex = productToUpdate.nds.findIndex(task => task.id == action.task_id)
-                                    if (NDTaskIndex >= 0) productToUpdate.nds.splice(NDTaskIndex, 1)
-                                }
-                            }
-                        })
-                    }
-                    // END Substract from NDs
-                }
+        DELETE_PRODUCTS(state, products) {
+            products.forEach((product) => {
+                const index = state.products.findIndex((x) => x.id == product.id)
+                state.products.splice(index, 1)
             })
-            // END Group actions by action type
-
-            // Mark new comments
-            dispatch('markNewComments', { product: product, productToUpdate: productToUpdate })
-
-            // Marks comments as focus
-            dispatch('markCommentsAsFocus', { productId: product.id, productToUpdate: productToUpdate })
         },
-    },
-
-    mutations: {
-        //Set the loading status of the app
-        setLoading(state, bool) {
-            state.loading = bool
+        setCurrentProduct(state, product) {
+            state.currentProduct = product
         },
-        setCurrentProductId(state, id) {
-            state.currentProductId = id
+        setCurrentFocusIndex(state, index) {
+            state.currentFocusIndex = index
         },
-        setAvailableProductIds(state, ids) {
-            state.availableProductIds = ids
-        },
-        setCurrentProductId(state, id) {
-            state.currentProductId = id
+        setAvailableProducts(state, products) {
+            state.availableProducts = products
         },
         updateSelectedCategories(state, payload) {
             state.selectedCategories = payload
@@ -1157,14 +896,128 @@ export default {
             state.productScope = productScope
         },
         updateProduct(state, product) {
-            product.updated_at = new Date()
-                .toISOString()
-                .slice(0, 19)
-                .replace('T', ' ')
-            Product.insert({ data: product })
+            // Replace the product with the new
+            let stateProduct = state.products.find((x) => x.id == product.id)
+            Object.assign(stateProduct, product)
+            // Check if we also need to update the current product
+            if (state.currentProduct && state.currentProduct.id == product.id) {
+                Object.assign(state.currentProduct, product)
+            }
         },
-        alertError: state => {
+        alertError: (state) => {
             window.alert('Network error. Please check your connection')
+        },
+        procesProducts: (state) => {
+            const products = state.products
+            products.map((product) => {
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function () {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find((x) => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                            else return product.prices[0]
+                        } else {
+                            return product.prices[0]
+                        }
+                    },
+                })
+            })
+        },
+        procesSelectionProducts: (state) => {
+            const products = state.products
+            products.map((product) => {
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function () {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find((x) => (x.currency = product.preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                        }
+                        // If nothing else worked, return the first available price
+                        return product.prices[0]
+                    },
+                })
+
+                // Actions
+                // Feedback Actions
+                Object.defineProperty(product, 'ins', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'outs', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'focus', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'nds', {
+                    get: function () {
+                        return product.feedbacks.filter((x) => x.action == 'None')
+                    },
+                })
+                // Alignment Actions
+                Object.defineProperty(product, 'alignmentIns', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentOuts', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentFocus', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentNds', {
+                    get: function () {
+                        return product.actions.filter((x) => x.action == 'None')
+                    },
+                })
+
+                // Comments / Requests
+                Object.defineProperty(product, 'hasAuthUserRequest', {
+                    get: function () {
+                        return !!product.requests.find((x) => x.author_id == 'None')
+                    },
+                })
+                // Remove deleted comments
+                Vue.set(
+                    product,
+                    'comments',
+                    product.comments.filter((x) => !x.is_deleted)
+                )
+            })
         },
     },
 }
