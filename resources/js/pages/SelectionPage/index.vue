@@ -50,7 +50,7 @@ export default {
         this.fetchSelectionProducts(selectionId)
 
         const selections = await this.fetchSelections({fileId})
-        this.filterSelectionsByAvailabilityForAlignment(selections)
+        await this.filterSelectionsByAvailabilityForAlignment(selections)
 
         this.loadingData = false
     },

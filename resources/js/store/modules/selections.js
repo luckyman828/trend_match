@@ -32,16 +32,16 @@ export default {
     },
 
     getters: {
-        loadingSelections: (state) => state.loading,
-        selectionsStatus: (state) => state.status,
-        currentSelectionStatus: (state) => state.currentSelectionStatus,
-        selectionUsersStatus: (state) => state.usersStatus,
-        selectionTeamsStatus: (state) => state.teamsStatus,
-        currentSelection: (state) => state.currentSelection,
-        getCurrentSelections: (state) => state.currentSelections,
-        getSelections: (state) => state.selections,
-        getSelectionsAvailableForAlignment: (state) => state.selectionsAvailableForAlignment,
-        currentSelectionMode: (state) => {
+        loadingSelections: state => state.loading,
+        selectionsStatus: state => state.status,
+        currentSelectionStatus: state => state.currentSelectionStatus,
+        selectionUsersStatus: state => state.usersStatus,
+        selectionTeamsStatus: state => state.teamsStatus,
+        currentSelection: state => state.currentSelection,
+        getCurrentSelections: state => state.currentSelections,
+        getSelections: state => state.selections,
+        getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        currentSelectionMode: state => {
             if (state.currentSelection) {
                 return state.currentSelection.your_role == 'Member'
                     ? 'Feedback'
@@ -54,8 +54,8 @@ export default {
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
-        selections: (state) => state.selections,
-        selectionsTree: (state) => {
+        selections: state => state.selections,
+        selectionsTree: state => {
             const list = state.selections
             let map = {},
                 node,
@@ -76,17 +76,17 @@ export default {
             }
             return roots
         },
-        availableSelectionRoles: (state) => {
+        availableSelectionRoles: state => {
             return state.availableSelectionRoles
         },
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
         },
-        getAuthUserHasSelectionEditAccess: (state, getters, rootState, rootGetters) => (selection) => {
+        getAuthUserHasSelectionEditAccess: (state, getters, rootState, rootGetters) => selection => {
             const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
             return authUserWorkspaceRole == 'Admin' || selection.your_role == 'Owner'
         },
-        getAuthUserSelectionWriteAccess: () => (selection) => {
+        getAuthUserSelectionWriteAccess: () => selection => {
             return {
                 actions: {
                     hasAccess: selection.is_open && selection.your_role != 'Approver',
@@ -113,7 +113,7 @@ export default {
                 let selections
                 await axios
                     .get(apiUrl)
-                    .then((response) => {
+                    .then(response => {
                         selections = response.data
                         // Process the selections
                         commit('PROCESS_SELECTIONS', selections)
@@ -122,7 +122,7 @@ export default {
                         }
                         commit('setStatus', 'success')
                     })
-                    .catch((err) => {
+                    .catch(err => {
                         commit('setStatus', 'error')
                     })
                 commit('setLoading', false)
@@ -132,7 +132,7 @@ export default {
         async filterSelectionsByAvailabilityForAlignment({ commit, getters, state, dispatch }, selections) {
             const selectionsToReturn = []
             await Promise.all(
-                selections.map(async (selection) => {
+                selections.map(async selection => {
                     const fetchedSelection = await dispatch('fetchSelection', {
                         selectionId: selection.id,
                         addToState: false,
@@ -140,7 +140,7 @@ export default {
                     selectionsToReturn.push(fetchedSelection)
                 })
             )
-            const selectionsFiltered = selectionsToReturn.filter((selection) => {
+            const selectionsFiltered = selectionsToReturn.filter(selection => {
                 return (
                     (getters.getAuthUserHasSelectionEditAccess(selection) || selection.is_visible) &&
                     selection.your_role == 'Owner'
@@ -156,7 +156,7 @@ export default {
             let selection
             await axios
                 .get(apiUrl)
-                .then((response) => {
+                .then(response => {
                     selection = response.data
                     commit('PROCESS_SELECTIONS', [selection])
                     if (addToState) {
@@ -165,7 +165,7 @@ export default {
                     }
                     commit('setCurrentSelectionStatus', 'success')
                 })
-                .catch((err) => {
+                .catch(err => {
                     commit('setCurrentSelectionStatus', 'error')
                 })
             return selection
@@ -174,7 +174,7 @@ export default {
             // Get users for selection
             const apiUrl = `/selections/${selection.id}/metadata`
             let settings
-            await axios.get(apiUrl).then((response) => {
+            await axios.get(apiUrl).then(response => {
                 settings = response.data
                 commit('setSelectionSettings', { selection, settings })
             })
@@ -184,7 +184,7 @@ export default {
             // Get users for selection
             commit('setUsersStatus', 'loading')
             const apiUrl = `/selections/${selection.id}/users`
-            await axios.get(apiUrl).then((response) => {
+            await axios.get(apiUrl).then(response => {
                 // Vue.set(selection, 'users', response.data)
                 commit('addUsersToSelection', { selection, users: response.data })
             })
@@ -195,7 +195,7 @@ export default {
             commit('setTeamsStatus', 'loading')
             let teams = []
             const apiUrl = `/selections/${selection.id}/teams`
-            await axios.get(apiUrl).then((response) => {
+            await axios.get(apiUrl).then(response => {
                 teams = response.data
                 // Commit mutation to state
                 commit('addTeamsToSelection', { selection, teams })
@@ -212,7 +212,7 @@ export default {
             } else {
                 apiUrl = `/selections/${selection.parent_id}/children`
             }
-            await axios.post(apiUrl, selection).then(async (response) => {
+            await axios.post(apiUrl, selection).then(async response => {
                 selection.id = response.data.id
                 commit('PROCESS_SELECTIONS', [selection])
                 if (addToState) {
@@ -241,7 +241,7 @@ export default {
                 method: requestMethod,
                 url: apiUrl,
                 data: requestBody,
-            }).then(async (response) => {
+            }).then(async response => {
                 // Set the selections ID if not already set
                 if (!selection.id) selection.id = response.data.id
             })
@@ -251,7 +251,7 @@ export default {
             console.log(users)
             await commit('addUsersToSelection', {
                 selection,
-                users: users.map((user) => {
+                users: users.map(user => {
                     if (ignoreRole) user.role = 'Member'
                     return user
                 }),
@@ -260,7 +260,7 @@ export default {
             const apiUrl = `/selections/${selection.id}/users`
             await axios.post(apiUrl, {
                 method: 'Add',
-                users: users.map((user) => {
+                users: users.map(user => {
                     return {
                         id: user.id,
                         role: ignoreRole ? 'Member' : user.role,
@@ -273,7 +273,7 @@ export default {
             // Commit mutation to state
             await commit('addUsersToSelection', {
                 selection,
-                users: users.map((user) => {
+                users: users.map(user => {
                     user.role = 'Member'
                     return user
                 }),
@@ -282,7 +282,7 @@ export default {
             const apiUrl = `/selections/${selection.id}/users`
             await axios.post(apiUrl, {
                 method: 'Remove',
-                users: users.map((user) => {
+                users: users.map(user => {
                     return {
                         id: user.id,
                         role: 'Member',
@@ -294,7 +294,7 @@ export default {
         async updateSelectionSettings({ commit, dispatch }, selection) {
             // Send request to API
             const apiUrl = `/selections/${selection.id}/metadata`
-            await axios.put(apiUrl, selection.settings).catch((err) => {
+            await axios.put(apiUrl, selection.settings).catch(err => {
                 dispatch(
                     'alerts/showAlert',
                     'Something went wrong trying to save selection settings. Please try again.',
@@ -309,7 +309,7 @@ export default {
             const apiUrl = `/selections/${selection.id}/users`
             await axios.post(apiUrl, {
                 method: 'Add',
-                users: users.map((x) => {
+                users: users.map(x => {
                     return {
                         id: x.id,
                         role: x.role,
@@ -325,7 +325,7 @@ export default {
             // Users added through a team have to be denied. Manually added users can simply be removed
             const usersToDeny = []
             const usersToRemove = []
-            users.forEach((user) => {
+            users.forEach(user => {
                 if (user.inherit_from_teams) {
                     usersToDeny.push(user)
                 } else {
@@ -337,7 +337,7 @@ export default {
             if (usersToRemove.length > 0) {
                 await axios.post(apiUrl, {
                     method: 'Remove',
-                    users: usersToRemove.map((x) => {
+                    users: usersToRemove.map(x => {
                         return {
                             id: x.id,
                         }
@@ -347,7 +347,7 @@ export default {
             if (usersToDeny.length > 0) {
                 await axios.post(apiUrl, {
                     method: 'Add',
-                    users: usersToDeny.map((x) => {
+                    users: usersToDeny.map(x => {
                         return {
                             id: x.id,
                             role: 'Denied',
@@ -364,7 +364,7 @@ export default {
             const apiUrl = `/selections/${selection.id}/teams`
             await axios.post(apiUrl, {
                 method: 'Add',
-                team_ids: teams.map((x) => x.id),
+                team_ids: teams.map(x => x.id),
             })
             dispatch('calculateSelectionUsers', selection)
         },
@@ -375,7 +375,7 @@ export default {
             const apiUrl = `/selections/${selection.id}/teams`
             await axios.post(apiUrl, {
                 method: 'Remove',
-                team_ids: teams.map((x) => x.id),
+                team_ids: teams.map(x => x.id),
             })
             dispatch('calculateSelectionUsers', selection)
         },
@@ -501,11 +501,11 @@ export default {
             }
         },
         REMOVE_SELECTION(state, selection) {
-            const index = state.selections.findIndex((x) => x.id == selection.id)
+            const index = state.selections.findIndex(x => x.id == selection.id)
             state.selections.splice(index, 1)
         },
         updateSelection(state, selection) {
-            const stateSelection = state.selections.find((x) => x.id == selection.id)
+            const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) {
                 Object.assign(stateSelection, selection)
             }
@@ -523,9 +523,9 @@ export default {
         },
         updateSelectionUsers(state, { selection, users }) {
             // Loop through our users
-            users.forEach((user) => {
+            users.forEach(user => {
                 // If the user exists edit it, else add it
-                const existingUser = selection.users.find((x) => x.id == user.id)
+                const existingUser = selection.users.find(x => x.id == user.id)
                 if (existingUser) {
                     existingUser.role = user.role
                 } else {
@@ -535,8 +535,8 @@ export default {
         },
         removeUsersFromSelection(state, { selection, users }) {
             // Loop through the users and remove them
-            users.forEach((user) => {
-                const userIndex = selection.users.findIndex((x) => x.id == user.id)
+            users.forEach(user => {
+                const userIndex = selection.users.findIndex(x => x.id == user.id)
                 selection.users.splice(userIndex, 1)
             })
         },
@@ -549,31 +549,31 @@ export default {
             }
             selection.team_count = selection.teams.length
             // Check if the current selection also exists in our selections array. Then update that as well
-            const stateSelection = state.selections.find((x) => x.id == selection.id)
+            const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) stateSelection.team_count = selection.teams.length
         },
         removeTeamsFromSelection(state, { selection, teams }) {
-            teams.forEach((team) => {
-                const teamIndex = selection.teams.findIndex((x) => x.id == team.id)
+            teams.forEach(team => {
+                const teamIndex = selection.teams.findIndex(x => x.id == team.id)
                 selection.teams.splice(teamIndex, 1)
             })
             selection.team_count = selection.teams.length
             // Check if the current selection also exists in our selections array. Then update that as well
-            const stateSelection = state.selections.find((x) => x.id == selection.id)
+            const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) stateSelection.team_count = selection.teams.length
         },
         setSelectionUsers(state, { selection, users }) {
             Vue.set(selection, 'users', users)
             Vue.set(selection, 'user_count', users.length)
             // Also update the selection if it exists in our state
-            const stateSelection = state.selections.find((x) => x.id == selection.id)
+            const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) {
                 Vue.set(stateSelection, 'users', users)
                 Vue.set(stateSelection, 'user_count', users.length)
             }
         },
         PROCESS_SELECTIONS(state, selections) {
-            selections.map((selection) => {
+            selections.map(selection => {
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
                     get: () => {

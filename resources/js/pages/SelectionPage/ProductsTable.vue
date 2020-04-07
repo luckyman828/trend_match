@@ -246,9 +246,10 @@ export default {
             const selections = this.selectedSelections
             // Fetch data for all the selections
             // Process all their data
+            this.SET_CURRENT_SELECTIONS(selections)
             await this.fetchProductsForMultipleSelections(selections)
             // Set them as current
-            this.SET_CURRENT_SELECTIONS(selections)
+            this.selectedSelections = selections
         },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
@@ -257,6 +258,11 @@ export default {
         },
     },
     created () {
+        // Find the corresponding selection in our available selections
+        this.currentSelections.forEach(selection => {
+            const selectionToPush = this.availableSelections.find(x => x.id == selection.id)
+            if (selectionToPush) this.selectedSelections.push(selectionToPush)
+        })
 
         // Setup event broadcast listening
 
