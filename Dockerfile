@@ -12,3 +12,4 @@ USER nobody
 COPY --chown=nobody . /var/www/html/
 
 ENTRYPOINT [ "./entry-point.sh" ]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
