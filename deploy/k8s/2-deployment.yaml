@@ -33,6 +33,6 @@ spec:
           configMap: 
             name: dashboard-env
       imagePullSecrets:
-        - name: regcred
+        - name: dashboard-regcred
       
       terminationGracePeriodSeconds: 30
