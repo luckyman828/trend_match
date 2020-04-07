@@ -11,4 +11,4 @@ USER nobody
 
 COPY --chown=nobody . /var/www/html/
 
-ENTRYPOINT [ "entry-point.sh" ]
+ENTRYPOINT [ "./entry-point.sh" ]
