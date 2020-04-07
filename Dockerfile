@@ -8,6 +8,7 @@ COPY deployments/nginx.conf /etc/nginx/nginx.conf
 WORKDIR /var/www/html
 
 USER nobody
+RUN rm .env.example
 
 COPY --chown=nobody . /var/www/html/
 
