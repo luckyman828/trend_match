@@ -13,4 +13,4 @@ COPY --chown=nobody . /var/www/html/
 
 RUN php artisan config:cache && php artisan route:cache
 
-ENTRYPOINT [ "./entry-point.sh" ]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
