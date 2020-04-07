@@ -11,4 +11,6 @@ USER nobody
 
 COPY --chown=nobody . /var/www/html/
 
+RUN php artisan config:clear
+
 ENTRYPOINT [ "./entry-point.sh" ]
