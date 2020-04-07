@@ -5,8 +5,17 @@
         <div class="container">
             <div class="inner">
                 <img class="logo" src="/images/kollekt-logo.svg">
-                <h2>Log in</h2>
-                <h3>Welcome! Please login to your account.</h3>
+                <h2>Welcome to Kollekt 1.0</h2>
+                <h3>Please login to your account.</h3>
+                <div class="notice-box">
+                    <strong>
+                        First time visiting?
+                    </strong>
+                    <span>
+                        Contact <a href="mailto:david@kollekt.dk">david@kollekt.dk</a>, 
+                        <br>or call <a href="tel:+4526399574">+45 26 39 95 74</a> to get set up.
+                    </span>
+                </div>
                 <form @submit.prevent="attemptLogin">
                     <div class="form-element">
                         <label for="email">E-mail Address</label>
@@ -81,6 +90,24 @@ export default {
 @import '~@/_variables.scss';
 
 .login-screen {
+    .notice-box {
+        border-radius: 4px;
+        padding: 16px;
+        margin-bottom: -32px;
+        box-shadow: 0 3px 6px rgba(0,0,0,.2);
+        background: $primary;
+        color: white;
+        strong {
+            color: white;
+            display: block;
+            margin-bottom: 8px;
+        }
+        a {
+            text-decoration: underline;
+            font-weight: 500;
+            color: white;
+        }
+    }
     background: $dark05;
     min-height: 100vh;
     position: relative;
