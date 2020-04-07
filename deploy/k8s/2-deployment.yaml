@@ -24,14 +24,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-          volumeMounts:
-            - name: env-file
-              mountPath: /var/www/html/.env
-              subPath: env
-      volumes:
-        - name: env-file
-          configMap: 
-            name: dashboard-env
       imagePullSecrets:
         - name: dashboard-regcred
       
