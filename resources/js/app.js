@@ -4,8 +4,6 @@ window.Vue = require('vue')
 
 window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-console.log('setting base url')
-console.log(process.env.MIX_API_BASE_URL)
 window.axios.defaults.baseURL = process.env.MIX_API_BASE_URL
 
 import store from './store/index'
