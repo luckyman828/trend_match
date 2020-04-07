@@ -11,9 +11,9 @@ export default {
     },
 
     getters: {
-        isAuthenticated: state => !!state.token,
-        authStatus: state => state.status,
-        authUser: state => state.user,
+        isAuthenticated: (state) => !!state.token,
+        authStatus: (state) => state.status,
+        authUser: (state) => state.user,
     },
 
     actions: {
@@ -27,7 +27,7 @@ export default {
                     email,
                     password,
                 })
-                .then(response => {
+                .then((response) => {
                     // Save the token to our state
                     const token = response.data.token.access_token
                     // Store the token in localstorage
@@ -41,7 +41,7 @@ export default {
                     state.status = 'success'
                     success = true
                 })
-                .catch(err => {
+                .catch((err) => {
                     state.status = 'error'
                     success = false
                 })
@@ -68,14 +68,14 @@ export default {
             const apiUrl = `/auth/me`
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then((response) => {
                     // Save the authenticated user
                     commit('setAuthUser', response.data)
                     // return success
                     state.status = 'success'
                     response = response
                 })
-                .catch(err => {
+                .catch((err) => {
                     state.status = 'error'
                     error = err
                 })

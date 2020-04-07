@@ -1,12 +1,15 @@
 // require('./bootstrap')
 
 window.Vue = require('vue')
-import store from './store/index'
-import router from './router'
 
 window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+console.log('setting base url')
+console.log(process.env.MIX_API_BASE_URL)
 window.axios.defaults.baseURL = process.env.MIX_API_BASE_URL
+
+import store from './store/index'
+import router from './router'
 
 // import VueDragscroll from 'vue-dragscroll'
 // Vue.use(VueDragscroll)
