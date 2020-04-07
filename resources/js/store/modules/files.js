@@ -15,24 +15,24 @@ export default {
     },
 
     getters: {
-        loadingFiles: state => state.loading,
-        filesStatus: state => state.status,
-        currentFile: state => state.currentFile,
-        currentFolderId: state => state.currentFolderId,
-        currentFolder: state => state.currentFolder,
-        files: state => state.files,
-        allFiles: state => state.allFiles,
-        nextFile: state => {
+        loadingFiles: (state) => state.loading,
+        filesStatus: (state) => state.status,
+        currentFile: (state) => state.currentFile,
+        currentFolderId: (state) => state.currentFolderId,
+        currentFolder: (state) => state.currentFolder,
+        files: (state) => state.files,
+        allFiles: (state) => state.allFiles,
+        nextFile: (state) => {
             // Find the index of the current file and add 1
-            const index = state.files.findIndex(x => x.id == state.currentFile.id)
+            const index = state.files.findIndex((x) => x.id == state.currentFile.id)
             // Check that the current file is not the last in the array
             if (index + 1 < state.files.length) {
                 return state.files[index + 1]
             }
         },
-        prevFile: state => {
+        prevFile: (state) => {
             // Find the index of the current file and add 1
-            const index = state.files.findIndex(x => x.id == state.currentFile.id)
+            const index = state.files.findIndex((x) => x.id == state.currentFile.id)
             // Check that the current file is not the first in the array
             if (index > 0) {
                 return state.files[index - 1]
@@ -69,7 +69,7 @@ export default {
             const apiUrl = `/workspaces/${workspaceId}/files/flat`
 
             let files
-            await axios.get(`${apiUrl}`).then(response => {
+            await axios.get(`${apiUrl}`).then((response) => {
                 state.allFiles = response.data
                 files = response.data
             })
@@ -83,12 +83,12 @@ export default {
             let file
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then((response) => {
                     file = response.data
                     commit('setCurrentFile', file)
                     commit('setFilesStatus', 'success')
                 })
-                .catch(err => {
+                .catch((err) => {
                     commit('setFilesStatus', 'error')
                 })
             return file
@@ -98,10 +98,10 @@ export default {
             let folder
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then((response) => {
                     folder = response.data
                 })
-                .catch(err => {})
+                .catch((err) => {})
             return folder
         },
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
@@ -113,7 +113,7 @@ export default {
             if (folder) {
                 apiUrl = `/files/${folder.id}/children`
             }
-            await axios.get(apiUrl).then(response => {
+            await axios.get(apiUrl).then((response) => {
                 Vue.set(state, 'files', response.data)
                 commit('setCurrentFolder', folder)
             })
@@ -121,7 +121,7 @@ export default {
         async fetchFileOwners({ commit, state }, file) {
             // Get owners for file
             const apiUrl = `/files/${file.id}/users`
-            await axios.get(apiUrl).then(response => {
+            await axios.get(apiUrl).then((response) => {
                 Vue.set(file, 'owners', response.data)
             })
         },
@@ -151,12 +151,12 @@ export default {
                 url: apiUrl,
                 data: requestBody,
             })
-                .then(async response => {
+                .then(async (response) => {
                     console.log(response.data)
                     // Set the files ID if not already set
                     if (!file.id) file.id = response.data.id
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err)
                 })
         },
@@ -166,10 +166,10 @@ export default {
             const apiUrl = `/files/${fileId}`
             await axios
                 .delete(apiUrl)
-                .then(response => {
+                .then((response) => {
                     console.log(response.data)
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err.response)
                 })
         },
@@ -196,12 +196,12 @@ export default {
                     start_date: startDate,
                     end_date: endDate,
                 })
-                .then(response => {
+                .then((response) => {
                     console.log(response.data)
                     // Commit to store
                     Collection.insert({ data: response.data })
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err.response)
                 })
         },
@@ -209,7 +209,7 @@ export default {
             commit('addOwnersToFile', { file, users })
 
             // Loop through the users and post them
-            users.forEach(user => {
+            users.forEach((user) => {
                 const apiUrl = `/files/${file.id}/users/${user.id}`
                 axios.put(apiUrl)
             })
@@ -252,16 +252,16 @@ export default {
         },
         updateFile(state, file) {
             // Remove unsaved files
-            const oldFile = state.files.find(x => x.id == file.id)
+            const oldFile = state.files.find((x) => x.id == file.id)
             Object.assign(oldFile, file)
         },
         deleteFile(state, fileId) {
             // Remove the deleted item from the current array
-            const index = state.files.findIndex(x => x.id == fileId)
+            const index = state.files.findIndex((x) => x.id == fileId)
             state.files.splice(index, 1)
         },
         removeUnsavedFiles(state) {
-            state.files = state.files.filter(x => x.id != null)
+            state.files = state.files.filter((x) => x.id != null)
         },
         setAvailableFileIds(state, fileIds) {
             state.availableFileIds = fileIds
@@ -276,7 +276,7 @@ export default {
             Vue.set(file, 'owner_count', file.owners.length)
         },
         removeUserFromFile(state, { file, user }) {
-            const userIndex = file.owners.findIndex(x => x.id == user.id)
+            const userIndex = file.owners.findIndex((x) => x.id == user.id)
             file.owners.splice(userIndex, 1)
             // Update user owner count
             Vue.set(file, 'owner_count', file.owners.length)
@@ -285,7 +285,7 @@ export default {
             file.approvers = file.approvers.concat(usersToAdd)
         },
         removeApproverFromFile(state, { file, user }) {
-            const userIndex = file.approvers.findIndex(x => x.id == user.id)
+            const userIndex = file.approvers.findIndex((x) => x.id == user.id)
             file.approvers.splice(userIndex, 1)
         },
     },
