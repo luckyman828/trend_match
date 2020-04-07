@@ -12,7 +12,7 @@
                 value="nds" @change="setCurrentProductFilter($event)"/>
 
                 <!-- Selection Selector -->
-                <div class="selection-selector">
+                <div class="selection-selector" v-if="currentSelectionMode == 'Alignment'">
                     <v-popover trigger="click">
                         <button class="white">
                             <!-- <i class="fas primary" :class="currentSelections.length > 1 ? 'fa-users-class' : 'fa-user'"></i> -->
@@ -180,7 +180,7 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
         ...mapState('products', {stateProducts: 'products'}),
         currentSelections() {
             return this.getCurrentSelections
