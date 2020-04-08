@@ -165,7 +165,7 @@ export default{
             })
             
             // Get some snowflake IDs now we're at it
-            this.getUids()
+            // this.getUids()
         }
         // this.$router.afterEach((to, from, next) => {
         //     console.log('router')
