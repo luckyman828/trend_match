@@ -55,7 +55,7 @@ jobs:
         container-registry-url: reg.trendmatch.dk
         container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
         container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        secret-name: regcred
+        secret-name: dashboard-regcred
 
     - uses: cschleiden/replace-tokens@v1
       with:
@@ -77,4 +77,4 @@ jobs:
         images: |
           reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
         imagePullSecrets: |
-          regcred  
+          dashboard-regcred

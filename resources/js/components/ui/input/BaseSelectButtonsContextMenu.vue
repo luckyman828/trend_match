@@ -75,7 +75,7 @@ export default {
 ::v-deep {
     .body {
         overflow: hidden;
-        height: 100vh;
+        // height: 100vh;
         .item-group {
             height: 100%;
             padding: 0;
@@ -88,6 +88,7 @@ export default {
     }
     .select-buttons .wrapper {
         max-height: 340px;
+        padding-bottom: 40px;
     }
 }
 </style>

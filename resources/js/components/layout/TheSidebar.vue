@@ -7,7 +7,20 @@
             <router-link to="/users" class="link"><i class="fas fa-user"></i> Users</router-link>
       </div>
       <div class="bottom-items">
-        <BaseDropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="workspaces.length > 1">
+        <v-popover placement="right" trigger="click">
+            <div class="link">
+                <i class="fas fa-building"></i>
+                <span>{{currentWorkspace.title | truncate(12)}}</span>
+            </div>
+            <template slot="popover">
+                <BasePopoverHeader>Choose Workspace</BasePopoverHeader>
+                <BaseSelectButtons type="radio" :options="workspaces" :value="currentWorkspaceIndex"
+                optionNameKey="title" optionValueKey="index" :submitOnChange="true"
+                v-close-popover
+                @submit="setCurrentWorkspaceIndex($event)"/>
+            </template>
+        </v-popover>
+        <!-- <BaseDropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="workspaces.length > 1">
             <template v-slot:button="slotProps">
               <div class="link" @click="slotProps.toggle">
                   <i class="fas fa-building"></i>
@@ -22,7 +35,7 @@
                 optionNameKey="title" optionValueKey="index" :submitOnChange="true"
                 @submit="setCurrentWorkspaceIndex($event); slotProps.toggle()"/>
             </template>
-        </BaseDropdown>
+        </BaseDropdown> -->
       </div>
     </div>
     <div class="bottom-drawer" @click="drawerExpanded = !drawerExpanded" :class="{collapsed: !drawerExpanded}">
