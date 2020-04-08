@@ -14,7 +14,7 @@
     <p>In short there are 3 important points.</p>
     <ul>
     <li>As a company we are obligated to tell you what personal data we collect, why we collect it and how we use it, and who else has access to it</li>
-    <li>As an individual you may at any time request to know what data we have on you, and request that it is deleted. Do this by sending an email to <a href="mailto:Simon@trendmatch.dk">Simon@trendmatch.dk</a></li>
+    <li>As an individual you may at any time request to know what data we have on you, and request that it is deleted. Do this by sending an email to <a href="mailto:Simon@kollekt.dk">Simon@kollekt.dk</a></li>
     <li>As a company we are obliged to have a plan in place in case of a data leak, and to notify the involved parties as soon as we realize the leak.</li>
     </ul>
     <p><strong>Information We Collect and How We Use It</strong></p>
@@ -56,7 +56,7 @@
     <p><strong>Changes to This Privacy Policy</strong></p>
     <p>This Privacy Policy is effective as of the date stated at the top of this Privacy Policy. We may change this Privacy Policy from time to time and will post any changes on the Website or notify you via e-mail, at our option, as soon as they go into effect. By using the Website, App or the Service after we make any such changes to this Privacy Policy, you are deemed to have accepted such changes. Please refer to this Privacy Policy on a regular basis.</p>
     <p><strong>How to Contact Us</strong></p>
-    <p>If you have questions about this Privacy Policy, please e-mail us at <a href="mailto:simon@trendmatch.dk">simon@trendmatch.dk</a></p>
+    <p>If you have questions about this Privacy Policy, please e-mail us at <a href="mailto:simon@kollekt.dk">simon@kollekt.dk</a></p>
 
 </div>
 @endsection
