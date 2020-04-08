@@ -17,6 +17,7 @@ jobs:
       with:
         args: install --no-dev
 
+    - run: echo '${{ secrets.PRD_ENV }}' > .env
     - name: Build vuejs
       uses: actions/setup-node@v1
       with:
