@@ -14,6 +14,9 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
+                        <SelectionSelector v-if="currentSelectionMode == 'Alignment'"/>
+                    </div>
+                    <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                         :disabled="currentSelectionMode == 'Approval'" 
                         v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
@@ -143,6 +146,7 @@ import { mapActions, mapGetters } from 'vuex'
 import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
+import SelectionSelector from './SelectionSelector'
 import variantImage from '../../../mixins/variantImage'
 
 export default {
@@ -158,6 +162,7 @@ export default {
         CommentsSection,
         DistributionSection,
         RequestsSection,
+        SelectionSelector,
     },
     data: function () { return {
             currentImgIndex: 0,
@@ -180,10 +185,13 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
-        ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionMode', 'currentSelectionModeAction']),
+        ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction']),
         product () {
             return this.currentProduct
         },
+        currentSelection () { return this.getCurrentPDPSelection },
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
+        currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
         currentAction () {
             return this.currentSelectionModeAction
         },

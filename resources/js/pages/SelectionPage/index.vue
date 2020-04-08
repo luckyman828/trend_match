@@ -43,12 +43,14 @@ export default {
         const fileId = this.$route.params.fileId
         this.fetchFile(fileId)
 
-        // Fetch selection data
+        // Fetch current selection
         const selectionId = this.$route.params.selectionId
-        let selection
-        selection = await this.fetchSelection({selectionId}),
-        this.fetchSelectionProducts(selectionId)
+        const selection = await this.fetchSelection({selectionId})
 
+        // Fetch selection products
+        await this.fetchSelectionProducts({selections: [selection], addToState: true})
+
+        // Fetch selections that are available for alignment for the auth user
         const selections = await this.fetchSelections({fileId})
         await this.filterSelectionsByAvailabilityForAlignment(selections)
 

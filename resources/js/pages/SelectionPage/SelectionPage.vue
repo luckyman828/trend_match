@@ -1,12 +1,9 @@
 <template>
     <div class="subfile">
         <ThePageHeader :title="`${currentFile.name}: 
-        ${!currentSelections[0].is_open ? '[Locked]' : ''} ${currentSelections[0].name || 'Untitled Selection'
+        ${!currentSelection.is_open ? '[Locked]' : ''} ${currentSelection.name || 'Untitled Selection'
         }${currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}: 
-        ${selection.your_role == 'Owner' ? 'Alignment' 
-        : selection.your_role == 'Approver' ? 'Approval'
-        : selection.your_role == 'Member' ? 'Feedback' 
-        : 'Access Denied'}`"/>
+        ${currentSelectionMode || 'Access Denied'}`"/>
 
         <!-- Access denied -->
         <template v-if="!selection.your_role">
@@ -66,7 +63,7 @@ export default{
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelections', 'currentSelectionMode', 'currentSelectionModeAction']),
         ...mapGetters('auth', ['authUser']),
         selection() {
-            return this.currentSelections[0]
+            return this.currentSelection
         },
         currentSelections() {
             return this.getCurrentSelections

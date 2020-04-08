@@ -12,34 +12,7 @@
                 value="nds" @change="setCurrentProductFilter($event)"/>
 
                 <!-- Selection Selector -->
-                <div class="selection-selector" v-if="currentSelectionMode == 'Alignment'">
-                    <v-popover trigger="click">
-                        <button class="white">
-                            <!-- <i class="fas primary" :class="currentSelections.length > 1 ? 'fa-users-class' : 'fa-user'"></i> -->
-                            <i class="fas primary fa-users-class"></i>
-                            <span>{{currentSelections[0].name}} {{`${currentSelections.length > 1 ? '+ ' + Math.abs(currentSelections.length - 1) : ''}`}}</span>
-                            <i class="fas fa-caret-down"></i>
-                        </button>
-                        <template slot="popover">
-                            <BaseSelectButton v-for="theSelection in availableSelections" :key="theSelection.id"
-                            :modelValue="theSelection" v-model="selectedSelections">
-                                <i v-if="!theSelection.is_visible" class="far fa-eye-slash" style="margin-right: 4px;"
-                                v-tooltip="'Selection is <strong>Hidden</strong>. You can still make new input, even though the selection is hidden'"></i>
-                                <i v-if="!theSelection.is_open" class="far fa-lock" style="margin-right: 4px;"
-                                v-tooltip="'Selection is <strong>Locked</strong>. You can view input from a locked selection, but not make any new'"></i>
-                                {{theSelection.name}}
-                            </BaseSelectButton>
-                            <div class="item-group actions">
-                                <button class="primary" v-close-popover @click="onSetCurrentSelections"><span>Apply</span></button>
-                                <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
-                            </div>
-                        </template>
-                    </v-popover>
-                    
-                    <!-- <button class="white">
-                        <i class="far fa-user"></i>
-                    </button> -->
-                </div>
+                <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment'"/>
                 <!-- Selection Selector Ends -->
 
             </template>
@@ -156,6 +129,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ProductsTableRow from './ProductsTableRow'
+import MultipleSelectionSelector from './MultipleSelectionSelector'
 import sortArray from '../../mixins/sortArray'
 
 export default {
@@ -171,6 +145,7 @@ export default {
     ],
     components: {
         ProductsTableRow,
+        MultipleSelectionSelector,
     },
     data: function() { return {
         sortKey: 'datasource_id',
@@ -184,9 +159,6 @@ export default {
         ...mapState('products', {stateProducts: 'products'}),
         currentSelections() {
             return this.getCurrentSelections
-        },
-        availableSelections() {
-            return this.getSelectionsAvailableForAlignment
         },
         currentProductFilter: {
             get () {
@@ -234,22 +206,13 @@ export default {
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
-        ...mapActions('products', ['fetchProductsForMultipleSelections']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
-        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
+        ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         onViewSingle(product) {
+            this.SET_CURRENT_PDP_SELECTION(this.selection)
             this.setCurrentProduct(product)
             this.setAvailableProducts(this.products) // Save array of available products
             this.setSingleVisisble(true)
-        },
-        async onSetCurrentSelections() {
-            const selections = this.selectedSelections
-            // Fetch data for all the selections
-            // Process all their data
-            this.SET_CURRENT_SELECTIONS(selections)
-            await this.fetchProductsForMultipleSelections(selections)
-            // Set them as current
-            this.selectedSelections = selections
         },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
@@ -258,11 +221,6 @@ export default {
         },
     },
     created () {
-        // Find the corresponding selection in our available selections
-        this.currentSelections.forEach(selection => {
-            const selectionToPush = this.availableSelections.find(x => x.id == selection.id)
-            if (selectionToPush) this.selectedSelections.push(selectionToPush)
-        })
 
         // Setup event broadcast listening
 

@@ -214,33 +214,27 @@ export default {
                 })
             return products
         },
-        async fetchSelectionProducts({ commit, dispatch }, selectionId) {
-            commit('setProductStatus', 'loading')
+        // async fetchSelectionProducts({ commit, dispatch }, selectionId) {
+        //     commit('setProductStatus', 'loading')
 
-            const apiUrl = `/selections/${selectionId}/products`
+        //     const apiUrl = `/selections/${selectionId}/products`
 
-            await axios
-                .get(apiUrl)
-                .then(response => {
-                    commit('insertProducts', { products: response.data, method: 'set' })
-                    dispatch('procesSelectionProducts')
-                    commit('setProductStatus', 'success')
-                })
-                .catch(err => {
-                    commit('setProductStatus', 'error')
-                })
-        },
-        async fetchProductsForMultipleSelections({ commit, dispatch }, selections) {
+        //     await axios
+        //         .get(apiUrl)
+        //         .then(response => {
+        //             commit('insertProducts', { products: response.data, method: 'set' })
+        //             dispatch('procesSelectionProducts')
+        //             commit('setProductStatus', 'success')
+        //         })
+        //         .catch(err => {
+        //             commit('setProductStatus', 'error')
+        //         })
+        // },
+        async fetchSelectionProducts({ commit, dispatch }, { selections, addToState = true }) {
             commit('setProductStatus', 'loading')
 
             const selectionProductArrayPairs = []
-
-            // product: {
-            //     selections: {
-            //         selection: {}
-            //         products: {}
-            //     }
-            // }
+            let productsToReturn
 
             // Loop through the selections and fetch all the products
             await Promise.all(
@@ -254,24 +248,66 @@ export default {
                 })
             )
                 .then(async response => {
+                    // Fetch fresh products
                     const freshProducts = await dispatch('fetchProducts', {
                         fileId: selections[0].file_id,
                         addToState: false,
                     })
-                    // Fetch fresh products
                     await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
                         products: freshProducts,
                         selectionProductArrayPairs,
                     })
+                    productsToReturn = freshProducts
                     // await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products: freshProducts })
-                    commit('insertProducts', { products: freshProducts, method: 'set' })
+                    if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
+                    console.log('now im done')
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
                     console.log(err)
                     commit('setProductStatus', 'error')
                 })
+            console.log('return products')
+            return productsToReturn
         },
+        // async fetchProductsForMultipleSelections({ commit, dispatch }, { selections, addToState = true }) {
+        //     commit('setProductStatus', 'loading')
+
+        //     const selectionProductArrayPairs = []
+        //     let productsToReturn
+
+        //     // Loop through the selections and fetch all the products
+        //     await Promise.all(
+        //         selections.map(async selection => {
+        //             const apiUrl = `/selections/${selection.id}/products`
+        //             await axios.get(apiUrl).then(async response => {
+        //                 const products = response.data
+        //                 await commit('PROCESS_SELECTION_PRODUCTS', products)
+        //                 selectionProductArrayPairs.push({ selection, products })
+        //             })
+        //         })
+        //     )
+        //         .then(async response => {
+        //             // Fetch fresh products
+        //             const freshProducts = await dispatch('fetchProducts', {
+        //                 fileId: selections[0].file_id,
+        //                 addToState: false,
+        //             })
+        //             await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
+        //                 products: freshProducts,
+        //                 selectionProductArrayPairs,
+        //             })
+        //             productsToReturn = freshProducts
+        //             // await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products: freshProducts })
+        //             if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
+        //             commit('setProductStatus', 'success')
+        //         })
+        //         .catch(err => {
+        //             console.log(err)
+        //             commit('setProductStatus', 'error')
+        //         })
+        //     return productsToReturn
+        // },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
                 if (addToState) commit('insertProducts', { products, method: 'add' })
@@ -538,11 +574,7 @@ export default {
                     },
                 })
                 // Remove deleted comments
-                Vue.set(
-                    product,
-                    'comments',
-                    product.comments.filter(x => !x.is_deleted)
-                )
+                Vue.set(product, 'comments', product.comments.filter(x => !x.is_deleted))
             })
         },
     },
@@ -733,11 +765,7 @@ export default {
                     },
                 })
                 // Remove deleted comments
-                Vue.set(
-                    product,
-                    'comments',
-                    product.comments.filter(x => !x.is_deleted)
-                )
+                Vue.set(product, 'comments', product.comments.filter(x => !x.is_deleted))
             })
         },
         PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs }) {

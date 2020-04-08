@@ -12,6 +12,7 @@ export default {
         teamsStatus: null,
         currentSelection: null,
         currentSelectionUsers: null,
+        currentPDPSelection: null,
         selections: [],
         currentSelections: [],
         selectionsAvailableForAlignment: [],
@@ -37,23 +38,35 @@ export default {
         currentSelectionStatus: state => state.currentSelectionStatus,
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
-        currentSelection: state => state.currentSelection,
+        currentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
         getSelections: state => state.selections,
+        getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
-        currentSelectionMode: state => {
-            if (state.currentSelection) {
-                return state.currentSelection.your_role == 'Member'
+        currentSelectionMode: (state, getters) => {
+            const selection = getters.currentSelection
+            if (selection) {
+                return selection.your_role == 'Member'
                     ? 'Feedback'
-                    : state.currentSelection.your_role == 'Owner'
+                    : selection.your_role == 'Owner'
                     ? 'Alignment'
-                    : state.currentSelection.your_role == 'Approver'
+                    : selection.your_role == 'Approver'
                     ? 'Approval'
                     : 'No Access'
             }
         },
+        getSelectionCurrentMode: (state, getters) => selection => {
+            return selection.your_role == 'Member'
+                ? 'Feedback'
+                : selection.your_role == 'Owner'
+                ? 'Alignment'
+                : selection.your_role == 'Approver'
+                ? 'Approval'
+                : 'No Access'
+        },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
+        getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
         selections: state => state.selections,
         selectionsTree: state => {
             const list = state.selections
@@ -160,7 +173,6 @@ export default {
                     selection = response.data
                     commit('PROCESS_SELECTIONS', [selection])
                     if (addToState) {
-                        commit('setCurrentSelection', selection)
                         commit('SET_CURRENT_SELECTIONS', [selection])
                     }
                     commit('setCurrentSelectionStatus', 'success')
@@ -491,6 +503,9 @@ export default {
         },
         SET_CURRENT_SELECTIONS(state, selections) {
             state.currentSelections = selections
+        },
+        SET_CURRENT_PDP_SELECTION(state, selection) {
+            state.currentPDPSelection = selection
         },
         insertSelections(state, { selections, method }) {
             // Check if we have already instantiated selections

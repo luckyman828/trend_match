@@ -3,7 +3,7 @@
         <span v-if="header" class="header" v-html="header"></span>
         <div class="button-wrapper">
             <label class="select-button">
-                <BaseRadiobox v-if="type == 'radio'" :value="value"/>
+                <BaseRadiobox v-if="type == 'radio'" :value="modelValue" :modelValue="value" @change="$emit('input', $event)"/>
                 <BaseCheckbox v-else :value="modelValue" :modelValue="value" @change="$emit('input', $event)"/>
 
                 <div class="label">
