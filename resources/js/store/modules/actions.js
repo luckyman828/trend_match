@@ -160,7 +160,7 @@ export default {
         },
         insertOrUpdateAction(state, { product, action, selection, user, type, authorIsAuthUser }) {
             if (type == 'Feedback') {
-                if (authorIsAuthUser) product.your_feedback = action
+                // if (authorIsAuthUser) product.your_feedback = action
                 // Check if the action already exists in the products feedbacks array
                 const existingAction = product.feedbacks.find(
                     x => x.product_id == product.id && x.selection_id == selection.id && x.user_id == user.id
