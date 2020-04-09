@@ -164,7 +164,10 @@ export default {
                 )
             })
             state.selectionsAvailableForAlignment = selectionsFiltered
-            return selectionsFiltered
+            return selectionsFiltered.sort((a, b) => {
+                if (a.type == 'Master') return -1
+                if (b.parent_id == a.id) return -1
+            })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
             commit('setCurrentSelectionStatus', 'loading')
