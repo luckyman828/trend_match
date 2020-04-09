@@ -253,12 +253,11 @@ export default {
                         fileId: selections[0].file_id,
                         addToState: false,
                     })
-                    await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
+                    await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
                         products: freshProducts,
                         selectionProductArrayPairs,
                     })
                     productsToReturn = freshProducts
-                    // await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products: freshProducts })
                     if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
                     console.log('now im done')
                     commit('setProductStatus', 'success')
@@ -293,12 +292,12 @@ export default {
         //                 fileId: selections[0].file_id,
         //                 addToState: false,
         //             })
-        //             await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
+        //             await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
         //                 products: freshProducts,
         //                 selectionProductArrayPairs,
         //             })
         //             productsToReturn = freshProducts
-        //             // await commit('PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products: freshProducts })
+        //             // await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products: freshProducts })
         //             if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
         //             commit('setProductStatus', 'success')
         //         })
@@ -768,7 +767,7 @@ export default {
                 Vue.set(product, 'comments', product.comments.filter(x => !x.is_deleted))
             })
         },
-        PROCES_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs }) {
+        PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs }) {
             // Use the first product of the
             products.map((product, productIndex) => {
                 // Attach the correct selection product to the base product
@@ -854,6 +853,32 @@ export default {
                             )
                         }, [])
                     },
+                })
+
+                // Set the current action for the user
+                Object.defineProperty(product, 'your_feedback', {
+                    get: function() {
+                        return product.feedbacks.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).action
+                    },
+                    configurable: true,
+                })
+                // Set the current action for the user
+                Object.defineProperty(product, 'action', {
+                    get: function() {
+                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
+                            .action
+                    },
+                    configurable: true,
+                })
+                // Set the current action for the user
+                Object.defineProperty(product, 'action_author', {
+                    get: function() {
+                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
+                            .user
+                    },
+                    configurable: true,
                 })
 
                 // Dynamically Calculated Actions

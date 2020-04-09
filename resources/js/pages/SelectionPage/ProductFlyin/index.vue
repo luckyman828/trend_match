@@ -18,22 +18,22 @@
                     </div>
                     <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
-                        :disabled="currentSelectionMode == 'Approval'" 
-                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'Focus', selection)">
+                        :disabled="!userWriteAccess.actions.hasAccess" 
+                        v-tooltip="userWriteAccess.actions.msg"
+                        @click="onUpdateAction(product, 'Focus', currentSelection)">
                             <i class="far fa-star"></i>
                         </BaseButton>
                         <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
-                        :disabled="currentSelectionMode == 'Approval'" 
-                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'In', selection)">
+                        :disabled="!userWriteAccess.actions.hasAccess" 
+                        v-tooltip="userWriteAccess.actions.msg"
+                        @click="onUpdateAction(product, 'In', currentSelection)">
                             <i class="far fa-heart"></i>
                             <span>In</span>
                         </BaseButton>
                         <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
-                        :disabled="currentSelectionMode == 'Approval'" 
-                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'Out', selection)">
+                        :disabled="!userWriteAccess.actions.hasAccess" 
+                        v-tooltip="userWriteAccess.actions.msg"
+                        @click="onUpdateAction(product, 'Out', currentSelection)">
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
                         </BaseButton>
@@ -185,7 +185,7 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
-        ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction']),
+        ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
         product () {
             return this.currentProduct
         },
@@ -194,6 +194,9 @@ export default {
         currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
         currentAction () {
             return this.currentSelectionModeAction
+        },
+        userWriteAccess () {
+            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
         },
     },
     methods: {
@@ -231,13 +234,13 @@ export default {
 
                 if (key == 'Escape')
                     this.onCloseSingle()
-                if ( this.currentSelectionMode != 'Approval' ) {
+                if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')
-                        this.onUpdateAction(this.product, 'In', this.selection)
+                        this.onUpdateAction(this.product, 'In', this.currentSelection)
                     if (key == 'KeyO')
-                        this.onUpdateAction(this.product, 'Out', this.selection)
+                        this.onUpdateAction(this.product, 'Out', this.currentSelection)
                     if (key == 'KeyF' || key == 'KeyU')
-                        this.onUpdateAction(this.product, 'Focus', this.selection)
+                        this.onUpdateAction(this.product, 'Focus', this.currentSelection)
                 }
             }
         },

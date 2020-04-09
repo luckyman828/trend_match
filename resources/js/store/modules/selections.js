@@ -103,7 +103,11 @@ export default {
             return {
                 actions: {
                     hasAccess: selection.is_open && selection.your_role != 'Approver',
-                    msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can decide action',
+                    msg: !selection.is_open
+                        ? 'Selection is locked'
+                        : selection.your_role == 'Approver'
+                        ? 'Only selection owners can decide action'
+                        : '',
                 },
                 requests: {
                     hasAccess: selection.is_open && selection.your_role == 'Owner',

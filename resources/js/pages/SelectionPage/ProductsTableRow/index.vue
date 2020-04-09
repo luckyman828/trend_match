@@ -271,8 +271,7 @@ export default {
         },
         keypressHandler(event) {
             const key = event.code
-            if (this.currentSelectionMode != 'Approval' 
-            && this.currentSelections.length <= 1 // Check that we are not doing multi selection input
+            if (this.currentSelections.length <= 1 // Check that we are not doing multi selection input
             && this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {
                 if (key == 'KeyI')
