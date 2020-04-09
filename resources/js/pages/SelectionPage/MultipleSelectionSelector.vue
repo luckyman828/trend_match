@@ -17,7 +17,12 @@
                     {{theSelection.name}}
                 </BaseSelectButton>
                 <div class="item-group actions">
-                    <button class="primary" v-close-popover @click="onSetCurrentSelections"><span>Apply</span></button>
+                    <BaseButton buttonClass="primary" v-close-popover="selectedSelections.length >= 1"
+                    :disabled="selectedSelections.length < 1"
+                    v-tooltip="selectedSelections.length < 1 && 'At least 1 selection must be selected'"
+                    @click="onSetCurrentSelections">
+                        <span>Apply</span>
+                    </BaseButton>
                     <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
                 </div>
             </template>
