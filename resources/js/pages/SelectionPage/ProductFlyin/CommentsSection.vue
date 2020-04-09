@@ -12,7 +12,10 @@
                 <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" 
                 :class="[{own: comment.user_id == authUser.id}, {master: comment.selection.type == 'Master'}]">
                     <comment :product="product" :comment="comment"/>
-                    <div class="sender" v-if="product.comments[index+1] ? product.comments[index+1].user_id != comment.user_id : true">
+                    <!-- Only show the sender if the comment after this one is not by the same user and from the same selection -->
+                    <div class="sender" v-if="product.comments[index+1] ? 
+                    (product.comments[index+1].user_id != comment.user_id || product.comments[index+1].selection_id != comment.selection_id) 
+                    : true">
                         <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
                         {{(comment.user_id == authUser.id) ? 'You' : comment.user ? comment.user.name : 'Anonymous'}}
                     </div>
@@ -59,6 +62,7 @@ export default {
     name: 'commentsSection',
     props: [
         'product',
+        'selection',
     ],
     components: {
         Comment,
@@ -77,15 +81,20 @@ export default {
             if (newVal.id != oldVal.id)
                 this.update()
         },
+        selection: function(newVal, oldVal) {
+            if (newVal.id != oldVal.id)
+                this.update()
+        },
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', ['getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
         submitDisabled () {
             return this.newComment.content.length < 1 || this.submitting
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
+            return this.getAuthUserSelectionWriteAccess(this.selection)
         },
     },
     methods: {
@@ -115,10 +124,10 @@ export default {
                 id: this.newComment.id,
                 user_id: this.authUser.id,
                 product_id: this.product.id,
-                selection_id: this.currentSelection.id,
+                selection_id: this.selection.id,
                 content: this.newComment.content,
                 user: this.authUser,
-                selection: this.currentSelection,
+                selection: this.selection,
                 votes: []
             }
             // dispatch action
