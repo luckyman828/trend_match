@@ -9,14 +9,14 @@
             @click.self="$refs.selectCheckbox.check()">
                 <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
             </td>
-            <td class="image clickable" @click="$emit('onViewSingle',product)">
+            <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
                     <!-- <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])"> -->
                 </div>
             </td>
-            <td class="id clickable" @click="$emit('onViewSingle',product)">{{product.datasource_id}}</td>
-            <td class="title"><span class="clickable" @click="$emit('onViewSingle',product)">
+            <td class="id clickable" @click="onViewSingle">{{product.datasource_id}}</td>
+            <td class="title"><span class="clickable" @click="onViewSingle">
                 <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
             </span></td>
             
@@ -84,10 +84,10 @@
             <!-- End Distribution -->
 
             <td class="requests">
-                <button class="ghost sm" @click="$emit('onViewSingle',product)">
+                <button class="ghost sm" @click="onViewSingle">
                     <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
                 </button>
-                <button class="requests-button ghost sm" @click="$emit('onViewSingle',product)">
+                <button class="requests-button ghost sm" @click="onViewSingle">
                     <span>{{product.requests.length}}</span><i class="far fa-clipboard-check"></i>
                     <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
                 </button>
@@ -118,7 +118,7 @@
                 </template>
                 <!-- End Single Selection Input only -->
                 <button class="invisible ghost-hover primary" 
-                @click="$emit('onViewSingle',product)"><span>View</span></button>
+                @click="onViewSingle"><span>View</span></button>
             </td>
         </div>
 
@@ -190,9 +190,13 @@ export default {
         }
     },
     methods: {
+        ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
+        },
+        onViewSingle() {
+            this.showSelectionProductPDP({product: this.product, selection: this.selection})
         },
         onRowFocus() {
             this.focusGroupIndex = null
@@ -266,7 +270,8 @@ export default {
                 this.focusNextRow(event)
             if (key == 'Enter') {
                 document.activeElement.blur()
-                this.$emit('onViewSingle', this.product)
+                // this.$emit('onViewSingle', this.product)
+                this.onViewSingle()
             }
         },
         keypressHandler(event) {

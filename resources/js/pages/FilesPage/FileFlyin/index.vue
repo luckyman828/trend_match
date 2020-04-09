@@ -73,14 +73,14 @@ export default {
     methods: {
         ...mapMutations('files', ['setCurrentFile']),
         ...mapActions('selections', ['fetchSelections']),
-        ...mapMutations('selections', ['setCurrentSelection']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async fetchData() {
             this.loadingData = true
             await this.fetchSelections({fileId: this.currentFile.id})
             this.loadingData = false
         },
         showSelectionUsersFlyin(selection) {
-            this.setCurrentSelection(selection)
+            this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
         },
         showNext() {

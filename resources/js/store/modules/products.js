@@ -269,6 +269,44 @@ export default {
             console.log('return products')
             return productsToReturn
         },
+        async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection, availableProducts }) {
+            console.log('show selection product PDP')
+            // Set the current PDP selection
+            commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
+
+            // Show the single PDP
+            commit('setSingleVisisble', true)
+
+            // If we have already fetched the product data from this selection as selectionInput on our current product, simply use that data
+            // Find the product in our products map, to be sure we get the original product, since the current product will be overwritten by us now.
+            const productMap = getters.products
+            const stateProduct = productMap.find(x => x.id == product.id)
+            const existingSelectionInput = stateProduct.selectionInputArray.find(x => x.selection.id == selection.id)
+            if (existingSelectionInput) {
+                // Set the current product
+                commit('setCurrentProduct', existingSelectionInput.product)
+                // Set our avaialble products to the products from the chosen selection so we can navigate back and forth
+                const newAvailableProducts = productMap.map(product => {
+                    const selectionInput = product.selectionInputArray.find(x => x.selection.id == selection.id)
+                    return selectionInput.product
+                })
+                commit('setAvailableProducts', newAvailableProducts)
+            }
+
+            // If we have not already fetched the data for this selection
+            else {
+                // Fetch the products for this selection, but don't save them to our state, since we only need them for our available products
+                const selectionProducts = await dispatch('fetchSelectionProducts', {
+                    selections: [selection],
+                    addToState: false,
+                })
+                // Set our available products equal to the recently fetched products
+                commit('setAvailableProducts', selectionProducts)
+                // Set the current product
+                const newCurrentProduct = selectionProducts.find(x => x.id == product.id)
+                commit('setCurrentProduct', newCurrentProduct)
+            }
+        },
         // async fetchProductsForMultipleSelections({ commit, dispatch }, { selections, addToState = true }) {
         //     commit('setProductStatus', 'loading')
 

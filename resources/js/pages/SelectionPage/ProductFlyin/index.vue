@@ -177,11 +177,6 @@ export default {
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
-                if (this.currentSelectionMode == 'Alignment') {
-                    this.$nextTick(() => {
-                        this.$refs.selectionSelector.onSetCurrentSelection(this.currentSelection)
-                    })
-                }
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
