@@ -1,6 +1,6 @@
 <template>
     <tr class="products-table-row" tabindex="0" @focus="onRowFocus"
-    @keydown="hotkeyHandler($event)" @keyup="keypressHandler($event)" ref="row">
+    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row">
 
         <div class="product-details">
             <span v-if="product.newComment" class="circle tiny primary"></span>
@@ -180,11 +180,7 @@ export default {
     watch: {
         // Watch for changes to the current focus index 
         currentFocusRowIndex: function(newVal, oldVal) {
-            // console.log(newVal)
             if (newVal == this.index) {
-                // console.log('focus this row')
-                // console.log(this.$refs.row)
-                // console.log(this.$refs.row.$el)
                 this.$refs.row.focus()
             }
         }
@@ -268,14 +264,14 @@ export default {
                 this.focusPrevRow(event)
             if (key == 'ArrowRight')
                 this.focusNextRow(event)
+        },
+        keypressHandler(event) {
+            const key = event.code
             if (key == 'Enter') {
                 document.activeElement.blur()
                 // this.$emit('onViewSingle', this.product)
                 this.onViewSingle()
             }
-        },
-        keypressHandler(event) {
-            const key = event.code
             if (this.currentSelections.length <= 1 // Check that we are not doing multi selection input
             && this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {

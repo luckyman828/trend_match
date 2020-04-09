@@ -269,7 +269,7 @@ export default {
             console.log('return products')
             return productsToReturn
         },
-        async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection, availableProducts }) {
+        async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {
             console.log('show selection product PDP')
             // Set the current PDP selection
             commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })

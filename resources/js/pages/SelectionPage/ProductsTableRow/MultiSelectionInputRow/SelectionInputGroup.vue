@@ -1,7 +1,10 @@
 <template>
     <div class="selection-input-group" v-if="product" tabindex="0" ref="selectionInputGroup"
     @keyup="keypressHandler($event)">
-        <span class="name">{{selection.name}}</span>
+        <span class="name"
+        @click="onViewSingle">
+            {{selection.name}}
+        </span>
         <div class="selection-action-buttons">
 
             <div class="selection-action">
@@ -78,7 +81,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
     name: 'selectionInputGroup',
     props: [
@@ -103,11 +106,17 @@ export default {
         },
     },
     methods: {
+        ...mapActions('products', ['showSelectionProductPDP']),
+        onViewSingle() {
+            this.showSelectionProductPDP({product: this.product, selection: this.selection})
+        },
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
         keypressHandler(event) {
             const key = event.code
+            if (key == 'Enter')
+                this.onViewSingle()
             if (this.userWriteAccess.actions.hasAccess) {
                 if (key == 'KeyI')
                     this.onUpdateAction(this.product, 'In', this.selection)
@@ -127,6 +136,13 @@ export default {
 .selection-input-group {
     margin-left: 20px;
     text-align: center;
+    .name {
+        cursor: pointer;
+        &:hover {
+            font-weight: 500;
+            color: $primary;
+        }
+    }
     &:first-child {
         margin-left: 4px;
     }
