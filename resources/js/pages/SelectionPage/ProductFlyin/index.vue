@@ -14,7 +14,7 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <SelectionSelector v-if="currentSelectionMode == 'Alignment'"/>
+                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
                     </div>
                     <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
@@ -177,6 +177,9 @@ export default {
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
+                this.$nextTick(() => {
+                    this.$refs.selectionSelector.onSetCurrentSelection(this.currentSelection)
+                })
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
