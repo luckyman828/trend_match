@@ -51,7 +51,7 @@
                         <div class="focus" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                             <span class="focus">Focus <i class="fas fa-star"></i></span>
@@ -62,7 +62,7 @@
                         <div class="in" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                         <div class="out" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                         <div class="focus" v-for="action in product.focus" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                             <span class="focus">Focus <i class="fas fa-star"></i></span>
@@ -114,7 +114,7 @@
                         <div class="in" v-for="action in product.ins" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
@@ -124,7 +124,7 @@
                         <div class="out" v-for="action in product.outs" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
@@ -134,7 +134,7 @@
                         <div class="nd" v-for="action in product.nds" :key="`${action.selection_id}-${action.user_id}`">
                             <div>
                                 <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user ? action.user.name : 'anonymous'}}</span>
+                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                 <span v-if="action.user" class="email">{{action.user.email}}</span>
                             </div>
                         </div>
@@ -146,6 +146,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     name: 'distibutionSection',
     props: [
@@ -159,6 +160,7 @@ export default {
             // includeNdsInFeedbackBar: true,
     }},
     computed: {
+        ...mapGetters('auth', ['authUser']),
         totalFeedbackInputCount() {
             return this.product.feedbacks.length
         },

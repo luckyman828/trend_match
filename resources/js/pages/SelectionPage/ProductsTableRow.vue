@@ -27,11 +27,11 @@
             <template slot="popover">
                 <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
                 <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -42,11 +42,11 @@
             <template slot="popover">
                 <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
                 <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -57,11 +57,11 @@
             <template slot="popover">
                 <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
                 <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -76,7 +76,7 @@
                 </BaseTooltipList>
                 <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
                     <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
-                    :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                    :label="action.selection.name" :value="action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'"/>
                 </BaseTooltipList>
             </template>
         </v-popover>
@@ -147,6 +147,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('products', ['currentFocusIndex']),
         userWriteAccess () {
