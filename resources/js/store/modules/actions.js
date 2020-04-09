@@ -187,6 +187,8 @@ export default {
                     })
                 } else {
                     existingAction.action = action
+                    existingAction.user = user
+                    existingAction.user_id = user.id
                 }
             }
         },
