@@ -862,6 +862,11 @@ export default {
                             x => x.selection_id == product.selectionInputArray[0].selection.id
                         ).action
                     },
+                    set: function(value) {
+                        product.feedbacks.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).action = value
+                    },
                     configurable: true,
                 })
                 // Set the current action for the user
@@ -870,6 +875,11 @@ export default {
                         return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
                             .action
                     },
+                    set: function(value) {
+                        product.actions.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).action = value
+                    },
                     configurable: true,
                 })
                 // Set the current action for the user
@@ -877,6 +887,11 @@ export default {
                     get: function() {
                         return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
                             .user
+                    },
+                    set: function(value) {
+                        product.actions.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).user = value
                     },
                     configurable: true,
                 })
