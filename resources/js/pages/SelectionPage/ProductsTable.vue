@@ -96,12 +96,22 @@
                 @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
                 @sort="onSort">Product Name</BaseTableHeader>
+                <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
+                @sort="onSort">Delivery</BaseTableHeader>
+                <BaseTableHeader class="wholesale-price" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
+                <BaseTableHeader class="recommended-retail-price" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
+                <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">MU</BaseTableHeader>
+                <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
+                <BaseTableHeader class="ins" :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'allOuts'" :currentSortKey="sortKey"
+                <BaseTableHeader class="outs" :sortKey="'allOuts'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'allNds'" :currentSortKey="sortKey"
+                <BaseTableHeader class="nds" :sortKey="'allNds'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">ND</BaseTableHeader>
                 <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
@@ -307,7 +317,7 @@ export default {
                         max-width: 220px;
                         display: flex;
                         align-items: center;
-                        margin-right: 32px;
+                        margin-right: 12px;
                         flex: 1;
                     }
                     &.id {
@@ -318,6 +328,22 @@ export default {
                     &.image {
                         min-width: 48px;
                         max-width: 48px;
+                    }
+                    &.delivery {
+                        min-width: 80px;
+                        max-width: 80px;
+                    }
+                    &.wholesale-price, &.recommended-retail-price {
+                        min-width: 92px;
+                        max-width: 92px;
+                    }
+                    &.mark-up {
+                        min-width: 56px;
+                        max-width: 56px;
+                    }
+                    &.minimum {
+                        min-width: 84px;
+                        max-width: 84px;
                     }
                     &.focus, &.ins {
                         min-width: 52px;

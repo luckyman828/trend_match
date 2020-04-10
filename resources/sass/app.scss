@@ -335,7 +335,7 @@ input[type='submit'] {
                 &.fad,
                 &.fab {
                     width: nth($size, 2) - 4px;
-                    font-size: nth($size, 3) + 2px;
+                    font-size: nth($size, 5);
                 }
             }
             &.ghost i {
@@ -351,13 +351,13 @@ input[type='submit'] {
             > span:first-child {
                 margin-left: nth($size, 4);
                 &:not(:last-child) {
-                    margin-right: 2px;
+                    margin-right: 4px;
                 }
             }
             > span:last-child {
                 margin-right: nth($size, 4);
                 &:not(:first-child) {
-                    margin-left: 2px;
+                    margin-left: 4px;
                 }
             }
         }

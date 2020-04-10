@@ -818,6 +818,7 @@ export default {
                     })
                 )
 
+                // ---- START PRICES ----
                 const preferred_currency = product.selectionInputArray[0].product.preferred_currency
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
@@ -841,6 +842,24 @@ export default {
                         return product.prices[0]
                     },
                 })
+
+                //Define default prices directly on the product
+                Object.defineProperty(product, 'wholesale_price', {
+                    get: function() {
+                        return product.yourPrice.wholesale_price
+                    },
+                })
+                Object.defineProperty(product, 'recommended_retail_price', {
+                    get: function() {
+                        return product.yourPrice.recommended_retail_price
+                    },
+                })
+                Object.defineProperty(product, 'mark_up', {
+                    get: function() {
+                        return product.yourPrice.mark_up
+                    },
+                })
+                // ---- END PRICES ----
 
                 Object.defineProperty(product, 'feedbacks', {
                     get: function() {

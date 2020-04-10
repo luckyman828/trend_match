@@ -66,9 +66,9 @@ $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white
     ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
 
-// BUTTON SIZES ($name, $height, $font-size, $padding)
-$button-sizes: ('xs', 20px, 12px, 4px), ('sm', 24px, 12px, 8px), ('md', 40px, 14px, 16px), ('lg', 48px, 14px, 20px),
-    ('xl', 60px, 18px, 24px);
+// BUTTON SIZES ($name, $height, $font-size, $padding, $icon-size)
+$button-sizes: ('xs', 20px, 12px, 6px, 12px), ('sm', 24px, 12px, 8px, 14px), ('md', 40px, 14px, 16px, 16px),
+    ('lg', 48px, 14px, 20px, 16px), ('xl', 60px, 18px, 24px, 20px);
 
 // Sidebar
 $sidebarWidth: 260px;
