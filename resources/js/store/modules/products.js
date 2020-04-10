@@ -259,14 +259,12 @@ export default {
                     })
                     productsToReturn = freshProducts
                     if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
-                    console.log('now im done')
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
                     console.log(err)
                     commit('setProductStatus', 'error')
                 })
-            console.log('return products')
             return productsToReturn
         },
         async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {

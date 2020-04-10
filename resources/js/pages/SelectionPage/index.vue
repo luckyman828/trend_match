@@ -21,6 +21,7 @@ export default {
     computed: {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('selections', ['currentSelectionStatus']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         loading () {
             return (this.productsStatus != 'success' || this.currentSelectionStatus != 'success' || this.loadingData)
         },
@@ -52,7 +53,15 @@ export default {
 
         // Fetch selections that are available for alignment for the auth user
         const selections = await this.fetchSelections({fileId})
-        await this.filterSelectionsByAvailabilityForAlignment(selections)
+        // Filter the selections so we only get the ones we have access to
+        const selectionsFiltered = selections.filter(x => {
+            // Return all selections for workspace admins
+            if (this.authUserWorkspaceRole == 'Admin') return true
+
+            // Else filter out hidden selections
+            return x.is_visible
+        })
+        await this.filterSelectionsByAvailabilityForAlignment(selectionsFiltered)
 
         this.loadingData = false
     },
