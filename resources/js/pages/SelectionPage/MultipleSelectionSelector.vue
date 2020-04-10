@@ -60,7 +60,7 @@ export default {
             this.selectedSelections = selections
             // Set the current tab to `Overview` if we are entering multi-selection mode
             if (selections.length > 1) {
-                this.setCurrentProductFilter('Overview')
+                this.setCurrentProductFilter('overview')
             }
         },
     },

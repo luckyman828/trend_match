@@ -2,13 +2,20 @@
     <div class="products-table-wrapper">
         <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="productTotals.all" v-model="currentProductFilter"
+                <BaseTableTab :label="`Overview`" :count="productTotals.all" 
+                v-model="currentProductFilter"
                 modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" v-model="currentProductFilter"
+                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" 
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="ins"/>
-                <BaseTableTab :label="`Out`" :count="productTotals.outs" v-model="currentProductFilter"
+                <BaseTableTab :label="`Out`" :count="productTotals.outs" 
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="outs"/>
-                <BaseTableTab :label="`Nds`" :count="productTotals.nds" v-model="currentProductFilter"
+                <BaseTableTab :label="`Nds`" :count="productTotals.nds" 
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="nds"/>
 
                 <!-- Selection Selector -->
