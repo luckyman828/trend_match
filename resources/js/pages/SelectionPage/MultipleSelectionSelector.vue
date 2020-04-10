@@ -48,6 +48,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapMutations('products', ['setCurrentProductFilter']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
             const selections = this.selectedSelections
@@ -57,6 +58,10 @@ export default {
             await this.fetchSelectionProducts({selections, addToState: true})
             // Set them as current
             this.selectedSelections = selections
+            // Set the current tab to `Overview` if we are entering multi-selection mode
+            if (selections.length > 1) {
+                this.setCurrentProductFilter('Overview')
+            }
         },
     },
     created() {
