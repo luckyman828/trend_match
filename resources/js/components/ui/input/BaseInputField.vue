@@ -79,9 +79,7 @@ export default {
                     width: calc(100% - 12px - 32px);
                 }
                 input {
-                    line-height: 0;
-                    position: absolute;
-                    bottom: 4px;
+                    margin-top: 6px;
                 }
             }
             .input-wrapper, input {
