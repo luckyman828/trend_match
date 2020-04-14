@@ -2,9 +2,15 @@
   <div class="vue-component-sidebar sidebar">
     <div class="nav">
         <div class="top-items">
-            <router-link to="/files" class="link"><i class="fas fa-folder"></i> Files</router-link>
-            <router-link v-if="authUserWorkspaceRole == 'Admin'" to="/teams" class="link"><i class="fas fa-users"></i> Teams</router-link>
-            <router-link to="/users" class="link"><i class="fas fa-user"></i> Users</router-link>
+            <router-link to="/files" class="link">
+              <i class="fas fa-folder"></i><span>Files</span>
+            </router-link>
+            <router-link v-if="authUserWorkspaceRole == 'Admin'" to="/teams" class="link">
+              <i class="fas fa-users"></i><span>Teams</span>
+            </router-link>
+            <router-link to="/users" class="link">
+              <i class="fas fa-user"></i><span>Users</span>
+            </router-link>
       </div>
       <div class="bottom-items">
         <BaseDropdown class="dropdown-parent left middle" ref="workspaceDropdown" v-if="workspaces.length > 1">
@@ -176,7 +182,7 @@ export default {
     color: $primary;
   }
   // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenSmall) {
+    @media screen and (max-width: $screenLaptop) {
       .header {
         padding: 16px 4px;
         font-size: 12px;

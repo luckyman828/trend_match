@@ -271,7 +271,6 @@ input[type='submit'] {
     align-items: center;
     color: $font;
     text-decoration: none;
-    font-weight: 700;
     user-select: none;
     border: solid 1px transparent;
     padding: 0 1px;
@@ -481,6 +480,7 @@ input[type='submit'] {
 button,
 .button,
 input[type='submit'] {
+    font-weight: 700;
     cursor: pointer;
     &.text-link {
         padding-top: 4px;
@@ -1416,12 +1416,12 @@ form {
 
 // SCREEN SIZES / MEDIA QUERIES
 .hide-screen-sm {
-    @media screen and (max-width: $screenSmall) {
+    @media screen and (max-width: $screenLaptop) {
         display: none !important;
     }
 }
 .show-screen-sm {
-    @media screen and (min-width: $screenSmall + 1) {
+    @media screen and (min-width: $screenLaptop + 1) {
         display: none !important;
     }
 }

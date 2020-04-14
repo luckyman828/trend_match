@@ -16,13 +16,13 @@ export default {
 @import '~@/_variables.scss';
 
     .logo {
-        @media screen and (max-width: $screenSmall) {
+        @media screen and (max-width: $screenLaptop) {
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        @media screen and (min-width: $screenSmall + 1) {
+        @media screen and (min-width: $screenLaptop + 1) {
             padding: 24px 20px 16px;
         }
     }

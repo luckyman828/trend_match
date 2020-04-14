@@ -18,6 +18,11 @@
             <td class="id clickable" @click="onViewSingle">{{product.datasource_id}}</td>
             <td class="title"><span class="clickable" @click="onViewSingle">
                 <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
+                <div class="variant-list">
+                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
+                        <span>{{variant.name}}</span>
+                    </div>
+                </div>
             </span></td>
 
             <td class="delivery">
@@ -37,7 +42,7 @@
                 <span>{{product.yourPrice.recommended_retail_price}} {{product.yourPrice.currency}}</span>
             </td>
             <td class="mark-up">
-                <span>{{product.yourPrice.mark_up}}x</span>
+                <span>{{product.yourPrice.mark_up}}</span>
             </td>
             <!-- End Prices -->
 
@@ -56,7 +61,7 @@
             <!-- Start Distribution -->
             <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
                 <td class="focus tooltip-target">
-                    <button tabindex="-1" class="ghost xs"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></button>
+                    <div tabindex="-1" class="square ghost xs"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></div>
                 </td>
                 <template slot="popover">
                     <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
@@ -71,7 +76,7 @@
             </v-popover>
             <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
                 <td class="ins tooltip-target">
-                    <button class="ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></button>
+                    <div class="square ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></div>
                 </td>
                 <template slot="popover">
                     <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
@@ -86,7 +91,7 @@
             </v-popover>
             <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
                 <td class="outs tooltip-target">
-                    <button class="ghost xs"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></button>
+                    <div class="square ghost xs"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></div>
                 </td>
                 <template slot="popover">
                     <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
@@ -101,7 +106,7 @@
             </v-popover>
             <v-popover class="nds" :disabled="product.nds.length <= 0 && product.alignmentNds <= 0">
                 <td class="nds tooltip-target">
-                    <button class="ghost xs"><span>{{product.alignmentNds.length+ product.nds.length}}</span></button>
+                    <div class="square ghost xs"><span>{{product.alignmentNds.length+ product.nds.length}}</span></div>
                 </td>
                 <template slot="popover">
                     <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
@@ -117,13 +122,13 @@
             <!-- End Distribution -->
 
             <td class="requests">
-                <button class="ghost xs" @click="onViewSingle">
+                <div class="square ghost xs" @click="onViewSingle">
                     <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
-                </button>
-                <button class="requests-button ghost xs" @click="onViewSingle">
+                </div>
+                <div class="requests-button square ghost xs" @click="onViewSingle">
                     <span>{{product.requests.length}}</span><i class="far fa-clipboard-check"></i>
                     <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
-                </button>
+                </div>
             </td>
             <td class="action">
                 <!-- Single Selection Input only -->
@@ -338,6 +343,17 @@ export default {
                 object-fit: contain;
             }
         }
+    }
+    td.title {
+        position: relative;
+    }
+    .variant-list {
+        position: absolute;
+        left: 0;
+        bottom: -6px;
+    }
+    .variant-list-item:not(:first-child) {
+        margin-left: 4px;
     }
     .product-details {
         height: 76px;

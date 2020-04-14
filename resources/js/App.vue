@@ -218,8 +218,12 @@ export default{
                 grid-template-columns: 200px auto;
             }
         }
-        @media screen and (max-width: $screenSmall) {
+        @media screen and (max-width: $screenLaptop) {
             grid-template-columns: 80px auto;
+        }
+        @media screen and (max-width: $screenSmallLaptop) {
+            grid-template-columns: 52px auto;
+            grid-template-rows: 52px auto;
         }
         &.hide-nav {
             // grid-template-rows: 0 auto;
@@ -232,6 +236,9 @@ export default{
         overflow-y: scroll;
         overflow-x: auto;
         background: $grey;
+        @media screen and (max-width: $screenSmallLaptop) {
+            padding: 20px;
+        }
     }
     h1 {
         margin-bottom: 30px;
@@ -325,5 +332,4 @@ export default{
             }
         }
     }
-
 </style>

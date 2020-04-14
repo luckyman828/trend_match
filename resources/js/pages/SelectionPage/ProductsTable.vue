@@ -373,6 +373,11 @@ export default {
                         margin-left: 32px;
                     }
                 }
+                td {
+                    &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up {
+                        padding-bottom: 20px;
+                    }
+                }
             }
         }
     }
@@ -397,7 +402,7 @@ export default {
     }
 
     // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenSmall) {
+    @media screen and (max-width: $screenLaptop) {
 
         @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
         only screen and (-o-min-device-pixel-ratio: 13/10),
