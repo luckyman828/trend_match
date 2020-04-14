@@ -46,6 +46,10 @@
                 
                 <div class="main-img" @click="cycleImage(true)">
                     <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])" @error="imgError(product.variants[currentImgIndex])">
+                    <button class="white controls" v-tooltip="'View large images'"
+                    @click="showLightbox = true">
+                        <i class="far fa-search-plus"></i>
+                    </button>
                 </div>
 
                 <div class="product-variants" v-dragscroll>
@@ -90,7 +94,7 @@
                     </div>
                     <div>
                         <v-popover :disabled="product.prices.length < 1">
-                            <label>Mark up ({{product.yourPrice.currency}}) <i class="far fa-info-circle"></i></label>
+                            <label>Mark up <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
                                 <BaseTooltipList header="Mark up">
                                     <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
@@ -137,6 +141,9 @@
             :product="product" :selection="currentSelection"
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
+
+            <ImageLightbox v-if="showLightbox" :defaultIndex="currentImgIndex" :images="product.variants.map(x => variantImage(x))"
+            @hide="showLightbox = false"/>
         </template>
     </BaseFlyin>
 </template>
@@ -148,6 +155,7 @@ import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
 import variantImage from '../../../mixins/variantImage'
+import ImageLightbox from '../../../components/ImageLightbox'
 
 export default {
     name: 'productFlyin',
@@ -163,9 +171,12 @@ export default {
         DistributionSection,
         RequestsSection,
         SelectionSelector,
+        ImageLightbox,
     },
     data: function () { return {
             currentImgIndex: 0,
+            showLightbox: false,
+
     }},
     watch: {
         product(newVal, oldVal) {
@@ -303,11 +314,23 @@ export default {
                 overflow: hidden;
                 border-radius: 4px;
                 border: solid 2px $divider;
+                position: relative;
                 img {
                     width: 100%;
                     height: 100%;
                     object-fit: contain;
                     object-position: center;
+                }
+                .controls {
+                    position: absolute;
+                    right: 4px;
+                    top: 4px;
+                    opacity: 0;
+                }
+                &:hover {
+                    .controls {
+                        opacity: 1;
+                    }
                 }
             }
             .product-variants {
