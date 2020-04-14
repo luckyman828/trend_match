@@ -1,7 +1,7 @@
 <template>
     <router-link to="/collection" class="logo link">
-        <img class="hide-screen-sm" src="/images/kollekt-logo-color-2.svg" />
-        <img class="show-screen-sm" src="/images/kollekt_logo_small.svg" />
+        <img class="hide-screen-xs" src="/images/kollekt_logo_small.svg" />
+        <img class="show-screen-xs" style="height: 100%" src="/images//kollekt_logo_00_1024x1024.svg" />
     </router-link>
 </template>
 
@@ -16,13 +16,12 @@ export default {
 @import '~@/_variables.scss';
 
     .logo {
-        @media screen and (max-width: $screenLaptop) {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        padding: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-        @media screen and (min-width: $screenLaptop + 1) {
+        @media screen and (min-width: $screenSm + 1) {
             padding: 24px 20px 16px;
         }
     }

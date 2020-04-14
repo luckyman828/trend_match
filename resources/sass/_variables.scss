@@ -39,6 +39,7 @@ $grey: #e4e4e4;
 $grey2: #cfcfcf;
 
 $font: $dark05;
+$fontSoft: $dark2;
 $fontBody: $dark;
 $fontIcon: $dark2;
 $tableHeader: $dark2;
@@ -77,8 +78,8 @@ $sidebarWidth: 260px;
 $navbarHeight: 72px;
 
 // Screen sizes / Breakpoints
-$screenLaptop: 1600px;
-$screenSmallLaptop: 1400px;
+$screenSm: 1600px;
+$screenXs: 1400px;
 
 // Media Queries
 // $mq-small: "(min-width:)"

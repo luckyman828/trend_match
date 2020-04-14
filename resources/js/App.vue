@@ -206,7 +206,8 @@ export default{
         min-height: 100vh;
         min-width: 100vw;
         transition: .3s;
-        grid-template-columns: 160px auto;
+        // grid-template-columns: 160px auto;
+        grid-template-columns: 80px auto;
         grid-template-rows: 72px auto;
         grid-template-areas: 
             "logo navbar" 
@@ -218,10 +219,10 @@ export default{
                 grid-template-columns: 200px auto;
             }
         }
-        @media screen and (max-width: $screenLaptop) {
-            grid-template-columns: 80px auto;
-        }
-        @media screen and (max-width: $screenSmallLaptop) {
+        // @media screen and (max-width: $screenSm) {
+        //     grid-template-columns: 80px auto;
+        // }
+        @media screen and (max-width: $screenXs) {
             grid-template-columns: 52px auto;
             grid-template-rows: 52px auto;
         }
@@ -236,7 +237,7 @@ export default{
         overflow-y: scroll;
         overflow-x: auto;
         background: $grey;
-        @media screen and (max-width: $screenSmallLaptop) {
+        @media screen and (max-width: $screenXs) {
             padding: 20px;
         }
     }

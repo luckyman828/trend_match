@@ -87,6 +87,15 @@ export default {
         }
         button {
             margin-left: -8px;
+            &:focus {
+                box-shadow: none;
+            }
+        }
+        button.invisible:not(.ghost-hover):hover {
+            color: $primary;
+        }
+        button.invisible:not(.ghost-hover):not(.active):hover {
+            background: none;
         }
     }
 

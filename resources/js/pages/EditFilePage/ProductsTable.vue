@@ -245,7 +245,7 @@ export default {
     }
 
     // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenLaptop) {
+    @media screen and (max-width: $screenSm) {
 
         @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
         only screen and (-o-min-device-pixel-ratio: 13/10),

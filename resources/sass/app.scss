@@ -1416,18 +1416,27 @@ form {
 
 // SCREEN SIZES / MEDIA QUERIES
 .hide-screen-sm {
-    @media screen and (max-width: $screenLaptop) {
+    @media screen and (max-width: $screenSm) {
         display: none !important;
     }
 }
-// SCREEN SIZES / MEDIA QUERIES
+.hide-screen-xs {
+    @media screen and (max-width: $screenXs) {
+        display: none !important;
+    }
+}
 .hide-screen-lg {
-    @media screen and (min-width: $screenLaptop+1) {
+    @media screen and (min-width: $screenSm + 1) {
         display: none !important;
     }
 }
 .show-screen-sm {
-    @media screen and (min-width: $screenLaptop + 1) {
+    @media screen and (min-width: $screenSm + 1) {
+        display: none !important;
+    }
+}
+.show-screen-xs {
+    @media screen and (min-width: $screenXs + 1) {
         display: none !important;
     }
 }

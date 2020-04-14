@@ -388,18 +388,18 @@ export default {
                         min-width: 84px;
                         max-width: 84px;
                     }
-                    &.focus, &.ins {
-                        min-width: 52px;
-                        max-width: 52px;
-                    }
-                    &.outs {
-                        min-width: 56px;
-                        max-width: 56px;
-                    }
-                    &.nds {
+                    &.focus, &.ins, &.outs, &.nds {
                         min-width: 48px;
                         max-width: 48px;
                     }
+                    &.outs {
+                        min-width: 52px;
+                        max-width: 52px;
+                    }
+                    // &.nds {
+                    //     min-width: 48px;
+                    //     max-width: 48px;
+                    // }
                     &.requests {
                         margin-left: 32px;
                         .button {
@@ -445,7 +445,7 @@ export default {
     }
 
     // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenLaptop) {
+    @media screen and (max-width: $screenSm) {
 
         @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
         only screen and (-o-min-device-pixel-ratio: 13/10),

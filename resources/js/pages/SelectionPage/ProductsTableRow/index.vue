@@ -135,21 +135,21 @@
             <td class="action">
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
-                    <button class="invisible ghost-hover hide-screen-lg" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button>
-                    <BaseButton class="hide-screen-sm" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                    <button class="invisible ghost-hover show-screen-xs" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button>
+                    <BaseButton class="hide-screen-xs" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Focus', selection)">
                         <i class="far fa-star"></i>
                     </BaseButton>
-                    <BaseButton class="hide-screen-sm"  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                    <BaseButton class="hide-screen-xs"  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'In', selection)">
                         <i class="far fa-heart"></i>
                         <span>In</span>
                     </BaseButton>
-                    <BaseButton class="hide-screen-sm"  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                    <BaseButton class="hide-screen-xs"  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Out', selection)">
@@ -158,7 +158,7 @@
                     </BaseButton>
                 </template>
                 <!-- End Single Selection Input only -->
-                <button class="invisible ghost-hover primary hide-screen-sm" 
+                <button class="invisible ghost-hover primary hide-screen-xs" 
                 @click="onViewSingle"><span>View</span></button>
             </td>
         </div>
@@ -346,7 +346,7 @@ export default {
                 object-fit: contain;
             }
         }
-        @media screen and (max-width: $screenLaptop) {
+        @media screen and (max-width: $screenXs) {
             &.action-Focus {
                 box-shadow: -6px 0 0px $primary inset;
             }
