@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth">
+    <div v-if="visible || inline" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth" :class="{inline: inline}">
         <div class="item-group header" v-if="hasHeader">
             <strong>
                 <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
@@ -23,6 +23,7 @@ export default {
     name: 'contextMenu',
     props: {
         columns: {},
+        inline: {},
         hotkeys: {
             default: () => []
         }
@@ -182,6 +183,9 @@ export default {
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        &.inline {
+            position: relative;
+        }
         .columns {
             display: flex;
             border-top: solid 1px $divider;

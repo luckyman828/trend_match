@@ -133,20 +133,47 @@
             <td class="action">
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
-                    <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                    <v-popover trigger="click">
+                        <button class="invisible ghost-hover"><i class="far fa-ellipsis-h"></i></button>
+                        <template slot="popover">
+                            <BaseContextMenu :inline="true">
+                                <div class="item-group">
+                                    <div class="item">
+                                        <div class="icon-wrapper"><i class="far fa-eye"></i></div>
+                                        <u>V</u>iew
+                                    </div>
+                                </div>
+                                <div class="item-group">
+                                    <div class="item">
+                                        <div class="icon-wrapper"><i class="far fa-star"></i></div>
+                                        <u>F</u>oc<u>u</u>s
+                                    </div>
+                                    <div class="item">
+                                        <div class="icon-wrapper"><i class="far fa-heart"></i></div>
+                                        <u>I</u>n
+                                    </div>
+                                    <div class="item">
+                                        <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                                        <u>O</u>ut
+                                    </div>
+                                </div>
+                            </BaseContextMenu>
+                        </template>
+                    </v-popover>
+                    <BaseButton class="hide-screen-sm" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Focus', selection)">
                         <i class="far fa-star"></i>
                     </BaseButton>
-                    <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                    <BaseButton class="hide-screen-sm"  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'In', selection)">
                         <i class="far fa-heart"></i>
                         <span>In</span>
                     </BaseButton>
-                    <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                    <BaseButton class="hide-screen-sm"  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Out', selection)">
@@ -155,7 +182,7 @@
                     </BaseButton>
                 </template>
                 <!-- End Single Selection Input only -->
-                <button class="invisible ghost-hover primary" 
+                <button class="invisible ghost-hover primary hide-screen-sm" 
                 @click="onViewSingle"><span>View</span></button>
             </td>
         </div>

@@ -1,5 +1,6 @@
 <template>
     <div class="products-table-wrapper">
+
         <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview`" :count="productTotals.all" 
@@ -369,7 +370,7 @@ export default {
                     }
                     &.action {
                         flex: 1;
-                        min-width: 232px;
+                        // min-width: 232px;
                         margin-left: 32px;
                     }
                 }
