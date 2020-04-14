@@ -53,15 +53,7 @@ export default {
 
         // Fetch selections that are available for alignment for the auth user
         const selections = await this.fetchSelections({fileId})
-        // Filter the selections so we only get the ones we have access to
-        const selectionsFiltered = selections.filter(x => {
-            // Return all selections for workspace admins
-            if (this.authUserWorkspaceRole == 'Admin') return true
-
-            // Else filter out hidden selections
-            return x.is_visible
-        })
-        await this.filterSelectionsByAvailabilityForAlignment(selectionsFiltered)
+        await this.filterSelectionsByAvailabilityForAlignment(selections)
 
         this.loadingData = false
     },

@@ -147,6 +147,7 @@ export default {
             })
         },
         async filterSelectionsByAvailabilityForAlignment({ commit, getters, state, dispatch }, selections) {
+            console.log('filtering selections')
             const selectionsToReturn = []
             await Promise.all(
                 selections.map(async selection => {
@@ -158,6 +159,8 @@ export default {
                 })
             )
             const selectionsFiltered = selectionsToReturn.filter(selection => {
+                console.log(selection.name)
+                console.log(getters.getAuthUserHasSelectionEditAccess(selection))
                 return (
                     (getters.getAuthUserHasSelectionEditAccess(selection) || selection.is_visible) &&
                     selection.your_role == 'Owner'

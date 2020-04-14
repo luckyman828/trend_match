@@ -10,6 +10,8 @@
             <template slot="popover">
                 <BaseSelectButton v-for="theSelection in availableSelections" :key="theSelection.id"
                 :modelValue="theSelection" v-model="selectedSelections">
+                    <i v-if="theSelection.type == 'Master'" class="far fa-crown" style="margin-right: 4px;"
+                    v-tooltip="'<strong>Master</strong> selection'"></i>
                     <i v-if="!theSelection.is_visible" class="far fa-eye-slash" style="margin-right: 4px;"
                     v-tooltip="'Selection is <strong>Hidden</strong>. You can still make new input, even though the selection is hidden'"></i>
                     <i v-if="!theSelection.is_open" class="far fa-lock" style="margin-right: 4px;"
