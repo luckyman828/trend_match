@@ -1420,6 +1420,12 @@ form {
         display: none !important;
     }
 }
+// SCREEN SIZES / MEDIA QUERIES
+.hide-screen-lg {
+    @media screen and (min-width: $screenLaptop+1) {
+        display: none !important;
+    }
+}
 .show-screen-sm {
     @media screen and (min-width: $screenLaptop + 1) {
         display: none !important;

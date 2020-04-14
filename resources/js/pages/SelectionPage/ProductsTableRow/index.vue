@@ -1,6 +1,6 @@
 <template>
-    <tr class="products-table-row" tabindex="0" @focus="onRowFocus"
-    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row">
+    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="'action-'+product[currentAction]"
+    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)">
 
         <div class="product-details">
             <span v-if="product.newComment" class="circle tiny primary"></span>
@@ -15,14 +15,16 @@
                     <!-- <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])"> -->
                 </div>
             </td>
-            <td class="id clickable" @click="onViewSingle">{{product.datasource_id}}</td>
-            <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
+            <td class="id clickable" @click="onViewSingle">
+                <span>{{product.datasource_id}}</span>
                 <div class="variant-list">
                     <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
                         <span>{{variant.name}}</span>
                     </div>
                 </div>
+            </td>
+            <td class="title"><span class="clickable" @click="onViewSingle">
+                <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
             </span></td>
 
             <td class="delivery">
@@ -35,13 +37,13 @@
             </td>
 
             <!-- Start Prices -->
-            <td class="wholesale-price">
+            <td class="wholesale-price hide-screen-sm">
                 <span>{{product.yourPrice.wholesale_price}} {{product.yourPrice.currency}}</span>
             </td>
-            <td class="recommended-retail-price">
+            <td class="recommended-retail-price hide-screen-sm">
                 <span>{{product.yourPrice.recommended_retail_price}} {{product.yourPrice.currency}}</span>
             </td>
-            <td class="mark-up">
+            <td class="mark-up hide-screen-sm">
                 <span>{{product.yourPrice.mark_up}}</span>
             </td>
             <!-- End Prices -->
@@ -133,33 +135,7 @@
             <td class="action">
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
-                    <v-popover trigger="click">
-                        <button class="invisible ghost-hover"><i class="far fa-ellipsis-h"></i></button>
-                        <template slot="popover">
-                            <BaseContextMenu :inline="true">
-                                <div class="item-group">
-                                    <div class="item">
-                                        <div class="icon-wrapper"><i class="far fa-eye"></i></div>
-                                        <u>V</u>iew
-                                    </div>
-                                </div>
-                                <div class="item-group">
-                                    <div class="item">
-                                        <div class="icon-wrapper"><i class="far fa-star"></i></div>
-                                        <u>F</u>oc<u>u</u>s
-                                    </div>
-                                    <div class="item">
-                                        <div class="icon-wrapper"><i class="far fa-heart"></i></div>
-                                        <u>I</u>n
-                                    </div>
-                                    <div class="item">
-                                        <div class="icon-wrapper"><i class="far fa-times"></i></div>
-                                        <u>O</u>ut
-                                    </div>
-                                </div>
-                            </BaseContextMenu>
-                        </template>
-                    </v-popover>
+                    <button class="invisible ghost-hover hide-screen-lg" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button>
                     <BaseButton class="hide-screen-sm" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
@@ -370,8 +346,19 @@ export default {
                 object-fit: contain;
             }
         }
+        @media screen and (max-width: $screenLaptop) {
+            &.action-Focus {
+                box-shadow: -6px 0 0px $primary inset;
+            }
+            &.action-In {
+                box-shadow: -6px 0 0px $green inset;
+            }
+            &.action-Out {
+                box-shadow: -6px 0 0px $red inset;
+            }
+        }
     }
-    td.title {
+    td.id {
         position: relative;
     }
     .variant-list {

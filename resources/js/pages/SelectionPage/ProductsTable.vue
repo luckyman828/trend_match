@@ -99,11 +99,11 @@
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
                 @sort="onSort">Delivery</BaseTableHeader>
-                <BaseTableHeader class="wholesale-price" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                <BaseTableHeader class="wholesale-price hide-screen-sm" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
-                <BaseTableHeader class="recommended-retail-price" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                <BaseTableHeader class="recommended-retail-price hide-screen-sm" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
-                <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                <BaseTableHeader class="mark-up hide-screen-sm" :sortKey="'mark_up'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
@@ -129,6 +129,7 @@
                     v-slot="{ item, index }"
                 >
                     <ProductsTableRow class="product-row flex-table-row"
+                    @showContext="$refs.contextMenu.show($event); contextProduct = item"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
@@ -141,12 +142,48 @@
                 </tr>
             </template>
         </BaseFlexTable>
+
+        <BaseContextMenu ref="contextMenu"
+            :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyV']"
+            @keybind-v="onViewSingle(contextProduct)"
+        >
+            <template v-if="contextProduct">
+                <div class="item-group">
+                    <div class="item" @click="onUpdateAction(contextProduct, 'In', selection)" v-close-popover>
+                        <div class="icon-wrapper">
+                            <i class="far fa-heart" :class="contextProduct[currentAction] == 'In' ? 'fas green' : 'far'"></i>
+                        </div>
+                        <u>I</u>n
+                    </div>
+                    <div class="item" @click="onUpdateAction(contextProduct, 'Out', selection)" v-close-popover>
+                        <div class="icon-wrapper">
+                            <i class="far fa-times" :class="contextProduct[currentAction] == 'Out' ? 'fas red' : 'far'"></i>
+                        </div>
+                        <u>O</u>ut
+                    </div>
+                    <div class="item" @click="onUpdateAction(contextProduct, 'Focus', selection)">
+                        <div class="icon-wrapper">
+                            <i class="far fa-star" :class="contextProduct[currentAction] == 'Focus' ? 'fas primary' : 'far'"></i>
+                        </div>
+                        <u>F</u>oc<u>u</u>s
+                    </div>
+                </div>
+                <div class="item-group">
+                    <div class="item" @click="onViewSingle(contextProduct)" v-close-popover>
+                        <div class="icon-wrapper">
+                            <i class="far fa-eye"></i>
+                        </div>
+                        <u>V</u>iew
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
-import ProductsTableRow from './ProductsTableRow'
+import ProductsTableRow from './ProductsTableRow/index'
 import MultipleSelectionSelector from './MultipleSelectionSelector'
 import sortArray from '../../mixins/sortArray'
 
@@ -170,6 +207,8 @@ export default {
         selectedProducts: [],
         productsFilteredBySearch: this.products,
         selectedSelections: [],
+        showContextMenu: false,
+        contextProduct: null,
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
@@ -236,6 +275,9 @@ export default {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.stateProducts, sortAsc, sortKey)
+        },
+        onUpdateAction(product, action, selection) {
+            this.$emit('updateAction', product, action, selection)
         },
     },
     created () {
@@ -375,7 +417,7 @@ export default {
                     }
                 }
                 td {
-                    &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up {
+                    &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up {
                         padding-bottom: 20px;
                     }
                 }
