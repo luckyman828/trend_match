@@ -51,7 +51,7 @@ export default {
     },
     created() {
         // Check the current selection
-        this.selectedSelection = this.currentSelection
+        this.selectedSelection = this.availableSelections.find(x => x.id == this.currentSelection.id)
     }
 }
 </script>
