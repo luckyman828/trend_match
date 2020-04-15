@@ -134,9 +134,10 @@ export default {
 .bottom-drawer {
     transition: .2s;
     position: relative;
-    margin-bottom: 0;
+    overflow: hidden;
+    height: 80px;
     &.collapsed {
-        margin-bottom: -80px;
+        height: 0;
     }
 }
 
