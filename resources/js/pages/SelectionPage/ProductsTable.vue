@@ -2,14 +2,26 @@
     <div class="products-table-wrapper">
         <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="productTotals.all" :value="currentProductFilter"
-                modelValue="overview" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" :value="currentProductFilter"
-                modelValue="ins" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`Out`" :count="productTotals.outs" :value="currentProductFilter"
-                modelValue="outs" @change="setCurrentProductFilter($event)"/>
-                <BaseTableTab :label="`Nds`" :count="productTotals.nds" :value="currentProductFilter"
-                modelValue="nds" @change="setCurrentProductFilter($event)"/>
+                <BaseTableTab :label="`Overview`" :count="productTotals.all" 
+                v-model="currentProductFilter"
+                modelValue="overview"/>
+                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" 
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                modelValue="ins"/>
+                <BaseTableTab :label="`Out`" :count="productTotals.outs" 
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                modelValue="outs"/>
+                <BaseTableTab :label="`Nds`" :count="productTotals.nds" 
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                modelValue="nds"/>
+
+                <!-- Selection Selector -->
+                <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment'"/>
+                <!-- Selection Selector Ends -->
+
             </template>
             <template v-slot:topBar>
                 <BaseTableTopBar>
@@ -100,7 +112,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="78"
+                    :item-size="currentSelections.length > 1 ? 186 : 78"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -108,7 +120,8 @@
                     <ProductsTableRow class="product-row flex-table-row"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    @onViewSingle="onViewSingle" @updateAction="(product, action) => $emit('updateAction', product, action)"/>
+                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
+                    
                 </RecycleScroller>
 
                 <tr v-if="productsFilteredBySearch.length <= 0">
@@ -123,6 +136,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ProductsTableRow from './ProductsTableRow'
+import MultipleSelectionSelector from './MultipleSelectionSelector'
 import sortArray from '../../mixins/sortArray'
 
 export default {
@@ -138,15 +152,21 @@ export default {
     ],
     components: {
         ProductsTableRow,
+        MultipleSelectionSelector,
     },
     data: function() { return {
         sortKey: 'datasource_id',
         selectedProducts: [],
         productsFilteredBySearch: this.products,
+        selectedSelections: [],
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
         ...mapState('products', {stateProducts: 'products'}),
+        currentSelections() {
+            return this.getCurrentSelections
+        },
         currentProductFilter: {
             get () {
                 return this.$store.getters['products/currentProductFilter']
@@ -194,7 +214,9 @@ export default {
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
+        ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         onViewSingle(product) {
+            this.SET_CURRENT_PDP_SELECTION(this.selection)
             this.setCurrentProduct(product)
             this.setAvailableProducts(this.products) // Save array of available products
             this.setSingleVisisble(true)
@@ -337,6 +359,14 @@ export default {
         }
         &.action-0 {
             box-shadow: 4px 0 $red inset
+        }
+    }
+
+    .selection-selector {
+        display: flex;
+        margin-left: auto;
+        > *:not(:first-child) {
+            margin-left: 8px;
         }
     }
 

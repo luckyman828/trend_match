@@ -21,6 +21,7 @@ export default {
     computed: {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('selections', ['currentSelectionStatus']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         loading () {
             return (this.productsStatus != 'success' || this.currentSelectionStatus != 'success' || this.loadingData)
         },
@@ -28,7 +29,7 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchSelectionProducts']),
-        ...mapActions('selections', ['fetchSelection']),
+        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment']),
         ...mapActions('teams', ['fetchTeamUsers']),
         async fetchSelectionTeamsUsers(teams) {
             // Use of promise and map to fetch users for all teams in parallel
@@ -43,13 +44,17 @@ export default {
         const fileId = this.$route.params.fileId
         this.fetchFile(fileId)
 
-        // Fetch selection data
+        // Fetch current selection
         const selectionId = this.$route.params.selectionId
-        let selection
-        selection = await this.fetchSelection({selectionId}),
-        this.fetchSelectionProducts(selectionId)
-        console.log(selection)
-        // await this.fetchSelectionTeamsUsers(selection.teams)
+        const selection = await this.fetchSelection({selectionId})
+
+        // Fetch selection products
+        await this.fetchSelectionProducts({selections: [selection], addToState: true})
+
+        // Fetch selections that are available for alignment for the auth user
+        const selections = await this.fetchSelections({fileId})
+        await this.filterSelectionsByAvailabilityForAlignment(selections)
+
         this.loadingData = false
     },
 }

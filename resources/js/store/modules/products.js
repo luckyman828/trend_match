@@ -15,14 +15,14 @@ export default {
         singleVisible: false,
         products: [],
         status: null,
-        currentFocusIndex: null,
+        currentFocusRowIndex: null,
     },
 
     getters: {
         loadingProducts: state => state.loading,
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
-        currentFocusIndex: state => state.currentFocusIndex,
+        currentFocusRowIndex: state => state.currentFocusRowIndex,
         availableProducts: state => {
             return state.availableProducts
         },
@@ -195,38 +195,154 @@ export default {
     },
 
     actions: {
-        async fetchProducts({ commit, dispatch }, fileId) {
+        async fetchProducts({ commit }, { fileId, addToState = true }) {
             commit('setProductStatus', 'loading')
 
             const apiUrl = `/files/${fileId}/products`
 
+            let products
             await axios
                 .get(apiUrl)
                 .then(response => {
-                    commit('insertProducts', { products: response.data, method: 'set' })
+                    products = response.data
+                    if (addToState) commit('insertProducts', { products, method: 'set' })
                     commit('procesProducts')
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
                     commit('setProductStatus', 'error')
                 })
+            return products
         },
-        async fetchSelectionProducts({ commit, dispatch }, selectionId) {
+        // async fetchSelectionProducts({ commit, dispatch }, selectionId) {
+        //     commit('setProductStatus', 'loading')
+
+        //     const apiUrl = `/selections/${selectionId}/products`
+
+        //     await axios
+        //         .get(apiUrl)
+        //         .then(response => {
+        //             commit('insertProducts', { products: response.data, method: 'set' })
+        //             dispatch('procesSelectionProducts')
+        //             commit('setProductStatus', 'success')
+        //         })
+        //         .catch(err => {
+        //             commit('setProductStatus', 'error')
+        //         })
+        // },
+        async fetchSelectionProducts({ commit, dispatch }, { selections, addToState = true }) {
             commit('setProductStatus', 'loading')
 
-            const apiUrl = `/selections/${selectionId}/products`
+            const selectionProductArrayPairs = []
+            let productsToReturn
 
-            await axios
-                .get(apiUrl)
-                .then(response => {
-                    commit('insertProducts', { products: response.data, method: 'set' })
-                    dispatch('procesSelectionProducts')
+            // Loop through the selections and fetch all the products
+            await Promise.all(
+                selections.map(async selection => {
+                    const apiUrl = `/selections/${selection.id}/products`
+                    await axios.get(apiUrl).then(async response => {
+                        const products = response.data
+                        await commit('PROCESS_SELECTION_PRODUCTS', products)
+                        selectionProductArrayPairs.push({ selection, products })
+                    })
+                })
+            )
+                .then(async response => {
+                    // Fetch fresh products
+                    const freshProducts = await dispatch('fetchProducts', {
+                        fileId: selections[0].file_id,
+                        addToState: false,
+                    })
+                    await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
+                        products: freshProducts,
+                        selectionProductArrayPairs,
+                    })
+                    productsToReturn = freshProducts
+                    if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
+                    console.log(err)
                     commit('setProductStatus', 'error')
                 })
+            return productsToReturn
         },
+        async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {
+            console.log('show selection product PDP')
+            // Set the current PDP selection
+            commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
+
+            // Show the single PDP
+            commit('setSingleVisisble', true)
+
+            // If we have already fetched the product data from this selection as selectionInput on our current product, simply use that data
+            // Find the product in our products map, to be sure we get the original product, since the current product will be overwritten by us now.
+            const productMap = getters.products
+            const stateProduct = productMap.find(x => x.id == product.id)
+            const existingSelectionInput = stateProduct.selectionInputArray.find(x => x.selection.id == selection.id)
+            if (existingSelectionInput) {
+                // Set the current product
+                commit('setCurrentProduct', existingSelectionInput.product)
+                // Set our avaialble products to the products from the chosen selection so we can navigate back and forth
+                const newAvailableProducts = productMap.map(product => {
+                    const selectionInput = product.selectionInputArray.find(x => x.selection.id == selection.id)
+                    return selectionInput.product
+                })
+                commit('setAvailableProducts', newAvailableProducts)
+            }
+
+            // If we have not already fetched the data for this selection
+            else {
+                // Fetch the products for this selection, but don't save them to our state, since we only need them for our available products
+                const selectionProducts = await dispatch('fetchSelectionProducts', {
+                    selections: [selection],
+                    addToState: false,
+                })
+                // Set our available products equal to the recently fetched products
+                commit('setAvailableProducts', selectionProducts)
+                // Set the current product
+                const newCurrentProduct = selectionProducts.find(x => x.id == product.id)
+                commit('setCurrentProduct', newCurrentProduct)
+            }
+        },
+        // async fetchProductsForMultipleSelections({ commit, dispatch }, { selections, addToState = true }) {
+        //     commit('setProductStatus', 'loading')
+
+        //     const selectionProductArrayPairs = []
+        //     let productsToReturn
+
+        //     // Loop through the selections and fetch all the products
+        //     await Promise.all(
+        //         selections.map(async selection => {
+        //             const apiUrl = `/selections/${selection.id}/products`
+        //             await axios.get(apiUrl).then(async response => {
+        //                 const products = response.data
+        //                 await commit('PROCESS_SELECTION_PRODUCTS', products)
+        //                 selectionProductArrayPairs.push({ selection, products })
+        //             })
+        //         })
+        //     )
+        //         .then(async response => {
+        //             // Fetch fresh products
+        //             const freshProducts = await dispatch('fetchProducts', {
+        //                 fileId: selections[0].file_id,
+        //                 addToState: false,
+        //             })
+        //             await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
+        //                 products: freshProducts,
+        //                 selectionProductArrayPairs,
+        //             })
+        //             productsToReturn = freshProducts
+        //             // await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', { selections, products: freshProducts })
+        //             if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
+        //             commit('setProductStatus', 'success')
+        //         })
+        //         .catch(err => {
+        //             console.log(err)
+        //             commit('setProductStatus', 'error')
+        //         })
+        //     return productsToReturn
+        // },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
                 if (addToState) commit('insertProducts', { products, method: 'add' })
@@ -421,113 +537,76 @@ export default {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'Out')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'focus', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'Focus')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'nds', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'None')
                     },
+                    configurable: true,
                 })
                 // Alignment Actions
                 Object.defineProperty(product, 'alignmentIns', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'In')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'Out')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'Focus')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'alignmentNds', {
                     get: function() {
                         return product.actions.filter(x => x.action == 'None')
                     },
+                    configurable: true,
                 })
                 // All Actions
                 Object.defineProperty(product, 'allIns', {
                     get: function() {
                         return product.ins.length + product.alignmentIns.length
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'allOuts', {
                     get: function() {
                         return product.outs.length + product.alignmentOuts.length
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'allFocus', {
                     get: function() {
                         return product.focus.length + product.alignmentFocus.length
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'allNds', {
                     get: function() {
                         return product.nds.length + product.alignmentNds.length
                     },
+                    configurable: true,
                 })
-
-                // Hard Set Actions
-                // Feedback Actions
-                // Vue.set(
-                //     product,
-                //     'ins',
-                //     product.feedbacks.filter(x => x.action == 'In')
-                // )
-                // Vue.set(
-                //     product,
-                //     'outs',
-                //     product.feedbacks.filter(x => x.action == 'Outs')
-                // )
-                // Vue.set(
-                //     product,
-                //     'focus',
-                //     product.feedbacks.filter(x => x.action == 'Focus')
-                // )
-                // Vue.set(
-                //     product,
-                //     'nds',
-                //     product.feedbacks.filter(x => x.action == 'None')
-                // )
-                // // Alignment Actions
-                // Vue.set(
-                //     product,
-                //     'alignmentIns',
-                //     product.actions.filter(x => x.action == 'In')
-                // )
-                // Vue.set(
-                //     product,
-                //     'alignmentOuts',
-                //     product.actions.filter(x => x.action == 'Outs')
-                // )
-                // Vue.set(
-                //     product,
-                //     'alignmentFocus',
-                //     product.actions.filter(x => x.action == 'Focus')
-                // )
-                // Vue.set(
-                //     product,
-                //     'alignmentNds',
-                //     product.actions.filter(x => x.action == 'None')
-                // )
-                // // All Actions
-                // Vue.set(product, 'allIns', product.ins.length + product.alignmentIns.length)
-                // Vue.set(product, 'allOuts', product.outs.length + product.alignmentOuts.length)
-                // Vue.set(product, 'allFocus', product.focus.length + product.alignmentFocus.length)
-                // Vue.set(product, 'allNds', product.nds.length + product.alignmentNds.length)
 
                 // Comments / Requests
                 Object.defineProperty(product, 'hasAuthUserRequest', {
@@ -578,8 +657,8 @@ export default {
         setCurrentProduct(state, product) {
             state.currentProduct = product
         },
-        setCurrentFocusIndex(state, index) {
-            state.currentFocusIndex = index
+        setCurrentFocusRowIndex(state, index) {
+            state.currentFocusRowIndex = index
         },
         setAvailableProducts(state, products) {
             state.availableProducts = products
@@ -642,8 +721,7 @@ export default {
                 })
             })
         },
-        procesSelectionProducts: state => {
-            const products = state.products
+        PROCESS_SELECTION_PRODUCTS(state, products) {
             products.map(product => {
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
@@ -668,12 +746,13 @@ export default {
                     },
                 })
 
-                // Actions
+                // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
                     get: function() {
                         return product.feedbacks.filter(x => x.action == 'In')
                     },
+                    configurable: true,
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
@@ -711,15 +790,225 @@ export default {
                         return product.actions.filter(x => x.action == 'None')
                     },
                 })
-
-                // Comments / Requests
-                Object.defineProperty(product, 'hasAuthUserRequest', {
+                // All Actions
+                Object.defineProperty(product, 'allIns', {
                     get: function() {
-                        return !!product.requests.find(x => x.author_id == 'None')
+                        return product.ins.length + product.alignmentIns.length
+                    },
+                })
+                Object.defineProperty(product, 'allOuts', {
+                    get: function() {
+                        return product.outs.length + product.alignmentOuts.length
+                    },
+                })
+                Object.defineProperty(product, 'allFocus', {
+                    get: function() {
+                        return product.focus.length + product.alignmentFocus.length
+                    },
+                })
+                Object.defineProperty(product, 'allNds', {
+                    get: function() {
+                        return product.nds.length + product.alignmentNds.length
                     },
                 })
                 // Remove deleted comments
                 Vue.set(product, 'comments', product.comments.filter(x => !x.is_deleted))
+            })
+        },
+        PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs }) {
+            // Use the first product of the
+            products.map((product, productIndex) => {
+                // Attach the correct selection product to the base product
+                Vue.set(
+                    product,
+                    'selectionInputArray',
+                    selectionProductArrayPairs.map(x => {
+                        return {
+                            selection: x.selection,
+                            product: x.products[productIndex],
+                        }
+                    })
+                )
+
+                const preferred_currency = product.selectionInputArray[0].product.preferred_currency
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function() {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (preferred_currency) {
+                            const preferredPrice = product.prices.find(x => (x.currency = preferred_currency))
+                            if (preferredPrice) return preferredPrice
+                        }
+                        // If nothing else worked, return the first available price
+                        return product.prices[0]
+                    },
+                })
+
+                Object.defineProperty(product, 'feedbacks', {
+                    get: function() {
+                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                            return acc.concat(
+                                selectionProductPair.product.feedbacks.filter(
+                                    action =>
+                                        !acc.find(existingAction => existingAction.selection_id == action.selection_id)
+                                )
+                            )
+                        }, [])
+                    },
+                })
+                Object.defineProperty(product, 'actions', {
+                    get: function() {
+                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                            return acc.concat(
+                                selectionProductPair.product.actions.filter(
+                                    action =>
+                                        !acc.find(existingAction => existingAction.selection_id == action.selection_id)
+                                )
+                            )
+                        }, [])
+                    },
+                })
+                Object.defineProperty(product, 'comments', {
+                    get: function() {
+                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                            return acc.concat(
+                                selectionProductPair.product.comments.filter(
+                                    comment =>
+                                        !acc.find(existingComment => existingComment.id == comment.id) &&
+                                        !comment.is_deleted
+                                )
+                            )
+                        }, [])
+                    },
+                })
+                Object.defineProperty(product, 'requests', {
+                    get: function() {
+                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                            return acc.concat(
+                                selectionProductPair.product.requests.filter(
+                                    request => !acc.find(existingRequest => existingRequest.id == request.id)
+                                )
+                            )
+                        }, [])
+                    },
+                })
+
+                // Set the current action for the user
+                Object.defineProperty(product, 'your_feedback', {
+                    get: function() {
+                        return product.feedbacks.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).action
+                    },
+                    set: function(value) {
+                        product.feedbacks.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).action = value
+                    },
+                    configurable: true,
+                })
+                // Set the current action for the user
+                Object.defineProperty(product, 'action', {
+                    get: function() {
+                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
+                            .action
+                    },
+                    set: function(value) {
+                        product.actions.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).action = value
+                    },
+                    configurable: true,
+                })
+                // Set the current action for the user
+                Object.defineProperty(product, 'action_author', {
+                    get: function() {
+                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
+                            .user
+                    },
+                    set: function(value) {
+                        product.actions.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        ).user = value
+                    },
+                    configurable: true,
+                })
+
+                // Dynamically Calculated Actions
+                // Feedback Actions
+                Object.defineProperty(product, 'ins', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'In')
+                    },
+                    configurable: true,
+                })
+                Object.defineProperty(product, 'outs', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'focus', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'nds', {
+                    get: function() {
+                        return product.feedbacks.filter(x => x.action == 'None')
+                    },
+                })
+                // Alignment Actions
+                Object.defineProperty(product, 'alignmentIns', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentOuts', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentFocus', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(product, 'alignmentNds', {
+                    get: function() {
+                        return product.actions.filter(x => x.action == 'None')
+                    },
+                })
+                // All Actions
+                Object.defineProperty(product, 'allIns', {
+                    get: function() {
+                        return product.ins.length + product.alignmentIns.length
+                    },
+                })
+                Object.defineProperty(product, 'allOuts', {
+                    get: function() {
+                        return product.outs.length + product.alignmentOuts.length
+                    },
+                })
+                Object.defineProperty(product, 'allFocus', {
+                    get: function() {
+                        return product.focus.length + product.alignmentFocus.length
+                    },
+                })
+                Object.defineProperty(product, 'allNds', {
+                    get: function() {
+                        return product.nds.length + product.alignmentNds.length
+                    },
+                })
             })
         },
     },

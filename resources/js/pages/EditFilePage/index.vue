@@ -33,7 +33,7 @@ export default {
         // Fetch the current file and the products
         const fileId = this.$route.params.fileId
         this.fetchFile(fileId)
-        this.fetchProducts(fileId)
+        this.fetchProducts({fileId})
     },
 }
 </script>

@@ -63,6 +63,9 @@
                         :modelValue="selection" v-model="selection" @change="change"/>
 
                         <div class="label">
+                            <template v-if="labelPrefix">
+                                <span v-html="labelPrefix" style="margin-right: 4px"></span>
+                            </template>
                             <template v-if="optionNameKey">
                                 {{option[optionNameKey]}}
                             </template>
@@ -102,6 +105,7 @@ export default {
         'unsetOption',
         'unsetValue',
         'value',
+        'labelPrefix',
     ],
     data: function () { return {
         selection: [],

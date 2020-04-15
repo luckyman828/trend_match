@@ -12,7 +12,10 @@ export default {
         teamsStatus: null,
         currentSelection: null,
         currentSelectionUsers: null,
+        currentPDPSelection: null,
         selections: [],
+        currentSelections: [],
+        selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
             {
                 role: 'Member',
@@ -35,20 +38,35 @@ export default {
         currentSelectionStatus: state => state.currentSelectionStatus,
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
-        currentSelection: state => state.currentSelection,
-        currentSelectionMode: state => {
-            if (state.currentSelection) {
-                return state.currentSelection.your_role == 'Member'
+        currentSelection: state => state.currentSelections[0],
+        getCurrentSelections: state => state.currentSelections,
+        getSelections: state => state.selections,
+        getCurrentPDPSelection: state => state.currentPDPSelection,
+        getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        currentSelectionMode: (state, getters) => {
+            const selection = getters.currentSelection
+            if (selection) {
+                return selection.your_role == 'Member'
                     ? 'Feedback'
-                    : state.currentSelection.your_role == 'Owner'
+                    : selection.your_role == 'Owner'
                     ? 'Alignment'
-                    : state.currentSelection.your_role == 'Approver'
+                    : selection.your_role == 'Approver'
                     ? 'Approval'
                     : 'No Access'
             }
         },
+        getSelectionCurrentMode: (state, getters) => selection => {
+            return selection.your_role == 'Member'
+                ? 'Feedback'
+                : selection.your_role == 'Owner'
+                ? 'Alignment'
+                : selection.your_role == 'Approver'
+                ? 'Approval'
+                : 'No Access'
+        },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
+        getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
         selections: state => state.selections,
         selectionsTree: state => {
             const list = state.selections
@@ -84,15 +102,19 @@ export default {
         getAuthUserSelectionWriteAccess: () => selection => {
             return {
                 actions: {
-                    has_access: selection.is_open && selection.your_role != 'Approver',
-                    msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can decide action',
+                    hasAccess: selection.is_open && selection.your_role != 'Approver',
+                    msg: !selection.is_open
+                        ? 'Selection is locked'
+                        : selection.your_role == 'Approver'
+                        ? 'Only selection owners can decide action'
+                        : '',
                 },
                 requests: {
-                    has_access: selection.is_open && selection.your_role == 'Owner',
+                    hasAccess: selection.is_open && selection.your_role == 'Owner',
                     msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can make requests',
                 },
                 comments: {
-                    has_access: selection.is_open,
+                    hasAccess: selection.is_open,
                     msg: !selection.is_open && 'Selection is locked',
                 },
             }
@@ -100,11 +122,11 @@ export default {
     },
 
     actions: {
-        async fetchSelections({ commit }, { file, addToState = true }) {
+        async fetchSelections({ commit }, { fileId, addToState = true }) {
             return new Promise(async (resolve, reject) => {
                 commit('setLoading', true)
                 commit('setStatus', 'loading')
-                const apiUrl = `/files/${file.id}/selections/flat`
+                const apiUrl = `/files/${fileId}/selections/flat`
                 let selections
                 await axios
                     .get(apiUrl)
@@ -124,6 +146,29 @@ export default {
                 resolve(selections)
             })
         },
+        async filterSelectionsByAvailabilityForAlignment({ commit, getters, state, dispatch }, selections) {
+            const selectionsToReturn = []
+            await Promise.all(
+                selections.map(async selection => {
+                    const fetchedSelection = await dispatch('fetchSelection', {
+                        selectionId: selection.id,
+                        addToState: false,
+                    })
+                    selectionsToReturn.push(fetchedSelection)
+                })
+            )
+            const selectionsFiltered = selectionsToReturn.filter(selection => {
+                return (
+                    (getters.getAuthUserHasSelectionEditAccess(selection) || selection.is_visible) &&
+                    selection.your_role == 'Owner'
+                )
+            })
+            state.selectionsAvailableForAlignment = selectionsFiltered
+            return selectionsFiltered.sort((a, b) => {
+                if (a.type == 'Master') return -1
+                if (b.parent_id == a.id) return -1
+            })
+        },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
             commit('setCurrentSelectionStatus', 'loading')
 
@@ -135,7 +180,7 @@ export default {
                     selection = response.data
                     commit('PROCESS_SELECTIONS', [selection])
                     if (addToState) {
-                        commit('setCurrentSelection', selection)
+                        commit('SET_CURRENT_SELECTIONS', [selection])
                     }
                     commit('setCurrentSelectionStatus', 'success')
                 })
@@ -461,8 +506,13 @@ export default {
             state.usersStatus = status
         },
         setCurrentSelection(state, selection) {
-            // Update the current selection if we already have one
             state.currentSelection = selection
+        },
+        SET_CURRENT_SELECTIONS(state, selections) {
+            state.currentSelections = selections
+        },
+        SET_CURRENT_PDP_SELECTION(state, selection) {
+            state.currentPDPSelection = selection
         },
         insertSelections(state, { selections, method }) {
             // Check if we have already instantiated selections

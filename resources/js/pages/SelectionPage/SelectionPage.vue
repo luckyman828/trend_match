@@ -1,10 +1,9 @@
 <template>
     <div class="subfile">
-        <ThePageHeader :title="`${!selection.is_open ? '[Locked]' : ''} ${selection.name || 'Untitled Selection'}: 
-        ${selection.your_role == 'Owner' ? 'Alignment' 
-        : selection.your_role == 'Approver' ? 'Approval'
-        : selection.your_role == 'Member' ? 'Feedback' 
-        : 'Access Denied'}`"/>
+        <ThePageHeader :title="`${currentFile.name}: 
+        ${!currentSelection.is_open ? '[Locked]' : ''} ${currentSelection.name || 'Untitled Selection'
+        }${currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}: 
+        ${currentSelectionMode || 'Access Denied'}`"/>
 
         <!-- Access denied -->
         <template v-if="!selection.your_role">
@@ -13,7 +12,7 @@
 
         <!-- Access granted -->
         <template v-else>
-            <div class="quick-actions" v-if="productsNoOutNoComment.length > 0 || productsNoIn.length > 0">
+            <div class="quick-actions" v-if="currentSelections.length <= 1 && (productsNoOutNoComment.length > 0 || productsNoIn.length > 0)">
                 <p>Quick actions</p>
                 <button v-if="productsNoOutNoComment.length > 0" class="green-hover md ghost" 
                 @click="InNoOutNoCommentStyles()" style="margin-right: 8px;">
@@ -28,11 +27,11 @@
                 </button> -->
             </div>
 
-            <ProductsTable ref="productsComponent" :file="file" :products="productsFiltered"
-            :selection="currentSelection" :currentAction="currentAction"
+            <ProductsTable ref="productsComponent" :file="currentFile" :products="productsFiltered"
+            :selection="selection" :currentAction="currentAction"
             @updateAction="onUpdateAction"/>
 
-            <ProductFlyin :show="singleVisible" :selection="currentSelection" :currentAction="currentAction"
+            <ProductFlyin :show="singleVisible" :selection="selection" :currentAction="currentAction"
             @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
         </template>
 
@@ -61,17 +60,17 @@ export default{
     computed: {
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode', 'currentSelectionModeAction']),
+        ...mapGetters('selections', ['currentSelection', 'getCurrentSelections', 'currentSelectionMode', 'currentSelectionModeAction']),
         ...mapGetters('auth', ['authUser']),
         selection() {
             return this.currentSelection
         },
+        currentSelections() {
+            return this.getCurrentSelections
+        },
         // Get the action according to the current type of selection access
         currentAction() {
             return this.currentSelectionModeAction
-        },
-        file() {
-            return this.currentFile
         },
         productsNoIn() {
             return this.products.filter(product => {
@@ -103,12 +102,12 @@ export default{
             this.hideQuickIn = true
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
-        onUpdateAction(product, action) {
+        onUpdateAction(product, action, selection) {
             const actionToPost = product[this.currentAction] == action ? 'None' : action
-            this.insertOrUpdateAction({product, action: actionToPost, selection: this.selection, user: this.authUser})
+            this.insertOrUpdateAction({product, action: actionToPost, selection, user: this.authUser})
         },
-        onInsertOrUpdateActions(products, action) {
-            this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        onInsertOrUpdateActions(products, action, selection) {
+            this.insertOrUpdateActions({products, action, selection, user: this.authUser})
         }
     },
     created() {

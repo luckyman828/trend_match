@@ -1,5 +1,5 @@
 <template>
-    <div class="tab" :class="[{'active': active}, {'has-count': count != null}]" @click="change">
+    <div class="tab" :class="[{'active': active}, {'has-count': count != null}, {'disabled': disabled}]" @click="!disabled && change($event)">
         <span>{{label}}</span>
         <span v-if="count != null" class="count pill sm" :class="active ? 'primary' : 'white'">
             <span>{{count}}</span>
@@ -15,6 +15,7 @@ export default {
         'value',
         'label',
         'count',
+        'disabled',
     ],
     computed: {
         active() {
@@ -47,7 +48,7 @@ export default {
         color: $dark15;
         cursor: pointer;
         padding-bottom: $borderRadius;
-        &:hover {
+        &:hover:not(.disabled) {
             background: $light2;
             color: $dark05;
         }
@@ -62,6 +63,10 @@ export default {
         &.has-count {
             justify-content: space-between;
             padding: 0 32px $borderRadius;
+        }
+        &.disabled {
+            cursor: default;
+            opacity: .5;
         }
     }
 

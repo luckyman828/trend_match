@@ -34,7 +34,12 @@
                 </template>
                 
             </div>
+            <!-- End Comment Controls -->
         </div>
+        <!-- <div class="sender">
+            <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
+            {{(comment.user_id == authUser.id) ? 'You' : comment.user ? comment.user.name : 'Anonymous'}}
+        </div> -->
         <div class="save-controls" v-if="editActive">
             <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
             @click="onUpdateComment">
@@ -120,6 +125,12 @@ export default {
         &.has-traits {
             margin-top: 16px;
         }
+    }
+    .sender {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: $font;
     }
     .save-controls {
         position: absolute;

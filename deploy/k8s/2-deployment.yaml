@@ -5,6 +5,7 @@ metadata:
   name: ${CONTAINER_IMAGE}
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:

@@ -14,23 +14,26 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
+                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
+                    </div>
+                    <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
-                        :disabled="currentSelectionMode == 'Approval'" 
-                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'Focus')">
+                        :disabled="!userWriteAccess.actions.hasAccess" 
+                        v-tooltip="userWriteAccess.actions.msg"
+                        @click="onUpdateAction(product, 'Focus', currentSelection)">
                             <i class="far fa-star"></i>
                         </BaseButton>
                         <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
-                        :disabled="currentSelectionMode == 'Approval'" 
-                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'In')">
+                        :disabled="!userWriteAccess.actions.hasAccess" 
+                        v-tooltip="userWriteAccess.actions.msg"
+                        @click="onUpdateAction(product, 'In', currentSelection)">
                             <i class="far fa-heart"></i>
                             <span>In</span>
                         </BaseButton>
                         <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
-                        :disabled="currentSelectionMode == 'Approval'" 
-                        v-tooltip="currentSelectionMode == 'Approval' && 'Only selection owner can decide action'"
-                        @click="onUpdateAction(product, 'Out')">
+                        :disabled="!userWriteAccess.actions.hasAccess" 
+                        v-tooltip="userWriteAccess.actions.msg"
+                        @click="onUpdateAction(product, 'Out', currentSelection)">
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
                         </BaseButton>
@@ -143,6 +146,7 @@ import { mapActions, mapGetters } from 'vuex'
 import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
+import SelectionSelector from './SelectionSelector'
 import variantImage from '../../../mixins/variantImage'
 
 export default {
@@ -158,6 +162,7 @@ export default {
         CommentsSection,
         DistributionSection,
         RequestsSection,
+        SelectionSelector,
     },
     data: function () { return {
             currentImgIndex: 0,
@@ -180,18 +185,24 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
-        ...mapGetters('selections', ['currentSelectionId', 'currentSelection', 'currentSelectionMode', 'currentSelectionModeAction']),
+        ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
         product () {
             return this.currentProduct
         },
+        currentSelection () { return this.getCurrentPDPSelection },
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
+        currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
         currentAction () {
             return this.currentSelectionModeAction
+        },
+        userWriteAccess () {
+            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
         },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
-        onUpdateAction(product, action) {
-            this.$emit('updateAction', product, action)
+        onUpdateAction(product, action, selection) {
+            this.$emit('updateAction', product, action, selection)
         },
         imgError (variant) {
              variant.error = true
@@ -223,13 +234,13 @@ export default {
 
                 if (key == 'Escape')
                     this.onCloseSingle()
-                if ( this.currentSelectionMode != 'Approval' ) {
+                if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')
-                        this.onUpdateAction(this.product, 'In')
+                        this.onUpdateAction(this.product, 'In', this.currentSelection)
                     if (key == 'KeyO')
-                        this.onUpdateAction(this.product, 'Out')
+                        this.onUpdateAction(this.product, 'Out', this.currentSelection)
                     if (key == 'KeyF' || key == 'KeyU')
-                        this.onUpdateAction(this.product, 'Focus')
+                        this.onUpdateAction(this.product, 'Focus', this.currentSelection)
                 }
             }
         },

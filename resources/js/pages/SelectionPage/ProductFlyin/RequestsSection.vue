@@ -12,10 +12,10 @@
                 <div class="selection-request" v-if="selectionRequest">
                     <request :request="selectionRequest"/>
                 </div>
-                <div v-if="product.requests.find(x => x.selection_id != currentSelection.id)" class="break-line">Showing requests from other selections(s)</div>
+                <div v-if="product.requests.find(x => x.selection_id != selection.id)" class="break-line">Showing requests from other selections(s)</div>
                 <request :request="request" :key="request.id" 
                 v-for="request in product.requests
-                .filter(x => x.selection_id != currentSelection.id)
+                .filter(x => x.selection_id != selection.id)
                 .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)"/>
             </div>
 
@@ -32,11 +32,11 @@
                     </button> -->
 
                     <div class="input-parent request">
-                        <BaseInputTextArea ref="requestField" :disabled="!userWriteAccess.requests.has_access"
-                        v-tooltip="!userWriteAccess.requests.has_access && userWriteAccess.requests.msg"
-                        :placeholder="userWriteAccess.comments.has_access ? 'Write your request here...' : userWriteAccess.requests.msg"
+                        <BaseInputTextArea ref="requestField" :disabled="!userWriteAccess.requests.hasAccess"
+                        v-tooltip="!userWriteAccess.requests.hasAccess && userWriteAccess.requests.msg"
+                        :placeholder="userWriteAccess.comments.hasAccess ? 'Write your request here...' : userWriteAccess.requests.msg"
                         v-model="newRequest.content" 
-                        @keydown.native.enter.exact.prevent @click.native="userWriteAccess.requests.has_access && activateWrite()"
+                        @keydown.native.enter.exact.prevent @click.native="userWriteAccess.requests.hasAccess && activateWrite()"
                         @keyup.native.esc="deactivateWrite(); cancelRequest()" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
                     </div>
                     <div class="flex-wrapper" v-if="writeActive">
@@ -70,6 +70,7 @@ export default {
     name: 'requestsSection',
     props: [
         'product',
+        'selection',
     ],
     components: {
         Request,
@@ -90,16 +91,20 @@ export default {
             if (newVal.id != oldVal.id)
                 this.update()
         },
+        selection: function(newVal, oldVal) {
+            if (newVal.id != oldVal.id)
+                this.update()
+        },
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
         submitDisabled () {
             return this.newRequest.content.length < 1 
-            // || (this.selectionRequest && this.newRequest.content == this.selectionRequest.content)
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
+            return this.getAuthUserSelectionWriteAccess(this.selection)
         },
     },
     methods: {
@@ -136,10 +141,10 @@ export default {
                 id: this.selectionRequest ? this.selectionRequest.id : null,
                 author_id: this.authUser.id,
                 product_id: this.product.id,
-                selection_id: this.currentSelection.id,
+                selection_id: this.selection.id,
                 content: this.newRequest.content,
                 author: this.authUser,
-                selection: this.currentSelection
+                selection: this.selection
             }
             // dispatch action
             this.insertOrUpdateRequest({product: this.product, request: requestToPost})
@@ -160,7 +165,7 @@ export default {
         },
         update() {
             // Find the existing selection request if any
-            this.selectionRequest = this.product.requests.find(x => x.selection_id == this.currentSelection.id)
+            this.selectionRequest = this.product.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
             this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
             // Set the id of the new request if one exists
