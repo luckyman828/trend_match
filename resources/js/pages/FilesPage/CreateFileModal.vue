@@ -146,7 +146,7 @@
                                                     <td><BaseInputField :id="'currency-'+index+'-file'" 
                                                     class="input-field" disabled=true
                                                     :value="currency.fileIndex != null ? availableFiles[currency.fileIndex].fileName : null" 
-                                                    type="select" @click="showSelectFileContext($event, currency)">
+                                                    type="select" @click="showSelectCurrencyFileContext($event, currency)">
                                                         <i class="fas fa-caret-down"></i>
                                                     </BaseInputField></td>
                                                 </tr>
@@ -187,6 +187,63 @@
                                 <i class="fas fa-plus"></i><span>Add currency</span>
                             </button>
                         </div>
+
+                        <!-- START Map Assortments -->
+                        <div class="table-wrapper map-assortments">
+                            <h3>Map Assortments</h3>
+                            <div class="assortment-wrapper" v-for="(assortment, index) in assortmentsToMatch" :key="index">
+                                <h4>Assortment {{index+1}}</h4>
+                                <div class="assortment-header">
+                                    <div class="left">
+                                        <table class="map-fields-table">
+                                            <tr class="header">
+                                                <th></th>
+                                                <th><label :for="'assortment-'+index+'-file'">Linked File</label></th>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td><BaseInputField :id="'assortment-'+index+'-file'" 
+                                                class="input-field" disabled=true
+                                                :value="assortment.fileIndex != null ? availableFiles[assortment.fileIndex].fileName : null" 
+                                                type="select" @click="showSelectAssortmentFileContext($event, assortment)">
+                                                    <i class="fas fa-caret-down"></i>
+                                                </BaseInputField></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <button v-if="index > 0" class="dark" @click="assortmentsToMatch.splice(index,1)">
+                                        <i class="fas fa-trash-alt"></i><span>Remove assortment</span>
+                                    </button>
+                                </div>
+                                <table class="map-fields-table">
+                                    <tr class="header">
+                                        <th></th>
+                                        <th><label>Database</label></th>
+                                        <th></th>
+                                        <th><label>Matched Datasource</label></th>
+                                        <th><label>Example</label></th>
+                                    </tr>
+                                    <tr v-for="(field, index) in assortment.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                                        <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                                        <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                        <td><i class="fas fa-equals"></i></td>
+                                        <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                            <i class="fas fa-caret-down"></i>
+                                        </BaseInputField></td>
+                                        <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                                            :value="previewExampleValue(field.newValue, field.name)"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <button class="dark" 
+                            @click="assortmentsToMatch.push(JSON.parse(JSON.stringify(assortmentDefaultObject)))">
+                                <i class="fas fa-plus"></i><span>Add assortment</span>
+                            </button>
+                        </div>
+                        <!-- END Map Assortments -->
 
                     </div>
 
@@ -230,7 +287,7 @@
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextSelectFile" class="context-select-file">
+        <BaseContextMenu ref="contextSelectCurrencyFile" class="context-select-file">
             <template v-slot:header>
                 Select file to match
             </template>
@@ -241,6 +298,21 @@
                     :options="availableFiles"
                     v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
                     :optionNameKey="'fileName'" @submit="autoMapCurrency(slotProps.item);slotProps.hide()"/>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextSelectAssortmentFile" class="context-select-file">
+            <template v-slot:header>
+                Select file to match
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
+                    @unset="slotProps.item.fileIndex = null;slotProps.hide()"
+                    :options="availableFiles"
+                    v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
+                    :optionNameKey="'fileName'" @submit="autoMapAssortment(slotProps.item);slotProps.hide()"/>
                 </div>
             </template>
         </BaseContextMenu>
@@ -289,12 +361,6 @@ export default {
             headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
-            {name: 'assortment_name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['assortment name','box name', 'ass name']},
-            {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
-            {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
             {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
             {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -332,6 +398,28 @@ export default {
                 headersToMatch: ['whs','wholesale price','whs price']},
                 {name: 'recommended_retail_price', displayName: 'Recommended Retail Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['rrp','recommended retail price','retail price']},
+            ]
+        }],
+        assortmentDefaultObject: {
+            fileIndex: null,
+            fieldsToMatch: [
+                {name: 'name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['assortment name','box name', 'ass name']},
+                {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
+                {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
+            ]
+        },
+        assortmentsToMatch: [{
+            fileIndex: null,
+            fieldsToMatch: [
+                {name: 'name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['assortment name','box name', 'ass name']},
+                {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
+                {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
             ]
         }]
     }},
@@ -603,6 +691,24 @@ export default {
                 }
             })
         },
+        autoMapAssortment(assortment) {
+            // Loop through the fields we still need to match to a header
+            const file = this.availableFiles[assortment.fileIndex]
+            assortment.fieldsToMatch.forEach(field => {
+                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
+                    // Test if the current header has a file that matches
+                    const autoMatchIndex = file.headers.findIndex(header => {
+                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
+                    })
+                    if (autoMatchIndex >= 0) {
+                        const newValueToPush = {fileIndex: assortment.fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
+                        field.newValue = newValueToPush
+                        // Validate the value of the new mapping
+                        this.validateField(field)
+                    }
+                }
+            })
+        },
         showSelectContext(e, field) {
             const contextMenu = this.$refs.contextSelectField
             contextMenu.item = field
@@ -613,9 +719,14 @@ export default {
             contextMenu.item = file
             contextMenu.show(e)
         },
-        showSelectFileContext(e, currency) {
-            const contextMenu = this.$refs.contextSelectFile
+        showSelectCurrencyFileContext(e, currency) {
+            const contextMenu = this.$refs.contextSelectCurrencyFile
             contextMenu.item = currency
+            contextMenu.show(e)
+        },
+        showSelectAssortmentFileContext(e, assortment) {
+            const contextMenu = this.$refs.contextSelectAssortmentFile
+            contextMenu.item = assortment
             contextMenu.show(e)
         },
         instantiateProducts() {
@@ -666,27 +777,33 @@ export default {
                             }
                         }
 
-                        // Assortments
-                        // Find / Instantiate this lines assortments
-                        let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
                         let assortment = null
-                        // Check that the assortment key is from this file
-                        if (assortmentKeyField.newValue.fileIndex == fileIndex) {
-                            // Find the assortment keys index
-                            let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
-                            // Find the assortment keys value
-                            let assortmentKeyValue = line[assortmentKeyIndex]
-                            // Find this lines assortment name
-                            assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
-                            if (!assortment) {
-                                assortment = {
-                                    name: assortmentKeyValue,
-                                    box_ean: null,
-                                    box_size: null,
+                        let assortments = this.assortmentsToMatch
+                        // Loop through our assortments to match
+                        assortments.forEach(thisAssortmentObject => {
+                            // Instantiate an assortment object
+                            // FieldsToMatch[0] = assortment name
+                            const assortmentName = line[thisAssortmentObject.fieldsToMatch[0].newValue.fieldIndex]
+                            assortment = product.assortments.find(x => x.name == assortmentName)
+                            if (!!assortment || assortmentName) {
+                                if (!assortment) {
+                                    assortment = {
+                                        name: assortmentName,
+                                        box_size: null,
+                                        box_ean: null,
+                                    }
+                                    product.assortments.push(assortment)
                                 }
-                                product.assortments.push(assortment)
+                                // Loop through the currencies fields
+                                thisAssortmentObject.fieldsToMatch.forEach(field => {
+                                    if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                        const assortmentFieldValue = line[field.newValue.fieldIndex]
+                                        const assortmentFieldName = field.name
+                                        assortment[assortmentFieldName] = assortmentFieldValue
+                                    }
+                                })
                             }
-                        }
+                        })
 
                         // CURRENCIES
                         // Find / Instantiate this lines currencies
@@ -773,16 +890,6 @@ export default {
                                             }
                                         } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
                                             variant[fieldName] = fieldValue
-                                        }
-                                    }
-                                }
-                                // Assortments
-                                else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
-                                    // Check if we have matched an assortment for this line
-                                    if (assortment) {
-                                        // If the assortment exists, add the field value to it
-                                        if (fieldName != 'assortment_name') { // Exclude assortment_name to only write "name" to the variant
-                                            assortment[fieldName] = fieldValue
                                         }
                                     }
                                 }
@@ -1028,5 +1135,25 @@ export default {
             margin-top: 32px;
         }
     }
-
+.assortment-wrapper {
+    margin-bottom: 32px;
+    h4 {
+        padding-left: 28px;
+        margin-top: 0;
+        margin-bottom: 4px;
+    }
+}
+.assortment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    align-items: flex-end;
+    padding-left: 20px;
+        p {
+        padding-left: 24px;
+        .small {
+            font-size: 12px;
+        }
+    }
+}
 </style>
