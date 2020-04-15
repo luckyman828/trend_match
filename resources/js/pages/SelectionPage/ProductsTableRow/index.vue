@@ -19,7 +19,7 @@
                 <span>{{product.datasource_id}}</span>
                 <div class="variant-list">
                     <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
-                        <span>{{variant.name}}</span>
+                        <span>{{variant.name || 'Unnamed'}}</span>
                     </div>
                 </div>
             </td>
