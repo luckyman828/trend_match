@@ -13,7 +13,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox/></BaseTableHeader>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :modelValue="true" :value="selected.length > 0"
+                    @change="(checked) => checked ? localSelected = files : localSelected = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'modified'" :currentSortKey="sortKey" @sort="onSort">Modified</BaseTableHeader> -->
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader> -->
@@ -21,8 +24,12 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="folder in foldersToShow" :key="folder.id" class="folder" @contextmenu.prevent="showContextMenu($event, folder, 'folder')">
-                    <td class="select"><BaseCheckbox/></td>
+                <tr v-for="(folder, index) in foldersToShow" :key="folder.id" class="folder" 
+                @contextmenu.prevent="showContextMenu($event, folder, 'folder')"
+                @click.ctrl="$refs.folderCheckbox[index].check()">
+                    <td class="select">
+                        <BaseCheckbox ref="folderCheckbox" :value="folder" :modelValue="localSelected" v-model="localSelected"/>
+                    </td>
                     <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
                         <i v-if="folder.id" class="fas fa-folder dark15"></i>
                         <i v-else class="far fa-folder dark15"></i>
@@ -49,8 +56,13 @@
                         <button class="invisible ghost-hover" @click="showContextMenu($event, folder, 'folder')"><i class="far fa-ellipsis-h"></i></button>
                     </td>
                 </tr>
-                <tr v-for="file in filesToShow" :key="file.id" class="file" @contextmenu.prevent="showContextMenu($event, file, 'file')">
-                    <td class="select"><BaseCheckbox/></td>
+
+                <tr v-for="(file, index) in filesToShow" :key="file.id" class="file" 
+                @contextmenu.prevent="showContextMenu($event, file, 'file')"
+                @click.ctrl="$refs.fileCheckbox[index].check()">
+                    <td class="select">
+                        <BaseCheckbox ref="fileCheckbox" :value="file" :modelValue="localSelected" v-model="localSelected"/>
+                    </td>
                     <td v-if="toEdit && toEdit.item.id == file.id && toEdit.type == 'file' && toEdit.field == 'title'" class="title">
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'"
                             :value="toEdit.item.name" :oldValue="file.name" v-model="toEdit.item.name"
@@ -252,6 +264,7 @@
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
+
     </div>
 </template>
 
@@ -296,6 +309,10 @@ export default {
         },
         filesToShow() {
             return this.files.filter(x => x.type =='File')
+        },
+        localSelected: {
+            get() { return this.selected },
+            set(localSelected) {this.$emit('input', localSelected)}
         }
     },
     methods: {
@@ -309,6 +326,10 @@ export default {
             this.$emit('setCurrentFolder', folder)
         },
         showContextMenu(e, item, type) {
+            if (this.selected.length > 1) {
+                this.$emit('showMultiItemContextMenu', e)
+                return
+            }
             const folderMenu = this.$refs.contextMenuFolder
             const fileMenu = this.$refs.contextMenuFile
             // Hide any current contextMenus

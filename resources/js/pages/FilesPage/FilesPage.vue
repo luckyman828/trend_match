@@ -23,9 +23,11 @@
         </div>
         <h1>Files</h1>
 
-        <FilesTable :files="files" :folder="currentFolder" :selected="selected" 
+        <FilesTable :files="files" :folder="currentFolder" :selected="selected"
+        v-model="selected"
         @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
-        @showFileOwnersFlyin="showFileOwnersFlyin"/>
+        @showFileOwnersFlyin="showFileOwnersFlyin"
+        @showMultiItemContextMenu="showMultiItemContextMenu"/>
 
         <FileFlyin :file="currentFile" :show="fileFlyinVisible" @close="fileFlyinVisible = false"
         @showFileOwnersFlyin="showFileOwnersFlyin" @showFileApproversFlyin="showFileApproversFlyin"/>
@@ -33,6 +35,30 @@
         <!-- <FileOwnersFlyin :file="currentFile" :show="fileOwnersFlyinVisible" @close="fileOwnersFlyinVisible = false"/> -->
 
         <!-- <FileApproversFlyin :file="currentFile" :show="fileApproversFlyinVisible" @close="fileApproversFlyinVisible = false"/> -->
+
+        <BaseContextMenu ref="contextMenuMultipleItems" class="context-file"
+        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteMultipleFiles(selected)"
+        @keybind-c="selected = []"
+        >
+            <template slot="header">
+                <span>Choose action for {{selected.length}} items</span>
+            </template>
+            <template slot>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-times"
+                    @click="selected = []">
+                        <span><u>C</u>lear selection</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete files'"
+                    @click="onDeleteMultipleFiles(selected)">
+                        <span><u>D</u>elete items</span>
+                    </BaseContextMenuItem>
+                </div>
+            </template>
+        </BaseContextMenu>
     
     </div>
 </template>
@@ -65,7 +91,7 @@ export default {
     }},
     computed: {
         ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId']),
-        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         folders() {
             return this.files.filter(x => x.type == 'Folder')
         },
@@ -76,7 +102,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['setCurrentFolder', 'fetchFile', 'fetchFolder']),
+        ...mapActions('files', ['setCurrentFolder', 'fetchFile', 'fetchFolder', 'deleteFile']),
         ...mapMutations('files', ['setCurrentFile']),
         showSingleFile(file) {
             // Set the current file id
@@ -109,9 +135,17 @@ export default {
                 this.path = []
                 // Set the current folder
                 this.setCurrentFolder(null)
-                
             }
+            this.selected = []
         },
+        showMultiItemContextMenu(e) {
+            this.$refs.contextMenuMultipleItems.show(e)
+        },
+        onDeleteMultipleFiles(files) {
+            files.map(file => {
+                this.deleteFile(file.id)
+            })    
+        }
     },
     async created() {
         // If the route has a fileId param set, then show that file in a flyin and set the current folder to the files parent
