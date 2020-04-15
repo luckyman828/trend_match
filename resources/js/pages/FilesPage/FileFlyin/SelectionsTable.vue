@@ -655,7 +655,7 @@ export default {
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
         'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
-        'fetchSelectionSettings', 'updateSelectionSettings']),
+        'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
         ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
@@ -849,17 +849,21 @@ export default {
         },
         onDeleteSelection(selection, parent) {
             // Send request to API
+            if (selection.children.length > 0 && !confirm('Are you sure you want to delete a selection with sub-selection? All the sub-selections will be deleted as well.')) {
+                return
+            }
+            this.deleteSelection(selection)
             
 
             // Delete the selection from state
             // Check if the selection has a parent
-            if (parent) {
-                const unsavedSelectionIndex = parent.children.findIndex(x => x.id == selection.id)
-                parent.children.splice(unsavedSelectionIndex, 1)
-            } else {
-                const unsavedSelectionIndex = this.selections.findIndex(x => x.id == selection.id)
-                this.selections.splice(unsavedSelectionIndex, 1)
-            }
+            // if (parent) {
+            //     const index = parent.children.findIndex(x => x.id == selection.id)
+            //     parent.children.splice(index, 1)
+            // } else {
+            //     const index = this.selections.findIndex(x => x.id == selection.id)
+            //     this.selections.splice(index, 1)
+            // }
         },
         clearToEdit() {
             // Clear the current edit
