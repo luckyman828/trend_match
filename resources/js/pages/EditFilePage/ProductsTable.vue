@@ -66,9 +66,19 @@
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">ID</BaseTableHeader>
+                @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
-                @sort="(sortAsc, sortKey) => $emit('onSort', sortAsc, sortKey)">Product Name</BaseTableHeader>
+                @sort="onSort">Product Name</BaseTableHeader>
+                <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
+                @sort="onSort">Delivery</BaseTableHeader>
+                <BaseTableHeader class="wholesale-price" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
+                <BaseTableHeader class="recommended-retail-price" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
+                <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">MU</BaseTableHeader>
+                <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -117,8 +127,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductsTableRow from './ProductsTableRow'
+import sortArray from '../../mixins/sortArray'
 
 export default {
     name: 'editProductsTable',
@@ -130,6 +141,9 @@ export default {
     components: {
         ProductsTableRow,
     },
+    mixins: [
+        sortArray
+    ],
     data: function() { return {
         selectedProducts: [],
         productsFilteredBySearch: this.products,
@@ -137,6 +151,7 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapState('products', {stateProducts: 'products'}),
         selectedCategories: {
             get () {
                 return this.$store.getters['products/selectedCategories']
@@ -180,6 +195,11 @@ export default {
             this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
         },
+        onSort(sortAsc, sortKey) {
+            this.sortKey = sortKey
+            // Sort the products in our state to make sure the sort happens everywhere in the dashboard
+            this.sortArray(this.stateProducts, sortAsc, sortKey)
+        },
     },
 }
 </script>
@@ -202,13 +222,13 @@ export default {
                 flex: 0 1 auto;
             }
             tr {
-                > * {
+                th, td {
                     &.title {
-                        min-width: 248px;
-                        max-width: 248px;
+                        min-width: 220px;
+                        max-width: 220px;
                         display: flex;
                         align-items: center;
-                        margin-right: 32px;
+                        margin-right: 12px;
                         flex: 1;
                     }
                     &.id {
@@ -220,24 +240,31 @@ export default {
                         min-width: 48px;
                         max-width: 48px;
                     }
-                    &.focus, &.in, &.out, &.nd {
-                        min-width: 48px;
-                        max-width: 48px;
+                    &.delivery {
+                        min-width: 80px;
+                        max-width: 80px;
                     }
-                    &.requests {
-                        margin-left: 32px;
-                        .button {
-                            padding: 0 4px;
-                        }
+                    &.wholesale-price, &.recommended-retail-price {
+                        min-width: 92px;
+                        max-width: 92px;
                     }
-                    &.image {
-                        min-width: 48px;
-                        max-width: 48px;
+                    &.mark-up {
+                        min-width: 56px;
+                        max-width: 56px;
+                    }
+                    &.minimum {
+                        min-width: 84px;
+                        max-width: 84px;
                     }
                     &.action {
                         flex: 1;
-                        min-width: 232px;
+                        // min-width: 232px;
                         margin-left: 32px;
+                    }
+                }
+                td {
+                    &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up {
+                        padding-bottom: 20px;
                     }
                 }
             }
