@@ -99,14 +99,16 @@
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
                 @sort="onSort">Delivery</BaseTableHeader>
-                <BaseTableHeader class="wholesale-price hide-screen-sm" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                <BaseTableHeader class="wholesale-price hide-screen-xs" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
-                <BaseTableHeader class="recommended-retail-price hide-screen-sm" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                <BaseTableHeader class="recommended-retail-price hide-screen-xs" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
-                <BaseTableHeader class="mark-up hide-screen-sm" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                <BaseTableHeader class="mark-up hide-screen-xs" :sortKey="'mark_up'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
+                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
+                v-tooltip="{content: 'Minimum per Variant / Minimum per Order', delay: {show: 300}}"
+                @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
                 <BaseTableHeader class="ins" :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">In</BaseTableHeader>
@@ -120,14 +122,6 @@
             </template>
             <template v-slot:body>
 
-                <!-- <RecycleScroller
-                    class="products-scroller"
-                    :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 186 : 78"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item, index }"
-                > -->
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
@@ -368,8 +362,11 @@ export default {
                         max-width: 220px;
                         display: flex;
                         align-items: center;
-                        margin-right: 12px;
-                        flex: 1;
+                        margin-right: auto;
+                        @media screen and (max-width: $screenXs) {
+                            min-width: 160px;
+                            max-width: 160px;
+                        }
                     }
                     &.id {
                         min-width: 80px;
@@ -384,18 +381,27 @@ export default {
                     &.delivery {
                         min-width: 80px;
                         max-width: 80px;
+                        margin-right: auto;
                     }
                     &.wholesale-price, &.recommended-retail-price {
-                        min-width: 92px;
-                        max-width: 92px;
+                        min-width: 64px;
+                        max-width: 64px;
+                    }
+                    &.currency {
+                        min-width: 38px;
+                        max-width: 38px;
                     }
                     &.mark-up {
-                        min-width: 56px;
-                        max-width: 56px;
+                        min-width: 36px;
+                        max-width: 36px;
+                    }
+                    &.currency {
+                        margin-right: auto;
                     }
                     &.minimum {
-                        min-width: 84px;
-                        max-width: 84px;
+                        min-width: 104px;
+                        max-width: 104px;
+                        margin-right: auto;
                     }
                     &.focus, &.ins, &.outs, &.nds {
                         min-width: 48px;
@@ -405,20 +411,26 @@ export default {
                         min-width: 52px;
                         max-width: 52px;
                     }
-                    // &.nds {
-                    //     min-width: 48px;
-                    //     max-width: 48px;
-                    // }
+                    &.nds {
+                        margin-right: auto;
+                    }
                     &.requests {
-                        margin-left: 32px;
+                        // margin-left: 32px;
                         .button {
                             padding: 0 4px;
                         }
                     }
                     &.action {
-                        flex: 1;
-                        // min-width: 232px;
-                        margin-left: 32px;
+                        flex: 0 1 auto;
+                        margin-left: auto;
+                        @media screen and (min-width: $screenMd+1) {
+                            min-width: 232px;
+                            max-width: 232px;
+                            
+                        }
+                        // min-width: 40px;
+                        // max-width: 40px;
+                        // margin-left: 32px;
                     }
                 }
                 td {
@@ -453,7 +465,7 @@ export default {
     }
 
     // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenSm) {
+    @media screen and (max-width: $screenMd) {
 
         @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
         only screen and (-o-min-device-pixel-ratio: 13/10),

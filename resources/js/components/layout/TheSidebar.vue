@@ -112,7 +112,7 @@ export default {
         color: $primary;
       }
     }
-    @media screen and (max-width: $screenXs) {
+    @media screen and (max-width: $screenSm) {
         flex-direction: row;
         justify-content: flex-start;
         transition: width .2s;

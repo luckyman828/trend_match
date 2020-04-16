@@ -219,10 +219,10 @@ export default{
                 grid-template-columns: 200px auto;
             }
         }
-        // @media screen and (max-width: $screenSm) {
+        // @media screen and (max-width: $screenMd) {
         //     grid-template-columns: 80px auto;
         // }
-        @media screen and (max-width: $screenXs) {
+        @media screen and (max-width: $screenSm) {
             grid-template-columns: 52px auto;
             grid-template-rows: 52px auto;
         }
@@ -237,7 +237,7 @@ export default{
         overflow-y: scroll;
         overflow-x: auto;
         background: $grey;
-        @media screen and (max-width: $screenXs) {
+        @media screen and (max-width: $screenSm) {
             padding: 20px;
         }
     }

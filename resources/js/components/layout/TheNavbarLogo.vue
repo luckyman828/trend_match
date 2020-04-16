@@ -1,7 +1,7 @@
 <template>
     <router-link to="/collection" class="logo link">
-        <img class="hide-screen-xs" src="/images/kollekt_logo_small.svg" />
-        <img class="show-screen-xs" style="height: 100%" src="/images//kollekt_logo_00_1024x1024.svg" />
+        <img class="hide-screen-sm" src="/images/kollekt_logo_small.svg" />
+        <img class="show-screen-sm" style="height: 100%" src="/images//kollekt_logo_00_1024x1024.svg" />
     </router-link>
 </template>
 
@@ -21,7 +21,7 @@ export default {
         justify-content: center;
         align-items: center;
 
-        @media screen and (min-width: $screenSm + 1) {
+        @media screen and (min-width: $screenMd + 1) {
             padding: 24px 20px 16px;
         }
     }

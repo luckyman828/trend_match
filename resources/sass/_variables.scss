@@ -67,9 +67,9 @@ $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white
     ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
 
-// BUTTON SIZES ($name, $height, $font-size, $padding, $icon-size)
-$button-sizes: ('xs', 20px, 12px, 6px, 12px), ('sm', 24px, 12px, 8px, 14px), ('md', 40px, 14px, 16px, 16px),
-    ('lg', 48px, 14px, 20px, 16px), ('xl', 60px, 18px, 24px, 20px);
+// BUTTON SIZES ($name, $height, $font-size, $padding, $icon-size, $icon-spacing)
+$button-sizes: ('xs', 20px, 12px, 6px, 12px, 2px), ('sm', 24px, 12px, 8px, 14px, 0), ('md', 40px, 14px, 16px, 16px, 0),
+    ('lg', 48px, 14px, 20px, 16px, 0), ('xl', 60px, 18px, 24px, 20px, 0);
 
 // Sidebar
 $sidebarWidth: 260px;
@@ -78,8 +78,9 @@ $sidebarWidth: 260px;
 $navbarHeight: 72px;
 
 // Screen sizes / Breakpoints
-$screenSm: 1600px;
-$screenXs: 1400px;
+$screenMd: 1600px;
+$screenSm: 1400px;
+$screenXs: 1260px;
 
 // Media Queries
 // $mq-small: "(min-width:)"

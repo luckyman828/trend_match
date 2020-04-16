@@ -350,13 +350,13 @@ input[type='submit'] {
             > span:first-child {
                 margin-left: nth($size, 4);
                 &:not(:last-child) {
-                    margin-right: 4px;
+                    margin-right: nth($size, 6);
                 }
             }
             > span:last-child {
                 margin-right: nth($size, 4);
                 &:not(:first-child) {
-                    margin-left: 4px;
+                    margin-left: nth($size, 6);
                 }
             }
         }
@@ -1415,18 +1415,23 @@ form {
 }
 
 // SCREEN SIZES / MEDIA QUERIES
+.hide-screen-md {
+    @media screen and (max-width: $screenMd - 1) {
+        display: none !important;
+    }
+}
 .hide-screen-sm {
-    @media screen and (max-width: $screenSm) {
+    @media screen and (max-width: $screenSm - 1) {
         display: none !important;
     }
 }
 .hide-screen-xs {
-    @media screen and (max-width: $screenXs) {
+    @media screen and (max-width: $screenXs - 1) {
         display: none !important;
     }
 }
-.hide-screen-lg {
-    @media screen and (min-width: $screenSm + 1) {
+.show-screen-md {
+    @media screen and (min-width: $screenMd + 1) {
         display: none !important;
     }
 }

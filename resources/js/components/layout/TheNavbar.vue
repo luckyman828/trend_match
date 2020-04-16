@@ -46,7 +46,7 @@ export default {
     align-items: center;
     display: flex;
     padding: 8px 60px;
-    @media screen and (max-width: $screenXs) {
+    @media screen and (max-width: $screenSm) {
             padding: 8px 20px;
     }
     > * {

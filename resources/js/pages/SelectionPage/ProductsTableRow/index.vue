@@ -1,5 +1,5 @@
 <template>
-    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="'action-'+product[currentAction]"
+    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="['action-'+product[currentAction], {'multi-selection': currentSelections.length > 1}]"
     @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)">
 
         <div class="product-details">
@@ -12,26 +12,19 @@
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
-                    <!-- <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])"> -->
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
                 <span>{{product.datasource_id}}</span>
-                <!-- <div class="variant-list">
-                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
-                        <span>{{variant.name || 'Unnamed'}}</span>
-                    </div>
-                </div> -->
             </td>
             <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
+                <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
                 <div class="variant-list">
                     <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
                         <span>{{variant.name || 'Unnamed'}}</span>
                     </div>
                 </div>
             </span></td>
-
             <td class="delivery">
                 <span>{{
                     new Date(product.delivery_date).toLocaleDateString('en-GB', {
@@ -42,15 +35,16 @@
             </td>
 
             <!-- Start Prices -->
-            <td class="wholesale-price hide-screen-sm">
-                <span>{{product.yourPrice.wholesale_price}} {{product.yourPrice.currency}}</span>
+            <td class="wholesale-price hide-screen-xs">
+                <span>{{product.yourPrice.wholesale_price}}</span>
             </td>
-            <td class="recommended-retail-price hide-screen-sm">
-                <span>{{product.yourPrice.recommended_retail_price}} {{product.yourPrice.currency}}</span>
+            <td class="recommended-retail-price hide-screen-xs">
+                <span>{{product.yourPrice.recommended_retail_price}}</span>
             </td>
-            <td class="mark-up hide-screen-sm">
+            <td class="mark-up hide-screen-xs">
                 <span>{{product.yourPrice.mark_up}}</span>
             </td>
+            <td class="currency hide-screen-xs"><span>{{product.yourPrice.currency}}</span></td>
             <!-- End Prices -->
 
             <td class="minimum">
@@ -81,66 +75,51 @@
                     </template>
                 </v-popover>
             </td>
-            <!-- <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
-                <td class="focus tooltip-target">
-                    <div tabindex="-1" class="square ghost xs"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></div>
-                </td>
-                <template slot="popover">
-                    <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                    <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                </template>
-            </v-popover> -->
-            <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
-                <td class="ins tooltip-target">
-                    <div class="square ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></div>
-                </td>
-                <template slot="popover">
-                    <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                    <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                </template>
-            </v-popover>
-            <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
-                <td class="outs tooltip-target">
-                    <div class="square ghost xs"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></div>
-                </td>
-                <template slot="popover">
-                    <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                    <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                </template>
-            </v-popover>
-            <v-popover class="nds" :disabled="product.nds.length <= 0 && product.alignmentNds <= 0">
-                <td class="nds tooltip-target">
-                    <div class="square ghost xs"><span>{{product.alignmentNds.length+ product.nds.length}}</span></div>
-                </td>
-                <template slot="popover">
-                    <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.alignmentNds" :key="index"
-                        :label="action.selection.name"/>
-                    </BaseTooltipList>
-                    <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
-                        <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
-                        :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                    </BaseTooltipList>
-                </template>
-            </v-popover>
+            <td class="ins">
+                <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
+                    <div class="tooltip-target square ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></div>
+                    <template slot="popover">
+                        <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                        <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                    </template>
+                </v-popover>
+            </td>
+            <td class="outs ">
+                <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
+                    <div class="square ghost xs tooltip-target"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></div>
+                    <template slot="popover">
+                        <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                        <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                    </template>
+                </v-popover>
+            </td>
+            <td class="nds">
+                <v-popover class="nds" :disabled="product.nds.length <= 0 && product.alignmentNds <= 0">
+                    <div class="tooltip-target square ghost xs"><span>{{product.alignmentNds.length+ product.nds.length}}</span></div>
+                    <template slot="popover">
+                        <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.alignmentNds" :key="index"
+                            :label="action.selection.name"/>
+                        </BaseTooltipList>
+                        <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                    </template>
+                </v-popover>
+            </td>
             <!-- End Distribution -->
 
             <td class="requests">
@@ -154,8 +133,7 @@
             </td>
             <td class="action">
                 <!-- Single Selection Input only -->
-                <template v-if="currentSelections.length <= 1">
-                    <!-- <button class="invisible ghost-hover show-screen-xs" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button> -->
+                <!-- <template v-if="currentSelections.length <= 1">
 
                     <BaseButton class="" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
@@ -177,10 +155,50 @@
                         <i class="far fa-times-circle"></i>
                         <span>out</span>
                     </BaseButton>
-                </template>
+                </template> -->
                 <!-- End Single Selection Input only -->
-                <button class="invisible ghost-hover primary" 
-                @click="onViewSingle"><span>View</span></button>
+                <!-- <button class="invisible ghost-hover primary" 
+                @click="onViewSingle"><span>View</span></button> -->
+
+
+                <!-- Single Selection Input only -->
+                <template v-if="currentSelections.length <= 1">
+                    <div class="fly-over-wrapper">
+                        <div class="fly-over">
+                            <div class="gradient"></div>
+                            <div class="inner">
+                                <BaseButton class="" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                                :disabled="!userWriteAccess.actions.hasAccess" 
+                                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                                @click="onUpdateAction(product, 'Focus', selection)">
+                                    <i class="far fa-star"></i>
+                                </BaseButton>
+                                <BaseButton class=""  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                                :disabled="!userWriteAccess.actions.hasAccess" 
+                                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                                @click="onUpdateAction(product, 'In', selection)">
+                                    <i class="far fa-heart"></i>
+                                    <span>In</span>
+                                </BaseButton>
+                                <BaseButton class=""  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                                :disabled="!userWriteAccess.actions.hasAccess" 
+                                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                                @click="onUpdateAction(product, 'Out', selection)">
+                                    <i class="far fa-times-circle"></i>
+                                    <span>out</span>
+                                </BaseButton>
+                                <button class="view invisible ghost-hover primary" 
+                                @click="onViewSingle"><span>View</span></button>
+                                <button class="options invisible ghost-hover show-screen-md" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <!-- END Single Selection Input only -->
+                <template v-else>
+                    <button class="invisible ghost-hover primary" 
+                    @click="onViewSingle"><span>View</span></button>
+                </template>
             </td>
         </div>
 
@@ -238,6 +256,9 @@ export default {
         currentSelections() {
             return this.getCurrentSelections
         },
+        titleTruncateSize () {
+            return window.innerWidth < 1260 ? 16 : 24
+        }
     },
     watch: {
         // Watch for changes to the current focus index 
@@ -368,15 +389,17 @@ export default {
                 object-fit: contain;
             }
         }
-        @media screen and (max-width: $screenXs) {
-            &.action-Focus {
-                box-shadow: -6px 0 0px $primary inset;
-            }
-            &.action-In {
-                box-shadow: -6px 0 0px $green inset;
-            }
-            &.action-Out {
-                box-shadow: -6px 0 0px $red inset;
+        @media screen and (max-width: $screenMd) {
+            &:not(.multi-selection) {
+                &.action-Focus {
+                    box-shadow: -6px 0 0px $primary inset;
+                }
+                &.action-In {
+                    box-shadow: -6px 0 0px $green inset;
+                }
+                &.action-Out {
+                    box-shadow: -6px 0 0px $red inset;
+                }
             }
         }
     }
@@ -409,6 +432,57 @@ export default {
             &::before {
                 background: white;
                 border-radius: 20px;
+            }
+        }
+    }
+
+    // Flyover actions
+    .gradient {
+        display: none;
+    }
+    @media screen and (max-width: $screenMd) {
+        td.action {
+            position: relative;
+            height: 100%;
+            .fly-over-wrapper {
+                overflow: hidden;
+                width: 36px;
+                height: 100%;
+                position: relative;
+                &:hover {
+                    overflow: visible;
+                    .fly-over .inner {
+                        background: $bgContentAlt;
+                    }
+                    button.options {
+                        display: none;
+                    }
+                }
+            }
+            .fly-over {
+                height: 100%;
+                position: absolute;
+                right: 0;
+                padding-right: 4px;
+                .inner {
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    padding-left: 20px;
+                    >* {
+                        margin-left: 4px;
+                    }
+                }
+                .gradient {
+                    display: block;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: -40px;
+                    width: 40px;
+                    background: linear-gradient(90deg, transparent, #f3f3f3);
+                    pointer-events: none;
+                }
             }
         }
     }
