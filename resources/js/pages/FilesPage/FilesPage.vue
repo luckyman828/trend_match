@@ -142,9 +142,13 @@ export default {
             this.$refs.contextMenuMultipleItems.show(e)
         },
         onDeleteMultipleFiles(files) {
-            files.map(file => {
-                this.deleteFile(file.id)
-            })    
+            if (window.confirm(
+                'Are you sure you want to delete your selection?\nAll folders and files contained in your selection and all their comments, requests and actions will be permanently deleted.'
+            )) {
+                for(let i = files.length; i--;) {
+                    this.deleteFile(files[i].id)
+                }
+            }
         }
     },
     async created() {
