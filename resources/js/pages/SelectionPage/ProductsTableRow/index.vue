@@ -66,7 +66,22 @@
             </td>
             
             <!-- Start Distribution -->
-            <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
+            <td class="focus">
+                <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
+                    <div tabindex="-1" class="square ghost xs tooltip-target"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></div>
+                    <template slot="popover">
+                        <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                        <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
+                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
+                        </BaseTooltipList>
+                    </template>
+                </v-popover>
+            </td>
+            <!-- <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
                 <td class="focus tooltip-target">
                     <div tabindex="-1" class="square ghost xs"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></div>
                 </td>
@@ -80,7 +95,7 @@
                         :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                     </BaseTooltipList>
                 </template>
-            </v-popover>
+            </v-popover> -->
             <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
                 <td class="ins tooltip-target">
                     <div class="square ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></div>
@@ -140,21 +155,22 @@
             <td class="action">
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
-                    <button class="invisible ghost-hover show-screen-xs" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button>
-                    <BaseButton class="hide-screen-xs" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                    <!-- <button class="invisible ghost-hover show-screen-xs" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button> -->
+
+                    <BaseButton class="" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Focus', selection)">
                         <i class="far fa-star"></i>
                     </BaseButton>
-                    <BaseButton class="hide-screen-xs"  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                    <BaseButton class=""  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'In', selection)">
                         <i class="far fa-heart"></i>
                         <span>In</span>
                     </BaseButton>
-                    <BaseButton class="hide-screen-xs"  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                    <BaseButton class=""  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                     @click="onUpdateAction(product, 'Out', selection)">
@@ -163,7 +179,7 @@
                     </BaseButton>
                 </template>
                 <!-- End Single Selection Input only -->
-                <button class="invisible ghost-hover primary hide-screen-xs" 
+                <button class="invisible ghost-hover primary" 
                 @click="onViewSingle"><span>View</span></button>
             </td>
         </div>
@@ -343,8 +359,9 @@ export default {
         }
         .img-wrapper {
             border: solid 1px $light2;
-            height: 60px;
-            width: 48px;
+            height: 100%;
+            width: 100%;
+            // width: 48px;
             img {
                 width: 100%;
                 height: 100%;
@@ -375,7 +392,7 @@ export default {
         margin-left: 4px;
     }
     .product-details {
-        height: 76px;
+        height: 98px;
         padding: 8px;
         display: flex;
         align-items: center;

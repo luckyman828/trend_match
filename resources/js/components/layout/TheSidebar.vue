@@ -107,6 +107,11 @@ export default {
     &:hover, &.router-link-active {
         background: $bgContentActive;
     }
+    &.router-link-active {
+      i {
+        color: $primary;
+      }
+    }
     @media screen and (max-width: $screenXs) {
         flex-direction: row;
         justify-content: flex-start;

@@ -120,10 +120,18 @@
             </template>
             <template v-slot:body>
 
-                <RecycleScroller
+                <!-- <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
                     :item-size="currentSelections.length > 1 ? 186 : 78"
+                    page-mode
+                    key-field="id"
+                    v-slot="{ item, index }"
+                > -->
+                <RecycleScroller
+                    class="products-scroller"
+                    :items="productsFilteredBySearch"
+                    :item-size="currentSelections.length > 1 ? 208 : 100"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -369,8 +377,9 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 48px;
-                        max-width: 48px;
+                        min-width: 64px;
+                        max-width: 64px;
+                        height: 100%;
                     }
                     &.delivery {
                         min-width: 80px;
@@ -405,10 +414,6 @@ export default {
                         .button {
                             padding: 0 4px;
                         }
-                    }
-                    &.image {
-                        min-width: 48px;
-                        max-width: 48px;
                     }
                     &.action {
                         flex: 1;
