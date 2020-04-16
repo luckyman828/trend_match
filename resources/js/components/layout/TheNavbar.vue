@@ -45,6 +45,10 @@ export default {
     width: 100%;
     align-items: center;
     display: flex;
+    padding: 8px 60px;
+    @media screen and (max-width: $screenSm) {
+            padding: 8px 20px;
+    }
     > * {
         width: 100%;
     }

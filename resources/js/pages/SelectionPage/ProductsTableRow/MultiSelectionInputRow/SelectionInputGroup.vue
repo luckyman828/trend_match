@@ -138,8 +138,11 @@ export default {
     text-align: center;
     .name {
         cursor: pointer;
+        font-weight: 500;
+        display: block;
+        margin-bottom: -4px;
+        font-size: 12px;
         &:hover {
-            font-weight: 500;
             color: $primary;
         }
     }
@@ -148,6 +151,8 @@ export default {
     }
     .selection-action-buttons {
         display: flex;
+        user-select: none;
+        font-size: 12px;
         ::v-deep {
             .selection-action {
                 button {

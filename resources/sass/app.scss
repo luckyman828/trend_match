@@ -271,7 +271,6 @@ input[type='submit'] {
     align-items: center;
     color: $font;
     text-decoration: none;
-    font-weight: 700;
     user-select: none;
     border: solid 1px transparent;
     padding: 0 1px;
@@ -335,7 +334,7 @@ input[type='submit'] {
                 &.fad,
                 &.fab {
                     width: nth($size, 2) - 4px;
-                    font-size: nth($size, 3) + 2px;
+                    font-size: nth($size, 5);
                 }
             }
             &.ghost i {
@@ -351,13 +350,13 @@ input[type='submit'] {
             > span:first-child {
                 margin-left: nth($size, 4);
                 &:not(:last-child) {
-                    margin-right: 2px;
+                    margin-right: nth($size, 6);
                 }
             }
             > span:last-child {
                 margin-right: nth($size, 4);
                 &:not(:first-child) {
-                    margin-left: 2px;
+                    margin-left: nth($size, 6);
                 }
             }
         }
@@ -481,6 +480,7 @@ input[type='submit'] {
 button,
 .button,
 input[type='submit'] {
+    font-weight: 700;
     cursor: pointer;
     &.text-link {
         padding-top: 4px;
@@ -1415,13 +1415,33 @@ form {
 }
 
 // SCREEN SIZES / MEDIA QUERIES
+.hide-screen-md {
+    @media screen and (max-width: $screenMd - 1) {
+        display: none !important;
+    }
+}
 .hide-screen-sm {
-    @media screen and (max-width: $screenSmall) {
+    @media screen and (max-width: $screenSm - 1) {
+        display: none !important;
+    }
+}
+.hide-screen-xs {
+    @media screen and (max-width: $screenXs - 1) {
+        display: none !important;
+    }
+}
+.show-screen-md {
+    @media screen and (min-width: $screenMd + 1) {
         display: none !important;
     }
 }
 .show-screen-sm {
-    @media screen and (min-width: $screenSmall + 1) {
+    @media screen and (min-width: $screenSm + 1) {
+        display: none !important;
+    }
+}
+.show-screen-xs {
+    @media screen and (min-width: $screenXs + 1) {
         display: none !important;
     }
 }

@@ -42,7 +42,6 @@ export default {
     .navbar-files {
         display: flex;
         justify-content: space-between;
-        padding: 8px 60px;
         > * {
             display: flex;
             align-items: center;

@@ -44,7 +44,6 @@ export default {
 
     .flex-wrapper {
         width: 100%;
-        padding: 8px 60px;
         display: flex;
         justify-content: space-between;
     }

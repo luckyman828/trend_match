@@ -1,5 +1,6 @@
 <template>
     <div class="products-table-wrapper">
+
         <BaseFlexTable class="products-table" stickyHeader="true">
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview`" :count="productTotals.all" 
@@ -96,12 +97,24 @@
                 @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
                 @sort="onSort">Product Name</BaseTableHeader>
+                <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
+                @sort="onSort">Delivery</BaseTableHeader>
+                <BaseTableHeader class="wholesale-price hide-screen-xs" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
+                <BaseTableHeader class="recommended-retail-price hide-screen-xs" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
+                <BaseTableHeader class="mark-up hide-screen-xs" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                @sort="onSort" :descDefault="true">MU</BaseTableHeader>
+                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
+                <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
+                v-tooltip="{content: 'Minimum per Variant / Minimum per Order', delay: {show: 300}}"
+                @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
                 <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
+                <BaseTableHeader class="ins" :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'allOuts'" :currentSortKey="sortKey"
+                <BaseTableHeader class="outs" :sortKey="'allOuts'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'allNds'" :currentSortKey="sortKey"
+                <BaseTableHeader class="nds" :sortKey="'allNds'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">ND</BaseTableHeader>
                 <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
@@ -112,12 +125,13 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 186 : 78"
+                    :item-size="currentSelections.length > 1 ? 208 : 100"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
                 >
                     <ProductsTableRow class="product-row flex-table-row"
+                    @showContext="$refs.contextMenu.show($event); contextProduct = item"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
@@ -130,12 +144,48 @@
                 </tr>
             </template>
         </BaseFlexTable>
+
+        <BaseContextMenu ref="contextMenu"
+            :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyV']"
+            @keybind-v="onViewSingle(contextProduct)"
+        >
+            <template v-if="contextProduct">
+                <div class="item-group">
+                    <div class="item" @click="onUpdateAction(contextProduct, 'In', selection)" v-close-popover>
+                        <div class="icon-wrapper">
+                            <i class="far fa-heart" :class="contextProduct[currentAction] == 'In' ? 'fas green' : 'far'"></i>
+                        </div>
+                        <u>I</u>n
+                    </div>
+                    <div class="item" @click="onUpdateAction(contextProduct, 'Out', selection)" v-close-popover>
+                        <div class="icon-wrapper">
+                            <i class="far fa-times" :class="contextProduct[currentAction] == 'Out' ? 'fas red' : 'far'"></i>
+                        </div>
+                        <u>O</u>ut
+                    </div>
+                    <div class="item" @click="onUpdateAction(contextProduct, 'Focus', selection)">
+                        <div class="icon-wrapper">
+                            <i class="far fa-star" :class="contextProduct[currentAction] == 'Focus' ? 'fas primary' : 'far'"></i>
+                        </div>
+                        <u>F</u>oc<u>u</u>s
+                    </div>
+                </div>
+                <div class="item-group">
+                    <div class="item" @click="onViewSingle(contextProduct)" v-close-popover>
+                        <div class="icon-wrapper">
+                            <i class="far fa-eye"></i>
+                        </div>
+                        <u>V</u>iew
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
-import ProductsTableRow from './ProductsTableRow'
+import ProductsTableRow from './ProductsTableRow/index'
 import MultipleSelectionSelector from './MultipleSelectionSelector'
 import sortArray from '../../mixins/sortArray'
 
@@ -159,6 +209,8 @@ export default {
         selectedProducts: [],
         productsFilteredBySearch: this.products,
         selectedSelections: [],
+        showContextMenu: false,
+        contextProduct: null,
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
@@ -225,6 +277,9 @@ export default {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.stateProducts, sortAsc, sortKey)
+        },
+        onUpdateAction(product, action, selection) {
+            this.$emit('updateAction', product, action, selection)
         },
     },
     created () {
@@ -307,8 +362,11 @@ export default {
                         max-width: 220px;
                         display: flex;
                         align-items: center;
-                        margin-right: 32px;
-                        flex: 1;
+                        margin-right: auto;
+                        @media screen and (max-width: $screenXs) {
+                            min-width: 160px;
+                            max-width: 160px;
+                        }
                     }
                     &.id {
                         min-width: 80px;
@@ -316,35 +374,71 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
+                        min-width: 64px;
+                        max-width: 64px;
+                        height: 100%;
+                    }
+                    &.delivery {
+                        min-width: 80px;
+                        max-width: 80px;
+                        margin-right: auto;
+                    }
+                    &.wholesale-price, &.recommended-retail-price {
+                        min-width: 64px;
+                        max-width: 64px;
+                    }
+                    &.currency {
+                        min-width: 38px;
+                        max-width: 38px;
+                    }
+                    &.mark-up {
+                        min-width: 36px;
+                        max-width: 36px;
+                    }
+                    &.currency {
+                        margin-right: auto;
+                    }
+                    &.minimum {
+                        min-width: 104px;
+                        max-width: 104px;
+                        margin-right: auto;
+                    }
+                    &.focus, &.ins, &.outs, &.nds {
                         min-width: 48px;
                         max-width: 48px;
                     }
-                    &.focus, &.ins {
+                    &.outs {
                         min-width: 52px;
                         max-width: 52px;
                     }
-                    &.outs {
-                        min-width: 56px;
-                        max-width: 56px;
-                    }
                     &.nds {
-                        min-width: 48px;
-                        max-width: 48px;
+                        margin-right: auto;
                     }
                     &.requests {
-                        margin-left: 32px;
+                        // margin-left: 32px;
                         .button {
                             padding: 0 4px;
                         }
                     }
-                    &.image {
-                        min-width: 48px;
-                        max-width: 48px;
-                    }
                     &.action {
-                        flex: 1;
-                        min-width: 232px;
-                        margin-left: 32px;
+                        flex: 0 1 auto;
+                        margin-left: auto;
+                        @media screen and (min-width: $screenMd+1) {
+                            min-width: 232px;
+                            max-width: 232px;
+                            
+                        }
+                        // min-width: 40px;
+                        // max-width: 40px;
+                        // margin-left: 32px;
+                    }
+                }
+                td {
+                    // &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up, &.minimum {
+                    //     padding-bottom: 20px;
+                    // }
+                    &:not(.image):not(.select):not(.action):not(.id) {
+                        padding-bottom: 24px;
                     }
                 }
             }
@@ -371,7 +465,7 @@ export default {
     }
 
     // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenSmall) {
+    @media screen and (max-width: $screenMd) {
 
         @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
         only screen and (-o-min-device-pixel-ratio: 13/10),
