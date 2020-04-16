@@ -17,14 +17,19 @@
             </td>
             <td class="id clickable" @click="onViewSingle">
                 <span>{{product.datasource_id}}</span>
+                <!-- <div class="variant-list">
+                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
+                        <span>{{variant.name || 'Unnamed'}}</span>
+                    </div>
+                </div> -->
+            </td>
+            <td class="title"><span class="clickable" @click="onViewSingle">
+                <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
                 <div class="variant-list">
                     <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
                         <span>{{variant.name || 'Unnamed'}}</span>
                     </div>
                 </div>
-            </td>
-            <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
             </span></td>
 
             <td class="delivery">
@@ -358,7 +363,7 @@ export default {
             }
         }
     }
-    td.id {
+    td.id, td.title {
         position: relative;
     }
     .variant-list {

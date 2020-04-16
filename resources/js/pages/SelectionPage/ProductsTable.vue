@@ -417,8 +417,11 @@ export default {
                     }
                 }
                 td {
-                    &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up {
-                        padding-bottom: 20px;
+                    // &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up, &.minimum {
+                    //     padding-bottom: 20px;
+                    // }
+                    &:not(.image):not(.select):not(.action):not(.id) {
+                        padding-bottom: 24px;
                     }
                 }
             }
