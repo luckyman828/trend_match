@@ -60,14 +60,9 @@
             </td>
 
         <td class="action">
-<<<<<<< HEAD
             <button class="invisible ghost-hover primary" 
             @click="$emit('onViewSingle',product)"><span>View / Edit</span></button>
             <button class="invisible ghost-hover" @click="$emit('showContextMenu', $event, product)"><i class="far fa-ellipsis-h"></i></button>
-=======
-            <button class="invisible ghost-hover" 
-            @click="onViewSingle"><span>View / Edit</span></button>
->>>>>>> feat/overview_info
         </td>
 
     </tr>
