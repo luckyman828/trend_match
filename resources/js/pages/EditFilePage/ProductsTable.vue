@@ -77,6 +77,7 @@
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
                 <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
+                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
@@ -86,7 +87,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="78"
+                    :item-size="100"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -196,9 +197,11 @@ export default {
             this.setSingleVisisble(true)
         },
         onSort(sortAsc, sortKey) {
-            this.sortKey = sortKey
-            // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            this.sortArray(this.stateProducts, sortAsc, sortKey)
+            this.$emit('onSort', sortAsc, sortKey)
+            // console.log('on sort')
+            // this.sortKey = sortKey
+            // // Sort the products in our state to make sure the sort happens everywhere in the dashboard
+            // this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
     },
 }
@@ -228,8 +231,11 @@ export default {
                         max-width: 220px;
                         display: flex;
                         align-items: center;
-                        margin-right: 12px;
-                        flex: 1;
+                        margin-right: auto;
+                        @media screen and (max-width: $screenXs) {
+                            min-width: 160px;
+                            max-width: 160px;
+                        }
                     }
                     &.id {
                         min-width: 80px;
@@ -237,34 +243,45 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 48px;
-                        max-width: 48px;
+                        min-width: 64px;
+                        max-width: 64px;
+                        height: 100%;
                     }
                     &.delivery {
                         min-width: 80px;
                         max-width: 80px;
+                        margin-right: auto;
                     }
                     &.wholesale-price, &.recommended-retail-price {
-                        min-width: 92px;
-                        max-width: 92px;
+                        min-width: 64px;
+                        max-width: 64px;
+                    }
+                    &.currency {
+                        min-width: 38px;
+                        max-width: 38px;
                     }
                     &.mark-up {
-                        min-width: 56px;
-                        max-width: 56px;
+                        min-width: 36px;
+                        max-width: 36px;
+                    }
+                    &.currency {
+                        margin-right: auto;
                     }
                     &.minimum {
-                        min-width: 84px;
-                        max-width: 84px;
+                        min-width: 104px;
+                        max-width: 104px;
+                        margin-right: auto;
                     }
                     &.action {
-                        flex: 1;
-                        // min-width: 232px;
-                        margin-left: 32px;
+                        min-width: 92px;
+                        max-width: 92px;
+                        flex: 0 1 auto;
+                        margin-left: auto;
                     }
                 }
                 td {
-                    &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up {
-                        padding-bottom: 20px;
+                    &:not(.image):not(.select):not(.action):not(.id) {
+                        padding-bottom: 24px;
                     }
                 }
             }
