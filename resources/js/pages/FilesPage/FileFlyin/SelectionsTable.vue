@@ -511,6 +511,27 @@
                     :options="displayLevelOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
+
+                <BaseContextMenu ref="contextCloneSettings" class="context-clone-settings">
+                    <template v-slot:header>
+                        <span>Select selections to copy settings from</span>
+                    </template>
+                    <template v-slot="innerSlotProps">
+                        <div class="item-group">
+                            <BaseSelectButtons type="radio" search="true" :options="allSelections.filter(x => x.id != contextSelection.id)"
+                            optionNameKey="name" v-model="selectionToCloneSettingsFrom" :submitOnChange="true"/>
+                        </div>
+                        <div class="item-group">
+                            <div class="item-wrapper">
+                                <button class="primary" @click="cloneSettings(); innerSlotProps.hide()"><span>Clone</span></button>
+                                <button class="invisible ghost-hover" style="margin-left: 8px;"
+                                @click="innerSlotProps.hide()">
+                                    <span>Cancel</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </BaseContextMenu>
             </template>
         </BaseContextMenu>
 
@@ -537,27 +558,6 @@
                         </button>
                     </div>
                 </div>
-            </template>
-        </BaseContextMenu>
-
-        <BaseContextMenu ref="contextCloneSettings" class="context-clone-settings">
-            <template v-slot:header>
-                <span>Select selections to copy settings from</span>
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons type="radio" search="true" :options="allSelections.filter(x => x.id != contextSelection.id)"
-                    optionNameKey="name" v-model="selectionToCloneSettingsFrom" :submitOnChange="true"/>
-                </div>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <button class="primary" @click="cloneSettings();slotProps.hide()"><span>Clone</span></button>
-                        <button class="invisible ghost-hover" style="margin-left: 8px;"
-                        @click="slotProps.hide()">
-                            <span>Cancel</span>
-                        </button>
-                    </div>
-                </div>s
             </template>
         </BaseContextMenu>
 

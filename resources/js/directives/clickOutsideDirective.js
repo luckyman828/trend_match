@@ -5,10 +5,8 @@ clickOutsideDirective.install = Vue => {
             el.clickOutsideEvent = function(event) {
                 // here I check that click was outside the el and his childrens
                 if (
-                    !(
-                        (el == event.target || el.contains(event.target))
-                        // || event.target.closest('.context-menu')
-                    )
+                    !(el == event.target || el.contains(event.target) || !document.contains(event.target))
+                    // || event.target.closest('.context-menu')
                 ) {
                     // and if it did, call method provided in attribute value
                     vnode.context[binding.expression](event)
