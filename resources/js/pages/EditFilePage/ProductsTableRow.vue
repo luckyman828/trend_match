@@ -5,59 +5,61 @@
         <span v-if="product.newComment" class="circle tiny primary"></span>
         
         <td class="select" 
-            @click.self="$refs.selectCheckbox.check()">
-                <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
-            </td>
-            <td class="image clickable" @click="onViewSingle">
-                <div class="img-wrapper">
-                    <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
-                    <!-- <img v-if="product.variants[0] != null" :src="variantImage(product.variants[0])"> -->
+        @click.self="$refs.selectCheckbox.check()">
+            <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
+        </td>
+        <td class="image clickable" @click="onViewSingle">
+            <div class="img-wrapper">
+                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+            </div>
+        </td>
+        <td class="id clickable" @click="onViewSingle">
+            <span>{{product.datasource_id}}</span>
+        </td>
+        <td class="title"><span class="clickable" @click="onViewSingle">
+            <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
+            <div class="variant-list">
+                <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,7)" :key="index">
+                    <span>{{variant.name || 'Unnamed'}}</span>
                 </div>
-            </td>
-            <td class="id clickable" @click="onViewSingle">
-                <span>{{product.datasource_id}}</span>
-                <div class="variant-list">
-                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
-                        <span>{{variant.name || 'Unnamed'}}</span>
-                    </div>
+                <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 7">
+                    <span>+ {{product.variants.length - 7}} more</span>
                 </div>
-            </td>
-            <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > 24 && product.title">{{product.title | truncate(24)}}</span>
-            </span></td>
+            </div>
+        </span></td>
+        <td class="delivery">
+            <span>{{
+                new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                    month: 'short',
+                    year: 'numeric',
+                })
+            }}</span>
+        </td>
 
-            <td class="delivery">
-                <span>{{
-                    new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        month: 'short',
-                        year: 'numeric',
-                    })
-                }}</span>
-            </td>
+        <!-- Start Prices -->
+        <td class="wholesale-price hide-screen-xs">
+            <span>{{product.yourPrice.wholesale_price}}</span>
+        </td>
+        <td class="recommended-retail-price hide-screen-xs">
+            <span>{{product.yourPrice.recommended_retail_price}}</span>
+        </td>
+        <td class="mark-up hide-screen-xs">
+            <span>{{product.yourPrice.mark_up}}</span>
+        </td>
+        <td class="currency hide-screen-xs"><span>{{product.yourPrice.currency}}</span></td>
+        <!-- End Prices -->
 
-            <!-- Start Prices -->
-            <td class="wholesale-price">
-                <span>{{product.yourPrice.wholesale_price}} {{product.yourPrice.currency}}</span>
-            </td>
-            <td class="recommended-retail-price">
-                <span>{{product.yourPrice.recommended_retail_price}} {{product.yourPrice.currency}}</span>
-            </td>
-            <td class="mark-up">
-                <span>{{product.yourPrice.mark_up}}</span>
-            </td>
-            <!-- End Prices -->
-
-            <td class="minimum">
-                <div class="square ghost xs">
-                    <span>
-                        <template v-if="product.min_variant_order">
-                        <span>{{product.min_variant_order}}/</span>
-                        </template>
-                        <span>{{product.min_order}}</span>
-                    </span>
-                    <i class="far fa-box"></i>
-                </div>
-            </td>
+        <td class="minimum">
+            <div class="square ghost xs">
+                <span>
+                    <template v-if="product.min_variant_order">
+                    <span>{{product.min_variant_order}}/</span>
+                    </template>
+                    <span>{{product.min_order}}</span>
+                </span>
+                <i class="far fa-box"></i>
+            </div>
+        </td>
 
         <td class="action">
             <button class="invisible ghost-hover primary" 
@@ -95,6 +97,9 @@ export default {
         localSelectedProducts: {
             get() { return this.selectedProducts },
             set(localSelectedProducts) {this.$emit('input', localSelectedProducts)}
+        },
+        titleTruncateSize () {
+            return window.innerWidth < 1260 ? 16 : 24
         }
     },
     methods: {
@@ -114,11 +119,12 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .products-table-row {
-        height: 76px;
+        height: 98px;
         .img-wrapper {
             border: solid 1px $light2;
-            height: 60px;
-            width: 48px;
+            height: 100%;
+            width: 100%;
+            // width: 48px;
             img {
                 width: 100%;
                 height: 100%;
@@ -126,13 +132,28 @@ export default {
             }
         }
     }
-    td.id {
+    td.title {
         position: relative;
     }
     .variant-list {
         position: absolute;
         left: 0;
         bottom: -6px;
+        // max-width: 700px;
+        // overflow: hidden;
+        // &::after {
+        //     content: "";
+        //     display: block;
+        //     height: 100%;
+        //     width: 80px;
+        //     background: linear-gradient(90deg, transparent, white);
+        //     position: absolute;
+        //     top: 0;
+        //     right: 0;
+        //     tr:hover & {
+        //         background: linear-gradient(90deg, transparent, $bgContentAlt);
+        //     }
+        // }
     }
     .variant-list-item:not(:first-child) {
         margin-left: 4px;

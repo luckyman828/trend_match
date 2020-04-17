@@ -20,8 +20,11 @@
             <td class="title"><span class="clickable" @click="onViewSingle">
                 <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
                 <div class="variant-list">
-                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants" :key="index">
+                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,7)" :key="index">
                         <span>{{variant.name || 'Unnamed'}}</span>
+                    </div>
+                    <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 7">
+                        <span>+ {{product.variants.length - 7}} more</span>
                     </div>
                 </div>
             </span></td>
