@@ -262,25 +262,26 @@ export default {
         showTeamContext(e, team) {
             // If we have a selection, show context menu for that selection instead
             let contextMenu
-            if (this.selectedTeams.length > 0) {
+            if (this.selectedTeams.length > 1) {
                 contextMenu = this.$refs.contextMenuSelectedTeams
-                this.contextTeam = this.selectedTeams[0]
             } else {
                 contextMenu = this.$refs.contextMenuTeam
-                this.contextTeam = team
             }
+            this.contextTeam = this.selectedTeams.length > 0 ? this.selectedTeams[0] : team
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
         onDeleteTeam(team) {
-            (window.confirm(
-                'Are you sure you want to delete this team?\nIt will be permanently deleted.'))
-            ? this.deleteTeam(team) : false
+            if (window.confirm('Are you sure you want to delete this team?\nIt will be permanently deleted.')) {
+                this.deleteTeam(team)
+                this.selectedTeams = []
+            } 
         },
         onDeleteTeams() {
             if (window.confirm(`Are you sure you want to delete ${this.selectedTeams.length} teams?\nIt will be permanently deleted.`)) {
                 this.selectedTeams.forEach(team => {
                     this.deleteTeam(team)
+                    this.selectedTeams = []
                 })
             }
         },

@@ -97,7 +97,7 @@
         @keybind-r="onRemoveUsers(contextUser)"
         @keybind-e="onRemoveUsers(contextUser)">
             <!-- Manually added users  -->
-            <template v-slot:header v-if="selected.length > 0">
+            <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
@@ -128,7 +128,7 @@
         <BaseContextMenu ref="contextMenuExcludedUser" class="context-user"
         :hotkeys="['KeyR']"
         @keybind-r="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
-            <template v-slot:header v-if="selected.length > 0">
+            <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
@@ -236,6 +236,7 @@ export default {
         onReAddUsersToSelection(usersToAdd) {
             // this.reAddUsersToSelection({selection: this.selection, users: usersToAdd})
             this.addUsersToSelection({selection: this.selection, users: usersToAdd})
+            this.selected = []
         },
         onUpdateSelectionUsersRole() {
             // Define the user to base the new role to set on
@@ -268,6 +269,7 @@ export default {
                 usersToRemove = [user]
             }
             this.removeUsersFromSelection({selection: this.selection, users: usersToRemove})
+            this.selected = []
         },
     }
 }

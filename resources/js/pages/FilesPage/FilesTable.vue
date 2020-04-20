@@ -336,7 +336,7 @@ export default {
             if (fileMenu) fileMenu.hide()
             if (folderMenu) folderMenu.hide()
             // Set the current context menu item
-            this.contextMenuItem = item
+            this.contextMenuItem = this.selected.length > 0 ? this.selected[0] : item
             // Save a reference to the contextual menu to show
             let contextMenu
             if (type == 'folder') {

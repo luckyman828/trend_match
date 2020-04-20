@@ -333,24 +333,25 @@ export default {
         showUserContext(e, user) {
             // If we have a selection, show context menu for that selection instead
             let contextMenu = this.$refs.contextMenuUser
-            if (this.selectedUsers.length > 0) {
+            if (this.selectedUsers.length > 1) {
                 contextMenu = this.$refs.contextMenuSelectedUsers
-                this.contextUser = this.selectedUsers[0]
             } else {
                 contextMenu = this.$refs.contextMenuUser
-                this.contextUser = user
             }
+            this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
         onDeleteUser(user) {
             if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
+                this.selectedUsers = []
             }
         },
         onDeleteUsers() {
             if (window.confirm(`Are you sure you want to remove ${this.selectedUsers.length} users from the workspace?`)) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: this.selectedUsers})
+                this.selectedUsers = []
             }
         },
         sortUsers(method, key) {

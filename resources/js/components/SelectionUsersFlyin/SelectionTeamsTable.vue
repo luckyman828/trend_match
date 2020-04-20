@@ -52,7 +52,7 @@
         <BaseContextMenu ref="contextMenuTeam" class="context-team"
         :hotkeys="['KeyR']"
         @keybind-r="onRemoveTeams(contextTeam)">
-            <template v-slot:header v-if="selected.length > 0">
+            <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} teams</span>
             </template>
             <div class="item-group">
@@ -173,6 +173,7 @@ export default {
                 teamsToRemove = [team]
             }
             this.removeTeamsFromSelection({selection: this.selection, teams: teamsToRemove})
+            this.selected = []
         },
     }
 }
