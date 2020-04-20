@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     name: 'contextMenu',
     props: {
@@ -53,7 +54,12 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('contextMenu', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
         show(e) {
+            // Increment the amount of visible context menus if this context menu is not already visible
+            if (!this.visible) {
+                this.INCREMENT_VISIBLE_AMOUNT()
+            }
             // e is expected to be a mouseclick event
             // Stop progration to avoid triggering the clickOutside function by the click to show the context menu
             e.stopPropagation()
@@ -116,6 +122,9 @@ export default {
 
         },
         hide() {
+            if (this.visible) {
+                this.DECREMENT_VISIBLE_AMOUNT()
+            }
             this.visible = false
             this.$nextTick(() => {
                 this.$emit('hide')
@@ -164,6 +173,9 @@ export default {
         }
     },
     destroyed() {
+        if (this.visible) {
+            this.DECREMENT_VISIBLE_AMOUNT()
+        }
         // Remove event listeners
         document.body.removeEventListener('keyup', this.hotkeyHandler)
         document.body.removeEventListener('click', this.clickHandler)

@@ -1,5 +1,6 @@
 <template>
-    <tr class="team-row table-row" ref="teamRow" @contextmenu.prevent="$emit('showContextMenu', $event, team)"
+    <tr class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive}"
+    @contextmenu.prevent="$emit('showContextMenu', $event, team)"
     @click.ctrl="$refs.selectBox.check()">
         <td class="select"><BaseCheckbox ref="selectBox" :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"/></td>
         <td v-if="editTitle" class="title">
@@ -49,6 +50,7 @@ export default {
     props: [
         'team',
         'selectedTeams',
+        'contextTeam',
     ],
     data: function() { return {
         editTitle: false,
@@ -60,9 +62,13 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
+        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         localSelectedTeams: {
             get() { return this.selectedTeams },
             set(localSelectedTeams) {this.$emit('input', localSelectedTeams)}
+        },
+        contextMenuIsActive() {
+            return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == this.team.id && this.selectedTeams.length <= 1
         }
     },
     methods: {

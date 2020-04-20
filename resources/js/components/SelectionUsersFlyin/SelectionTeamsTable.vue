@@ -21,7 +21,7 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow"
+                <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive(team)}"
                 @click.ctrl="$refs.selectBox[index].check()"
                 @contextmenu="showTeamContext($event, team)">
                     <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
@@ -116,6 +116,7 @@ export default {
     computed: {
         ...mapGetters('teams', ['teams']),
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
@@ -129,6 +130,9 @@ export default {
     methods: {
         ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection']),
         ...mapActions('teams', ['fetchTeamUsers']),
+        contextMenuIsActive (team) {
+            return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == team.id && this.selected.length <= 1
+        },
         showTeamContext(e, team) {
             if (!this.userHasEditAccess) return
             e.preventDefault()

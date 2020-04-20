@@ -13,6 +13,7 @@ import actions from './modules/actions'
 import alerts from './modules/alerts'
 import comments from './modules/comments'
 import requests from './modules/requests'
+import contextMenu from './modules/contextMenu'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -33,6 +34,7 @@ const store = new Vuex.Store({
         alerts,
         comments,
         requests,
+        contextMenu,
     },
 })
 

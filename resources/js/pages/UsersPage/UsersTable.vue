@@ -28,6 +28,7 @@
             </template>
             <template v-slot:body>
                 <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                :contextUser="contextUser"
                 @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
                 @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
             </template>
@@ -280,6 +281,7 @@ export default {
             this.updateUserPassword(user)
         },
         onEditUserCurrency(mouseEvent, user) {
+            this.contextUser = user
             this.userToEdit = JSON.parse(JSON.stringify(user));
             this.originalUser = user;
             // Wait for the context menu to show in the DOM
@@ -292,6 +294,7 @@ export default {
         onEditUserRole(mouseEvent, user) {
             this.userToEdit = JSON.parse(JSON.stringify(user));
             this.originalUser = user;
+            this.contextUser = user
             const contextMenu = this.$refs.contextMenuWorkspaceRole
             contextMenu.item = user;
             contextMenu.show(mouseEvent)

@@ -24,6 +24,7 @@
             </template>
             <template v-slot:body>
                 <TeamFlyinUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                :contextUser="contextUser"
                 :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)" v-model="selectedUsers" :selectedUsers="selectedUsers"
                 @editCurrency="onEditUserCurrency($event, user)"/>
             </template>
@@ -220,13 +221,12 @@ export default {
 
             // If we have a selection, show context menu for that selection instead
             let contextMenu
-            if (this.selectedUsers.length > 0) {
+            if (this.selectedUsers.length > 1) {
                 contextMenu = this.$refs.contextMenuSelectedUsers
-                this.contextUser = this.selectedUsers[0]
             } else {
                 contextMenu = this.$refs.contextMenuUser
-                this.contextUser = user
             }
+            this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
@@ -236,6 +236,7 @@ export default {
         },
         onEditUserCurrency(mouseEvent, user) {
             this.userToEdit = user;
+            this.contextUser = user
             this.originalUser = JSON.parse(JSON.stringify(user));
             const contextMenu = this.$refs.contextMenuUserCurrency
             contextMenu.item = user;
@@ -264,13 +265,17 @@ export default {
         onRemoveUserFromTeam(user) {
             // if ( confirm("Are you sure you want to remove this user from this team?") )
                 this.removeUsersFromTeam({users: [user], team: this.team})
+                this.selectedUsers = []
         },
         onRemoveUsersFromTeam() {
-            if ( confirm(`Are you sure you want to remove ${this.selectedUsers.length} from this team?`) )
-                this.removeUsersFromTeam({users: this.selectedUsers, team: this.team})
+            if ( confirm(`Are you sure you want to remove ${this.selectedUsers.length} from this team?`) ) {
+                this.removeUsersFromTeam({users: JSON.parse(JSON.stringify(this.selectedUsers)), team: this.team})
+                this.selectedUsers = []
+            }
         },
         onEditUserRole(mouseEvent, user) {
             this.userToEdit = user;
+            this.contextUser = user
             this.originalUser = JSON.parse(JSON.stringify(user));
             const contextMenu = this.$refs.contextMenuTeamRole
             contextMenu.item = user;

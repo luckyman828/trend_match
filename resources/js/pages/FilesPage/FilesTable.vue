@@ -24,7 +24,7 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="(folder, index) in foldersToShow" :key="folder.id" class="folder" 
+                <tr v-for="(folder, index) in foldersToShow" :key="folder.id" class="folder" :class="{active: contextMenuIsActive(folder)}"
                 @contextmenu.prevent="showContextMenu($event, folder, 'folder')"
                 @click.ctrl="$refs.folderCheckbox[index].check()">
                     <td class="select">
@@ -57,7 +57,7 @@
                     </td>
                 </tr>
 
-                <tr v-for="(file, index) in filesToShow" :key="file.id" class="file" 
+                <tr v-for="(file, index) in filesToShow" :key="file.id" class="file" :class="{active: contextMenuIsActive(file)}"
                 @contextmenu.prevent="showContextMenu($event, file, 'file')"
                 @click.ctrl="$refs.fileCheckbox[index].check()">
                     <td class="select">
@@ -304,6 +304,7 @@ export default {
     },
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
+        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         foldersToShow() {
             return this.files.filter(x => x.type =='Folder')
         },
@@ -313,7 +314,7 @@ export default {
         localSelected: {
             get() { return this.selected },
             set(localSelected) {this.$emit('input', localSelected)}
-        }
+        },
     },
     methods: {
         ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile']),
@@ -321,6 +322,9 @@ export default {
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
+        },
+        contextMenuIsActive (file) {
+            return this.getContextMenuIsVisible && this.contextMenuItem && this.contextMenuItem.id == file.id && this.selected.length <= 1
         },
         setCurrentFolder(folder) {
             this.$emit('setCurrentFolder', folder)

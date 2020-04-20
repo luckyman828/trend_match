@@ -184,10 +184,9 @@ export default {
             })
         },
         async removeUsersFromTeam({ commit, dispatch }, { team, users }) {
-            console.log(team)
             console.log(users)
             // Update state
-            commit('removeUsersFromTeam', { team, users })
+            commit('REMOVE_USERS_FROM_TEAM', { team, users })
 
             // Update API
             const apiUrl = `/teams/${team.id}/users`
@@ -199,6 +198,8 @@ export default {
                     users: users,
                 },
             })
+
+            console.log(users)
         },
     },
 
@@ -215,10 +216,7 @@ export default {
         },
         insertOrUpdateTeam(state, team) {
             if (team.id && state.teams.find(x => x.id == team.id)) {
-                Object.assign(
-                    state.teams.find(x => x.id == team.id),
-                    team
-                )
+                Object.assign(state.teams.find(x => x.id == team.id), team)
             } else {
                 state.teams.push(team)
             }
@@ -235,12 +233,19 @@ export default {
             }
             team.user_count = team.users.length
         },
-        removeUsersFromTeam(state, { team, users }) {
-            users.forEach(user => {
+        REMOVE_USERS_FROM_TEAM(state, { team, users }) {
+            console.log(users)
+            // users.forEach(user => {
+            //     const index = team.users.findIndex(x => x.id == user.id)
+            //     team.users.splice(index, 1)
+            //     team.user_count = team.users.length
+            // })
+            for (let i = users.length; i--; ) {
+                const user = users[i]
                 const index = team.users.findIndex(x => x.id == user.id)
                 team.users.splice(index, 1)
                 team.user_count = team.users.length
-            })
+            }
         },
     },
 }

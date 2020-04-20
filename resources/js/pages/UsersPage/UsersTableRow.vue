@@ -1,5 +1,5 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" :class="{self: isSelf}"
+    <tr class="user-row table-row" ref="userRow" :class="[{self: isSelf}, {active: contextMenuIsActive}]"
     @contextmenu.prevent="$emit('showContextMenu', $event, user)" @click.ctrl="selectUser">
         <td class="select">
             <BaseCheckbox ref="selectBox" :value="user" :modelValue="selectedUsers" 
@@ -25,7 +25,7 @@
             <!-- Admin -->
             <button v-if="authUserWorkspaceRole == 'Admin'" 
             class="ghost editable sm" 
-            @click.stop="$emit('editRole', $event, user)">
+            @click="$emit('editRole', $event, user)">
                 <span>{{user.role}}</span>
             </button>
             <!-- Member -->
@@ -35,7 +35,7 @@
             <!-- Admin or self -->
             <button v-if="authUserWorkspaceRole == 'Admin'"
             class="ghost editable sm" 
-            @click.stop="$emit('editCurrency', $event, user)">
+            @click="$emit('editCurrency', $event, user)">
                 <span>{{user.currency ? user.currency : 'Set currency'}}</span>
             </button>
             <!-- Member -->
@@ -54,7 +54,8 @@ export default {
     name: 'usersTableRow',
     props: [
         'user',
-        'selectedUsers'
+        'selectedUsers',
+        'contextUser',
     ],
     data: function() { return {
         editName: false,
@@ -64,8 +65,12 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         isSelf() {
             return this.authUser.id == this.user.id
+        },
+        contextMenuIsActive () {
+            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == this.user.id && this.selectedUsers.length <= 1
         }
     },
     methods: {

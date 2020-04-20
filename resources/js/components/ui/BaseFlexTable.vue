@@ -188,6 +188,11 @@ export default {
             align-items: center;
             padding: 8px;
             position: relative;
+            &.active {
+                outline: solid 1px $primary;
+                outline-offset: -1px;
+                background: $bgContentActive;
+            }
             &:not(.table-top-bar) {
                 margin-bottom: 2px;
                 > * {

@@ -36,7 +36,7 @@
             <template v-slot:body>
                 <!-- Selection Members -->
                 <template v-if="currentUsersTableTab == 'Members'">
-                    <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow"
+                    <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive(user)}"
                     @click.ctrl="$refs.selectBox[index].check()"
                     @contextmenu="showUserContext($event, user)">
                         <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
@@ -189,6 +189,7 @@ export default {
     computed: {
         ...mapGetters('selections', ['availableSelectionRoles', 'getAuthUserHasSelectionEditAccess']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
@@ -206,6 +207,9 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
+        contextMenuIsActive (user) {
+            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == user.id && this.selected.length <= 1
+        },
         showUserContext(e, user) {
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser

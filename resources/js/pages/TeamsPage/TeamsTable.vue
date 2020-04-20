@@ -28,7 +28,7 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="team in teamsFilteredBySearch" :key="team.id" :team="team"
+                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="team in teamsFilteredBySearch" :key="team.id" :team="team" :contextTeam="contextTeam"
                 @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
                 @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"/>
             </template>
@@ -206,6 +206,7 @@ export default {
         },
         onEditTeamCurrency(mouseEvent, team) {
             this.teamToEdit = team;
+            this.contextTeam = team
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
                 const contextMenu = this.$refs.contextMenuTeamCurrency
