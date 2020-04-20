@@ -399,6 +399,8 @@ export default {
                 'Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.'
             )) {
                 this.deleteFile(folderId)
+                // Remove the item from our selection
+                this.localSelected = this.selected.filter(x => x.id != folderId)
             }
         },
         onNewFolder() {
@@ -448,6 +450,8 @@ export default {
                 'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
             )) {
                 this.deleteFile(fileId)
+                // Remove the item from our selection
+                this.localSelected = this.selected.filter(x => x.id != fileId)
             }
         },
         onRenameFile(file, index) {

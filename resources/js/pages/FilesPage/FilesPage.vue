@@ -148,6 +148,10 @@ export default {
                 for(let i = files.length; i--;) {
                     this.deleteFile(files[i].id)
                 }
+                for(let i = files.length; i--;) {
+                    // Remove the item from our selection
+                    this.selected = this.selected.filter(x => x.id != files[i].id)
+                }
             }
         }
     },
