@@ -20,11 +20,11 @@
             <td class="title"><span class="clickable" @click="onViewSingle">
                 <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
                 <div class="variant-list">
-                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,7)" :key="index">
-                        <span>{{variant.name || 'Unnamed'}}</span>
+                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
+                        <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
                     </div>
-                    <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 7">
-                        <span>+ {{product.variants.length - 7}} more</span>
+                    <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
+                        <span>+ {{product.variants.length - 5}} more</span>
                     </div>
                 </div>
             </span></td>
@@ -274,6 +274,15 @@ export default {
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        variantNameTruncateLength(product) {
+            const amount = product.variants.length
+            if (amount > 4) {
+                return window.innerWidth > 1260 ? 12 : 6
+            }
+            else if (amount > 2) {
+                return window.innerWidth > 1260 ? 20 : 15
+            }
+        },
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
