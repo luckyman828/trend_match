@@ -126,13 +126,13 @@
             <!-- End Distribution -->
 
             <td class="requests">
-                <div class="square ghost xs" @click="onViewSingle">
+                <button class="ghost xs" @click="onViewSingle">
                     <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
-                </div>
-                <div class="requests-button square ghost xs" @click="onViewSingle">
+                </button>
+                <button class="requests-button ghost xs" @click="onViewSingle">
                     <span>{{product.requests.length}}</span><i class="far fa-clipboard-check"></i>
                     <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
-                </div>
+                </button>
             </td>
             <td class="action">
                 <!-- Single Selection Input only -->
