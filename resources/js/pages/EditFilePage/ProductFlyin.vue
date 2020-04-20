@@ -79,7 +79,10 @@
                                 </button>
                             </div>
                         </div>
-                        <BaseEditable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :value="variant.name" :type="'text'" v-model="variant.name"/>
+                        <!-- Variant Name -->
+                        <BaseEditable :ref="'nameInput-'+index" :placeholder="'Untitled variant'" :type="'text'" 
+                        v-model="variant.name" :truncateLength="15"/>
+                        <!-- End Variant Name -->
                     </div>
                 </Draggable>
 

@@ -1,5 +1,10 @@
 <template>
-        <span ref="original" class="editable" v-if="!editActive" @click="activate">{{value ? value : placeholder}} <span v-tooltip.top="'Edit'" class="edit square true-square light-2-hover"><i class="far fa-pen"></i></span></span>
+        <div ref="original" class="editable" v-if="!editActive" @click="activate">
+            <span>{{value ? value : placeholder | truncate(truncateLength)}}</span>
+            <span v-tooltip.top="'Edit'" class="edit square true-square light-2-hover">
+                <i class="far fa-pen"></i>
+            </span>
+        </div>
         <input v-else ref="input" :id="id" class="input-wrapper active" :type="type" :value="value" :placeholder="placeholder"
             @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" @blur="submit">
 </template>
@@ -11,7 +16,8 @@ export default {
         'value',
         'type',
         'id',
-        'placeholder'
+        'placeholder',
+        'truncateLength',
     ],
     data: function () { return {
         editActive: false,
