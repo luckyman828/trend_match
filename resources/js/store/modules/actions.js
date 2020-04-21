@@ -69,11 +69,11 @@ export default {
             }
 
             // Update state
-            commit('insertOrUpdateAction', { product, action, selection, user, type, authorIsAuthUser: true })
+            commit('INSERT_OR_UPDATE_ACTION', { product, action, selection, user, type, authorIsAuthUser: true })
 
             await axios.post(apiUrl, requestBody).catch(err => {
                 // Return the action to the old
-                commit('insertOrUpdateAction', {
+                commit('INSERT_OR_UPDATE_ACTION', {
                     product,
                     action: oldAction,
                     selection,
@@ -135,11 +135,21 @@ export default {
             }
 
             // Update state
-            commit('insertOrUpdateActions', { productActions, selection, user })
+            commit('INSERT_OR_UPDATE_ACTIONS', {
+                productActions,
+                selection,
+                user,
+                type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
+            })
 
             await axios.post(apiUrl, requestBody).catch(err => {
                 // Return the action to the old
-                commit('insertOrUpdateActions', { productActions: oldActions, selection, user })
+                commit('INSERT_OR_UPDATE_ACTIONS', {
+                    productActions: oldActions,
+                    selection,
+                    user,
+                    type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
+                })
                 // Dispatch an error alert
                 dispatch(
                     'alerts/showAlert',
@@ -158,7 +168,7 @@ export default {
         alertError: state => {
             window.alert('Network error. Please check your connection')
         },
-        insertOrUpdateAction(state, { product, action, selection, user, type, authorIsAuthUser }) {
+        INSERT_OR_UPDATE_ACTION(state, { product, action, selection, user, type, authorIsAuthUser }) {
             if (type == 'Feedback') {
                 if (authorIsAuthUser) product.your_feedback = action
                 // Check if the action already exists in the products feedbacks array
@@ -185,7 +195,6 @@ export default {
                 const existingAction = product.actions.find(
                     x => x.product_id == product.id && x.selection_id == selection.id
                 )
-                console.log(existingAction)
                 if (!existingAction) {
                     product.actions.push({
                         action: action,
@@ -202,9 +211,10 @@ export default {
                 }
             }
         },
-        insertOrUpdateActions(state, { productActions, selection, user }) {
+        INSERT_OR_UPDATE_ACTIONS(state, { productActions, selection, user, type, currentSelectionId }) {
+            console.log('insert or update actions', productActions, selection, user, type)
             // Loop through our products and update their actions
-            if (selection.your_role == 'Member') {
+            if (type == 'Feedback') {
                 productActions.forEach(productAction => {
                     productAction.product.your_feedback = productAction.action
                     // Check if the action already exists in the products feedbacks array
@@ -228,11 +238,30 @@ export default {
                     }
                 })
             }
-            if (selection.your_role == 'Owner') {
+            if (type == 'Alignment') {
                 productActions.forEach(productAction => {
-                    productAction.product.action = productAction.action
-                    Vue.set(productAction.product, 'action', productAction.action)
-                    Vue.set(productAction.product, 'action_author', user)
+                    console.log('setting product action')
+                    const existingAction = productAction.product.actions.find(
+                        x => x.product_id == productAction.product.id && x.selection_id == selection.id
+                    )
+                    if (!existingAction) {
+                        productAction.product.actions.push({
+                            action: productAction.action,
+                            product_id: productAction.product.id,
+                            selection: selection,
+                            selection_id: selection.id,
+                            user_id: user.id,
+                            user: user,
+                        })
+                    } else {
+                        existingAction.action = productAction.action
+                    }
+
+                    // If is self
+                    if (!currentSelectionId || selection.id == currentSelectionId) {
+                        Vue.set(productAction.product, 'action', productAction.action)
+                        Vue.set(productAction.product, 'action_author', user)
+                    }
                 })
             }
         },

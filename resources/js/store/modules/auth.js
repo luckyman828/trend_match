@@ -14,6 +14,7 @@ export default {
         isAuthenticated: state => !!state.token,
         authStatus: state => state.status,
         authUser: state => state.user,
+        getAuthUserToken: state => state.token,
     },
 
     actions: {
@@ -58,7 +59,6 @@ export default {
             router.go()
         },
         async getAuthUser({ commit, state }) {
-            console.log('get auth user')
             state.status = 'loading'
             let response
             let error

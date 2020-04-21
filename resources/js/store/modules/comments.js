@@ -43,7 +43,7 @@ export default {
         },
         async insertOrUpdateComment({ commit, dispatch }, { product, comment }) {
             // Update our state
-            commit('insertOrUpdateComment', { product, comment })
+            commit('INSERT_OR_UPDATE_COMMENT', { product, comment })
             let requestMethod
             let apiUrl
             // check if the provided comment should be posted or updates
@@ -99,8 +99,10 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        insertOrUpdateComment(state, { product, comment }) {
+        INSERT_OR_UPDATE_COMMENT(state, { product, comment }) {
             // First see if the comment already exists
+            console.log('insert comment')
+            console.log(product)
             const existingCommentIndex = product.comments.findIndex(x => x.id == comment.id)
             if (existingCommentIndex >= 0) {
                 Vue.set(product.comments, existingCommentIndex, comment)
