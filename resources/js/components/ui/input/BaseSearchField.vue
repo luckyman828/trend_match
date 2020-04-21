@@ -31,12 +31,23 @@ export default {
         result() {
             const array = this.arrayToSearch
             // Get the lowercase value to avoid the search being case sensitive
-            const searchString = this.searchString.toLowerCase()
+            let searchString = this.searchString.toLowerCase()
             const searchKey = this.searchKey
             // First test that we actually have a search string
             if (!searchString) {
                 return array
             }
+
+            // If search string is delimited by comma, convert to array and trim
+            if (searchString.search(',') >= 0) {
+                searchString = searchString.split(',')
+            } else if (searchString.search(' ') >= 0) {
+                searchString = searchString.split(' ')
+            } else {
+                searchString = [searchString]
+            }
+            searchString = searchString.map(str => str.trim())
+
             // If we have a search key, search by that
             if (searchKey) {
 
@@ -53,25 +64,33 @@ export default {
                             // If the search key is an array of keys, search for a result in each of them
                             if (Array.isArray(searchKey)) {
                                 // Assume no match
-                                let match = false
+                                let isMatch = false
                                 searchKey.forEach(key => {
                                     // Check that we have a value
                                     if (!x[key]) return false
                                     // Convert the value to match to a string so we can search it
                                     const valueToMatch = x[key].toString().toLowerCase()
                                     // If a match is found for any of the keys, return true
-                                    if (valueToMatch.search(searchString) >= 0) {
-                                        match = true
-                                    }
+                                    searchString.forEach(str => {
+                                        if (valueToMatch.search(str) >= 0) isMatch = true
+                                    })
+                                    // if (valueToMatch.search(searchString) >= 0) {
+                                    //     isMatch = true
+                                    // }
                                 })
-                                return match
+                                return isMatch
                             }
                             else {
                                 // Check that we have a value
                                 if (!x[searchKey]) return false
                                 // Convert the value to match to a string so we can search it
                                 const valueToMatch = x[searchKey].toString().toLowerCase()
-                                return valueToMatch.search(searchString) >= 0
+                                let isMatch = false
+                                searchString.forEach(str => {
+                                    if (valueToMatch.search(str) >= 0) isMatch = true
+                                })
+                                return isMatch
+                                // return valueToMatch.search(searchString) >= 0
                             }
                         })
                         arrayToReturn.push(arrayObjectToReturn)
@@ -86,25 +105,30 @@ export default {
                         // If the search key is an array of keys, search for a result in each of them
                         if (Array.isArray(searchKey)) {
                             // Assume no match
-                            let match = false
+                            let isMatch = false
                             searchKey.forEach(key => {
                                 // If a match is found for any of the keys, return true
                                 // Check that we have a value
                                 if (!x[key]) return false
                                 // Convert the value to match to a string so we can search it
                                 const valueToMatch = x[key].toString().toLowerCase()
-                                if (valueToMatch.search(searchString) >= 0) {
-                                    match = true
-                                }
+                                searchString.forEach(str => {
+                                    if (valueToMatch.search(str) >= 0) isMatch = true
+                                })
                             })
-                            return match
+                            return isMatch
                         }
                         else {
                             // Check that we have a value
                             if (!x[searchKey]) return false
                             // Convert the value to match to a string so we can search it
                             const valueToMatch = x[searchKey].toString().toLowerCase()
-                            return valueToMatch.search(searchString) >= 0
+                            let isMatch = false
+                            searchString.forEach(str => {
+                                if (valueToMatch.search(str) >= 0) isMatch = true
+                            })
+                            return isMatch
+                            // return valueToMatch.search(searchString) >= 0
                         }
                     })
                 }
@@ -114,7 +138,11 @@ export default {
             return array.filter(x => {
                 // Convert the value to match to a string so we can search it
                 const valueToMatch = x.toString().toLowerCase()
-                return valueToMatch.search(searchString) >= 0
+                let isMatch = false
+                searchString.forEach(str => {
+                    if (valueToMatch.search(str) >= 0) isMatch = true
+                })
+                return isMatch
             })
         }
     },
