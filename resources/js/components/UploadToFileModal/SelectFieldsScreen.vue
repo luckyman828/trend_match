@@ -22,6 +22,13 @@
 
         <div class="form-element">
             <BaseCheckboxInputField class="replace-all" 
+            :value="replaceAssortments" @input="$emit('update:replaceAssortments', $event)">
+                <span>Replace assortments</span>
+            </BaseCheckboxInputField>
+        </div>
+
+        <div class="form-element">
+            <BaseCheckboxInputField class="replace-all" 
             :value="replacePrices" @input="$emit('update:replacePrices', $event)">
                 <span>Replace prices</span>
             </BaseCheckboxInputField>
@@ -42,7 +49,8 @@ export default {
     name: 'selectFieldsScreen',
     props: [
         'fields',
-        'replacePrices'
+        'replacePrices',
+        'replaceAssortments',
     ],
     data: function () { return {
     }},
@@ -53,6 +61,7 @@ export default {
         toggleAll(boolean) {
             this.fields.map(x => x.enabled = boolean)
             this.$emit('update:replacePrices', boolean)
+            this.$emit('update:replaceAssortments', boolean)
         }
     },
 }

@@ -2,7 +2,7 @@
     <div class="map-fields">
         <form @submit.prevent class="map-fields">
         <div class="form-element" style="text-align: center;">
-            <p>Some text to help understand what mapping means. Should be short.</p>
+            <p>Choose columns to match from your uploaded datasource.</p>
         </div>
 
             <div class="form-section link-ids">
@@ -124,6 +124,61 @@
                 </button>
             </div>
 
+            <!-- START Map Assortments -->
+            <div class="table-wrapper map-assortments" v-if="replaceAssortments">
+                <h3>Map Assortments</h3>
+                <div class="assortment-wrapper" v-for="(assortment, index) in assortmentsToMatch" :key="index">
+                    <h4>Assortment {{index+1}}</h4>
+                    <div class="assortment-header">
+                        <div class="left">
+                            <table class="map-fields-table">
+                                <tr class="header">
+                                    <th></th>
+                                    <th><label :for="'assortment-'+index+'-file'">Linked File</label></th>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><BaseInputField :id="'assortment-'+index+'-file'" 
+                                    class="input-field" disabled=true
+                                    :value="assortment.fileIndex != null ? availableFiles[assortment.fileIndex].fileName : null" 
+                                    type="select" @click="showSelectAssortmentFileContext($event, assortment)">
+                                        <i class="fas fa-caret-down"></i>
+                                    </BaseInputField></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <button v-if="index > 0" class="dark" @click="$emit('removeAssortment', index)">
+                            <i class="fas fa-trash-alt"></i><span>Remove assortment</span>
+                        </button>
+                    </div>
+                    <table class="map-fields-table">
+                        <tr class="header">
+                            <th><label>Database</label></th>
+                            <th></th>
+                            <th><label>Matched Datasource</label></th>
+                            <th><label>Example</label></th>
+                        </tr>
+                        <tr v-for="(field, index) in assortment.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                            <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                            <td><i class="fas fa-equals"></i></td>
+                            <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                            class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                            :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                <i class="fas fa-caret-down"></i>
+                            </BaseInputField></td>
+                            <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                                :value="previewExampleValue(field.newValue, field.name)"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <button class="dark" 
+                @click="$emit('addAssortment')">
+                    <i class="fas fa-plus"></i><span>Add assortment</span>
+                </button>
+            </div>
+            <!-- END Map Assortments -->
+
         </form>
 
 
@@ -176,6 +231,21 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseContextMenu ref="contextSelectAssortmentFile" class="context-select-file">
+            <template v-slot:header>
+                Select file to match
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
+                    @unset="slotProps.item.fileIndex = null;slotProps.hide()"
+                    :options="availableFiles"
+                    v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
+                    :optionNameKey="'fileName'" @submit="autoMapAssortment(slotProps.item);slotProps.hide()"/>
+                </div>
+            </template>
+        </BaseContextMenu>
     </div>
 </template>
 
@@ -188,7 +258,9 @@ export default {
         'availableFiles',
         'replacePrices',
         'currenciesToMatch',
-        'singleCurrencyFile'
+        'singleCurrencyFile',
+        'assortmentsToMatch',
+        'replaceAssortments',
     ],
     data: function () { return {
     }},
@@ -337,6 +409,24 @@ export default {
                 }
             })
         },
+        autoMapAssortment(assortment) {
+            // Loop through the fields we still need to match to a header
+            const file = this.availableFiles[assortment.fileIndex]
+            assortment.fieldsToMatch.forEach(field => {
+                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
+                    // Test if the current header has a file that matches
+                    const autoMatchIndex = file.headers.findIndex(header => {
+                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
+                    })
+                    if (autoMatchIndex >= 0) {
+                        const newValueToPush = {fileIndex: assortment.fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
+                        field.newValue = newValueToPush
+                        // Validate the value of the new mapping
+                        this.validateField(field)
+                    }
+                }
+            })
+        },
         showSelectContext(e, field) {
             const contextMenu = this.$refs.contextSelectField
             contextMenu.item = field
@@ -350,6 +440,11 @@ export default {
         showSelectFileContext(e, currency) {
             const contextMenu = this.$refs.contextSelectFile
             contextMenu.item = currency
+            contextMenu.show(e)
+        },
+        showSelectAssortmentFileContext(e, assortment) {
+            const contextMenu = this.$refs.contextSelectAssortmentFile
+            contextMenu.item = assortment
             contextMenu.show(e)
         },
     },
@@ -440,5 +535,28 @@ export default {
             }
         }
     }
+.assortment-wrapper {
+    margin-bottom: 20px;
+    h4 {
+        margin-top: 32px;
+        margin-bottom: 4px;
+    }
+}
+.assortment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    align-items: flex-end;
+    p {
+        .small {
+            font-size: 12px;
+        }
+    }
+}
+.map-assortments {
+    button {
+        margin-bottom: 32px;
+    }
+}
 
 </style>

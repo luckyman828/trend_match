@@ -2,22 +2,29 @@
     <BaseModal :classes="['upload-to-file-modal', currentScreen.class]" :show="show" @close="$emit('close')"
     ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
-        <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
-        @goToNextScreen="currentScreenIndex++; processFilesToUpload()" ref="uploadFileScreen"
-        @addFileToUpload="addFileToUpload" @removeFileToUpload="removeFileToUpload"
-        @processFile="processFile"/>
+        <BaseLoader v-if="isSubmitting" message="Processing products.."/>
 
-        <SelectFieldsScreen v-if="currentScreenIndex == 1"
-        :fields="fieldsToReplace" :replacePrices.sync="replacePrices"
-        @goToNextScreen="currentScreenIndex++;"
-        @goToPrevScreen="currentScreenIndex--"/>
+        <template v-else>
+            <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
+            @goToNextScreen="currentScreenIndex++; processFilesToUpload()" ref="uploadFileScreen"
+            @addFileToUpload="addFileToUpload" @removeFileToUpload="removeFileToUpload"
+            @processFile="processFile"/>
 
-        <MapFieldsScreen v-if="currentScreenIndex == 2"
-        :fields="fieldsToMatch" :availableFiles="availableFiles"
-        :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
-        :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
-        @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
-        @addCurrency="addCurrency" @removeCurrency="removeCurrency"/>
+            <SelectFieldsScreen v-if="currentScreenIndex == 1"
+            :fields="fieldsToReplace" :replacePrices.sync="replacePrices"
+            :replaceAssortments.sync="replaceAssortments"
+            @goToNextScreen="currentScreenIndex++;"
+            @goToPrevScreen="currentScreenIndex--"/>
+
+            <MapFieldsScreen v-if="currentScreenIndex == 2"
+            :fields="fieldsToMatch" :availableFiles="availableFiles"
+            :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
+            :assortmentsToMatch="assortmentsToMatch" :replaceAssortments="replaceAssortments"
+            :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
+            @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
+            @addCurrency="addCurrency" @removeCurrency="removeCurrency"
+            @addAssortment="addAssortment" @removeAssortment="removeAssortment"/>
+        </template>
 
     </BaseModal>
 </template>
@@ -53,12 +60,14 @@ export default {
                 class: 'map-fields'
             }
         ],
+        isSubmitting: false,
         filesToUpload: [],
         currentScreenIndex: 0,
         availableFiles: [],
         filePreviews: [],
         singleCurrencyFile: false,
         replacePrices: false,
+        replaceAssortments: false,
         fieldsToReplace: [
             {name: 'title', displayName: 'Name', enabled: false},
             {name: 'sale_description', displayName: 'Description', enabled: false},
@@ -68,7 +77,6 @@ export default {
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
-            {name: 'assortments', displayName: 'Assortments', enabled: false},
             {name: 'variants', displayName: 'Variants', enabled: false},
             {name: 'eans', displayName: 'Product EANs', enabled: false},
             {name: 'buying_group', displayName: 'Buyer Group', enabled: false},
@@ -92,12 +100,6 @@ export default {
             headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
-            {name: 'assortment_name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['assortment name','box name', 'ass name']},
-            {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
-            {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
             {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
             {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -135,6 +137,28 @@ export default {
                 headersToMatch: ['whs','wholesale price','whs price']},
                 {name: 'recommended_retail_price', displayName: 'Recommended Retail Price',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
                 headersToMatch: ['rrp','recommended retail price','retail price']},
+            ]
+        }],
+        assortmentDefaultObject: {
+            fileIndex: null,
+            fieldsToMatch: [
+                {name: 'name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['assortment name','box name', 'ass name']},
+                {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
+                {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
+            ]
+        },
+        assortmentsToMatch: [{
+            fileIndex: null,
+            fieldsToMatch: [
+                {name: 'name', displayName: 'Assortment Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['assortment name','box name', 'ass name']},
+                {name: 'box_ean', displayName: 'Assortment Box EAN',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box ean','assortment box ean','assortment ean', 'ass ean']},
+                {name: 'box_size', displayName: 'Assortment Box Size',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['box size','assortment box size', 'ass.', 'ass size', 'assortment size']},
             ]
         }]
     }},
@@ -277,6 +301,12 @@ export default {
         removeCurrency(index) {
             this.currenciesToMatch.splice(index, 1)
         },
+        addAssortment() {
+            this.assortmentsToMatch.push(JSON.parse(JSON.stringify(this.assortmentDefaultObject)))
+        },
+        removeAssortment(index) {
+            this.assortmentsToMatch.splice(index, 1)
+        },
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
             // First check that we have any previews available, and that we have a new value defined
@@ -374,7 +404,7 @@ export default {
                                 product.variants = []
                             if(this.replacePrices) 
                                 product.prices = []
-                            if(this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) 
+                            if(this.replaceAssortments) 
                                 product.assortments = []
                             if(this.fieldsToReplace.find(x => x.name == 'eans' && x.enabled)) 
                                 product.eans = []
@@ -408,26 +438,33 @@ export default {
 
                         // Assortments
                         let assortment = null
-                        if (this.fieldsToReplace.find(x => x.name == 'assortments' && x.enabled)) {
-                            // Find / Instantiate this lines assortments
-                            let assortmentKeyField = this.fieldsToMatch.find(x => x.name == 'assortment_name')
-                            // Check that the assortment key is from this file
-                            if (assortmentKeyField.newValue.fileIndex == fileIndex) {
-                                // Find the assortment keys index
-                                let assortmentKeyIndex = assortmentKeyField.newValue.fieldIndex
-                                // Find the assortment keys value
-                                let assortmentKeyValue = line[assortmentKeyIndex]
-                                // Find this lines assortment name
-                                assortment = product.assortments.find(x => x.assortment_name == assortmentKeyValue)
-                                if (!assortment) {
-                                    assortment = {
-                                        name: assortmentKeyValue,
-                                        box_ean: null,
-                                        box_size: null,
+                        let assortments = this.assortmentsToMatch
+                        if (this.replaceAssortments) {
+                            // Loop through our assortments to match
+                            assortments.forEach(thisAssortmentObject => {
+                                // Instantiate an assortment object
+                                // FieldsToMatch[0] = assortment name
+                                const assortmentName = line[thisAssortmentObject.fieldsToMatch[0].newValue.fieldIndex]
+                                assortment = product.assortments.find(x => x.name == assortmentName)
+                                if (!!assortment || assortmentName) {
+                                    if (!assortment) {
+                                        assortment = {
+                                            name: assortmentName,
+                                            box_size: null,
+                                            box_ean: null,
+                                        }
+                                        product.assortments.push(assortment)
                                     }
-                                    product.assortments.push(assortment)
+                                    // Loop through the currencies fields
+                                    thisAssortmentObject.fieldsToMatch.forEach(field => {
+                                        if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                            const assortmentFieldValue = line[field.newValue.fieldIndex]
+                                            const assortmentFieldName = field.name
+                                            assortment[assortmentFieldName] = assortmentFieldValue
+                                        }
+                                    })
                                 }
-                            }
+                            })
                         }
 
                         // CURRENCIES
@@ -556,6 +593,7 @@ export default {
             return productsToReturn
         },
         async onSubmit() {
+            this.isSubmitting = true
 
             // First validate all fields
             // Loop through the fields and look for errors
@@ -597,6 +635,7 @@ export default {
                 console.log(err)
                 window.alert('Something went wrong. Please try again')
             })
+            this.isSubmitting = false
         },
         reset() {
             this.availableFiles = []
