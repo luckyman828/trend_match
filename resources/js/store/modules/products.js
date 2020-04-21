@@ -14,6 +14,7 @@ export default {
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
+        productsFilteredBySearch: [],
         status: null,
         currentFocusRowIndex: null,
     },
@@ -23,6 +24,7 @@ export default {
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
+        getProductsFilteredBySearch: state => state.productsFilteredBySearch,
         availableProducts: state => {
             return state.availableProducts
         },
@@ -252,7 +254,6 @@ export default {
             return productsToReturn
         },
         async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {
-            console.log('show selection product PDP')
             // Set the current PDP selection
             commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
 
@@ -272,7 +273,15 @@ export default {
                     const selectionInput = product.selectionInputArray.find(x => x.selection.id == selection.id)
                     return selectionInput.product
                 })
-                commit('setAvailableProducts', newAvailableProducts)
+                // Filter our products by search
+                console.log('filter by search')
+                console.log(getters.getProductsFilteredBySearch)
+                console.log(getters.getProductsFilteredBySearch[1])
+                const selectionProductsFilteredBySearch = newAvailableProducts.filter(product =>
+                    getters.getProductsFilteredBySearch.find(x => x.id == product.id)
+                )
+                console.log(selectionProductsFilteredBySearch)
+                commit('setAvailableProducts', selectionProductsFilteredBySearch)
             }
 
             // If we have not already fetched the data for this selection
@@ -282,8 +291,12 @@ export default {
                     selections: [selection],
                     addToState: false,
                 })
+                // Filter our products by search
+                const selectionProductsFilteredBySearch = selectionProducts.filter(product =>
+                    getters.getProductsFilteredBySearch.find(x => x.id == product.id)
+                )
                 // Set our available products equal to the recently fetched products
-                commit('setAvailableProducts', selectionProducts)
+                commit('setAvailableProducts', selectionProductsFilteredBySearch)
                 // Set the current product
                 const newCurrentProduct = selectionProducts.find(x => x.id == product.id)
                 commit('setCurrentProduct', newCurrentProduct)
@@ -485,6 +498,9 @@ export default {
                 const index = state.products.findIndex(x => x.id == product.id)
                 state.products.splice(index, 1)
             })
+        },
+        SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
+            state.productsFilteredBySearch = products
         },
         setCurrentProduct(state, product) {
             state.currentProduct = product

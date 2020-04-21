@@ -28,7 +28,7 @@
                 <BaseTableTopBar>
                     <template v-slot:left>
                         <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch"/>
+                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
 
                         <v-popover trigger="click">
                             <button class="ghost">
@@ -207,17 +207,24 @@ export default {
     data: function() { return {
         sortKey: 'datasource_id',
         selectedProducts: [],
-        productsFilteredBySearch: this.products,
         selectedSelections: [],
         showContextMenu: false,
         contextProduct: null,
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
         ...mapState('products', {stateProducts: 'products'}),
         currentSelections() {
             return this.getCurrentSelections
+        },
+        productsFilteredBySearch: {
+            get() {
+                return this.$store.getters['products/getProductsFilteredBySearch']
+            },
+            set(value) {
+                this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
+            }
         },
         currentProductFilter: {
             get () {
@@ -263,15 +270,17 @@ export default {
     methods: {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
-        'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts']),
+        'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
+        'SET_PRODUCTS_FILTERED_BY_SEARCH']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         onViewSingle(product) {
             this.SET_CURRENT_PDP_SELECTION(this.selection)
             this.setCurrentProduct(product)
-            this.setAvailableProducts(this.products) // Save array of available products
+            this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
             this.setSingleVisisble(true)
+            document.activeElement.blur()
         },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey

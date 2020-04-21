@@ -5,7 +5,7 @@
                 <BaseTableTopBar>
                     <template v-slot:left>
                         <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch"/>
+                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
 
                         <v-popover trigger="click">
                             <button class="ghost">
@@ -153,12 +153,20 @@ export default {
     ],
     data: function() { return {
         selectedProducts: [],
-        productsFilteredBySearch: this.products,
+        // productsFilteredBySearch: this.products,
         contextItem: null,
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
         ...mapState('products', {stateProducts: 'products'}),
+        productsFilteredBySearch: {
+            get() {
+                return this.$store.getters['products/getProductsFilteredBySearch']
+            },
+            set(value) {
+                this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
+            }
+        },
         selectedCategories: {
             get () {
                 return this.$store.getters['products/selectedCategories']
@@ -186,11 +194,13 @@ export default {
     },
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct', 'deleteProducts']),
-        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups']),
+        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
-            this.setAvailableProducts(this.products) // Save array of available products
+            this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
             this.setSingleVisisble(true)
+            document.activeElement.blur()
         },
         showContext(mouseEvent, product) {
             const contextMenu = this.$refs.contextMenu
