@@ -85,7 +85,7 @@ export default {
         writeScope: 'comment',
         writeActive: false,
         submitting: false,
-        selectionRequest: null,
+        // selectionRequest: null,
     }},
     watch: {
         product: function(newVal, oldVal) {
@@ -94,11 +94,16 @@ export default {
                 this.update()
         },
         selection: function(newVal, oldVal) {
+            console.log('selection')
             if (newVal.id != oldVal.id)
                 this.update()
         },
         requests: function(newVal, oldVal) {
             console.log('requests updated')
+            this.update()
+        },
+        selectionRequest: function(newVal, oldVal) {
+            console.log('selection request updated')
             this.update()
         },
     },
@@ -112,6 +117,9 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },
+        selectionRequest () {
+            return this.requests.find(x => x.selection_id == this.selection.id)
+        }
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
@@ -157,7 +165,7 @@ export default {
             this.submitting = false
 
             // Update the selection request
-            this.selectionRequest = requestToPost
+            // this.selectionRequest = requestToPost
 
             // Reset comment
             this.writeActive = false
@@ -170,8 +178,9 @@ export default {
 
         },
         update() {
+            console.log('update')
             // Find the existing selection request if any
-            this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
+            // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
             this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
             // Set the id of the new request if one exists

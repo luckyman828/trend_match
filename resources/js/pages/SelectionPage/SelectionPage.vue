@@ -93,7 +93,7 @@ export default{
     },
     methods: {
         ...mapMutations('products', ['setSingleVisisble']),
-        ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT']),
+        ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
         ...mapActions('actions', ['insertOrUpdateAction', 'insertOrUpdateActions']),
         ...mapMutations('actions', ['INSERT_OR_UPDATE_ACTIONS']),
@@ -155,19 +155,33 @@ export default{
             // Comments
             connection.on("OnCommentArrived", (selectionId, comment) => {
                 if (comment.user_id != authUser.id) {
-                    console.log("OnCommentArrived", selectionId, comment)
+                    // console.log("OnCommentArrived", selectionId, comment)
                     const product = this.products.find(x => x.id == comment.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    if (!comment.selection) {
+                        delete comment.selection
+                    }
                     this.INSERT_OR_UPDATE_COMMENT({product: selectionProduct, comment})
+                }
+            })
+            connection.on("OnCommentDeleted", (selectionId, comment) => {
+                if (comment.user_id != authUser.id) {
+                    console.log("OnCommentDeleted", selectionId, comment)
+                    const product = this.products.find(x => x.id == comment.product_id)
+                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    this.DELETE_COMMENT({product: selectionProduct, comment})
                 }
             })
 
             // Requests
             connection.on("OnRequestArrived", (selectionId, request) => {
                 if (request.author_id != authUser.id) {
-                    console.log("OnRequestArrived", selectionId, request)
+                    // console.log("OnRequestArrived", selectionId, request)
                     const product = this.products.find(x => x.id == request.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    if (!request.selection) {
+                        delete request.selection
+                    }
                     this.INSERT_OR_UPDATE_REQUEST({product: selectionProduct, request})
                 }
             })
@@ -175,7 +189,7 @@ export default{
             // Feedback
             connection.on("OnBulkFeedbackArrived", (selectionId, feedbacks) => {
                 if (feedbacks[0].user_id != authUser.id) {
-                    console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
+                    // console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
                     feedbacks.forEach(action => {
                         const product = this.products.find(x => x.id == action.product_id)
                         const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
@@ -190,7 +204,7 @@ export default{
             // Alignment
             connection.on("OnBulkAlignmentArrived", (selectionId, alignments) => {
                 if (alignments[0].user_id != authUser.id) {
-                    console.log("OnBulkAlignmentArrived", selectionId, alignments)
+                    // console.log("OnBulkAlignmentArrived", selectionId, alignments)
                     alignments.forEach(action => {
                         const product = this.products.find(x => x.id == action.product_id)
                         const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product

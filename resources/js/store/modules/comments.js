@@ -83,7 +83,7 @@ export default {
         },
         async deleteComment({ commit }, { product, comment }) {
             // Delete the comment from our state
-            commit('deleteComment', { product, comment })
+            commit('DELETE_COMMENT', { product, comment })
 
             // Config API endpoint
             const apiUrl = `/comments/${comment.id}`
@@ -105,14 +105,15 @@ export default {
             console.log(product)
             const existingCommentIndex = product.comments.findIndex(x => x.id == comment.id)
             if (existingCommentIndex >= 0) {
-                Vue.set(product.comments, existingCommentIndex, comment)
+                const updatedComment = Object.assign(product.comments[existingCommentIndex], comment)
+                Vue.set(product.comments, existingCommentIndex, updatedComment)
             }
             // Else insert the comment
             else {
                 product.comments.push(comment)
             }
         },
-        deleteComment(state, { product, comment }) {
+        DELETE_COMMENT(state, { product, comment }) {
             // If a product has been provided. use that, else find the product from our state
             const commentProduct = product
                 ? product

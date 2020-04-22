@@ -102,7 +102,8 @@ export default {
             // First see if the request already exists
             const existingRequestIndex = product.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
-                Vue.set(product.requests, existingRequestIndex, request)
+                const updatedRequest = Object.assign(product.requests[existingRequestIndex], request)
+                Vue.set(product.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
             else {
