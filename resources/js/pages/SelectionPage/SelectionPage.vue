@@ -127,7 +127,9 @@ export default{
             .configureLogging(signalR.LogLevel.Information)
             .build()
             const connection = this.$connection
-            await connection.start()
+            await connection.start().catch(err => {
+                console.log(err)
+            })
 
             const authUser = this.authUser
             
@@ -151,6 +153,7 @@ export default{
                 // console.log('authenticated!')
                 // console.log(message)
             })
+                        
 
             // Comments
             connection.on("OnCommentArrived", (selectionId, comment) => {
@@ -166,10 +169,10 @@ export default{
             })
             connection.on("OnCommentDeleted", (selectionId, comment) => {
                 if (comment.user_id != authUser.id) {
-                    console.log("OnCommentDeleted", selectionId, comment)
+                    // console.log("OnCommentDeleted", selectionId, comment)
                     const product = this.products.find(x => x.id == comment.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    this.DELETE_COMMENT({product: selectionProduct, comment})
+                    this.DELETE_COMMENT({product: selectionProduct, commentId: comment.comment_id})
                 }
             })
 
