@@ -111,8 +111,6 @@ export default {
 
             await axios.post(apiUrl, requestBody).catch(err => {
                 // Return the action to the old
-                console.log('there is an error!')
-                console.log(oldActions)
                 commit('INSERT_OR_UPDATE_ACTIONS', {
                     productActions: oldActions,
                     type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
@@ -136,7 +134,7 @@ export default {
             window.alert('Network error. Please check your connection')
         },
         INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId }) {
-            console.log('insert or update actions', productActions, type, currentSelectionId)
+            // console.log('insert or update actions', productActions, type, currentSelectionId)
             // Loop through our products and update their actions
             productActions.forEach(productAction => {
                 const product = productAction.product
@@ -173,60 +171,6 @@ export default {
                 }
             })
         },
-        // INSERT_OR_UPDATE_ACTIONS(state, { productActions, selection, user, type, currentSelectionId }) {
-        //     console.log('insert or update actions', productActions, selection, user, type)
-        //     // Loop through our products and update their actions
-        //     if (type == 'Feedback') {
-        //         productActions.forEach(productAction => {
-        //             productAction.product.your_feedback = productAction.action
-        //             // Check if the action already exists in the products feedbacks array
-        //             const existingAction = productAction.product.feedbacks.find(
-        //                 x =>
-        //                     x.product_id == productAction.product.id &&
-        //                     x.selection_id == selection.id &&
-        //                     x.user_id == user.id
-        //             )
-        //             if (!existingAction) {
-        //                 productAction.product.feedbacks.push({
-        //                     action: productAction.action,
-        //                     product_id: productAction.product.id,
-        //                     selection: selection,
-        //                     selection_id: selection.id,
-        //                     user_id: user.id,
-        //                     user: user,
-        //                 })
-        //             } else {
-        //                 existingAction.action = productAction.action
-        //             }
-        //         })
-        //     }
-        //     if (type == 'Alignment') {
-        //         productActions.forEach(productAction => {
-        //             console.log('setting product action')
-        //             const existingAction = productAction.product.actions.find(
-        //                 x => x.product_id == productAction.product.id && x.selection_id == selection.id
-        //             )
-        //             if (!existingAction) {
-        //                 productAction.product.actions.push({
-        //                     action: productAction.action,
-        //                     product_id: productAction.product.id,
-        //                     selection: selection,
-        //                     selection_id: selection.id,
-        //                     user_id: user.id,
-        //                     user: user,
-        //                 })
-        //             } else {
-        //                 existingAction.action = productAction.action
-        //             }
-
-        //             // If is self
-        //             if (!currentSelectionId || selection.id == currentSelectionId) {
-        //                 Vue.set(productAction.product, 'action', productAction.action)
-        //                 Vue.set(productAction.product, 'action_author', user)
-        //             }
-        //         })
-        //     }
-        // },
         UPDATE_ACTIONS(state, { product, action, selection, user, type }) {
             if (type == 'Feedback') {
                 const existingAction = product.feedbacks.find(

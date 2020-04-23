@@ -192,7 +192,7 @@ export default{
             // Feedback
             connection.on("OnBulkFeedbackArrived", (selectionId, feedbacks) => {
                 if (feedbacks[0].user_id != authUser.id) {
-                    console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
+                    // console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
                     feedbacks.forEach(action => {
                         const product = this.products.find(x => x.id == action.product_id)
                         const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
@@ -206,7 +206,7 @@ export default{
             // Feedback
             connection.on("OnFeedbackArrived", (selectionId, feedback) => {
                 if (feedback.user_id != authUser.id) {
-                    console.log("OnFeedbackArrived", selectionId, feedback)
+                    // console.log("OnFeedbackArrived", selectionId, feedback)
                     const product = this.products.find(x => x.id == feedback.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
                     feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
@@ -219,7 +219,7 @@ export default{
             // Alignment
             connection.on("OnBulkAlignmentArrived", (selectionId, alignments) => {
                 if (alignments[0].user_id != authUser.id) {
-                    console.log("OnBulkAlignmentArrived", selectionId, alignments)
+                    // console.log("OnBulkAlignmentArrived", selectionId, alignments)
                     alignments.forEach(action => {
                         const product = this.products.find(x => x.id == action.product_id)
                         const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
@@ -232,7 +232,7 @@ export default{
             })
             connection.on("OnAlignmentArrived", (selectionId, alignment) => {
                 if (alignment.user_id != authUser.id) {
-                    console.log("OnAlignmentArrived", selectionId, alignment)
+                    // console.log("OnAlignmentArrived", selectionId, alignment)
                     const product = this.products.find(x => x.id == alignment.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
                     alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
