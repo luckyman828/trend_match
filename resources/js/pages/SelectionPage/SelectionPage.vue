@@ -95,7 +95,7 @@ export default{
         ...mapMutations('products', ['setSingleVisisble']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
-        ...mapActions('actions', ['insertOrUpdateAction', 'insertOrUpdateActions']),
+        ...mapActions('actions', ['insertOrUpdateActions']),
         ...mapMutations('actions', ['INSERT_OR_UPDATE_ACTIONS']),
         InNoOutNoCommentStyles() {
             this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In')
@@ -113,7 +113,7 @@ export default{
         },
         onUpdateAction(product, action, selection) {
             const actionToPost = product[this.currentAction] == action ? 'None' : action
-            this.insertOrUpdateAction({product, action: actionToPost, selection, user: this.authUser})
+            this.insertOrUpdateActions({products: [product], action: actionToPost, selection, user: this.authUser})
         },
         onInsertOrUpdateActions(products, action, selection) {
             this.insertOrUpdateActions({products, action, selection, user: this.authUser})
@@ -192,30 +192,53 @@ export default{
             // Feedback
             connection.on("OnBulkFeedbackArrived", (selectionId, feedbacks) => {
                 if (feedbacks[0].user_id != authUser.id) {
-                    // console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
+                    console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
                     feedbacks.forEach(action => {
                         const product = this.products.find(x => x.id == action.product_id)
                         const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                        const actionSelection = this.selections.find(x => x.id == action.selection_id)
+                        action.selection = this.selections.find(x => x.id == action.selection_id)
     
-                        const productActions = [{product: selectionProduct, action: action.action}]
-                        this.INSERT_OR_UPDATE_ACTIONS({ productActions, selection: actionSelection, user: alignments[0].user, type: 'Feedback' })
+                        const productActions = [{product: selectionProduct, action: action}]
+                        this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback' })
                     })
+                }
+            })
+            // Feedback
+            connection.on("OnFeedbackArrived", (selectionId, feedback) => {
+                if (feedback.user_id != authUser.id) {
+                    console.log("OnFeedbackArrived", selectionId, feedback)
+                    const product = this.products.find(x => x.id == feedback.product_id)
+                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
+
+                    const productActions = [{product: selectionProduct, action: feedback}]
+                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback' })
                 }
             })
 
             // Alignment
             connection.on("OnBulkAlignmentArrived", (selectionId, alignments) => {
                 if (alignments[0].user_id != authUser.id) {
-                    // console.log("OnBulkAlignmentArrived", selectionId, alignments)
+                    console.log("OnBulkAlignmentArrived", selectionId, alignments)
                     alignments.forEach(action => {
                         const product = this.products.find(x => x.id == action.product_id)
                         const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                        const actionSelection = this.selections.find(x => x.id == action.selection_id)
+                        action.selection = this.selections.find(x => x.id == action.selection_id)
     
-                        const productActions = [{product: selectionProduct, action: action.action}]
-                        this.INSERT_OR_UPDATE_ACTIONS({ productActions, selection: actionSelection, user: alignments[0].user, type: 'Alignment' , currentSelectionId: selectionId})
+                        const productActions = [{product: selectionProduct, action: action}]
+                        this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment' , currentSelectionId: selectionId})
                     })
+                }
+            })
+            connection.on("OnAlignmentArrived", (selectionId, alignment) => {
+                if (alignment.user_id != authUser.id) {
+                    console.log("OnAlignmentArrived", selectionId, alignment)
+                    const product = this.products.find(x => x.id == alignment.product_id)
+                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
+
+                    const productActions = [{product: selectionProduct, action: alignment}]
+                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment' , currentSelectionId: selectionId})
                 }
             })
 
