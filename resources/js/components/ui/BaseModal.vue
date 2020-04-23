@@ -5,7 +5,7 @@
                 <div class="overlay" @click="close"></div>
 
                 <div class="modal" ref="modal">
-                    <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header || subHeader">
+                    <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header">
                         <div class="left" v-if="goBack">
                             <button class="go-bacl md circle" @click="$emit('goBack')"><i class="far fa-arrow-left"></i></button>
                         </div>
@@ -30,7 +30,6 @@ export default {
     name: 'Modal',
     props: [
         'header',
-        'subHeader',
         'classes',
         'goBack',
         'show'

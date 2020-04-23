@@ -131,36 +131,39 @@
 
         <BaseModal
             ref="moveItemModal"
-            :header="'Move item to..'"
-            :subHeader="'Select a place to move the current item to'"
+            :header="`Move ${filesToMove.length} item${filesToMove.length > 1 ? 's' : ''} to..`"
             :classes="'move-item-modal'"
+            :show="showMoveModal"
+            @close="showMoveModal = false"
         >
             <template v-slot>
-                <div class="inner" v-if="toMove != null">
+                <div class="inner" v-if="filesToMove != null">
                     <div style="margin-bottom: 12px">
-                        <button v-if="folderToMoveToId != null" class="invisible ghost-hover true-square" @click="folderToMoveToId = folderToMoveTo.parent_id">
+                        <button v-if="destinationFolder.id != currentWorkspace.id" class="invisible ghost-hover true-square" 
+                        @click="setDestinationFolder(destinationFolder.parent_id)">
                             <i class="fas fa-arrow-left"></i>
                         </button>
-                        <span v-if="folderToMoveToId != null">{{folderToMoveTo.name}}</span>
+                        <span v-if="destinationFolder.id != null">{{destinationFolder.name}}</span>
                         <span v-else><span class="square true-square"><i class="far fa-building"></i></span> {{currentWorkspace.name}}</span>
                     </div>
                     <div class="folders-wrapper">
-                        <template v-for="thisFolder in folderToMoveTo.folders">
+                        <template v-for="thisFolder in destinationFolderContent.filter(x => x.type == 'Folder')">
                             <div class="folder" :key="thisFolder.id">
-                                <p v-if="thisFolder.id != toMove.id" class="clickable"
-                                @click="folderToMoveToId = thisFolder.id">
+                                <span v-if="!filesToMove.find(x => x.id == thisFolder.id)" class="clickable"
+                                @click="setDestinationFolder(thisFolder.id)">
                                     <i class="fas fa-folder dark15"></i> {{thisFolder.name}}
-                                </p>
-                                <p v-else :key="thisFolder.id" class="disabled" style="opacity: .5;">
+                                </span>
+                                <span v-else class="disabled" style="opacity: .5;"
+                                v-tooltip="'Cannot place a folder inside itself'">
                                     <i class="fas fa-folder dark15"></i> {{thisFolder.name}}
-                                </p>
+                                </span>
                             </div>
                         </template>
-                        <p v-if="folderToMoveTo.folders.length <= 0">No folders..</p>
+                        <p v-if="destinationFolderContent.filter(x => x.type == 'Folder').length <= 0">No folders..</p>
                     </div>
                     <div class="controls" style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                        <button class="invisible dark ghost-hover" @click="$refs.moveItemModal.toggle(); toMove = null"><span>Cancel</span></button>
-                        <button class="primary" :class="{disabled: folderToMoveToId == toMove.id || folderToMoveToId == folder.id}" @click="submitMoveItem()"
+                        <button class="invisible dark ghost-hover" @click="showMoveModal = false"><span>Cancel</span></button>
+                        <button class="primary" :class="{disabled: destinationFolder.id == filesToMove.id || destinationFolder.id == filesToMove.parent_id}" @click="submitMoveItem()"
                         ><span>Move here</span>
                         </button>
                     </div>
@@ -173,7 +176,7 @@
         @keybind-o="setCurrentFolder(contextMenuItem)"
         @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'folder', 'title')"
         @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
-        @keybind-m="false && onMoveTo(contextMenuItem, 'folder')"
+        @keybind-m="onMoveFiles()"
         @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFolder(contextMenuItem.id)">
             <div class="item-group">
                 <div class="item" @click="setCurrentFolder(contextMenuItem)">
@@ -195,12 +198,12 @@
                     </div>
                     <u>A</u>dd owner(s)
                 </div> -->
-                <!-- <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
+                <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move folders'"
-                @click="onMoveTo(contextMenuItem, 'folder')">
+                @click="onMoveFiles()">
                     <span><u>M</u>ove to</span>
-                </BaseContextMenuItem> -->
-                <!-- <div class="item" @click="onMoveTo(contextMenuItem, 'folder')">
+                </BaseContextMenuItem>
+                <!-- <div class="item" @click="onMoveFiles(contextMenuItem, 'folder')">
                     <div class="icon-wrapper">
                         <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
                     </div>
@@ -217,11 +220,12 @@
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuFile" class="context-file" v-slot
+        :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyA', 'KeyM', 'KeyD']"
         @keybind-v="viewSingle(contextMenuItem.id)"
         @keybind-e="authUserWorkspaceRole == 'Admin' && onGoToEditFile(contextMenuItem.id)"
         @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'file', 'title')"
         @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
-        @keybind-m="false && onMoveTo(contextMenuItem, 'file')"
+        @keybind-m="onMoveFiles()"
         @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFile(contextMenuItem.id)">
             <div class="item-group">
                 <div class="item" @click="showSingleFile(contextMenuItem)">
@@ -248,13 +252,12 @@
                         <i class="far fa-user-plus"></i>
                     </div>
                     <u>A</u>dd owner(s)
-                </div>
-                <div class="item" @click="onMoveTo(contextMenuItem, 'file')">
-                    <div class="icon-wrapper">
-                        <i class="far fa-folder"><i class="fas fa-long-arrow-alt-right"></i></i>
-                    </div>
-                    <u>M</u>ove to
                 </div> -->
+                <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move files'"
+                @click="onMoveFiles()">
+                    <span><u>M</u>ove to</span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
@@ -263,6 +266,37 @@
                     <span><u>D</u>elete file</span>
                 </BaseContextMenuItem>
             </div>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuMultipleItems" class="context-file"
+        :hotkeys="['KeyD', 'KeyC', 'KeyM']"
+        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteMultipleFiles(selected)"
+        @keybind-c="localSelected = []"
+        @keybind-m="onMoveFiles()"
+        >
+            <template slot="header">
+                <span>Choose action for {{selected.length}} items</span>
+            </template>
+            <template slot>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-times"
+                    @click="localSelected = []">
+                        <span><u>C</u>lear selection</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move files'"
+                    @click="onMoveFiles()">
+                        <span><u>M</u>ove to</span>
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
+                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete files'"
+                    @click="onDeleteMultipleFiles(selected)">
+                        <span><u>D</u>elete items</span>
+                    </BaseContextMenuItem>
+                </div>
+            </template>
         </BaseContextMenu>
 
     </div>
@@ -285,6 +319,7 @@ export default {
     data: function() {
         return {
             sortKey: null,
+            showMoveModal: false,
             fileToEdit: {
                 id: '',
                 title: '',
@@ -298,8 +333,9 @@ export default {
             uploadingToFile: false,
             contextMenuItem: null,
             toEdit: null,
-            toMove: null,
-            folderToMoveTo: this.folder,
+            filesToMove: [],
+            destinationFolder: null,
+            destinationFolderContent: [],
         }
     },
     computed: {
@@ -317,7 +353,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile']),
+        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile', 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
         ...mapMutations('files', ['removeUnsavedFiles']),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {
@@ -331,7 +367,7 @@ export default {
         },
         showContextMenu(e, item, type) {
             if (this.selected.length > 1) {
-                this.$emit('showMultiItemContextMenu', e)
+                this.showMultiItemContextMenu(e)
                 return
             }
             const folderMenu = this.$refs.contextMenuFolder
@@ -354,37 +390,29 @@ export default {
         showSingleFile(file) {
             this.$emit('showSingleFile', file)
         },
-        onMoveTo(item, type) {
-            this.toMove = item
-            this.toEdit = {item: item, type: type}
-            this.folderToMoveToId = this.folder.id
-            this.$refs.moveItemModal.toggle()
+        onMoveFiles() {
+            // If we have a selection then move that, else move the context file
+            if (this.selected.length > 0) {
+                this.filesToMove = this.selected
+            } else {
+                this.filesToMove = [this.contextMenuItem]
+            }
+            this.destinationFolder = this.folder || {id: this.currentWorkspace.id, parent_id: null}
+            this.destinationFolderContent = this.files
+            this.showMoveModal = true
+        },
+        async setDestinationFolder(folderId) {
+            // If there is no folder ID, then set the destination to the workspace
+            if (folderId == 0 || !folderId) {
+                this.destinationFolder = {id: this.currentWorkspace.id, parent_id: null}
+                this.destinationFolderContent = await this.fetchFiles(false)
+            } else {
+                this.destinationFolder = await this.fetchFolder(folderId)
+                this.destinationFolderContent = await this.fetchFolderContent(folderId)
+            }
         },
         submitMoveItem() {
-            const item = this.toEdit.item
-            // Check the type of the item to move
-            if (this.toEdit.type == 'folder') {
-                // Set the new parent_id
-                item.parent_id = this.folderToMoveToId
-                this.updateFolder(item)
-
-                // Remove the moved item from the current array
-                const currentItemIndex = this.files.findIndex(x => x.id == item.id)
-                this.files.splice(currentItemIndex, 1)
-            } else {
-                // Set the folder id
-                item.folder_id = this.folderToMoveToId
-                item.catalog_id = this.folderToMoveToId
-                this.insertOrUpdateFile(item)
-
-                // Remove the moved item from the current array
-                const currentItemIndex = this.folder.files.findIndex(x => x.id == item.id)
-                this.folder.files.splice(currentItemIndex, 1)
-            }
-            // Reset the item to edit
-            this.toMove = null
-            this.toEdit = null
-            this.$refs.moveItemModal.toggle()
+            this.moveFiles({destinationFolder: this.destinationFolder, filesToMove: this.filesToMove})
         },
         onEditField(item, type, field) {
             // If the new item to edit has an ID, remove all unsaved folders, to avoid confusion as to whether they are saved or not
@@ -505,6 +533,19 @@ export default {
         removeFile(index) {
             this.filesToAdd.splice(index, 1)
         },
+        showMultiItemContextMenu(e) {
+            this.$refs.contextMenuMultipleItems.show(e)
+        },
+        onDeleteMultipleFiles(files) {
+            if (window.confirm(
+                'Are you sure you want to delete your selection?\nAll folders and files contained in your selection and all their comments, requests and actions will be permanently deleted.'
+            )) {
+                for(let i = files.length; i--;) {
+                    this.deleteFile(files[i].id)
+                }
+                this.localSelected = []
+            }
+        }
     },
 }
 </script>
