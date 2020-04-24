@@ -808,6 +808,7 @@ export default {
             // Else instantiate a new master object in the table
             const newSelection = {
                 id: null,
+                file_id: this.currentFile.id,
                 name: '',
                 type: 'Master',
                 currency: null,
@@ -818,6 +819,7 @@ export default {
                 visible_to: null,
                 open_from: null,
                 open_to: null,
+                completed_at: null,
             }
             // Push new selection to the parent
             if (parent) {
