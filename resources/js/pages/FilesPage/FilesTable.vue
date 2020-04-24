@@ -413,6 +413,7 @@ export default {
         },
         submitMoveItem() {
             this.moveFiles({destinationFolder: this.destinationFolder, filesToMove: this.filesToMove})
+            this.showMoveModal = false
         },
         onEditField(item, type, field) {
             // If the new item to edit has an ID, remove all unsaved folders, to avoid confusion as to whether they are saved or not
