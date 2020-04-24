@@ -808,7 +808,6 @@ export default {
                                 }
                             }
                         })
-                        console.log(product.assortments)
 
                         // CURRENCIES
                         // Find / Instantiate this lines currencies
