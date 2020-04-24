@@ -779,31 +779,36 @@ export default {
 
                         let assortment = null
                         let assortments = this.assortmentsToMatch
+                        
                         // Loop through our assortments to match
                         assortments.forEach(thisAssortmentObject => {
-                            // Instantiate an assortment object
-                            // FieldsToMatch[0] = assortment name
-                            const assortmentName = line[thisAssortmentObject.fieldsToMatch[0].newValue.fieldIndex]
-                            assortment = product.assortments.find(x => x.name == assortmentName)
-                            if (!!assortment || assortmentName) {
-                                if (!assortment) {
-                                    assortment = {
-                                        name: assortmentName,
-                                        box_size: null,
-                                        box_ean: null,
+
+                            if (thisAssortmentObject.fileIndex == fileIndex) {
+                                // Instantiate an assortment object
+                                // FieldsToMatch[0] = assortment name
+                                const assortmentName = line[thisAssortmentObject.fieldsToMatch[0].newValue.fieldIndex]
+                                assortment = product.assortments.find(x => x.name == assortmentName)
+                                if (!!assortment || assortmentName) {
+                                    if (!assortment) {
+                                        assortment = {
+                                            name: assortmentName,
+                                            box_size: null,
+                                            box_ean: null,
+                                        }
+                                        product.assortments.push(assortment)
                                     }
-                                    product.assortments.push(assortment)
+                                    // Loop through the currencies fields
+                                    thisAssortmentObject.fieldsToMatch.forEach(field => {
+                                        if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                            const assortmentFieldValue = line[field.newValue.fieldIndex]
+                                            const assortmentFieldName = field.name
+                                            assortment[assortmentFieldName] = assortmentFieldValue
+                                        }
+                                    })
                                 }
-                                // Loop through the currencies fields
-                                thisAssortmentObject.fieldsToMatch.forEach(field => {
-                                    if (field.enabled && field.newValue.fileIndex == fileIndex) {
-                                        const assortmentFieldValue = line[field.newValue.fieldIndex]
-                                        const assortmentFieldName = field.name
-                                        assortment[assortmentFieldName] = assortmentFieldValue
-                                    }
-                                })
                             }
                         })
+                        console.log(product.assortments)
 
                         // CURRENCIES
                         // Find / Instantiate this lines currencies
