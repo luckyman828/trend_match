@@ -43,7 +43,7 @@ export default {
         },
         async insertOrUpdateComment({ commit, dispatch }, { product, comment }) {
             // Update our state
-            commit('insertOrUpdateComment', { product, comment })
+            commit('INSERT_OR_UPDATE_COMMENT', { product, comment })
             let requestMethod
             let apiUrl
             // check if the provided comment should be posted or updates
@@ -83,7 +83,7 @@ export default {
         },
         async deleteComment({ commit }, { product, comment }) {
             // Delete the comment from our state
-            commit('deleteComment', { product, comment })
+            commit('DELETE_COMMENT', { product, commentId: comment.id })
 
             // Config API endpoint
             const apiUrl = `/comments/${comment.id}`
@@ -99,25 +99,23 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        insertOrUpdateComment(state, { product, comment }) {
+        INSERT_OR_UPDATE_COMMENT(state, { product, comment }) {
             // First see if the comment already exists
+            console.log('insert comment')
+            console.log(product)
             const existingCommentIndex = product.comments.findIndex(x => x.id == comment.id)
             if (existingCommentIndex >= 0) {
-                Vue.set(product.comments, existingCommentIndex, comment)
+                const updatedComment = Object.assign(product.comments[existingCommentIndex], comment)
+                Vue.set(product.comments, existingCommentIndex, updatedComment)
             }
             // Else insert the comment
             else {
                 product.comments.push(comment)
             }
         },
-        deleteComment(state, { product, comment }) {
-            // If a product has been provided. use that, else find the product from our state
-            const commentProduct = product
-                ? product
-                : this.state.entities.products.products.find(x => x.id == comment.product_id)
-
-            const commentIndex = commentProduct.comments.findIndex(x => x.id == comment.id)
-            commentProduct.comments.splice(commentIndex, 1)
+        DELETE_COMMENT(state, { product, commentId }) {
+            const commentIndex = product.comments.findIndex(x => x.id == commentId)
+            product.comments.splice(commentIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

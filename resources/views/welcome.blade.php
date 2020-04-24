@@ -25,5 +25,6 @@
         </div>
 
         <script src="{{ asset('js/app.js') }}"></script>
+        <script src="/lib/signalr/signalr.js"></script>
     </body>
 </html>

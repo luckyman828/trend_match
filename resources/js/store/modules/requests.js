@@ -43,7 +43,7 @@ export default {
         },
         async insertOrUpdateRequest({ commit, dispatch }, { product, request }) {
             // Update our state
-            commit('insertOrUpdateRequest', { product, request })
+            commit('INSERT_OR_UPDATE_REQUEST', { product, request })
             let requestMethod
             let apiUrl
             // check if the provided request should be posted or updates
@@ -98,11 +98,12 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        insertOrUpdateRequest(state, { product, request }) {
+        INSERT_OR_UPDATE_REQUEST(state, { product, request }) {
             // First see if the request already exists
             const existingRequestIndex = product.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
-                Vue.set(product.requests, existingRequestIndex, request)
+                const updatedRequest = Object.assign(product.requests[existingRequestIndex], request)
+                Vue.set(product.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
             else {

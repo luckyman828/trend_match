@@ -134,7 +134,7 @@
             <DistributionSection :product="currentProduct"/>
 
             <RequestsSection class="comments" ref="requestsSection"
-            :product="product" :selection="currentSelection"
+            :product="product" :selection="currentSelection" :requests="product.requests"
             @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
             <CommentsSection class="comments" ref="commentsSection"

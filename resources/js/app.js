@@ -50,7 +50,7 @@ const requireComponent = require.context(
     /Base[A-Z]\w+\.(vue|js)$/
 )
 
-requireComponent.keys().forEach((fileName) => {
+requireComponent.keys().forEach(fileName => {
     // Get component config
     const componentConfig = requireComponent(fileName)
 
@@ -79,14 +79,14 @@ if (token) {
 }
 
 // Define global filters
-Vue.filter('truncate', function (value, limit) {
+Vue.filter('truncate', function(value, limit) {
     if (value.length > limit) {
         value = value.substring(0, limit - 2) + '..'
     }
 
     return value
 })
-Vue.filter('formatDate', function (value) {
+Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
 

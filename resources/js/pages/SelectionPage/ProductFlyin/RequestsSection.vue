@@ -3,7 +3,7 @@
 
         <template v-slot:header class="random">
             <h3><span>Requests</span>
-                <span class="pill primary sm"><span>{{product.requests.length}}</span></span>
+                <span class="pill primary sm"><span>{{requests.length}}</span></span>
             </h3>
         </template>
 
@@ -12,9 +12,9 @@
                 <div class="selection-request" v-if="selectionRequest">
                     <request :request="selectionRequest"/>
                 </div>
-                <div v-if="product.requests.find(x => x.selection_id != selection.id)" class="break-line">Showing requests from other selections(s)</div>
+                <div v-if="requests.find(x => x.selection_id != selection.id)" class="break-line">Showing requests from other selections(s)</div>
                 <request :request="request" :key="request.id" 
-                v-for="request in product.requests
+                v-for="request in requests
                 .filter(x => x.selection_id != selection.id)
                 .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)"/>
             </div>
@@ -71,6 +71,7 @@ export default {
     props: [
         'product',
         'selection',
+        'requests',
     ],
     components: {
         Request,
@@ -84,16 +85,26 @@ export default {
         writeScope: 'comment',
         writeActive: false,
         submitting: false,
-        selectionRequest: null,
+        // selectionRequest: null,
     }},
     watch: {
         product: function(newVal, oldVal) {
-            if (newVal.id != oldVal.id)
+            // if (newVal.id != oldVal.id)
+            console.log('product updated')
                 this.update()
         },
         selection: function(newVal, oldVal) {
+            console.log('selection')
             if (newVal.id != oldVal.id)
                 this.update()
+        },
+        requests: function(newVal, oldVal) {
+            console.log('requests updated')
+            this.update()
+        },
+        selectionRequest: function(newVal, oldVal) {
+            console.log('selection request updated')
+            this.update()
         },
     },
     computed: {
@@ -106,6 +117,9 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },
+        selectionRequest () {
+            return this.requests.find(x => x.selection_id == this.selection.id)
+        }
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
@@ -151,7 +165,7 @@ export default {
             this.submitting = false
 
             // Update the selection request
-            this.selectionRequest = requestToPost
+            // this.selectionRequest = requestToPost
 
             // Reset comment
             this.writeActive = false
@@ -164,8 +178,9 @@ export default {
 
         },
         update() {
+            console.log('update')
             // Find the existing selection request if any
-            this.selectionRequest = this.product.requests.find(x => x.selection_id == this.selection.id)
+            // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
             this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
             // Set the id of the new request if one exists
