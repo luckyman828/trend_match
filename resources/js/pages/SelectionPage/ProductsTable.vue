@@ -383,8 +383,8 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 64px;
-                        max-width: 64px;
+                        min-width: 70px;
+                        max-width: 70px;
                         height: 100%;
                     }
                     &.delivery {

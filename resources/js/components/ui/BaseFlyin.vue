@@ -1,7 +1,7 @@
 <template>
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
-        <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
+        <div class="fly-in" ref="flyIn" :class="[{'has-columns': columns > 1}, placement == 'left' ? 'placement-left' : 'placement-right']">
             <template v-if="!loading">
                 <slot name="header" :toggle="toggle"/>
                 <div class="body" :style="columnStyle">
@@ -22,6 +22,7 @@ export default {
         'columns',
         'disableKeyHandler',
         'loading',
+        'placement',
     ],
     data: function () { return {
         visible: false,
@@ -111,6 +112,11 @@ export default {
         //     animation-duration: .2s;
         //     animation-iteration-count: 1;
         // }
+        &.placement-left {
+            right: auto;
+            left: 0;
+            transform: translateX(-100%);
+        }
         .body {
             padding: 16px;
             flex: 1;

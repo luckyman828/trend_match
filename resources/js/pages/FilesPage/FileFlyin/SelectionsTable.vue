@@ -971,8 +971,10 @@ export default {
                         max-width: 76px;
                     }
                     &.status { // Status
-                        min-width: 180px;
-                        max-width: 180px;
+                        min-width: 260px;
+                        max-width: 260px;
+                        // min-width: 180px;
+                        // max-width: 180px;
                     }
                     // &.items, &.in, &.out, &.nd {
                     //     min-width: 72px;

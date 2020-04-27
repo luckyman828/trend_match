@@ -51,11 +51,16 @@
                     <button class="editable" :class="selection.is_open && 'ghost'" 
                     @click="onToggleLocked(selection)">
                         <span>{{selection.is_open ? 'Open' : 'Locked'}}</span>
-                        <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i></button>
+                        <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i>
+                    </button>
+
                     <button class="editable" :class="selection.is_visible && 'ghost'"
                     @click="onToggleHidden(selection)">
                         <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
-                        <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                        <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+
+                    <SelectionPresenterModeButton class="editable" :selection="selection"/>
                 </template>
                 <span v-else>-</span>
             </td>
@@ -81,11 +86,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
+import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
 export default {
     name: 'selectionsTableRow',
     components: {
         'selectionsTableRow': SelectionsTableRow,
+        SelectionPresenterModeButton,
     },
     props: [
         'selection',
@@ -98,7 +105,7 @@ export default {
         'isMaster'
     ],
     data: function() { return {
-        childrenExpanded: true
+        childrenExpanded: true,
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
@@ -125,7 +132,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['insertSelection', 'updateSelection']),
+        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
         },

@@ -57,12 +57,12 @@ export default{
         hideQuickOut: false,
         hideQuickIn: false,
     }},
-    watch: {
-        currentSelections: function(newVal, oldVal) {
-            console.log('new current selections')
-            console.log(newVal)
-        }
-    },
+    // watch: {
+    //     currentSelections: function(newVal, oldVal) {
+    //         console.log('new current selections')
+    //         console.log(newVal)
+    //     }
+    // },
     computed: {
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('files', ['currentFile']),

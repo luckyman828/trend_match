@@ -14,6 +14,9 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
+                        <SelectionPresenterModeButton :selection="currentSelection"/>
+                    </div>
+                    <div class="item-group">
                         <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
                     </div>
                     <div class="item-group">
@@ -144,6 +147,8 @@
 
             <ImageLightbox v-if="showLightbox" :defaultIndex="currentImgIndex" :images="product.variants.map(x => variantImage(x))"
             @hide="showLightbox = false"/>
+
+            <PresenterQueueFlyin :product="product" v-if="currentSelection.presenterModeActive && show"/>
         </template>
     </BaseFlyin>
 </template>
@@ -154,8 +159,10 @@ import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
+import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import variantImage from '../../../mixins/variantImage'
 import ImageLightbox from '../../../components/ImageLightbox'
+import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
 export default {
     name: 'productFlyin',
@@ -172,6 +179,8 @@ export default {
         RequestsSection,
         SelectionSelector,
         ImageLightbox,
+        SelectionPresenterModeButton,
+        PresenterQueueFlyin,
     },
     data: function () { return {
             currentImgIndex: 0,

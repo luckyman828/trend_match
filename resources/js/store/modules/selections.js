@@ -437,6 +437,11 @@ export default {
                 commit('DELETE_SELECTION', child)
             })
         },
+        async togglePresenterMode({ dispatch }, selection) {
+            // selection.presenterModeActive = !selection.presenterModeActive // uncomment when API is updated
+            Vue.set(selection, 'presenterModeActive', !selection.presenterModeActive) // delete when API is updated
+            dispatch('updateSelection', selection)
+        },
     },
 
     mutations: {

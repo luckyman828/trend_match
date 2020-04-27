@@ -17,6 +17,8 @@
         </div>
 
         <div class="items-right">
+            <SelectionPresenterModeButton :selection="currentSelection"/>
+
             <button class="button dark wide" @click="onExport"><span>Export PDF</span></button>
             <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
         </div>
@@ -31,12 +33,14 @@ import axios from 'axios';
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
+import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
 
 export default {
     name: "editFilePageNavbar",
     components: {
         ExportProductsModal,
         ExportToCsvModal,
+        SelectionPresenterModeButton,
     },
     data: function () { return {
         exportModalVisible: false,
@@ -44,6 +48,7 @@ export default {
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
+        ...mapGetters('selections', ['currentSelection']),
     },
     methods: {
         onExport() {

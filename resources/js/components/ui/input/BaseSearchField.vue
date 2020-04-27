@@ -1,9 +1,9 @@
 <template>
     <div class="search">
-        <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
+        <input class="input-wrapper" :class="inputClasses" :placeholder="placeholderText || 'Search..'" type="search" v-model="searchString" ref="searchField"
         @click.stop @input="$emit('input', result)" @keydown.esc="onEsc">
-        <span v-if="searchString.length > 0" class="close" @click.stop="clear();setFocus()">
-            <i class="fas fa-times"></i>
+        <span v-if="searchString.length > 0" class="clear" @click.stop="clear();setFocus()">
+            <i class="far fa-times-circle"></i>
         </span>
     </div>
 </template>
@@ -11,12 +11,16 @@
 <script>
 export default {
     name: 'searchField',
-    props: [
-        'arrayToSearch',
-        'searchKey',
-        'searchMultipleArrays',
-        'multipleArrayKey'
-    ],
+    props: {
+        arrayToSearch: {},
+        searchKey: {},
+        searchMultipleArrays: {},
+        multipleArrayKey: {},
+        placeholderText: {},
+        inputClasses: {
+            default: 'small'
+        }
+    },
     data: function () { return {
         searchString: '',
     }},
@@ -163,6 +167,9 @@ export default {
             }
             // Else do nothing
         }
+    },
+    created() {
+        this.$emit('input', this.result)
     }
 }
 </script>
@@ -176,16 +183,16 @@ export default {
             padding-right: 32px;
             box-sizing: border-box;
         }
-        .close {
+        .clear {
             position: absolute;
             right: 0;
             top: 2px;
-            font-size: 12px;
+            font-size: 14px;
             color: $fontIcon;
             cursor: pointer;
             padding: 4px 12px;
             &:hover {
-                opacity: .8;
+                color: $font;
             }
         }
     }
