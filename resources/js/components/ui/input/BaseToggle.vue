@@ -1,6 +1,6 @@
 <template>
-    <div class="toggle-wrapper" :class="{active: isActive}"
-    @click="toggle">
+    <div class="toggle-wrapper" :class="[{active: isActive}, {disabled: disabled}]"
+    @click="!disabled && toggle()" v-tooltip="disabled ? disabledTooltip : ''">
         <span class="label" v-if="label">{{label}}</span>
         <div class="toggle">
             <div class="pill fixed-width" :class="sizeClass">
@@ -19,6 +19,8 @@ export default {
         'isActive',
         'label',
         'sizeClass',
+        'disabled',
+        'disabledTooltip',
     ],
     methods: {
         toggle () {
@@ -36,6 +38,10 @@ export default {
     display: inline-flex;
     flex-direction: column;
     cursor: pointer;
+    &.disabled {
+        cursor: default;
+        opacity: .5;
+    }
     &.active {
         .pill {
             background: $green;

@@ -64,7 +64,8 @@
                 <span v-else>-</span>
             </td>
             <td class="presentation">
-                <SelectionPresenterModeButton v-if="userHasEditAccess && isMaster" :selection="selection" :showLabel="false"/>
+                <SelectionPresenterModeButton v-if="isMaster" :selection="selection" :showLabel="false"/>
+                <!-- <SelectionPresenterModeButton v-if="userHasEditAccess && isMaster" :selection="selection" :showLabel="false"/> -->
             </td>
             <td class="action">
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>

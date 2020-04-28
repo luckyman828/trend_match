@@ -82,11 +82,34 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
+::v-deep {
+    .presenter-queue-search-flyin {
+        background: cyan;
+        &.visible {
+            background: orange;
+            .flyin.placement-left {
+                background: green;
+            }
+        }
+    }
+    &.presenter-queue-search-flyin {
+        background: cyan;
+        &.visble {
+            background: orange;
+            .flyin.placement-left {
+                background: green;
+            }
+        }
+    }
+}
+
 .presenter-queue-search-flyin {
     ::v-deep {
-        .flyin {
+        .flyin.placement-left {
             width: 400px;
             min-width: 0;
+            transform: none;
+            left: -400px;
             .body {
                 background: white;
             }

@@ -301,7 +301,7 @@ export default {
             min-width: 0;
             width: calc(100vw - 242px);
             > .body {
-                grid-template-columns: 28% repeat(3, 24%) !important;
+                grid-template-columns: 26% 26% 24% 24% !important;
             }
             .flyin-header {
                 > .left {

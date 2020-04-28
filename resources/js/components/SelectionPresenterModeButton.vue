@@ -1,5 +1,8 @@
 <template>
-    <BaseToggle :label="showLabel ? 'Presentation' : ''" sizeClass="xs"
+    <BaseToggle v-if="selection && selection.type == 'Master'"
+        :disabled="!userHasEditAccess"
+        disabledTooltip="Only Selection Owners can activate Presentation Mode"
+        :label="showLabel ? 'Presentation' : ''" sizeClass="xs"
         :isActive="selection && selection.presenterModeActive"
         @toggle="onTogglePresenterMode(selection)"/>
 </template>
