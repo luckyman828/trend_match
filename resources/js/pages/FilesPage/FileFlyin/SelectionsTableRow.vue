@@ -32,13 +32,13 @@
                 </button>
                 <span v-else>{{selection.currency || 'No currency set'}}</span>
             </td>
-            <td class="teams">
+            <!-- <td class="teams">
                 <button class="ghost editable sm" v-if="userHasEditAccess"
                 @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-users"></i><span>{{selection.team_count}}</span>
                 </button>
                 <span v-else>-</span>
-            </td>
+            </td> -->
             <td class="users">
                 <button class="ghost editable sm" v-if="userHasEditAccess"
                 @click="$emit('showSelectionUsersFlyin', selection)">
@@ -60,9 +60,11 @@
                         <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i>
                     </button>
 
-                    <SelectionPresenterModeButton class="editable" :selection="selection"/>
                 </template>
                 <span v-else>-</span>
+            </td>
+            <td class="presentation">
+                <SelectionPresenterModeButton v-if="userHasEditAccess && isMaster" :selection="selection" :showLabel="false"/>
             </td>
             <td class="action">
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
@@ -115,7 +117,7 @@ export default {
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 400
+            const baseWidth = 300
             const indentAmount = 24
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         },

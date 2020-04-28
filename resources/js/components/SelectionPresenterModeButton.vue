@@ -1,25 +1,19 @@
 <template>
-    <button v-if="selection && selection.type == 'Master'" 
-    :class="[!selection.presenterModeActive && 'ghost', !userHasEditAccess && 'disabled']"
-    @click="togglePresenterMode(selection)">
-        <template v-if="selection.presenterModeActive">
-            <span>Presentation Live</span>
-            <i class="fas fa-circle red"></i>
-        </template>
-        <template v-else>
-            <span>Start presenting</span>
-            <i class="fas fa-circle"></i>
-        </template>
-    </button>
+    <BaseToggle :label="showLabel ? 'Presentation' : ''" sizeClass="xs"
+        :isActive="selection && selection.presenterModeActive"
+        @toggle="onTogglePresenterMode(selection)"/>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'selectionPresenterModeButton',
-    props: [
-        'selection'
-    ],
+    props: {
+        selection: {},
+        showLabel: {
+            default: true
+        }
+    },
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
         userHasEditAccess() {
@@ -28,6 +22,14 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['togglePresenterMode']),
+        onTogglePresenterMode(selection) {
+            if (confirm(!selection.presenterModeActive ? 
+                'ATTENTION: You are about to enter Presentation Mode.\n\nIn Presentation Mode, You decide what product is shown in the mobile app.\n\nWhen a selection is in Presentation Mode, noone can access the selection or any of its sub-selections outside of Presentation Mode.\n\nPress "Okay" to continue.'
+                : 'ATTENTION: You are about to stop Presentation Mode.\n\nThis will end Presentation Mode for all viewers.\n\n Press "Okay" to continue.'
+            )) {
+                this.togglePresenterMode(selection)
+            }
+        }
     }
 }
 </script>

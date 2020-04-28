@@ -68,6 +68,7 @@ export default {
     },
     methods: {
         onShow() {
+            
             this.show = true
             // Wait for the flyin to become visible
             this.$nextTick(() => { this.$nextTick(() => {

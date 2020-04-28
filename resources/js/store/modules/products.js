@@ -17,7 +17,6 @@ export default {
         productsFilteredBySearch: [],
         status: null,
         currentFocusRowIndex: null,
-        presenterQueue: [],
     },
 
     getters: {
@@ -26,7 +25,6 @@ export default {
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
-        getPresenterQueue: state => state.presenterQueue,
         availableProducts: state => {
             return state.availableProducts
         },
@@ -461,12 +459,6 @@ export default {
                     })
             })
         },
-        async addProductToPresenterQueue({ commit }, product) {
-            commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', product)
-        },
-        async removeProductFromPresenterQueue({ commit }, product) {
-            commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)
-        },
     },
 
     mutations: {
@@ -899,16 +891,6 @@ export default {
                     },
                 })
             })
-        },
-        ADD_PRODUCT_TO_PRESENTER_QUEUE(state, product) {
-            state.presenterQueue.push(product)
-        },
-        REMOVE_PRODUCT_FROM_PRESENTER_QUEUE(state, product) {
-            const index = state.presenterQueue.findIndex(x => x.id == product.id)
-            state.presenterQueue.splice(index, 1)
-        },
-        SET_PRESENTER_QUEUE(state, newQueue) {
-            state.presenterQueue = newQueue
         },
     },
 }

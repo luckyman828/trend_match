@@ -51,7 +51,7 @@ export default {
         'flyinVisible'
     ],
     computed: {
-        ...mapGetters('products', ['getPresenterQueue']),
+        ...mapGetters('presenterQueue', ['getPresenterQueue']),
         presenterQueue: {
             get() {
                 return this.getPresenterQueue
@@ -62,7 +62,7 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('products', ['SET_PRESENTER_QUEUE']),
+        ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
         onShowSearchFlyin() {
             this.$emit('showSearchFlyin')
         },

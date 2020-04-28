@@ -21,7 +21,8 @@
                 </template>
             </div>
         </div>
-        <h1>Files</h1>
+        <h1 v-if="!currentFolder">Files</h1>
+        <h1 v-else>{{currentFolder.name}}</h1>
 
         <FilesTable :files="files" :folder="currentFolder" :selected="selected"
         v-model="selected"

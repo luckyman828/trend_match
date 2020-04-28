@@ -1,8 +1,16 @@
 <template>
     <div class="queue-item-wrapper">
-        <div class="queue-item">
+        <div class="queue-item" :class="[{'before-current': isBeforeCurrent},{'is-current': isCurrent}]"
+        @click="setPresenterQueueCurrentProductId(product.id)">
             <div class="square-sizer">
                 <div class="inner">
+                    <div class="current-item-marker" v-if="isCurrent">
+                        <div class="pill dark sm">
+                            <i class="fas fa-eye"></i>
+                            <span>Showing</span>
+                        </div>
+                    </div>
+
                     <div class="left">
                         <img :src="variantImage(product.variants[0])">
                         <strong class="name">{{product.title | truncate(20)}}</strong>
@@ -24,7 +32,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../../../mixins/variantImage'
 
 export default {
@@ -35,8 +43,19 @@ export default {
     props: [
         'product'
     ],
+    computed: {
+        ...mapGetters('presenterQueue', ['getPresenterQueueCurrentProductId', 'getPresenterQueue']),
+        isCurrent() {
+            return this.product.id == this.getPresenterQueueCurrentProductId
+        },
+        isBeforeCurrent() {
+            const productIndex = this.getPresenterQueue.findIndex(x => x.id == this.product.id)
+            const currentProductIndex = this.getPresenterQueue.findIndex(x => x.id == this.getPresenterQueueCurrentProductId)
+            return productIndex < currentProductIndex
+        }
+    },
     methods: {
-        ...mapActions('products', ['removeProductFromPresenterQueue']),
+        ...mapActions('presenterQueue', ['removeProductFromPresenterQueue', 'setPresenterQueueCurrentProductId']),
         onRemoveProductFromPresenterQueue(product) {
             this.removeProductFromPresenterQueue(product)
         }
@@ -62,6 +81,12 @@ export default {
         border-color: $primary;
         border-width: 2px;
         padding: 0;
+    }
+    &.is-current {
+        cursor: default;
+    }
+    &.before-current {
+        opacity: .5;
     }
     .sortable-ghost & {
         background: $grey;
@@ -124,6 +149,17 @@ export default {
     }
     .drag-button {
         cursor: grab;
+    }
+    .current-item-marker {
+        opacity: 0.9;
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: auto;
+        top: 16px;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
     }
 }
 

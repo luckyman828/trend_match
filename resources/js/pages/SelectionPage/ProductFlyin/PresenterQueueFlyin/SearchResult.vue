@@ -8,17 +8,23 @@
             <strong class="name">{{product.title}}</strong>
         </div>
         <div class="actions">
-            <button class="ghost"
-            @click="onAddToQueue">
+            <!-- If the product is not already in the queue -->
+            <button class="ghost" v-if="!isInQueue"
+            @click="onAddToQueue(product)">
                 <i class="fas fa-plus"></i>
             </button>
+
+            <!-- Else  -->
+            <div class="square primary" v-else>
+                <i class="fas fa-check"></i>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import variantImage from '../../../../mixins/variantImage'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'searchResult',
@@ -28,10 +34,20 @@ export default {
     props: [
         'product'
     ],
+    computed: {
+        ...mapGetters('presenterQueue', ['getPresenterQueue']),
+        isInQueue() {
+            return this.getPresenterQueue.find(x => x.id == this.product.id)
+        }
+    },
     methods: {
-        ...mapActions('products', ['addProductToPresenterQueue']),
-        onAddToQueue() {
-            this.addProductToPresenterQueue(this.product)
+        ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'setPresenterQueueCurrentProductId']),
+        onAddToQueue(product) {
+            // If the presenterQueue is empty, then set this product as the current
+            if (this.getPresenterQueue.length <= 0) {
+                this.setPresenterQueueCurrentProductId(product.id)
+            }
+            this.addProductToPresenterQueue(product)
         },
     }
 }

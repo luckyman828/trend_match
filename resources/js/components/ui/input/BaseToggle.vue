@@ -1,9 +1,14 @@
 <template>
-    <div class="toggle" @click="toggle">
-        <span class="option" v-for="(option, index) in options" :key="index" :class="{active: value == option.value}">
-            <span v-if="option.count != null" class="count">{{option.count}}</span>
-            <span>{{option.label}}</span>
-        </span>
+    <div class="toggle-wrapper" :class="{active: isActive}"
+    @click="toggle">
+        <span class="label" v-if="label">{{label}}</span>
+        <div class="toggle">
+            <div class="pill fixed-width" :class="sizeClass">
+                <div class="circle" :class="sizeClass"></div>
+            </div>
+            <span v-if="isActive">On</span>
+            <span v-else>Off</span>
+        </div>
     </div>
 </template>
 
@@ -11,26 +16,14 @@
 export default {
     name: 'baseToggle',
     props: [
-        'options',
-        'currentOption',
-        'value'
+        'isActive',
+        'label',
+        'sizeClass',
     ],
-    data: function () { return {
-        activeOption: 0,
-    }},
     methods: {
         toggle () {
-            // Emit the option that is not the current option
-            let valueToEmit
-            // find the index of the active option
-            const activeOptionIndex = this.options.findIndex(x => x.value == this.value)
-            // If it is the last option then start from 0. Otherwise increment the active option
-            if (activeOptionIndex == this.options.length-1) {
-                valueToEmit = this.options[0].value 
-            } else {
-                valueToEmit = this.options[activeOptionIndex+1].value 
-            }
-            this.$emit('input', valueToEmit)
+            this.$emit('toggle', !this.isActive)
+            this.$emit('input', !this.isActive)
         }
     },
 }
@@ -39,38 +32,58 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .toggle {
-        display: inline-flex;
-        border: solid 1px $light2;
-        border-radius: 50px;
-        user-select: none;
-        cursor: pointer;
-        background: $bg;
-        height: 40px;
-        .option {
-            display: flex;
-            align-items: center;
-            padding: 0 32px 0 12px;
-            font-weight: 700;
-            color: $dark2;
-            border: solid 2px transparent;
-            border-radius: 50px;
-            &.active {
-                color: $primary;
-                background: $bgContent;
-                border-color: $primary;
+.toggle-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    cursor: pointer;
+    &.active {
+        .pill {
+            background: $green;
+            .circle {
+                transform: translateX(calc(100% - 2px));
             }
-            .count {
-                padding: 0 8px;
-                background: white;
-                border-radius: 40px;
-                margin-right: 8px;
-                font-size: 12px;
-                font-weight: 500;
+            + span {
                 color: $font;
-                height: 20px;
-                line-height: 20px;
             }
         }
     }
+    &:hover {
+        .circle {
+            border-color: $dark2;
+        }
+        span {
+            color: $font;
+        }
+    }
+    span {
+        font-weight: 700;
+        font-size: 12px;
+        color: $dark2;
+        line-height: 1;
+        &.label {
+            color: $font;
+            margin-bottom: 4px;
+        }
+    }
+}
+.toggle {
+    display: flex;
+    align-items: center;
+}
+.pill {
+    background: $bg;
+    border: solid 1px $divider;
+    position: relative;
+    .circle {
+        position: absolute;
+        left: 0;
+        background: white;
+        border: solid 2px $divider;
+        transition: transform .2s;
+    }
+    + span {
+        margin-left: 4px;
+        width: 18px;
+    }
+}
 </style>

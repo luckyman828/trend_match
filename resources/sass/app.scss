@@ -506,15 +506,30 @@ input[type='submit'] {
     border-radius: 500px;
 }
 .circle {
+    width: 32px;
     .fa-chevron-right {
         margin-left: 2px;
     }
     .fa-chevron-left {
         margin-right: 2px;
     }
+    @each $size in $button-sizes {
+        &.#{nth($size,1)} {
+            width: nth($size, 2);
+        }
+    }
 }
 .pill {
     min-width: 32px;
+    @each $size in $button-sizes {
+        min-width: 32px;
+        &.#{nth($size,1)} {
+            min-width: nth($size, 2);
+            &.fixed-width {
+                width: nth($size, 2) * 2;
+            }
+        }
+    }
 }
 
 // ICONS
