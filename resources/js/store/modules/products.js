@@ -907,5 +907,8 @@ export default {
             const index = state.presenterQueue.findIndex(x => x.id == product.id)
             state.presenterQueue.splice(index, 1)
         },
+        SET_PRESENTER_QUEUE(state, newQueue) {
+            state.presenterQueue = newQueue
+        },
     },
 }

@@ -50,6 +50,7 @@ export default {
         height: 145px;
         width: 116px;
         border-radius: 4px;
+        object-fit: contain;
     }
     .details {
         padding: 8px 16px 0;

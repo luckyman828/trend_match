@@ -83,7 +83,7 @@ export default {
 
 .presenter-queue-search-flyin {
     ::v-deep {
-        .fly-in {
+        .flyin {
             width: 400px;
             min-width: 0;
             .body {

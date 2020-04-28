@@ -294,6 +294,24 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+
+::v-deep {
+    &.product-single {
+        > .flyin {
+            min-width: 0;
+            width: calc(100vw - 242px);
+            > .body {
+                grid-template-columns: 28% repeat(3, 24%) !important;
+            }
+            .flyin-header {
+                > .left {
+                    max-width: 380px;
+                }
+            }
+        }
+    }
+}
+
 .product-title-wrapper {
     flex-direction: column;
     justify-content: flex-start;

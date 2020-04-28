@@ -294,43 +294,4 @@ export default{
             }
         }
     }
-    // Scrollbar
-    *:not(.app) {
-        /* width */
-        &::-webkit-scrollbar {
-            width: 3px;
-            height: 7px;
-        }
-        /* Track */
-        &::-webkit-scrollbar-track {
-            background: $light2; 
-        }
-        /* Handle */
-        &::-webkit-scrollbar-thumb {
-            background: $dark2;
-            border-radius: 2px;
-            &:hover {
-                background: $dark25;
-            }
-        }
-        .dark > *, .dark {
-            /* width */
-            &::-webkit-scrollbar {
-                width: 5px;
-                height: 7px;
-            }
-            /* Track */
-            &::-webkit-scrollbar-track {
-                background: transparent; 
-            }
-            /* Handle */
-            &::-webkit-scrollbar-thumb {
-                background: white;
-                box-shadow: -2px 0 #333 inset;
-                &:hover {
-                    background: $primary;
-                }
-            }
-        }
-    }
 </style>

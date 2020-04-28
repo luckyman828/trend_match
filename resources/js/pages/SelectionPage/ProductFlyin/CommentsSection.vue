@@ -184,7 +184,7 @@ export default {
 <style <style lang="scss" scoped>
 @import '~@/_variables.scss';
     ::v-deep {
-        &.fly-in-column {
+        &.flyin-column {
             .header {
                 display: flex;
                 align-items: center;
