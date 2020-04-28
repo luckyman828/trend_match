@@ -25,10 +25,10 @@
 
                 <!-- regular comment -->
                 <template v-else>
-                    <button v-tooltip.top="'Delete'" class="button true-square invisible ghost dark-hover"
+                    <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
                     @click="onDeleteComment">
                         <i class="far fa-trash-alt"></i></button>
-                    <button v-tooltip.top="'Edit'" class="button true-square invisible ghost dark-hover"
+                    <button v-tooltip.top="{content: 'Edit', delay: {show: 300}}" class="button invisible ghost-hover"
                     @click="onEditComment">
                         <i class="far fa-pen"></i></button>
                 </template>
@@ -107,7 +107,7 @@ export default {
     .comment-wrapper {
         position: relative;
         margin-bottom: 4px;
-        max-width: calc(100% - 64px);
+        max-width: calc(100% - 24px);
         &.edit-active {
             width: 100%;
             max-width: none;
@@ -158,7 +158,6 @@ export default {
         background: white;
         border-radius: 6px;
         width: 100%;
-        z-index: 1;
         .failed {
             color: $red;
         }
@@ -187,22 +186,35 @@ export default {
             }
         }
         .controls {
-            white-space: nowrap;
             transition: .3s;
             opacity: 0;
             position: absolute;
-            left: calc(-100% - 4px);
-            width: 100%;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 0;
+            bottom: -36px;
+            padding: 4px;
             display: none;
-            justify-content: flex-end;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 3px 6px rgba(0,0,0,.2);
+            z-index: 1;
+            > *:not(:first-child) {
+                margin-left: 8px;
+                &::before {
+                    content: "";
+                    display: block;
+                    width: 1px;
+                    height: 28px;
+                    background: #cfcfcf;
+                    position: absolute;
+                    left: -6px;
+                }
+            }
             .loader {
                 height: 24px;
                 flex-direction: row;
             }
             .own & {
-                display: flex;
+                display: inline-flex;
             }
         }
     }
