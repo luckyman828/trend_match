@@ -1,5 +1,5 @@
 <template>
-    <div class="input-textarea" :class="{'read-only': disabled}">
+    <div class="input-textarea" :class="{'read-only': disabled || readOnly}">
         <textarea class="input-wrapper focus-visible" ref="textarea" :placeholder="placeholder"
         :class="{disabled: disabled}" :disabled="disabled"
         @input="resize(); $emit('input', $event.target.value)" :value="value"/>
@@ -12,8 +12,18 @@ export default {
     props: [
         'placeholder',
         'value',
-        'disabled'
+        'disabled',
+        'readOnly',
     ],
+    watch: {
+        value(newVal, oldVal) {
+            if (newVal != oldVal) {
+                this.$nextTick(() => {
+                    this.resize()
+                })
+            }
+        }
+    },
     methods: {
         resize() {
             const textarea = this.$refs.textarea
@@ -34,6 +44,9 @@ export default {
         select() {
             this.$refs.textarea.select()
         }
+    },
+    mounted() {
+        this.resize()
     }
 }
 </script>

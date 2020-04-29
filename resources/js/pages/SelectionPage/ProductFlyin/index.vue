@@ -123,9 +123,9 @@
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
                 <label>Description</label>
-                <BaseInputField readOnly=true :value="product.description"/>
+                <BaseInputTextArea readOnly=true :value="product.description"/>
                 <label>Assortments</label>
-                <BaseInputField readOnly=true />
+                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => x.name).join(',\n')"/>
                 <label>Category</label>
                 <BaseInputField readOnly=true :value="product.category"/>
 
