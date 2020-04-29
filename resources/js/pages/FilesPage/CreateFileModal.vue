@@ -575,65 +575,16 @@ export default {
             this.processFile(csv, fileName)
         },
         processFile(csv, fileName) {
+            // Use Papa Parse 5 to parse the CSV.
+            const allLines = this.$papa.parse(csv).data
 
-            // Split the csv into lines by line breaks
-            // NB: This regex is magic
-            // It matches strings seperated by linebreaks (CLRF (windows,max,linux shouldb be supported)) 
-            // not inside double quotation marks, while allowing for escaped " marks. 
-            const allTextLines = csv.match(/(?:"(?:\\.|[^"])*"|\\.|[^\r\n|\r|\n])+/g)
-
-            // Loop thorugh the lines
-            let lineIndex = 0
-            const csvLines = []
-            const csvHeaders = []
-
-            // Attempt to determine file delimiter
-            const csvDelimiters = [';', ',', '\t']
-            let delimiterIndex = 0
-            // Loop through our delimiters and try to split the first row by it. Apply the delimiter with the highest number of matches
-            // This should work because the first row should contain headers and therefore not include any other delimiters
-            let cellCount = 0
-            let testDelimiterIndex = 0
-            csvDelimiters.forEach(delimiter => {
-                // The split regex matches delimiters not in quotes
-                const splitRegex = new RegExp(`${delimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
-                const testCellCount = allTextLines[0].split(splitRegex).length
-                if (testCellCount >= cellCount) {
-                    cellCount = testCellCount
-                    delimiterIndex = testDelimiterIndex
-                }
-                testDelimiterIndex++
+            // Use the first line as headers (splice removes the first line)
+            const allHeaders = allLines.splice(0,1)[0]
+            const csvHeaders = allHeaders.map((header, index) => {
+                return {fileIndex: this.availableFiles.length, fieldName: header, fieldIndex: index}
             })
-            const csvDelimiter = csvDelimiters[delimiterIndex]
 
-            while (lineIndex < allTextLines.length) {
-                const line = allTextLines[lineIndex]
-                
-                // Split the line by our delimiter
-                // The split regex matches delimiters not in quotes
-                const splitRegex = new RegExp(`${csvDelimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
-                const cells = line.split(splitRegex)
-
-                // Read the first line as headers
-                if (lineIndex == 0) {
-                    // Loop through the headerCells and push an object
-                    let cellIndex = 0
-                    cells.forEach(cell => {
-                        // Push the cells to our headers array
-                        csvHeaders.push({fileIndex: this.availableFiles.length, fieldName: cell, fieldIndex: cellIndex})
-                        cellIndex++
-                    })
-                }
-                // Not the header row
-                else {
-                    // Push the cells to our lines array
-                    csvLines.push(cells)
-                }
-                // Increment the row index
-                lineIndex++
-            }
-
-            const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines, error: false}
+            const fileToPush = {fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: allLines, error: false}
             // Check if the file already exists. If so, replace it instead of adding
             const existingFile = this.availableFiles.find(x => x.fileName == fileName)
             if (existingFile) {
@@ -787,6 +738,8 @@ export default {
                                 // Instantiate an assortment object
                                 // FieldsToMatch[0] = assortment name
                                 const assortmentName = line[thisAssortmentObject.fieldsToMatch[0].newValue.fieldIndex]
+                                console.log(fileIndex)
+                                console.log(assortmentName)
                                 assortment = product.assortments.find(x => x.name == assortmentName)
                                 if (!!assortment || assortmentName) {
                                     if (!assortment) {
