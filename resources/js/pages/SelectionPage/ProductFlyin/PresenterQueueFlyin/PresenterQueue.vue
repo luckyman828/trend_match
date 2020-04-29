@@ -101,6 +101,7 @@ export default {
         flex-direction: column;
         flex: 1;
         overflow-y: auto;
+        scroll-behavior: smooth;
     }
 
     // ITEMS

@@ -15,22 +15,22 @@ export default {
             state.presenterQueue.find(x => x.id == state.presenterQueueCurrentProductId),
         getPresenterQueueCurrentProductIndex: state =>
             state.presenterQueue.findIndex(x => x.id == state.presenterQueueCurrentProductId),
-        // nextProduct: state => {
-        //     // Find the index of the current product
-        //     const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
-        //     // Check that the current is not the last in the array
-        //     if (index + 1 < state.availableProducts.length) {
-        //         return state.availableProducts[index + 1]
-        //     }
-        // },
-        // prevProduct: state => {
-        //     // Find the index of the current product
-        //     const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
-        //     // Check that the current is not the first in the array
-        //     if (index > 0) {
-        //         return state.availableProducts[index - 1]
-        //     }
-        // },
+        getNextProduct: (state, getters) => {
+            // Find the index of the current product
+            const index = getters.getPresenterQueueCurrentProductIndex
+            // Check that the current is not the last in the array
+            if (index + 1 < state.presenterQueue.length) {
+                return state.presenterQueue[index + 1]
+            }
+        },
+        getPrevProduct: (state, getters) => {
+            // Find the index of the current product
+            const index = getters.getPresenterQueueCurrentProductIndex
+            // Check that the current is not the first in the array
+            if (index > 0) {
+                return state.presenterQueue[index - 1]
+            }
+        },
     },
 
     actions: {

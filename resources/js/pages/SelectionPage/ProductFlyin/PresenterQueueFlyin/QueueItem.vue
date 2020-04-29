@@ -43,6 +43,14 @@ export default {
     props: [
         'product'
     ],
+    watch: {
+        isCurrent(newVal, oldVal) {
+            if (newVal) {
+                // When a product becomes the current product, scroll it into view
+                this.$el.scrollIntoView()
+            }
+        }
+    },
     computed: {
         ...mapGetters('presenterQueue', ['getPresenterQueueCurrentProductId', 'getPresenterQueue']),
         ...mapGetters('selections', ['getCurrentSelection']),

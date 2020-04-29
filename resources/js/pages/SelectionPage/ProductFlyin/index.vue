@@ -234,7 +234,6 @@ export default {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         onTogglePresenterMode(gotActivated) {
-            console.log('on toggle presenter mode')
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
             }
