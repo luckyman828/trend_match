@@ -41,13 +41,10 @@ export default {
         }
     },
     methods: {
-        ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'setPresenterQueueCurrentProductId']),
+        ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'broadcastProduct']),
         onAddToQueue(product) {
             // If the presenterQueue is empty, then set this product as the current
-            if (this.getPresenterQueue.length <= 0) {
-                this.setPresenterQueueCurrentProductId(product.id)
-            }
-            this.addProductToPresenterQueue(product)
+            this.addProductToPresenterQueue({product})
         },
     }
 }

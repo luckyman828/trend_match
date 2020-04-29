@@ -25,12 +25,13 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['togglePresenterMode']),
-        onTogglePresenterMode(selection) {
+        async onTogglePresenterMode(selection) {
             if (confirm(!selection.presenterModeActive ? 
                 'ATTENTION: You are about to enter Presentation Mode.\n\nIn Presentation Mode, You decide what product is shown in the mobile app.\n\nWhen a selection is in Presentation Mode, noone can access the selection or any of its sub-selections outside of Presentation Mode.\n\nPress "Okay" to continue.'
                 : 'ATTENTION: You are about to stop Presentation Mode.\n\nThis will end Presentation Mode for all viewers.\n\n Press "Okay" to continue.'
             )) {
-                this.togglePresenterMode(selection)
+                await this.togglePresenterMode(selection)
+                this.$emit('toggle', !!selection.presenterModeActive)
             }
         }
     }

@@ -14,7 +14,7 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <SelectionPresenterModeButton :selection="currentSelection"/>
+                        <SelectionPresenterModeButton :selection="currentSelection" @toggle="onTogglePresenterMode"/>
                     </div>
                     <div class="item-group">
                         <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
@@ -185,15 +185,25 @@ export default {
     data: function () { return {
             currentImgIndex: 0,
             showLightbox: false,
-
+            lastBroadcastProductId: null,
     }},
     watch: {
         product(newVal, oldVal) {
-            if (oldVal && oldVal.id != newVal.id)
+            if (oldVal && oldVal.id != newVal.id) {
                 this.currentImgIndex = 0
+
+                // Broadcast the product when the product changes
+                if (this.broadcastActive && this.lastBroadcastProductId != newVal.id) {
+                    this.onBroadcastProduct(newVal)
+                }
+            }
         },
         show(newVal, oldVal) {
             if (newVal) {
+                // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
+                if (this.broadcastActive && (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)) {
+                    this.onBroadcastProduct(this.product)
+                }
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
@@ -209,6 +219,7 @@ export default {
         product () {
             return this.currentProduct
         },
+        broadcastActive () {return this.currentSelection.presenterModeActive},
         currentSelection () { return this.getCurrentPDPSelection },
         currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
         currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
@@ -221,6 +232,17 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
+        ...mapActions('presenterQueue', ['broadcastProduct']),
+        onTogglePresenterMode(gotActivated) {
+            console.log('on toggle presenter mode')
+            if (gotActivated) {
+                this.onBroadcastProduct(this.product)
+            }
+        },
+        onBroadcastProduct(product) {
+            this.lastBroadcastProductId = product.id
+            this.broadcastProduct(product)
+        },
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
@@ -228,9 +250,11 @@ export default {
              variant.error = true
         },
         onCloseSingle() {
-            this.currentImgIndex = 0
-            // Emit event to parent
-            this.$emit('close')
+            if (!this.selection.presenterModeActive || confirm('You are about to close the Product Flyin.\n\nYour presentation will still continue.\n\nPress any product to access your queue again.\n\nPress "Okay" to continue.')) {
+                this.currentImgIndex = 0
+                // Emit event to parent
+                this.$emit('close')
+            }
         },
         cycleImage(cycleForward = true) {
             if (cycleForward) {

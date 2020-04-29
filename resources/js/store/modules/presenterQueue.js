@@ -13,6 +13,8 @@ export default {
         getPresenterQueueCurrentProductId: state => state.presenterQueueCurrentProductId,
         getPresenterQueueCurrentProduct: state =>
             state.presenterQueue.find(x => x.id == state.presenterQueueCurrentProductId),
+        getPresenterQueueCurrentProductIndex: state =>
+            state.presenterQueue.findIndex(x => x.id == state.presenterQueueCurrentProductId),
         // nextProduct: state => {
         //     // Find the index of the current product
         //     const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
@@ -32,20 +34,32 @@ export default {
     },
 
     actions: {
-        async addProductToPresenterQueue({ commit }, product) {
-            commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', product)
+        async addProductToPresenterQueue({ commit }, { product, index }) {
+            commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index })
         },
         async removeProductFromPresenterQueue({ commit }, product) {
             commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)
         },
-        async setPresenterQueueCurrentProductId({ commit }, productId) {
-            commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', productId)
+        async broadcastProduct({ getters, commit }, product) {
+            console.log('Broadcast product!!', product.id)
+            // If the product is not currently in our queue, add it right after the current product
+            const newProductIndex = getters.getPresenterQueue.findIndex(x => x.id == product.id)
+            const currentProductIndex = getters.getPresenterQueueCurrentProductIndex
+            if (newProductIndex < 0) {
+                commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index: currentProductIndex + 1 })
+            }
+            commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', product.id)
         },
     },
 
     mutations: {
-        ADD_PRODUCT_TO_PRESENTER_QUEUE(state, product) {
-            state.presenterQueue.push(product)
+        ADD_PRODUCT_TO_PRESENTER_QUEUE(state, { product, index }) {
+            // If we have been provided an index, then insert at that position
+            if (index) {
+                state.presenterQueue.splice(index, 0, product)
+            } else {
+                state.presenterQueue.push(product)
+            }
         },
         REMOVE_PRODUCT_FROM_PRESENTER_QUEUE(state, product) {
             const index = state.presenterQueue.findIndex(x => x.id == product.id)

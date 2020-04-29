@@ -1,7 +1,7 @@
 <template>
     <div class="queue-item-wrapper">
         <div class="queue-item" :class="[{'before-current': isBeforeCurrent},{'is-current': isCurrent}]"
-        @click="setPresenterQueueCurrentProductId(product.id)">
+        @click="onBroadcastProduct(product)">
             <div class="square-sizer">
                 <div class="inner">
                     <div class="current-item-marker" v-if="isCurrent">
@@ -21,7 +21,7 @@
                             <i class="fas fa-grip-vertical"></i>
                         </button>
                         <button class="invisible red-hover" :key="product.id"
-                        @click="onRemoveProductFromPresenterQueue(product)">
+                        @click.stop="onRemoveProductFromPresenterQueue(product)">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -45,6 +45,7 @@ export default {
     ],
     computed: {
         ...mapGetters('presenterQueue', ['getPresenterQueueCurrentProductId', 'getPresenterQueue']),
+        ...mapGetters('selections', ['getCurrentSelection']),
         isCurrent() {
             return this.product.id == this.getPresenterQueueCurrentProductId
         },
@@ -55,9 +56,14 @@ export default {
         }
     },
     methods: {
-        ...mapActions('presenterQueue', ['removeProductFromPresenterQueue', 'setPresenterQueueCurrentProductId']),
+        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('presenterQueue', ['removeProductFromPresenterQueue']),
         onRemoveProductFromPresenterQueue(product) {
             this.removeProductFromPresenterQueue(product)
+        },
+        onBroadcastProduct(product) {
+            // Show the product in the PDP. The PDP will then trigger a broadcast event
+            this.showSelectionProductPDP({product, selection: this.getCurrentSelection})
         }
     }
 }

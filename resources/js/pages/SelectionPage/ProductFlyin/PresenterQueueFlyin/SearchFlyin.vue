@@ -83,21 +83,10 @@ export default {
 @import '~@/_variables.scss';
 
 ::v-deep {
-    .presenter-queue-search-flyin {
-        background: cyan;
-        &.visible {
-            background: orange;
-            .flyin.placement-left {
-                background: green;
-            }
-        }
-    }
     &.presenter-queue-search-flyin {
-        background: cyan;
-        &.visble {
-            background: orange;
+        &.visible {
             .flyin.placement-left {
-                background: green;
+                left: 0;
             }
         }
     }
@@ -117,9 +106,6 @@ export default {
         .flyin-header {
             .left{
                 width: 100%;
-            }
-            .close {
-
             }
         }
         .search-field input {

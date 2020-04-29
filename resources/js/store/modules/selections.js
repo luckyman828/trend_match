@@ -40,6 +40,7 @@ export default {
         selectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
+        getCurrentSelection: state => state.currentSelections[0],
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
@@ -437,10 +438,15 @@ export default {
                 commit('DELETE_SELECTION', child)
             })
         },
-        async togglePresenterMode({ dispatch }, selection) {
+        async togglePresenterMode({ dispatch, commit }, selection) {
             // selection.presenterModeActive = !selection.presenterModeActive // uncomment when API is updated
             Vue.set(selection, 'presenterModeActive', !selection.presenterModeActive) // delete when API is updated
             dispatch('updateSelection', selection)
+
+            // Clear the current presentation queue if we just exited presentation mode
+            if (!selection.presenterModeActive) {
+                commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
+            }
         },
     },
 
