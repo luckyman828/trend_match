@@ -1,6 +1,6 @@
 <template>
     <BaseToggle v-if="selection && selection.type == 'Master'"
-        :disabled="!userHasEditAccess"
+        :disabled="selection.your_role != 'Owner'"
         disabledTooltip="Only Selection Owners can activate Presentation Mode"
         :label="showLabel ? 'Presentation' : ''" sizeClass="xs"
         :isActive="selection && selection.is_presenting"

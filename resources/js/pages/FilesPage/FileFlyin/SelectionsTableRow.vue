@@ -48,13 +48,13 @@
             </td>
             <td class="status">
                 <template v-if="userHasEditAccess">
-                    <button class="editable" :class="selection.is_open && 'ghost'" 
+                    <button class="editable sm" :class="selection.is_open && 'ghost'" 
                     @click="onToggleLocked(selection)">
                         <span>{{selection.is_open ? 'Open' : 'Locked'}}</span>
                         <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i>
                     </button>
 
-                    <button class="editable" :class="selection.is_visible && 'ghost'"
+                    <button class="editable sm" :class="selection.is_visible && 'ghost'"
                     @click="onToggleHidden(selection)">
                         <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
                         <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i>
@@ -65,6 +65,11 @@
             </td>
             <td class="presentation">
                 <SelectionPresenterModeButton v-if="isMaster" :selection="selection" :showLabel="false"/>
+                <div v-else-if="selection.is_presenting" class="pill primary sm">
+                    <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" 
+                    class="far fa-presentation"></i>
+                    <span>In presentation</span>
+                </div>
                 <!-- <SelectionPresenterModeButton v-if="userHasEditAccess && isMaster" :selection="selection" :showLabel="false"/> -->
             </td>
             <td class="action">

@@ -464,7 +464,7 @@ export default {
             }
             if (!success) return
 
-            commit('SET_SELECTION_PRESENTATION_MODE_ACTIVE', { selection, isActive: !selection.is_presenting })
+            // commit('SET_SELECTION_PRESENTATION_MODE_ACTIVE', { selection, isActive: !selection.is_presenting })
 
             // Clear the current presentation queue if we just exited presentation mode
             if (!selection.is_presenting) {
