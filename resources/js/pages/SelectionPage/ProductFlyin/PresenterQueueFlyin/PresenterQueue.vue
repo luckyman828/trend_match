@@ -1,5 +1,5 @@
 <template>
-    <div class="presenter-queue" :class="{'flyin-visible': flyinVisible}">
+    <div class="presenter-queue" :class="[{'flyin-visible': flyinVisible}, {'drag-active': getSearchItemDragActive}]">
         <!-- Header -->
         <div class="header">
             <div class="left">
@@ -17,13 +17,14 @@
 
         <!-- Body -->
         <div class="body">
-            <Draggable v-model="presenterQueue" tag="div" :forceFallback="true"
+            <Draggable class="draggable" v-model="presenterQueue" tag="div" :forceFallback="true"
+            group="presenterQueue" draggable=".queue-item-wrapper"
             fallbackClass="sortable-drag">
                 <QueueItem v-for="product in presenterQueue" :key="product.id"
                 :product="product"/>
             </Draggable>
 
-            <div class="queue-item add-new" @click="onShowSearchFlyin">
+            <div class="queue-item add-new" @click="onShowSearchFlyin" v-if="!getSearchItemDragActive">
                 <div class="square-sizer">
                     <div class="inner">
                         <i class="fas fa-plus primary"></i>
@@ -50,8 +51,11 @@ export default {
     props: [
         'flyinVisible'
     ],
+    data: function () { return {
+        testList: [],
+    }},
     computed: {
-        ...mapGetters('presenterQueue', ['getPresenterQueue']),
+        ...mapGetters('presenterQueue', ['getPresenterQueue', 'getSearchItemDragActive']),
         presenterQueue: {
             get() {
                 return this.getPresenterQueue
@@ -85,6 +89,15 @@ export default {
     right: calc(-16px - 242px + 32px);
     background: white;
     border-radius: 4px;
+    &.drag-active {
+        .draggable {
+            flex: 1;
+            padding-bottom: 200px;
+        }
+        .add-new {
+            pointer-events: none;
+        }
+    }
     .header {
         height: 60px;
         width: 100%;

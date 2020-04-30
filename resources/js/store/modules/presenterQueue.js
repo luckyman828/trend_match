@@ -6,6 +6,7 @@ export default {
     state: {
         presenterQueue: [],
         presenterQueueCurrentProductId: null,
+        searchItemDragActive: false,
     },
 
     getters: {
@@ -31,6 +32,7 @@ export default {
                 return state.presenterQueue[index - 1]
             }
         },
+        getSearchItemDragActive: state => state.searchItemDragActive,
     },
 
     actions: {
@@ -71,6 +73,9 @@ export default {
         SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID(state, id) {
             console.log('set current product id', id)
             state.presenterQueueCurrentProductId = id
+        },
+        SET_SEARCH_ITEM_DRAG_ACTIVE(state, bool) {
+            state.searchItemDragActive = bool
         },
     },
 }

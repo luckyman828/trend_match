@@ -1,39 +1,54 @@
 <template>
-    <div class="search-result">
-        <div class="image">
-            <img :key="product.id" :src="variantImage(product.variants[0])">
-        </div>
-        <div class="details">
-            <span class="id">#{{product.datasource_id}}</span>
-            <strong class="name">{{product.title}}</strong>
-        </div>
-        <div class="actions">
-            <!-- If the product is not already in the queue -->
-            <button class="ghost" v-if="!isInQueue"
-            @click="onAddToQueue(product)">
-                <i class="fas fa-plus"></i>
-            </button>
+    <Draggable :list="[product]" tag="div"
+    :group="{name: 'presenterQueue', pull: 'clone', put: false}"
+    :disabled="isInQueue" 
+    :forceFallback="true" fallbackOnBody=true
+    fallbackClass="sortable-drag" @start="SET_SEARCH_ITEM_DRAG_ACTIVE(true)"
+    @end="SET_SEARCH_ITEM_DRAG_ACTIVE(false)" :key="product.id">
+        <div class="drag-wrapper" :key="product.id">
+            <div class="search-result drag-item">
+                <div class="image">
+                    <img :key="product.id" :src="variantImage(product.variants[0])">
+                </div>
+                <div class="details">
+                    <span class="id">#{{product.datasource_id}}</span>
+                    <strong class="name">{{product.title}}</strong>
+                </div>
+                <div class="actions">
+                    <!-- If the product is not already in the queue -->
+                    <button class="ghost" v-if="!isInQueue"
+                    @click="onAddToQueue(product)">
+                        <i class="fas fa-plus"></i>
+                    </button>
 
-            <!-- Else  -->
-            <div class="square primary" v-else>
-                <i class="fas fa-check"></i>
+                    <!-- Else  -->
+                    <div class="square primary" v-else>
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </Draggable>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import variantImage from '../../../../mixins/variantImage'
-import { mapActions, mapGetters } from 'vuex'
+import Draggable from 'vuedraggable'
 
 export default {
     name: 'searchResult',
     mixins: [
         variantImage
     ],
+    components: {
+        Draggable,
+    },
     props: [
-        'product'
+        'product',
     ],
+    // data: function() { return {
+    // }},
     computed: {
         ...mapGetters('presenterQueue', ['getPresenterQueue']),
         isInQueue() {
@@ -42,6 +57,7 @@ export default {
     },
     methods: {
         ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'broadcastProduct']),
+        ...mapMutations('presenterQueue', ['SET_SEARCH_ITEM_DRAG_ACTIVE']),
         onAddToQueue(product) {
             // If the presenterQueue is empty, then set this product as the current
             this.addProductToPresenterQueue({product})
@@ -59,6 +75,8 @@ export default {
     display: flex;
     border: solid $divider 1px;
     border-radius: 4px;
+    background: white;
+    margin-bottom: 8px;
     img {
         height: 145px;
         width: 116px;
@@ -77,6 +95,10 @@ export default {
     }
     .actions {
         margin-left: auto;
+    }
+    .sortable-ghost & {
+        background: orange;
+        height: 191px;
     }
 }
 

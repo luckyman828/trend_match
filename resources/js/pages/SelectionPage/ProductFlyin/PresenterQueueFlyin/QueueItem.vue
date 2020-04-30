@@ -1,6 +1,6 @@
 <template>
     <div class="queue-item-wrapper">
-        <div class="queue-item" :class="[{'before-current': isBeforeCurrent},{'is-current': isCurrent}]"
+        <div class="queue-item drag-item" :class="[{'before-current': isBeforeCurrent},{'is-current': isCurrent}]"
         @click="onBroadcastProduct(product)">
             <div class="square-sizer">
                 <div class="inner">
@@ -80,10 +80,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-// ITEMS
-.queue-item-wrapper.sortable-drag {
-    opacity: 1 !important;
-}
 .queue-item {
     border: solid $divider 1px;
     border-radius: 4px;
@@ -101,21 +97,6 @@ export default {
     }
     &.before-current {
         opacity: .5;
-    }
-    .sortable-ghost & {
-        background: $grey;
-        > * {
-            visibility: hidden;
-        }
-        // &:hover {
-        //     border-color: $divider;
-        //     border-width: 1px;
-        //     padding: 1px;
-        // }
-    }
-    .sortable-drag & {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.5) !important;
-        transform: rotateZ(3deg) !important;
     }
     > .square-sizer {
         width: 100%;
