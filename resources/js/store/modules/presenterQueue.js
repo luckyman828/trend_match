@@ -42,9 +42,19 @@ export default {
         async removeProductFromPresenterQueue({ commit }, product) {
             commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)
         },
-        async broadcastProduct({ getters, commit }, product) {
+        async broadcastProduct({ getters, dispatch, commit }, product) {
             console.log('Broadcast product!!', product.id)
-            // const apiUrl = `/selections/${fileId}/products`
+            const selection = getters['selections/getCurrentSelection']
+            const apiUrl = `/selections/${selection.id}/presentation/${product.id}`
+
+            let success = true
+            await axios.put(apiUrl, {}).catch(err => {
+                dispatch('alerts/showAlert', 'Something went wrong trying to broadcast product. Please try again.', {
+                    root: true,
+                })
+                success = false
+            })
+            if (!success) return
 
             // If the product is not currently in our queue, add it right after the current product
             const newProductIndex = getters.getPresenterQueue.findIndex(x => x.id == product.id)
