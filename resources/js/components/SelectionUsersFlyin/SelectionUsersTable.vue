@@ -164,7 +164,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import sortArray from '../../mixins/sortArray'
 
 export default {
@@ -187,6 +187,7 @@ export default {
         currentUsersTableTab: 'Members'
     }},
     computed: {
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['availableSelectionRoles', 'getAuthUserHasSelectionEditAccess']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
@@ -207,6 +208,7 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
+        ...mapMutations('selections', ['updateSelection']),
         contextMenuIsActive (user) {
             return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == user.id && this.selected.length <= 1
         },
@@ -256,6 +258,13 @@ export default {
             } else usersToPost = [baseUser]
             // Update users
             this.updateSelectionUsers({selection: this.selection, users: usersToPost})
+            
+            // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
+            const authUser = usersToPost.find(x => x.id == this.authUser.id)
+            if (authUser) {
+                this.selection.your_role = authUser.role
+                this.updateSelection(this.selection)
+            }
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
