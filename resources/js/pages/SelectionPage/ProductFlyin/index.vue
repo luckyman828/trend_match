@@ -47,7 +47,7 @@
                 <div class="main-img" @click="cycleImage(true)">
                     <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])" @error="imgError(product.variants[currentImgIndex])">
                     <button class="white controls" v-tooltip="'View large images'"
-                    @click="showLightbox = true">
+                    @click.stop="showLightbox = true">
                         <i class="far fa-search-plus"></i>
                     </button>
                 </div>

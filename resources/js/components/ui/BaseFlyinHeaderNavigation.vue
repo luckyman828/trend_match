@@ -6,17 +6,24 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     name: 'flyinHeaderNavigation',
     props: [
         'next',
         'prev',
     ],
+    computed: {
+        ...mapGetters('lightbox', ['getLightboxIsVisible'])
+    },
     methods: {
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+            if (!this.getLightboxIsVisible &&
+                event.target.type != 'textarea' && 
+                event.target.tagName.toUpperCase() != 'INPUT'
+            ) {
                 if (key == 'ArrowRight' && this.next)
                     this.$emit('next')
                 if (key == 'ArrowLeft' && this.prev)

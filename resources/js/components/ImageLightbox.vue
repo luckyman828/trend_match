@@ -1,13 +1,15 @@
 <template>
     <div class="image-lightbox" @click.exact="$emit('hide')">
         <div class="img-wrapper">
-            <img :src="images[index]" @click.stop="nextImg">
-            <span>Click image to show next</span>
+            <img :src="imageToDisplay" @click.stop="nextImg">
+            <span>Image {{index+1}} of {{images.length}}</span>
+            <span>Use the arrow keys or click image to show next</span>
         </div>
     </div>
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     name: 'imageLightbox',
     props: [
@@ -17,14 +19,57 @@ export default {
     data: function() { return {
         index: this.defaultIndex || 0
     }},
+    watch: {
+        // Reset the index when our images changes
+        images(newVal, oldVal) {
+            this.index = 0
+        }
+    },
+    computed: {
+        imageToDisplay () {
+            const index = this.index
+            const image = this.images[index]
+            // Check if it's an image from bestseller
+            if (image.search('bestseller') >= 0) {
+                const imageToReturn = `${image.substring(0, image.length-4)}false`
+                return imageToReturn
+            } else return image
+        }
+    },
     methods: {
+        ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE']),
         nextImg() {
             if (this.index < this.images.length-1) {
                 this.index++
             } else {
                 this.index = 0
             }
+        },
+        prevImg() {
+            if (this.index != 0) {
+                this.index--
+            } else {
+                this.index = this.images.length-1
+            }
+        },
+        hotkeyHandler(event) {
+            const key = event.code
+            // Only do these if the current target is not the comment box
+            {
+                if (key == 'ArrowRight')
+                    this.nextImg()
+                if (key == 'ArrowLeft')
+                    this.prevImg()
+            }
         }
+    },
+    created() {
+        this.SET_LIGHTBOX_VISIBLE(true)
+        document.body.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        this.SET_LIGHTBOX_VISIBLE(false)
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>
@@ -45,6 +90,10 @@ export default {
         text-align: center;
         span {
             display: block;
+        }
+        strong {
+            display: block;
+            color: white;
         }
         img {
             max-height: 90vh;
