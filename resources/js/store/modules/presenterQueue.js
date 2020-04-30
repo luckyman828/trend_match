@@ -44,6 +44,8 @@ export default {
         },
         async broadcastProduct({ getters, commit }, product) {
             console.log('Broadcast product!!', product.id)
+            // const apiUrl = `/selections/${fileId}/products`
+
             // If the product is not currently in our queue, add it right after the current product
             const newProductIndex = getters.getPresenterQueue.findIndex(x => x.id == product.id)
             const currentProductIndex = getters.getPresenterQueueCurrentProductIndex

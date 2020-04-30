@@ -52,7 +52,8 @@ export default{
     }},
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
-        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
+        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
+        ...mapGetters('selections', ['getSelectionById']),
     },
     watch : {
         // Watch for changes to the authStatus
@@ -61,6 +62,7 @@ export default{
             // -> initialize the workspace
             if (newVal == 'success') {
                 this.initWorkspace()
+                this.initSignalR()
             }
         },
         // Watch for workspace changes
@@ -84,6 +86,7 @@ export default{
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
         ...mapActions('files', ['setCurrentFolder']),
+        ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         initWorkspace() {
             // Get workspaces
             this.fetchWorkspaces().then(() => {
@@ -92,6 +95,36 @@ export default{
                 if (this.currentWorkspaceIndex == null) {
                     this.setCurrentWorkspaceIndex(0)
                 }
+            })
+        },
+        async initSignalR() {
+            console.log('init SignalR')
+            // Connect to SignalR
+            Vue.prototype.$connection = new signalR.HubConnectionBuilder()
+            .withAutomaticReconnect()
+            .withUrl(`${process.env.MIX_API_BASE_URL.substr(0,process.env.MIX_API_BASE_URL.length-3)}/live-update`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build()
+            const connection = this.$connection
+            await connection.start().catch(err => {
+                console.log(err)
+            })
+
+            // Authenticate our connection
+            connection.invoke("Authenticate", this.getAuthUserToken).catch(function (err) {
+                return console.error(err.toString())
+            })
+
+            connection.on('AuthenticatedSuccess', message => {})
+
+            connection.on('OnSelectionPresentationChanged', (eventName, selectionIds) => {
+                console.log("OnSelectionPresentationChanged", eventName, selectionIds)
+                selectionIds.selection_ids.map(id => {
+                    const selection = this.getSelectionById(id)
+                    if (selection) {
+                        this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: eventName == 'Begin' ? true : false})
+                    }
+                })
             })
         },
         // onScroll(e) {

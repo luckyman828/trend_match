@@ -148,7 +148,7 @@
             <ImageLightbox v-if="showLightbox" :defaultIndex="currentImgIndex" :images="product.variants.map(x => variantImage(x))"
             @hide="showLightbox = false"/>
 
-            <PresenterQueueFlyin :product="product" v-if="currentSelection.presenterModeActive && show"/>
+            <PresenterQueueFlyin :product="product" v-if="currentSelection.is_presenting && show"/>
         </template>
     </BaseFlyin>
 </template>
@@ -219,7 +219,7 @@ export default {
         product () {
             return this.currentProduct
         },
-        broadcastActive () {return this.currentSelection.presenterModeActive},
+        broadcastActive () {return this.currentSelection.is_presenting},
         currentSelection () { return this.getCurrentPDPSelection },
         currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
         currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
@@ -249,7 +249,7 @@ export default {
              variant.error = true
         },
         onCloseSingle() {
-            if (!this.selection.presenterModeActive || confirm('You are about to close the Product Flyin.\n\nYour presentation will still continue.\n\nPress any product to access your queue again.\n\nPress "Okay" to continue.')) {
+            if (!this.selection.is_presenting || confirm('You are about to close the Product Flyin.\n\nYour presentation will still continue.\n\nPress any product to access your queue again.\n\nPress "Okay" to continue.')) {
                 this.currentImgIndex = 0
                 // Emit event to parent
                 this.$emit('close')

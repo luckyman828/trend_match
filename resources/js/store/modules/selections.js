@@ -68,6 +68,7 @@ export default {
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
+        getSelectionById: state => id => state.selections.find(x => x.id == id),
         selections: state => state.selections,
         selectionsTree: state => {
             const list = state.selections
@@ -439,12 +440,34 @@ export default {
             })
         },
         async togglePresenterMode({ dispatch, commit }, selection) {
-            // selection.presenterModeActive = !selection.presenterModeActive // uncomment when API is updated
-            Vue.set(selection, 'presenterModeActive', !selection.presenterModeActive) // delete when API is updated
-            dispatch('updateSelection', selection)
+            const apiUrl = `/selections/${selection.id}/presentation`
+            // Assunme success
+            let success = true
+            if (!selection.is_presenting) {
+                await axios.post(apiUrl).catch(err => {
+                    dispatch(
+                        'alerts/showAlert',
+                        'Something went wrong trying to enter presentation mode. Please try again.',
+                        { root: true }
+                    )
+                    success = false
+                })
+            } else {
+                await axios.delete(apiUrl).catch(err => {
+                    dispatch(
+                        'alerts/showAlert',
+                        'Something went wrong trying to stop presentation mode. Please try again.',
+                        { root: true }
+                    )
+                    success = false
+                })
+            }
+            if (!success) return
+
+            commit('SET_SELECTION_PRESENTATION_MODE_ACTIVE', { selection, isActive: !selection.is_presenting })
 
             // Clear the current presentation queue if we just exited presentation mode
-            if (!selection.presenterModeActive) {
+            if (!selection.is_presenting) {
                 commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
             }
         },
@@ -588,6 +611,10 @@ export default {
                     },
                 })
             })
+        },
+        SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {
+            // Vue.set(selection, 'is_presenting', isActive)
+            selection.is_presenting = isActive
         },
     },
 }
