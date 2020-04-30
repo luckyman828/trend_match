@@ -42,9 +42,9 @@ export default {
         async removeProductFromPresenterQueue({ commit }, product) {
             commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)
         },
-        async broadcastProduct({ getters, dispatch, commit }, product) {
-            console.log('Broadcast product!!', product.id)
-            const selection = getters['selections/getCurrentSelection']
+        async broadcastProduct({ getters, rootGetters, dispatch, commit }, product) {
+            const selection = rootGetters['selections/getCurrentSelection']
+            console.log('current selection', selection)
             const apiUrl = `/selections/${selection.id}/presentation/${product.id}`
 
             let success = true

@@ -17,7 +17,7 @@
                         <SelectionPresenterModeButton :selection="currentSelection" @toggle="onTogglePresenterMode"/>
                     </div>
                     <div class="item-group">
-                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
+                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !currentSelection.is_presenting"/>
                     </div>
                     <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"

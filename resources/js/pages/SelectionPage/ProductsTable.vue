@@ -20,7 +20,7 @@
                 modelValue="nds"/>
 
                 <!-- Selection Selector -->
-                <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment'"/>
+                <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                 <!-- Selection Selector Ends -->
 
             </template>
