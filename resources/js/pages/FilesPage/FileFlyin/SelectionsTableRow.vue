@@ -76,6 +76,8 @@
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
                 <BaseButton v-else buttonClass="invisible ghost-hover primary"
+                :disabled="selection.is_presenting && selection.your_role != 'Owner'"
+                v-tooltip="selection.is_presenting && selection.your_role != 'Owner' && 'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'"
                 @click="onGoToSelection">
                     <span>Go to Selection</span>
                 </BaseButton>

@@ -120,23 +120,8 @@ export default{
         },
 
         async connectToLiveUpdates() {
-            // Connect to SignalR
-            // this.$connection = new signalR.HubConnectionBuilder()
-            // .withAutomaticReconnect()
-            // .withUrl(`${process.env.MIX_API_BASE_URL.substr(0,process.env.MIX_API_BASE_URL.length-3)}/live-update`)
-            // .configureLogging(signalR.LogLevel.Information)
-            // .build()
             const connection = this.$connection
-            // await connection.start().catch(err => {
-            //     console.log(err)
-            // })
-
             const authUser = this.authUser
-            
-            // // Authenticate our connection
-            // connection.invoke("Authenticate", this.getAuthUserToken).catch(function (err) {
-            //     return console.error(err.toString())
-            // })
 
             // Subscribe to our selections
             this.currentSelections.forEach(selection => {
@@ -145,19 +130,10 @@ export default{
                 });
             })
 
-            // connection.on('AuthenticatedSuccess', message => {
-            //     // console.log('authenticated!')
-            //     // console.log(message)
-            // })
             connection.on('SubscribeSelectionsChanged', message => {
                 // console.log('authenticated!')
                 // console.log(message)
-            })
-
-            // connection.on('OnSelectionPresentationChanged', function (eventName, selectionIds) {
-            //     console.log("OnSelectionPresentationChanged", eventName, selectionIds);
-            // });
-                        
+            })    
 
             // Comments
             connection.on("OnCommentArrived", (selectionId, comment) => {
@@ -254,6 +230,10 @@ export default{
 
         // LIVE UPDATE
         this.connectToLiveUpdates()
+        // Route the user away if the current selection is live and your role is not Owner
+        if (this.selection.is_presenting && this.selection.your_role != 'Owner') {
+            this.$router.push({name: 'files'})
+        }
     },
     destroyed() {
         console.log('unsubscribe all!')
