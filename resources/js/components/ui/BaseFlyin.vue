@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'baseFlyin',
@@ -27,6 +28,7 @@ export default {
         visible: false,
     }},
     computed: {
+        ...mapGetters('lightbox', ['getLightboxIsVisible']),
         isVisible () {
             return (this.show) ? this.show : this.visible
         },
@@ -50,7 +52,7 @@ export default {
             if (!this.disableKeyHandler) {
                 const key = event.code
                 // Only do these if the current target is not the comment box
-                if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (!this.getLightboxIsVisible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                     if (key == 'Escape')
                         this.close()
                 }

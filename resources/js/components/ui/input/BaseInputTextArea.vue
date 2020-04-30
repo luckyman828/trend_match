@@ -1,7 +1,7 @@
 <template>
     <div class="input-textarea" :class="{'read-only': disabled || readOnly}">
         <textarea class="input-wrapper focus-visible" ref="textarea" :placeholder="placeholder"
-        :class="{disabled: disabled}" :disabled="disabled"
+        :class="{disabled: disabled || readOnly}" :disabled="disabled || readOnly"
         @input="resize(); $emit('input', $event.target.value)" :value="value"/>
     </div>
 </template>
