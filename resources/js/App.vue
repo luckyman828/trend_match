@@ -15,6 +15,7 @@
                 </transition>
             </div>
         </div>
+        <TheImageLightbox v-if="getLightboxIsVisible"/>
     </div>
     <div class="error-wrapper" v-else-if="error">
         <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo">
@@ -34,6 +35,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TheSidebar from './components/layout/TheSidebar'
 import TheNavbar from './components/layout/TheNavbar'
 import TheNavbarLogo from './components/layout/TheNavbarLogo'
+import TheImageLightbox from './components/layout/TheImageLightbox'
 
 export default{
     name: 'app',
@@ -41,6 +43,7 @@ export default{
         TheSidebar,
         TheNavbar,
         TheNavbarLogo,
+        TheImageLightbox,
     },
     data: function() { return {
         error: false,
@@ -53,6 +56,7 @@ export default{
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
+        ...mapGetters('lightbox', ['getLightboxIsVisible']),
     },
     watch : {
         // Watch for changes to the authStatus

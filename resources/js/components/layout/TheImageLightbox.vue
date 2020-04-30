@@ -1,5 +1,5 @@
 <template>
-    <div class="image-lightbox" @click.exact="$emit('hide')">
+    <div class="image-lightbox" @click.exact="onHide">
         <div class="img-wrapper" @click.stop="onZoom" :class="{'zoom-active': zoomActive}" ref="imgWrapper">
             <img :src="imageToDisplay" ref="img">
         </div>
@@ -9,24 +9,20 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
     name: 'imageLightbox',
-    props: [
-        'defaultIndex',
-        'images',
-    ],
     data: function() { return {
-        index: this.defaultIndex || 0,
         zoomActive: false,
     }},
-    watch: {
-        // Reset the index when our images changes
-        images(newVal, oldVal) {
-            this.index = 0
-        }
-    },
     computed: {
+        ...mapGetters('lightbox', ['getLightboxImages', 'getLightboxImageIndex']),
+        images () {
+            return this.getLightboxImages
+        },
+        index () {
+            return this.getLightboxImageIndex
+        },
         imageToDisplay () {
             const index = this.index
             const image = this.images[index]
@@ -43,7 +39,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE']),
+        ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGE_INDEX']),
         onZoom(e) {
             // Toggle zoom
             this.zoomActive = !this.zoomActive
@@ -62,7 +58,6 @@ export default {
                 const heightStyle = heightPercent > 75 ? 'bottom' : heightPercent > 25 ? 'center' : 'top'
                 const widthStyle = widthPercent > 75 ? 'right' : widthPercent > 25 ? 'center' : 'left'
                 const objectPositionStyle = widthStyle + ' ' + heightStyle
-                console.log('position', objectPositionStyle)
                 img.style.objectPosition = objectPositionStyle
             }
         },
@@ -70,15 +65,18 @@ export default {
             if (this.index < this.images.length-1) {
                 this.index++
             } else {
-                this.index = 0
+                this.SET_LIGHTBOX_IMAGE_INDEX(0)
             }
         },
         prevImg() {
             if (this.index != 0) {
                 this.index--
             } else {
-                this.index = this.images.length-1
+                this.SET_LIGHTBOX_IMAGE_INDEX(this.images.length-1)
             }
+        },
+        onHide() {
+            this.SET_LIGHTBOX_VISIBLE(false)
         },
         hotkeyHandler(event) {
             const key = event.code
@@ -88,13 +86,13 @@ export default {
                     this.nextImg()
                 if (key == 'ArrowLeft')
                     this.prevImg()
-                if (key == 'Escape')
-                    this.$emit('hide')
+                if (key == 'Escape') {
+                    this.onHide()
+                }
             }
         }
     },
     created() {
-        this.SET_LIGHTBOX_VISIBLE(true)
         document.body.addEventListener('keydown', this.hotkeyHandler)
     },
     destroyed() {

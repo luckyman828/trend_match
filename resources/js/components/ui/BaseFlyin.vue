@@ -52,7 +52,10 @@ export default {
             if (!this.disableKeyHandler) {
                 const key = event.code
                 // Only do these if the current target is not the comment box
-                if (!this.getLightboxIsVisible && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (!this.getLightboxIsVisible 
+                    && event.target.type != 'textarea' 
+                    && event.target.tagName.toUpperCase() != 'INPUT'
+                ) {
                     if (key == 'Escape')
                         this.close()
                 }
