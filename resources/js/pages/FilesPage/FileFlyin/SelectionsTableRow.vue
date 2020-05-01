@@ -66,7 +66,8 @@
             </td>
             <td class="presentation">
                 <SelectionPresenterModeButton v-if="isMaster" :selection="selection" :showLabel="false"/>
-                <div v-else-if="selection.is_presenting" class="pill primary sm">
+                <div v-else-if="selection.is_presenting" class="pill primary sm"
+                v-tooltip="'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'">
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" 
                     class="far fa-presentation"></i>
                     <span>In presentation</span>
