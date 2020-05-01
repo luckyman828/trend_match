@@ -17,7 +17,8 @@
                 @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', {selection, parent})"/>
             </td>
             <!-- Viewing -->
-            <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
+            <td v-else class="title" :class="{'clickable': !selection.is_presenting || selection.your_role == 'Owner'}"
+            @click="!(selection.is_presenting && selection.your_role != 'Owner') && onGoToSelection()" :style="selectionWidth">
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
