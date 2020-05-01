@@ -791,9 +791,7 @@ export default {
                 // Set the current action for the user
                 Object.defineProperty(product, 'your_feedback', {
                     get: function() {
-                        return product.feedbacks.find(
-                            x => x.selection_id == product.selectionInputArray[0].selection.id
-                        ).action
+                        return product.selectionInputArray[0].product.your_feedback
                     },
                     set: function(value) {
                         product.feedbacks.find(

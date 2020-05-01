@@ -38,6 +38,14 @@ export default {
             }
         },
         async insertOrUpdateActions({ commit, dispatch }, { products, action, selection, user }) {
+            // Find the selection product if it is not the product we have been passed
+            if (!!products[0].selectionInputArray) {
+                products = products.map(product => {
+                    const selectionIndex = product.selectionInputArray.findIndex(x => x.selection.id == selection.id)
+                    return product.selectionInputArray[selectionIndex].product
+                })
+            }
+
             // type = action|feedback
             let apiUrl
             let requestBody
@@ -134,6 +142,7 @@ export default {
             window.alert('Network error. Please check your connection')
         },
         INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId }) {
+            console.log('insert action', currentSelectionId)
             // console.log('insert or update actions', productActions, type, currentSelectionId)
             // Loop through our products and update their actions
             productActions.forEach(productAction => {
@@ -165,6 +174,7 @@ export default {
 
                     // If is self
                     if (!currentSelectionId || action.selection_id == currentSelectionId) {
+                        console.log('set current action', product)
                         Vue.set(product, 'action', action.action)
                         Vue.set(product, 'action_author', action.user)
                     }
