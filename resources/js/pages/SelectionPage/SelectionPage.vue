@@ -57,12 +57,6 @@ export default{
         hideQuickOut: false,
         hideQuickIn: false,
     }},
-    watch: {
-        currentSelections: function(newVal, oldVal) {
-            console.log('new current selections')
-            console.log(newVal)
-        }
-    },
     computed: {
         ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
         ...mapGetters('files', ['currentFile']),
@@ -98,10 +92,10 @@ export default{
         ...mapActions('actions', ['insertOrUpdateActions']),
         ...mapMutations('actions', ['INSERT_OR_UPDATE_ACTIONS']),
         InNoOutNoCommentStyles() {
-            this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In')
+            this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In', this.currentSelection)
         },
         OutNoInStyles() {
-            this.onInsertOrUpdateActions(this.productsNoIn, 'Out')
+            this.onInsertOrUpdateActions(this.productsNoIn, 'Out', this.currentSelection)
         },
         setHideQuickOut() {
             this.hideQuickOut = true
@@ -113,6 +107,7 @@ export default{
         },
         onUpdateAction(product, action, selection) {
             const actionToPost = product[this.currentAction] == action ? 'None' : action
+            // Find the selection product
             this.insertOrUpdateActions({products: [product], action: actionToPost, selection, user: this.authUser})
         },
         onInsertOrUpdateActions(products, action, selection) {
