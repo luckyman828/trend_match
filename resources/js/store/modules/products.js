@@ -560,7 +560,7 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
                             if (preferredPrice) return preferredPrice
                             else return product.prices[0]
                         } else {
@@ -604,7 +604,7 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
@@ -713,7 +713,7 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = preferred_currency))
+                            const preferredPrice = product.prices.find(x => x.currency == preferred_currency)
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
