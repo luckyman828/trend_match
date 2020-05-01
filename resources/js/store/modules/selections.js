@@ -69,6 +69,7 @@ export default {
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
         getSelectionById: state => id => state.selections.find(x => x.id == id),
+        getCurrentSelectionById: state => id => state.currentSelections.find(x => x.id == id),
         selections: state => state.selections,
         selectionsTree: state => {
             const list = state.selections

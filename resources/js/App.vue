@@ -53,7 +53,7 @@ export default{
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
-        ...mapGetters('selections', ['getSelectionById']),
+        ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
     },
     watch : {
         // Watch for changes to the authStatus
@@ -123,6 +123,10 @@ export default{
                     const selection = this.getSelectionById(id)
                     if (selection) {
                         this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: eventName == 'Begin' ? true : false})
+                    }
+                    const currentSelection = this.getCurrentSelectionById(id)
+                    if (currentSelection) {
+                        this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection: currentSelection, isActive: eventName == 'Begin' ? true : false})
                     }
                 })
             })
