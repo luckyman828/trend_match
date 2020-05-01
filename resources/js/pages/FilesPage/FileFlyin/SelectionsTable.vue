@@ -78,13 +78,14 @@
         @keybind-c="onNewSelection(contextSelection)"
         @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
         @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
-            <div class="item-group">
-                <div class="item" @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
-                    <div class="icon-wrapper">
-                        <i class="far fa-users"></i>
-                    </div>
-                    <u>G</u>o to selection 
-                </div>
+            <div class="item-group" v-if="!!contextSelection">
+                <BaseContextMenuItem iconClass="far fa-users"
+                :disabled="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master'))"
+                v-tooltip="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')) 
+                && 'Selection is in presentation mode. To join the presentation login to the Kollekt mobile app'"
+                @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
+                    <span><u>G</u>o to selection </span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <div class="item" @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
