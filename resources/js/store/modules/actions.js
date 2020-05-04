@@ -124,8 +124,8 @@ export default {
                     type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
                 })
                 // Dispatch an error alert
-                dispatch(
-                    'alerts/showAlert',
+                commit(
+                    'alerts/SHOW_ALERT',
                     'Something went wrong. Please try again, or contact Kollekt support, if the problem persists',
                     { root: true }
                 )

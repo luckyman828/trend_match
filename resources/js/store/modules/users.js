@@ -132,7 +132,7 @@ export default {
                     const errMsg = isSelf
                         ? 'Something went wrong. Make sure you entered your old password correctly.'
                         : 'Something went wrong'
-                    dispatch('alerts/showAlert', errMsg, { root: true })
+                    commit('alerts/SHOW_ALERT', errMsg, { root: true })
                 })
         },
     },

@@ -73,8 +73,8 @@ export default {
                     // On error, set error on the request
                     Vue.set(request, 'error', true)
                     // Alert the user
-                    dispatch(
-                        'alerts/showAlert',
+                    commit(
+                        'alerts/SHOW_ALERT',
                         'Error on request. Please try again. If the error persists, please contact Kollekt support',
                         { root: true }
                     )

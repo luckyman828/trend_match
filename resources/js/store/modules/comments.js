@@ -74,8 +74,8 @@ export default {
                     // On error, set error on the comment
                     Vue.set(comment, 'error', true)
                     // Alert the user
-                    dispatch(
-                        'alerts/showAlert',
+                    commit(
+                        'alerts/SHOW_ALERT',
                         'Error on comment. Please try again. If the error persists, please contact Kollekt support',
                         { root: true }
                     )

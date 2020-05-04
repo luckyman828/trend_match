@@ -321,8 +321,8 @@ export default {
                     })
                     .catch(err => {
                         reject(err)
-                        dispatch(
-                            'alerts/showAlert',
+                        commit(
+                            'alerts/SHOW_ALERT',
                             'Something went wrong when creating the product. Please try again.',
                             { root: true }
                         )
@@ -376,8 +376,8 @@ export default {
                     })
                     .catch(err => {
                         reject(err)
-                        dispatch(
-                            'alerts/showAlert',
+                        commit(
+                            'alerts/SHOW_ALERT',
                             'Something went wrong when updating the product. Please try again.',
                             { root: true }
                         )
@@ -455,8 +455,8 @@ export default {
                         reject(err)
                         // Re-add the products
                         commit('insertProducts', { products, method: 'add' })
-                        dispatch(
-                            'alerts/showAlert',
+                        commit(
+                            'alerts/SHOW_ALERT',
                             'Something went wrong when creating the product. Please try again.',
                             { root: true }
                         )

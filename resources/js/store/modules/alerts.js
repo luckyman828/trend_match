@@ -6,22 +6,19 @@ export default {
     state: {
         snackbarID: 0,
         snackbars: [],
+        showDialogue: false,
     },
 
     getters: {
         getSnackbars: state => state.snackbars,
+        getAlert: state => state.alert,
+        getDialogueIsVisible: state => state.showDialogue,
     },
 
-    actions: {
-        showAlert({ commit }, msg) {
-            alert(msg)
-        },
-        showSnackbar({ commit }, { msg, callback }) {
-            commit('SHOW_SNACKBAR', { msg, callback })
-        },
-    },
+    actions: {},
 
     mutations: {
+        SHOW_ALERT(state, {}) {},
         SHOW_SNACKBAR(state, { msg, type, iconClass, callback, callbackLabel }) {
             // TYPE = success | danger | warning | info
             state.snackbars.push({

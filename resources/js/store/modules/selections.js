@@ -314,8 +314,8 @@ export default {
             // Send request to API
             const apiUrl = `/selections/${selection.id}/metadata`
             await axios.put(apiUrl, selection.settings).catch(err => {
-                dispatch(
-                    'alerts/showAlert',
+                commit(
+                    'alerts/SHOW_ALERT',
                     'Something went wrong trying to save selection settings. Please try again.',
                     { root: true }
                 )
