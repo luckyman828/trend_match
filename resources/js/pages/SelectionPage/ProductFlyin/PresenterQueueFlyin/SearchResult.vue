@@ -22,8 +22,10 @@
                     </button>
 
                     <!-- Else  -->
-                    <div class="square primary" v-else>
-                        <i class="fas fa-check"></i>
+                    <div class="square primary red-hover added-indicator" v-else
+                    @click="onRemoveFromQueue(product)">
+                        <i class="default fas fa-check"></i>
+                        <i class="hover fas fa-trash"></i>
                     </div>
                 </div>
             </div>
@@ -56,12 +58,15 @@ export default {
         }
     },
     methods: {
-        ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'broadcastProduct']),
+        ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'broadcastProduct', 'removeProductFromPresenterQueue']),
         ...mapMutations('presenterQueue', ['SET_SEARCH_ITEM_DRAG_ACTIVE']),
         onAddToQueue(product) {
             // If the presenterQueue is empty, then set this product as the current
             this.addProductToPresenterQueue({product})
         },
+        onRemoveFromQueue(product) {
+            this.removeProductFromPresenterQueue(product)
+        }
     }
 }
 </script>
@@ -100,6 +105,20 @@ export default {
         height: 191px;
         > * {
             display: none;
+        }
+    }
+    .added-indicator {
+        cursor: pointer;
+        .hover {
+            display: none;
+        }
+        &:hover {
+            .default {
+                display: none;
+            }
+            .hover {
+                display: inline-block;
+            }
         }
     }
 }

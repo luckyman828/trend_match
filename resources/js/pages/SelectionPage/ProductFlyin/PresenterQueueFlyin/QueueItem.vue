@@ -155,6 +155,7 @@ export default {
         z-index: 1;
         display: flex;
         justify-content: center;
+        pointer-events: none;
     }
 }
 
