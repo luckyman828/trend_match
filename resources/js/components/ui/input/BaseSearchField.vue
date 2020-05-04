@@ -42,6 +42,8 @@ export default {
                 return array
             }
 
+            let resultsToReturn = []
+
             // If search string is delimited by comma, convert to array and trim
             if (searchString.search(',') >= 0) {
                 searchString = searchString.split(',')
@@ -100,46 +102,44 @@ export default {
                         arrayToReturn.push(arrayObjectToReturn)
                     })
                     // Return the resulting arrays
-                    return arrayToReturn
+                    resultsToReturn = arrayToReturn
                 }
 
                 // If we don't have multiple arrays 
-                {
-                    return array.filter(x => {
-                        // If the search key is an array of keys, search for a result in each of them
-                        if (Array.isArray(searchKey)) {
-                            // Assume no match
-                            let isMatch = false
-                            searchKey.forEach(key => {
-                                // If a match is found for any of the keys, return true
-                                // Check that we have a value
-                                if (!x[key]) return false
-                                // Convert the value to match to a string so we can search it
-                                const valueToMatch = x[key].toString().toLowerCase()
-                                searchString.forEach(str => {
-                                    if (valueToMatch.search(str) >= 0) isMatch = true
-                                })
-                            })
-                            return isMatch
-                        }
-                        else {
+                else resultsToReturn = array.filter(x => {
+                    // If the search key is an array of keys, search for a result in each of them
+                    if (Array.isArray(searchKey)) {
+                        // Assume no match
+                        let isMatch = false
+                        searchKey.forEach(key => {
+                            // If a match is found for any of the keys, return true
                             // Check that we have a value
-                            if (!x[searchKey]) return false
+                            if (!x[key]) return false
                             // Convert the value to match to a string so we can search it
-                            const valueToMatch = x[searchKey].toString().toLowerCase()
-                            let isMatch = false
+                            const valueToMatch = x[key].toString().toLowerCase()
                             searchString.forEach(str => {
                                 if (valueToMatch.search(str) >= 0) isMatch = true
                             })
-                            return isMatch
-                            // return valueToMatch.search(searchString) >= 0
-                        }
-                    })
-                }
+                        })
+                        return isMatch
+                    }
+                    else {
+                        // Check that we have a value
+                        if (!x[searchKey]) return false
+                        // Convert the value to match to a string so we can search it
+                        const valueToMatch = x[searchKey].toString().toLowerCase()
+                        let isMatch = false
+                        searchString.forEach(str => {
+                            if (valueToMatch.search(str) >= 0) isMatch = true
+                        })
+                        return isMatch
+                        // return valueToMatch.search(searchString) >= 0
+                    }
+                })
 
             }
             // Else search by the option itself
-            return array.filter(x => {
+            else resultsToReturn = array.filter(x => {
                 // Convert the value to match to a string so we can search it
                 const valueToMatch = x.toString().toLowerCase()
                 let isMatch = false
@@ -148,6 +148,15 @@ export default {
                 })
                 return isMatch
             })
+
+            // Sort the results by the search array
+            if (searchString.length > 2) {
+                return resultsToReturn.sort((a,b) => {
+                    return searchString.indexOf(a.datasource_id.toString()) - searchString.indexOf(b.datasource_id.toString())
+                })
+            }
+            // return resultsToReturn unsorted
+            return resultsToReturn
         }
     },
     methods: {

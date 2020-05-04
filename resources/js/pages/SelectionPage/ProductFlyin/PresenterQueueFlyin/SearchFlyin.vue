@@ -6,7 +6,7 @@
                 <template v-slot:left>
 
                     <div class="search-field">
-                        <BaseSearchField ref="searchField" :searchKey="['id', 'title']"
+                        <BaseSearchField ref="searchField" :searchKey="['datasource_id', 'title']"
                         placeholderText="Search Product name, ID" :inputClasses="''"
                         :arrayToSearch="products" v-model="productsFilteredBySearch"/>
                     </div>
