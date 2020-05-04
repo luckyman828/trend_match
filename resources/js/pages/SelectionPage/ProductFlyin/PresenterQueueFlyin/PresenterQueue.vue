@@ -19,7 +19,7 @@
         <div class="body">
             <Draggable class="draggable" v-model="presenterQueue" tag="div" :forceFallback="true"
             group="presenterQueue" draggable=".queue-item-wrapper"
-            fallbackClass="sortable-drag">
+            fallbackClass="sortable-drag" :fallbackTolerance="10">
                 <QueueItem v-for="product in presenterQueue" :key="product.id"
                 :product="product"/>
             </Draggable>

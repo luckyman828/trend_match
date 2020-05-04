@@ -17,9 +17,17 @@
                         <span class="id">#{{product.datasource_id}}</span>
                     </div>
                     <div class="right">
-                        <button class="invisible drag-button">
-                            <i class="fas fa-grip-vertical"></i>
-                        </button>
+                        <div class="top">
+                            <button class="invisible drag-button"
+                            v-tooltip="{content: 'Drag to reposition product in queue', delay: {show: 300}}">
+                                <i class="fas fa-grip-vertical"></i>
+                            </button>
+                            <button class="invisible" v-if="!isCurrent"
+                            v-tooltip="{content: 'Broadcast this product', delay: {show: 300}}"
+                            @click.stop="onBroadcastProduct(product)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <button class="invisible red-hover" :key="product.id"
                         @click.stop="onRemoveProductFromPresenterQueue(product)">
                             <i class="fas fa-trash"></i>
@@ -141,6 +149,10 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        .top {
+            display: flex;
+            flex-direction: column;
+        }
     }
     .drag-button {
         cursor: grab;
