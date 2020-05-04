@@ -15,7 +15,11 @@ export default {
         getDialogueIsVisible: state => state.showDialogue,
     },
 
-    actions: {},
+    actions: {
+        testAlert({ state }, msg) {
+            alert(msg)
+        },
+    },
 
     mutations: {
         SHOW_ALERT(state, {}) {},

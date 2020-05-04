@@ -1,4 +1,5 @@
 import axios from 'axios'
+import sortArray from '../../mixins/sortArray'
 
 export default {
     namespaced: true,
@@ -17,6 +18,7 @@ export default {
         productsFilteredBySearch: [],
         status: null,
         currentFocusRowIndex: null,
+        lastSort: null,
     },
 
     getters: {
@@ -438,7 +440,7 @@ export default {
                     console.log(err.response)
                 })
         },
-        async deleteProducts({ commit, dispatch }, { file, products }) {
+        async deleteProducts({ state, getters, commit, dispatch }, { file, products }) {
             return new Promise((resolve, reject) => {
                 commit('DELETE_PRODUCTS', products)
                 const apiUrl = `/files/${file.id}/products`
@@ -450,6 +452,17 @@ export default {
                     .then(response => {
                         // Add the created ID to the product, if we only have 1 product
                         resolve(response)
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${products.length} products deleted`,
+                                callback: () => restoreProducts(),
+                                callbackLabel: 'Restore products',
+                                iconClass: 'fa-trash',
+                                type: 'danger',
+                            },
+                            { root: true }
+                        )
                     })
                     .catch(err => {
                         reject(err)
@@ -461,6 +474,11 @@ export default {
                             { root: true }
                         )
                     })
+
+                const restoreProducts = async () => {
+                    await dispatch('insertProducts', { file, products, addToState: true })
+                    commit('SORT_PRODUCTS')
+                }
             })
         },
     },
@@ -469,6 +487,9 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        SORT_PRODUCTS(state) {
+            sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
         },
         setProductStatus(state, status) {
             state.status = status
@@ -893,6 +914,9 @@ export default {
                     },
                 })
             })
+        },
+        SET_LAST_SORT(state, { method, key }) {
+            state.lastSort = { method, key }
         },
     },
 }

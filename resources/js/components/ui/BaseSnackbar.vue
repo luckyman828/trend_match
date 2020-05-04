@@ -6,11 +6,11 @@
         </div>
         <div class="body">
             <div class="msg">
-                <span>{{snackbar.msg}} <strong>{{snackbar.id}}</strong></span>
+                <span>{{snackbar.msg}}</span>
             </div>
             <div class="callback" v-if="snackbar.callback">
                 <button class="invisible primary ghost-hover"
-                @click.stop="snackbar.callback">
+                @click.stop="snackbar.callback(); onDeleteSnackbar()">
                     <span>{{snackbar.callbackLabel}}</span>
                 </button>
             </div>

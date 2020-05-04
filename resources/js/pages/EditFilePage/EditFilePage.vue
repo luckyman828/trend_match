@@ -58,10 +58,12 @@ export default{
     },
     methods: {
         ...mapActions('products', ['updateProduct']),
-        ...mapMutations('products', ['setSingleVisisble']),
+        ...mapMutations('products', ['setSingleVisisble', 'SET_LAST_SORT']),
         onSort(method, key) {
             this.sortKey = key
             this.sortArray(this.products, method, key)
+            // Save a reference to our last sort
+            this.SET_LAST_SORT({method, key})
         },
         setVariantWithImageFirst() {
             const productsToUpdateCount = this.productsEligibleForVariantImageShift.length

@@ -63,7 +63,7 @@ export default {
 
     .modal-wrapper {
         position: fixed;
-        z-index: 9;
+        z-index: 99;
         &.visible {
             .overlay {
                 display: block;

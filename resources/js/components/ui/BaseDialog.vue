@@ -1,14 +1,22 @@
 <template>
     <BaseModal classes="dialog"
-    :show="visible" @hide="hide">
+    :show="visible" @close="hide">
         <slot/>
         <div class="actions">
-            <button class="ghost lg" @click="onCancel">
-                <span>{{cancelText || 'Cancel'}}</span>
-            </button>
-            <button class="lg" :class="confirmColor" @click="onConfirm">
-                <span>{{confirmText || 'Confirm'}}</span>
-            </button>
+            <!-- Confirm -->
+            <template v-if="type == 'confirm'">
+                <button class="ghost lg" @click="onCancel">
+                    <span>{{cancelText || 'Cancel'}}</span>
+                </button>
+                <button class="lg" :class="confirmColor" @click="onConfirm">
+                    <span>{{confirmText || 'Confirm'}}</span>
+                </button>
+            </template>
+            <template v-else>
+                <button class="lg" :class="confirmColor" @click="onCancel">
+                    <span>{{confirmText || 'Okay'}}</span>
+                </button>
+            </template>
         </div>
     </BaseModal>
 </template>
@@ -20,6 +28,7 @@ export default {
         'confirmColor',
         'confirmText',
         'cancelText',
+        'type'
     ],
     data: function() { return {
         visible: false,
@@ -59,6 +68,13 @@ export default {
                 text-align: center;
                 padding: 88px 16px 32px;
             }
+        }
+        .icon-graphic {
+            display: flex;
+            width: 188px;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            margin: auto;
         }
     }
 </style>
