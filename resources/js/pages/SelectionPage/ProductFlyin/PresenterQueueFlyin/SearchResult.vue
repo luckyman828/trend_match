@@ -97,8 +97,10 @@ export default {
         margin-left: auto;
     }
     .sortable-ghost & {
-        background: orange;
         height: 191px;
+        > * {
+            display: none;
+        }
     }
 }
 
