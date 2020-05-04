@@ -39,7 +39,13 @@ export default {
         async addProductToPresenterQueue({ commit }, { product, index }) {
             commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index })
         },
-        async removeProductFromPresenterQueue({ commit }, product) {
+        async removeProductFromPresenterQueue({ getters, commit, dispatch }, product) {
+            const currentProduct = getters.getPresenterQueueCurrentProduct
+            const nextProduct = getters.getNextProduct
+            if (currentProduct.id == product.id && nextProduct) {
+                dispatch('broadcastProduct', nextProduct)
+            }
+            // If the current product is getting removed, set the next product as active if any
             commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)
         },
         async broadcastProduct({ getters, rootGetters, dispatch, commit }, product) {

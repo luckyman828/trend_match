@@ -23,6 +23,7 @@
 
                     <!-- Else  -->
                     <div class="square primary red-hover added-indicator" v-else
+                    v-tooltip="'Remove product from queue'"
                     @click="onRemoveFromQueue(product)">
                         <i class="default fas fa-check"></i>
                         <i class="hover fas fa-trash"></i>
