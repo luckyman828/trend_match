@@ -19,9 +19,9 @@
                 <i class="fas fa-times"></i>
             </button>
 
-            <div class="timer">
+            <div class="timer" v-if="duration">
                 <svg>
-                    <rect height="4px"/>
+                    <rect height="4px" :style="animationDuration"/>
                 </svg>
             </div>
         </div>
@@ -39,6 +39,14 @@ export default {
     data: function() { return {
         timer: null,
     }},
+    computed: {
+        duration() {
+            return this.snackbar.duration != null ? this.snackbar.duration : 5000
+        },
+        animationDuration() {
+            return `animation-duration: ${this.duration}ms`
+        }
+    },
     methods: {
         ...mapMutations('alerts', ['DELETE_SNACKBAR']),
         onDeleteSnackbar() {
@@ -53,7 +61,9 @@ export default {
     },
     created() {
         // Automatically hide the snackbar
-        this.timer = new Timer(() => this.onDeleteSnackbar(), 5000) // ATTENTION! If you change this number you also need to change the animation duration in the css
+        if (this.duration) {
+            this.timer = new Timer(() => this.onDeleteSnackbar(), this.duration)
+        }
     }
 }
 
@@ -146,7 +156,7 @@ var Timer = function(callback, delay) {
             height: 16px;
             rect {
                 width: 100%;
-                animation: animateWidth 5s linear;
+                animation: animateWidth linear;
                 fill: $dark2;
             }
         }

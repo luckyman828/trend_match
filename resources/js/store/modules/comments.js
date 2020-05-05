@@ -66,6 +66,20 @@ export default {
                 },
             })
                 .then(response => {
+                    Vue.set(comment, 'error', false)
+                    // If the comment already had an ID -> it got updated give the user a confirmation message
+                    if (!!comment.id) {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Comment updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
+
                     // Set the given ID to the comment if we were posting a new comment
                     // if (!comment.id) comment.id = response.data.id
                     if (!comment.id) Object.assign(comment, response.data)
@@ -75,8 +89,16 @@ export default {
                     Vue.set(comment, 'error', true)
                     // Alert the user
                     commit(
-                        'alerts/SHOW_ALERT',
-                        'Error on comment. Please try again. If the error persists, please contact Kollekt support',
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg:
+                                'Error on comment. Please try again. If the error persists, please contact Kollekt support',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertOrUpdateComment', { product, comment }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
                         { root: true }
                     )
                 })
