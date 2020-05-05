@@ -314,6 +314,17 @@ export default {
                         products: products,
                     })
                     .then(response => {
+                        // Alert the user
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Product created',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+
                         // Add the created ID to the product, if we only have 1 product
                         if (products.length <= 1) {
                             const product = products[0]
@@ -324,8 +335,15 @@ export default {
                     .catch(err => {
                         reject(err)
                         commit(
-                            'alerts/SHOW_ALERT',
-                            'Something went wrong when creating the product. Please try again.',
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when creating the product. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('insertProducts', { file, products, addToState }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
                             { root: true }
                         )
                     })
@@ -373,14 +391,31 @@ export default {
                 axios
                     .put(apiUrl, product)
                     .then(response => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Product updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+
                         commit('updateProduct', product)
                         resolve(response)
                     })
                     .catch(err => {
                         reject(err)
                         commit(
-                            'alerts/SHOW_ALERT',
-                            'Something went wrong when updating the product. Please try again.',
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when updating the product. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('updateProduct', product),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
                             { root: true }
                         )
                     })
