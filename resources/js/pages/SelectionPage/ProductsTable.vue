@@ -131,7 +131,7 @@
                     v-slot="{ item, index }"
                 >
                     <ProductsTableRow class="product-row flex-table-row"
-                    @showContext="$refs.contextMenu.show($event); contextProduct = item"
+                    @showContext="onShowContextMenu($event, item)"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
@@ -180,6 +180,59 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuSelection"
+            :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyC']"
+            @keybind-c="selectedProducts = []"
+            @keybind-i="onUpdateMultipleActions(selectedProducts, 'In')"
+            @keybind-o="onUpdateMultipleActions(selectedProducts, 'Out')"
+            @keybind-f="onUpdateMultipleActions(selectedProducts, 'Focus')"
+            @keybind-u="onUpdateMultipleActions(selectedProducts, 'Focus')"
+        >
+            <template v-slot:header>
+                <span>Choose action for {{selectedProducts.length}} product{{selectedProducts.length > 1 ? 's' : ''}}</span>
+            </template>
+
+            <div class="item-group">
+                <div class="item" @click="selectedProducts = []">
+                    <div class="icon-wrapper">
+                        <i class="far fa-times"></i>
+                    </div>
+                    <span><u>C</u>lear selection</span>
+                </div>
+            </div>
+
+            <template v-if="selectedProducts.length > 1">
+                <div class="item-group">
+                    <div class="item" @click="onUpdateMultipleActions(selectedProducts, 'In')">
+                        <div class="icon-wrapper">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <u>I</u>n
+                    </div>
+                    <div class="item" @click="onUpdateMultipleActions(selectedProducts, 'Out')">
+                        <div class="icon-wrapper">
+                            <i class="far fa-times"></i>
+                        </div>
+                        <u>O</u>ut
+                    </div>
+                    <div class="item" @click="onUpdateMultipleActions(selectedProducts, 'Focus')">
+                        <div class="icon-wrapper">
+                            <i class="far fa-star"></i>
+                        </div>
+                        <u>F</u>oc<u>u</u>s
+                    </div>
+                </div>
+                <div class="item-group">
+                    <div class="item" @click="onUpdateMultipleActions(selectedProducts, 'None')">
+                        <div class="icon-wrapper">
+                            <i class="far fa-times"></i>
+                        </div>
+                        <span>Clear actions</span>
+                    </div>
+                </div>
+            </template>
+        </BaseContextMenu>
     </div>
 </template>
 
@@ -215,6 +268,7 @@ export default {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
         ...mapState('products', {stateProducts: 'products'}),
+        ...mapGetters('auth', ['authUser']),
         currentSelections() {
             return this.getCurrentSelections
         },
@@ -272,7 +326,7 @@ export default {
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
         'SET_PRODUCTS_FILTERED_BY_SEARCH']),
-        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         onViewSingle(product) {
@@ -282,6 +336,17 @@ export default {
             this.setSingleVisisble(true)
             document.activeElement.blur()
         },
+        onShowContextMenu(mouseEvent, product) {
+            let contextMenu = this.$refs.contextMenu
+            this.contextProduct = product
+            if (this.selectedProducts.length > 0) {
+                this.contextProduct = this.selectedProducts[0]
+            }
+            if (this.selectedProducts.length > 1) {
+                contextMenu = this.$refs.contextMenuSelection
+            }
+            contextMenu.show(mouseEvent)
+        },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
@@ -290,6 +355,9 @@ export default {
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
+        onUpdateMultipleActions(products, action) {
+            this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        }
     },
     created () {
 

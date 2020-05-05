@@ -80,13 +80,11 @@ var Timer = function(callback, delay) {
 @import '~@/_variables.scss';
 
 .snackbar {
-    height: 60px;
     width: 400px;
     display: flex;
     margin-top: 32px;
     box-shadow: 0 3px 30px rgba(0,0,0,.4);
     .icon-wrapper {
-        height: 100%;
         width: 44px;
         background: $bg;
         display: flex;
@@ -122,7 +120,7 @@ var Timer = function(callback, delay) {
         position: relative;
         display: flex;
         align-items: center;
-        padding: 0 16px 0 32px;
+        padding: 12px 16px 12px 32px;
         flex: 1;
         border: solid 1px $divider;
         border-radius: 0 4px 4px 0;
