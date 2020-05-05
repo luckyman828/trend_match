@@ -1,9 +1,20 @@
 <template>
     <div class="button-wrapper">
+
+        <!-- Button -->
         <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}]"
         @click="!disabled && $emit('click', $event)">
             <slot/>
+
+            <!-- Target Area -->
+            <div class="target-area" v-if="targetArea" 
+            :style="targetAreaSize">
+
+            </div>
         </button>
+
+
+        <!-- Hotkey -->
         <div class="hotkey" v-if="hotkey">
             <span class="key">{{hotkey.key}}</span>
             <span class="label">{{hotkey.label}}</span>
@@ -19,7 +30,20 @@ export default {
         'hotkey',
         'disabled',
         'tooltip',
+        'targetArea',
     ],
+    computed: {
+        targetAreaSize() {
+            if (this.targetArea) {
+                const strArr = this.targetArea.split(' ')
+                if (strArr.length > 1) {
+                    return `height: ${strArr[0]}; width: ${strArr[1]};`
+                } else {
+                    return `height: ${strArr[0]}; width: ${strArr[0]};`
+                }
+            }
+        }
+    }
 }
 </script>
 
@@ -48,6 +72,15 @@ export default {
         .label {
             font-size: 11px;
         }
+    }
+
+    // Target Area
+    .target-area {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
     }
 }
 

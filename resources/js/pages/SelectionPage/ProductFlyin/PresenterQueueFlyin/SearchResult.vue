@@ -16,18 +16,18 @@
                 </div>
                 <div class="actions">
                     <!-- If the product is not already in the queue -->
-                    <button class="ghost" v-if="!isInQueue"
-                    @click="onAddToQueue(product)">
+                    <BaseButton buttonClass="ghost" v-if="!isInQueue"
+                    @click="onAddToQueue(product)" targetArea="80px">
                         <i class="fas fa-plus"></i>
-                    </button>
+                    </BaseButton>
 
                     <!-- Else  -->
-                    <div class="square primary red-hover added-indicator" v-else
-                    v-tooltip="'Remove product from queue'"
+                    <BaseButton v-else buttonClass="square primary red-hover added-indicator"
+                    v-tooltip="'Remove product from queue'" targetArea="80px"
                     @click="onRemoveFromQueue(product)">
                         <i class="default fas fa-check"></i>
                         <i class="hover fas fa-trash"></i>
-                    </div>
+                    </BaseButton>
                 </div>
             </div>
         </div>
