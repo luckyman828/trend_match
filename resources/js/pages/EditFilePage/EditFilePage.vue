@@ -59,6 +59,7 @@ export default{
     methods: {
         ...mapActions('products', ['updateProduct']),
         ...mapMutations('products', ['setSingleVisisble', 'SET_LAST_SORT']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onSort(method, key) {
             this.sortKey = key
             this.sortArray(this.products, method, key)
@@ -77,7 +78,11 @@ export default{
                     this.updateProduct(product)
                 }
             })
-            alert(`Success! ${productsToUpdateCount} Products updated`)
+            this.SHOW_SNACKBAR({
+                msg: `${productsToUpdateCount} Product${productsToUpdateCount > 1 ? 's' : ''} updated`,
+                iconClass: 'fa-check',
+                type: 'success'
+            })
         }
     },
     created() {

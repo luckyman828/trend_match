@@ -455,7 +455,7 @@ export default {
                         commit(
                             'alerts/SHOW_SNACKBAR',
                             {
-                                msg: `${products.length} products deleted`,
+                                msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
                                 callback: () => restoreProducts(),
                                 callbackLabel: 'Restore products',
                                 iconClass: 'fa-trash',
@@ -478,6 +478,15 @@ export default {
                 const restoreProducts = async () => {
                     await dispatch('insertProducts', { file, products, addToState: true })
                     commit('SORT_PRODUCTS')
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${products.length} product${products.length > 1 ? 's' : ''} re-added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 }
             })
         },
