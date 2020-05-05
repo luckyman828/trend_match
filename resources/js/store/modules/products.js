@@ -439,8 +439,8 @@ export default {
                 })
         },
         async deleteProducts({ commit, dispatch }, { file, products }) {
+            console.log('delete products', products)
             return new Promise((resolve, reject) => {
-                commit('DELETE_PRODUCTS', products)
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -448,7 +448,7 @@ export default {
                         products: products,
                     })
                     .then(response => {
-                        // Add the created ID to the product, if we only have 1 product
+                        commit('DELETE_PRODUCTS', products)
                         resolve(response)
                     })
                     .catch(err => {
@@ -494,10 +494,10 @@ export default {
             }
         },
         DELETE_PRODUCTS(state, products) {
-            products.forEach(product => {
-                const index = state.products.findIndex(x => x.id == product.id)
+            for (let i = products.length; i--; ) {
+                const index = state.products.findIndex(x => x.id == products[i].id)
                 state.products.splice(index, 1)
-            })
+            }
         },
         SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
             state.productsFilteredBySearch = products

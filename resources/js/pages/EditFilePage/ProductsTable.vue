@@ -110,7 +110,7 @@
         @keybind-v="onViewSingle(contextItem)"
         @keybind-e="onViewSingle(contextItem)"
         @keybind-a="onNewProduct()"
-        @keybind-d="deleteProducts({file, products: [contextItem]})"
+        @keybind-d="deleteProducts({file, products: [contextItem]}); selectedProducts = []"
         >
             <div class="item-group" v-if="selectedProducts.length > 0">
                 <div class="item" @click="selectedProducts = []; slotProps.hide()">
@@ -131,7 +131,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="deleteProducts({file, products: [contextItem]})">
+                <div class="item" @click="deleteProducts({file, products: [contextItem]}); selectedProducts = []">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <span><u>D</u>elete Product</span>
                 </div>
@@ -156,7 +156,7 @@
             <div class="item-group">
                 <div class="item" @click="deleteProducts({file, products: selectedProducts})">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
-                    <span><u>D</u>elete Product</span>
+                    <span><u>D</u>elete Products</span>
                 </div>
             </div>
         </BaseContextMenu>
