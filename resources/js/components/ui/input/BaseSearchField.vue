@@ -188,19 +188,22 @@ export default {
 
     .search {
         position: relative;
-        input.input-wrapper.small {
+        input.input-wrapper {
             padding-right: 32px;
             box-sizing: border-box;
         }
         .clear {
             position: absolute;
             right: 0;
-            top: 2px;
+            top: 0;
             font-size: 14px;
             color: $fontIcon;
             cursor: pointer;
             padding: 4px 12px;
-            &:hover {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            &:hover i {
                 color: $font;
             }
         }
