@@ -53,9 +53,9 @@
         <BaseDialog ref="quickInDialog" type="confirm" confirmColor="green"
         confirmText="Yes, mark them IN" cancelText="No, keep them as is">
             <div class="icon-graphic">
-                <i class="far fa-cube lg dark"></i>
+                <i class="far fa-cube lg primary"></i>
                 <i class="far fa-arrow-right lg"></i>
-                <i class="far fa-heart green lg"></i>
+                <i class="far fa-heart dark lg"></i>
             </div>
             <h3>Mark {{productsNoOutNoComment.length}} products IN</h3>
             <p>

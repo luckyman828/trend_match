@@ -113,9 +113,8 @@ export default {
                 data: teamToPush,
             })
                 .then(response => {
-                    if (!team.id) team.id = response.data.id
-                    commit('INSERT_OR_UPDATE_TEAM', response.data)
-                    const successMsg = team.id ? 'Team created' : 'Team updated'
+                    const wasCreated = !team.id
+                    const successMsg = wasCreated ? 'Team created' : 'Team updated'
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
@@ -125,6 +124,8 @@ export default {
                         },
                         { root: true }
                     )
+                    if (!team.id) team.id = response.data.id
+                    commit('INSERT_OR_UPDATE_TEAM', response.data)
                 })
                 .catch(err => {
                     console.log(err)
@@ -161,8 +162,8 @@ export default {
                         'alerts/SHOW_SNACKBAR',
                         {
                             msg: 'Team deleted',
-                            iconClass: 'fa-check',
-                            type: 'success',
+                            iconClass: 'fa-trash',
+                            type: 'danger',
                         },
                         { root: true }
                     )
@@ -306,6 +307,8 @@ export default {
                             msg: `${users.length} user${users.length > 1 ? 's' : ''} removed from team`,
                             iconClass: 'fa-check',
                             type: 'success',
+                            callback: () => dispatch('addUsersToTeam', { team, users }),
+                            callbackLabel: 'undo',
                         },
                         { root: true }
                     )

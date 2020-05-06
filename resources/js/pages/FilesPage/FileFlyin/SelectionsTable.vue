@@ -571,9 +571,9 @@
         confirmText="Yes, delete it" cancelText="No, keep it"
         confirmColor="red">
             <div class="icon-graphic">
-                <i class="far fa-poll dark lg"></i>
+                <i class="far fa-poll primary lg"></i>
                 <i class="far fa-arrow-right lg"></i>
-                <i class="far fa-trash lg red"></i>
+                <i class="far fa-trash lg dark"></i>
             </div>
             <h3>Really delete this selection?</h3>
             <p>All input of the selection will be permanently deleted.</p>

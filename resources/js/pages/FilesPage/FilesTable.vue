@@ -303,9 +303,9 @@
         confirmText="Yes, delete it" cancelText="No, keep it"
         confirmColor="red">
             <div class="icon-graphic">
-                <i class="far fa-file dark lg"></i>
+                <i class="far fa-file primary lg"></i>
                 <i class="far fa-arrow-right lg"></i>
-                <i class="far fa-trash lg red"></i>
+                <i class="far fa-trash lg dark"></i>
             </div>
             <h3>Really delete this file?</h3>
             <p>All comments, requests and actions will be permanently deleted.</p>
@@ -315,9 +315,9 @@
         confirmText="Yes, delete it" cancelText="No, keep it"
         confirmColor="red">
             <div class="icon-graphic">
-                <i class="far fa-file dark lg"></i>
+                <i class="far fa-file primary lg"></i>
                 <i class="far fa-arrow-right lg"></i>
-                <i class="far fa-trash lg red"></i>
+                <i class="far fa-trash lg dark"></i>
             </div>
             <h3>Really delete this folder?</h3>
             <p>The folder and all of its contents will be permanently deleted.</p>
@@ -327,9 +327,9 @@
         confirmText="Yes, delete them" cancelText="No, keep them"
         confirmColor="red">
             <div class="icon-graphic">
-                <i class="far fa-copy dark lg"></i>
+                <i class="far fa-copy primary lg"></i>
                 <i class="far fa-arrow-right lg"></i>
-                <i class="far fa-trash lg red"></i>
+                <i class="far fa-trash lg dark"></i>
             </div>
             <h3>Really delete {{selected.length}} files/folders?</h3>
             <p>folders and files contained in your selection and all their comments, requests and actions will be permanently deleted.</p>

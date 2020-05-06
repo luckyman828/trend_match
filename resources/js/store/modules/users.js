@@ -124,7 +124,7 @@ export default {
                 })
             return succes
         },
-        async removeUsersFromWorkspace({ commit }, { workspaceId, users }) {
+        async removeUsersFromWorkspace({ commit, dispatch }, { workspaceId, users }) {
             commit('removeUsers', users)
             const apiUrl = `/workspaces/${workspaceId}/users`
             let success
@@ -143,8 +143,8 @@ export default {
                         'alerts/SHOW_SNACKBAR',
                         {
                             msg: `${users.length} user${users.length > 1 ? 's' : ''} removed`,
-                            iconClass: 'fa-check',
-                            type: 'success',
+                            iconClass: 'fa-trash',
+                            type: 'danger',
                             callback: () => dispatch('addUsersToWorkspace', users),
                             callbackLabel: 'Undo',
                         },

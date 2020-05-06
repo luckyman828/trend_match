@@ -49,7 +49,7 @@
         </div>
 
         <BaseDialog ref="confirmDeleteComment" type="confirm"
-        confirmColor="red">
+        confirmColor="red" confirmText="Yes, delete it">
             <div class="icon-graphic">
                 <i class="lg primary far fa-comment"></i>
                 <i class="lg far fa-arrow-right"></i>
