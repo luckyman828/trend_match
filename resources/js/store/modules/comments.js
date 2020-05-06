@@ -68,17 +68,16 @@ export default {
                 .then(response => {
                     Vue.set(comment, 'error', false)
                     // If the comment already had an ID -> it got updated give the user a confirmation message
-                    if (!!comment.id) {
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Comment updated',
-                                iconClass: 'fa-check',
-                                type: 'success',
-                            },
-                            { root: true }
-                        )
-                    }
+                    const wasCreated = !comment.id
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Comment ${wasCreated ? 'created' : 'updated'}`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
 
                     // Set the given ID to the comment if we were posting a new comment
                     // if (!comment.id) comment.id = response.data.id
@@ -109,7 +108,37 @@ export default {
 
             // Config API endpoint
             const apiUrl = `/comments/${comment.id}`
-            await axios.delete(apiUrl)
+            await axios
+                .delete(apiUrl)
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Comment deleted`,
+                            iconClass: 'fa-trash',
+                            type: 'danger',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Re-add the comment
+                    commit('INSERT_OR_UPDATE_COMMENT', { product, comment })
+                    // Alert the user
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg:
+                                'Error when trying to delete comment. Please try again. If the error persists, please contact Kollekt support',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('deleteComment', { product, comment }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 
