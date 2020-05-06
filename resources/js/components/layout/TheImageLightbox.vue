@@ -63,14 +63,14 @@ export default {
         },
         nextImg() {
             if (this.index < this.images.length-1) {
-                this.index++
+                this.SET_LIGHTBOX_IMAGE_INDEX(this.index+1)
             } else {
                 this.SET_LIGHTBOX_IMAGE_INDEX(0)
             }
         },
         prevImg() {
             if (this.index != 0) {
-                this.index--
+                this.SET_LIGHTBOX_IMAGE_INDEX(this.index-1)
             } else {
                 this.SET_LIGHTBOX_IMAGE_INDEX(this.images.length-1)
             }
