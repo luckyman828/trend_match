@@ -24,7 +24,6 @@ export default {
     mutations: {
         SHOW_ALERT(state, {}) {},
         SHOW_SNACKBAR(state, { msg, type, iconClass, callback, callbackLabel, duration }) {
-            console.log('show snackbar')
             // TYPE = success | danger | warning | info
             state.snackbars.push({
                 id: state.snackbarID,

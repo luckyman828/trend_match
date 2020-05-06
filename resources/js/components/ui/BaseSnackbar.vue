@@ -94,6 +94,7 @@ var Timer = function(callback, delay) {
     display: flex;
     margin-top: 32px;
     box-shadow: 0 3px 30px rgba(0,0,0,.4);
+    animation: flyin .1s;
     .icon-wrapper {
         width: 44px;
         background: $bg;
@@ -170,6 +171,11 @@ var Timer = function(callback, delay) {
 @keyframes animateWidth {
     from {width: 0;}
     to {width: 100%;}
+}
+
+@keyframes flyin {
+    from {transform: translateX(calc(100% + 16px));}
+    to {transform: none;}
 }
 
 </style>

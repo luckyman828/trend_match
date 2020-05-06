@@ -566,6 +566,19 @@
         v-model="contextSelection.currency" unsetOption="Clear" :unsetValue="null"
         type="radio" :options="availableCurrencies" :search="true"
         @submit="updateSelection(contextSelection)"/>
+
+        <BaseDialog ref="deleteSelectionDialog" type="confirm"
+        confirmText="Yes, delete it" cancelText="No, keep it"
+        confirmColor="red">
+            <div class="icon-graphic">
+                <i class="far fa-poll dark lg"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-trash lg red"></i>
+            </div>
+            <h3>Really delete this selection?</h3>
+            <p>All input of the selection will be permanently deleted.</p>
+            <p><strong>Please beware:</strong>All sub-selections will be deleted as well.</p>
+        </BaseDialog>
         
     </div>
 </template>
@@ -849,12 +862,11 @@ export default {
                 this.selectionToEdit = {selection: newSelection, field: 'name'}
             })
         },
-        onDeleteSelection(selection) {
+        async onDeleteSelection(selection) {
             // Send request to API
-            if (selection.children.length > 0 && !confirm('Are you sure you want to delete a selection with sub-selection? All the sub-selections will be deleted as well.')) {
-                return
+            if (await this.$refs.deleteSelectionDialog.confirm()) {
+                this.deleteSelection(selection)
             }
-            this.deleteSelection(selection)
         },
         clearToEdit() {
             // Clear the current edit

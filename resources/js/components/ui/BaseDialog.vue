@@ -1,7 +1,9 @@
 <template>
     <BaseModal classes="dialog"
     :show="visible" @close="hide">
-        <slot/>
+        <div class="body">
+            <slot/>
+        </div>
         <div class="actions">
             <!-- Confirm -->
             <template v-if="type == 'confirm'">
@@ -63,7 +65,7 @@ export default {
         .modal {
             background: white;
             width: 524px;
-            .body {
+            > .body {
                 max-width: none;
                 text-align: center;
                 padding: 88px 16px 32px;
@@ -80,6 +82,11 @@ export default {
 </style>
 
 <style lang="scss" scoped>
+
+.body {
+    max-width: 400px;
+    margin: auto;
+}
 
 .actions {
     display: flex;

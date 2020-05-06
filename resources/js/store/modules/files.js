@@ -213,10 +213,10 @@ export default {
                 commit('SET_FILE_FLYIN_VISIBLE', true)
             }
         },
-        async deleteFile({ commit }, fileId) {
-            commit('deleteFile', fileId)
+        async deleteFile({ commit }, file) {
+            commit('deleteFile', file.id)
 
-            const apiUrl = `/files/${fileId}`
+            const apiUrl = `/files/${file.id}`
             await axios
                 .delete(apiUrl)
                 .then(response => {
@@ -242,7 +242,7 @@ export default {
                             msg: errMsg,
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
-                            callback: () => dispatch('insertOrUpdateFile', file),
+                            callback: () => dispatch('deleteFile', file),
                             callbackLabel: 'Retry',
                             duration: 0,
                         },

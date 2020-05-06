@@ -177,7 +177,7 @@
         @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'folder', 'title')"
         @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveFiles()"
-        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFolder(contextMenuItem.id)">
+        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFolder(contextMenuItem)">
             <div class="item-group">
                 <div class="item" @click="setCurrentFolder(contextMenuItem)">
                     <div class="icon-wrapper">
@@ -213,7 +213,7 @@
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete folders'"
-                @click="onDeleteFolder(contextMenuItem.id)">
+                @click="onDeleteFolder(contextMenuItem)">
                     <span><u>D</u>elete folder</span>
                 </BaseContextMenuItem>
             </div>
@@ -226,7 +226,7 @@
         @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'file', 'title')"
         @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
         @keybind-m="onMoveFiles()"
-        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFile(contextMenuItem.id)">
+        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFile(contextMenuItem)">
             <div class="item-group">
                 <div class="item" @click="showSingleFile(contextMenuItem)">
                     <div class="icon-wrapper">
@@ -262,7 +262,7 @@
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete files'"
-                @click="onDeleteFile(contextMenuItem.id)">
+                @click="onDeleteFile(contextMenuItem)">
                     <span><u>D</u>elete file</span>
                 </BaseContextMenuItem>
             </div>
@@ -298,6 +298,42 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseDialog ref="deleteFileDialog" type="confirm"
+        confirmText="Yes, delete it" cancelText="No, keep it"
+        confirmColor="red">
+            <div class="icon-graphic">
+                <i class="far fa-file dark lg"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-trash lg red"></i>
+            </div>
+            <h3>Really delete this file?</h3>
+            <p>All comments, requests and actions will be permanently deleted.</p>
+        </BaseDialog>
+
+        <BaseDialog ref="deleteFolderDialog" type="confirm"
+        confirmText="Yes, delete it" cancelText="No, keep it"
+        confirmColor="red">
+            <div class="icon-graphic">
+                <i class="far fa-file dark lg"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-trash lg red"></i>
+            </div>
+            <h3>Really delete this folder?</h3>
+            <p>The folder and all of its contents will be permanently deleted.</p>
+        </BaseDialog>
+
+        <BaseDialog ref="deleteMultipleDialog" type="confirm"
+        confirmText="Yes, delete them" cancelText="No, keep them"
+        confirmColor="red">
+            <div class="icon-graphic">
+                <i class="far fa-copy dark lg"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-trash lg red"></i>
+            </div>
+            <h3>Really delete {{selected.length}} files/folders?</h3>
+            <p>folders and files contained in your selection and all their comments, requests and actions will be permanently deleted.</p>
+        </BaseDialog>
 
     </div>
 </template>
@@ -427,13 +463,11 @@ export default {
         removeUnsavedFolders() {
             this.removeUnsavedFiles()
         },
-        onDeleteFolder(folderId) {
-            if (window.confirm(
-                'Are you sure you want to delete this folder?\nThe folder and all of its contents will be permanently deleted.'
-            )) {
-                this.deleteFile(folderId)
+        async onDeleteFolder(folder) {
+            if (await this.$refs.deleteFolderDialog.confirm()) {
+                this.deleteFile(folder)
                 // Remove the item from our selection
-                this.localSelected = this.selected.filter(x => x.id != folderId)
+                this.localSelected = this.selected.filter(x => x.id != folder.id)
             }
         },
         onNewFolder() {
@@ -475,13 +509,11 @@ export default {
         onGoToEditFile(fileId) {
             this.$router.push({ name: 'editFile', params: { fileId: fileId } })
         },
-        onDeleteFile(fileId) {
-            if (window.confirm(
-                'Are you sure you want to delete this file?\nAll comments, requests and actions will be permanently deleted.'
-            )) {
-                this.deleteFile(fileId)
+        async onDeleteFile(file) {
+            if (await this.$refs.deleteFileDialog.confirm()) {
+                this.deleteFile(file)
                 // Remove the item from our selection
-                this.localSelected = this.selected.filter(x => x.id != fileId)
+                this.localSelected = this.selected.filter(x => x.id != file.id)
             }
         },
         onRenameFile(file, index) {
@@ -534,12 +566,10 @@ export default {
         showMultiItemContextMenu(e) {
             this.$refs.contextMenuMultipleItems.show(e)
         },
-        onDeleteMultipleFiles(files) {
-            if (window.confirm(
-                'Are you sure you want to delete your selection?\nAll folders and files contained in your selection and all their comments, requests and actions will be permanently deleted.'
-            )) {
+        async onDeleteMultipleFiles(files) {
+            if (await this.$refs.deleteMultipleDialog.confirm()) {
                 for(let i = files.length; i--;) {
-                    this.deleteFile(files[i].id)
+                    this.deleteFile(files[i])
                 }
                 this.localSelected = []
             }
