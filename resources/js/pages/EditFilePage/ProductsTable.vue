@@ -110,7 +110,7 @@
         @keybind-v="onViewSingle(contextItem)"
         @keybind-e="onViewSingle(contextItem)"
         @keybind-a="onNewProduct()"
-        @keybind-d="deleteProducts({file, products: [contextItem]}); selectedProducts = []"
+        @keybind-d="onDeleteProducts([contextItem])"
         >
             <div class="item-group" v-if="selectedProducts.length > 0">
                 <div class="item" @click="selectedProducts = []; slotProps.hide()">
@@ -131,7 +131,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="deleteProducts({file, products: [contextItem]}); selectedProducts = []">
+                <div class="item" @click="onDeleteProducts([contextItem])">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <span><u>D</u>elete Product</span>
                 </div>
@@ -140,7 +140,7 @@
 
         <BaseContextMenu ref="contextMenuSelected"
         :hotkeys="['KeyD', 'KeyC']"
-        @keybind-d="deleteProduct({file, products: selectedProducts})"
+        @keybind-d="onDeleteProduct(selectedProducts)"
         @keybind-c="selectedProducts = []"
         >
             <template v-slot:header>
@@ -154,7 +154,7 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="deleteProducts({file, products: selectedProducts})">
+                <div class="item" @click="onDeleteProducts(selectedProducts)">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <span><u>D</u>elete Products</span>
                 </div>
@@ -247,6 +247,10 @@ export default {
             const newProduct = await this.instantiateNewProduct()
             this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
+        },
+        async onDeleteProducts(products) {
+            await this.deleteProducts({file: this.file, products})
+            this.selectedProducts = []
         },
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)

@@ -439,7 +439,6 @@ export default {
                 })
         },
         async deleteProducts({ commit, dispatch }, { file, products }) {
-            console.log('delete products', products)
             return new Promise((resolve, reject) => {
                 const apiUrl = `/files/${file.id}/products`
                 axios
