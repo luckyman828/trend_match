@@ -164,6 +164,7 @@ export default {
                             type: 'warning',
                             callback: () => dispatch('insertOrUpdateActions', { products, action, selection, user }),
                             callbackLabel: 'Retry',
+                            duration: 0,
                         },
                         { root: true }
                     )

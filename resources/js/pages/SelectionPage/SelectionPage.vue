@@ -35,6 +35,37 @@
             @close="setSingleVisisble(false)" @updateAction="onUpdateAction"/>
         </template>
 
+        <BaseDialog ref="quickOutDialog" type="confirm" confirmColor="red"
+        confirmText="Yes, mark them OUT" cancelText="No, keep them as is">
+            <div class="icon-graphic">
+                <i class="far fa-cube lg dark"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-times red lg"></i>
+            </div>
+            <h3>You are about to mark {{productsNoIn.length}} products OUT</h3>
+            <p>
+                Noone has said IN for these products.
+                <br>
+                Be aware that not all users may have given their feedback yet.
+            </p>
+        </BaseDialog>
+
+        <BaseDialog ref="quickInDialog" type="confirm" confirmColor="green"
+        confirmText="Yes, mark them IN" cancelText="No, keep them as is">
+            <div class="icon-graphic">
+                <i class="far fa-cube lg dark"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-heart green lg"></i>
+            </div>
+            <h3>Mark {{productsNoOutNoComment.length}} products IN</h3>
+            <p>
+                Noone has said OUT for these products and they have NO comments.
+                <br>
+                Be aware that not all users may have given their feedback yet.
+                <br>
+                Style with only FOCUS will NOT be marked as FOCUS.
+            </p>
+        </BaseDialog>
 
     </div>
 </template>
@@ -91,11 +122,15 @@ export default{
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
         ...mapActions('actions', ['insertOrUpdateActions']),
         ...mapMutations('actions', ['INSERT_OR_UPDATE_ACTIONS']),
-        InNoOutNoCommentStyles() {
-            this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In', this.currentSelection)
+        async InNoOutNoCommentStyles() {
+            if (await this.$refs.quickInDialog.confirm()) {
+                this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In', this.currentSelection)
+            }
         },
-        OutNoInStyles() {
-            this.onInsertOrUpdateActions(this.productsNoIn, 'Out', this.currentSelection)
+        async OutNoInStyles() {
+            if (await this.$refs.quickOutDialog.confirm()) {
+                this.onInsertOrUpdateActions(this.productsNoIn, 'Out', this.currentSelection)
+            }
         },
         setHideQuickOut() {
             this.hideQuickOut = true

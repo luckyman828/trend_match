@@ -14,6 +14,7 @@ export default {
         currentSelectionUsers: null,
         currentPDPSelection: null,
         selections: [],
+        usersFlyInVisible: false,
         currentSelections: [],
         selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
@@ -43,6 +44,7 @@ export default {
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {
@@ -231,13 +233,47 @@ export default {
             } else {
                 apiUrl = `/selections/${selection.parent_id}/children`
             }
-            await axios.post(apiUrl, selection).then(async response => {
-                selection.id = response.data.id
-                commit('PROCESS_SELECTIONS', [selection])
-                if (addToState) {
-                    commit('insertSelections', { file, selections: [selection] })
-                }
-            })
+            await axios
+                .post(apiUrl, selection)
+                .then(async response => {
+                    selection.id = response.data.id
+                    commit('PROCESS_SELECTIONS', [selection])
+                    if (addToState) {
+                        commit('insertSelections', { file, selections: [selection] })
+                    }
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Selection created',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                            callback: () => showNewSelectionUsersFlyin(),
+                            callbackLabel: 'Manage users',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to creat the selection. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertSelection', { file, selection, addToState }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+
+            const showNewSelectionUsersFlyin = () => {
+                commit('SET_CURRENT_SELECTIONS', [selection])
+                commit('SET_SELECTION_USERS_FLYIN_VISIBLE', true)
+            }
         },
         async updateSelection({ commit, dispatch }, selection) {
             // Assume update
@@ -315,8 +351,15 @@ export default {
             const apiUrl = `/selections/${selection.id}/metadata`
             await axios.put(apiUrl, selection.settings).catch(err => {
                 commit(
-                    'alerts/SHOW_ALERT',
-                    'Something went wrong trying to save selection settings. Please try again.',
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Something went wrong trying to save selection settings. Please try again.',
+                        iconClass: 'fa-exclamation-triangle',
+                        type: 'warning',
+                        callback: () => dispatch('updateSelectionSettings', selection),
+                        callbackLabel: 'Retry',
+                        duration: 0,
+                    },
                     { root: true }
                 )
             })
@@ -463,6 +506,9 @@ export default {
         },
         SET_CURRENT_PDP_SELECTION(state, selection) {
             state.currentPDPSelection = selection
+        },
+        SET_SELECTION_USERS_FLYIN_VISIBLE(state, bool) {
+            state.usersFlyInVisible = bool
         },
         insertSelections(state, { selections, method }) {
             // Check if we have already instantiated selections

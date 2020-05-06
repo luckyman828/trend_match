@@ -221,7 +221,7 @@
 
         <BaseContextMenu ref="contextMenuFile" class="context-file" v-slot
         :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyA', 'KeyM', 'KeyD']"
-        @keybind-v="viewSingle(contextMenuItem.id)"
+        @keybind-v="showSingleFile(contextMenuItem)"
         @keybind-e="authUserWorkspaceRole == 'Admin' && onGoToEditFile(contextMenuItem.id)"
         @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'file', 'title')"
         @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
@@ -471,9 +471,6 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             this.sortArray(this.files, sortAsc, sortKey)
-        },
-        viewSingle(fileId) {
-            this.$router.push({ name: 'file', params: { fileId: fileId } })
         },
         onGoToEditFile(fileId) {
             this.$router.push({ name: 'editFile', params: { fileId: fileId } })

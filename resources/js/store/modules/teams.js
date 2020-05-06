@@ -114,14 +114,40 @@ export default {
             })
                 .then(response => {
                     if (!team.id) team.id = response.data.id
-                    commit('insertOrUpdateTeam', response.data)
+                    commit('INSERT_OR_UPDATE_TEAM', response.data)
+                    const successMsg = team.id ? 'Team created' : 'Team updated'
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: successMsg,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(err => {
                     console.log(err)
+                    // Display message
+                    const errMsg = team.id
+                        ? 'Error when updating team. Please try again.'
+                        : 'Error when creating team. Please try again.'
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: errMsg,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertOrUpdateTeam', team),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
         },
         async deleteTeam({ commit }, team) {
-            commit('deleteTeam', team)
+            commit('DELETE_TEAM', team)
             const apiUrl = `/teams/${team.id}`
             let succes
             await axios({
@@ -130,10 +156,35 @@ export default {
             })
                 .then(response => {
                     succes = true
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Team deleted',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(err => {
                     console.log(err.response)
                     succes = false
+                    // Re-add the team
+                    commit('INSERT_TEAM', team)
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error when deleting team. Please try again',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('deleteTeam', team),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
             return succes
         },
@@ -164,10 +215,33 @@ export default {
             })
                 .then(async response => {
                     succes = true
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} user${users.length > 1 ? 's' : ''} added to team`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(err => {
                     console.log(err)
                     succes = false
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error when adding users to team. Please try again',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('addUsersToTeam', { team, users }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
             return succes
         },
@@ -182,9 +256,35 @@ export default {
                     users: users,
                 },
             })
+                .then(() => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} user${users.length > 1 ? 's' : ''} updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error when updating team users. Please try again',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateTeamUsers', { team, users }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async removeUsersFromTeam({ commit, dispatch }, { team, users }) {
-            console.log(users)
             // Update state
             commit('REMOVE_USERS_FROM_TEAM', { team, users })
 
@@ -198,8 +298,33 @@ export default {
                     users: users,
                 },
             })
-
-            console.log(users)
+                .then(() => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} user${users.length > 1 ? 's' : ''} removed from team`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error when removing users from team. Please try again',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('removeUsersFromTeam', { team, users }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 
@@ -214,14 +339,14 @@ export default {
         setAvailableTeams(state, teams) {
             state.availableTeams = teams
         },
-        insertOrUpdateTeam(state, team) {
+        INSERT_OR_UPDATE_TEAM(state, team) {
             if (team.id && state.teams.find(x => x.id == team.id)) {
                 Object.assign(state.teams.find(x => x.id == team.id), team)
             } else {
                 state.teams.push(team)
             }
         },
-        deleteTeam(state, team) {
+        DELETE_TEAM(state, team) {
             const index = state.teams.findIndex(x => x.id == team.id)
             state.teams.splice(index, 1)
         },

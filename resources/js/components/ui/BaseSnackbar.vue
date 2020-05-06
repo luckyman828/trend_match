@@ -9,10 +9,10 @@
                 <span>{{snackbar.msg}}</span>
             </div>
             <div class="callback" v-if="snackbar.callback">
-                <button class="invisible primary ghost-hover"
+                <BaseButton buttonClass="invisible primary ghost-hover"
                 @click.stop="snackbar.callback(); onDeleteSnackbar()">
                     <span>{{snackbar.callbackLabel}}</span>
-                </button>
+                </BaseButton>
             </div>
             <button class="dark invisible ghost-hover"
             @click.stop="onDeleteSnackbar">

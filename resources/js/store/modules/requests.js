@@ -72,10 +72,18 @@ export default {
                 .catch(err => {
                     // On error, set error on the request
                     Vue.set(request, 'error', true)
-                    // Alert the user
+                    // Show error message
                     commit(
-                        'alerts/SHOW_ALERT',
-                        'Error on request. Please try again. If the error persists, please contact Kollekt support',
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg:
+                                'Error on request. Please try again. If the error persists, please contact Kollekt support.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertOrUpdateRequest', { product, request }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
                         { root: true }
                     )
                 })

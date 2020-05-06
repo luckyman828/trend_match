@@ -503,9 +503,17 @@ export default {
                         reject(err)
                         // Re-add the products
                         commit('insertProducts', { products, method: 'add' })
+                        // Show error message
                         commit(
-                            'alerts/SHOW_ALERT',
-                            'Something went wrong when creating the product. Please try again.',
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when deleting the product(s). Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('deleteProducts', { file, products }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
                             { root: true }
                         )
                     })
