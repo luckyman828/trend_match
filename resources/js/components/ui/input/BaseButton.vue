@@ -7,8 +7,8 @@
             <slot/>
 
             <!-- Target Area -->
-            <div class="target-area" v-if="targetArea" 
-            :style="targetAreaSize">
+            <div class="target-area" v-if="targetAreaPadding" 
+            :style="'padding: '+targetAreaPadding">
 
             </div>
         </button>
@@ -30,20 +30,8 @@ export default {
         'hotkey',
         'disabled',
         'tooltip',
-        'targetArea',
+        'targetAreaPadding',
     ],
-    computed: {
-        targetAreaSize() {
-            if (this.targetArea) {
-                const strArr = this.targetArea.split(' ')
-                if (strArr.length > 1) {
-                    return `height: ${strArr[0]}; width: ${strArr[1]};`
-                } else {
-                    return `height: ${strArr[0]}; width: ${strArr[0]};`
-                }
-            }
-        }
-    }
 }
 </script>
 
@@ -81,6 +69,9 @@ export default {
         top: 50%;
         transform: translate(-50%, -50%);
         z-index: 1;
+        height: 100%;
+        width: 100%;
+        box-sizing: content-box;
     }
 }
 

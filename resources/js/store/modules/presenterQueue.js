@@ -50,11 +50,10 @@ export default {
         },
         async broadcastProduct({ getters, rootGetters, dispatch, commit }, product) {
             const selection = rootGetters['selections/getCurrentSelection']
-            console.log('current selection', selection)
             const apiUrl = `/selections/${selection.id}/presentation/${product.id}`
 
             let success = true
-            await axios.put(apiUrl, {}).catch(err => {
+            await axios.put(apiUrl).catch(err => {
                 dispatch('alerts/showAlert', 'Something went wrong trying to broadcast product. Please try again.', {
                     root: true,
                 })
@@ -89,7 +88,6 @@ export default {
             state.presenterQueue = newQueue
         },
         SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID(state, id) {
-            console.log('set current product id', id)
             state.presenterQueueCurrentProductId = id
         },
         SET_SEARCH_ITEM_DRAG_ACTIVE(state, bool) {
