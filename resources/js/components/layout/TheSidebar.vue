@@ -18,7 +18,7 @@
                 </a>
                 <BaseSelectButtons slot="popover" type="radio" :options="workspaces" :value="currentWorkspaceIndex"
                 optionNameKey="title" optionValueKey="index" :submitOnChange="true"
-                @submit="setCurrentWorkspaceIndex($event)"/>
+                @submit="setCurrentWorkspaceIndex($event)" v-close-popover/>
             </v-popover>
       </div>
     </div>
