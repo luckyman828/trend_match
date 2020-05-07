@@ -12,7 +12,8 @@
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @click="onUpdateAction(product, 'Focus', selection)">
-                    <span>F</span>
+                    <!-- <span>F</span> -->
+                    <i class="far fa-star"></i>
                 </BaseButton>
 
                 <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
@@ -35,7 +36,8 @@
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @click="onUpdateAction(product, 'In', selection)">
-                    <span>I</span>
+                    <!-- <span>I</span> -->
+                    <i class="far fa-heart"></i>
                 </BaseButton>
 
                 <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
@@ -58,7 +60,8 @@
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @click="onUpdateAction(product, 'Out', selection)">
-                    <span>O</span>
+                    <!-- <span>O</span> -->
+                    <i class="far fa-times-circle"></i>
                 </BaseButton>
                 
                 <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
