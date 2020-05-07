@@ -53,16 +53,20 @@ export default {
             this.DELETE_SNACKBAR(this.snackbar)
         },
         onEnter() {
-            this.timer.pause()
+            if (this.timer) this.timer.pause()
         },
         onLeave() {
-            this.timer.resume()
+            if (this.timer) this.timer.resume()
+        },
+        onTimeout() {
+            this.snackbar.timeoutCallback()
+            this.onDeleteSnackbar()
         }
     },
     created() {
         // Automatically hide the snackbar
         if (this.duration) {
-            this.timer = new Timer(() => this.onDeleteSnackbar(), this.duration)
+            this.timer = new Timer(() => this.onTimeout(), this.duration)
         }
     }
 }

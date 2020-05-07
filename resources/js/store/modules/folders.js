@@ -12,46 +12,46 @@ export default {
     },
 
     actions: {
-        async updateFolder({ commit }, folderToUpdate) {
-            // If the folder has an ID, send a PUT request to update the existing record.
-            // Else send POST request to create a new folder.
-            let apiURL = `/api/folder`
-            let requestMethod = 'post'
-            if (folderToUpdate.id) {
-                apiURL = `/api/folder/${folderToUpdate.id}`
-                requestMethod = 'put'
-            }
+        // async updateFolder({ commit }, folderToUpdate) {
+        //     // If the folder has an ID, send a PUT request to update the existing record.
+        //     // Else send POST request to create a new folder.
+        //     let apiURL = `/api/folder`
+        //     let requestMethod = 'post'
+        //     if (folderToUpdate.id) {
+        //         apiURL = `/api/folder/${folderToUpdate.id}`
+        //         requestMethod = 'put'
+        //     }
 
-            await axios({
-                method: requestMethod,
-                url: apiURL,
-                data: {
-                    folder: folderToUpdate,
-                },
-            })
-                .then(response => {
-                    console.log(response.data)
-                    // If the folder had no idea, set it's idea to the one returned from the API
-                    if (!folderToUpdate.id) folderToUpdate.id = response.data.id
-                    console.log(folderToUpdate)
-                    commit('updateFolder', folderToUpdate)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
-        async deleteFolder({ commit }, folderId) {
-            commit('deleteFolder', folderId)
+        //     await axios({
+        //         method: requestMethod,
+        //         url: apiURL,
+        //         data: {
+        //             folder: folderToUpdate,
+        //         },
+        //     })
+        //         .then(response => {
+        //             console.log(response.data)
+        //             // If the folder had no idea, set it's idea to the one returned from the API
+        //             if (!folderToUpdate.id) folderToUpdate.id = response.data.id
+        //             console.log(folderToUpdate)
+        //             commit('updateFolder', folderToUpdate)
+        //         })
+        //         .catch(err => {
+        //             // console.log(err.response)
+        //         })
+        // },
+        // async deleteFolder({ commit }, folderId) {
+        //     commit('deleteFolder', folderId)
 
-            await axios
-                .delete(`/api/folder/${folderId}`)
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
+        //     await axios
+        //         .delete(`/api/folder/${folderId}`)
+        //         .then(response => {
+        //             console.log(response.data)
+        //         })
+        //         .catch(err => {
+        //             console.log(err.response)
+        //         })
+        // },
         addUsersToFolder({ commit }, { folder, usersToAdd }) {
             // Commit mutation to state
             commit('addUsersToFolder', { folder, usersToAdd })

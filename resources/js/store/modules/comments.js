@@ -34,9 +34,9 @@ export default {
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
-                    console.log('API error in comments.js :')
-                    console.log(err.response)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+                    // console.log('API error in comments.js :')
+                    // console.log(err.response)
+                    // console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }
@@ -102,7 +102,7 @@ export default {
                     )
                 })
         },
-        async deleteComment({ commit }, { product, comment }) {
+        async deleteComment({ commit, dispatch }, { product, comment }) {
             // Delete the comment from our state
             commit('DELETE_COMMENT', { product, commentId: comment.id })
 

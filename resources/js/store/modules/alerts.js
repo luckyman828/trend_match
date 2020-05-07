@@ -23,7 +23,7 @@ export default {
 
     mutations: {
         SHOW_ALERT(state, {}) {},
-        SHOW_SNACKBAR(state, { msg, type, iconClass, callback, callbackLabel, duration }) {
+        SHOW_SNACKBAR(state, { msg, type, iconClass, callback, callbackLabel, duration, timeoutCallback }) {
             // TYPE = success | danger | warning | info
             state.snackbars.push({
                 id: state.snackbarID,
@@ -33,6 +33,7 @@ export default {
                 callback,
                 callbackLabel,
                 duration,
+                timeoutCallback,
             })
             state.snackbarID++
         },

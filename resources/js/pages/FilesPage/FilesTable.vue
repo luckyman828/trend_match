@@ -391,7 +391,6 @@ export default {
     methods: {
         ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile', 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
         ...mapMutations('files', ['removeUnsavedFiles']),
-        ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
         },

@@ -30,9 +30,9 @@ export default {
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
-                    console.log('API error in actions.js :')
-                    console.log(err.response)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+                    // console.log('API error in actions.js :')
+                    // console.log(err.response)
+                    // console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }

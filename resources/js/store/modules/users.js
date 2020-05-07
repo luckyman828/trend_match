@@ -28,7 +28,7 @@ export default {
                 commit('setLoading', false)
             })
         },
-        async updateWorkspaceUsers({ commit, rootGetters }, usersToUpdate) {
+        async updateWorkspaceUsers({ commit, rootGetters, dispatch }, usersToUpdate) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             commit('updateUsers', usersToUpdate)
 
@@ -59,7 +59,6 @@ export default {
                     )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     succes = false
                     // Display message
                     commit(
@@ -77,7 +76,7 @@ export default {
                 })
             return succes
         },
-        async addUsersToWorkspace({ commit, rootGetters }, usersToAdd) {
+        async addUsersToWorkspace({ commit, rootGetters, dispatch }, usersToAdd) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             let succes
 
@@ -106,7 +105,6 @@ export default {
                     )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     succes = false
                     // Display message
                     commit(
@@ -152,7 +150,6 @@ export default {
                     )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     success = false
                     // Re-add the users
                     commit('ADD_USERS', users)
@@ -173,7 +170,7 @@ export default {
                 })
             return success
         },
-        async updateUser({ commit }, user) {
+        async updateUser({ commit, dispatch }, user) {
             commit('updateUsers', [user])
 
             const apiUrl = `/admins/users/${user.id}`

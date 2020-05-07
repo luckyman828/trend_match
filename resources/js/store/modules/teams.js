@@ -147,7 +147,7 @@ export default {
                     )
                 })
         },
-        async deleteTeam({ commit }, team) {
+        async deleteTeam({ commit, dispatch }, team) {
             commit('DELETE_TEAM', team)
             const apiUrl = `/teams/${team.id}`
             let succes
@@ -169,7 +169,6 @@ export default {
                     )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     succes = false
                     // Re-add the team
                     commit('INSERT_TEAM', team)
@@ -246,7 +245,7 @@ export default {
                 })
             return succes
         },
-        async updateTeamUsers({ commit }, { team, users }) {
+        async updateTeamUsers({ commit, dispatch }, { team, users }) {
             const apiUrl = `/teams/${team.id}/users`
 
             await axios({

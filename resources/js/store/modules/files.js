@@ -142,7 +142,7 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        async insertOrUpdateFile({ commit }, file) {
+        async insertOrUpdateFile({ commit, dispatch }, file) {
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -150,7 +150,7 @@ export default {
             // Check if we are inserting or updating
             if (!file.id) {
                 // If we are inserting
-                commit('insertFile', file)
+                commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
@@ -213,42 +213,78 @@ export default {
                 commit('SET_FILE_FLYIN_VISIBLE', true)
             }
         },
-        async deleteFile({ commit }, file) {
+        async deleteFile({ commit, dispatch }, file) {
             commit('deleteFile', file.id)
 
             const apiUrl = `/files/${file.id}`
-            await axios
-                .delete(apiUrl)
-                .then(response => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${file.type} deleted`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    // Display message
-                    const errMsg = file.id
-                        ? `Error when deleting ${file.type}. Please try again.`
-                        : `Error when deleting ${file.type}. Please try again.`
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: errMsg,
-                            iconClass: 'fa-exclamation-triangle',
-                            type: 'warning',
-                            callback: () => dispatch('deleteFile', file),
-                            callbackLabel: 'Retry',
-                            duration: 0,
-                        },
-                        { root: true }
-                    )
-                })
+
+            // Start timer for deletion
+            let wasCancelled = false
+            commit(
+                'alerts/SHOW_SNACKBAR',
+                {
+                    msg: `${file.type} deleted`,
+                    iconClass: 'fa-trash',
+                    type: 'danger',
+                    callback: () => {
+                        wasCancelled = true
+                        undoDelete()
+                    },
+                    callbackLabel: 'Undo',
+                    timeoutCallback: () => {
+                        if (!wasCancelled) {
+                            sendRequest()
+                        }
+                    },
+                },
+                { root: true }
+            )
+
+            const sendRequest = async () => {
+                console.log('sendrequest')
+                await axios
+                    .delete(apiUrl)
+                    .then(response => {
+                        console.log('then', response)
+                        // commit(
+                        //     'alerts/SHOW_SNACKBAR',
+                        //     {
+                        //         msg: `${file.type} deleted`,
+                        //         iconClass: 'fa-check',
+                        //         type: 'success',
+                        //         timeoutCallback: () => {
+                        //             console.log('times up!')
+                        //         },
+                        //     },
+                        //     { root: true }
+                        // )
+                    })
+                    .catch(err => {
+                        // Undo
+                        undoDelete()
+                        // Display message
+                        const errMsg = file.id
+                            ? `Error when deleting ${file.type}. Please try again.`
+                            : `Error when deleting ${file.type}. Please try again.`
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: errMsg,
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('deleteFile', file),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                    })
+            }
+
+            // Undo delete
+            const undoDelete = () => {
+                commit('INSERT_FILE', file)
+            }
         },
         async addUsersToFile({ commit }, { file, users }) {
             commit('addOwnersToFile', { file, users })
@@ -301,7 +337,7 @@ export default {
         setFilesStatus(state, status) {
             state.status = status
         },
-        insertFile(state, file) {
+        INSERT_FILE(state, file) {
             state.files.push(file)
         },
         SET_CURRENT_FILE(state, file) {

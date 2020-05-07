@@ -471,9 +471,7 @@ export default {
                 .then(response => {
                     console.log(response.data)
                 })
-                .catch(err => {
-                    console.log(err.response)
-                })
+                .catch(err => {})
         },
         async deleteProducts({ state, getters, commit, dispatch }, { file, products }) {
             return new Promise((resolve, reject) => {
