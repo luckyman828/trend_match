@@ -118,7 +118,6 @@ export default{
             connection.on('AuthenticatedSuccess', message => {})
 
             connection.on('OnSelectionPresentationChanged', (eventName, selectionIds) => {
-                console.log("OnSelectionPresentationChanged", eventName, selectionIds)
                 selectionIds.selection_ids.map(id => {
                     const selection = this.getSelectionById(id)
                     if (selection) {

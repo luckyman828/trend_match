@@ -132,15 +132,10 @@ export default{
             })
 
             connection.on('SubscribeSelectionsChanged', message => {
-                // console.log('authenticated!')
-                // console.log(message)
+                console.log('authenticated!', message)
             })   
 
             connection.on('OnSelectionPresentationChanged', (eventName, selectionIds) => {
-                console.log('Selections changed - on the page!')
-                console.log('event name', eventName, eventName == 'Terminate')
-                console.log(this.currentSelection.your_role)
-                console.log(selectionIds.selection_ids.includes(this.currentSelection.id))
                 if (eventName == 'Begin' 
                     && this.currentSelection.your_role != 'Owner'
                     && selectionIds.selection_ids.includes(this.currentSelection.id)
@@ -148,6 +143,10 @@ export default{
                     this.showAlert('The selection has entered Presentation Mode.\n\nTo join the presentation login to the Kollekt mobile app.\n\nYou will now be redirected to the files overview.')
                     this.$router.push({name: 'files'})
                 }
+            })
+
+            connection.on('ProductChanged', (eventName, selectionIds) => {
+                console.log('ProductChanged', eventName, selectionIds)
             })
 
             // Comments

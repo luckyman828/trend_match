@@ -31,6 +31,7 @@ export default {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment']),
         ...mapActions('teams', ['fetchTeamUsers']),
+        ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
         async fetchSelectionTeamsUsers(teams) {
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(teams.map(async team => {
@@ -54,6 +55,9 @@ export default {
         // Fetch selections that are available for alignment for the auth user
         const selections = await this.fetchSelections({fileId})
         await this.filterSelectionsByAvailabilityForAlignment(selections)
+
+        // Reset the presenter queue
+        this.SET_PRESENTER_QUEUE([])
 
         this.loadingData = false
     },
