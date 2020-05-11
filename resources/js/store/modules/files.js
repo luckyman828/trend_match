@@ -372,7 +372,7 @@ export default {
             commit('removeApproverFromFile', { file, user })
             // Send request to API
         },
-        moveFiles({ commit }, { destinationFolder, filesToMove }) {
+        moveFiles({ commit, dispatch }, { destinationFolder, filesToMove }) {
             // Send request to API
             const apiUrl = `/files/${destinationFolder.id}/paste`
             axios
@@ -384,6 +384,15 @@ export default {
                     filesToMove.map(x => {
                         commit('deleteFile', x.id)
                     })
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${filesToMove.length} files/folders moved`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(() => {})
         },

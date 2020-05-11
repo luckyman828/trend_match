@@ -14,7 +14,7 @@
                     <span>{{snackbar.callbackLabel}}</span>
                 </BaseButton>
             </div>
-            <button class="dark invisible ghost-hover"
+            <button class="circle"
             @click.stop="onDeleteSnackbar">
                 <i class="fas fa-times"></i>
             </button>
@@ -101,6 +101,7 @@ var Timer = function(callback, delay) {
     margin-top: 32px;
     box-shadow: 0 3px 30px rgba(0,0,0,.4);
     animation: flyin .1s;
+    border-radius: 4px;
     .icon-wrapper {
         width: 44px;
         background: $bg;
