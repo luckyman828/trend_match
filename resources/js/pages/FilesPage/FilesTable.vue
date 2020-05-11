@@ -389,7 +389,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile', 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
+        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'deleteMultipleFiles', 
+        'uploadToExistingFile', 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
         ...mapMutations('files', ['removeUnsavedFiles']),
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
@@ -567,9 +568,7 @@ export default {
         },
         async onDeleteMultipleFiles(files) {
             if (await this.$refs.deleteMultipleDialog.confirm()) {
-                for(let i = files.length; i--;) {
-                    this.deleteFile(files[i])
-                }
+                this.deleteMultipleFiles(files)
                 this.localSelected = []
             }
         }

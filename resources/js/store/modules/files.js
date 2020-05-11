@@ -169,7 +169,6 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
-                    console.log(response.data)
                     // Display message
                     const wasCreated = !file.id
                     const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`
@@ -188,7 +187,6 @@ export default {
                     if (!file.id) file.id = response.data.id
                 })
                 .catch(err => {
-                    console.log(err)
                     // Display message
                     const errMsg = file.id
                         ? `Error when creating ${file.type}. Please try again.`
@@ -241,11 +239,9 @@ export default {
             )
 
             const sendRequest = async () => {
-                console.log('sendrequest')
                 await axios
                     .delete(apiUrl)
                     .then(response => {
-                        console.log('then', response)
                         commit(
                             'alerts/SHOW_SNACKBAR',
                             {
@@ -281,6 +277,73 @@ export default {
             // Undo delete
             const undoDelete = () => {
                 commit('INSERT_FILE', file)
+            }
+        },
+        async deleteMultipleFiles({ commit, dispatch }, files) {
+            commit('DELETE_MULTIPLE_FILES', files)
+
+            // Start timer for deletion
+            let wasCancelled = false
+            commit(
+                'alerts/SHOW_SNACKBAR',
+                {
+                    msg: `${files.length} files/folders will be deleted`,
+                    iconClass: 'fa-trash',
+                    type: 'danger',
+                    callback: () => {
+                        wasCancelled = true
+                        undoDelete()
+                    },
+                    callbackLabel: 'Undo',
+                    timeoutCallback: () => {
+                        if (!wasCancelled) {
+                            sendRequest()
+                        }
+                    },
+                },
+                { root: true }
+            )
+
+            const sendRequest = async () =>
+                await Promise.all(
+                    files.map(async file => {
+                        const apiUrl = `/files/${file.id}`
+                        await axios.delete(apiUrl).catch(err => {
+                            // Undo
+                            undoDelete()
+                            // Display message
+                            const errMsg = file.id
+                                ? `Error when deleting ${file.type}. Please try again.`
+                                : `Error when deleting ${file.type}. Please try again.`
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: errMsg,
+                                    iconClass: 'fa-exclamation-triangle',
+                                    type: 'warning',
+                                    callback: () => dispatch('deleteFile', file),
+                                    callbackLabel: 'Retry',
+                                    duration: 0,
+                                },
+                                { root: true }
+                            )
+                        })
+                    })
+                ).then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${files.length} files/folders permanently deleted`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+
+            // Undo delete
+            const undoDelete = () => {
+                commit('INSERT_MULTIPLE_FILES', files)
             }
         },
         async addUsersToFile({ commit }, { file, users }) {
@@ -337,6 +400,9 @@ export default {
         INSERT_FILE(state, file) {
             state.files.push(file)
         },
+        INSERT_MULTIPLE_FILES(state, files) {
+            state.files.push(...files)
+        },
         SET_CURRENT_FILE(state, file) {
             state.currentFile = file
         },
@@ -352,6 +418,14 @@ export default {
             // Remove the deleted item from the current array
             const index = state.files.findIndex(x => x.id == fileId)
             state.files.splice(index, 1)
+        },
+        DELETE_MULTIPLE_FILES(state, files) {
+            // Remove the deleted item from the current array
+            for (let i = files.length - 1; i >= 0; i--) {
+                const file = files[i]
+                const index = state.files.findIndex(x => x.id == file.id)
+                state.files.splice(index, 1)
+            }
         },
         removeUnsavedFiles(state) {
             state.files = state.files.filter(x => x.id != null)
