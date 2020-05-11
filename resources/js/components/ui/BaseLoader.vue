@@ -1,6 +1,6 @@
 <template>
     <div class="loader">
-        <span class="message" v-if="message" v-html="message"></span>
+        <span class="message" v-if="msg" v-html="msg"></span>
         <svg
             width="50px"
             height="50px"
@@ -38,7 +38,7 @@
 <script>
 export default {
     name: 'loader',
-    props: ['message'],
+    props: ['msg'],
 }
 </script>
 

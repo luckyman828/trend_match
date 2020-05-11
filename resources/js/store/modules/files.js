@@ -12,14 +12,17 @@ export default {
         currentFile: null,
         currentFolder: null,
         status: null,
+        currentFolderStatus: null,
     },
 
     getters: {
         loadingFiles: state => state.loading,
         filesStatus: state => state.status,
+        getCurrentFolderStatus: state => state.currentFolderStatus,
         currentFile: state => state.currentFile,
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
+        getCurrentFolder: state => state.currentFolder,
         files: state => state.files,
         allFiles: state => state.allFiles,
         nextFile: state => {
@@ -45,7 +48,10 @@ export default {
         async fetchFiles({ commit, state, rootGetters }, addToState = true) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
-            if (addToState) commit('setLoading', true)
+            if (addToState) {
+                commit('setLoading', true)
+                commit('SET_CURRENT_FOLDER_STATUS', 'loading')
+            }
 
             const apiUrl = `/workspaces/${workspaceId}/files`
 
@@ -57,11 +63,20 @@ export default {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     files = response.data
-                    if (addToState) state.files = files
-                    if (addToState) commit('setLoading', false)
+                    if (addToState) {
+                        state.files = files
+                        commit('setLoading', false)
+                        commit('SET_CURRENT_FOLDER_STATUS', 'success')
+                    }
                     succes = true
                 } catch (err) {
-                    if (tryCount <= 0) throw err
+                    if (tryCount <= 0) {
+                        if (addToState) {
+                            commit('setLoading', false)
+                            commit('SET_CURRENT_FOLDER_STATUS', 'error')
+                        }
+                        throw err
+                    }
                 }
             }
             return files
@@ -120,6 +135,7 @@ export default {
             return files
         },
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
+            commit('SET_CURRENT_FOLDER_STATUS', 'loading')
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
             let apiUrl = `/workspaces/${workspaceId}/files`
@@ -128,10 +144,16 @@ export default {
             if (folder) {
                 apiUrl = `/files/${folder.id}/children`
             }
-            await axios.get(apiUrl).then(response => {
-                Vue.set(state, 'files', response.data)
-                commit('setCurrentFolder', folder)
-            })
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    Vue.set(state, 'files', response.data)
+                    commit('setCurrentFolder', folder)
+                    commit('SET_CURRENT_FOLDER_STATUS', 'success')
+                })
+                .catch(err => {
+                    commit('SET_CURRENT_FOLDER_STATUS', 'error')
+                })
         },
         async fetchFileOwners({ commit, state }, file) {
             // Get owners for file
@@ -267,6 +289,9 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        SET_CURRENT_FOLDER_STATUS(state, status) {
+            state.currentFolderStatus = status
         },
         setFilesStatus(state, status) {
             state.status = status

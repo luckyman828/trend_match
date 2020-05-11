@@ -1,6 +1,8 @@
 <template>
     <div class="folders-table-wrapper">
-        <BaseFlexTable class="folders-table" stickyHeader="true">
+        <BaseFlexTable class="folders-table" stickyHeader="true"
+        :contentStatus="getCurrentFolderStatus" 
+        :errorCallback="() => setCurrentFolder(getCurrentFolder)">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
@@ -123,7 +125,7 @@
                         >
                     </template>
                     <template v-else>
-                        <BaseLoader :message="'Uploading'" />
+                        <BaseLoader :msg="'Uploading'" />
                     </template>
                 </form>
             </template>
@@ -339,6 +341,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('files', ['getCurrentFolderStatus', 'getCurrentFolder']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         foldersToShow() {
@@ -353,7 +356,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile', 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
+        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile'
+        , 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
         ...mapMutations('files', ['removeUnsavedFiles']),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         showFileOwnersFlyin(file) {

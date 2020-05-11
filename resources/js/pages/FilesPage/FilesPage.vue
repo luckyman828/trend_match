@@ -23,7 +23,8 @@
         </div>
         <h1>Files</h1>
 
-        <FilesTable :files="files" :folder="currentFolder" :selected="selected"
+        <FilesTable
+        :files="files" :folder="currentFolder" :selected="selected"
         v-model="selected"
         @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
         @showFileOwnersFlyin="showFileOwnersFlyin"/>
@@ -67,14 +68,6 @@ export default {
     computed: {
         ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
-        folders() {
-            return this.files.filter(x => x.type == 'Folder')
-        },
-        defaultTeam() {
-            if (this.userPermissionLevel >= 3)
-                return {id: 0, title: 'Global'}
-            else return null
-        },
     },
     methods: {
         ...mapActions('files', ['setCurrentFolder', 'fetchFile', 'fetchFolder']),

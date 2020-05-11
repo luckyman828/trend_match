@@ -2,7 +2,7 @@
     <BaseModal :classes="['upload-to-file-modal', currentScreen.class]" :show="show" @close="$emit('close')"
     ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
-        <BaseLoader v-if="isSubmitting" message="Processing products.."/>
+        <BaseLoader v-if="isSubmitting" msg="Processing products.."/>
 
         <template v-else>
             <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"

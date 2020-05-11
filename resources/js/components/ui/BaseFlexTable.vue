@@ -16,7 +16,26 @@
         </div>
         <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
         <div class="body">
-            <slot name="body"/>
+            <!-- Content -->
+            <slot v-if="isReady" name="body"/>
+            <!-- End content -->
+
+            <!-- Loading / Error -->
+            <tr class="load-wrapper" v-else>
+                <!-- Loading -->
+                <BaseLoader v-if="contentStatus != 'error'" msg="loading content"/>
+
+                <!-- Error  -->
+                <div class="error-wrapper" v-else>
+                    <i class="far fa-exclamation-triangle lg"></i>
+                    <h3>{{errorMsg || 'Failed to load content'}}</h3>
+                    <button v-if="errorCallback" class="ghost lg full-width"
+                    @click="errorCallback">
+                        <span>Retry</span>
+                    </button>
+                </div>
+            </tr>
+            <!-- End Loading / Error -->
         </div>
         <tr class="footer">
             <td class="select"></td>
@@ -35,10 +54,39 @@ export default {
         scrollTable: null,
         scrollHeaderInitialized: false,
         tableWidth: null,
+        statusTimeout: null,
+        isReady: true,
     }},
     props: [
-        'stickyHeader'
+        'stickyHeader',
+        'contentStatus',
+        'errorCallback',
+        'errorMsg',
     ],
+    watch: {
+        contentStatus: function(newVal, oldVal) {
+            if (newVal == 'loading') {
+                // Wait 300 ms before setting the current folder status as loading
+                this.statusTimeout = setTimeout(() => this.isReady = false, 100)
+            } 
+            else if (this.statusTimeout) {
+                clearTimeout(this.statusTimeout)
+            }
+
+            if (newVal == 'error') {
+                this.isReady = false
+            }
+
+            if (newVal == 'success') {
+                this.isReady = true
+            }
+        }
+    },
+    computed: {
+        // isReady() {
+        //     return this.contentStatus != 'loading' && this.contentStatus != 'error'
+        // }
+    },
     methods: {
         getYPos(element) {
             var yPosition = 0;
@@ -138,129 +186,145 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '~@/_variables.scss';
-    $rowRadius: 4px;
+@import '~@/_variables.scss';
+$rowRadius: 4px;
 
-    .flex-table {
-        white-space: nowrap;
-        border-spacing: 0 2px;
+.flex-table {
+    white-space: nowrap;
+    border-spacing: 0 2px;
+    display: flex;
+    flex-direction: column;
+    .tabs {
         display: flex;
-        flex-direction: column;
-        .tabs {
-            display: flex;
-            margin-bottom: -$rowRadius;
-        }
+        margin-bottom: -$rowRadius;
+    }
+    .sticky-bg {
+        display: none;
+    }
+    &.sticky {
         .sticky-bg {
-            display: none;
+            background: $bg;
+            box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
+            position: fixed;
+            z-index: -1;
+            display: block;
         }
-        &.sticky {
-            .sticky-bg {
-                background: $bg;
-                box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
-                position: fixed;
-                z-index: -1;
-                display: block;
-            }
-            .sticky-header {
-                position: fixed;
-                z-index: 1;
-                .header {
-                    box-shadow: 0px 4px 10px #0000002A;
-                    position: static;
-                }
-            }
-            .sticky-placeholder {
-                display: block;
+        .sticky-header {
+            position: fixed;
+            z-index: 1;
+            .header {
+                box-shadow: 0px 4px 10px #0000002A;
+                position: static;
             }
         }
         .sticky-placeholder {
-            display: none;
+            display: block;
         }
-        .rounded-top {
-            > :first-child {
-                border-radius: $rowRadius $rowRadius 0 0;
+    }
+    .sticky-placeholder {
+        display: none;
+    }
+    .rounded-top {
+        > :first-child {
+            border-radius: $rowRadius $rowRadius 0 0;
+        }
+    }
+    tr {
+        background: white;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        position: relative;
+        &.active {
+            outline: solid 1px $primary;
+            outline-offset: -1px;
+            background: $bgContentActive;
+        }
+        &:not(.table-top-bar) {
+            margin-bottom: 2px;
+            > * {
+                flex: 1;
             }
         }
-        tr {
-            background: white;
-            min-height: 48px;
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            position: relative;
-            &.active {
-                outline: solid 1px $primary;
-                outline-offset: -1px;
-                background: $bgContentActive;
-            }
-            &:not(.table-top-bar) {
-                margin-bottom: 2px;
-                > * {
-                    flex: 1;
-                }
-            }
-            &:not(.header):not(.footer):not(.table-top-bar) {
-                &:hover {
-                    background: $light1;
-                    td {
-                        &.title {
-                            i {
-                                color: $dark05;
-                                transition: 0;
-                            }
+        &:not(.header):not(.footer):not(.table-top-bar) {
+            &:hover {
+                background: $light1;
+                td {
+                    &.title {
+                        i {
+                            color: $dark05;
+                            transition: 0;
                         }
                     }
                 }
             }
-            &.header, &.footer {
-                color: $tableHeader;
-            }
-            &.header {
-                height: 32px;
-            }
-            &.footer {
-                border-radius: 0 0 $rowRadius $rowRadius;
-                margin-bottom: 0;
-                min-height: 16px;
-                height: auto;
-            }
         }
-        td {
-            // overflow: hidden;
+        &.header, &.footer {
+            color: $tableHeader;
         }
-        th, td {
-            padding: 0 4px;
-            &:first-child:not(.select) {
-                margin-left: 8px;
-            }
-            > i {
-                &:last-child {
-                    margin-left: 12px;
-                }
-                &:first-child {
-                    margin-right: 12px;
-                }
-            }
-            &.action {
-                flex: 1;
-                text-align: right;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                >*:not(:last-child) {
-                    margin-right: 4px;
-                }
-            }
-            &.select {
-                flex: 0 1 auto;
-                min-width: 40px;
-                max-width: 40px;
-                display: flex;
-                align-items: center;
-                height: 100%;
-                padding-left: 8px;
-                cursor: pointer;
-            }
+        &.header {
+            height: 32px;
+        }
+        &.footer {
+            border-radius: 0 0 $rowRadius $rowRadius;
+            margin-bottom: 0;
+            min-height: 16px;
+            height: auto;
         }
     }
+    td {
+        // overflow: hidden;
+    }
+    th, td {
+        padding: 0 4px;
+        &:first-child:not(.select) {
+            margin-left: 8px;
+        }
+        > i {
+            &:last-child {
+                margin-left: 12px;
+            }
+            &:first-child {
+                margin-right: 12px;
+            }
+        }
+        &.action {
+            flex: 1;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            >*:not(:last-child) {
+                margin-right: 4px;
+            }
+        }
+        &.select {
+            flex: 0 1 auto;
+            min-width: 40px;
+            max-width: 40px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding-left: 8px;
+            cursor: pointer;
+        }
+    }
+    // Error
+    .load-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        text-align: center;
+        min-height: 200px;
+        .error-wrapper {
+            width: 100%;
+            margin: auto;
+            max-width: 260px;
+            padding: 32px 0;
+            padding: 40px 0;
+        }
+    }
+}
+
 </style>
