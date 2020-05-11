@@ -121,11 +121,21 @@ export default{
                 selectionIds.selection_ids.map(id => {
                     const selection = this.getSelectionById(id)
                     if (selection) {
-                        this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: eventName == 'Begin' ? true : false})
+                        if (eventName == 'Begin') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: true})
+                        }
+                        if (eventName == 'Terminate') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: false})
+                        }
                     }
                     const currentSelection = this.getCurrentSelectionById(id)
                     if (currentSelection) {
-                        this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection: currentSelection, isActive: eventName == 'Begin' ? true : false})
+                        if (eventName == 'Begin') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection: currentSelection, isActive: true})
+                        }
+                        if (eventName == 'Terminate') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection: currentSelection, isActive: false})
+                        }
                     }
                 })
             })

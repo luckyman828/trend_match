@@ -145,9 +145,9 @@ export default{
                 }
             })
 
-            connection.on('ProductChanged', (eventName, selectionIds) => {
-                console.log('ProductChanged', eventName, selectionIds)
-            })
+            // connection.on('ProductChanged', (eventName, selectionIds) => {
+            //     console.log('ProductChanged', eventName, selectionIds)
+            // })
 
             // Comments
             connection.on("OnCommentArrived", (selectionId, comment) => {
