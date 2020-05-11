@@ -223,7 +223,7 @@ export default {
             commit(
                 'alerts/SHOW_SNACKBAR',
                 {
-                    msg: `${file.type} deleted`,
+                    msg: `${file.type} will be deleted`,
                     iconClass: 'fa-trash',
                     type: 'danger',
                     callback: () => {
@@ -246,18 +246,15 @@ export default {
                     .delete(apiUrl)
                     .then(response => {
                         console.log('then', response)
-                        // commit(
-                        //     'alerts/SHOW_SNACKBAR',
-                        //     {
-                        //         msg: `${file.type} deleted`,
-                        //         iconClass: 'fa-check',
-                        //         type: 'success',
-                        //         timeoutCallback: () => {
-                        //             console.log('times up!')
-                        //         },
-                        //     },
-                        //     { root: true }
-                        // )
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${file.type} permanently deleted`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
                     })
                     .catch(err => {
                         // Undo

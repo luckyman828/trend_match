@@ -59,7 +59,9 @@ export default {
             if (this.timer) this.timer.resume()
         },
         onTimeout() {
-            this.snackbar.timeoutCallback()
+            if (this.snackbar.timeoutCallback) {
+                this.snackbar.timeoutCallback()
+            }
             this.onDeleteSnackbar()
         }
     },
