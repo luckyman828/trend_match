@@ -39,6 +39,11 @@ export default {
         async addProductToPresenterQueue({ commit }, { product, index }) {
             commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index })
         },
+        async addMultipleProductsToPresenterQueue({ state, commit }, products) {
+            // Filter the products to not add products that are already in the queue
+            const productsFiltered = products.filter(product => !state.presenterQueue.find(x => x.id == product.id))
+            commit('ADD_MULTIPLE_PRODUCTs_TO_PRESENTER_QUEUE', productsFiltered)
+        },
         async removeProductFromPresenterQueue({ getters, commit, dispatch }, product) {
             const currentProduct = getters.getPresenterQueueCurrentProduct
             const nextProduct = getters.getNextProduct
@@ -79,6 +84,9 @@ export default {
             } else {
                 state.presenterQueue.push(product)
             }
+        },
+        ADD_MULTIPLE_PRODUCTs_TO_PRESENTER_QUEUE(state, products) {
+            state.presenterQueue.push(...products)
         },
         REMOVE_PRODUCT_FROM_PRESENTER_QUEUE(state, product) {
             const index = state.presenterQueue.findIndex(x => x.id == product.id)

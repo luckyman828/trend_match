@@ -18,7 +18,12 @@
         <template v-slot:default>
             <div class="inner">
                 <div class="header">
-                    <strong>Results</strong>
+                    <strong>Results {{productsFilteredBySearch.length}}</strong>
+                    <button class="primary sm" 
+                        @click="onAddAllResultsToQueue">
+                        <i class="far fa-plus" style="margin-right: 2px"></i>
+                        <span>Add all results to queue</span>
+                    </button>
                 </div>
 
                 <RecycleScroller
@@ -49,7 +54,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import SearchResult from './SearchResult'
 import PresenterQueue from './PresenterQueue'
 
@@ -67,13 +72,16 @@ export default {
         ...mapGetters('products', ['products'])
     },
     methods: {
+        ...mapActions('presenterQueue', ['addMultipleProductsToPresenterQueue']),
         onShow() {
-            
             this.show = true
             // Wait for the flyin to become visible
             this.$nextTick(() => { this.$nextTick(() => {
                 this.$refs.searchField.setFocus()
             })})
+        },
+        onAddAllResultsToQueue() {
+            this.addMultipleProductsToPresenterQueue(this.productsFilteredBySearch)
         }
     }
 }
@@ -122,10 +130,12 @@ export default {
         flex-direction: column;
         .header {
             background: $bg;
-            height: 32px;
+            height: 40px;
             padding: 0 16px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            position: relative;
         }
         .result-list {
             overflow-y: auto;
