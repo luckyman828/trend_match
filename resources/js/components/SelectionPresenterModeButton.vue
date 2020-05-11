@@ -31,7 +31,7 @@ export default {
                 : 'ATTENTION: You are about to stop Presentation Mode.\n\nThis will end Presentation Mode for all viewers.\n\n Press "Okay" to continue.'
             )) {
                 await this.togglePresenterMode(selection)
-                this.$emit('toggle', !!selection.is_presenting)
+                this.$emit('toggle', !selection.is_presenting)
             }
         }
     }
