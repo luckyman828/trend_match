@@ -215,7 +215,7 @@
         </BaseDialog>
 
         <BaseDialog ref="confirmDeleteUser" type="confirm"
-        confirmColor="red" confirmText="Yes, delete them" cancelText="No, keep them">
+        confirmColor="red" confirmText="Yes, delete this user" cancelText="No, keep this user">
             <div class="icon-graphic">
                 <i class="lg primary far fa-user"></i>
                 <i class="lg far fa-arrow-right"></i>
