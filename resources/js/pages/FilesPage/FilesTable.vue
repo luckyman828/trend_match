@@ -4,7 +4,7 @@
         :contentStatus="readyStatus"
         loadingMsg="loading folder content"
         errorMsg="error loading folder content"
-        :errorCallback="() => setCurrentFolder(getCurrentFolder)">
+        :errorCallback="() => initData()">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
@@ -373,8 +373,7 @@ export default {
         ...mapMutations('files', ['removeUnsavedFiles']),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
         initData(forceRefresh) {
-            if (forceRefresh || (this.getFilesStatus != 'success' && this.getFilesStatus != 'loading')) this.fetchFiles()
-            if (forceRefresh || (this.getCurrentFolderStatus != 'success' && this.getCurrentFolderStatus != 'loading')) this.setCurrentFolder(this.currentFolder)
+            if (forceRefresh || (this.getCurrentFolderStatus != 'success' && this.getCurrentFolderStatus != 'loading')) this.setCurrentFolder(this.getCurrentFolder)
         },
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)

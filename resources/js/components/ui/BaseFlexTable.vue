@@ -59,8 +59,10 @@ export default {
     ],
     watch: {
         contentStatus: function(newVal, oldVal) {
+            console.log('content status changed')
             if (newVal == 'loading') {
-                // Wait 300 ms before setting the current folder status as loading
+                console.log('set timeout')
+                // Wait before setting the current folder status as loading
                 this.statusTimeout = setTimeout(() => this.isReady = false, 100)
             } 
             else if (this.statusTimeout) {
@@ -311,6 +313,7 @@ $rowRadius: 4px;
         flex-direction: column;
         align-content: center;
         text-align: center;
+        justify-content: center;
         min-height: 200px;
     }
 }

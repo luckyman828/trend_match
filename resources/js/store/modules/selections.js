@@ -35,6 +35,7 @@ export default {
     getters: {
         loadingSelections: state => state.loading,
         selectionsStatus: state => state.status,
+        getSelectionsStatus: state => state.status,
         currentSelectionStatus: state => state.currentSelectionStatus,
         selectionUsersStatus: state => state.usersStatus,
         selectionTeamsStatus: state => state.teamsStatus,
@@ -68,7 +69,7 @@ export default {
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
         selections: state => state.selections,
-        selectionsTree: state => {
+        getSelectionsTree: state => {
             const list = state.selections
             let map = {},
                 node,
@@ -267,7 +268,6 @@ export default {
         },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
             // Commit mutation to state
-            console.log(users)
             await commit('addUsersToSelection', {
                 selection,
                 users: users.map(user => {

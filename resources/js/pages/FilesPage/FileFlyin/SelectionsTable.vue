@@ -1,10 +1,14 @@
 <template>
     <div class="selections-table">
-        <BaseFlexTable class="flex-table-root">
+        <BaseFlexTable class="flex-table-root"
+        :contentStatus="readyStatus"
+        loadingMsg="loading selections"
+        errorMsg="error loading selections"
+        :errorCallback="() => initData()">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
-                        <span>{{selections.length}} records</span>
+                        <span>{{getSelectionsTree.length}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -25,8 +29,8 @@
             <template v-slot:body>
                 <div class="body">
                     <!-- Show Selections -->
-                    <template v-if="selections.length > 0">
-                        <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in selections" :key="selection.id"
+                    <template v-if="getSelectionsTree.length > 0">
+                        <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in getSelectionsTree" :key="selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
                         :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
@@ -577,9 +581,6 @@ import sortArray from '../../../mixins/sortArray'
 
 export default {
     name: 'selectionsTable',
-    props: [
-        'selections',
-    ],
     components: {
         SelectionsTableRow,
     },
@@ -649,8 +650,20 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('files', ['currentFile', 'files', 'allFiles']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('selections', {allSelections: ['selections']}),
-        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'selections', 'getSelectionsTree', 'getSelectionsStatus']),
+        allSelections () {
+            return this.selections
+        },
+        readyStatus() {
+            if (this.getSelectionsStatus == 'error') return 'error'
+            if (this.getSelectionsStatus == 'loading') return 'loading'
+            return 'success'
+        }
+    },
+    watch: {
+        currentFile(newVal, oldVal) {
+            this.initData(true)
+        },
     },
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
@@ -658,9 +671,12 @@ export default {
         'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
         ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
+        initData(forceRefresh) {
+            if (forceRefresh || (this.getSelectionsStatus != 'success' && this.getSelectionsStatus != 'loading')) this.fetchSelections({fileId: this.currentFile.id})
+        },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
-            this.sortArray(this.selections, sortAsc, sortKey)
+            this.sortArray(this.getSelectionsTree, sortAsc, sortKey)
         },
         rowClick(e, component) {
             if (this.moveSelectionActive) {
@@ -759,8 +775,8 @@ export default {
                     const index = parent.children.findIndex(x => x.id == this.selectionToMove.id)
                     parent.children.splice(index, 1)
                 } else {
-                    const index = this.selections.findIndex(x => x.id == this.selectionToMove.id)
-                    this.selections.splice(index, 1)
+                    const index = this.getSelectionsTree.findIndex(x => x.id == this.selectionToMove.id)
+                    this.getSelectionsTree.splice(index, 1)
                 }
 
                 // Expand the component
@@ -804,7 +820,7 @@ export default {
         },
         async onNewSelection(parent) {
             // First check that we don't already have an unsaved new selection
-            if (this.selections.find(x => x.id == null)) return
+            if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
             const newSelection = {
                 id: null,
@@ -925,6 +941,9 @@ export default {
                 this.cloneSelectionTree(childSelection)
             })
         }
+    },
+    created() {
+        this.initData()
     },
     destroyed() {
         document.removeEventListener('mousemove', this.moveSelectionMouseFollowHandler)

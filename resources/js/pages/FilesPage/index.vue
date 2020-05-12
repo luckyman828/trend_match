@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FilesPage from './FilesPage'
 import PageLoader from '../../components/common/PageLoader'
 
@@ -15,6 +15,17 @@ export default {
         FilesPage,
         PageLoader
     },
+    computed: {
+        ...mapGetters('workspaces', ['currentWorkspace'])
+    },
+    watch: {
+        currentWorkspace(newVal, oldVal) {
+            this.SET_CURRENT_PATH_FOLDER()
+        }
+    },
+    methods: {
+        ...mapMutations('files', ['SET_CURRENT_PATH_FOLDER'])
+    }
 }
 </script>
 

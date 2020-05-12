@@ -144,6 +144,7 @@ export default {
         },
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
             commit('SET_CURRENT_FOLDER_STATUS', 'loading')
+            commit('SET_CURRENT_FOLDER', folder)
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
             let apiUrl = `/workspaces/${workspaceId}/files`
@@ -164,7 +165,6 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     Vue.set(state, 'files', response.data)
-                    commit('setCurrentFolder', folder)
                     commit('SET_CURRENT_FOLDER_STATUS', 'success')
                 })
                 .catch(err => {
@@ -205,7 +205,6 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
-                    console.log(response.data)
                     // Set the files ID if not already set
                     if (!file.id) file.id = response.data.id
                 })
@@ -219,45 +218,43 @@ export default {
             const apiUrl = `/files/${fileId}`
             await axios
                 .delete(apiUrl)
-                .then(response => {
-                    console.log(response.data)
-                })
+                .then(response => {})
                 .catch(err => {
                     console.log(err.response)
                 })
         },
-        async updateFile({ commit }, fileToUpdate) {
-            const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
-            const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
-            // Add support for both catalog id and folder id
-            let folder_id = null
-            if (fileToUpdate.folder_id) {
-                folder_id = fileToUpdate.folder_id
-            }
-            if (fileToUpdate.catalog_id) {
-                folder_id = fileToUpdate.catalog_id
-            }
+        // async updateFile({ commit }, fileToUpdate) {
+        //     const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
+        //     const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
+        //     // Add support for both catalog id and folder id
+        //     let folder_id = null
+        //     if (fileToUpdate.folder_id) {
+        //         folder_id = fileToUpdate.folder_id
+        //     }
+        //     if (fileToUpdate.catalog_id) {
+        //         folder_id = fileToUpdate.catalog_id
+        //     }
 
-            await axios
-                .put(`/api/file`, {
-                    id: fileToUpdate.id,
-                    title: fileToUpdate.title,
-                    phase: fileToUpdate.phase,
-                    catalog_id: folder_id,
-                    folder_id: folder_id,
-                    workspace_id: fileToUpdate.workspace_id,
-                    start_date: startDate,
-                    end_date: endDate,
-                })
-                .then(response => {
-                    console.log(response.data)
-                    // Commit to store
-                    Collection.insert({ data: response.data })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
+        //     await axios
+        //         .put(`/api/file`, {
+        //             id: fileToUpdate.id,
+        //             title: fileToUpdate.title,
+        //             phase: fileToUpdate.phase,
+        //             catalog_id: folder_id,
+        //             folder_id: folder_id,
+        //             workspace_id: fileToUpdate.workspace_id,
+        //             start_date: startDate,
+        //             end_date: endDate,
+        //         })
+        //         .then(response => {
+        //             console.log(response.data)
+        //             // Commit to store
+        //             Collection.insert({ data: response.data })
+        //         })
+        //         .catch(err => {
+        //             console.log(err.response)
+        //         })
+        // },
         async addUsersToFile({ commit }, { file, users }) {
             commit('addOwnersToFile', { file, users })
 
@@ -318,7 +315,7 @@ export default {
         setCurrentFile(state, file) {
             state.currentFile = file
         },
-        setCurrentFolder(state, folder) {
+        SET_CURRENT_FOLDER(state, folder) {
             state.currentFolder = folder
         },
         updateFile(state, file) {

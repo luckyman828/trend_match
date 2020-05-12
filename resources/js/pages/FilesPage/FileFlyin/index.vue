@@ -28,7 +28,7 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
@@ -54,27 +54,27 @@ export default {
     },
     data: function(){ return {
         SelectionUsersFlyinVisible: false,
-        loadingData: false,
+        // loadingData: false,
     }},
     watch: {
-        show: function(newVal, oldVal) {
-            if (newVal) {
-                if (!this.loadingData) this.fetchData()
-            }
-        },
-        file: function(newVal, oldVal) {
-            if (!oldVal || newVal.id != oldVal.id) {
-                if (!this.loadingData) this.fetchData()
-            }
-        }
+        // show: function(newVal, oldVal) {
+        //     if (newVal) {
+        //         if (!this.loadingData) this.fetchData()
+        //     }
+        // },
+        // file: function(newVal, oldVal) {
+        //     if (!oldVal || newVal.id != oldVal.id) {
+        //         if (!this.loadingData) this.fetchData()
+        //     }
+        // }
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['selectionsStatus', 'selectionsTree', 'currentSelection']),
+        ...mapGetters('selections', ['selectionsStatus', 'currentSelection']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         status() {
-            if (this.selectionsStatus == 'error') return 'error'
-            if (this.selectionsStatus == 'loading' || this.loadingData) return 'loading'
+            // if (this.selectionsStatus == 'error') return 'error'
+            // if (this.selectionsStatus == 'loading' || this.loadingData) return 'loading'
             return 'success'
         }
     },
@@ -82,11 +82,6 @@ export default {
         ...mapMutations('files', ['setCurrentFile']),
         ...mapActions('selections', ['fetchSelections']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
-        async fetchData() {
-            this.loadingData = true
-            await this.fetchSelections({fileId: this.currentFile.id})
-            this.loadingData = false
-        },
         showSelectionUsersFlyin(selection) {
             this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
@@ -103,11 +98,6 @@ export default {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
     },
-    created() {
-        if (this.currentFile) {
-            this.fetchData()
-        }
-    }
 }
 </script>
 
