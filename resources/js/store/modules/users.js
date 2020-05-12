@@ -14,6 +14,7 @@ export default {
     getters: {
         loadingUsers: state => state.loading,
         users: state => state.users,
+        getUsers: state => state.users,
         getUsersStatus: state => state.status,
         addNewUserModalVisible: state => state.addNewUserModalVisible,
     },

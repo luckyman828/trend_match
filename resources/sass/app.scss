@@ -1408,7 +1408,9 @@ form {
 .fade-enter-active {
     transition-delay: 0.15s;
 }
-
+.fade-leave-active {
+    height: 0 !important;
+}
 .fade-enter,
 .fade-leave-active {
     opacity: 0;

@@ -1,9 +1,12 @@
 <template>
-    <PageLoader :status="status"
+    <!-- <PageLoader :status="status"
     loadingMsg="loading users"
     errorMsg="error loading users"
     :errorCallback="() => fetchData()"
     @workspaceChange="fetchData">
+        <UsersPage/>
+    </PageLoader> -->
+    <PageLoader>
         <UsersPage/>
     </PageLoader>
 </template>
