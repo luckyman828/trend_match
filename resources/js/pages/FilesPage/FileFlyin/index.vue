@@ -1,6 +1,9 @@
 <template>
     <BaseFlyin ref="fileSingleFlyin" :show="show" :disableKeyHandler="SelectionUsersFlyinVisible"
-    @close="$emit('close')">
+    @close="$emit('close')" :status="status"
+    loadingMsg="loading file selections"
+    errorMsg="error loading file selections"
+    :errorCallback="() => fetchData()">
         <template v-slot:header v-if="file && show">
             <BaseFlyinHeader :next="nextFile" :prev="prevFile"
             :disableNavigation="SelectionUsersFlyinVisible"
@@ -25,9 +28,9 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable v-if="!loadingSelections" :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
+                <SelectionsTable :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
-                <SelectionUsersFlyin v-if="!loadingSelections" :selection="currentSelection" :show="SelectionUsersFlyinVisible"
+                <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
             </div>
         </template>
@@ -67,8 +70,13 @@ export default {
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection']),
+        ...mapGetters('selections', ['selectionsStatus', 'selectionsTree', 'currentSelection']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        status() {
+            if (this.selectionsStatus == 'error') return 'error'
+            if (this.selectionsStatus == 'loading' || this.loadingData) return 'loading'
+            return 'success'
+        }
     },
     methods: {
         ...mapMutations('files', ['setCurrentFile']),

@@ -125,7 +125,7 @@ export default {
         async fetchSelections({ commit }, { fileId, addToState = true }) {
             return new Promise(async (resolve, reject) => {
                 commit('setLoading', true)
-                commit('setStatus', 'loading')
+                commit('SET_STATUS', 'loading')
                 const apiUrl = `/files/${fileId}/selections/flat`
                 let selections
                 await axios
@@ -137,10 +137,10 @@ export default {
                         if (addToState) {
                             commit('insertSelections', { selections, method: 'set' })
                         }
-                        commit('setStatus', 'success')
+                        commit('SET_STATUS', 'success')
                     })
                     .catch(err => {
-                        commit('setStatus', 'error')
+                        commit('SET_STATUS', 'error')
                     })
                 commit('setLoading', false)
                 resolve(selections)
@@ -443,7 +443,7 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        setStatus(state, status) {
+        SET_STATUS(state, status) {
             state.status = status
         },
         SET_CURRENT_SELECTIONS_STATUS(state, status) {
