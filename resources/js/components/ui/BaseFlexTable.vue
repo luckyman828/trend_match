@@ -24,16 +24,8 @@
             <tr class="load-wrapper" v-else>
                 <!-- Loading -->
                 <BaseLoader v-if="contentStatus != 'error'" msg="loading content"/>
-
                 <!-- Error  -->
-                <div class="error-wrapper" v-else>
-                    <i class="far fa-exclamation-triangle lg"></i>
-                    <h3>{{errorMsg || 'Failed to load content'}}</h3>
-                    <button v-if="errorCallback" class="ghost lg full-width"
-                    @click="errorCallback">
-                        <span>Retry</span>
-                    </button>
-                </div>
+                <BaseContentLoadError v-else :msg="errorMsg" :callback="errorCallback"/>
             </tr>
             <!-- End Loading / Error -->
         </div>
@@ -317,13 +309,6 @@ $rowRadius: 4px;
         align-content: center;
         text-align: center;
         min-height: 200px;
-        .error-wrapper {
-            width: 100%;
-            margin: auto;
-            max-width: 260px;
-            padding: 32px 0;
-            padding: 40px 0;
-        }
     }
 }
 

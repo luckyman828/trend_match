@@ -1,7 +1,15 @@
 <template>
     <div class="page-loader">
-        <slot v-if="!loading"/>
-        <BaseLoader v-else/>
+
+        <!-- Error  -->
+        <BaseContentLoadError v-if="status == 'error'" :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+
+        <!-- Loading -->
+        <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'"/>
+
+        <!-- Success -->
+        <slot v-else/>
+
     </div>
 </template>
 
@@ -11,7 +19,12 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'pageLoader',
     props: [
-        'loading'
+        'loading',
+        'error',
+        'status',
+        'loadingMsg',
+        'errorMsg',
+        'errorCallback'
     ],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),

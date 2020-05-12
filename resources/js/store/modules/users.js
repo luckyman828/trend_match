@@ -8,11 +8,13 @@ export default {
         loading: false,
         users: null,
         addNewUserModalVisible: false,
+        status: null,
     },
 
     getters: {
         loadingUsers: state => state.loading,
         users: state => state.users,
+        getUsersStatus: state => state.status,
         addNewUserModalVisible: state => state.addNewUserModalVisible,
     },
 
@@ -21,12 +23,19 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setLoading', true)
+            commit('SET_USER_STATUS', 'loading')
 
             const apiUrl = `/workspaces/${workspaceId}/users`
-            axios.get(apiUrl).then(response => {
-                state.users = response.data
-                commit('setLoading', false)
-            })
+            axios
+                .get(apiUrl)
+                .then(response => {
+                    state.users = response.data
+                    commit('setLoading', false)
+                    commit('SET_USER_STATUS', 'success')
+                })
+                .catch(err => {
+                    commit('SET_USER_STATUS', 'error')
+                })
         },
         async updateWorkspaceUsers({ commit, rootGetters }, usersToUpdate) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
@@ -141,6 +150,9 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        SET_USER_STATUS(state, status) {
+            state.status = status
         },
         addUsers(state, users) {
             state.users = state.users.concat(users)

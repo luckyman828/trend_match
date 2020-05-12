@@ -1,5 +1,6 @@
 <template>
-    <PageLoader :loading="loading" 
+    <PageLoader :status="status"
+    :errorCallback="() => fetchData()"
     @workspaceChange="fetchData">
         <UsersPage/>
     </PageLoader>
@@ -20,9 +21,9 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('users', ['loadingUsers']),
-        loading () {
-            return (this.loadingTeams || this.loadingUsers)
+        ...mapGetters('users', ['loadingUsers', 'getUsersStatus']),
+        status () {
+            return this.getUsersStatus
         },
     },
     watch: {
