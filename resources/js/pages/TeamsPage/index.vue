@@ -1,6 +1,7 @@
 <template>
     <PageLoader :status="status"
     loadingMsg="loading teams"
+    errorMsg="error loading teams"
     :errorCallback="() => fetchData()"
     @workspaceChange="fetchData">
         <TeamsPage/>

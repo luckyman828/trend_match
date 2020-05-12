@@ -1,6 +1,8 @@
 <template>
-    <PageLoader :loading="loading"
-    @workspaceChange="fetchData">
+    <PageLoader :status="status"
+    loadingMsg="loading files"
+    errorMsg="error loading files"
+    :errorCallback="() => fetchData()">
         <FilesPage/>
     </PageLoader>
 </template>
@@ -19,9 +21,9 @@ export default {
     data: function () { return {
     }},
     computed: {
-        ...mapGetters('files', ['loadingFiles', 'files']),
-        loading () {
-            return (this.loadingFiles)
+        ...mapGetters('files', ['filesStatus', 'files']),
+        status () {
+            return this.filesStatus
         }
     },
     methods: {

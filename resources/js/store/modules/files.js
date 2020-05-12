@@ -11,7 +11,7 @@ export default {
         availableFileIds: [],
         currentFile: null,
         currentFolder: null,
-        status: null,
+        status: 'loading',
         currentFolderStatus: null,
     },
 
@@ -51,6 +51,7 @@ export default {
             if (addToState) {
                 commit('setLoading', true)
                 commit('SET_CURRENT_FOLDER_STATUS', 'loading')
+                commit('SET_FILES_STATUS', 'loading')
             }
 
             const apiUrl = `/workspaces/${workspaceId}/files`
@@ -61,12 +62,15 @@ export default {
             let files
             while (tryCount-- > 0 && !succes) {
                 try {
-                    const response = await axios.get(`${apiUrl}`)
+                    const response = await axios.get(`${apiUrl}`).catch(err => {
+                        'error???'
+                    })
                     files = response.data
                     if (addToState) {
                         state.files = files
                         commit('setLoading', false)
                         commit('SET_CURRENT_FOLDER_STATUS', 'success')
+                        commit('SET_FILES_STATUS', 'success')
                     }
                     succes = true
                 } catch (err) {
@@ -74,6 +78,7 @@ export default {
                         if (addToState) {
                             commit('setLoading', false)
                             commit('SET_CURRENT_FOLDER_STATUS', 'error')
+                            commit('SET_FILES_STATUS', 'error')
                         }
                         throw err
                     }

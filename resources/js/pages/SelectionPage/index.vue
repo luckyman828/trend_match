@@ -1,9 +1,7 @@
 <template>
-    <!-- <PageLoader :loading="loading">
-        <SelectionPage/>
-    </PageLoader> -->
     <PageLoader :status="status"
     loadingMsg="loading selection"
+    errorMsg="error loading selection"
     :errorCallback="() => fetchData()">
         <SelectionPage/>
     </PageLoader>
