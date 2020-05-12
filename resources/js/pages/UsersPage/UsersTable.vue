@@ -2,8 +2,10 @@
     <div class="users-table">
 
         <BaseFlexTable v-if="currentTab == 'Users'" stickyHeader="true"
-        :status="readyStatus"
-        @errorCallack="() => initData()">
+        :contentStatus="readyStatus"
+        loadingMsg="loading users"
+        errorMsg="error loading users"
+        @errorCallback="() => initData()">
 
 
             <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
@@ -15,7 +17,7 @@
                         <BaseSearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users ? users.length : '?'}}</strong> records</span>
+                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users ? users.length : 0}}</strong> records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -31,10 +33,18 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <UsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
-                :contextUser="contextUser"
-                @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
-                @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
+                <RecycleScroller
+                    :items="usersFilteredBySearch"
+                    :item-size="50"
+                    page-mode
+                    key-field="id"
+                    v-slot="{ item }"
+                >
+                    <UsersTableRow :ref="'userRow-'+item.id" :user="item"
+                    :contextUser="contextUser"
+                    @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
+                    @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
+                </RecycleScroller>
             </template>
             <template v-slot:footer>
                 <td>
@@ -275,10 +285,19 @@ export default {
     watch: {
         getUsersStatus: function(newVal, oldVal) {
             if (newVal == 'success') this.usersFilteredBySearch = this.users
+        },
+        currentWorkspace(newVal, oldVal) {
+            this.initData(true)
         }
     },
     methods: {
         ...mapActions('users', ['fetchUsers', 'updateWorkspaceUsers', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        async initData(forceRefresh) {
+            // If we have not and are not fetching the users then fetch them
+            if (forceRefresh || (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading')) await this.fetchUsers()
+            // Initially set the filteredbySearch arrays
+            if (this.getUsersStatus == 'success') this.usersFilteredBySearch = this.users
+        },
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
             contextMenu.item = user;
@@ -390,12 +409,6 @@ export default {
 
             this.sortArray(array, this.sortAsc, this.sortKey)
         },
-        async initData() {
-            // If we have not and are not fetching the users then fetch them
-            if (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') await this.fetchUsers()
-            // Initially set the filteredbySearch arrays
-            if (this.getUsersStatus == 'success') this.usersFilteredBySearch = this.users
-        }
     },
     created() {
         this.initData()

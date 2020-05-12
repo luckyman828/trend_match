@@ -27,9 +27,9 @@ export default {
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('users', ['loadingUsers', 'getUsersStatus']),
-        status () {
-            return this.getUsersStatus
-        },
+        // status () {
+        //     return this.getUsersStatus
+        // },
     },
     watch: {
     },
@@ -37,11 +37,11 @@ export default {
         ...mapActions('users', ['fetchUsers']),
         fetchData() {
             // Fetch workspace data
-            this.fetchUsers(this.currentWorkspace.id)
+            // this.fetchUsers(this.currentWorkspace.id)
         }
     },
     created () {
-        this.fetchData()
+        // this.fetchData()
     },
 }
 </script>

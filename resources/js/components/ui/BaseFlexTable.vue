@@ -23,9 +23,10 @@
             <!-- Loading / Error -->
             <tr class="load-wrapper" v-else>
                 <!-- Loading -->
-                <BaseLoader v-if="contentStatus != 'error'" msg="loading content"/>
+                <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'"/>
+
                 <!-- Error  -->
-                <BaseContentLoadError v-else :msg="errorMsg" :callback="errorCallback"/>
+                <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
             </tr>
             <!-- End Loading / Error -->
         </div>
@@ -52,12 +53,14 @@ export default {
     props: [
         'stickyHeader',
         'contentStatus',
+        'loadingMsg',
         'errorCallback',
         'errorMsg',
     ],
     watch: {
         contentStatus: function(newVal, oldVal) {
             if (newVal == 'loading') {
+                console.log('set timeout')
                 // Wait 300 ms before setting the current folder status as loading
                 this.statusTimeout = setTimeout(() => this.isReady = false, 100)
             } 
@@ -160,6 +163,7 @@ export default {
         if (this.stickyHeader) {
             window.addEventListener('resize', this.resizeHeader)
         }
+        if (this.contentStatus && this.contentStatus != 'success') this.isReady = false
     },
     destroyed () {
         if (this.stickyHeader) {

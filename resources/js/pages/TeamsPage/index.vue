@@ -1,9 +1,10 @@
 <template>
-    <PageLoader :status="status"
+    <!-- <PageLoader :status="status"
     loadingMsg="loading teams"
     errorMsg="error loading teams"
     :errorCallback="() => fetchData()"
-    @workspaceChange="fetchData">
+    @workspaceChange="fetchData"> -->
+    <PageLoader>
         <TeamsPage/>
     </PageLoader>
 </template>
@@ -41,15 +42,15 @@ export default {
         ...mapActions('teams', ['fetchTeams']),
         fetchData() {
             // Fetch workspace data
-            this.fetchTeams(this.currentWorkspace.id)
-            this.fetchUsers(this.currentWorkspace.id)
+            // this.fetchTeams(this.currentWorkspace.id)
+            // this.fetchUsers(this.currentWorkspace.id)
         }
     },
     created () {
         if (this.authUserWorkspaceRole != 'Admin') {
             this.$router.push({name: 'files'})
         }
-        this.fetchData()
+        // this.fetchData()
     },
 }
 </script>

@@ -13,8 +13,8 @@
         </div>
         <h1>Users</h1>
         <!-- <UsersTable :users="users.filter(x => authUserWorkspaceRole == 'Admin' ? true : x.id == authUser.id)" -->
-        <UsersTable
-        @onNewUser="setAddNewUserModalVisible(true)"/>
+        <UsersTable @onNewUser="setAddNewUserModalVisible(true)"/>
+        
         <AddUserModal ref="addUserModal" :show="addNewUserModalVisible" 
         @close="setAddNewUserModalVisible(false)" :users="users"/>
     </div>
