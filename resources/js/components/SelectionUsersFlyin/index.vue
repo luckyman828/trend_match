@@ -1,6 +1,9 @@
 <template>
-    <BaseFlyin ref="flyin" :show="show" :loading="loading"
-    @close="$emit('close')">
+    <BaseFlyin ref="flyin" :show="show" :status="status"
+    @close="$emit('close')"
+    loadingMsg="loading selection members"
+    erorrMsg="error loading selection members"
+    :errorCallback="() => fetchData()">
         <template v-slot:header>
             <BaseFlyinHeader v-if="show" disableNavigation=true 
             @close="$emit('close')">
@@ -10,8 +13,8 @@
             </BaseFlyinHeader>
         </template>
         <template v-slot>
-            <SelectionTeamsTable v-if="show && !loading" :selection="selection" :authUserIsOwner="authUserIsOwner"/>
-            <SelectionUsersTable style="margin-top: 40px;" v-if="show && !loading" :selection="selection" :users="selection.users"
+            <SelectionTeamsTable :selection="selection" :authUserIsOwner="authUserIsOwner"/>
+            <SelectionUsersTable style="margin-top: 40px;" :selection="selection" :users="selection.users"
             :authUserIsOwner="authUserIsOwner"/>
         </template>
     </BaseFlyin>
@@ -33,7 +36,6 @@ export default {
     ],
     data: function() { return {
         loadingSelectionTeamUsers: false,
-        loadingSelection: false,
         fetchingData: true,
         authUserIsOwner: false,
     }},
@@ -53,13 +55,13 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('users', ['users', 'loadingUsers']),
-        ...mapGetters('teams', ['teams', 'loadingTeams']),
-        ...mapGetters('selections', ['currentSelectionUsers']),
-        loading() {
-            return this.loadingUsers 
-            || this.loadingTeams
-            || this.fetchingData
+        ...mapGetters('users', ['users', 'getUsersStatus']),
+        ...mapGetters('teams', ['teams', 'getTeamsStatus']),
+        ...mapGetters('selections', ['currentSelectionUsers', 'currentSelectionStatus']),
+        status() {
+            if (this.getUsersStatus == 'error' || this.getTeamsStatus == 'error' || this.currentSelectionStatus == 'error') return 'error'
+            if (this.getUsersStatus == 'loading' || this.getTeamsStatus == 'loading' || this.currentSelectionStatus == 'error' || this.fetchingData) return 'loading'
+            return 'success'
         }
     },
     methods: {
@@ -83,9 +85,9 @@ export default {
     },
     created() {
         // Check if we have any workspace users, else fetch them
-        if (!this.loadingUsers) this.fetchUsers()
+        if (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
         // Check if we have any workspace teams, else fetch them
-        if (!this.loadingTeams) this.fetchTeams()
+        if (this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading') this.fetchTeams()
     }
 }
 </script>

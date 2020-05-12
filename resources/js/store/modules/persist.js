@@ -401,8 +401,8 @@ export default {
             state.uids.pop()
             return uid
         },
-        setCurrentTeam({ commit }, id) {
-            commit('setCurrentTeam', id)
+        SET_CURRENT_TEAM({ commit }, id) {
+            commit('SET_CURRENT_TEAM', id)
         },
         setTeamFilter({ commit }, id) {
             commit('setTeamFilter', id)
@@ -447,7 +447,7 @@ export default {
     },
 
     mutations: {
-        setCurrentTeam(state, id) {
+        SET_CURRENT_TEAM(state, id) {
             state.currentTeamId = id
         },
         setCurrentFolderId(state, id) {

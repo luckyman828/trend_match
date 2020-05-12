@@ -218,7 +218,7 @@ export default {
         SET_TEAMS_STATUS(state, status) {
             state.status = status
         },
-        setCurrentTeam(state, team) {
+        SET_CURRENT_TEAM(state, team) {
             state.currentTeam = team
         },
         setAvailableTeams(state, teams) {

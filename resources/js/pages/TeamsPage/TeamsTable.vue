@@ -44,20 +44,8 @@
             </template>
         </BaseFlexTable>
 
-        <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
-            <template v-slot:header v-if="currentTeam && teamFlyInVisible">
-                <BaseFlyinHeader @close="teamFlyInVisible = false" class="flyin-header" 
-                :next="nextTeam" :prev="prevTeam"
-                @next="showNext" @prev="showPrev">
-                    <template v-slot:left>
-                        <h3>{{currentTeam.title}}</h3>
-                    </template>
-                </BaseFlyinHeader>
-            </template>
-            <template v-slot v-if="currentTeam && teamFlyInVisible">
-                <TeamFlyin :team="currentTeam" :workspaceUsers="users"/>
-            </template>
-        </BaseFlyin>
+        <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"
+        v-if="teamFlyInVisible && currentTeam" :team="currentTeam"/>
 
         <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps"
         :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyC', 'KeyD']"
@@ -179,7 +167,7 @@ export default {
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
-        ...mapGetters('teams', ['currentTeam', 'nextTeam', 'prevTeam']),
+        ...mapGetters('teams', ['currentTeam']),
         currentTab: {
             get () {
                 const routeName = this.$route.name
@@ -190,20 +178,15 @@ export default {
                 if (newVal == 'Teams') this.$router.push({name: 'teams'})
                 if (newVal == 'Users') this.$router.push({name: 'users'})
             }
+        },
+        teamFlyinStatus() {
+            return 'success'
         }
     },
     methods: {
         ...mapActions('teams', ['removeUserFromTeam']),
         ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam']),
-        ...mapMutations('teams', ['setCurrentTeam', 'setAvailableTeams']),
-        showNext() {
-            if (this.nextTeam)
-                this.setCurrentTeam(this.nextTeam)
-        },
-        showPrev() {
-            if (this.prevTeam)
-                this.setCurrentTeam(this.prevTeam)
-        },
+        ...mapMutations('teams', ['SET_CURRENT_TEAM', 'setAvailableTeams']),
         onEditTeamCurrency(mouseEvent, team) {
             this.teamToEdit = team;
             this.contextTeam = team
@@ -257,7 +240,7 @@ export default {
         },
         showSingleTeam(team) {
             this.setAvailableTeams(this.teams)
-            this.setCurrentTeam(team)
+            this.SET_CURRENT_TEAM(team)
             this.teamFlyInVisible = true
         },
         showTeamContext(e, team) {
