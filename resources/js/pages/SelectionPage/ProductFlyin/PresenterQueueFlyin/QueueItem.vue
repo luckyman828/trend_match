@@ -28,10 +28,12 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
-                        <button class="invisible red-hover" :key="product.id"
+                        <BaseButton buttonClass="invisible red-hover" :key="product.id"
+                        :disabled="isCurrent"
+                        v-tooltip="isCurrent && 'You cannot remove the currently broadcast product'"
                         @click.stop="onRemoveProductFromPresenterQueue(product)">
                             <i class="fas fa-trash"></i>
-                        </button>
+                        </BaseButton>
                     </div>
                 </div>
             </div>

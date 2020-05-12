@@ -36,19 +36,32 @@ export default {
     },
 
     actions: {
-        async addProductToPresenterQueue({ commit }, { product, index }) {
+        async addProductToPresenterQueue({ getters, commit }, { product, index }) {
             commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index })
+
+            // If no product is currently being broadcast, broadcast this product
+            const currentProduct = getters.getPresenterQueueCurrentProduct
+            if (!currentProduct) {
+                commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', product.id)
+            }
         },
-        async addMultipleProductsToPresenterQueue({ state, commit }, products) {
+        async addMultipleProductsToPresenterQueue({ getters, state, commit }, products) {
             // Filter the products to not add products that are already in the queue
             const productsFiltered = products.filter(product => !state.presenterQueue.find(x => x.id == product.id))
             commit('ADD_MULTIPLE_PRODUCTs_TO_PRESENTER_QUEUE', productsFiltered)
+
+            // If no product is currently being broadcast, broadcast the first product product
+            const currentProduct = getters.getPresenterQueueCurrentProduct
+            if (!currentProduct) {
+                commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', productsFiltered[0].id)
+            }
         },
         async removeProductFromPresenterQueue({ getters, commit, dispatch }, product) {
             const currentProduct = getters.getPresenterQueueCurrentProduct
-            const nextProduct = getters.getNextProduct
-            if (currentProduct.id == product.id && nextProduct) {
-                dispatch('broadcastProduct', nextProduct)
+            // Disallow removing the current product
+            if (currentProduct.id == product.id) {
+                dispatch('alerts/showAlert', 'You cannot remove the currently broadcast product', { root: true })
+                return
             }
             // If the current product is getting removed, set the next product as active if any
             commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)

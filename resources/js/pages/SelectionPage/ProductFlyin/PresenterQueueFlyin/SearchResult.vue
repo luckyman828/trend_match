@@ -23,7 +23,8 @@
 
                     <!-- Else  -->
                     <BaseButton v-else buttonClass="square primary red-hover added-indicator"
-                    v-tooltip="'Remove product from queue'" targetAreaPadding="20px"
+                    :disabled="isCurrent"
+                    v-tooltip="isCurrent ? 'You cannot remove the currently broadcast product' : 'Remove product from queue'" targetAreaPadding="20px"
                     @click="onRemoveFromQueue(product)">
                         <i class="default fas fa-check"></i>
                         <i class="hover fas fa-trash"></i>
@@ -53,10 +54,13 @@ export default {
     // data: function() { return {
     // }},
     computed: {
-        ...mapGetters('presenterQueue', ['getPresenterQueue']),
+        ...mapGetters('presenterQueue', ['getPresenterQueue', 'getPresenterQueueCurrentProductId']),
         isInQueue() {
             return this.getPresenterQueue.find(x => x.id == this.product.id)
-        }
+        },
+        isCurrent() {
+            return this.product.id == this.getPresenterQueueCurrentProductId
+        },
     },
     methods: {
         ...mapActions('presenterQueue', ['addProductToPresenterQueue', 'broadcastProduct', 'removeProductFromPresenterQueue']),
