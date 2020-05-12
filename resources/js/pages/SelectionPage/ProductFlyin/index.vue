@@ -54,7 +54,6 @@
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
                     <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
                         <div class="img-wrapper">
                             <img :src="variantImage(variant)" @error="imgError(variant)">
