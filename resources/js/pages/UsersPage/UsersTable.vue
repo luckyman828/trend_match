@@ -5,7 +5,7 @@
         :contentStatus="readyStatus"
         loadingMsg="loading users"
         errorMsg="error loading users"
-        @errorCallback="() => initData()">
+        :errorCallback="() => initData()">
 
 
             <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">

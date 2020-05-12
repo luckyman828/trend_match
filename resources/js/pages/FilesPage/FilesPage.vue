@@ -4,7 +4,7 @@
             <button @click="onSetCurrentFolder(null)" class="invisible white-hover">
                 <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
             </button>
-            <div class="breadcrumb" v-for="(folder, index) in path" :key="folder.id">
+            <div class="breadcrumb" v-for="(folder, index) in getCurrentFilePath" :key="folder.id">
                 <template v-if="!currentFolder || folder.id != currentFolder.id">
                     <button @click="onSetCurrentFolder(folder, index)" class="invisible white-hover">
                         <i class="far fa-folder"></i>
@@ -24,8 +24,6 @@
         <h1>Files</h1>
 
         <FilesTable
-        :files="files" :folder="currentFolder" :selected="selected"
-        v-model="selected"
         @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
         @showFileOwnersFlyin="showFileOwnersFlyin"/>
 
@@ -55,18 +53,16 @@ export default {
         FileApproversFlyin,
     },
     data: function() { return {
-        selected: [],
         itemFilterIds: [],
         // teamFilterId: '-1',
         loadingOverwrite: false,
         unsub: '',
-        path: [],
         fileFlyinVisible: false,
         fileOwnersFlyinVisible: false,
         fileApproversFlyinVisible: false,
     }},
     computed: {
-        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId']),
+        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId', 'getCurrentFilePath']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
     },
     methods: {
@@ -88,23 +84,8 @@ export default {
             this.setCurrentFile(file)
             this.fileApproversFlyinVisible = true
         },
-        onSetCurrentFolder(folder, pathIndex) {
-            if (folder != null) {
-                // Remove folders after the new folder from the current path
-                if (pathIndex != null) {
-                    this.path.splice(pathIndex)
-                }
-                // Store what folder we are in now, so we know the path
-                this.path.push(folder)
-                // Set current folder
-                this.setCurrentFolder(folder)
-            } else {
-                // Reset the folder and path
-                this.path = []
-                // Set the current folder
-                this.setCurrentFolder(null)
-            }
-            this.selected = []
+        onSetCurrentFolder(folder) {
+            this.setCurrentFolder(folder)
         },
     },
     async created() {

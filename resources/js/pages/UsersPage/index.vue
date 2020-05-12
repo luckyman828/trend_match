@@ -1,11 +1,4 @@
 <template>
-    <!-- <PageLoader :status="status"
-    loadingMsg="loading users"
-    errorMsg="error loading users"
-    :errorCallback="() => fetchData()"
-    @workspaceChange="fetchData">
-        <UsersPage/>
-    </PageLoader> -->
     <PageLoader>
         <UsersPage/>
     </PageLoader>
@@ -21,27 +14,6 @@ export default {
     components: {
         UsersPage,
         PageLoader
-    },
-    data: function () { return {
-    }},
-    computed: {
-        ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('users', ['loadingUsers', 'getUsersStatus']),
-        // status () {
-        //     return this.getUsersStatus
-        // },
-    },
-    watch: {
-    },
-    methods: {
-        ...mapActions('users', ['fetchUsers']),
-        fetchData() {
-            // Fetch workspace data
-            // this.fetchUsers(this.currentWorkspace.id)
-        }
-    },
-    created () {
-        // this.fetchData()
     },
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <div class="fly-in-wrapper" :class="[{visible: isVisible}]" v-if="isVisible">
+    <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
             <!-- Error -->

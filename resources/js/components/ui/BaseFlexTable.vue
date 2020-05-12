@@ -60,7 +60,6 @@ export default {
     watch: {
         contentStatus: function(newVal, oldVal) {
             if (newVal == 'loading') {
-                console.log('set timeout')
                 // Wait 300 ms before setting the current folder status as loading
                 this.statusTimeout = setTimeout(() => this.isReady = false, 100)
             } 

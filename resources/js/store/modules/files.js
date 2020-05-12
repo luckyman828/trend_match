@@ -13,11 +13,14 @@ export default {
         currentFolder: null,
         status: 'loading',
         currentFolderStatus: null,
+        path: [],
     },
 
     getters: {
         loadingFiles: state => state.loading,
         filesStatus: state => state.status,
+        getFilesStatus: state => state.status,
+        getCurrentFilePath: state => state.path,
         getCurrentFolderStatus: state => state.currentFolderStatus,
         currentFile: state => state.currentFile,
         currentFolderId: state => state.currentFolderId,
@@ -144,11 +147,19 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
             let apiUrl = `/workspaces/${workspaceId}/files`
-
             // Check if the folder to set is a folder or root
             if (folder) {
                 apiUrl = `/files/${folder.id}/children`
+
+                // Update our path
+                commit('SET_CURRENT_PATH_FOLDER', folder)
+            } else {
+                // Reset the path
+                commit('SET_CURRENT_PATH_FOLDER', null)
             }
+            this.selected = []
+
+            // Send API request to fetch folder content
             await axios
                 .get(apiUrl)
                 .then(response => {
@@ -347,6 +358,18 @@ export default {
         removeApproverFromFile(state, { file, user }) {
             const userIndex = file.approvers.findIndex(x => x.id == user.id)
             file.approvers.splice(userIndex, 1)
+        },
+        SET_CURRENT_PATH_FOLDER(state, folder) {
+            // If no folder set the path to an empty array
+            if (!folder) state.path = []
+            else {
+                // Check if the folder already exists in our path
+                const index = state.path.findIndex(x => x.id == folder.id)
+                // If the folder exists, remove all folders after it
+                if (index >= 0) state.path.splice(index + 1)
+                // Else add it to the path
+                else state.path.push(folder)
+            }
         },
     },
 }

@@ -1,8 +1,5 @@
 <template>
-    <PageLoader :status="status"
-    loadingMsg="loading files"
-    errorMsg="error loading files"
-    :errorCallback="() => fetchData()">
+    <PageLoader>
         <FilesPage/>
     </PageLoader>
 </template>
@@ -17,23 +14,6 @@ export default {
     components: {
         FilesPage,
         PageLoader
-    },
-    data: function () { return {
-    }},
-    computed: {
-        ...mapGetters('files', ['filesStatus', 'files']),
-        status () {
-            return this.filesStatus
-        }
-    },
-    methods: {
-        ...mapActions('files', ['fetchFiles']),
-        fetchData() {
-            this.fetchFiles()
-        }
-    },
-    created() {
-        this.fetchData()
     },
 }
 </script>

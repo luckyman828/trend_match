@@ -3,7 +3,9 @@
 
         <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true"
         :contentStatus="readyStatus"
-        @errorCallback="() => initData()">
+        loadingMsg="loading teams"
+        errorMsg="error loading teams"
+        :errorCallback="() => initData()">
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
@@ -214,7 +216,7 @@ export default {
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
                 const contextMenu = this.$refs.contextMenuTeamCurrency
-                contextMenu.item = team;
+                contextMenu.item = team
                 contextMenu.show(mouseEvent)
             })
         },
