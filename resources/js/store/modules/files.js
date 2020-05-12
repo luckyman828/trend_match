@@ -96,7 +96,7 @@ export default {
         },
         async fetchFile({ commit, state, rootGetters }, fileid) {
             // Set the state to loading
-            commit('setFilesStatus', 'loading')
+            commit('SET_FILES_STATUS', 'loading')
 
             const apiUrl = `/files/${fileid}`
             let file
@@ -105,10 +105,10 @@ export default {
                 .then(response => {
                     file = response.data
                     commit('setCurrentFile', file)
-                    commit('setFilesStatus', 'success')
+                    commit('SET_FILES_STATUS', 'success')
                 })
                 .catch(err => {
-                    commit('setFilesStatus', 'error')
+                    commit('SET_FILES_STATUS', 'error')
                 })
             return file
         },
@@ -293,7 +293,7 @@ export default {
         SET_CURRENT_FOLDER_STATUS(state, status) {
             state.currentFolderStatus = status
         },
-        setFilesStatus(state, status) {
+        SET_FILES_STATUS(state, status) {
             state.status = status
         },
         insertFile(state, file) {

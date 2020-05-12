@@ -1,5 +1,6 @@
 <template>
     <PageLoader :status="status"
+    loadingMsg="loading users"
     :errorCallback="() => fetchData()"
     @workspaceChange="fetchData">
         <UsersPage/>

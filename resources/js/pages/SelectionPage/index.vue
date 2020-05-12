@@ -1,5 +1,10 @@
 <template>
-    <PageLoader :loading="loading">
+    <!-- <PageLoader :loading="loading">
+        <SelectionPage/>
+    </PageLoader> -->
+    <PageLoader :status="status"
+    loadingMsg="loading selection"
+    :errorCallback="() => fetchData()">
         <SelectionPage/>
     </PageLoader>
 </template>
@@ -22,8 +27,11 @@ export default {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('selections', ['currentSelectionStatus']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        loading () {
-            return (this.productsStatus != 'success' || this.currentSelectionStatus != 'success' || this.loadingData)
+        ...mapGetters('files', ['filesStatus']),
+        status () {
+            if (this.productsStatus == 'error' || this.currentSelectionStatus == 'error' || this.filesStatus == 'error') return 'error'
+            if (this.productsStatus == 'loading' || this.currentSelectionStatus == 'loading' || this.filesStatus == 'loading' || this.loadingData) return 'loading'
+            return 'success'
         },
     },
     methods: {
@@ -36,26 +44,29 @@ export default {
             await Promise.all(teams.map(async team => {
                 await this.fetchTeamUsers(team)
             }))
+        },
+        async fetchData() {
+            this.loadingData = true
+            // Fetch the current file and the products
+            const fileId = this.$route.params.fileId
+            this.fetchFile(fileId)
+    
+            // Fetch current selection
+            const selectionId = this.$route.params.selectionId
+            const selection = await this.fetchSelection({selectionId})
+    
+            // Fetch selection products
+            await this.fetchSelectionProducts({selections: [selection], addToState: true})
+    
+            // Fetch selections that are available for alignment for the auth user
+            const selections = await this.fetchSelections({fileId})
+            await this.filterSelectionsByAvailabilityForAlignment(selections)
+    
+            this.loadingData = false
         }
     },
-    async created() {
-        this.loadingData = true
-        // Fetch the current file and the products
-        const fileId = this.$route.params.fileId
-        this.fetchFile(fileId)
-
-        // Fetch current selection
-        const selectionId = this.$route.params.selectionId
-        const selection = await this.fetchSelection({selectionId})
-
-        // Fetch selection products
-        await this.fetchSelectionProducts({selections: [selection], addToState: true})
-
-        // Fetch selections that are available for alignment for the auth user
-        const selections = await this.fetchSelections({fileId})
-        await this.filterSelectionsByAvailabilityForAlignment(selections)
-
-        this.loadingData = false
+    created() {
+        this.fetchData()
     },
 }
 </script>

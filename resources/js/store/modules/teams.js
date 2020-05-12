@@ -6,6 +6,7 @@ export default {
 
     state: {
         loading: false,
+        status: null,
         currentTeam: null,
         currentTeamStatus: 'loading',
         availableTeams: [],
@@ -25,6 +26,7 @@ export default {
 
     getters: {
         loadingTeams: state => state.loading,
+        getTeamsStatus: state => state.status,
         currentTeamId: state => state.currentTeam.id,
         availableTeams: state => state.availableTeams,
         teams: state => state.teams,
@@ -58,6 +60,7 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setLoading', true)
+            commit('SET_TEAMS_STATUS', 'loading')
 
             const apiUrl = `/workspaces/${workspaceId}/teams`
 
@@ -68,12 +71,16 @@ export default {
                     const response = await axios.get(`${apiUrl}`)
                     Vue.set(state, 'teams', response.data)
                     commit('setLoading', false)
+                    commit('SET_TEAMS_STATUS', 'success')
                     succes = true
                 } catch (err) {
                     console.log('API error in teams.js :')
                     console.log(err)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
+                    if (tryCount <= 0) {
+                        commit('SET_TEAMS_STATUS', 'error')
+                        throw err
+                    }
                 }
             }
         },
@@ -207,6 +214,9 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        SET_TEAMS_STATUS(state, status) {
+            state.status = status
         },
         setCurrentTeam(state, team) {
             state.currentTeam = team

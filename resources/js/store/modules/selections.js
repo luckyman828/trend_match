@@ -170,7 +170,7 @@ export default {
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
-            commit('setCurrentSelectionStatus', 'loading')
+            commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
 
             const apiUrl = `/selections/${selectionId}`
             let selection
@@ -182,10 +182,10 @@ export default {
                     if (addToState) {
                         commit('SET_CURRENT_SELECTIONS', [selection])
                     }
-                    commit('setCurrentSelectionStatus', 'success')
+                    commit('SET_CURRENT_SELECTIONS_STATUS', 'success')
                 })
                 .catch(err => {
-                    commit('setCurrentSelectionStatus', 'error')
+                    commit('SET_CURRENT_SELECTIONS_STATUS', 'error')
                 })
             return selection
         },
@@ -446,7 +446,7 @@ export default {
         setStatus(state, status) {
             state.status = status
         },
-        setCurrentSelectionStatus(state, status) {
+        SET_CURRENT_SELECTIONS_STATUS(state, status) {
             state.currentSelectionStatus = status
         },
         setTeamsStatus(state, status) {
