@@ -65,7 +65,6 @@ export default {
         SelectionUsersFlyin,
     },
     data: function(){ return {
-        SelectionUsersFlyinVisible: false,
         loadingData: false,
     }},
     watch: {
@@ -82,13 +81,21 @@ export default {
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection', 'getSelections']),
+        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection', 'getSelections', 'getSelectionUsersFlyinIsVisible']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        SelectionUsersFlyinVisible: {
+            get() {
+                return this.getSelectionUsersFlyinIsVisible
+            },
+            set(value) {
+                this.SET_SELECTION_USERS_FLYIN_VISIBLE(value)
+            }
+        }
     },
     methods: {
-        ...mapMutations('files', ['setCurrentFile']),
+        ...mapMutations('files', ['SET_CURRENT_FILE']),
         ...mapActions('selections', ['fetchSelections', 'updateSelection']),
-        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
         async fetchData() {
             this.loadingData = true
             await this.fetchSelections({fileId: this.currentFile.id})
@@ -100,11 +107,11 @@ export default {
         },
         showNext() {
             if (this.nextFile)
-                this.setCurrentFile(this.nextFile)
+                this.SET_CURRENT_FILE(this.nextFile)
         },
         showPrev() {
             if (this.prevFile)
-                this.setCurrentFile(this.prevFile)
+                this.SET_CURRENT_FILE(this.prevFile)
         },
         goToEditSingle() {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })

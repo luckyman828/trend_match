@@ -1,6 +1,7 @@
 <template>
     <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="['action-'+product[currentAction], {'multi-selection': currentSelections.length > 1}]"
-    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)">
+    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)"
+    @click.ctrl="$refs.selectCheckbox.check()">
 
         <div class="product-details">
             <span v-if="product.newComment" class="circle tiny primary"></span>
@@ -134,36 +135,8 @@
                     <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
                 </button>
             </td>
+            
             <td class="action">
-                <!-- Single Selection Input only -->
-                <!-- <template v-if="currentSelections.length <= 1">
-
-                    <BaseButton class="" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
-                    :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                    @click="onUpdateAction(product, 'Focus', selection)">
-                        <i class="far fa-star"></i>
-                    </BaseButton>
-                    <BaseButton class=""  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
-                    :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                    @click="onUpdateAction(product, 'In', selection)">
-                        <i class="far fa-heart"></i>
-                        <span>In</span>
-                    </BaseButton>
-                    <BaseButton class=""  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
-                    :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                    @click="onUpdateAction(product, 'Out', selection)">
-                        <i class="far fa-times-circle"></i>
-                        <span>out</span>
-                    </BaseButton>
-                </template> -->
-                <!-- End Single Selection Input only -->
-                <!-- <button class="invisible ghost-hover primary" 
-                @click="onViewSingle"><span>View</span></button> -->
-
-
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
                     <div class="fly-over-wrapper">

@@ -141,6 +141,17 @@
         @submit="addUsersToTeam({team, users: usersToAdd}); usersToAdd = []"
         @cancel="usersToAdd = []"
         />
+
+        <BaseDialog ref="confirmRemoveUsers" type="confirm"
+        confirmColor="red" confirmText="Yes, remove them" cancelText="No, keep them">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-user-friends"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Are you sure you want to remove {{selectedUsers.length}} users from this team?</h3>
+        </BaseDialog>
+
     </div>
     <BaseLoader v-else-if="currentTeamStatus == 'loading'"/>
     <div v-else class="error-wrapper">
@@ -267,8 +278,8 @@ export default {
                 this.removeUsersFromTeam({users: [user], team: this.team})
                 this.selectedUsers = []
         },
-        onRemoveUsersFromTeam() {
-            if ( confirm(`Are you sure you want to remove ${this.selectedUsers.length} from this team?`) ) {
+        async onRemoveUsersFromTeam() {
+            if (await this.$refs.confirmRemoveUsers.confirm()) {
                 this.removeUsersFromTeam({users: JSON.parse(JSON.stringify(this.selectedUsers)), team: this.team})
                 this.selectedUsers = []
             }

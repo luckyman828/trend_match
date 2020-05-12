@@ -254,10 +254,6 @@ export default {
         },
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)
-            // console.log('on sort')
-            // this.sortKey = sortKey
-            // // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            // this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
     },
 }

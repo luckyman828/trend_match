@@ -136,6 +136,28 @@
         :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
         @submit="onUpdateTeamsCurrency"/>
 
+        <BaseDialog ref="confirmDeleteMultipleTeams" type="confirm"
+        confirmColor="red" confirmText="Yes, delete them" cancelText="No, keep them">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-users"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Are you sure you want to delete {{selectedTeams.length}} teams?</h3>
+            <p>They will be permanently deleted.</p>
+        </BaseDialog>
+
+        <BaseDialog ref="confirmDeleteTeam" type="confirm"
+        confirmColor="red" confirmText="Yes, delete it" cancelText="No, keep it">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-users"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Are you sure you want to delete this team?</h3>
+            <p>It will be permanently deleted.</p>
+        </BaseDialog>
+
     </div>
 </template>
 
@@ -272,14 +294,14 @@ export default {
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
-        onDeleteTeam(team) {
-            if (window.confirm('Are you sure you want to delete this team?\nIt will be permanently deleted.')) {
+        async onDeleteTeam(team) {
+            if (await this.$refs.confirmDeleteTeam.confirm()) {
                 this.deleteTeam(team)
                 this.selectedTeams = []
             } 
         },
-        onDeleteTeams() {
-            if (window.confirm(`Are you sure you want to delete ${this.selectedTeams.length} teams?\nIt will be permanently deleted.`)) {
+        async onDeleteTeams() {
+            if (await this.$refs.confirmDeleteMultipleTeams.confirm()) {
                 this.selectedTeams.forEach(team => {
                     this.deleteTeam(team)
                     this.selectedTeams = []

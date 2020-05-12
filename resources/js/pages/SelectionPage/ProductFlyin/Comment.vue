@@ -47,6 +47,16 @@
             </BaseButton>
             <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
         </div>
+
+        <BaseDialog ref="confirmDeleteComment" type="confirm"
+        confirmColor="red" confirmText="Yes, delete it">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-comment"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Are you sure you want to delete this comment?</h3>
+        </BaseDialog>
     </div>
 </template>
 
@@ -77,12 +87,10 @@ export default {
     },
     methods: {
         ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
-        onDeleteComment() {
-            window.confirm(
-                'Are you sure you want to delete this comment?'
-            )
-                ? this.deleteComment({product: this.product, comment: this.comment})
-                : false
+        async onDeleteComment() {
+            if (await this.$refs.confirmDeleteComment.confirm()) {
+                this.deleteComment({product: this.product, comment: this.comment})
+            }
         },
         retrySubmitComment() {
             this.insertOrUpdateComment({product: this.product, comment: this.comment})

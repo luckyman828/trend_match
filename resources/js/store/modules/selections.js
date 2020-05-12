@@ -14,6 +14,7 @@ export default {
         currentSelectionUsers: null,
         currentPDPSelection: null,
         selections: [],
+        usersFlyInVisible: false,
         currentSelections: [],
         selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
@@ -43,6 +44,7 @@ export default {
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {
@@ -205,7 +207,7 @@ export default {
             const apiUrl = `/selections/${selection.id}/users`
             await axios.get(apiUrl).then(response => {
                 // Vue.set(selection, 'users', response.data)
-                commit('addUsersToSelection', { selection, users: response.data })
+                commit('ADD_USERS_TO_SELECTION', { selection, users: response.data })
             })
             commit('setUsersStatus', 'success')
         },
@@ -217,7 +219,7 @@ export default {
             await axios.get(apiUrl).then(response => {
                 teams = response.data
                 // Commit mutation to state
-                commit('addTeamsToSelection', { selection, teams })
+                commit('ADD_TEAMS_TO_SELECTION', { selection, teams })
             })
             commit('setTeamsStatus', 'success')
             return teams
@@ -231,13 +233,47 @@ export default {
             } else {
                 apiUrl = `/selections/${selection.parent_id}/children`
             }
-            await axios.post(apiUrl, selection).then(async response => {
-                selection.id = response.data.id
-                commit('PROCESS_SELECTIONS', [selection])
-                if (addToState) {
-                    commit('insertSelections', { file, selections: [selection] })
-                }
-            })
+            await axios
+                .post(apiUrl, selection)
+                .then(async response => {
+                    selection.id = response.data.id
+                    commit('PROCESS_SELECTIONS', [selection])
+                    if (addToState) {
+                        commit('insertSelections', { file, selections: [selection] })
+                    }
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Selection created',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                            callback: () => showNewSelectionUsersFlyin(),
+                            callbackLabel: 'Manage users',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to creat the selection. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertSelection', { file, selection, addToState }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+
+            const showNewSelectionUsersFlyin = () => {
+                commit('SET_CURRENT_SELECTIONS', [selection])
+                commit('SET_SELECTION_USERS_FLYIN_VISIBLE', true)
+            }
         },
         async updateSelection({ commit, dispatch }, selection) {
             // Assume update
@@ -256,19 +292,49 @@ export default {
                 apiUrl = `/selections/${selection.id}`
             }
 
+            const wasCreated = !selection.id
+
             await axios({
                 method: requestMethod,
                 url: apiUrl,
                 data: requestBody,
-            }).then(async response => {
-                // Set the selections ID if not already set
-                if (!selection.id) selection.id = response.data.id
             })
+                .then(async response => {
+                    // Set the selections ID if not already set
+                    if (!selection.id) selection.id = response.data.id
+
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Selection ${wasCreated ? 'created' : 'updated'}`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Something went wrong trying to ${
+                                wasCreated ? 'create' : 'update'
+                            } the selection. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelection', selection),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
             // Commit mutation to state
             console.log(users)
-            await commit('addUsersToSelection', {
+            await commit('ADD_USERS_TO_SELECTION', {
                 selection,
                 users: users.map(user => {
                     if (ignoreRole) user.role = 'Member'
@@ -277,69 +343,154 @@ export default {
             })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
-            await axios.post(apiUrl, {
-                method: 'Add',
-                users: users.map(user => {
-                    return {
-                        id: user.id,
-                        role: ignoreRole ? 'Member' : user.role,
-                    }
-                }),
-            })
+            await axios
+                .post(apiUrl, {
+                    method: 'Add',
+                    users: users.map(user => {
+                        return {
+                            id: user.id,
+                            role: ignoreRole ? 'Member' : user.role,
+                        }
+                    }),
+                })
+                .then(() => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} user${users.length > 1 ? 's' : ''} added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                            callback: () =>
+                                dispatch('removeUsersFromSelection', {
+                                    selection,
+                                    users,
+                                }),
+                            callbackLabel: 'Undo',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Remove users again
+                    commit('REMOVE_USERS_FROM_SELECTION', { selection, users })
+                    dispatch('calculateSelectionUsers', selection)
+
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to update selection user(s). Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelectionUsers', { selection, users }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
             dispatch('calculateSelectionUsers', selection)
         },
-        async reAddUsersToSelection({ commit, dispatch }, { selection, users }) {
-            // Commit mutation to state
-            await commit('addUsersToSelection', {
-                selection,
-                users: users.map(user => {
-                    user.role = 'Member'
-                    return user
-                }),
-            })
-            // Send request to API
-            const apiUrl = `/selections/${selection.id}/users`
-            await axios.post(apiUrl, {
-                method: 'Remove',
-                users: users.map(user => {
-                    return {
-                        id: user.id,
-                        role: 'Member',
-                    }
-                }),
-            })
-            dispatch('calculateSelectionUsers', selection)
-        },
+        // async reAddUsersToSelection({ commit, dispatch }, { selection, users }) {
+        //     // Commit mutation to state
+        //     await commit('addUsersToSelection', {
+        //         selection,
+        //         users: users.map(user => {
+        //             user.role = 'Member'
+        //             return user
+        //         }),
+        //     })
+        //     // Send request to API
+        //     const apiUrl = `/selections/${selection.id}/users`
+        //     await axios.post(apiUrl, {
+        //         method: 'Remove',
+        //         users: users.map(user => {
+        //             return {
+        //                 id: user.id,
+        //                 role: 'Member',
+        //             }
+        //         }),
+        //     })
+        //     dispatch('calculateSelectionUsers', selection)
+        // },
         async updateSelectionSettings({ commit, dispatch }, selection) {
             // Send request to API
             const apiUrl = `/selections/${selection.id}/metadata`
-            await axios.put(apiUrl, selection.settings).catch(err => {
-                dispatch(
-                    'alerts/showAlert',
-                    'Something went wrong trying to save selection settings. Please try again.',
-                    { root: true }
-                )
-            })
+            await axios
+                .put(apiUrl, selection.settings)
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Settings updated',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to save selection settings. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelectionSettings', selection),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async updateSelectionUsers({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
             await commit('updateSelectionUsers', { selection, users })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/users`
-            await axios.post(apiUrl, {
-                method: 'Add',
-                users: users.map(x => {
-                    return {
-                        id: x.id,
-                        role: x.role,
-                    }
-                }),
-            })
+            await axios
+                .post(apiUrl, {
+                    method: 'Add',
+                    users: users.map(x => {
+                        return {
+                            id: x.id,
+                            role: x.role,
+                        }
+                    }),
+                })
+                .then(() => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} selection user${users.length > 1 ? 's' : ''} updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to update selection user(s). Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelectionUsers', { selection, users }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
             dispatch('calculateSelectionUsers', selection)
         },
         async removeUsersFromSelection({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
-            await commit('removeUsersFromSelection', { selection, users })
+            await commit('REMOVE_USERS_FROM_SELECTION', { selection, users })
             // Find the users to deny and the users to remove
             // Users added through a team have to be denied. Manually added users can simply be removed
             const usersToDeny = []
@@ -352,51 +503,202 @@ export default {
                 }
             })
             // Send request to API
+
+            // Remove users
             const apiUrl = `/selections/${selection.id}/users`
             if (usersToRemove.length > 0) {
-                await axios.post(apiUrl, {
-                    method: 'Remove',
-                    users: usersToRemove.map(x => {
-                        return {
-                            id: x.id,
-                        }
-                    }),
-                })
+                await axios
+                    .post(apiUrl, {
+                        method: 'Remove',
+                        users: usersToRemove.map(x => {
+                            return {
+                                id: x.id,
+                            }
+                        }),
+                    })
+                    .then(() => {
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${usersToRemove.length} user${usersToRemove.length > 1 ? 's' : ''} removed`,
+                                iconClass: 'fa-trash',
+                                type: 'danger',
+                                callback: () =>
+                                    dispatch('addUsersToSelection', {
+                                        selection,
+                                        users: usersToRemove,
+                                        ignoreRole: false,
+                                    }),
+                                callbackLabel: 'Undo',
+                            },
+                            { root: true }
+                        )
+                    })
+                    .catch(err => {
+                        // Re-add the users
+                        commit('ADD_USERS_TO_SELECTION', { selection, users: usersToRemove })
+                        dispatch('calculateSelectionUsers', selection)
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg:
+                                    'Something went wrong trying to remove user(s) from the selection. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () =>
+                                    dispatch('removeUsersFromSelection', { selection, users: usersToRemove }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                    })
             }
+
+            // Deny users
             if (usersToDeny.length > 0) {
-                await axios.post(apiUrl, {
-                    method: 'Add',
-                    users: usersToDeny.map(x => {
-                        return {
-                            id: x.id,
-                            role: 'Denied',
-                        }
-                    }),
-                })
+                await axios
+                    .post(apiUrl, {
+                        method: 'Add',
+                        users: usersToDeny.map(x => {
+                            return {
+                                id: x.id,
+                                role: 'Denied',
+                            }
+                        }),
+                    })
+                    .then(() => {
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${usersToDeny.length} team user${usersToDeny.length > 1 ? 's' : ''} excluded`,
+                                iconClass: 'fa-ban',
+                                type: 'danger',
+                                callback: () =>
+                                    dispatch('addUsersToSelection', {
+                                        selection,
+                                        users: usersToDeny,
+                                        ignoreRole: false,
+                                    }),
+                                callbackLabel: 'Undo',
+                            },
+                            { root: true }
+                        )
+                    })
+                    .catch(err => {
+                        // Re-add the users
+                        commit('ADD_USERS_TO_SELECTION', { selection, users: usersToDeny })
+                        dispatch('calculateSelectionUsers', selection)
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg:
+                                    'Something went wrong trying to exclude team user(s) from the selection. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('removeUsersFromSelection', { selection, users: usersToDeny }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                    })
             }
+
             dispatch('calculateSelectionUsers', selection)
         },
         async addTeamsToSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
-            await commit('addTeamsToSelection', { selection, teams })
+            await commit('ADD_TEAMS_TO_SELECTION', { selection, teams })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/teams`
-            await axios.post(apiUrl, {
-                method: 'Add',
-                team_ids: teams.map(x => x.id),
-            })
+            await axios
+                .post(apiUrl, {
+                    method: 'Add',
+                    team_ids: teams.map(x => x.id),
+                })
+                .then(() => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${teams.length} team ${teams.length > 1 ? 's' : ''} added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Commit mutation to state
+                    commit('REMOVE_TEAMS_FROM_SELECTION', { selection, teams })
+                    dispatch('calculateSelectionUsers', selection)
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to add team(s) to the selection. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('addTeamsToSelection', { selection, teams }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
             dispatch('calculateSelectionUsers', selection)
         },
         async removeTeamsFromSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
-            commit('removeTeamsFromSelection', { selection, teams })
+            commit('REMOVE_TEAMS_FROM_SELECTION', { selection, teams })
             // Send request to API
             const apiUrl = `/selections/${selection.id}/teams`
-            await axios.post(apiUrl, {
-                method: 'Remove',
-                team_ids: teams.map(x => x.id),
-            })
+            await axios
+                .post(apiUrl, {
+                    method: 'Remove',
+                    team_ids: teams.map(x => x.id),
+                })
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${teams.length} team ${teams.length > 1 ? 's' : ''} removed`,
+                            iconClass: 'fa-trash',
+                            type: 'danger',
+                            callback: () => dispatch('addTeamsToSelection', { selection, teams }),
+                            callbackLabel: 'Undo',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Re-add the team
+                    reAddTeamsToSelection()
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to remove team(s) from the selection. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('removeTeamsFromSelection', { selection, teams }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
             dispatch('calculateSelectionUsers', selection)
+
+            const reAddTeamsToSelection = () => {
+                commit('ADD_TEAMS_TO_SELECTION', { selection, teams })
+                dispatch('calculateSelectionUsers', selection)
+            }
         },
         async calculateSelectionUsers({ commit, dispatch }, selection) {
             // This functions finds all the users who have access to the selection and adds them to the users array on the selection
@@ -429,7 +731,33 @@ export default {
             commit('DELETE_SELECTION', selection)
             // Send request to API
             const apiUrl = `/selections/${selection.id}`
-            await axios.delete(apiUrl)
+            await axios
+                .delete(apiUrl)
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Selection deleted',
+                            iconClass: 'fa-trash',
+                            type: 'danger',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to delete the selection. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('deleteSelection', selection),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async deleteAllSelectionDescendants({ commit, dispatch }, selection) {
             selection.children.forEach(child => {
@@ -464,6 +792,9 @@ export default {
         SET_CURRENT_PDP_SELECTION(state, selection) {
             state.currentPDPSelection = selection
         },
+        SET_SELECTION_USERS_FLYIN_VISIBLE(state, bool) {
+            state.usersFlyInVisible = bool
+        },
         insertSelections(state, { selections, method }) {
             // Check if we have already instantiated selections
             if (method == 'set') {
@@ -485,7 +816,7 @@ export default {
         setSelectionSettings(state, { selection, settings }) {
             Vue.set(selection, 'settings', settings)
         },
-        addUsersToSelection(state, { selection, users }) {
+        ADD_USERS_TO_SELECTION(state, { selection, users }) {
             // Instantiate the users object as a reactive object if it doesnt already exist
             if (selection.users) {
                 selection.users.push(...users)
@@ -505,14 +836,14 @@ export default {
                 }
             })
         },
-        removeUsersFromSelection(state, { selection, users }) {
+        REMOVE_USERS_FROM_SELECTION(state, { selection, users }) {
             // Loop through the users and remove them
             users.forEach(user => {
                 const userIndex = selection.users.findIndex(x => x.id == user.id)
                 selection.users.splice(userIndex, 1)
             })
         },
-        addTeamsToSelection(state, { selection, teams }) {
+        ADD_TEAMS_TO_SELECTION(state, { selection, teams }) {
             // Instantiate the teams object as a reactive object if it doesnt already exist
             if (selection.teams) {
                 selection.teams.push(...teams)
@@ -524,7 +855,7 @@ export default {
             const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) stateSelection.team_count = selection.teams.length
         },
-        removeTeamsFromSelection(state, { selection, teams }) {
+        REMOVE_TEAMS_FROM_SELECTION(state, { selection, teams }) {
             teams.forEach(team => {
                 const teamIndex = selection.teams.findIndex(x => x.id == team.id)
                 selection.teams.splice(teamIndex, 1)

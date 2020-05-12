@@ -1,15 +1,45 @@
+import UUID from 'vue-uuid'
+
 export default {
     namespaced: true,
 
-    state: {},
+    state: {
+        snackbarID: 0,
+        snackbars: [],
+        showDialogue: false,
+    },
 
-    getters: {},
+    getters: {
+        getSnackbars: state => state.snackbars,
+        getAlert: state => state.alert,
+        getDialogueIsVisible: state => state.showDialogue,
+    },
 
     actions: {
-        showAlert({ commit }, msg) {
+        testAlert({ state }, msg) {
             alert(msg)
         },
     },
 
-    mutations: {},
+    mutations: {
+        SHOW_ALERT(state, {}) {},
+        SHOW_SNACKBAR(state, { msg, type, iconClass, callback, callbackLabel, duration, timeoutCallback }) {
+            // TYPE = success | danger | warning | info
+            state.snackbars.push({
+                id: state.snackbarID,
+                msg,
+                type,
+                iconClass,
+                callback,
+                callbackLabel,
+                duration,
+                timeoutCallback,
+            })
+            state.snackbarID++
+        },
+        DELETE_SNACKBAR(state, snackbar) {
+            const index = state.snackbars.findIndex(x => x.id == snackbar.id)
+            state.snackbars.splice(index, 1)
+        },
+    },
 }
