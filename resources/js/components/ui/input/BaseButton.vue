@@ -1,5 +1,5 @@
 <template>
-    <div class="button-wrapper">
+    <div class="button-wrapper" v-tooltip="disabled && disabledTooltip">
         <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}]"
         @click="!disabled && $emit('click', $event)">
             <slot/>
@@ -19,6 +19,7 @@ export default {
         'hotkey',
         'disabled',
         'tooltip',
+        'disabledTooltip',
     ],
 }
 </script>

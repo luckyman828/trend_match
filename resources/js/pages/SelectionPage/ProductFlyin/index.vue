@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :next="nextProduct" :prev="prevProduct"
+            <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <template v-slot:left>
                     <div class="item-group product-title-wrapper">
@@ -15,6 +15,7 @@
                 <template v-slot:right>
                     <div class="item-group">
                         <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
+                        <div class="button" v-tooltip="{content:'test popover', container: '.the-flyin-header'}"><span>Test</span></div>
                     </div>
                     <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
@@ -53,6 +54,7 @@
                 </div>
 
                 <div class="product-variants" v-dragscroll>
+                    <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
                     <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
                         <div class="img-wrapper">
                             <img :src="variantImage(variant)" @error="imgError(variant)">

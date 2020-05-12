@@ -14,8 +14,23 @@
                             <i class="far fa-user-shield"></i>
                             <span>{{file.owner_count || 0}} File owners</span>
                         </button> -->
+
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can edit files'"
+                        disabledTooltip="Only admins can hide/unhide selections"
+                        @click="onToggleAllSelectionsLocked">
+                        <i class="far fa-lock"></i>
+                            <span>Lock/Undlock all selections</span>
+                        </BaseButton>
+                        
+                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can lock/unlock selections"
+                        @click="onToggleAllSelectionsVisibility">
+                            <i class="far fa-eye"></i>
+                            <span>Hide/Show all selections</span>
+                        </BaseButton>
+
+                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can edit files"
                         @click="goToEditSingle">
                             <span>View / Edit products</span>
                         </BaseButton>
@@ -67,12 +82,12 @@ export default {
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection']),
+        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection', 'getSelections']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
     },
     methods: {
         ...mapMutations('files', ['setCurrentFile']),
-        ...mapActions('selections', ['fetchSelections']),
+        ...mapActions('selections', ['fetchSelections', 'updateSelection']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async fetchData() {
             this.loadingData = true
@@ -94,6 +109,39 @@ export default {
         goToEditSingle() {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
+        onToggleAllSelectionsLocked() {
+            const selections = this.getSelections
+            const makeLocked = selections[0].is_open 
+            selections.map(selection => {
+                // Check if the selection is locked
+                if (makeLocked) {
+                    selection.open_from = new Date("9999")
+                    // Set To to now
+                    selection.open_to = null
+                } else {
+                    selection.open_from = null
+                    selection.open_to = null
+                }
+                this.updateSelection(selection)
+            })
+        },
+        onToggleAllSelectionsVisibility() {
+            // Use the first selection to determine if we are opening or closing all
+            const selections = this.getSelections
+            const makeHidden = selections[0].is_visible 
+            selections.map(selection => {
+                // Check if the selection is visible
+                if (makeHidden) {
+                    // Set To to now
+                    selection.visible_from = new Date("9999")
+                    selection.visible_to = null
+                } else {
+                    selection.visible_from = null
+                    selection.visible_to = null
+                }
+                this.updateSelection(selection)
+            })
+        }
     },
     created() {
         if (this.currentFile) {
