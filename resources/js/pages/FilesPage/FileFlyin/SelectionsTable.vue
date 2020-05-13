@@ -656,7 +656,7 @@ export default {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
         'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
         'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
-        ...mapMutations('selections', ['insertSelections', 'REMOVE_SELECTION']),
+        ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles']),
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
@@ -863,7 +863,7 @@ export default {
         clearUnsaved({selection, parent}) {
             // Check if the selection is saved
             if (!selection.id) {
-                this.REMOVE_SELECTION(selection)
+                this.DELETE_SELECTION(selection)
             }
         },
         async onShowCloneSetupContext(e) {
