@@ -68,16 +68,18 @@ export default {
                 .then(response => {
                     Vue.set(comment, 'error', false)
                     // If the comment already had an ID -> it got updated give the user a confirmation message
-                    const wasCreated = !comment.id
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `Comment ${wasCreated ? 'created' : 'updated'}`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
+                    // const wasCreated = !comment.id
+                    // if (!wasCreated) {
+                    //     commit(
+                    //         'alerts/SHOW_SNACKBAR',
+                    //         {
+                    //             msg: `Comment ${wasCreated ? 'created' : 'updated'}`,
+                    //             iconClass: 'fa-check',
+                    //             type: 'success',
+                    //         },
+                    //         { root: true }
+                    //     )
+                    // }
 
                     // Set the given ID to the comment if we were posting a new comment
                     // if (!comment.id) comment.id = response.data.id

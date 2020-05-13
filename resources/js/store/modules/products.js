@@ -209,11 +209,14 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     products = response.data
-                    if (addToState) commit('insertProducts', { products, method: 'set' })
-                    commit('PROCESS_PRODUCTS', products)
+                    if (addToState) {
+                        commit('insertProducts', { products, method: 'set' })
+                        commit('PROCESS_PRODUCTS', products)
+                    }
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
+                    console.log(err)
                     commit('setProductStatus', 'error')
                 })
             return products
@@ -643,6 +646,7 @@ export default {
                             return product.prices[0]
                         }
                     },
+                    configurable: true,
                 })
                 //Define default prices directly on the product
                 Object.defineProperty(product, 'wholesale_price', {
@@ -686,6 +690,7 @@ export default {
                         // If nothing else worked, return the first available price
                         return product.prices[0]
                     },
+                    configurable: true,
                 })
 
                 // Dynamically Calculated Actions
@@ -795,6 +800,7 @@ export default {
                         // If nothing else worked, return the first available price
                         return product.prices[0]
                     },
+                    configurable: true,
                 })
 
                 //Define default prices directly on the product
