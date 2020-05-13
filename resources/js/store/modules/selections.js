@@ -37,9 +37,11 @@ export default {
         selectionsStatus: state => state.status,
         getSelectionsStatus: state => state.status,
         currentSelectionStatus: state => state.currentSelectionStatus,
-        selectionUsersStatus: state => state.usersStatus,
-        selectionTeamsStatus: state => state.teamsStatus,
+        getCurrentSelectionStatus: state => state.currentSelectionStatus,
+        getSelectionUsersStatus: state => state.usersStatus,
+        getSelectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelections[0],
+        getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
@@ -171,7 +173,10 @@ export default {
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
+            console.log('fetch selection')
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
+            commit('SET_SELECTION_USERS_STATUS', 'loading')
+            commit('SET_SELECTION_TEAMS_STATUS', 'loading')
 
             const apiUrl = `/selections/${selectionId}`
             let selection
@@ -180,13 +185,18 @@ export default {
                 .then(response => {
                     selection = response.data
                     commit('PROCESS_SELECTIONS', [selection])
+                    commit('UPDATE_SELECTION', selection)
                     if (addToState) {
                         commit('SET_CURRENT_SELECTIONS', [selection])
                     }
                     commit('SET_CURRENT_SELECTIONS_STATUS', 'success')
+                    commit('SET_SELECTION_USERS_STATUS', 'success')
+                    commit('SET_SELECTION_TEAMS_STATUS', 'success')
                 })
                 .catch(err => {
                     commit('SET_CURRENT_SELECTIONS_STATUS', 'error')
+                    commit('SET_SELECTION_USERS_STATUS', 'error')
+                    commit('SET_SELECTION_TEAMS_STATUS', 'error')
                 })
             return selection
         },
@@ -200,29 +210,29 @@ export default {
             })
             return settings
         },
-        async fetchSelectionUsers({ commit, dispatch }, selection) {
-            // Get users for selection
-            commit('setUsersStatus', 'loading')
-            const apiUrl = `/selections/${selection.id}/users`
-            await axios.get(apiUrl).then(response => {
-                // Vue.set(selection, 'users', response.data)
-                commit('addUsersToSelection', { selection, users: response.data })
-            })
-            commit('setUsersStatus', 'success')
-        },
-        async fetchSelectionTeams({ commit, dispatch }, selection) {
-            // Get teams for selection
-            commit('setTeamsStatus', 'loading')
-            let teams = []
-            const apiUrl = `/selections/${selection.id}/teams`
-            await axios.get(apiUrl).then(response => {
-                teams = response.data
-                // Commit mutation to state
-                commit('addTeamsToSelection', { selection, teams })
-            })
-            commit('setTeamsStatus', 'success')
-            return teams
-        },
+        // async fetchSelectionUsers({ commit, dispatch }, selection) {
+        //     // Get users for selection
+        //     commit('SET_SELECTION_USERS_STATUS', 'loading')
+        //     const apiUrl = `/selections/${selection.id}/users`
+        //     await axios.get(apiUrl).then(response => {
+        //         // Vue.set(selection, 'users', response.data)
+        //         commit('addUsersToSelection', { selection, users: response.data })
+        //     })
+        //     commit('SET_SELECTION_USERS_STATUS', 'success')
+        // },
+        // async fetchSelectionTeams({ commit, dispatch }, selection) {
+        //     // Get teams for selection
+        //     commit('SET_SELECTION_TEAMS_STATUS', 'loading')
+        //     let teams = []
+        //     const apiUrl = `/selections/${selection.id}/teams`
+        //     await axios.get(apiUrl).then(response => {
+        //         teams = response.data
+        //         // Commit mutation to state
+        //         commit('addTeamsToSelection', { selection, teams })
+        //     })
+        //     commit('SET_SELECTION_TEAMS_STATUS', 'success')
+        //     return teams
+        // },
         async insertSelection({ commit, dispatch }, { file, selection, addToState = true }) {
             // Check if we are inserting a master or a child
             let apiUrl = ''
@@ -252,7 +262,7 @@ export default {
                 requestMethod = 'post'
                 apiUrl = `/files/${file.id}/selections`
             } else {
-                commit('updateSelection', selection)
+                commit('UPDATE_SELECTION', selection)
                 requestMethod = 'put'
                 apiUrl = `/selections/${selection.id}`
             }
@@ -449,10 +459,10 @@ export default {
         SET_CURRENT_SELECTIONS_STATUS(state, status) {
             state.currentSelectionStatus = status
         },
-        setTeamsStatus(state, status) {
+        SET_SELECTION_TEAMS_STATUS(state, status) {
             state.teamsStatus = status
         },
-        setUsersStatus(state, status) {
+        SET_SELECTION_USERS_STATUS(state, status) {
             state.usersStatus = status
         },
         setCurrentSelection(state, selection) {
@@ -476,9 +486,13 @@ export default {
             const index = state.selections.findIndex(x => x.id == selection.id)
             state.selections.splice(index, 1)
         },
-        updateSelection(state, selection) {
+        UPDATE_SELECTION(state, selection) {
             const stateSelection = state.selections.find(x => x.id == selection.id)
             if (stateSelection) {
+                // Make users, teams and denied_users reactive
+                if (selection.users) Vue.set(stateSelection, 'users', selection.users)
+                if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
+                if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
                 Object.assign(stateSelection, selection)
             }
         },

@@ -1,11 +1,15 @@
 <template>
     <div class="selection-users-table">
-        <BaseFlexTable :stickyHeader="false">
+        <BaseFlexTable :stickyHeader="false"
+        :contentStatus="readyStatus"
+        loadingMsg="loading users"
+        errorMsg="error loading users"
+        :errorCallback="() => initData()">
             <template v-slot:tabs>
-                <BaseTableTab label="Members" :count="selection.users.length" 
+                <BaseTableTab label="Members" :count="selection.users ? selection.users.length : 0" 
                 modelValue="Members" v-model="currentUsersTableTab" 
                 @change="selected = []"/>
-                <BaseTableTab label="Excluded" :count="selection.denied_users.length"
+                <BaseTableTab label="Excluded" :count="selection.denied_users? selection.denied_users.length : 0"
                 modelValue="Excluded" v-model="currentUsersTableTab" 
                 @change="selected = []"/>
             </template>
@@ -15,7 +19,7 @@
                         <h3>Selection Members</h3>
                     </template>
                     <template v-slot:right>
-                        <span>{{users.length}} records</span>
+                        <span>{{selection.users ? selection.users.length : 0}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -36,7 +40,7 @@
             <template v-slot:body>
                 <!-- Selection Members -->
                 <template v-if="currentUsersTableTab == 'Members'">
-                    <tr v-for="(user, index) in users" :key="user.id" class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive(user)}"
+                    <tr v-for="(user, index) in selection.users" :key="user.id" class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive(user)}"
                     @click.ctrl="$refs.selectBox[index].check()"
                     @contextmenu="showUserContext($event, user)">
                         <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
@@ -169,11 +173,6 @@ import sortArray from '../../mixins/sortArray'
 
 export default {
     name: 'selectionUsersTable',
-    props: [
-        'selection',
-        'users',
-        'authUserIsOwner',
-    ],
     mixins: [
         sortArray
     ],
@@ -184,12 +183,25 @@ export default {
         userToEdit: null,
         contextUser: null,
         contextMouseEvent: null,
-        currentUsersTableTab: 'Members'
+        currentUsersTableTab: 'Members',
+        authUserIsOwner: false,
     }},
     computed: {
-        ...mapGetters('selections', ['availableSelectionRoles', 'getAuthUserHasSelectionEditAccess']),
+        ...mapGetters('selections', {
+            selection: 'getCurrentSelection',
+            getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
+            getSelectionUsersStatus: 'getSelectionUsersStatus',
+            availableSelectionRoles: 'availableSelectionRoles',
+        }),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        // ...mapGetters('users', ['getUsersStatus', 'users']),
+        ...mapGetters('users', {workspaceUsers: 'users', getUsersStatus: 'getUsersStatus'}),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
+        readyStatus() {
+            if (this.getUsersStatus == 'error' || this.getSelectionUsersStatus == 'error') return 'error'
+            if (this.getUsersStatus == 'loading' || this.getSelectionUsersStatus == 'error') return 'loading'
+            return 'success'
+        },
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
@@ -198,15 +210,26 @@ export default {
                 return this.selection.type != 'Master' ? x.role != 'Approver' : true
             })
         },
-        ...mapGetters('users', {workspaceUsers: 'users'}),
         availableUsers() {
-            const allUsers = this.workspaceUsers
-            // Filter the available users to exclude users already added
-            return allUsers.filter(user => !this.users.find(x => x.id == user.id))
+            if (!this.selection.users || !this.workspaceUsers) return []
+            // Users who are on the workspace and not on the team
+            const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
+            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
         },
     },
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
+        ...mapActions('users', ['fetchUsers']),
+        initData(forceRefresh) {
+            // Check if we have any workspace teams, else fetch them
+            if (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
+
+            // Fetch selection with users and teams
+            if (forceRefresh || (this.getSelectionUsersStatus != 'loading' && !this.selection.users)) {
+                this.fetchSelection({selectionId: this.selection.id, addToState: false})
+            }
+            this.authUserIsOwner = this.selection.your_role == 'Owner'
+        },
         contextMenuIsActive (user) {
             return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == user.id && this.selected.length <= 1
         },
@@ -275,6 +298,9 @@ export default {
             this.removeUsersFromSelection({selection: this.selection, users: usersToRemove})
             this.selected = []
         },
+    },
+    created() {
+        this.initData()
     }
 }
 </script>

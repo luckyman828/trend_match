@@ -1,13 +1,17 @@
 <template>
     <div class="selection-teams-table">
-        <BaseFlexTable :stickyHeader="false">
+        <BaseFlexTable :stickyHeader="false"
+        :contentStatus="readyStatus"
+        loadingMsg="loading teams"
+        errorMsg="error loading teams"
+        :errorCallback="() => initData()">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
                         <h3>Selection Teams</h3>
                     </template>
                     <template v-slot:right>
-                        <span>{{selection.teams.length}} records</span>
+                        <span>{{selection.teams ? selection.teams.length : 0}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -99,10 +103,6 @@ import sortArray from '../../mixins/sortArray'
 
 export default {
     name: 'selectionTeamsTable',
-    props: [
-        'selection',
-        'authUserIsOwner'
-    ],
     mixins: [
         sortArray
     ],
@@ -112,24 +112,47 @@ export default {
         selected: [],
         teamsToAdd: [],
         contextTeam: null,
+        authUserIsOwner: false,
     }},
     computed: {
-        ...mapGetters('teams', ['teams']),
-        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        ...mapGetters('teams', ['teams', 'getTeamsStatus']),
+        ...mapGetters('selections', {
+            selection: 'getCurrentSelection',
+            getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
+            getSelectionTeamsStatus: 'getSelectionTeamsStatus'
+        }),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
+        readyStatus() {
+            if (this.getTeamsStatus == 'error' || this.getSelectionTeamsStatus == 'error') return 'error'
+            if (this.getTeamsStatus == 'loading' || this.getSelectionTeamsStatus == 'error') return 'loading'
+            return 'success'
+        },
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
         availableTeams() {
+            if (!this.selection.teams) return []
             const allTeams = this.teams
-            // return allTeams
             // Filter the available teams to exclude teams already added
             return allTeams.filter(team => !this.selection.teams.find(x => x.id == team.id))
         }
     },
+    watch: {
+        // selection
+    },
     methods: {
-        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection']),
-        ...mapActions('teams', ['fetchTeamUsers']),
+        ...mapActions('selections', ['addTeamsToSelection','removeTeamsFromSelection', 'updateSelection', 'fetchSelection']),
+        ...mapActions('teams', ['fetchTeamUsers', 'fetchTeams']),
+        initData(forceRefresh) {
+            // Check if we have any workspace teams, else fetch them
+            if (this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading') this.fetchTeams()
+
+            // Fetch selection with users and teams
+            if (forceRefresh || (this.getSelectionTeamsStatus != 'loading' && !this.selection.teams)) {
+                this.fetchSelection({selectionId: this.selection.id, addToState: false})
+            }
+            this.authUserIsOwner = this.selection.your_role == 'Owner'
+        },
         contextMenuIsActive (team) {
             return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == team.id && this.selected.length <= 1
         },
@@ -179,6 +202,9 @@ export default {
             this.removeTeamsFromSelection({selection: this.selection, teams: teamsToRemove})
             this.selected = []
         },
+    },
+    created() {
+        this.initData()
     }
 }
 </script>

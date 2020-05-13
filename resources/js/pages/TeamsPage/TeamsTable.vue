@@ -48,8 +48,7 @@
             </template>
         </BaseFlexTable>
 
-        <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"
-        v-if="teamFlyInVisible && currentTeam" :team="currentTeam"/>
+        <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"/>
 
         <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps"
         :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyC', 'KeyD']"

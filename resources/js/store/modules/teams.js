@@ -35,6 +35,7 @@ export default {
         getCurrentTeam: state => state.currentTeam,
         currentTeamStatus: state => state.currentTeamStatus,
         nextTeam: (state, getters) => {
+            if (!getters.currentTeam) return
             const available = getters.availableTeams
             const currentId = getters.currentTeam.id
             if (currentId && available.length > 0) {
@@ -45,6 +46,7 @@ export default {
             }
         },
         prevTeam: (state, getters) => {
+            if (!getters.currentTeam) return
             const available = getters.availableTeams
             const currentId = getters.currentTeam.id
             if (currentId && available.length > 0) {

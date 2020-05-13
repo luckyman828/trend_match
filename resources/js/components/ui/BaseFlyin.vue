@@ -9,7 +9,7 @@
             <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'"/>
 
             <!-- Ready -->
-            <template v-else>
+            <template v-else-if="isVisible">
                 <slot name="header" :toggle="toggle"/>
                 <div class="body" :style="columnStyle">
                     <slot :toggle="toggle"/>
