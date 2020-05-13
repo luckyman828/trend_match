@@ -32,6 +32,7 @@ export default {
         teams: state => state.teams,
         availableTeamRoles: state => state.availableTeamRoles,
         currentTeam: state => state.currentTeam,
+        getCurrentTeam: state => state.currentTeam,
         currentTeamStatus: state => state.currentTeamStatus,
         nextTeam: (state, getters) => {
             const available = getters.availableTeams
@@ -91,7 +92,7 @@ export default {
             await axios
                 .get(`${apiUrl}`)
                 .then(response => {
-                    commit('addUsersToTeam', { team, users: response.data })
+                    commit('SET_TEAM_USERS', { team, users: response.data })
                     state.currentTeamStatus = 'success'
                 })
                 .catch(err => {
@@ -234,6 +235,9 @@ export default {
         deleteTeam(state, team) {
             const index = state.teams.findIndex(x => x.id == team.id)
             state.teams.splice(index, 1)
+        },
+        SET_TEAM_USERS(state, { team, users }) {
+            Vue.set(team, 'users', users)
         },
         addUsersToTeam(state, { team, users }) {
             if (team.users) {
