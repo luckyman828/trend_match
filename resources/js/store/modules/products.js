@@ -210,7 +210,7 @@ export default {
                 .then(response => {
                     products = response.data
                     if (addToState) commit('insertProducts', { products, method: 'set' })
-                    commit('PROCESS_PRODUCTS')
+                    commit('PROCESS_PRODUCTS', products)
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
@@ -306,7 +306,10 @@ export default {
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
-                if (addToState) commit('insertProducts', { products, method: 'add' })
+                if (addToState) {
+                    commit('insertProducts', { products, method: 'add' })
+                    commit('PROCESS_PRODUCTS', products)
+                }
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -314,6 +317,8 @@ export default {
                         products: products,
                     })
                     .then(response => {
+                        // Resort the products
+                        commit('SORT_PRODUCTS')
                         // Alert the user
                         commit(
                             'alerts/SHOW_SNACKBAR',
@@ -347,6 +352,8 @@ export default {
                             { root: true }
                         )
                     })
+            }).catch(err => {
+                console.log(err)
             })
         },
         instantiateNewProduct({ commit }) {
@@ -611,8 +618,7 @@ export default {
         alertError: state => {
             window.alert('Network error. Please check your connection')
         },
-        PROCESS_PRODUCTS: state => {
-            const products = state.products
+        PROCESS_PRODUCTS(state, products) {
             products.map(product => {
                 // ---- START PRICES ----
                 // Currency
