@@ -312,6 +312,7 @@ export default {
                 if (addToState) {
                     commit('insertProducts', { products, method: 'add' })
                     commit('PROCESS_PRODUCTS', products)
+                    commit('SORT_PRODUCTS')
                 }
                 const apiUrl = `/files/${file.id}/products`
                 axios
@@ -320,13 +321,13 @@ export default {
                         products: products,
                     })
                     .then(response => {
-                        // Resort the products
-                        commit('SORT_PRODUCTS')
                         // Alert the user
                         commit(
                             'alerts/SHOW_SNACKBAR',
                             {
-                                msg: 'Product created',
+                                msg: `${products.length > 1 ? products.length + ' ' : ''}Product${
+                                    products.length > 1 ? 's' : ''
+                                } created`,
                                 iconClass: 'fa-check',
                                 type: 'success',
                             },
@@ -548,7 +549,9 @@ export default {
             state.loading = bool
         },
         SORT_PRODUCTS(state) {
-            sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
+            if (state.lastSort) {
+                sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
+            }
         },
         setProductStatus(state, status) {
             state.status = status
