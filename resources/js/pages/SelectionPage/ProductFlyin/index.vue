@@ -15,7 +15,6 @@
                 <template v-slot:right>
                     <div class="item-group">
                         <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
-                        <div class="button" v-tooltip="{content:'test popover', container: '.the-flyin-header'}"><span>Test</span></div>
                     </div>
                     <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
