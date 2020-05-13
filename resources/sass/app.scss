@@ -918,12 +918,12 @@ i.has-tooltip {
     }
 
     &[x-placement^='top'] {
-        padding-bottom: 5px;
+        padding-bottom: 8px;
 
         .tooltip-arrow {
             border-bottom-width: 0;
             border-top-color: $divider;
-            bottom: 0;
+            bottom: 3px;
             left: 0;
 
             &::after {
@@ -936,15 +936,12 @@ i.has-tooltip {
     }
 
     &[x-placement^='bottom'] {
-        padding-top: 5px;
+        padding-top: 8px;
 
         .tooltip-arrow {
             border-top-width: 0;
             border-bottom-color: $divider;
-            top: 0;
-            // left: 50%;
-            // 实战bug3： x-arrow自动会计算
-            // transform: translateX(-50%);
+            top: 3px;
             left: 0;
 
             &::after {
@@ -957,13 +954,13 @@ i.has-tooltip {
     }
 
     &[x-placement^='right'] {
-        padding-left: 5px;
+        padding-left: 8px;
 
         .tooltip-arrow {
             border-left-width: 0;
             border-right-color: $divider;
             top: 0;
-            left: 0;
+            left: 3px;
 
             &::after {
                 border-left-width: 0;
@@ -975,13 +972,13 @@ i.has-tooltip {
     }
 
     &[x-placement^='left'] {
-        padding-right: 5px;
+        padding-right: 8px;
 
         .tooltip-arrow {
             border-right-width: 0;
             border-left-color: $divider;
             top: 0;
-            right: 0;
+            right: 3px;
 
             &::after {
                 border-right-width: 0;
