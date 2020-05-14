@@ -179,7 +179,7 @@ export default {
                 selection.open_from = new Date("9999")
                 // Set To to now
                 selection.open_to = null
-                } else {
+            } else {
                 selection.open_from = null
                 selection.open_to = null
             }

@@ -94,6 +94,26 @@ export default {
             }
             return roots
         },
+        getSelectionTree: state => selection => {
+            const list = state.selections
+            let map = {},
+                node,
+                i,
+                nodeToReturn
+            for (i = 0; i < list.length; i += 1) {
+                map[list[i].id] = i // initialize the map
+                Vue.set(list[i], 'children', []) // initialize the children
+            }
+            for (i = 0; i < list.length; i += 1) {
+                node = list[i]
+                if (node.id == selection.id) nodeToReturn = node
+                if (map[node.parent_id] != null) {
+                    // if you have dangling branches check that map[node.parentId] exists
+                    list[map[node.parent_id]].children.push(node)
+                }
+            }
+            return nodeToReturn
+        },
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
         },
@@ -768,24 +788,73 @@ export default {
                 commit('DELETE_SELECTION', child)
             })
         },
-        async togglePresenterMode({ dispatch, commit }, selection) {
+        // async unlockAllSelectionDescendants({ commit, dispatch }, selection) {
+        //     selection.open_from = null
+        //     selection.open_to = null
+        //     dispatch('updateSelection', selection)
+
+        //     selection.children.forEach(childSelection => {
+        //         dispatch('unlockAllSelectionDescendants', childSelection)
+        //     })
+        // },
+        // async unhidellSelectionDescendants({ commit, dispatch }, selection) {
+        //     selection.visible_from = null
+        //     selection.visible_to = null
+        //     dispatch('updateSelection', selection)
+
+        //     selection.children.forEach(childSelection => {
+        //         dispatch('unlockAllSelectionDescendants', childSelection)
+        //     })
+        // },
+        async openAllSelectionDescendants({ commit, dispatch }, selection) {
+            selection.visible_from = null
+            selection.visible_to = null
+            selection.open_from = null
+            selection.open_to = null
+            dispatch('updateSelection', selection)
+
+            selection.children.forEach(childSelection => {
+                dispatch('openAllSelectionDescendants', childSelection)
+            })
+        },
+        async togglePresenterMode({ getters, dispatch, commit }, selection) {
             const apiUrl = `/selections/${selection.id}/presentation`
             // Assunme success
             let success = true
             if (!selection.is_presenting) {
-                await axios.post(apiUrl).catch(err => {
-                    dispatch(
-                        'alerts/showAlert',
-                        'Something went wrong trying to enter presentation mode. Please try again.',
-                        { root: true }
-                    )
-                    success = false
-                })
+                await axios
+                    .post(apiUrl)
+                    .then(() => {
+                        // On successful presentation start, unlock / unhide the selection and all of its children
+                        selection.visible_from = null
+                        selection.visible_to = null
+                        selection.open_from = null
+                        selection.open_to = null
+                        const selectionTree = getters.getSelectionTree(selection)
+                        dispatch('openAllSelectionDescendants', selectionTree)
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong trying to enter presentation mode. Please try again.',
+                                type: 'warning',
+                                iconClass: 'fa-exclamation-triangle',
+                            },
+                            { root: true }
+                        )
+                        success = false
+                    })
             } else {
                 await axios.delete(apiUrl).catch(err => {
-                    dispatch(
-                        'alerts/showAlert',
-                        'Something went wrong trying to stop presentation mode. Please try again.',
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to stop presentation mode. Please try again.',
+                            type: 'warning',
+                            iconClass: 'fa-exclamation-triangle',
+                        },
                         { root: true }
                     )
                     success = false
