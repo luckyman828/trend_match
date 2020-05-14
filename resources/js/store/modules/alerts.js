@@ -1,5 +1,3 @@
-import UUID from 'vue-uuid'
-
 export default {
     namespaced: true,
 
@@ -25,9 +23,18 @@ export default {
         SHOW_ALERT(state, {}) {},
         SHOW_SNACKBAR(state, { msg, type, iconClass, callback, callbackLabel, duration, timeoutCallback }) {
             // TYPE = success | danger | warning | info
+
+            // If we already have a snackbar with the same message add our count to the count of that snackbar
+            const duplicateSnackbarIndex = state.snackbars.findIndex(x => x.msg == msg)
+            if (duplicateSnackbarIndex >= 0 && type == 'success') {
+                state.snackbars[duplicateSnackbarIndex].count++
+                return
+            }
+
             state.snackbars.push({
                 id: state.snackbarID,
                 msg,
+                count: 1,
                 type,
                 iconClass,
                 callback,

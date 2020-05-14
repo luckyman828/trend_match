@@ -1,12 +1,13 @@
 <template>
     <div class="snackbar" @mouseenter="onEnter" @mouseleave="onLeave"
     @click.exact="onDeleteSnackbar">
+        <!-- <div class="count circle" v-if="snackbar.count">{{snackbar.count}}</div> -->
         <div class="icon-wrapper" :class="snackbar.type">
             <i class="fas" :class="snackbar.iconClass"></i>
         </div>
         <div class="body">
             <div class="msg">
-                <span>{{snackbar.msg}}</span>
+                <span>{{snackbar.msg}} <span v-if="snackbar.count > 1">({{snackbar.count}})</span></span>
             </div>
             <div class="callback" v-if="snackbar.callback">
                 <BaseButton buttonClass="invisible primary ghost-hover"
@@ -21,7 +22,7 @@
 
             <div class="timer" v-if="duration">
                 <svg>
-                    <rect height="4px" :style="animationDuration"/>
+                    <rect class="animate" ref="countdown" height="4px" :style="animationDuration"/>
                 </svg>
             </div>
         </div>
@@ -38,6 +39,7 @@ export default {
     ],
     data: function() { return {
         timer: null,
+        lastReset: null
     }},
     computed: {
         duration() {
@@ -45,6 +47,19 @@ export default {
         },
         animationDuration() {
             return `animation-duration: ${this.duration}ms`
+        },
+        count() {
+            return this.snackbar.count
+        }
+    },
+    watch: {
+        count(newVal, oldVal) {
+            if (this.timer) {
+                if (this.lastReset + 100 < Date.now()) {
+                    this.timer.reset()
+                }
+                this.lastReset = Date.now()
+            }
         }
     },
     methods: {
@@ -63,19 +78,28 @@ export default {
                 this.snackbar.timeoutCallback()
             }
             this.onDeleteSnackbar()
+        },
+        resetTimerAnimation() {
+            this.$nextTick(() => {
+                const el = this.$refs.countdown
+                el.classList.remove('animate')
+                setTimeout(() => {
+                    el.classList.add('animate')
+                },100)
+            })
         }
     },
     created() {
         // Automatically hide the snackbar
         if (this.duration) {
-            this.timer = new Timer(() => this.onTimeout(), this.duration)
+            this.timer = new Timer(() => this.onTimeout(), this.duration, () => this.resetTimerAnimation())
         }
     }
 }
 
 // Helper Function
-var Timer = function(callback, delay) {
-    var timerId, start, remaining = delay
+var Timer = function(callback, delay, resetCallback) {
+    var timerId, start, remaining = delay, lastReset
 
     this.pause = function() {
         window.clearTimeout(timerId)
@@ -86,6 +110,14 @@ var Timer = function(callback, delay) {
         start = Date.now()
         window.clearTimeout(timerId)
         timerId = window.setTimeout(callback, remaining)
+    }
+
+    this.reset = function() {
+            start = Date.now()
+            remaining = delay
+            window.clearTimeout(timerId)
+            timerId = window.setTimeout(callback, remaining)
+            resetCallback()
     }
 
     this.resume()
@@ -102,6 +134,13 @@ var Timer = function(callback, delay) {
     box-shadow: 0 3px 30px rgba(0,0,0,.4);
     animation: flyin .1s;
     border-radius: 4px;
+    position: relative;
+    .count {
+        position: absolute;
+        left: -12px;
+        top: -12px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
     .icon-wrapper {
         width: 44px;
         background: $bg;
@@ -163,9 +202,12 @@ var Timer = function(callback, delay) {
             width: 100%;
             height: 16px;
             rect {
-                width: 100%;
-                animation: animateWidth linear;
+                // width: 100%;
+                width: 0;
                 fill: $dark2;
+                &.animate {
+                    animation: animateWidth linear;
+                }
             }
         }
     }

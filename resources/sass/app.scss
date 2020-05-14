@@ -497,11 +497,17 @@ input[type='submit'] {
     border-radius: 500px;
 }
 .circle {
+    width: 32px;
     .fa-chevron-right {
         margin-left: 2px;
     }
     .fa-chevron-left {
         margin-right: 2px;
+    }
+    @each $size in $button-sizes {
+        &.#{nth($size,1)} {
+            width: nth($size, 2);
+        }
     }
 }
 .pill {
