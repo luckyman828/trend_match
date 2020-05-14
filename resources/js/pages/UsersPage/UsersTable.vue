@@ -204,6 +204,26 @@
             </template>
         </BaseContextMenu>
 
+        <BaseDialog ref="confirmDeleteMultipleUsers" type="confirm"
+        confirmColor="red" confirmText="Yes, delete them" cancelText="No, keep them">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-user"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Really delete {{selectedUsers.length}} users from your workspace??</h3>
+        </BaseDialog>
+
+        <BaseDialog ref="confirmDeleteUser" type="confirm"
+        confirmColor="red" confirmText="Yes, delete this user" cancelText="No, keep this user">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-user"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Really delete this user from your workspace?</h3>
+        </BaseDialog>
+
     </div>
 </template>
 
@@ -345,14 +365,14 @@ export default {
             this.contextMouseEvent = e
             contextMenu.show(e)
         },
-        onDeleteUser(user) {
-            if (window.confirm('Are you sure you want to remove this user from the workspace?')) {
+        async onDeleteUser(user) {
+            if (await this.$refs.confirmDeleteUser.confirm()) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
                 this.selectedUsers = []
             }
         },
-        onDeleteUsers() {
-            if (window.confirm(`Are you sure you want to remove ${this.selectedUsers.length} users from the workspace?`)) {
+        async onDeleteUsers() {
+            if (await this.$refs.confirmDeleteMultipleUsers.confirm()) {
                 this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: this.selectedUsers})
                 this.selectedUsers = []
             }

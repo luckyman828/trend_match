@@ -100,12 +100,10 @@ export default {
     },
     methods: {
         ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
-        onDeleteComment() {
-            window.confirm(
-                'Are you sure you want to delete this comment?'
-            )
-                ? this.deleteComment({product: this.product, comment: this.comment})
-                : false
+        async onDeleteComment() {
+            if (await this.$refs.confirmDeleteComment.confirm()) {
+                this.deleteComment({product: this.product, comment: this.comment})
+            }
         },
         retrySubmitComment() {
             this.insertOrUpdateComment({product: this.product, comment: this.comment})
