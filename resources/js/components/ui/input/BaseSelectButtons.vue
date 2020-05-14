@@ -204,8 +204,16 @@ export default {
             margin-top: 8px;
             h4 {
                 margin: 0;
-                padding: 0 16px;
                 margin-bottom: 8px;
+                background: $primary;
+                color: white;
+                font-size: 12px;
+                padding: 8px 24px 8px 16px;
+                max-width: 90%;
+                display: inline-block;
+                border-radius: 0 50px 50px 0;
+                line-height: 1.4;
+                box-shadow: 0 3px 3px rgba(0,0,0,.2);
             }
         }
         .option {

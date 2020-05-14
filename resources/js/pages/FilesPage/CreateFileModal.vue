@@ -11,7 +11,7 @@
 
                 <div class="form-element">
                     <label for="file-name-input">File name* (required)</label>
-                    <input type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.name">
+                    <input ref="fileNameInput" type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.name">
                 </div>
                 <div class="form-element">
                     <BaseDroparea multiple="true" accept=".csv, text/csv, .tsv" ref="droparea"
@@ -169,9 +169,12 @@
                                                 <td><BaseCheckbox v-if="field.name != 'currency' || singleCurrencyFile" :value="field.enabled" v-model="field.enabled"/></td>
                                                 <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
                                                 <td><i class="fas fa-equals"></i></td>
-                                                <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                                <td><BaseInputField :readOnly="currency.fileIndex == null"
+                                                v-tooltip="currency.fileIndex == null && 'You must select a file to map first'"
+                                                :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
                                                 class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                                :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                                :value="field.newValue.fieldName" type="select" 
+                                                @click="currency.fileIndex != null && showSelectContext($event, field, currency)">
                                                     <i class="fas fa-caret-down"></i>
                                                 </BaseInputField></td>
                                                 <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
@@ -227,9 +230,12 @@
                                         <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
                                         <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
                                         <td><i class="fas fa-equals"></i></td>
-                                        <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                        <td><BaseInputField :readOnly="assortment.fileIndex == null"
+                                        v-tooltip="assortment.fileIndex == null && 'You must select a file to map first'"
+                                        :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
                                         class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                        :value="field.newValue.fieldName" type="select" 
+                                        @click="assortment.fileIndex != null && showSelectContext($event, field, assortment)">
                                             <i class="fas fa-caret-down"></i>
                                         </BaseInputField></td>
                                         <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
@@ -280,7 +286,7 @@
                 <div class="item-group">
                     <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
                     @unset="slotProps.item.newValue={fileIndex: null, fieldName: null, fieldIndex: null};slotProps.item.error=false;slotProps.hide()"
-                    :options="availableFiles" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
+                    :options="filesToChooseFrom" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
                     v-model="slotProps.item.newValue" :submitOnChange="true" :optionDescriptionKey="'fileName'"
                     :optionNameKey="'fieldName'" :search="true" @submit="validateField(slotProps.item);slotProps.hide()"/>
                 </div>
@@ -331,12 +337,13 @@ export default {
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
         defalultNewFile: {
-            name: '',
+            name: 'New file',
             type: 'File',
             files: [],
             owner_count: 0,
             children_count: 0,
         },
+        filesToChooseFrom: [],
         newFile: null,
         uploadingFile: false,
         availableFiles: [],
@@ -445,6 +452,18 @@ export default {
                 }
             })
             return valid
+        }
+    },
+    watch: {
+        show(newVal, oldVal) {
+            if (newVal && this.currentScreen.name == 'chooseFiles') {
+                this.$nextTick(() => {
+                    this.$nextTick(() => {
+                        this.$refs.fileNameInput.focus()
+                        this.$refs.fileNameInput.select()
+                    })
+                })
+            }
         }
     },
     methods: {
@@ -588,7 +607,8 @@ export default {
             // Check if the file already exists. If so, replace it instead of adding
             const existingFile = this.availableFiles.find(x => x.fileName == fileName)
             if (existingFile) {
-                existingFile = fileToPush
+                // existingFile = fileToPush
+                Object.assign(existingFile, fileToPush)
             } else {
                 this.availableFiles.push(fileToPush)
             }
@@ -660,8 +680,12 @@ export default {
                 }
             })
         },
-        showSelectContext(e, field) {
+        showSelectContext(e, field, context) {
             const contextMenu = this.$refs.contextSelectField
+            this.filesToChooseFrom = this.availableFiles
+            if (context && context.fileIndex != null) {
+                this.filesToChooseFrom = [this.availableFiles[context.fileIndex]]
+            }
             contextMenu.item = field
             contextMenu.show(e)
         },

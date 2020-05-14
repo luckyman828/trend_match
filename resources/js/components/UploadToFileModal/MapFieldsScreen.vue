@@ -105,9 +105,17 @@
                                 <template v-if="field.name != 'currency' || singleCurrencyFile">
                                     <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
                                     <td class="equals"><i class="fas fa-equals"></i></td>
-                                    <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                    <!-- <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
                                     class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
                                     :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                        <i class="fas fa-caret-down"></i>
+                                    </BaseInputField></td> -->
+                                    <td><BaseInputField :readOnly="currency.fileIndex == null"
+                                    v-tooltip="currency.fileIndex == null && 'You must select a file to map first'"
+                                    :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                    class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                    :value="field.newValue.fieldName" type="select" 
+                                    @click="currency.fileIndex != null && showSelectContext($event, field, currency)">
                                         <i class="fas fa-caret-down"></i>
                                     </BaseInputField></td>
                                     <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
@@ -161,9 +169,17 @@
                         <tr v-for="(field, index) in assortment.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
                             <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
                             <td><i class="fas fa-equals"></i></td>
-                            <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                            <!-- <td><BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
                             class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
                             :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                <i class="fas fa-caret-down"></i>
+                            </BaseInputField></td> -->
+                            <td><BaseInputField :readOnly="assortment.fileIndex == null"
+                            v-tooltip="assortment.fileIndex == null && 'You must select a file to map first'"
+                            :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                            class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                            :value="field.newValue.fieldName" type="select" 
+                            @click="assortment.fileIndex != null && showSelectContext($event, field, assortment)">
                                 <i class="fas fa-caret-down"></i>
                             </BaseInputField></td>
                             <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
@@ -263,6 +279,7 @@ export default {
         'replaceAssortments',
     ],
     data: function () { return {
+        filesToChooseFrom: []
     }},
     computed: {
         submitValid() {
@@ -427,8 +444,12 @@ export default {
                 }
             })
         },
-        showSelectContext(e, field) {
+        showSelectContext(e, field, context) {
             const contextMenu = this.$refs.contextSelectField
+            this.filesToChooseFrom = this.availableFiles
+            if (context && context.fileIndex != null) {
+                this.filesToChooseFrom = [this.availableFiles[context.fileIndex]]
+            }
             contextMenu.item = field
             contextMenu.show(e)
         },
