@@ -48,8 +48,16 @@ export default {
         },
         hide() {
             this.visible = false
+            this.resolve(false)
         },
         confirm() {
+            this.visible = true
+            return new Promise((resolve, reject) => {
+                this.resolve = resolve
+                this.reject = reject
+            })
+        },
+        show() {
             this.visible = true
             return new Promise((resolve, reject) => {
                 this.resolve = resolve

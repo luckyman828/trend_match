@@ -60,7 +60,15 @@ export default {
             const currentProduct = getters.getPresenterQueueCurrentProduct
             // Disallow removing the current product
             if (currentProduct.id == product.id) {
-                dispatch('alerts/showAlert', 'You cannot remove the currently broadcast product', { root: true })
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'You cannot remove the currently broadcast product',
+                        type: 'warning',
+                        iconClass: 'fa-exclamation-triangle',
+                    },
+                    { root: true }
+                )
                 return
             }
             // If the current product is getting removed, set the next product as active if any
@@ -72,9 +80,18 @@ export default {
 
             let success = true
             await axios.put(apiUrl).catch(err => {
-                dispatch('alerts/showAlert', 'Something went wrong trying to broadcast product. Please try again.', {
-                    root: true,
-                })
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Something went wrong trying to broadcast product. Please try again.',
+                        type: 'warning',
+                        iconClass: 'fa-exclamation-triangle',
+                        callback: () => dispatch('broadcastProduct', product),
+                        callbackLabel: 'Retry',
+                        duration: 0,
+                    },
+                    { root: true }
+                )
                 success = false
             })
             if (!success) return

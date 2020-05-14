@@ -67,6 +67,17 @@
             </p>
         </BaseDialog>
 
+        <BaseDialog ref="presentationModeDialog">
+            <div class="icon-graphic">
+                <i class="far fa-file lg primary"></i>
+                <i class="far fa-arrow-right lg"></i>
+                <i class="far fa-presentation dark lg"></i>
+            </div>
+            <h3>The selection has entered Presentation Mode</h3>
+            <p>To join the presentation login to the Kollekt mobile app.</p>
+            <p><strong>You will now be redirected to the files overview</strong></p>
+        </BaseDialog>
+
     </div>
 </template>
 
@@ -122,7 +133,6 @@ export default{
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
         ...mapActions('actions', ['insertOrUpdateActions']),
         ...mapMutations('actions', ['INSERT_OR_UPDATE_ACTIONS']),
-        ...mapActions('alerts', ['showAlert']),
         InNoOutNoCommentStyles() {
             this.onInsertOrUpdateActions(this.productsNoOutNoComment, 'In')
         },
@@ -168,12 +178,12 @@ export default{
                 console.log('authenticated!', message)
             })   
 
-            connection.on('OnSelectionPresentationChanged', (eventName, selectionIds) => {
+            connection.on('OnSelectionPresentationChanged', async (eventName, selectionIds) => {
                 if (eventName == 'Begin' 
                     && this.currentSelection.your_role != 'Owner'
                     && selectionIds.selection_ids.includes(this.currentSelection.id)
                 ) {
-                    this.showAlert('The selection has entered Presentation Mode.\n\nTo join the presentation login to the Kollekt mobile app.\n\nYou will now be redirected to the files overview.')
+                    await this.$refs.presentationModeDialog.show()
                     this.$router.push({name: 'files'})
                 }
             })

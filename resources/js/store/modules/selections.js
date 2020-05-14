@@ -807,11 +807,18 @@ export default {
         //     })
         // },
         async openAllSelectionDescendants({ commit, dispatch }, selection) {
-            selection.visible_from = null
-            selection.visible_to = null
-            selection.open_from = null
-            selection.open_to = null
-            dispatch('updateSelection', selection)
+            const hasChanged = !selection.is_visible || !selection.is_open
+            if (!selection.is_visible) {
+                selection.visible_from = null
+                selection.visible_to = null
+            }
+            if (!selection.is_open) {
+                selection.open_from = null
+                selection.open_to = null
+            }
+            if (hasChanged) {
+                dispatch('updateSelection', selection)
+            }
 
             selection.children.forEach(childSelection => {
                 dispatch('openAllSelectionDescendants', childSelection)
@@ -826,10 +833,14 @@ export default {
                     .post(apiUrl)
                     .then(() => {
                         // On successful presentation start, unlock / unhide the selection and all of its children
-                        selection.visible_from = null
-                        selection.visible_to = null
-                        selection.open_from = null
-                        selection.open_to = null
+                        if (!selection.is_visible) {
+                            selection.visible_from = null
+                            selection.visible_to = null
+                        }
+                        if (!selection.is_open) {
+                            selection.open_from = null
+                            selection.open_to = null
+                        }
                         const selectionTree = getters.getSelectionTree(selection)
                         dispatch('openAllSelectionDescendants', selectionTree)
                     })
