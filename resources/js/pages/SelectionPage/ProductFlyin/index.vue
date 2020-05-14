@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
         <template v-slot:header>
-            <BaseFlyinHeader v-if="show" :next="nextProduct" :prev="prevProduct"
+            <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <template v-slot:left>
                     <div class="item-group product-title-wrapper">
@@ -50,7 +50,7 @@
                 <div class="main-img" @click="cycleImage(true)">
                     <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])" @error="imgError(product.variants[currentImgIndex])">
                     <button class="white controls" v-tooltip="'View large images'"
-                    @click="showLightbox = true">
+                    @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
                     </button>
                 </div>
@@ -126,9 +126,9 @@
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
                 <label>Description</label>
-                <BaseInputField readOnly=true :value="product.description"/>
+                <BaseInputTextArea readOnly=true :value="product.description"/>
                 <label>Assortments</label>
-                <BaseInputField readOnly=true />
+                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => x.name).join(',\n')"/>
                 <label>Category</label>
                 <BaseInputField readOnly=true :value="product.category"/>
 
@@ -145,23 +145,19 @@
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
-            <ImageLightbox v-if="showLightbox" :defaultIndex="currentImgIndex" :images="product.variants.map(x => variantImage(x))"
-            @hide="showLightbox = false"/>
-
             <PresenterQueueFlyin :product="product" v-if="currentSelection.is_presenting && show"/>
         </template>
     </BaseFlyin>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
 import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import variantImage from '../../../mixins/variantImage'
-import ImageLightbox from '../../../components/ImageLightbox'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
 export default {
@@ -178,7 +174,6 @@ export default {
         DistributionSection,
         RequestsSection,
         SelectionSelector,
-        ImageLightbox,
         SelectionPresenterModeButton,
         PresenterQueueFlyin,
     },
@@ -233,8 +228,8 @@ export default {
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
+        ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         onTogglePresenterMode(gotActivated) {
-            console.log('toggle presenter mode!', gotActivated)
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
             }
@@ -245,6 +240,11 @@ export default {
         },
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
+        },
+        onShowLightbox() {
+            this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
+            this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
+            this.SET_LIGHTBOX_VISIBLE(true)
         },
         imgError (variant) {
              variant.error = true
@@ -276,8 +276,6 @@ export default {
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
 
-                if (key == 'Escape')
-                    this.onCloseSingle()
                 if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')
                         this.onUpdateAction(this.product, 'In', this.currentSelection)

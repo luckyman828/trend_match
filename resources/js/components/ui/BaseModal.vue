@@ -11,13 +11,14 @@
                         </div>
                         <h2 v-if="header" v-html="header"></h2>
                         <slot name="header"/>
-                        <div class="right">
+                        <!-- <div class="right">
                             <button class="close md circle" @click="close"><i class="fal fa-times"></i></button>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="body">
                         <slot :close="close"/>
                     </div>
+                    <button class="close md circle" @click="close"><i class="fal fa-times"></i></button>
                 </div>
             </div>
         </div>
@@ -62,7 +63,7 @@ export default {
 
     .modal-wrapper {
         position: fixed;
-        z-index: 9;
+        z-index: 99;
         &.visible {
             .overlay {
                 display: block;
@@ -132,6 +133,11 @@ export default {
             max-width: 512px;
             margin: auto;
             padding: 20px 32px 40px;
+        }
+        .close {
+            position: absolute;
+            right: 16px;
+            top: 16px;
         }
     }
 

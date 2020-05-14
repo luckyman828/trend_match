@@ -15,6 +15,7 @@ import comments from './modules/comments'
 import requests from './modules/requests'
 import contextMenu from './modules/contextMenu'
 import presenterQueue from './modules/presenterQueue'
+import lightbox from './modules/lightbox'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -37,6 +38,7 @@ const store = new Vuex.Store({
         requests,
         contextMenu,
         presenterQueue,
+        lightbox,
     },
 })
 

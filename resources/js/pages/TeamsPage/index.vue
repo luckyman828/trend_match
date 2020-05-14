@@ -19,7 +19,7 @@ export default {
     data: function () { return {
     }},
     computed: {
-        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         ...mapGetters('teams', ['loadingTeams']),
         ...mapGetters('users', ['loadingUsers']),
         loading () {
@@ -38,6 +38,9 @@ export default {
         }
     },
     created () {
+        if (this.authUserWorkspaceRole != 'Admin') {
+            this.$router.push({name: 'files'})
+        }
         this.fetchData()
     },
 }

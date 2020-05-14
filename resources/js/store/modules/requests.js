@@ -34,9 +34,9 @@ export default {
                     commit('setLoading', false)
                     succes = true
                 } catch (err) {
-                    console.log('API error in requests.js :')
-                    console.log(err.response)
-                    console.log(`Trying to fetch again. TryCount = ${tryCount}`)
+                    // console.log('API error in requests.js :')
+                    // console.log(err.response)
+                    // console.log(`Trying to fetch again. TryCount = ${tryCount}`)
                     if (tryCount <= 0) throw err
                 }
             }
@@ -72,10 +72,18 @@ export default {
                 .catch(err => {
                     // On error, set error on the request
                     Vue.set(request, 'error', true)
-                    // Alert the user
-                    dispatch(
-                        'alerts/showAlert',
-                        'Error on request. Please try again. If the error persists, please contact Kollekt support',
+                    // Show error message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg:
+                                'Error on request. Please try again. If the error persists, please contact Kollekt support.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertOrUpdateRequest', { product, request }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
                         { root: true }
                     )
                 })

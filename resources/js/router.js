@@ -35,13 +35,8 @@ router.beforeEach((to, from, next) => {
         store.commit('files/setCurrentFolder', null)
     }
 
-    // Guard paths
-    if (to.name == 'teams' && store.getters['workspaces/authUserWorkspaceRole'] != 'Admin') {
-        next({ name: 'files' })
-    }
-
     // Check that the user is not going to the login page already
-    else if (to.path !== '/login' && !store.getters['auth/isAuthenticated']) {
+    if (to.path !== '/login' && !store.getters['auth/isAuthenticated']) {
         // If the user is not authenticated
         next({
             name: 'login',

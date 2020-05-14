@@ -284,6 +284,16 @@
                     </div>
                 </template>
             </BaseContextMenu>
+
+            <BaseDialog ref="confirmDeleteProduct" type="confirm"
+            confirmColor="red">
+                <div class="icon-graphic">
+                    <i class="lg primary far fa-file"></i>
+                    <i class="lg far fa-arrow-right"></i>
+                    <i class="lg dark far fa-trash"></i>
+                </div>
+                <h3>Are you sure you want to delete this product?</h3>
+            </BaseDialog>
         </template>
     </BaseFlyin>
 </template>
@@ -380,8 +390,9 @@ export default {
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
-        onDeleteProduct() {
-            if (confirm('Are you sure you want to delete this product?')) {
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        async onDeleteProduct() {
+            if (await this.$refs.confirmDeleteProduct.confirm()) {
                 this.deleteProducts({file: this.currentFile, products: [this.product]})
                 this.onCloseSingle()
             }
@@ -512,11 +523,23 @@ export default {
                     }).then(response => {
                         // Remove the image to upload
                         delete variant.imageToUpload
-                    }).catch(err => {variantError = true})
+                    }).catch(err => {
+                        variantError = true
+                        variant.imageToUpload.uploading = false
+                    })
                 }
             }
             if (variantError) {
                 this.updatingProduct = false
+                // Show alert
+                this.SHOW_SNACKBAR({
+                    msg: 'Error when trying to upload image. Please try again',
+                    callback: () => this.onUpdateProduct(),
+                    callbackLabel: 'Retry',
+                    iconClass: 'fa-exclamation-triangle',
+                    type: 'warning',
+                    duration: 0,
+                })
                 return
             }
 

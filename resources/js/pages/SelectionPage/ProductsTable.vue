@@ -131,7 +131,7 @@
                     v-slot="{ item, index }"
                 >
                     <ProductsTableRow class="product-row flex-table-row"
-                    @showContext="$refs.contextMenu.show($event); contextProduct = item"
+                    @showContext="onShowContextMenu($event, item)"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
@@ -151,24 +151,31 @@
         >
             <template v-if="contextProduct">
                 <div class="item-group">
-                    <div class="item" @click="onUpdateAction(contextProduct, 'In', selection)" v-close-popover>
-                        <div class="icon-wrapper">
-                            <i class="far fa-heart" :class="contextProduct[currentAction] == 'In' ? 'fas green' : 'far'"></i>
-                        </div>
-                        <u>I</u>n
-                    </div>
-                    <div class="item" @click="onUpdateAction(contextProduct, 'Out', selection)" v-close-popover>
-                        <div class="icon-wrapper">
-                            <i class="far fa-times" :class="contextProduct[currentAction] == 'Out' ? 'fas red' : 'far'"></i>
-                        </div>
-                        <u>O</u>ut
-                    </div>
-                    <div class="item" @click="onUpdateAction(contextProduct, 'Focus', selection)">
-                        <div class="icon-wrapper">
-                            <i class="far fa-star" :class="contextProduct[currentAction] == 'Focus' ? 'fas primary' : 'far'"></i>
-                        </div>
-                        <u>F</u>oc<u>u</u>s
-                    </div>
+  
+                    <BaseContextMenuItem 
+                    :iconClass="contextProduct[currentAction] == 'In' ? 'fas green fa-heart' : 'far fa-heart'"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateAction(contextProduct, 'In', selection)">
+                        <span><u>I</u>n</span>
+                    </BaseContextMenuItem>
+
+                    <BaseContextMenuItem 
+                    :iconClass="contextProduct[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateAction(contextProduct, 'Out', selection)">
+                        <span><u>O</u>ut</span>
+                    </BaseContextMenuItem>
+
+                    <BaseContextMenuItem 
+                    :iconClass="contextProduct[currentAction] == 'Focus' ? 'fas primary fa-star' : 'far fa-star'"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateAction(contextProduct, 'Focus', selection)">
+                        <span><u>F</u>oc<u>u</u>s</span>
+                    </BaseContextMenuItem>
+
                 </div>
                 <div class="item-group">
                     <div class="item" @click="onViewSingle(contextProduct)" v-close-popover>
@@ -177,6 +184,62 @@
                         </div>
                         <u>V</u>iew
                     </div>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuSelection"
+            :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyC']"
+            @keybind-c="selectedProducts = []"
+            @keybind-i="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'In')"
+            @keybind-o="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'Out')"
+            @keybind-f="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'Focus')"
+            @keybind-u="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'Focus')"
+        >
+            <template v-slot:header>
+                <span>Choose action for {{selectedProducts.length}} product{{selectedProducts.length > 1 ? 's' : ''}}</span>
+            </template>
+
+            <div class="item-group">
+                <div class="item" @click="selectedProducts = []">
+                    <div class="icon-wrapper">
+                        <i class="far fa-times"></i>
+                    </div>
+                    <span><u>C</u>lear selection</span>
+                </div>
+            </div>
+
+            <template v-if="selectedProducts.length > 1">
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-heart"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateMultipleActions(selectedProducts, 'In')">
+                        <span><u>I</u>n</span>
+                    </BaseContextMenuItem>
+
+                    <BaseContextMenuItem iconClass="far fa-times"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateMultipleActions(selectedProducts, 'Out')">
+                        <span><u>O</u>ut</span>
+                    </BaseContextMenuItem>
+
+                    <BaseContextMenuItem iconClass="far fa-star"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateMultipleActions(selectedProducts, 'Focus')">
+                        <span><u>F</u>oc<u>u</u>s</span>
+                    </BaseContextMenuItem>
+                </div>
+
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-times"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    @click="onUpdateMultipleActions(selectedProducts, 'None')">
+                        <span>Clear actions</span>
+                    </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>
@@ -213,8 +276,12 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapState('products', {stateProducts: 'products'}),
+        ...mapGetters('auth', ['authUser']),
+        userWriteAccess () {
+            return this.getAuthUserSelectionWriteAccess(this.selection)
+        },
         currentSelections() {
             return this.getCurrentSelections
         },
@@ -272,7 +339,7 @@ export default {
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
         'SET_PRODUCTS_FILTERED_BY_SEARCH']),
-        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions']),
+        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         onViewSingle(product) {
@@ -282,6 +349,17 @@ export default {
             this.setSingleVisisble(true)
             document.activeElement.blur()
         },
+        onShowContextMenu(mouseEvent, product) {
+            let contextMenu = this.$refs.contextMenu
+            this.contextProduct = product
+            if (this.selectedProducts.length > 0) {
+                this.contextProduct = this.selectedProducts[0]
+            }
+            if (this.selectedProducts.length > 1) {
+                contextMenu = this.$refs.contextMenuSelection
+            }
+            contextMenu.show(mouseEvent)
+        },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
@@ -290,6 +368,9 @@ export default {
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
+        onUpdateMultipleActions(products, action) {
+            this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        }
     },
     created () {
 

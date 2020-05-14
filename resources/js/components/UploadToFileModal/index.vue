@@ -613,6 +613,34 @@ export default {
                     }
                 }
             })
+            // Loop through mapped currencies
+            this.currenciesToMatch.forEach(currency => {
+                currency.fieldsToMatch.forEach(field => {
+                    // Check if the field has been mapped
+                    if (field.enabled && field.newValue.fieldIndex != null) {
+                        // Loop through all lines in the csv
+                        // Find the file the field is mapped to to get the number of lines
+                        const file = this.availableFiles[field.newValue.fileIndex]
+                        if (!this.validateField(field, file.lines.length)) {
+                            valid = false
+                        }
+                    }
+                })
+            })
+            // Loop through mapped assortments
+            this.assortmentsToMatch.forEach(assortment => {
+                assortment.fieldsToMatch.forEach(field => {
+                    // Check if the field has been mapped
+                    if (field.enabled && field.newValue.fieldIndex != null) {
+                        // Loop through all lines in the csv
+                        // Find the file the field is mapped to to get the number of lines
+                        const file = this.availableFiles[field.newValue.fileIndex]
+                        if (!this.validateField(field, file.lines.length)) {
+                            valid = false
+                        }
+                    }
+                })
+            })
             if (!valid) {
                 alert('Error. One or more fields have an error')
                 return

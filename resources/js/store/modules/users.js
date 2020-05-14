@@ -28,7 +28,7 @@ export default {
                 commit('setLoading', false)
             })
         },
-        async updateWorkspaceUsers({ commit, rootGetters }, usersToUpdate) {
+        async updateWorkspaceUsers({ commit, rootGetters, dispatch }, usersToUpdate) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             commit('updateUsers', usersToUpdate)
 
@@ -45,15 +45,38 @@ export default {
             })
                 .then(response => {
                     succes = true
-                    // commit('addUsers', usersToAdd)
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${usersToUpdate.length > 1 ? usersToUpdate.length + ' ' : ''}User${
+                                usersToUpdate.length > 1 ? 's' : ''
+                            } updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     succes = false
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Error when updating user(s). Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateWorkspaceUsers', usersToUpdate),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
             return succes
         },
-        async addUsersToWorkspace({ commit, rootGetters }, usersToAdd) {
+        async addUsersToWorkspace({ commit, rootGetters, dispatch }, usersToAdd) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             let succes
 
@@ -69,15 +92,37 @@ export default {
                 .then(response => {
                     console.log(response)
                     succes = true
-                    commit('addUsers', response.data)
+                    commit('ADD_USERS', response.data)
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''} added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     succes = false
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Error when adding user. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('addUsersToWorkspace', usersToAdd),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
             return succes
         },
-        async removeUsersFromWorkspace({ commit }, { workspaceId, users }) {
+        async removeUsersFromWorkspace({ commit, dispatch }, { workspaceId, users }) {
             commit('removeUsers', users)
             const apiUrl = `/workspaces/${workspaceId}/users`
             let success
@@ -91,18 +136,73 @@ export default {
                 })
                 .then(response => {
                     success = true
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} user${users.length > 1 ? 's' : ''} removed`,
+                            iconClass: 'fa-trash',
+                            type: 'danger',
+                            callback: () => dispatch('addUsersToWorkspace', users),
+                            callbackLabel: 'Undo',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(err => {
-                    console.log(err.response)
                     success = false
+                    // Re-add the users
+                    commit('ADD_USERS', users)
+
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Error when removing users. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('removeUsersFromWorkspace', { workspaceId, users }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
             return success
         },
-        async updateUser({ commit }, user) {
+        async updateUser({ commit, dispatch }, user) {
             commit('updateUsers', [user])
 
             const apiUrl = `/admins/users/${user.id}`
-            axios.put(apiUrl, { name: user.name, email: user.email })
+            axios
+                .put(apiUrl, { name: user.name, email: user.email })
+                .then(() => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `User updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Error when updating user. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateUser', user),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async updateUserPassword({ commit, rootGetters, dispatch }, user) {
             const authUser = rootGetters['auth/authUser']
@@ -126,13 +226,35 @@ export default {
             await axios
                 .post(apiUrl, data)
                 .then(response => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Password updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                     if (isSelf) router.go()
                 })
                 .catch(err => {
                     const errMsg = isSelf
                         ? 'Something went wrong. Make sure you entered your old password correctly.'
-                        : 'Something went wrong'
-                    dispatch('alerts/showAlert', errMsg, { root: true })
+                        : 'Something went wrong. Please try again.'
+
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: errMsg,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateUserPassword', user),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
         },
     },
@@ -142,7 +264,7 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        addUsers(state, users) {
+        ADD_USERS(state, users) {
             state.users = state.users.concat(users)
         },
         updateUsers(state, users) {

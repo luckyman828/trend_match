@@ -12,6 +12,7 @@ export default {
         currentFile: null,
         currentFolder: null,
         status: null,
+        flyinVisible: false,
     },
 
     getters: {
@@ -22,6 +23,7 @@ export default {
         currentFolder: state => state.currentFolder,
         files: state => state.files,
         allFiles: state => state.allFiles,
+        getFileFlyinIsVisible: state => state.flyinVisible,
         nextFile: state => {
             // Find the index of the current file and add 1
             const index = state.files.findIndex(x => x.id == state.currentFile.id)
@@ -89,7 +91,7 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     file = response.data
-                    commit('setCurrentFile', file)
+                    commit('SET_CURRENT_FILE', file)
                     commit('setFilesStatus', 'success')
                 })
                 .catch(err => {
@@ -140,7 +142,7 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        async insertOrUpdateFile({ commit }, file) {
+        async insertOrUpdateFile({ commit, dispatch }, file) {
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -148,7 +150,7 @@ export default {
             // Check if we are inserting or updating
             if (!file.id) {
                 // If we are inserting
-                commit('insertFile', file)
+                commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
@@ -158,7 +160,7 @@ export default {
                     requestBody = { type: file.type, name: file.name }
                 }
             } else {
-                commit('updateFile', file)
+                commit('UPDATE_FILE', file)
             }
 
             await axios({
@@ -167,58 +169,182 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
-                    console.log(response.data)
+                    // Display message
+                    const wasCreated = !file.id
+                    const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: successMsg,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                            callback: file.type == 'File' ? () => showNewFile() : false,
+                            callbackLabel: file.type == 'File' && `View ${file.type}`,
+                        },
+                        { root: true }
+                    )
                     // Set the files ID if not already set
                     if (!file.id) file.id = response.data.id
                 })
                 .catch(err => {
-                    console.log(err)
+                    // Display message
+                    const errMsg = file.id
+                        ? `Error when creating ${file.type}. Please try again.`
+                        : `Error when updating ${file.type}. Please try again.`
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: errMsg,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertOrUpdateFile', file),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
                 })
-        },
-        async deleteFile({ commit }, fileId) {
-            commit('deleteFile', fileId)
 
-            const apiUrl = `/files/${fileId}`
-            await axios
-                .delete(apiUrl)
-                .then(response => {
-                    console.log(response.data)
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
-        },
-        async updateFile({ commit }, fileToUpdate) {
-            const startDate = fileToUpdate.start_date ? fileToUpdate.start_date : null
-            const endDate = fileToUpdate.end_date ? fileToUpdate.end_date : null
-            // Add support for both catalog id and folder id
-            let folder_id = null
-            if (fileToUpdate.folder_id) {
-                folder_id = fileToUpdate.folder_id
+            const showNewFile = () => {
+                commit('SET_CURRENT_FILE', file)
+                // Show the flyin
+                commit('SET_FILE_FLYIN_VISIBLE', true)
             }
-            if (fileToUpdate.catalog_id) {
-                folder_id = fileToUpdate.catalog_id
+        },
+        async deleteFile({ commit, dispatch }, file) {
+            commit('deleteFile', file.id)
+
+            const apiUrl = `/files/${file.id}`
+
+            // Start timer for deletion
+            let wasCancelled = false
+            commit(
+                'alerts/SHOW_SNACKBAR',
+                {
+                    msg: `${file.type} will be deleted`,
+                    iconClass: 'fa-trash',
+                    type: 'danger',
+                    callback: () => {
+                        wasCancelled = true
+                        undoDelete()
+                    },
+                    callbackLabel: 'Undo',
+                    timeoutCallback: () => {
+                        if (!wasCancelled) {
+                            sendRequest()
+                        }
+                    },
+                },
+                { root: true }
+            )
+
+            const sendRequest = async () => {
+                await axios
+                    .delete(apiUrl)
+                    .then(response => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${file.type} permanently deleted`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    })
+                    .catch(err => {
+                        // Undo
+                        undoDelete()
+                        // Display message
+                        const errMsg = file.id
+                            ? `Error when deleting ${file.type}. Please try again.`
+                            : `Error when deleting ${file.type}. Please try again.`
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: errMsg,
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('deleteFile', file),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                    })
             }
 
-            await axios
-                .put(`/api/file`, {
-                    id: fileToUpdate.id,
-                    title: fileToUpdate.title,
-                    phase: fileToUpdate.phase,
-                    catalog_id: folder_id,
-                    folder_id: folder_id,
-                    workspace_id: fileToUpdate.workspace_id,
-                    start_date: startDate,
-                    end_date: endDate,
+            // Undo delete
+            const undoDelete = () => {
+                commit('INSERT_FILE', file)
+            }
+        },
+        async deleteMultipleFiles({ commit, dispatch }, files) {
+            commit('DELETE_MULTIPLE_FILES', files)
+
+            // Start timer for deletion
+            let wasCancelled = false
+            commit(
+                'alerts/SHOW_SNACKBAR',
+                {
+                    msg: `${files.length} files/folders will be deleted`,
+                    iconClass: 'fa-trash',
+                    type: 'danger',
+                    callback: () => {
+                        wasCancelled = true
+                        undoDelete()
+                    },
+                    callbackLabel: 'Undo',
+                    timeoutCallback: () => {
+                        if (!wasCancelled) {
+                            sendRequest()
+                        }
+                    },
+                },
+                { root: true }
+            )
+
+            const sendRequest = async () =>
+                await Promise.all(
+                    files.map(async file => {
+                        const apiUrl = `/files/${file.id}`
+                        await axios.delete(apiUrl).catch(err => {
+                            // Undo
+                            undoDelete()
+                            // Display message
+                            const errMsg = file.id
+                                ? `Error when deleting ${file.type}. Please try again.`
+                                : `Error when deleting ${file.type}. Please try again.`
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: errMsg,
+                                    iconClass: 'fa-exclamation-triangle',
+                                    type: 'warning',
+                                    callback: () => dispatch('deleteFile', file),
+                                    callbackLabel: 'Retry',
+                                    duration: 0,
+                                },
+                                { root: true }
+                            )
+                        })
+                    })
+                ).then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${files.length} files/folders permanently deleted`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
-                .then(response => {
-                    console.log(response.data)
-                    // Commit to store
-                    Collection.insert({ data: response.data })
-                })
-                .catch(err => {
-                    console.log(err.response)
-                })
+
+            // Undo delete
+            const undoDelete = () => {
+                commit('INSERT_MULTIPLE_FILES', files)
+            }
         },
         async addUsersToFile({ commit }, { file, users }) {
             commit('addOwnersToFile', { file, users })
@@ -246,7 +372,7 @@ export default {
             commit('removeApproverFromFile', { file, user })
             // Send request to API
         },
-        moveFiles({ commit }, { destinationFolder, filesToMove }) {
+        moveFiles({ commit, dispatch }, { destinationFolder, filesToMove }) {
             // Send request to API
             const apiUrl = `/files/${destinationFolder.id}/paste`
             axios
@@ -258,6 +384,15 @@ export default {
                     filesToMove.map(x => {
                         commit('deleteFile', x.id)
                     })
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${filesToMove.length} files/folders moved`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
                 })
                 .catch(() => {})
         },
@@ -271,16 +406,19 @@ export default {
         setFilesStatus(state, status) {
             state.status = status
         },
-        insertFile(state, file) {
+        INSERT_FILE(state, file) {
             state.files.push(file)
         },
-        setCurrentFile(state, file) {
+        INSERT_MULTIPLE_FILES(state, files) {
+            state.files.push(...files)
+        },
+        SET_CURRENT_FILE(state, file) {
             state.currentFile = file
         },
         setCurrentFolder(state, folder) {
             state.currentFolder = folder
         },
-        updateFile(state, file) {
+        UPDATE_FILE(state, file) {
             // Remove unsaved files
             const oldFile = state.files.find(x => x.id == file.id)
             Object.assign(oldFile, file)
@@ -289,6 +427,14 @@ export default {
             // Remove the deleted item from the current array
             const index = state.files.findIndex(x => x.id == fileId)
             state.files.splice(index, 1)
+        },
+        DELETE_MULTIPLE_FILES(state, files) {
+            // Remove the deleted item from the current array
+            for (let i = files.length - 1; i >= 0; i--) {
+                const file = files[i]
+                const index = state.files.findIndex(x => x.id == file.id)
+                state.files.splice(index, 1)
+            }
         },
         removeUnsavedFiles(state) {
             state.files = state.files.filter(x => x.id != null)
@@ -317,6 +463,9 @@ export default {
         removeApproverFromFile(state, { file, user }) {
             const userIndex = file.approvers.findIndex(x => x.id == user.id)
             file.approvers.splice(userIndex, 1)
+        },
+        SET_FILE_FLYIN_VISIBLE(state, bool) {
+            state.flyinVisible = bool
         },
     },
 }

@@ -61,12 +61,11 @@ export default {
         loadingOverwrite: false,
         unsub: '',
         path: [],
-        fileFlyinVisible: false,
         fileOwnersFlyinVisible: false,
         fileApproversFlyinVisible: false,
     }},
     computed: {
-        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId']),
+        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId', 'getFileFlyinIsVisible']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         folders() {
             return this.files.filter(x => x.type == 'Folder')
@@ -76,24 +75,32 @@ export default {
                 return {id: 0, title: 'Global'}
             else return null
         },
+        fileFlyinVisible: {
+            get() {
+                return this.getFileFlyinIsVisible
+            },
+            set(value) {
+                this.SET_FILE_FLYIN_VISIBLE(value)
+            }
+        }
     },
     methods: {
         ...mapActions('files', ['setCurrentFolder', 'fetchFile', 'fetchFolder']),
-        ...mapMutations('files', ['setCurrentFile']),
+        ...mapMutations('files', ['SET_CURRENT_FILE', 'SET_FILE_FLYIN_VISIBLE']),
         showSingleFile(file) {
             // Set the current file id
-            this.setCurrentFile(file)
+            this.SET_CURRENT_FILE(file)
             // Show the flyin
             this.fileFlyinVisible = true
         },
         showFileOwnersFlyin(file) {
             // Set the current file id
-            this.setCurrentFile(file)
+            this.SET_CURRENT_FILE(file)
             this.fileOwnersFlyinVisible = true
         },
         showFileApproversFlyin(file) {
             // Set the current file id
-            this.setCurrentFile(file)
+            this.SET_CURRENT_FILE(file)
             this.fileApproversFlyinVisible = true
         },
         onSetCurrentFolder(folder, pathIndex) {

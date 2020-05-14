@@ -104,13 +104,20 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenu" v-slot
-        :hotkeys="['KeyV', 'KeyE', 'KeyA', 'KeyD']"
+        <BaseContextMenu ref="contextMenu" v-slot="slotProps"
+        :hotkeys="['KeyV', 'KeyE', 'KeyA', 'KeyD', 'KeyC']"
+        @keybind-c="selectedProducts = []"
         @keybind-v="onViewSingle(contextItem)"
         @keybind-e="onViewSingle(contextItem)"
         @keybind-a="onNewProduct()"
-        @keybind-d="deleteProduct({file, products: [contextItem]})"
+        @keybind-d="onDeleteProducts([contextItem])"
         >
+            <div class="item-group" v-if="selectedProducts.length > 0">
+                <div class="item" @click="selectedProducts = []; slotProps.hide()">
+                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                    <span><u>C</u>lear Selection</span>
+                </div>
+            </div>
             <div class="item-group">
                 <div class="item" @click="onViewSingle(contextItem)">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
@@ -124,9 +131,32 @@
                 </div>
             </div>
             <div class="item-group">
-                <div class="item" @click="deleteProducts({file, products: [contextItem]})">
+                <div class="item" @click="onDeleteProducts([contextItem])">
                     <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
                     <span><u>D</u>elete Product</span>
+                </div>
+            </div>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuSelected"
+        :hotkeys="['KeyD', 'KeyC']"
+        @keybind-d="onDeleteProduct(selectedProducts)"
+        @keybind-c="selectedProducts = []"
+        >
+            <template v-slot:header>
+                <span>Choose action for {{selectedProducts.length}} products</span>
+            </template>
+
+            <div class="item-group">
+                <div class="item" @click="selectedProducts = []">
+                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                    <span><u>C</u>lear Selection</span>
+                </div>
+            </div>
+            <div class="item-group">
+                <div class="item" @click="onDeleteProducts(selectedProducts)">
+                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                    <span><u>D</u>elete Products</span>
                 </div>
             </div>
         </BaseContextMenu>
@@ -203,8 +233,14 @@ export default {
             document.activeElement.blur()
         },
         showContext(mouseEvent, product) {
-            const contextMenu = this.$refs.contextMenu
+            let contextMenu = this.$refs.contextMenu
             this.contextItem = product;
+            if (this.selectedProducts.length > 0) {
+                this.contextItem = this.selectedProducts[0]
+            }
+            if (this.selectedProducts.length > 1) {
+                contextMenu = this.$refs.contextMenuSelected
+            }
             contextMenu.show(mouseEvent)
         },
         async onNewProduct() {
@@ -212,12 +248,12 @@ export default {
             this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
         },
+        async onDeleteProducts(products) {
+            await this.deleteProducts({file: this.file, products})
+            this.selectedProducts = []
+        },
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)
-            // console.log('on sort')
-            // this.sortKey = sortKey
-            // // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            // this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
     },
 }

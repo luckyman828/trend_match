@@ -1,4 +1,5 @@
 import axios from 'axios'
+import sortArray from '../../mixins/sortArray'
 
 export default {
     namespaced: true,
@@ -17,6 +18,7 @@ export default {
         productsFilteredBySearch: [],
         status: null,
         currentFocusRowIndex: null,
+        lastSort: null,
     },
 
     getters: {
@@ -215,11 +217,14 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     products = response.data
-                    if (addToState) commit('insertProducts', { products, method: 'set' })
-                    commit('PROCESS_PRODUCTS')
+                    if (addToState) {
+                        commit('insertProducts', { products, method: 'set' })
+                        commit('PROCESS_PRODUCTS', products)
+                    }
                     commit('setProductStatus', 'success')
                 })
                 .catch(err => {
+                    console.log(err)
                     commit('setProductStatus', 'error')
                 })
             return products
@@ -308,7 +313,11 @@ export default {
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
-                if (addToState) commit('insertProducts', { products, method: 'add' })
+                if (addToState) {
+                    commit('insertProducts', { products, method: 'add' })
+                    commit('PROCESS_PRODUCTS', products)
+                    commit('SORT_PRODUCTS')
+                }
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -316,6 +325,19 @@ export default {
                         products: products,
                     })
                     .then(response => {
+                        // Alert the user
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${products.length > 1 ? products.length + ' ' : ''}Product${
+                                    products.length > 1 ? 's' : ''
+                                } created`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+
                         // Add the created ID to the product, if we only have 1 product
                         if (products.length <= 1) {
                             const product = products[0]
@@ -325,12 +347,21 @@ export default {
                     })
                     .catch(err => {
                         reject(err)
-                        dispatch(
-                            'alerts/showAlert',
-                            'Something went wrong when creating the product. Please try again.',
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when creating the product. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('insertProducts', { file, products, addToState }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
                             { root: true }
                         )
                     })
+            }).catch(err => {
+                console.log(err)
             })
         },
         instantiateNewProduct({ commit }) {
@@ -375,14 +406,31 @@ export default {
                 axios
                     .put(apiUrl, product)
                     .then(response => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Product updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+
                         commit('updateProduct', product)
                         resolve(response)
                     })
                     .catch(err => {
                         reject(err)
-                        dispatch(
-                            'alerts/showAlert',
-                            'Something went wrong when updating the product. Please try again.',
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when updating the product. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('updateProduct', product),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
                             { root: true }
                         )
                     })
@@ -438,13 +486,10 @@ export default {
                 .then(response => {
                     console.log(response.data)
                 })
-                .catch(err => {
-                    console.log(err.response)
-                })
+                .catch(err => {})
         },
-        async deleteProducts({ commit, dispatch }, { file, products }) {
+        async deleteProducts({ state, getters, commit, dispatch }, { file, products }) {
             return new Promise((resolve, reject) => {
-                commit('DELETE_PRODUCTS', products)
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -452,19 +497,52 @@ export default {
                         products: products,
                     })
                     .then(response => {
-                        // Add the created ID to the product, if we only have 1 product
+                        commit('DELETE_PRODUCTS', products)
                         resolve(response)
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
+                                callback: () => restoreProducts(),
+                                callbackLabel: 'Restore products',
+                                iconClass: 'fa-trash',
+                                type: 'danger',
+                            },
+                            { root: true }
+                        )
                     })
                     .catch(err => {
                         reject(err)
                         // Re-add the products
                         commit('insertProducts', { products, method: 'add' })
-                        dispatch(
-                            'alerts/showAlert',
-                            'Something went wrong when creating the product. Please try again.',
+                        // Show error message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when deleting the product(s). Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('deleteProducts', { file, products }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
                             { root: true }
                         )
                     })
+
+                const restoreProducts = async () => {
+                    await dispatch('insertProducts', { file, products, addToState: true })
+                    commit('SORT_PRODUCTS')
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${products.length} product${products.length > 1 ? 's' : ''} re-added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                }
             })
         },
     },
@@ -473,6 +551,11 @@ export default {
         //Set the loading status of the app
         setLoading(state, bool) {
             state.loading = bool
+        },
+        SORT_PRODUCTS(state) {
+            if (state.lastSort) {
+                sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
+            }
         },
         setProductStatus(state, status) {
             state.status = status
@@ -498,10 +581,10 @@ export default {
             }
         },
         DELETE_PRODUCTS(state, products) {
-            products.forEach(product => {
-                const index = state.products.findIndex(x => x.id == product.id)
+            for (let i = products.length; i--; ) {
+                const index = state.products.findIndex(x => x.id == products[i].id)
                 state.products.splice(index, 1)
-            })
+            }
         },
         SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
             state.productsFilteredBySearch = products
@@ -545,8 +628,7 @@ export default {
         alertError: state => {
             window.alert('Network error. Please check your connection')
         },
-        PROCESS_PRODUCTS: state => {
-            const products = state.products
+        PROCESS_PRODUCTS(state, products) {
             products.map(product => {
                 // ---- START PRICES ----
                 // Currency
@@ -564,13 +646,14 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
                             if (preferredPrice) return preferredPrice
                             else return product.prices[0]
                         } else {
                             return product.prices[0]
                         }
                     },
+                    configurable: true,
                 })
                 //Define default prices directly on the product
                 Object.defineProperty(product, 'wholesale_price', {
@@ -608,12 +691,13 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = product.preferred_currency))
+                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
                         return product.prices[0]
                     },
+                    configurable: true,
                 })
 
                 // Dynamically Calculated Actions
@@ -717,12 +801,13 @@ export default {
                         }
                         // Else check if we have a preferred currency set, and try to match that
                         if (preferred_currency) {
-                            const preferredPrice = product.prices.find(x => (x.currency = preferred_currency))
+                            const preferredPrice = product.prices.find(x => x.currency == preferred_currency)
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
                         return product.prices[0]
                     },
+                    configurable: true,
                 })
 
                 //Define default prices directly on the product
@@ -795,9 +880,7 @@ export default {
                 // Set the current action for the user
                 Object.defineProperty(product, 'your_feedback', {
                     get: function() {
-                        return product.feedbacks.find(
-                            x => x.selection_id == product.selectionInputArray[0].selection.id
-                        ).action
+                        return product.selectionInputArray[0].product.your_feedback
                     },
                     set: function(value) {
                         product.feedbacks.find(
@@ -899,6 +982,9 @@ export default {
                     },
                 })
             })
+        },
+        SET_LAST_SORT(state, { method, key }) {
+            state.lastSort = { method, key }
         },
     },
 }

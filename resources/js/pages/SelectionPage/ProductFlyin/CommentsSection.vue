@@ -9,7 +9,7 @@
 
         <template v-slot>
             <div class="comments-wrapper">
-                <div class="sender-wrapper" v-for="(comment, index) in product.comments" :key="index" 
+                <div class="sender-wrapper" v-for="(comment, index) in commentsSorted" :key="index" 
                 :class="[{own: comment.user_id == authUser.id}, {master: comment.selection.type == 'Master'}]">
                     <comment :product="product" :comment="comment"/>
                     <!-- Only show the sender if the comment after this one is not by the same user and from the same selection -->
@@ -96,6 +96,11 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },
+        commentsSorted() {
+            return this.product.comments.sort((a,b) => {
+                return a.id - b.id
+            })
+        }
     },
     methods: {
         ...mapActions('comments', ['insertOrUpdateComment']),
