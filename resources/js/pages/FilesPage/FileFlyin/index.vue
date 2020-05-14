@@ -118,35 +118,50 @@ export default {
         },
         onToggleAllSelectionsLocked() {
             const selections = this.getSelections
-            const makeLocked = selections[0].is_open 
+            let makeLocked = null
             selections.map(selection => {
+                if (selection.is_presenting) return
+                let hasChange = false
+                if (makeLocked == null) makeLocked = selection.is_open
                 // Check if the selection is locked
+                if (makeLocked && !selection.is_open) return 
+                if (!makeLocked && selection.is_open) return 
+
                 if (makeLocked) {
                     selection.open_from = new Date("9999")
-                    // Set To to now
                     selection.open_to = null
+                    hasChange = true
                 } else {
                     selection.open_from = null
                     selection.open_to = null
+                    hasChange = true
                 }
-                this.updateSelection(selection)
+                if (hasChange) this.updateSelection(selection)
             })
         },
         onToggleAllSelectionsVisibility() {
             // Use the first selection to determine if we are opening or closing all
             const selections = this.getSelections
-            const makeHidden = selections[0].is_visible 
+            let makeHidden = null
             selections.map(selection => {
+                if (selection.is_presenting) return
+                if (makeHidden == null) makeHidden = selection.is_visible
+                let hasChange = false
+
+                if (makeHidden && !selection.is_visible) return
+                if (!makeHidden && selection.is_visible) return
                 // Check if the selection is visible
                 if (makeHidden) {
                     // Set To to now
                     selection.visible_from = new Date("9999")
                     selection.visible_to = null
+                    hasChange = true
                 } else {
                     selection.visible_from = null
                     selection.visible_to = null
+                    hasChange = true
                 }
-                this.updateSelection(selection)
+                if (hasChange) this.updateSelection(selection)
             })
         }
     },
