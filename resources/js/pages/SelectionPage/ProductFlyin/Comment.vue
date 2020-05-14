@@ -1,5 +1,7 @@
 <template>
-    <div class="comment-wrapper" :class="[{'has-traits': hasTraits}, {'edit-active': editActive}]">
+    <div class="comment-wrapper" 
+    :class="[{'own': comment.user_id == authUser.id}, {'master': comment.selection.type == 'Master'}, 
+    {'has-traits': hasTraits}, {'edit-active': editActive}]">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
             <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
@@ -36,16 +38,18 @@
             </div>
             <!-- End Comment Controls -->
         </div>
-        <!-- <div class="sender">
-            <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
-            {{(comment.user_id == authUser.id) ? 'You' : comment.user ? comment.user.name : 'Anonymous'}}
-        </div> -->
         <div class="save-controls" v-if="editActive">
             <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
             @click="onUpdateComment">
                 <span>Save</span>
             </BaseButton>
             <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
+        </div>
+
+        <div class="sender" v-if="displayAuthor">
+            <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
+            {{(comment.user_id == authUser.id) ? 'You' 
+            : !commentIsAnonymized && comment.user ? comment.user.name : 'Anonymous'}}
         </div>
 
         <BaseDialog ref="confirmDeleteComment" type="confirm"
@@ -66,7 +70,9 @@ export default {
     name: 'comment',
     props: [
         'comment',
-        'product'
+        'product',
+        'selection',
+        'displayAuthor',
     ],
     data: function() {
         return {
@@ -76,6 +82,7 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         isOwn() {
             return this.comment.user_id == this.authUser.id
         },
@@ -83,6 +90,12 @@ export default {
             return this.comment.important 
             // || this.comment.votes.length > 0 
             || this.comment.focus
+        },
+        commentIsAnonymized() {
+            const yourRole = this.selection.your_role
+            const displayRole = this.selection.settings.anonymize_comment
+            if (this.authUserWorkspaceRole == 'Admin') return false
+            return displayRole == 'None' || displayRole == 'Owner' && yourRole != 'Owner'
         }
     },
     methods: {
@@ -114,7 +127,7 @@ export default {
 
     .comment-wrapper {
         position: relative;
-        margin-bottom: 4px;
+        margin-bottom: 8px;
         max-width: calc(100% - 64px);
         &.edit-active {
             width: 100%;
@@ -133,12 +146,17 @@ export default {
         &.has-traits {
             margin-top: 16px;
         }
+        &.own {
+            margin-left: auto;
+            text-align: right;
+        }
     }
     .sender {
         display: block;
         font-size: 12px;
         font-weight: 500;
         color: $font;
+        margin-bottom: 20px;
     }
     .save-controls {
         position: absolute;
@@ -165,8 +183,10 @@ export default {
         padding: 12px;
         background: white;
         border-radius: 6px;
-        width: 100%;
+        display: inline-block;
         z-index: 1;
+        margin-bottom: 4px;
+        text-align: left;
         .failed {
             color: $red;
         }

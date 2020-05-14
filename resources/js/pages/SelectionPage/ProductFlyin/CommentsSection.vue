@@ -9,17 +9,11 @@
 
         <template v-slot>
             <div class="comments-wrapper">
-                <div class="sender-wrapper" v-for="(comment, index) in commentsSorted" :key="index" 
-                :class="[{own: comment.user_id == authUser.id}, {master: comment.selection.type == 'Master'}]">
-                    <comment :product="product" :comment="comment"/>
-                    <!-- Only show the sender if the comment after this one is not by the same user and from the same selection -->
-                    <div class="sender" v-if="product.comments[index+1] ? 
-                    (product.comments[index+1].user_id != comment.user_id || product.comments[index+1].selection_id != comment.selection_id) 
-                    : true">
-                        <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
-                        {{(comment.user_id == authUser.id) ? 'You' : comment.user ? comment.user.name : 'Anonymous'}}
-                    </div>
-                </div>
+                <comment v-for="(comment, index) in commentsSorted" 
+                :key="index" :product="product" :comment="comment" :selection="selection"
+                :displayAuthor="product.comments[index+1] ? 
+                (product.comments[index+1].user_id != comment.user_id || product.comments[index+1].selection_id != comment.selection_id) 
+                : true"/>
             </div>
 
 
@@ -100,7 +94,7 @@ export default {
             return this.product.comments.sort((a,b) => {
                 return a.id - b.id
             })
-        }
+        },
     },
     methods: {
         ...mapActions('comments', ['insertOrUpdateComment']),
@@ -215,12 +209,6 @@ export default {
         height: 100%;
         overflow-y: auto;
         padding: 16px 16px 64px;
-        .sender {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: $font;
-        }
     }
     .form-wrapper {
         padding: 20px 16px 28px;
@@ -321,18 +309,6 @@ export default {
     }
     .request-wrapper {
         margin-bottom: 16px;
-    }
-    .sender-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 4px;
-        &.own {
-            align-items: flex-end
-        }
-    }
-    .sender {
-        margin-bottom: 20px;
     }
     .break-line {
         &::after, &::before {
