@@ -50,6 +50,8 @@ export default {
             let apiUrl
             let requestBody
             let oldActions
+
+            // Shape products for request
             const productActions = products.map(product => {
                 return {
                     product,
@@ -63,6 +65,8 @@ export default {
                     },
                 }
             })
+
+            // Save old actions
             if (selection.your_role == 'Member') {
                 oldActions = products.map(product => {
                     return {
@@ -109,6 +113,13 @@ export default {
                         }
                     }),
                 }
+            }
+
+            const restoreActions = () => {
+                commit('INSERT_OR_UPDATE_ACTIONS', {
+                    productActions: oldActions,
+                    type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
+                })
             }
 
             // Update state
@@ -169,13 +180,6 @@ export default {
                         { root: true }
                     )
                 })
-
-            const restoreActions = () => {
-                commit('INSERT_OR_UPDATE_ACTIONS', {
-                    productActions: oldActions,
-                    type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
-                })
-            }
         },
         async insertOrUpdateProductActionPairs({ commit }, { productActionPairs, selection }) {
             // Find the selection product if it is not the product we have been passed
