@@ -29,7 +29,7 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchSelectionProducts']),
-        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment']),
+        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment', 'fetchSelectionSettings']),
         ...mapActions('teams', ['fetchTeamUsers']),
         async fetchSelectionTeamsUsers(teams) {
             // Use of promise and map to fetch users for all teams in parallel
@@ -50,6 +50,9 @@ export default {
 
         // Fetch selection products
         await this.fetchSelectionProducts({selections: [selection], addToState: true})
+
+        // Fetch selection settings
+        await this.fetchSelectionSettings(selection)
 
         // Fetch selections that are available for alignment for the auth user
         const selections = await this.fetchSelections({fileId})

@@ -459,6 +459,7 @@ export default {
             state.currentSelection = selection
         },
         SET_CURRENT_SELECTIONS(state, selections) {
+            console.log('set current selections', selections)
             state.currentSelections = selections
         },
         SET_CURRENT_PDP_SELECTION(state, selection) {
