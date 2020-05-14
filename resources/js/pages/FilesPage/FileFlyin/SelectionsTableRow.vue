@@ -49,17 +49,21 @@
             </td>
             <td class="status">
                 <template v-if="userHasEditAccess">
-                    <button class="editable sm" :class="selection.is_open && 'ghost'" 
+                    <BaseButton :buttonClass="`editable sm ${selection.is_open && 'ghost'}`"
+                    :disabled="selection.is_presenting"
+                    disabledTooltip="You cannot lock a selection in presentation mode"
                     @click="onToggleLocked(selection)">
                         <span>{{selection.is_open ? 'Open' : 'Locked'}}</span>
                         <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i>
-                    </button>
+                    </BaseButton>
 
-                    <button class="editable sm" :class="selection.is_visible && 'ghost'"
+                    <BaseButton :buttonClass="`editable sm ${selection.is_visible && 'ghost'}`"
+                    :disabled="selection.is_presenting"
+                    disabledTooltip="You cannot hide a selection in presentation mode"
                     @click="onToggleHidden(selection)">
                         <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
                         <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i>
-                    </button>
+                    </BaseButton>
 
                 </template>
                 <span v-else>-</span>
@@ -265,8 +269,10 @@ export default {
         }
     }
     .status {
-        button {
-            min-width: 84px;
+        ::v-deep {
+            button {
+                min-width: 72px;
+            }
         }
     }
     
