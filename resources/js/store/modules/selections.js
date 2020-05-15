@@ -44,6 +44,7 @@ export default {
         currentSelection: state => state.currentSelections[0],
         getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
+        getCurrentSelection: state => state.currentSelections[0],
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
@@ -72,6 +73,8 @@ export default {
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
+        getSelectionById: state => id => state.selections.find(x => x.id == id),
+        getCurrentSelectionById: state => id => state.currentSelections.find(x => x.id == id),
         selections: state => state.selections,
         getSelectionsTree: state => {
             const list = state.selections
@@ -93,6 +96,26 @@ export default {
                 }
             }
             return roots
+        },
+        getSelectionTree: state => selection => {
+            const list = state.selections
+            let map = {},
+                node,
+                i,
+                nodeToReturn
+            for (i = 0; i < list.length; i += 1) {
+                map[list[i].id] = i // initialize the map
+                Vue.set(list[i], 'children', []) // initialize the children
+            }
+            for (i = 0; i < list.length; i += 1) {
+                node = list[i]
+                if (node.id == selection.id) nodeToReturn = node
+                if (map[node.parent_id] != null) {
+                    // if you have dangling branches check that map[node.parentId] exists
+                    list[map[node.parent_id]].children.push(node)
+                }
+            }
+            return nodeToReturn
         },
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
@@ -175,7 +198,6 @@ export default {
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
-            console.log('fetch selection')
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
             commit('SET_SELECTION_USERS_STATUS', 'loading')
             commit('SET_SELECTION_TEAMS_STATUS', 'loading')
@@ -752,6 +774,98 @@ export default {
                 commit('DELETE_SELECTION', child)
             })
         },
+        // async unlockAllSelectionDescendants({ commit, dispatch }, selection) {
+        //     selection.open_from = null
+        //     selection.open_to = null
+        //     dispatch('updateSelection', selection)
+
+        //     selection.children.forEach(childSelection => {
+        //         dispatch('unlockAllSelectionDescendants', childSelection)
+        //     })
+        // },
+        // async unhidellSelectionDescendants({ commit, dispatch }, selection) {
+        //     selection.visible_from = null
+        //     selection.visible_to = null
+        //     dispatch('updateSelection', selection)
+
+        //     selection.children.forEach(childSelection => {
+        //         dispatch('unlockAllSelectionDescendants', childSelection)
+        //     })
+        // },
+        async openAllSelectionDescendants({ commit, dispatch }, selection) {
+            const hasChanged = !selection.is_visible || !selection.is_open
+            if (!selection.is_visible) {
+                selection.visible_from = null
+                selection.visible_to = null
+            }
+            if (!selection.is_open) {
+                selection.open_from = null
+                selection.open_to = null
+            }
+            if (hasChanged) {
+                dispatch('updateSelection', selection)
+            }
+
+            selection.children.forEach(childSelection => {
+                dispatch('openAllSelectionDescendants', childSelection)
+            })
+        },
+        async togglePresenterMode({ getters, dispatch, commit }, selection) {
+            const apiUrl = `/selections/${selection.id}/presentation`
+            // Assunme success
+            let success = true
+            if (!selection.is_presenting) {
+                await axios
+                    .post(apiUrl)
+                    .then(() => {
+                        // On successful presentation start, unlock / unhide the selection and all of its children
+                        if (!selection.is_visible) {
+                            selection.visible_from = null
+                            selection.visible_to = null
+                        }
+                        if (!selection.is_open) {
+                            selection.open_from = null
+                            selection.open_to = null
+                        }
+                        const selectionTree = getters.getSelectionTree(selection)
+                        dispatch('openAllSelectionDescendants', selectionTree)
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong trying to enter presentation mode. Please try again.',
+                                type: 'warning',
+                                iconClass: 'fa-exclamation-triangle',
+                            },
+                            { root: true }
+                        )
+                        success = false
+                    })
+            } else {
+                await axios.delete(apiUrl).catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to stop presentation mode. Please try again.',
+                            type: 'warning',
+                            iconClass: 'fa-exclamation-triangle',
+                        },
+                        { root: true }
+                    )
+                    success = false
+                })
+            }
+            if (!success) return
+
+            // commit('SET_SELECTION_PRESENTATION_MODE_ACTIVE', { selection, isActive: !selection.is_presenting })
+
+            // Clear the current presentation queue if we just exited presentation mode
+            if (!selection.is_presenting) {
+                commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
+            }
+        },
     },
 
     mutations: {
@@ -899,6 +1013,10 @@ export default {
                     },
                 })
             })
+        },
+        SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {
+            // Vue.set(selection, 'is_presenting', isActive)
+            selection.is_presenting = isActive
         },
     },
 }

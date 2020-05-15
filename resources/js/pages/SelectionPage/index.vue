@@ -37,6 +37,7 @@ export default {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment', 'fetchSelectionSettings']),
         ...mapActions('teams', ['fetchTeamUsers']),
+        ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
         async fetchSelectionTeamsUsers(teams) {
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(teams.map(async team => {

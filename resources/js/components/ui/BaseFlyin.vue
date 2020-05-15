@@ -1,7 +1,7 @@
 <template>
-    <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
+    <div class="flyin-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
-        <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
+        <div class="flyin" ref="flyIn" :class="[{'has-columns': columns > 1}, placement == 'left' ? 'placement-left' : 'placement-right']">
             <!-- Error -->
             <BaseContentLoadError v-if="status == 'error'" :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
 
@@ -15,6 +15,8 @@
                     <slot :toggle="toggle"/>
                 </div>
             </template>
+
+            <slot name="alwaysVisible"/>
         </div>
     </div>
 </template>
@@ -32,6 +34,7 @@ export default {
         'loadingMsg',
         'errorMsg',
         'errorCallback',
+        'placement',
     ],
     data: function () { return {
         visible: false,
@@ -82,12 +85,12 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    .fly-in-wrapper {
+    .flyin-wrapper {
         &.visible {
             > .overlay {
                 display: block;
             }
-            > .fly-in {
+            > .flyin {
                 transform: none;
             }
         }
@@ -102,7 +105,7 @@ export default {
         background: rgba($dark, 50%);
         display: none;
     }
-    .fly-in {
+    .flyin {
         display: flex;
         flex-direction: column;
         right: 0;
@@ -121,10 +124,15 @@ export default {
         transition-timing-function: cubic-bezier(0.060, 0.975, 0.195, 0.985);;
         transition: .2s;
         // &.animate {
-        //     animation-name: fly-in;
+        //     animation-name: flyin;
         //     animation-duration: .2s;
         //     animation-iteration-count: 1;
         // }
+        &.placement-left {
+            right: auto;
+            left: 0;
+            transform: translateX(-100%);
+        }
         .body {
             padding: 16px;
             flex: 1;
@@ -138,7 +146,7 @@ export default {
             }
         }
     }
-    // @keyframes fly-in {
+    // @keyframes flyin {
     //     from {right: -100%;}
     //     to {right: 0;}
     // }

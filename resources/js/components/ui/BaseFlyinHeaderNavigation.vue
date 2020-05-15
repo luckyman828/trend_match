@@ -24,10 +24,14 @@ export default {
                 event.target.type != 'textarea' && 
                 event.target.tagName.toUpperCase() != 'INPUT'
             ) {
-                if (key == 'ArrowRight' && this.next)
+                if (key == 'ArrowRight' && this.next) {
+                    event.preventDefault()
                     this.$emit('next')
-                if (key == 'ArrowLeft' && this.prev)
+                }
+                if (key == 'ArrowLeft' && this.prev) {
+                    event.preventDefault()
                     this.$emit('prev')
+                }
             }
         }
     },

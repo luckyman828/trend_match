@@ -17,12 +17,13 @@
                 @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', {selection, parent})"/>
             </td>
             <!-- Viewing -->
-            <td v-else class="title clickable" @click="onGoToSelection" :style="selectionWidth">
+            <td v-else class="title" :class="{'clickable': !selection.is_presenting || (selection.your_role == 'Owner' && selection.type == 'Master')}"
+            @click="(!selection.is_presenting || (selection.your_role == 'Owner' && selection.type == 'Master')) && onGoToSelection()" :style="selectionWidth">
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
-            <!-- <td class="items">-</td>
+            <!-- <td class="items">-</td>s
             <td class="in">-</td>
             <td class="out">-</td>
             <td class="nd">-</td> -->
@@ -32,13 +33,13 @@
                 </button>
                 <span v-else>{{selection.currency || 'No currency set'}}</span>
             </td>
-            <td class="teams">
+            <!-- <td class="teams">
                 <button class="ghost editable sm" v-if="userHasEditAccess"
                 @click="$emit('showSelectionUsersFlyin', selection)">
                     <i class="far fa-users"></i><span>{{selection.team_count}}</span>
                 </button>
                 <span v-else>-</span>
-            </td>
+            </td> -->
             <td class="users">
                 <button class="ghost editable sm" v-if="userHasEditAccess"
                 @click="$emit('showSelectionUsersFlyin', selection)">
@@ -48,21 +49,41 @@
             </td>
             <td class="status">
                 <template v-if="userHasEditAccess">
-                    <button class="editable" :class="selection.is_open && 'ghost'" 
+                    <BaseButton :buttonClass="`editable sm ${selection.is_open && 'ghost'}`"
+                    :disabled="selection.is_presenting"
+                    disabledTooltip="You cannot lock a selection in presentation mode"
                     @click="onToggleLocked(selection)">
                         <span>{{selection.is_open ? 'Open' : 'Locked'}}</span>
-                        <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i></button>
-                    <button class="editable" :class="selection.is_visible && 'ghost'"
+                        <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i>
+                    </BaseButton>
+
+                    <BaseButton :buttonClass="`editable sm ${selection.is_visible && 'ghost'}`"
+                    :disabled="selection.is_presenting"
+                    disabledTooltip="You cannot hide a selection in presentation mode"
                     @click="onToggleHidden(selection)">
                         <span>{{!selection.is_visible ? 'Hidden' : 'Visible'}}</span>
-                        <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i></button>
+                        <i class="far" :class="!selection.is_visible ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </BaseButton>
+
                 </template>
                 <span v-else>-</span>
+            </td>
+            <td class="presentation">
+                <SelectionPresenterModeButton v-if="isMaster" :selection="selection" :showLabel="false"/>
+                <div v-else-if="selection.is_presenting" class="pill primary sm"
+                v-tooltip="'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'">
+                    <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" 
+                    class="far fa-presentation"></i>
+                    <span>In presentation</span>
+                </div>
+                <!-- <SelectionPresenterModeButton v-if="userHasEditAccess && isMaster" :selection="selection" :showLabel="false"/> -->
             </td>
             <td class="action">
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="$emit('showSettingsContext', $event, selection)"><i class="fas fa-cog"></i></button>
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="emitShowContext"><i class="fas fa-ellipsis-h"></i></button>
                 <BaseButton v-else buttonClass="invisible ghost-hover primary"
+                :disabled="selection.is_presenting && selection.your_role != 'Owner'"
+                v-tooltip="selection.is_presenting && selection.your_role != 'Owner' && 'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'"
                 @click="onGoToSelection">
                     <span>Go to Selection</span>
                 </BaseButton>
@@ -81,11 +102,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
+import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
 export default {
     name: 'selectionsTableRow',
     components: {
         'selectionsTableRow': SelectionsTableRow,
+        SelectionPresenterModeButton,
     },
     props: [
         'selection',
@@ -98,7 +121,7 @@ export default {
         'isMaster'
     ],
     data: function() { return {
-        childrenExpanded: true
+        childrenExpanded: true,
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
@@ -108,7 +131,7 @@ export default {
             return {maxWidth: `${this.depth * indentAmount + baseIndent}px`, minWidth: `${this.depth * indentAmount + baseIndent}px` }
         },
         selectionWidth() {
-            const baseWidth = 400
+            const baseWidth = 300
             const indentAmount = 24
             return {maxWidth: `${baseWidth - this.depth * indentAmount}px`, minWidth: `${baseWidth - this.depth * indentAmount}px` }
         },
@@ -125,7 +148,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['insertSelection', 'updateSelection']),
+        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
         },
@@ -160,7 +183,7 @@ export default {
                 selection.open_from = new Date("9999")
                 // Set To to now
                 selection.open_to = null
-                } else {
+            } else {
                 selection.open_from = null
                 selection.open_to = null
             }
@@ -246,8 +269,10 @@ export default {
         }
     }
     .status {
-        button {
-            min-width: 84px;
+        ::v-deep {
+            button {
+                min-width: 72px;
+            }
         }
     }
     

@@ -61,6 +61,15 @@ html {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     color: $fontBody;
 }
+// Headers
+h1,
+h2,
+h3,
+h4,
+h5,
+strong {
+    line-height: 1.2;
+}
 h1,
 h2,
 h3,
@@ -512,6 +521,15 @@ input[type='submit'] {
 }
 .pill {
     min-width: 32px;
+    @each $size in $button-sizes {
+        min-width: 32px;
+        &.#{nth($size,1)} {
+            min-width: nth($size, 2);
+            &.fixed-width {
+                width: nth($size, 2) * 2;
+            }
+        }
+    }
 }
 
 // ICONS
@@ -900,12 +918,12 @@ i.has-tooltip {
     }
 
     &[x-placement^='top'] {
-        padding-bottom: 5px;
+        padding-bottom: 8px;
 
         .tooltip-arrow {
             border-bottom-width: 0;
             border-top-color: $divider;
-            bottom: 0;
+            bottom: 3px;
             left: 0;
 
             &::after {
@@ -918,15 +936,12 @@ i.has-tooltip {
     }
 
     &[x-placement^='bottom'] {
-        padding-top: 5px;
+        padding-top: 8px;
 
         .tooltip-arrow {
             border-top-width: 0;
             border-bottom-color: $divider;
-            top: 0;
-            // left: 50%;
-            // 实战bug3： x-arrow自动会计算
-            // transform: translateX(-50%);
+            top: 3px;
             left: 0;
 
             &::after {
@@ -939,13 +954,13 @@ i.has-tooltip {
     }
 
     &[x-placement^='right'] {
-        padding-left: 5px;
+        padding-left: 8px;
 
         .tooltip-arrow {
             border-left-width: 0;
             border-right-color: $divider;
             top: 0;
-            left: 0;
+            left: 3px;
 
             &::after {
                 border-left-width: 0;
@@ -957,13 +972,13 @@ i.has-tooltip {
     }
 
     &[x-placement^='left'] {
-        padding-right: 5px;
+        padding-right: 8px;
 
         .tooltip-arrow {
             border-right-width: 0;
             border-left-color: $divider;
             top: 0;
-            right: 0;
+            right: 3px;
 
             &::after {
                 border-right-width: 0;
@@ -1467,4 +1482,41 @@ input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+// SCROLLBARS
+::-webkit-scrollbar {
+    width: 3px;
+    height: 7px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+    background: $light2;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: $dark2;
+    border-radius: 2px;
+    &:hover {
+        background: $dark25;
+    }
+}
+
+// SORTABLE / DRAGABLE
+.sortable-drag {
+    opacity: 1 !important;
+    z-index: 999;
+}
+.drag-item {
+    .sortable-ghost & {
+        background: $grey !important;
+        > * {
+            visibility: hidden;
+            // display: none !important;
+        }
+    }
+    .sortable-drag & {
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5) !important;
+        transform: rotateZ(3deg) !important;
+    }
 }

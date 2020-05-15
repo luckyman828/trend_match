@@ -90,20 +90,16 @@ export default {
     watch: {
         product: function(newVal, oldVal) {
             // if (newVal.id != oldVal.id)
-            console.log('product updated')
                 this.update()
         },
         selection: function(newVal, oldVal) {
-            console.log('selection')
             if (newVal.id != oldVal.id)
                 this.update()
         },
         requests: function(newVal, oldVal) {
-            console.log('requests updated')
             this.update()
         },
         selectionRequest: function(newVal, oldVal) {
-            console.log('selection request updated')
             this.update()
         },
     },
@@ -178,7 +174,6 @@ export default {
 
         },
         update() {
-            console.log('update')
             // Find the existing selection request if any
             // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
@@ -228,7 +223,7 @@ export default {
 <style <style lang="scss" scoped>
 @import '~@/_variables.scss';
     ::v-deep {
-        &.fly-in-column {
+        &.flyin-column {
             .header {
                 display: flex;
                 align-items: center;

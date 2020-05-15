@@ -30,7 +30,11 @@ export default {
         availableProducts: state => {
             return state.availableProducts
         },
-        nextProduct: state => {
+        nextProduct: (state, getters, rootState, rootGetters) => {
+            // If we have a nextProduct in our presenterQueue, then use that instead
+            const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
+            if (nextPresentationQueueProduct) return nextPresentationQueueProduct
+
             // Find the index of the current product
             const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
             // Check that the current is not the last in the array
@@ -38,7 +42,11 @@ export default {
                 return state.availableProducts[index + 1]
             }
         },
-        prevProduct: state => {
+        prevProduct: (state, getters, rootState, rootGetters) => {
+            // If we have a prevProduct in our presenterQueue, then use that instead
+            const prevPresentationQueueProduct = rootGetters['presenterQueue/getPrevProduct']
+            if (prevPresentationQueueProduct) return prevPresentationQueueProduct
+
             // Find the index of the current product
             const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
             // Check that the current is not the first in the array
@@ -278,13 +286,9 @@ export default {
                     return selectionInput.product
                 })
                 // Filter our products by search
-                console.log('filter by search')
-                console.log(getters.getProductsFilteredBySearch)
-                console.log(getters.getProductsFilteredBySearch[1])
                 const selectionProductsFilteredBySearch = newAvailableProducts.filter(product =>
                     getters.getProductsFilteredBySearch.find(x => x.id == product.id)
                 )
-                console.log(selectionProductsFilteredBySearch)
                 commit('setAvailableProducts', selectionProductsFilteredBySearch)
             }
 

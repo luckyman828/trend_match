@@ -1,12 +1,19 @@
 <template>
     <div class="flyin-header">
         <div class="left">
-            <button class="circle close" @click="$emit('closeFlyin');$emit('close')"><i class="fal fa-times"></i></button>
+            <button v-if="!placement || placement== 'right'" class="circle close md" 
+            @click="$emit('closeFlyin');$emit('close')">
+                <i class="fal fa-times"></i>
+            </button>
             <slot name="left"/>
         </div>
         <div class="right">
             <slot name="right"/>
             <BaseFlyinHeaderNavigation v-if="!disableNavigation" :next="next" :prev="prev" @prev="$emit('prev')" @next="$emit('next')"/>
+            <button v-if="placement == 'left'" class="circle close md" 
+            @click="$emit('closeFlyin');$emit('close')">
+                <i class="fal fa-times"></i>
+            </button>
         </div>
     </div>
 </template>
@@ -18,7 +25,8 @@ export default {
         'title',
         'next',
         'prev',
-        'disableNavigation'
+        'disableNavigation',
+        'placement',
     ]
 }
 </script>
@@ -55,8 +63,15 @@ export default {
                 }
             }
         }
-        .close {
-            margin-right: 32px;
+        .left {
+            .close {
+                margin-right: 16px;
+            }
+        }
+        .right {
+            .close {
+                margin-left: 16px;
+            }
         }
     }
 </style>

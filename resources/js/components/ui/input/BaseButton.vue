@@ -3,7 +3,16 @@
         <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}]"
         @click="!disabled && $emit('click', $event)">
             <slot/>
+
+            <!-- Target Area -->
+            <div class="target-area" v-if="targetAreaPadding" 
+            :style="'padding: '+targetAreaPadding">
+
+            </div>
         </button>
+
+
+        <!-- Hotkey -->
         <div class="hotkey" v-if="hotkey">
             <span class="key">{{hotkey.key}}</span>
             <span class="label">{{hotkey.label}}</span>
@@ -19,6 +28,7 @@ export default {
         'hotkey',
         'disabled',
         'tooltip',
+        'targetAreaPadding',
         'disabledTooltip',
     ],
 }
@@ -49,6 +59,18 @@ export default {
         .label {
             font-size: 11px;
         }
+    }
+
+    // Target Area
+    .target-area {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+        height: 100%;
+        width: 100%;
+        box-sizing: content-box;
     }
 }
 

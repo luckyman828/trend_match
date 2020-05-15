@@ -20,7 +20,7 @@
                 modelValue="nds"/>
 
                 <!-- Selection Selector -->
-                <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment'"/>
+                <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                 <!-- Selection Selector Ends -->
 
             </template>
@@ -464,8 +464,8 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 64px;
-                        max-width: 64px;
+                        min-width: 70px;
+                        max-width: 70px;
                         height: 100%;
                     }
                     &.delivery {
