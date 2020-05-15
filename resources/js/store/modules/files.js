@@ -11,16 +11,24 @@ export default {
         availableFileIds: [],
         currentFile: null,
         currentFolder: null,
-        status: null,
+        currentFileChanged: false,
+        status: 'loading',
+        currentFolderStatus: null,
+        path: [],
         flyinVisible: false,
     },
 
     getters: {
         loadingFiles: state => state.loading,
         filesStatus: state => state.status,
+        getFilesStatus: state => state.status,
+        getCurrentFileChanged: state => state.currentFileChanged,
+        getCurrentFilePath: state => state.path,
+        getCurrentFolderStatus: state => state.currentFolderStatus,
         currentFile: state => state.currentFile,
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
+        getCurrentFolder: state => state.currentFolder,
         files: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
@@ -47,7 +55,11 @@ export default {
         async fetchFiles({ commit, state, rootGetters }, addToState = true) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
-            if (addToState) commit('setLoading', true)
+            if (addToState) {
+                commit('setLoading', true)
+                commit('SET_CURRENT_FOLDER_STATUS', 'loading')
+                commit('SET_FILES_STATUS', 'loading')
+            }
 
             const apiUrl = `/workspaces/${workspaceId}/files`
 
@@ -57,13 +69,26 @@ export default {
             let files
             while (tryCount-- > 0 && !succes) {
                 try {
-                    const response = await axios.get(`${apiUrl}`)
+                    const response = await axios.get(`${apiUrl}`).catch(err => {
+                        'error???'
+                    })
                     files = response.data
-                    if (addToState) state.files = files
-                    if (addToState) commit('setLoading', false)
+                    if (addToState) {
+                        state.files = files
+                        commit('setLoading', false)
+                        commit('SET_CURRENT_FOLDER_STATUS', 'success')
+                        commit('SET_FILES_STATUS', 'success')
+                    }
                     succes = true
                 } catch (err) {
-                    if (tryCount <= 0) throw err
+                    if (tryCount <= 0) {
+                        if (addToState) {
+                            commit('setLoading', false)
+                            commit('SET_CURRENT_FOLDER_STATUS', 'error')
+                            commit('SET_FILES_STATUS', 'error')
+                        }
+                        throw err
+                    }
                 }
             }
             return files
@@ -83,7 +108,7 @@ export default {
         },
         async fetchFile({ commit, state, rootGetters }, fileid) {
             // Set the state to loading
-            commit('setFilesStatus', 'loading')
+            commit('SET_FILES_STATUS', 'loading')
 
             const apiUrl = `/files/${fileid}`
             let file
@@ -92,10 +117,10 @@ export default {
                 .then(response => {
                     file = response.data
                     commit('SET_CURRENT_FILE', file)
-                    commit('setFilesStatus', 'success')
+                    commit('SET_FILES_STATUS', 'success')
                 })
                 .catch(err => {
-                    commit('setFilesStatus', 'error')
+                    commit('SET_FILES_STATUS', 'error')
                 })
             return file
         },
@@ -122,18 +147,33 @@ export default {
             return files
         },
         async setCurrentFolder({ commit, state, rootGetters }, folder) {
+            commit('SET_CURRENT_FOLDER_STATUS', 'loading')
+            commit('SET_CURRENT_FOLDER', folder)
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Assume root
             let apiUrl = `/workspaces/${workspaceId}/files`
-
             // Check if the folder to set is a folder or root
             if (folder) {
                 apiUrl = `/files/${folder.id}/children`
+
+                // Update our path
+                commit('SET_CURRENT_PATH_FOLDER', folder)
+            } else {
+                // Reset the path
+                commit('SET_CURRENT_PATH_FOLDER', null)
             }
-            await axios.get(apiUrl).then(response => {
-                Vue.set(state, 'files', response.data)
-                commit('setCurrentFolder', folder)
-            })
+            this.selected = []
+
+            // Send API request to fetch folder content
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    Vue.set(state, 'files', response.data)
+                    commit('SET_CURRENT_FOLDER_STATUS', 'success')
+                })
+                .catch(err => {
+                    commit('SET_CURRENT_FOLDER_STATUS', 'error')
+                })
         },
         async fetchFileOwners({ commit, state }, file) {
             // Get owners for file
@@ -403,7 +443,10 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        setFilesStatus(state, status) {
+        SET_CURRENT_FOLDER_STATUS(state, status) {
+            state.currentFolderStatus = status
+        },
+        SET_FILES_STATUS(state, status) {
             state.status = status
         },
         INSERT_FILE(state, file) {
@@ -413,9 +456,13 @@ export default {
             state.files.push(...files)
         },
         SET_CURRENT_FILE(state, file) {
+            state.currentFileChanged = true
             state.currentFile = file
         },
-        setCurrentFolder(state, folder) {
+        SET_CURRENT_FILE_CHANGED(state, bool) {
+            state.currentFileChanged = bool
+        },
+        SET_CURRENT_FOLDER(state, folder) {
             state.currentFolder = folder
         },
         UPDATE_FILE(state, file) {
@@ -466,6 +513,18 @@ export default {
         },
         SET_FILE_FLYIN_VISIBLE(state, bool) {
             state.flyinVisible = bool
+        },
+        SET_CURRENT_PATH_FOLDER(state, folder) {
+            // If no folder set the path to an empty array
+            if (!folder) state.path = []
+            else {
+                // Check if the folder already exists in our path
+                const index = state.path.findIndex(x => x.id == folder.id)
+                // If the folder exists, remove all folders after it
+                if (index >= 0) state.path.splice(index + 1)
+                // Else add it to the path
+                else state.path.push(folder)
+            }
         },
     },
 }

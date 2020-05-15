@@ -55,7 +55,7 @@ export default {
         },
         async setCurrentWorkspaceIndex({ commit }, index) {
             // Reset the current folder ID
-            commit('files/setCurrentFolder', null, { root: true })
+            commit('files/SET_CURRENT_FOLDER', null, { root: true })
             commit('setCurrentWorkspaceIndex', index)
         },
     },

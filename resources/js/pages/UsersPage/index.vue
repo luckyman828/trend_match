@@ -1,6 +1,5 @@
 <template>
-    <PageLoader :loading="loading" 
-    @workspaceChange="fetchData">
+    <PageLoader>
         <UsersPage/>
     </PageLoader>
 </template>
@@ -15,27 +14,6 @@ export default {
     components: {
         UsersPage,
         PageLoader
-    },
-    data: function () { return {
-    }},
-    computed: {
-        ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('users', ['loadingUsers']),
-        loading () {
-            return (this.loadingTeams || this.loadingUsers)
-        },
-    },
-    watch: {
-    },
-    methods: {
-        ...mapActions('users', ['fetchUsers']),
-        fetchData() {
-            // Fetch workspace data
-            this.fetchUsers(this.currentWorkspace.id)
-        }
-    },
-    created () {
-        this.fetchData()
     },
 }
 </script>

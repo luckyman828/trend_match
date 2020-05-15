@@ -31,7 +31,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
-    name: 'teamSingleFlyinUsersTableRow',
+    name: 'teamUsersTableRow',
     props: [
         'user',
         'team',

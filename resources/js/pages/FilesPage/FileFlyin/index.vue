@@ -40,9 +40,9 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable v-if="!loadingSelections" :selections="selectionsTree" @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
-                <SelectionUsersFlyin v-if="!loadingSelections" :selection="currentSelection" :show="SelectionUsersFlyinVisible"
+                <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
             </div>
         </template>
@@ -65,23 +65,12 @@ export default {
         SelectionUsersFlyin,
     },
     data: function(){ return {
-        loadingData: false,
     }},
     watch: {
-        show: function(newVal, oldVal) {
-            if (newVal) {
-                if (!this.loadingData) this.fetchData()
-            }
-        },
-        file: function(newVal, oldVal) {
-            if (!oldVal || newVal.id != oldVal.id) {
-                if (!this.loadingData) this.fetchData()
-            }
-        }
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['loadingSelections', 'selectionsTree', 'currentSelection', 'getSelections', 'getSelectionUsersFlyinIsVisible']),
+        ...mapGetters('selections', ['selectionsStatus', 'currentSelection', 'getSelectionUsersFlyinIsVisible', 'getSelections']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         SelectionUsersFlyinVisible: {
             get() {
@@ -93,14 +82,9 @@ export default {
         }
     },
     methods: {
+        ...mapActions('selections', ['updateSelection']),
         ...mapMutations('files', ['SET_CURRENT_FILE']),
-        ...mapActions('selections', ['fetchSelections', 'updateSelection']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
-        async fetchData() {
-            this.loadingData = true
-            await this.fetchSelections({fileId: this.currentFile.id})
-            this.loadingData = false
-        },
         showSelectionUsersFlyin(selection) {
             this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
@@ -150,11 +134,6 @@ export default {
             })
         }
     },
-    created() {
-        if (this.currentFile) {
-            this.fetchData()
-        }
-    }
 }
 </script>
 

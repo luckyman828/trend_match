@@ -200,7 +200,7 @@ export default {
 
     actions: {
         async fetchProducts({ commit }, { fileId, addToState = true }) {
-            commit('setProductStatus', 'loading')
+            commit('SET_PRODUCTS_STATUS', 'loading')
 
             const apiUrl = `/files/${fileId}/products`
 
@@ -213,16 +213,15 @@ export default {
                         commit('insertProducts', { products, method: 'set' })
                         commit('PROCESS_PRODUCTS', products)
                     }
-                    commit('setProductStatus', 'success')
+                    commit('SET_PRODUCTS_STATUS', 'success')
                 })
                 .catch(err => {
-                    console.log(err)
-                    commit('setProductStatus', 'error')
+                    commit('SET_PRODUCTS_STATUS', 'error')
                 })
             return products
         },
         async fetchSelectionProducts({ commit, dispatch }, { selections, addToState = true }) {
-            commit('setProductStatus', 'loading')
+            commit('SET_PRODUCTS_STATUS', 'loading')
 
             const selectionProductArrayPairs = []
             let productsToReturn
@@ -250,11 +249,11 @@ export default {
                     })
                     productsToReturn = freshProducts
                     if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
-                    commit('setProductStatus', 'success')
+                    commit('SET_PRODUCTS_STATUS', 'success')
                 })
                 .catch(err => {
                     console.log(err)
-                    commit('setProductStatus', 'error')
+                    commit('SET_PRODUCTS_STATUS', 'error')
                 })
             return productsToReturn
         },
@@ -553,7 +552,7 @@ export default {
                 sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
             }
         },
-        setProductStatus(state, status) {
+        SET_PRODUCTS_STATUS(state, status) {
             state.status = status
         },
         insertProducts(state, { products, method }) {

@@ -1,5 +1,8 @@
 <template>
-    <PageLoader :loading="loading">
+    <PageLoader :status="status"
+    loadingMsg="loading file"
+    errorMsg="error loading file"
+    :errorCallback="() => fetchData()">
         <EditFilePage/>
     </PageLoader>
 </template>
@@ -19,21 +22,28 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productsStatus']),
-        ...mapGetters('files', ['currentFile']),
+        ...mapGetters('files', ['currentFile', 'filesStatus']),
         loading () {
             return (this.productsStatus != 'success' || !this.currentFile)
+        },
+        status () {
+            if (this.productsStatus == 'error' || this.filesStatus == 'error') return 'error'
+            if (this.productsStatus == 'loading' || this.filesStatus == 'loading' || !this.currentFile) return 'loading'
+            return 'success'
         },
     },
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
-        
+        fetchData() {
+            // Fetch the current file and the products
+            const fileId = this.$route.params.fileId
+            this.fetchFile(fileId)
+            this.fetchProducts({fileId})
+        },
     },
     created() {
-        // Fetch the current file and the products
-        const fileId = this.$route.params.fileId
-        this.fetchFile(fileId)
-        this.fetchProducts({fileId})
+        this.fetchData()
     },
 }
 </script>

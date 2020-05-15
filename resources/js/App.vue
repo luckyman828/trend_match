@@ -90,7 +90,6 @@ export default{
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
-        ...mapActions('files', ['setCurrentFolder']),
         initWorkspace() {
             // Get workspaces
             this.fetchWorkspaces().then(() => {

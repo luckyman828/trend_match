@@ -23,7 +23,7 @@
                 </span>
 
                 <!-- comment posting -->
-                <BaseLoader v-else-if="!comment.id" :message="'posting..'"/>
+                <BaseLoader v-else-if="!comment.id" :msg="'posting..'"/>
 
                 <!-- regular comment -->
                 <template v-else>

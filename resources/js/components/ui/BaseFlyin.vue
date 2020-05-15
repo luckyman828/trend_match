@@ -2,13 +2,19 @@
     <div class="fly-in-wrapper" :class="[{visible: isVisible}]">
         <div class="overlay" @click="close"></div>
         <div class="fly-in" ref="flyIn" :class="{'has-columns': columns > 1}">
-            <template v-if="!loading">
+            <!-- Error -->
+            <BaseContentLoadError v-if="status == 'error'" :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+
+            <!-- Loading -->
+            <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'"/>
+
+            <!-- Ready -->
+            <template v-else-if="isVisible">
                 <slot name="header" :toggle="toggle"/>
                 <div class="body" :style="columnStyle">
                     <slot :toggle="toggle"/>
                 </div>
             </template>
-            <BaseLoader v-else/>
         </div>
     </div>
 </template>
@@ -22,7 +28,10 @@ export default {
         'show',
         'columns',
         'disableKeyHandler',
-        'loading',
+        'status',
+        'loadingMsg',
+        'errorMsg',
+        'errorCallback',
     ],
     data: function () { return {
         visible: false,

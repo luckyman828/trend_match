@@ -1,6 +1,5 @@
 <template>
-    <PageLoader :loading="loading" 
-    @workspaceChange="fetchData">
+    <PageLoader>
         <TeamsPage/>
     </PageLoader>
 </template>
@@ -20,10 +19,15 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
-        ...mapGetters('teams', ['loadingTeams']),
-        ...mapGetters('users', ['loadingUsers']),
+        ...mapGetters('teams', ['loadingTeams', 'getTeamsStatus']),
+        ...mapGetters('users', ['loadingUsers', 'getUsersStatus']),
         loading () {
             return (this.loadingTeams || this.loadingUsers)
+        },
+        status () {
+            if (this.getUsersStatus == 'error' || this.getTeamsStatus == 'error') return 'error'
+            if (this.getUsersStatus == 'loading' || this.getTeamsStatus == 'loading') return 'loading'
+            return 'success'
         },
     },
     watch: {
@@ -31,17 +35,11 @@ export default {
     methods: {
         ...mapActions('users', ['fetchUsers']),
         ...mapActions('teams', ['fetchTeams']),
-        fetchData() {
-            // Fetch workspace data
-            this.fetchTeams(this.currentWorkspace.id)
-            this.fetchUsers(this.currentWorkspace.id)
-        }
     },
     created () {
         if (this.authUserWorkspaceRole != 'Admin') {
             this.$router.push({name: 'files'})
         }
-        this.fetchData()
     },
 }
 </script>

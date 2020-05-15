@@ -1,7 +1,11 @@
 <template>
     <div class="teams-table">
 
-        <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true">
+        <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true"
+        :contentStatus="readyStatus"
+        loadingMsg="loading teams"
+        errorMsg="error loading teams"
+        :errorCallback="() => initData()">
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
@@ -44,20 +48,7 @@
             </template>
         </BaseFlexTable>
 
-        <BaseFlyin ref="TeamFlyin" :show="teamFlyInVisible" @close="teamFlyInVisible = false">
-            <template v-slot:header v-if="currentTeam && teamFlyInVisible">
-                <BaseFlyinHeader @close="teamFlyInVisible = false" class="flyin-header" 
-                :next="nextTeam" :prev="prevTeam"
-                @next="showNext" @prev="showPrev">
-                    <template v-slot:left>
-                        <h3>{{currentTeam.title}}</h3>
-                    </template>
-                </BaseFlyinHeader>
-            </template>
-            <template v-slot v-if="currentTeam && teamFlyInVisible">
-                <TeamFlyin :team="currentTeam" :workspaceUsers="users"/>
-            </template>
-        </BaseFlyin>
+        <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"/>
 
         <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps"
         :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyC', 'KeyD']"
@@ -170,9 +161,7 @@ import sortArray from '../../mixins/sortArray'
 export default {
     name: 'teamsTable',
     props: [
-        'teams',
         'authUser',
-        'users',
     ],
     mixins: [
         sortArray
@@ -201,7 +190,13 @@ export default {
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
-        ...mapGetters('teams', ['currentTeam', 'nextTeam', 'prevTeam']),
+        ...mapGetters('teams', ['currentTeam', 'getTeamsStatus', 'teams']),
+        ...mapGetters('users', ['getUsersStatus', 'users']),
+        readyStatus() {
+            if (this.getUsersStatus == 'error' || this.getTeamsStatus == 'error') return 'error'
+            if (this.getUsersStatus == 'loading' || this.getTeamsStatus == 'loading') return 'loading'
+            return 'success'
+        },
         currentTab: {
             get () {
                 const routeName = this.$route.name
@@ -212,19 +207,29 @@ export default {
                 if (newVal == 'Teams') this.$router.push({name: 'teams'})
                 if (newVal == 'Users') this.$router.push({name: 'users'})
             }
+        },
+        teamFlyinStatus() {
+            return 'success'
+        },
+    },
+    watch: {
+        getTeamsStatus: function(newVal, oldVal) {
+            if (newVal == 'success') this.teamsFilteredBySearch = this.teams
+        },
+        currentWorkspace(newVal, oldVal) {
+            this.initData(true)
         }
     },
     methods: {
-        ...mapActions('teams', ['removeUserFromTeam']),
-        ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam']),
-        ...mapMutations('teams', ['setCurrentTeam', 'setAvailableTeams']),
-        showNext() {
-            if (this.nextTeam)
-                this.setCurrentTeam(this.nextTeam)
-        },
-        showPrev() {
-            if (this.prevTeam)
-                this.setCurrentTeam(this.prevTeam)
+        ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam', 'removeUserFromTeam', 'fetchTeams']),
+        ...mapMutations('teams', ['SET_CURRENT_TEAM', 'setAvailableTeams']),
+        ...mapActions('users', ['fetchUsers']),
+        async initData(forceRefresh) {
+            // If we have not and are not fetching the users then fetch them
+            if (forceRefresh || (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading')) await this.fetchUsers()
+            if (forceRefresh || (this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading')) await this.fetchTeams()
+            // Initially set the filteredbySearch arrays
+            if (this.getTeamsStatus == 'success') this.teamsFilteredBySearch = this.teams
         },
         onEditTeamCurrency(mouseEvent, team) {
             this.teamToEdit = team;
@@ -232,7 +237,7 @@ export default {
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
                 const contextMenu = this.$refs.contextMenuTeamCurrency
-                contextMenu.item = team;
+                contextMenu.item = team
                 contextMenu.show(mouseEvent)
             })
         },
@@ -279,7 +284,7 @@ export default {
         },
         showSingleTeam(team) {
             this.setAvailableTeams(this.teams)
-            this.setCurrentTeam(team)
+            this.SET_CURRENT_TEAM(team)
             this.teamFlyInVisible = true
         },
         showTeamContext(e, team) {
@@ -342,13 +347,8 @@ export default {
             this.sortArray(array, this.sortAsc, this.sortKey)
         }
     },
-    updated() {
-        // Set the filteredbySearch arrays if we have a change
-        this.teamsFilteredBySearch = this.teams
-    },
-    mounted() {
-        // Initially set the filteredbySearch arrays
-        this.teamsFilteredBySearch = this.teams
+    created() {
+        this.initData()
     }
 }
 </script>

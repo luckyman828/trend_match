@@ -32,7 +32,7 @@ router.beforeEach((to, from, next) => {
     // Reset current folder
     if (!['files', 'editFile', 'selection'].includes(to.name)) {
         // If we are not going to a file related path --> reset the current folder
-        store.commit('files/setCurrentFolder', null)
+        store.commit('files/SET_CURRENT_FOLDER', null)
     }
 
     // Check that the user is not going to the login page already

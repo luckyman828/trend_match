@@ -6,6 +6,7 @@ export default {
 
     state: {
         loading: false,
+        status: null,
         currentTeam: null,
         currentTeamStatus: 'loading',
         availableTeams: [],
@@ -25,13 +26,16 @@ export default {
 
     getters: {
         loadingTeams: state => state.loading,
+        getTeamsStatus: state => state.status,
         currentTeamId: state => state.currentTeam.id,
         availableTeams: state => state.availableTeams,
         teams: state => state.teams,
         availableTeamRoles: state => state.availableTeamRoles,
         currentTeam: state => state.currentTeam,
+        getCurrentTeam: state => state.currentTeam,
         currentTeamStatus: state => state.currentTeamStatus,
         nextTeam: (state, getters) => {
+            if (!getters.currentTeam) return
             const available = getters.availableTeams
             const currentId = getters.currentTeam.id
             if (currentId && available.length > 0) {
@@ -42,6 +46,7 @@ export default {
             }
         },
         prevTeam: (state, getters) => {
+            if (!getters.currentTeam) return
             const available = getters.availableTeams
             const currentId = getters.currentTeam.id
             if (currentId && available.length > 0) {
@@ -58,6 +63,7 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             commit('setLoading', true)
+            commit('SET_TEAMS_STATUS', 'loading')
 
             const apiUrl = `/workspaces/${workspaceId}/teams`
 
@@ -68,12 +74,16 @@ export default {
                     const response = await axios.get(`${apiUrl}`)
                     Vue.set(state, 'teams', response.data)
                     commit('setLoading', false)
+                    commit('SET_TEAMS_STATUS', 'success')
                     succes = true
                 } catch (err) {
                     console.log('API error in teams.js :')
                     console.log(err)
                     console.log(`Trying to fetch again. TryCount = ${tryCount}`)
-                    if (tryCount <= 0) throw err
+                    if (tryCount <= 0) {
+                        commit('SET_TEAMS_STATUS', 'error')
+                        throw err
+                    }
                 }
             }
         },
@@ -84,7 +94,7 @@ export default {
             await axios
                 .get(`${apiUrl}`)
                 .then(response => {
-                    commit('addUsersToTeam', { team, users: response.data })
+                    commit('SET_TEAM_USERS', { team, users: response.data })
                     state.currentTeamStatus = 'success'
                 })
                 .catch(err => {
@@ -335,7 +345,10 @@ export default {
         setLoading(state, bool) {
             state.loading = bool
         },
-        setCurrentTeam(state, team) {
+        SET_TEAMS_STATUS(state, status) {
+            state.status = status
+        },
+        SET_CURRENT_TEAM(state, team) {
             state.currentTeam = team
         },
         setAvailableTeams(state, teams) {
@@ -351,6 +364,9 @@ export default {
         DELETE_TEAM(state, team) {
             const index = state.teams.findIndex(x => x.id == team.id)
             state.teams.splice(index, 1)
+        },
+        SET_TEAM_USERS(state, { team, users }) {
+            Vue.set(team, 'users', users)
         },
         addUsersToTeam(state, { team, users }) {
             if (team.users) {

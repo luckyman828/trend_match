@@ -4,7 +4,7 @@
             <button @click="onSetCurrentFolder(null)" class="invisible white-hover">
                 <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
             </button>
-            <div class="breadcrumb" v-for="(folder, index) in path" :key="folder.id">
+            <div class="breadcrumb" v-for="(folder, index) in getCurrentFilePath" :key="folder.id">
                 <template v-if="!currentFolder || folder.id != currentFolder.id">
                     <button @click="onSetCurrentFolder(folder, index)" class="invisible white-hover">
                         <i class="far fa-folder"></i>
@@ -23,12 +23,11 @@
         </div>
         <h1>Files</h1>
 
-        <FilesTable :files="files" :folder="currentFolder" :selected="selected"
-        v-model="selected"
+        <FilesTable
         @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
         @showFileOwnersFlyin="showFileOwnersFlyin"/>
 
-        <FileFlyin :file="currentFile" :show="fileFlyinVisible" @close="fileFlyinVisible = false"
+        <FileFlyin :file="currentFile" :show="getFileFlyinIsVisible" @close="SET_FILE_FLYIN_VISIBLE(false)"
         @showFileOwnersFlyin="showFileOwnersFlyin" @showFileApproversFlyin="showFileApproversFlyin"/>
 
         <!-- <FileOwnersFlyin :file="currentFile" :show="fileOwnersFlyinVisible" @close="fileOwnersFlyinVisible = false"/> -->
@@ -54,34 +53,12 @@ export default {
         FileApproversFlyin,
     },
     data: function() { return {
-        selected: [],
-        itemFilterIds: [],
-        // teamFilterId: '-1',
-        loadingOverwrite: false,
-        unsub: '',
-        path: [],
         fileOwnersFlyinVisible: false,
         fileApproversFlyinVisible: false,
     }},
     computed: {
-        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId', 'getFileFlyinIsVisible']),
+        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId', 'getCurrentFilePath', 'getFileFlyinIsVisible']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
-        folders() {
-            return this.files.filter(x => x.type == 'Folder')
-        },
-        defaultTeam() {
-            if (this.userPermissionLevel >= 3)
-                return {id: 0, title: 'Global'}
-            else return null
-        },
-        fileFlyinVisible: {
-            get() {
-                return this.getFileFlyinIsVisible
-            },
-            set(value) {
-                this.SET_FILE_FLYIN_VISIBLE(value)
-            }
-        }
     },
     methods: {
         ...mapActions('files', ['setCurrentFolder', 'fetchFile', 'fetchFolder']),
@@ -90,7 +67,7 @@ export default {
             // Set the current file id
             this.SET_CURRENT_FILE(file)
             // Show the flyin
-            this.fileFlyinVisible = true
+            this.SET_FILE_FLYIN_VISIBLE(true)
         },
         showFileOwnersFlyin(file) {
             // Set the current file id
@@ -102,23 +79,8 @@ export default {
             this.SET_CURRENT_FILE(file)
             this.fileApproversFlyinVisible = true
         },
-        onSetCurrentFolder(folder, pathIndex) {
-            if (folder != null) {
-                // Remove folders after the new folder from the current path
-                if (pathIndex != null) {
-                    this.path.splice(pathIndex)
-                }
-                // Store what folder we are in now, so we know the path
-                this.path.push(folder)
-                // Set current folder
-                this.setCurrentFolder(folder)
-            } else {
-                // Reset the folder and path
-                this.path = []
-                // Set the current folder
-                this.setCurrentFolder(null)
-            }
-            this.selected = []
+        onSetCurrentFolder(folder) {
+            this.setCurrentFolder(folder)
         },
     },
     async created() {

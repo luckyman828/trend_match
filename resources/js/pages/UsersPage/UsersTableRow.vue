@@ -1,6 +1,6 @@
 <template>
     <tr class="user-row table-row" ref="userRow" :class="[{self: isSelf}, {active: contextMenuIsActive}]"
-    @contextmenu.prevent="$emit('showContextMenu', $event, user)" @click.ctrl="selectUser">
+    @contextmenu.prevent="$emit('showContextMenu', $event, user)" @click.ctrl="selectUser" :key="user.id">
         <td class="select">
             <BaseCheckbox ref="selectBox" :value="user" :modelValue="selectedUsers" 
             @change="$emit('update:selectedUsers', $event)"/>

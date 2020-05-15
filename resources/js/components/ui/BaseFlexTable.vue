@@ -16,7 +16,19 @@
         </div>
         <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
         <div class="body">
-            <slot name="body"/>
+            <!-- Content -->
+            <slot v-if="isReady" name="body"/>
+            <!-- End content -->
+
+            <!-- Loading / Error -->
+            <tr class="load-wrapper" v-else>
+                <!-- Loading -->
+                <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'"/>
+
+                <!-- Error  -->
+                <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+            </tr>
+            <!-- End Loading / Error -->
         </div>
         <tr class="footer">
             <td class="select"></td>
@@ -35,10 +47,40 @@ export default {
         scrollTable: null,
         scrollHeaderInitialized: false,
         tableWidth: null,
+        statusTimeout: null,
+        isReady: true,
     }},
     props: [
-        'stickyHeader'
+        'stickyHeader',
+        'contentStatus',
+        'loadingMsg',
+        'errorCallback',
+        'errorMsg',
     ],
+    watch: {
+        contentStatus: function(newVal, oldVal) {
+            if (newVal == 'loading') {
+                // Wait before setting the current folder status as loading
+                this.statusTimeout = setTimeout(() => this.isReady = false, 100)
+            } 
+            else if (this.statusTimeout) {
+                clearTimeout(this.statusTimeout)
+            }
+
+            if (newVal == 'error') {
+                this.isReady = false
+            }
+
+            if (newVal == 'success') {
+                this.isReady = true
+            }
+        }
+    },
+    computed: {
+        // isReady() {
+        //     return this.contentStatus != 'loading' && this.contentStatus != 'error'
+        // }
+    },
     methods: {
         getYPos(element) {
             var yPosition = 0;
@@ -120,6 +162,7 @@ export default {
         if (this.stickyHeader) {
             window.addEventListener('resize', this.resizeHeader)
         }
+        if (this.contentStatus && this.contentStatus != 'success') this.isReady = false
     },
     destroyed () {
         if (this.stickyHeader) {
@@ -138,129 +181,139 @@ export default {
 </script>
 
 <style lang="scss">
-    @import '~@/_variables.scss';
-    $rowRadius: 4px;
+@import '~@/_variables.scss';
+$rowRadius: 4px;
 
-    .flex-table {
-        white-space: nowrap;
-        border-spacing: 0 2px;
+.flex-table {
+    white-space: nowrap;
+    border-spacing: 0 2px;
+    display: flex;
+    flex-direction: column;
+    .tabs {
         display: flex;
-        flex-direction: column;
-        .tabs {
-            display: flex;
-            margin-bottom: -$rowRadius;
-        }
+        margin-bottom: -$rowRadius;
+    }
+    .sticky-bg {
+        display: none;
+    }
+    &.sticky {
         .sticky-bg {
-            display: none;
+            background: $bg;
+            box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
+            position: fixed;
+            z-index: -1;
+            display: block;
         }
-        &.sticky {
-            .sticky-bg {
-                background: $bg;
-                box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
-                position: fixed;
-                z-index: -1;
-                display: block;
-            }
-            .sticky-header {
-                position: fixed;
-                z-index: 1;
-                .header {
-                    box-shadow: 0px 4px 10px #0000002A;
-                    position: static;
-                }
-            }
-            .sticky-placeholder {
-                display: block;
+        .sticky-header {
+            position: fixed;
+            z-index: 1;
+            .header {
+                box-shadow: 0px 4px 10px #0000002A;
+                position: static;
             }
         }
         .sticky-placeholder {
-            display: none;
+            display: block;
         }
-        .rounded-top {
-            > :first-child {
-                border-radius: $rowRadius $rowRadius 0 0;
+    }
+    .sticky-placeholder {
+        display: none;
+    }
+    .rounded-top {
+        > :first-child {
+            border-radius: $rowRadius $rowRadius 0 0;
+        }
+    }
+    tr {
+        background: white;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        position: relative;
+        &.active {
+            outline: solid 1px $primary;
+            outline-offset: -1px;
+            background: $bgContentActive;
+        }
+        &:not(.table-top-bar) {
+            margin-bottom: 2px;
+            > * {
+                flex: 1;
             }
         }
-        tr {
-            background: white;
-            min-height: 48px;
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            position: relative;
-            &.active {
-                outline: solid 1px $primary;
-                outline-offset: -1px;
-                background: $bgContentActive;
-            }
-            &:not(.table-top-bar) {
-                margin-bottom: 2px;
-                > * {
-                    flex: 1;
-                }
-            }
-            &:not(.header):not(.footer):not(.table-top-bar) {
-                &:hover {
-                    background: $light1;
-                    td {
-                        &.title {
-                            i {
-                                color: $dark05;
-                                transition: 0;
-                            }
+        &:not(.header):not(.footer):not(.table-top-bar) {
+            &:hover {
+                background: $light1;
+                td {
+                    &.title {
+                        i {
+                            color: $dark05;
+                            transition: 0;
                         }
                     }
                 }
             }
-            &.header, &.footer {
-                color: $tableHeader;
-            }
-            &.header {
-                height: 32px;
-            }
-            &.footer {
-                border-radius: 0 0 $rowRadius $rowRadius;
-                margin-bottom: 0;
-                min-height: 16px;
-                height: auto;
-            }
         }
-        td {
-            // overflow: hidden;
+        &.header, &.footer {
+            color: $tableHeader;
         }
-        th, td {
-            padding: 0 4px;
-            &:first-child:not(.select) {
-                margin-left: 8px;
-            }
-            > i {
-                &:last-child {
-                    margin-left: 12px;
-                }
-                &:first-child {
-                    margin-right: 12px;
-                }
-            }
-            &.action {
-                flex: 1;
-                text-align: right;
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
-                >*:not(:last-child) {
-                    margin-right: 4px;
-                }
-            }
-            &.select {
-                flex: 0 1 auto;
-                min-width: 40px;
-                max-width: 40px;
-                display: flex;
-                align-items: center;
-                height: 100%;
-                padding-left: 8px;
-                cursor: pointer;
-            }
+        &.header {
+            height: 32px;
+        }
+        &.footer {
+            border-radius: 0 0 $rowRadius $rowRadius;
+            margin-bottom: 0;
+            min-height: 16px;
+            height: auto;
         }
     }
+    td {
+        // overflow: hidden;
+    }
+    th, td {
+        padding: 0 4px;
+        &:first-child:not(.select) {
+            margin-left: 8px;
+        }
+        > i {
+            &:last-child {
+                margin-left: 12px;
+            }
+            &:first-child {
+                margin-right: 12px;
+            }
+        }
+        &.action {
+            flex: 1;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            >*:not(:last-child) {
+                margin-right: 4px;
+            }
+        }
+        &.select {
+            flex: 0 1 auto;
+            min-width: 40px;
+            max-width: 40px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            padding-left: 8px;
+            cursor: pointer;
+        }
+    }
+    // Error
+    .load-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        text-align: center;
+        justify-content: center;
+        min-height: 200px;
+    }
+}
+
 </style>

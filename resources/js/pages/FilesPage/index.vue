@@ -1,12 +1,11 @@
 <template>
-    <PageLoader :loading="loading"
-    @workspaceChange="fetchData">
+    <PageLoader>
         <FilesPage/>
     </PageLoader>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FilesPage from './FilesPage'
 import PageLoader from '../../components/common/PageLoader'
 
@@ -16,23 +15,17 @@ export default {
         FilesPage,
         PageLoader
     },
-    data: function () { return {
-    }},
     computed: {
-        ...mapGetters('files', ['loadingFiles', 'files']),
-        loading () {
-            return (this.loadingFiles)
+        ...mapGetters('workspaces', ['currentWorkspace'])
+    },
+    watch: {
+        currentWorkspace(newVal, oldVal) {
+            this.SET_CURRENT_PATH_FOLDER()
         }
     },
     methods: {
-        ...mapActions('files', ['fetchFiles']),
-        fetchData() {
-            this.fetchFiles()
-        }
-    },
-    created() {
-        this.fetchData()
-    },
+        ...mapMutations('files', ['SET_CURRENT_PATH_FOLDER'])
+    }
 }
 </script>
 

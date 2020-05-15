@@ -1,6 +1,10 @@
 <template>
     <div class="folders-table-wrapper">
-        <BaseFlexTable class="folders-table" stickyHeader="true">
+        <BaseFlexTable class="folders-table" stickyHeader="true"
+        :contentStatus="readyStatus"
+        loadingMsg="loading folder content"
+        errorMsg="error loading folder content"
+        :errorCallback="() => initData()">
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
@@ -15,7 +19,7 @@
             <template v-slot:header>
                 <BaseTableHeader class="select">
                     <BaseCheckbox :modelValue="true" :value="selected.length > 0"
-                    @change="(checked) => checked ? localSelected = files : localSelected = []"/>
+                    @change="(checked) => checked ? selected = files : selected = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'modified'" :currentSortKey="sortKey" @sort="onSort">Modified</BaseTableHeader> -->
@@ -28,7 +32,7 @@
                 @contextmenu.prevent="showContextMenu($event, folder, 'folder')"
                 @click.ctrl="$refs.folderCheckbox[index].check()">
                     <td class="select">
-                        <BaseCheckbox ref="folderCheckbox" :value="folder" :modelValue="localSelected" v-model="localSelected"/>
+                        <BaseCheckbox ref="folderCheckbox" :value="folder" :modelValue="selected" v-model="selected"/>
                     </td>
                     <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
                         <i v-if="folder.id" class="fas fa-folder dark15"></i>
@@ -61,7 +65,7 @@
                 @contextmenu.prevent="showContextMenu($event, file, 'file')"
                 @click.ctrl="$refs.fileCheckbox[index].check()">
                     <td class="select">
-                        <BaseCheckbox ref="fileCheckbox" :value="file" :modelValue="localSelected" v-model="localSelected"/>
+                        <BaseCheckbox ref="fileCheckbox" :value="file" :modelValue="selected" v-model="selected"/>
                     </td>
                     <td v-if="toEdit && toEdit.item.id == file.id && toEdit.type == 'file' && toEdit.field == 'title'" class="title">
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'"
@@ -123,7 +127,7 @@
                         >
                     </template>
                     <template v-else>
-                        <BaseLoader :message="'Uploading'" />
+                        <BaseLoader :msg="'Uploading'" />
                     </template>
                 </form>
             </template>
@@ -271,7 +275,7 @@
         <BaseContextMenu ref="contextMenuMultipleItems" class="context-file"
         :hotkeys="['KeyD', 'KeyC', 'KeyM']"
         @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteMultipleFiles(selected)"
-        @keybind-c="localSelected = []"
+        @keybind-c="selected = []"
         @keybind-m="onMoveFiles()"
         >
             <template slot="header">
@@ -280,7 +284,7 @@
             <template slot>
                 <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-times"
-                    @click="localSelected = []">
+                    @click="selected = []">
                         <span><u>C</u>lear selection</span>
                     </BaseContextMenuItem>
                 </div>
@@ -345,15 +349,13 @@ import sortArray from '../../mixins/sortArray'
 export default {
     name: 'filesTable',
     props: [
-        'folder',
-        'files',
-        'selected',
     ],
     mixins: [
         sortArray
     ],
     data: function() {
         return {
+            selected: [],
             sortKey: null,
             showMoveModal: false,
             fileToEdit: {
@@ -375,31 +377,45 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('files', ['files', 'getCurrentFolderStatus', 'getCurrentFolder', 'getFilesStatus']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
+        folder() {
+            this.getCurrentFolder
+        },
         foldersToShow() {
             return this.files.filter(x => x.type =='Folder')
         },
         filesToShow() {
             return this.files.filter(x => x.type =='File')
         },
-        localSelected: {
-            get() { return this.selected },
-            set(localSelected) {this.$emit('input', localSelected)}
+        readyStatus() {
+            if (this.getCurrentFolderStatus == 'error') return 'error'
+            if (this.getCurrentFolderStatus == 'loading') return 'loading'
+            return 'success'
         },
     },
+    watch: {
+        currentWorkspace(newVal, oldVal) {
+            this.initData(true)
+        },
+        getCurrentFolder(newVal, oldVal) {
+            this.selected = []
+        }
+    },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'deleteMultipleFiles', 
-        'uploadToExistingFile', 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles']),
+        ...mapActions('files', ['insertOrUpdateFile', 'deleteFile', 'uploadToExistingFile', 'deleteMultipleFiles'
+        , 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles', 'setCurrentFolder']),
         ...mapMutations('files', ['removeUnsavedFiles']),
+        ...mapActions('folders', ['deleteFolder', 'updateFolder']),
+        initData(forceRefresh) {
+            if (forceRefresh || (this.getCurrentFolderStatus != 'success' && this.getCurrentFolderStatus != 'loading')) this.setCurrentFolder(this.getCurrentFolder)
+        },
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
         },
         contextMenuIsActive (file) {
             return this.getContextMenuIsVisible && this.contextMenuItem && this.contextMenuItem.id == file.id && this.selected.length <= 1
-        },
-        setCurrentFolder(folder) {
-            this.$emit('setCurrentFolder', folder)
         },
         showContextMenu(e, item, type) {
             if (this.selected.length > 1) {
@@ -467,7 +483,7 @@ export default {
             if (await this.$refs.deleteFolderDialog.confirm()) {
                 this.deleteFile(folder)
                 // Remove the item from our selection
-                this.localSelected = this.selected.filter(x => x.id != folder.id)
+                this.selected = this.selected.filter(x => x.id != folderId)
             }
         },
         onNewFolder() {
@@ -513,7 +529,7 @@ export default {
             if (await this.$refs.deleteFileDialog.confirm()) {
                 this.deleteFile(file)
                 // Remove the item from our selection
-                this.localSelected = this.selected.filter(x => x.id != file.id)
+                this.selected = this.selected.filter(x => x.id != fileId)
             }
         },
         onRenameFile(file, index) {
@@ -573,6 +589,9 @@ export default {
             }
         }
     },
+    created() {
+        this.initData()
+    }
 }
 </script>
 
