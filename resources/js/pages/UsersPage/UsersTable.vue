@@ -296,8 +296,9 @@ export default {
         },
         users() {
             const users = this.getUsers
+            if (!users) return []
             if (this.authUserWorkspaceRole != 'Admin') {
-                return users.filter(x => x.id == authUser.id)
+                return users.filter(x => x.id == this.authUser.id)
             }
             return users
         }
