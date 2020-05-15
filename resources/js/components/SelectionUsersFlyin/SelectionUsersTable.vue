@@ -284,6 +284,7 @@ export default {
             // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
+                console.log('update selection ')
                 this.selection.your_role = authUser.role
                 this.UPDATE_SELECTION(this.selection)
             }

@@ -827,6 +827,7 @@ export default {
                             selection.open_from = null
                             selection.open_to = null
                         }
+                        dispatch('updateSelection', selection)
                         const selectionTree = getters.getSelectionTree(selection)
                         dispatch('openAllSelectionDescendants', selectionTree)
                     })
