@@ -33,7 +33,12 @@ export default {
         nextProduct: (state, getters, rootState, rootGetters) => {
             // If we have a nextProduct in our presenterQueue, then use that instead
             const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
-            if (nextPresentationQueueProduct) return nextPresentationQueueProduct
+            if (nextPresentationQueueProduct) {
+                if (nextPresentationQueueProduct.selectionInputArray) {
+                    return nextPresentationQueueProduct.selectionInputArray[0].product
+                }
+                return nextPresentationQueueProduct
+            }
 
             // Find the index of the current product
             const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
@@ -45,7 +50,12 @@ export default {
         prevProduct: (state, getters, rootState, rootGetters) => {
             // If we have a prevProduct in our presenterQueue, then use that instead
             const prevPresentationQueueProduct = rootGetters['presenterQueue/getPrevProduct']
-            if (prevPresentationQueueProduct) return prevPresentationQueueProduct
+            if (prevPresentationQueueProduct) {
+                if (prevPresentationQueueProduct.selectionInputArray) {
+                    return prevPresentationQueueProduct.selectionInputArray[0].product
+                }
+                return prevPresentationQueueProduct
+            }
 
             // Find the index of the current product
             const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)

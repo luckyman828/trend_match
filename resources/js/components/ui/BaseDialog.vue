@@ -39,16 +39,16 @@ export default {
     }},
     methods: {
         onConfirm() {
-            this.resolve(true)
+            if (this.resolve) this.resolve(true)
             this.hide()
         },
         onCancel() {
-            this.resolve(false)
+            if (this.resolve) this.resolve(false)
             this.hide()
         },
         hide() {
+            if (this.resolve) this.resolve(false)
             this.visible = false
-            this.resolve(false)
         },
         confirm() {
             this.visible = true
