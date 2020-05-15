@@ -192,6 +192,7 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
         ...mapGetters('teams', ['currentTeam', 'getTeamsStatus', 'teams']),
         ...mapGetters('users', ['getUsersStatus', 'users']),
+        ...mapGetters('tables', ['getTeamsTable']),
         readyStatus() {
             if (this.getUsersStatus == 'error' || this.getTeamsStatus == 'error') return 'error'
             if (this.getUsersStatus == 'loading' || this.getTeamsStatus == 'loading') return 'loading'
@@ -223,6 +224,7 @@ export default {
     methods: {
         ...mapActions('teams', ['insertOrUpdateTeam', 'deleteTeam', 'removeUserFromTeam', 'fetchTeams']),
         ...mapMutations('teams', ['SET_CURRENT_TEAM', 'setAvailableTeams']),
+        ...mapMutations('tables', ['SET_TABLE_PROPERTY']),
         ...mapActions('users', ['fetchUsers']),
         async initData(forceRefresh) {
             // If we have not and are not fetching the users then fetch them
@@ -230,6 +232,7 @@ export default {
             if (forceRefresh || (this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading')) await this.fetchTeams()
             // Initially set the filteredbySearch arrays
             if (this.getTeamsStatus == 'success') this.teamsFilteredBySearch = this.teams
+            this.SET_TABLE_PROPERTY('teamsTable', 'workspaceId', this.currentWorkspace.id)
         },
         onEditTeamCurrency(mouseEvent, team) {
             this.teamToEdit = team;
@@ -348,7 +351,8 @@ export default {
         }
     },
     created() {
-        this.initData()
+        const forceRefresh = this.getTeamsTable.workspaceId != this.currentWorkspace.id
+        this.initData(forceRefresh)
     }
 }
 </script>
