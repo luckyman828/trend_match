@@ -42,8 +42,8 @@
                 >
                     <UsersTableRow :ref="'userRow-'+item.id" :user="item"
                     :contextUser="contextUser"
-                    @showContextMenu="showUserContext($event, user)" @editCurrency="onEditUserCurrency($event, user)"
-                    @editRole="onEditUserRole($event, user)" :selectedUsers.sync="selectedUsers"/>
+                    @showContextMenu="showUserContext($event, item)" @editCurrency="onEditUserCurrency($event, item)"
+                    @editRole="onEditUserRole($event, item)" :selectedUsers.sync="selectedUsers"/>
                 </RecycleScroller>
             </template>
             <template v-slot:footer>
