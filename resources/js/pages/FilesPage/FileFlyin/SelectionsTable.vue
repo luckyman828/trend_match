@@ -21,9 +21,10 @@
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
                 <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader> -->
                 <BaseTableHeader class="currency">Currency</BaseTableHeader>
-                <BaseTableHeader class="teams">Teams</BaseTableHeader>
+                <!-- <BaseTableHeader class="teams">Teams</BaseTableHeader> -->
                 <BaseTableHeader class="users">Users</BaseTableHeader>
                 <BaseTableHeader class="status">Status</BaseTableHeader>
+                <BaseTableHeader class="presentation">Presentation</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -81,13 +82,14 @@
         @keybind-c="onNewSelection(contextSelection)"
         @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
         @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
-            <div class="item-group">
-                <div class="item" @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
-                    <div class="icon-wrapper">
-                        <i class="far fa-users"></i>
-                    </div>
-                    <u>G</u>o to selection 
-                </div>
+            <div class="item-group" v-if="!!contextSelection">
+                <BaseContextMenuItem iconClass="far fa-users"
+                :disabled="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master'))"
+                v-tooltip="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')) 
+                && 'Selection is in presentation mode. To join the presentation login to the Kollekt mobile app'"
+                @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
+                    <span><u>G</u>o to selection </span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <div class="item" @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
@@ -991,8 +993,8 @@ export default {
                         max-width: 48px
                     }
                     &.title { // Title
-                        min-width: 400px;
-                        max-width: 400px;
+                        min-width: 300px;
+                        max-width: 300px;
                     }
                     &.teams {
                         margin-left: auto;
@@ -1000,6 +1002,7 @@ export default {
                     &.currency {
                         min-width: 100px;
                         max-width: 100px;
+                        margin-left: auto;
                     }
                     &.teams, &.users {
                         min-width: 76px;
@@ -1008,6 +1011,17 @@ export default {
                     &.status { // Status
                         min-width: 180px;
                         max-width: 180px;
+                        margin-left: auto;
+                        // display: flex;
+                        // align-items: center;
+                        // > *:not(:first-child) {
+                        //     margin-left: 4px;
+                        // }
+                    }
+                    &.presentation {
+                        min-width: 72px;
+                        max-width: 72px;
+                        margin-left: auto;
                     }
                     // &.items, &.in, &.out, &.nd {
                     //     min-width: 72px;

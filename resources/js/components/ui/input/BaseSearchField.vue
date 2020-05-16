@@ -1,9 +1,9 @@
 <template>
     <div class="search">
-        <input class="input-wrapper small" placeholder="Search.." type="search" v-model="searchString" ref="searchField"
+        <input class="input-wrapper" :class="inputClasses" :placeholder="placeholderText || 'Search..'" type="search" v-model="searchString" ref="searchField"
         @click.stop @input="$emit('input', result)" @keydown.esc="onEsc">
-        <span v-if="searchString.length > 0" class="close" @click.stop="clear();setFocus()">
-            <i class="fas fa-times"></i>
+        <span v-if="searchString.length > 0" class="clear" @click.stop="clear();setFocus()">
+            <i class="far fa-times-circle"></i>
         </span>
     </div>
 </template>
@@ -11,12 +11,16 @@
 <script>
 export default {
     name: 'searchField',
-    props: [
-        'arrayToSearch',
-        'searchKey',
-        'searchMultipleArrays',
-        'multipleArrayKey'
-    ],
+    props: {
+        arrayToSearch: {},
+        searchKey: {},
+        searchMultipleArrays: {},
+        multipleArrayKey: {},
+        placeholderText: {},
+        inputClasses: {
+            default: 'small'
+        }
+    },
     data: function () { return {
         searchString: '',
     }},
@@ -37,6 +41,8 @@ export default {
             if (!searchString) {
                 return array
             }
+
+            let resultsToReturn = []
 
             // If search string is delimited by comma, convert to array and trim
             if (searchString.search(',') >= 0) {
@@ -96,46 +102,44 @@ export default {
                         arrayToReturn.push(arrayObjectToReturn)
                     })
                     // Return the resulting arrays
-                    return arrayToReturn
+                    resultsToReturn = arrayToReturn
                 }
 
                 // If we don't have multiple arrays 
-                {
-                    return array.filter(x => {
-                        // If the search key is an array of keys, search for a result in each of them
-                        if (Array.isArray(searchKey)) {
-                            // Assume no match
-                            let isMatch = false
-                            searchKey.forEach(key => {
-                                // If a match is found for any of the keys, return true
-                                // Check that we have a value
-                                if (!x[key]) return false
-                                // Convert the value to match to a string so we can search it
-                                const valueToMatch = x[key].toString().toLowerCase()
-                                searchString.forEach(str => {
-                                    if (valueToMatch.search(str) >= 0) isMatch = true
-                                })
-                            })
-                            return isMatch
-                        }
-                        else {
+                else resultsToReturn = array.filter(x => {
+                    // If the search key is an array of keys, search for a result in each of them
+                    if (Array.isArray(searchKey)) {
+                        // Assume no match
+                        let isMatch = false
+                        searchKey.forEach(key => {
+                            // If a match is found for any of the keys, return true
                             // Check that we have a value
-                            if (!x[searchKey]) return false
+                            if (!x[key]) return false
                             // Convert the value to match to a string so we can search it
-                            const valueToMatch = x[searchKey].toString().toLowerCase()
-                            let isMatch = false
+                            const valueToMatch = x[key].toString().toLowerCase()
                             searchString.forEach(str => {
                                 if (valueToMatch.search(str) >= 0) isMatch = true
                             })
-                            return isMatch
-                            // return valueToMatch.search(searchString) >= 0
-                        }
-                    })
-                }
+                        })
+                        return isMatch
+                    }
+                    else {
+                        // Check that we have a value
+                        if (!x[searchKey]) return false
+                        // Convert the value to match to a string so we can search it
+                        const valueToMatch = x[searchKey].toString().toLowerCase()
+                        let isMatch = false
+                        searchString.forEach(str => {
+                            if (valueToMatch.search(str) >= 0) isMatch = true
+                        })
+                        return isMatch
+                        // return valueToMatch.search(searchString) >= 0
+                    }
+                })
 
             }
             // Else search by the option itself
-            return array.filter(x => {
+            else resultsToReturn = array.filter(x => {
                 // Convert the value to match to a string so we can search it
                 const valueToMatch = x.toString().toLowerCase()
                 let isMatch = false
@@ -144,6 +148,15 @@ export default {
                 })
                 return isMatch
             })
+
+            // Sort the results by the search array
+            if (searchString.length > 2) {
+                return resultsToReturn.sort((a,b) => {
+                    return searchString.indexOf(a.datasource_id.toString()) - searchString.indexOf(b.datasource_id.toString())
+                })
+            }
+            // return resultsToReturn unsorted
+            return resultsToReturn
         }
     },
     methods: {
@@ -163,6 +176,11 @@ export default {
             }
             // Else do nothing
         }
+    },
+    created() {
+        if (this.arrayToSearch) {
+            this.$emit('input', this.result)
+        }
     }
 }
 </script>
@@ -172,20 +190,23 @@ export default {
 
     .search {
         position: relative;
-        input.input-wrapper.small {
+        input.input-wrapper {
             padding-right: 32px;
             box-sizing: border-box;
         }
-        .close {
+        .clear {
             position: absolute;
             right: 0;
-            top: 2px;
-            font-size: 12px;
+            top: 0;
+            font-size: 14px;
             color: $fontIcon;
             cursor: pointer;
             padding: 4px 12px;
-            &:hover {
-                opacity: .8;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            &:hover i {
+                color: $font;
             }
         }
     }

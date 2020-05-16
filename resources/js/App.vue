@@ -58,7 +58,8 @@ export default{
     }},
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
-        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus']),
+        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
+        ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
     },
     watch : {
@@ -68,6 +69,7 @@ export default{
             // -> initialize the workspace
             if (newVal == 'success') {
                 this.initWorkspace()
+                this.initSignalR()
             }
         },
         // Watch for workspace changes
@@ -90,6 +92,7 @@ export default{
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         initWorkspace() {
             // Get workspaces
             this.fetchWorkspaces().then(() => {
@@ -98,6 +101,49 @@ export default{
                 if (this.currentWorkspaceIndex == null) {
                     this.setCurrentWorkspaceIndex(0)
                 }
+            })
+        },
+        async initSignalR() {
+            console.log('init SignalR')
+            // Connect to SignalR
+            Vue.prototype.$connection = new signalR.HubConnectionBuilder()
+            .withAutomaticReconnect()
+            .withUrl(`${process.env.MIX_API_BASE_URL.substr(0,process.env.MIX_API_BASE_URL.length-3)}/live-update`)
+            .configureLogging(signalR.LogLevel.Information)
+            .build()
+            const connection = this.$connection
+            await connection.start().catch(err => {
+                console.log(err)
+            })
+
+            // Authenticate our connection
+            connection.invoke("Authenticate", this.getAuthUserToken).catch(function (err) {
+                return console.error(err.toString())
+            })
+
+            connection.on('AuthenticatedSuccess', message => {})
+
+            connection.on('OnSelectionPresentationChanged', (eventName, selectionIds) => {
+                selectionIds.selection_ids.map(id => {
+                    const selection = this.getSelectionById(id)
+                    if (selection) {
+                        if (eventName == 'Begin') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: true})
+                        }
+                        if (eventName == 'Terminate') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection, isActive: false})
+                        }
+                    }
+                    const currentSelection = this.getCurrentSelectionById(id)
+                    if (currentSelection) {
+                        if (eventName == 'Begin') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection: currentSelection, isActive: true})
+                        }
+                        if (eventName == 'Terminate') {
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({selection: currentSelection, isActive: false})
+                        }
+                    }
+                })
             })
         },
         // onScroll(e) {
@@ -297,45 +343,6 @@ export default{
         &.disabled {
             &::after {
                 display: block;
-            }
-        }
-    }
-    // Scrollbar
-    *:not(.app) {
-        /* width */
-        &::-webkit-scrollbar {
-            width: 3px;
-            height: 7px;
-        }
-        /* Track */
-        &::-webkit-scrollbar-track {
-            background: $light2; 
-        }
-        /* Handle */
-        &::-webkit-scrollbar-thumb {
-            background: $dark2;
-            border-radius: 2px;
-            &:hover {
-                background: $dark25;
-            }
-        }
-        .dark > *, .dark {
-            /* width */
-            &::-webkit-scrollbar {
-                width: 5px;
-                height: 7px;
-            }
-            /* Track */
-            &::-webkit-scrollbar-track {
-                background: transparent; 
-            }
-            /* Handle */
-            &::-webkit-scrollbar-thumb {
-                background: white;
-                box-shadow: -2px 0 #333 inset;
-                &:hover {
-                    background: $primary;
-                }
             }
         }
     }

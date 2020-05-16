@@ -31,8 +31,13 @@ import VueVirtualScroller from 'vue-virtual-scroller'
 Vue.use(VueVirtualScroller)
 
 import VTooltip from 'v-tooltip'
-Vue.use(VTooltip)
-VTooltip.options.popover.defaultTrigger = 'hover focus'
+Vue.use(VTooltip, {
+    defaultBoundariesElement: 'window',
+    popover: {
+        defaultTrigger: 'hover focus',
+    },
+})
+// VTooltip.options.popover.defaultTrigger = 'hover focus'
 
 import PortalVue from 'portal-vue'
 Vue.use(PortalVue)

@@ -14,7 +14,10 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment'"/>
+                        <SelectionPresenterModeButton :selection="currentSelection" @toggle="onTogglePresenterMode"/>
+                    </div>
+                    <div class="item-group">
+                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !currentSelection.is_presenting"/>
                     </div>
                     <div class="item-group">
                         <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
@@ -142,6 +145,19 @@
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
+            <PresenterQueueFlyin :product="product" v-if="currentSelection.is_presenting && show"/>
+
+            <BaseDialog ref="confirmCloseInPresentation" type="confirm"
+            confirmColor="dark" confirmText="Okay, close it">
+                <div class="icon-graphic">
+                    <i class="lg primary far fa-file"></i>
+                    <i class="lg far fa-arrow-right"></i>
+                    <i class="lg dark far fa-times"></i>
+                </div>
+                <h3>You are about to close the Product Flyin</h3>
+                <p>Your presentation will still continue</p>
+                <p>Press any product to access your queue again</p>
+            </BaseDialog>
         </template>
     </BaseFlyin>
 </template>
@@ -152,7 +168,9 @@ import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
+import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import variantImage from '../../../mixins/variantImage'
+import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
 export default {
     name: 'productFlyin',
@@ -168,17 +186,31 @@ export default {
         DistributionSection,
         RequestsSection,
         SelectionSelector,
+        SelectionPresenterModeButton,
+        PresenterQueueFlyin,
     },
     data: function () { return {
             currentImgIndex: 0,
+            showLightbox: false,
+            lastBroadcastProductId: null,
     }},
     watch: {
         product(newVal, oldVal) {
-            if (oldVal && oldVal.id != newVal.id)
+            if (oldVal && oldVal.id != newVal.id) {
                 this.currentImgIndex = 0
+
+                // Broadcast the product when the product changes
+                if (this.broadcastActive && this.lastBroadcastProductId != newVal.id) {
+                    this.onBroadcastProduct(newVal)
+                }
+            }
         },
         show(newVal, oldVal) {
             if (newVal) {
+                // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
+                if (this.broadcastActive && (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)) {
+                    this.onBroadcastProduct(this.product)
+                }
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
@@ -194,6 +226,7 @@ export default {
         product () {
             return this.currentProduct
         },
+        broadcastActive () {return this.currentSelection.is_presenting},
         currentSelection () { return this.getCurrentPDPSelection },
         currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
         currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
@@ -206,7 +239,17 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
+        ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        onTogglePresenterMode(gotActivated) {
+            if (gotActivated) {
+                this.onBroadcastProduct(this.product)
+            }
+        },
+        onBroadcastProduct(product) {
+            this.lastBroadcastProductId = product.id
+            this.broadcastProduct(product)
+        },
         onUpdateAction(product, action, selection) {
             this.$emit('updateAction', product, action, selection)
         },
@@ -218,7 +261,11 @@ export default {
         imgError (variant) {
              variant.error = true
         },
-        onCloseSingle() {
+        async onCloseSingle() {
+            if (this.selection.is_presenting && !await this.$refs.confirmCloseInPresentation.confirm()) {
+                return
+            }
+
             this.currentImgIndex = 0
             // Emit event to parent
             this.$emit('close')
@@ -282,6 +329,24 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+
+::v-deep {
+    &.product-single {
+        > .flyin {
+            min-width: 0;
+            width: calc(100vw - 242px);
+            > .body {
+                grid-template-columns: 26% 26% 24% 24% !important;
+            }
+            .flyin-header {
+                > .left {
+                    max-width: 380px;
+                }
+            }
+        }
+    }
+}
 
 .product-title-wrapper {
     flex-direction: column;

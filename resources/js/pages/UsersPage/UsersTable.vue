@@ -48,7 +48,7 @@
             </template>
             <template v-slot:footer>
                 <td>
-                    <BaseButton :buttonClass="'primary invisible'" 
+                    <BaseButton buttonClass="primary invisible" 
                     :disabled="authUserWorkspaceRole != 'Admin'" 
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'"
                         @click="onNewUser">
@@ -277,6 +277,7 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('users', ['getUsers', 'getUsersStatus']),
+        ...mapGetters('tables', ['getUsersTable']),
         passwordSubmitDisabled() {
             return this.newUserPassword.length < 8 || (this.authUserWorkspaceRole != 'Admin' && this.oldUserPassword.length < 8)
         },
@@ -313,11 +314,13 @@ export default {
     },
     methods: {
         ...mapActions('users', ['fetchUsers', 'updateWorkspaceUsers', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        ...mapMutations('tables', ['SET_TABLE_PROPERTY']),
         async initData(forceRefresh) {
             // If we have not and are not fetching the users then fetch them
             if (forceRefresh || (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading')) await this.fetchUsers()
             // Initially set the filteredbySearch arrays
             if (this.getUsersStatus == 'success') this.usersFilteredBySearch = this.users
+            this.SET_TABLE_PROPERTY('usersTable', 'workspaceId', this.currentWorkspace.id)
         },
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
@@ -432,7 +435,8 @@ export default {
         },
     },
     created() {
-        this.initData()
+        const forceRefresh = this.getUsersTable.workspaceId != this.currentWorkspace.id
+        this.initData(forceRefresh)
     }
 }
 </script>

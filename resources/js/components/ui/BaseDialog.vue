@@ -39,17 +39,25 @@ export default {
     }},
     methods: {
         onConfirm() {
-            this.resolve(true)
+            if (this.resolve) this.resolve(true)
             this.hide()
         },
         onCancel() {
-            this.resolve(false)
+            if (this.resolve) this.resolve(false)
             this.hide()
         },
         hide() {
+            if (this.resolve) this.resolve(false)
             this.visible = false
         },
         confirm() {
+            this.visible = true
+            return new Promise((resolve, reject) => {
+                this.resolve = resolve
+                this.reject = reject
+            })
+        },
+        show() {
             this.visible = true
             return new Promise((resolve, reject) => {
                 this.resolve = resolve

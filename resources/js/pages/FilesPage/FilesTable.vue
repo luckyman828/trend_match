@@ -380,6 +380,7 @@ export default {
         ...mapGetters('files', ['files', 'getCurrentFolderStatus', 'getCurrentFolder', 'getFilesStatus']),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
+        ...mapGetters('tables', ['getFilesTable']),
         folder() {
             this.getCurrentFolder
         },
@@ -408,8 +409,10 @@ export default {
         , 'fetchFolder', 'fetchFolderContent', 'fetchFiles', 'moveFiles', 'setCurrentFolder']),
         ...mapMutations('files', ['removeUnsavedFiles']),
         ...mapActions('folders', ['deleteFolder', 'updateFolder']),
+        ...mapMutations('tables', ['SET_TABLE_PROPERTY']),
         initData(forceRefresh) {
             if (forceRefresh || (this.getCurrentFolderStatus != 'success' && this.getCurrentFolderStatus != 'loading')) this.setCurrentFolder(this.getCurrentFolder)
+            this.SET_TABLE_PROPERTY('filesTable', 'workspaceId', this.currentWorkspace.id)
         },
         showFileOwnersFlyin(file) {
             this.$emit('showFileOwnersFlyin', file)
@@ -590,7 +593,8 @@ export default {
         }
     },
     created() {
-        this.initData()
+        const forceRefresh = this.getFilesTable.workspaceId != this.currentWorkspace.id
+        this.initData(forceRefresh)
     }
 }
 </script>
