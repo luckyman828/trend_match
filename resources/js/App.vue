@@ -8,7 +8,8 @@
         <TheNavbarLogo/>
         <TheNavbar/>
         <TheSidebar/>
-        <div class="main" id="main" ref="main" @scroll="scrollHandler">
+        <div class="main" id="main" ref="main">
+        <!-- <div class="main" id="main" ref="main" @scroll.passive="scrollHandler"> -->
             <div class="container">
                 <transition name="fade">
                     <router-view></router-view>
