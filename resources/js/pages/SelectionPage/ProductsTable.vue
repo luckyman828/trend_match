@@ -1,7 +1,7 @@
 <template>
     <div class="products-table-wrapper">
 
-        <BaseFlexTable class="products-table" stickyHeader="true">
+        <BaseFlexTable class="products-table" :stickyHeader=true>
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview`" :count="productTotals.all" 
                 v-model="currentProductFilter"
