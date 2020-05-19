@@ -382,7 +382,7 @@ export default {
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         ...mapGetters('tables', ['getFilesTable']),
         folder() {
-            this.getCurrentFolder
+            return this.getCurrentFolder
         },
         foldersToShow() {
             return this.files.filter(x => x.type =='Folder')
@@ -474,7 +474,7 @@ export default {
             // If the new item to edit has an ID, remove all unsaved folders, to avoid confusion as to whether they are saved or not
             if(item.id) this.removeUnsavedFolders()
             // Set the item to edit
-            this.toEdit = {item: item, type: type, field: field}
+            this.toEdit = {item, type, field}
         },
         clearToEdit() {
             this.toEdit = null
