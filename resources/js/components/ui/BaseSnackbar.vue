@@ -92,8 +92,12 @@ export default {
     created() {
         // Automatically hide the snackbar
         if (this.duration) {
+            // this.timer = new Timer(() => this.onTimeout(), this.duration, () => this.resetTimerAnimation())
             this.timer = new Timer(() => this.onTimeout(), this.duration, () => this.resetTimerAnimation())
         }
+    },
+    destroyed() {
+        this.onTimeout()
     }
 }
 
