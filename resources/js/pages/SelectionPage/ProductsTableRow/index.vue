@@ -12,7 +12,7 @@
             </td>
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
-                    <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                    <img :key="product.id" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex])">
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
@@ -25,7 +25,8 @@
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
                     </div> -->
                     <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
-                    :variant="variant" :product="product" :selection="selection"/>
+                    :variant="variant" :product="product" :selection="selection"
+                    @mouseenter.native="variantIndex = index"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
                     </div>
@@ -222,6 +223,7 @@ export default {
     },
     data: function() { return {
         focusGroupIndex: null,
+        variantIndex: 0,
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
@@ -246,6 +248,9 @@ export default {
             if (newVal == this.index) {
                 this.$refs.row.focus()
             }
+        },
+        product(newVal, oldVal) {
+            this.variantIndex = 0
         }
     },
     methods: {
