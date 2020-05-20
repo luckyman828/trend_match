@@ -202,6 +202,7 @@ export default {
                         return {
                             product_id: pair.product.id,
                             feedback: pair.action.action,
+                            variants: pair.action.variants,
                         }
                     }),
                 }
@@ -212,6 +213,7 @@ export default {
                         return {
                             product_id: pair.product.id,
                             actions: pair.action.action,
+                            variants: pair.action.variants,
                         }
                     }),
                 }

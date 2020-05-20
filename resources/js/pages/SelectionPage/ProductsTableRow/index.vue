@@ -21,9 +21,11 @@
             <td class="title"><span class="clickable" @click="onViewSingle">
                 <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
                 <div class="variant-list">
-                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
+                    <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
-                    </div>
+                    </div> -->
+                    <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
+                    :variant="variant" :product="product" :selection="selection"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
                     </div>
@@ -190,6 +192,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 // Mixins
 import variantImage from '../../../mixins/variantImage'
 import MultiSelectionInputRow from './MultiSelectionInputRow/index'
+import VariantListItem from './VariantListItem'
 
 export default {
     name: 'productsRow',
@@ -201,7 +204,8 @@ export default {
         'index',
     ],
     components: {
-        MultiSelectionInputRow
+        MultiSelectionInputRow,
+        VariantListItem,
     },
     mixins: [
         variantImage,
@@ -395,9 +399,7 @@ export default {
         position: absolute;
         left: 0;
         bottom: -6px;
-    }
-    .variant-list-item:not(:first-child) {
-        margin-left: 4px;
+        display: flex;
     }
     .product-details {
         height: 98px;
