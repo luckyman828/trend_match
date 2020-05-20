@@ -125,7 +125,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 208 : 100"
+                    :item-size="currentSelections.length > 1 ? 248 : 140"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -464,8 +464,8 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 70px;
-                        max-width: 70px;
+                        min-width: 90px;
+                        max-width: 90px;
                         height: 100%;
                     }
                     &.delivery {
@@ -528,7 +528,7 @@ export default {
                     //     padding-bottom: 20px;
                     // }
                     &:not(.image):not(.select):not(.action):not(.id) {
-                        padding-bottom: 24px;
+                        padding-bottom: 28px;
                     }
                 }
             }

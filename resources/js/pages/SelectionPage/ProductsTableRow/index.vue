@@ -403,11 +403,11 @@ export default {
     .variant-list {
         position: absolute;
         left: 0;
-        bottom: -6px;
+        bottom: -12px;
         display: flex;
     }
     .product-details {
-        height: 98px;
+        height: 138px;
         padding: 8px;
         display: flex;
         align-items: center;
