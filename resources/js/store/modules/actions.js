@@ -53,6 +53,14 @@ export default {
 
             // Shape products for request
             const productActions = products.map(product => {
+                // Loop through all the variants. If their action is None, then give them a default action
+                product.variants.forEach(variant => {
+                    // if (variant.your_feedback == 'None') {
+                    variant.your_feedback = action
+                    // }
+                })
+
+                // Return the products shaped for the request body
                 return {
                     product,
                     action: {
@@ -62,6 +70,16 @@ export default {
                         selection_id: selection.id,
                         user_id: user.id,
                         user: user,
+                        // variants: product.variants.map(variant => {
+                        //     return {
+                        //         id: variant.id,
+                        //         action: action,
+                        //         selection,
+                        //         selection_id: selection.id,
+                        //         user_id: user.id,
+                        //         user: user,
+                        //     }
+                        // }),
                     },
                 }
             })
@@ -87,6 +105,12 @@ export default {
                         return {
                             product_id: product.id,
                             feedback: action,
+                            variants: product.variants.map(variant => {
+                                return {
+                                    id: variant.id,
+                                    feedback: action,
+                                }
+                            }),
                         }
                     }),
                 }
@@ -110,6 +134,12 @@ export default {
                         return {
                             product_id: product.id,
                             action: action,
+                            variants: product.variants.map(variant => {
+                                return {
+                                    id: variant.id,
+                                    action: action,
+                                }
+                            }),
                         }
                     }),
                 }
@@ -243,6 +273,7 @@ export default {
             productActions.forEach(productAction => {
                 const product = productAction.product
                 const action = productAction.action
+                console.log('insert or update actions', action, product)
 
                 // Feedback
                 if (type == 'Feedback') {

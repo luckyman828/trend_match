@@ -251,7 +251,7 @@ export default {
                     const apiUrl = `/selections/${selection.id}/products`
                     await axios.get(apiUrl).then(async response => {
                         const products = response.data
-                        await commit('PROCESS_SELECTION_PRODUCTS', products)
+                        await commit('PROCESS_SELECTION_PRODUCTS', { products, selection, authUser })
                         selectionProductArrayPairs.push({ selection, products })
                     })
                 })
@@ -685,7 +685,7 @@ export default {
                 // ---- END PRICES ----
             })
         },
-        PROCESS_SELECTION_PRODUCTS(state, products) {
+        PROCESS_SELECTION_PRODUCTS(state, { products, selection, authUser }) {
             products.map(product => {
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
@@ -778,6 +778,148 @@ export default {
                 })
                 // Remove deleted comments
                 Vue.set(product, 'comments', product.comments.filter(x => !x.is_deleted))
+
+                // PROCESS VARIANTS
+                product.variants.forEach(variant => {
+                    Object.defineProperty(variant, 'feedbacks', {
+                        get: function() {
+                            const feedbacks = []
+                            product.feedbacks.map(feedback => {
+                                const variantFeedbacks = feedback.variants.filter(x => x.id == variant.id)
+                                variantFeedbacks.map(variantFeedback => {
+                                    feedbacks.push({
+                                        id: variantFeedback.id,
+                                        action: variantFeedback.feedback,
+                                        user_id: feedback.user_id,
+                                        user: feedback.user,
+                                        selection_id: feedback.selection_id,
+                                        selection: feedback.selection,
+                                    })
+                                })
+                            })
+                            return feedbacks
+                        },
+                    })
+                    // Get the user's feedback
+                    Object.defineProperty(variant, 'your_feedback', {
+                        get: function() {
+                            const userFeedback = variant.feedbacks.find(x => x.user_id == authUser.id)
+                            return userFeedback ? userFeedback.action : 'None'
+                        },
+                        set: function(newAction) {
+                            // Find the user feedback for the variant input for this feedback action
+                            // const userFeedback = product.feedbacks.find(feedback => feedback.user_id == authUser.id)
+                            const userFeedback = product.feedbacks.find(feedback => feedback.user_id == authUser.id)
+                            // If the user has already made variant input, update the action
+                            const userVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
+                            if (userVariantFeedbackIndex >= 0) {
+                                userFeedback.variants.splice(userVariantFeedbackIndex, 1, {
+                                    feedback: newAction,
+                                    id: variant.id,
+                                })
+                            } else {
+                                userFeedback.variants.push({
+                                    feedback: newAction,
+                                    id: variant.id,
+                                })
+                            }
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'actions', {
+                        get: function() {
+                            const actions = []
+                            product.actions.map(action => {
+                                const variantActions = action.variants.filter(x => x.id == variant.id)
+                                variantActions.map(variantAction => {
+                                    actions.push({
+                                        id: variantAction.id,
+                                        action: variantAction.action,
+                                        user_id: action.user_id,
+                                        user: action.user,
+                                        selection_id: action.selection_id,
+                                        selection: action.selection,
+                                    })
+                                })
+                            })
+                            return actions
+                        },
+                    })
+                    // Get the user's feedback
+                    Object.defineProperty(variant, 'action', {
+                        get: function() {
+                            const selectionAction = variant.actions.find(x => x.selection_id == selection.id)
+                            return selectionAction ? selectionAction.action : 'None'
+                        },
+                    })
+
+                    // Feedback Actions
+                    Object.defineProperty(variant, 'ins', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'In')
+                        },
+                        configurable: true,
+                    })
+                    Object.defineProperty(variant, 'outs', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'Out')
+                        },
+                    })
+                    Object.defineProperty(variant, 'focus', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'Focus')
+                        },
+                    })
+                    Object.defineProperty(variant, 'nds', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'None')
+                        },
+                    })
+
+                    // Alignment Actions
+                    Object.defineProperty(variant, 'alignmentIns', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'In')
+                        },
+                    })
+                    Object.defineProperty(variant, 'alignmentOuts', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'Out')
+                        },
+                    })
+                    Object.defineProperty(variant, 'alignmentFocus', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'Focus')
+                        },
+                    })
+                    Object.defineProperty(variant, 'alignmentNds', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'None')
+                        },
+                    })
+                    // All Actions
+                    Object.defineProperty(variant, 'allIns', {
+                        get: function() {
+                            return variant.ins.length + variant.alignmentIns.length
+                        },
+                    })
+                    Object.defineProperty(variant, 'allOuts', {
+                        get: function() {
+                            return variant.outs.length + variant.alignmentOuts.length
+                        },
+                    })
+                    Object.defineProperty(variant, 'allFocus', {
+                        get: function() {
+                            return variant.focus.length + variant.alignmentFocus.length
+                        },
+                    })
+                    Object.defineProperty(variant, 'allNds', {
+                        get: function() {
+                            return variant.nds.length + variant.alignmentNds.length
+                        },
+                    })
+                })
+                // END PROCESS VARIANTS
             })
         },
         PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs, authUser }) {
