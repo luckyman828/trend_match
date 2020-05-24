@@ -1,15 +1,15 @@
 <template>
-    <div class="variant-list-item-wrapper" :class="{'has-action': variant.your_feedback != 'None'}">
+    <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <v-popover>
             <div class="variant-item-wrapper">
                 <div class="variant-list-item pill ghost xs">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
                 </div>
-                <div class="your-action" v-if="variant.your_feedback != 'None'">
+                <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="circle ghost xs">
-                        <i v-if="variant.your_feedback == 'Focus'" class="fas fa-star primary"></i>
-                        <i v-if="variant.your_feedback == 'In'" class="fas fa-heart green"></i>
-                        <i v-if="variant.your_feedback == 'Out'" class="fas fa-times red"></i>
+                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
+                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
+                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
                     </div>
                 </div>
             </div>
@@ -20,7 +20,7 @@
                 <div class="action-list">
 
                     <div class="action-list-item">
-                        <button :class="variant.your_feedback == 'Focus' ? 'primary' : 'ghost'"
+                        <button :class="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
                         @click="updateVariantAction('Focus')">
                             <i class="far fa-star"></i>
                         </button>
@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="action-list-item">
-                        <button :class="variant.your_feedback == 'In' ? 'green' : 'ghost'"
+                        <button :class="variant[currentAction] == 'In' ? 'green' : 'ghost'"
                         @click="updateVariantAction('In')">
                             <i class="far fa-heart"></i>
                         </button>
@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="action-list-item">
-                        <button :class="variant.your_feedback == 'Out' ? 'red' : 'ghost'"
+                        <button :class="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
                         @click="updateVariantAction('Out')">
                             <i class="far fa-times"></i>
                         </button>
@@ -79,7 +79,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('auth', ['authUser'])
+        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', {
+            currentAction: 'currentSelectionModeAction'
+        }),
     },
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
@@ -94,17 +97,17 @@ export default {
         },
         updateVariantAction(newAction) {
             // If the new action to set is the same as the one already set, return
-            if (this.variant.your_feedback == newAction) return
+            if (this.variant[this.currentAction] == newAction) return
 
             // Loop through all the variants. If their action is None, then give them a default action
             this.product.variants.forEach(variant => {
-                if (variant.your_feedback == 'None') {
-                    variant.your_feedback = 'In'
+                if (variant[this.currentAction] == 'None') {
+                    variant[this.currentAction] = 'In'
                 }
             })
 
             // Set the variant feedback
-            this.variant.your_feedback = newAction
+            this.variant[this.currentAction] = newAction
             
             // Find the users feedback action for the product and make sure it is not None
             const authUserFeedback = this.product.feedbacks.find(x => x.user_id == this.authUser.id)

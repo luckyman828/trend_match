@@ -808,8 +808,10 @@ export default {
                         },
                         set: function(newAction) {
                             // Find the user feedback for the variant input for this feedback action
-                            // const userFeedback = product.feedbacks.find(feedback => feedback.user_id == authUser.id)
-                            const userFeedback = product.feedbacks.find(feedback => feedback.user_id == authUser.id)
+                            const userFeedback = product.feedbacks.find(
+                                // feedback => feedback.user_id == authUser.id && feedback.selection_id == selection.id
+                                feedback => feedback.user_id == authUser.id
+                            )
                             // If the user has already made variant input, update the action
                             const userVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
                             if (userVariantFeedbackIndex >= 0) {
@@ -834,7 +836,7 @@ export default {
                                 variantActions.map(variantAction => {
                                     actions.push({
                                         id: variantAction.id,
-                                        action: variantAction.action,
+                                        action: variantAction.feedback,
                                         user_id: action.user_id,
                                         user: action.user,
                                         selection_id: action.selection_id,
@@ -845,11 +847,28 @@ export default {
                             return actions
                         },
                     })
-                    // Get the user's feedback
+                    // Get the selection's action
                     Object.defineProperty(variant, 'action', {
                         get: function() {
                             const selectionAction = variant.actions.find(x => x.selection_id == selection.id)
                             return selectionAction ? selectionAction.action : 'None'
+                        },
+                        set: function(newAction) {
+                            // Find the current action for the variant input for this action action
+                            const currentAction = product.actions.find(action => action.selection_id == selection.id)
+                            // If the user has already made variant input, update the action
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantActionIndex >= 0) {
+                                currentAction.variants.splice(currentVariantActionIndex, 1, {
+                                    action: newAction,
+                                    id: variant.id,
+                                })
+                            } else {
+                                currentAction.variants.push({
+                                    action: newAction,
+                                    id: variant.id,
+                                })
+                            }
                         },
                     })
 
@@ -1164,9 +1183,10 @@ export default {
                         },
                         set: function(newAction) {
                             // Find the user feedback for the variant input for this feedback action
-                            // const userFeedback = product.feedbacks.find(feedback => feedback.user_id == authUser.id)
-                            const userFeedback = product.selectionInputArray[0].product.feedbacks.find(
-                                feedback => feedback.user_id == authUser.id
+                            const userFeedback = product.feedbacks.find(
+                                feedback =>
+                                    feedback.user_id == authUser.id &&
+                                    feedback.selection_id == product.selectionInputArray[0].selection.id
                             )
                             // If the user has already made variant input, update the action
                             const userVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
@@ -1192,7 +1212,7 @@ export default {
                                 variantActions.map(variantAction => {
                                     actions.push({
                                         id: variantAction.id,
-                                        action: variantAction.action,
+                                        action: variantAction.feedback,
                                         user_id: action.user_id,
                                         user: action.user,
                                         selection_id: action.selection_id,
@@ -1203,13 +1223,33 @@ export default {
                             return actions
                         },
                     })
-                    // Get the user's feedback
+                    // Get the selection's action
                     Object.defineProperty(variant, 'action', {
                         get: function() {
                             const selectionAction = variant.actions.find(
                                 x => x.selection_id == product.selectionInputArray[0].selection.id
                             )
                             return selectionAction ? selectionAction.action : 'None'
+                        },
+                        set: function(newAction) {
+                            console.log('set variant action')
+                            // Find the current action for the variant input for this action action
+                            const currentAction = product.actions.find(
+                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                            )
+                            // If the user has already made variant input, update the action
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantActionIndex >= 0) {
+                                currentAction.variants.splice(currentVariantActionIndex, 1, {
+                                    action: newAction,
+                                    id: variant.id,
+                                })
+                            } else {
+                                currentAction.variants.push({
+                                    action: newAction,
+                                    id: variant.id,
+                                })
+                            }
                         },
                     })
 

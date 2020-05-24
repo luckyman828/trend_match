@@ -53,13 +53,6 @@ export default {
 
             // Shape products for request
             const productActions = products.map(product => {
-                // Loop through all the variants. If their action is None, then give them a default action
-                product.variants.forEach(variant => {
-                    // if (variant.your_feedback == 'None') {
-                    variant.your_feedback = action
-                    // }
-                })
-
                 // Return the products shaped for the request body
                 return {
                     product,
@@ -86,6 +79,18 @@ export default {
 
             // Save old actions
             if (selection.your_role == 'Member') {
+                products.map(product => {
+                    // Loop through all the variants. If their action is None, then give them a default action
+                    product.variants.forEach(variant => {
+                        if (variant.your_feedback == 'None') {
+                            variant.your_feedback = action
+                        }
+                        if (action == 'None') {
+                            variant.your_feedback = 'None'
+                        }
+                    })
+                })
+
                 oldActions = products.map(product => {
                     return {
                         product,
@@ -115,6 +120,15 @@ export default {
                     }),
                 }
             } else if (selection.your_role == 'Owner') {
+                products.map(product => {
+                    // Loop through all the variants. If their action is None, then give them a default action
+                    product.variants.forEach(variant => {
+                        // if (variant.action == 'None') {
+                        variant.action = action
+                        // }
+                    })
+                })
+
                 oldActions = products.map(product => {
                     return {
                         product,
@@ -137,7 +151,7 @@ export default {
                             variants: product.variants.map(variant => {
                                 return {
                                     id: variant.id,
-                                    action: action,
+                                    feedback: action,
                                 }
                             }),
                         }
@@ -170,7 +184,6 @@ export default {
                                 type: 'success',
                                 callback: async () => {
                                     // Restore the actions
-                                    console.log('restore actions!')
                                     await dispatch('insertOrUpdateProductActionPairs', {
                                         productActionPairs: oldActions,
                                         selection,
@@ -268,12 +281,10 @@ export default {
             window.alert('Network error. Please check your connection')
         },
         INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId }) {
-            // console.log('insert or update actions', productActions, type, currentSelectionId)
             // Loop through our products and update their actions
             productActions.forEach(productAction => {
                 const product = productAction.product
                 const action = productAction.action
-                console.log('insert or update actions', action, product)
 
                 // Feedback
                 if (type == 'Feedback') {
