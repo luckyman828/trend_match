@@ -1,16 +1,23 @@
 <template>
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <v-popover :disabled="multiSelectionMode">
-            <div class="variant-item-wrapper">
-                <div class="variant-list-item pill ghost xs">
-                    <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                </div>
-                <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
-                    <div class="circle ghost xs">
-                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
-                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
-                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
+            <div class="variant">
+                <div class="img-wrapper">
+                    <img :src="variantImage(variant)" @error="imgError(variant)">
+                    <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
+                        <div class="square xs" :class="
+                        variant[currentAction] == 'Focus' ? 'primary'
+                        : variant[currentAction] == 'In' ? 'green'
+                        : 'red'">
+                            <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star"></i>
+                            <i v-if="variant[currentAction] == 'In'" class="fas fa-heart"></i>
+                            <i v-if="variant[currentAction] == 'Out'" class="fas fa-times"></i>
+                        </div>
                     </div>
+                </div>
+                <div class="color-wrapper">
+                    <div class="circle-img"><img :src="variantImage(variant)" @error="imgError(variant)"></div>
+                    <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
                 </div>
             </div>
             <template slot="popover">
@@ -56,6 +63,7 @@
 
 <script>
 import ActionDistributionList from '../ActionDistributionList'
+import variantImage from '../../../mixins/variantImage'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -68,6 +76,9 @@ export default {
     components: {
         ActionDistributionList
     },
+    mixins: [
+        variantImage
+    ],
     filters: {
         truncate: function(text, length) {
             const clamp = '...'
@@ -87,15 +98,6 @@ export default {
     },
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
-        variantNameTruncateLength() {
-            const amount = this.product.variants.length
-            if (amount > 4) {
-                return window.innerWidth > 1260 ? 12 : 6
-            }
-            else if (amount > 2) {
-                return window.innerWidth > 1260 ? 20 : 15
-            }
-        },
         updateVariantAction(newAction) {
             // If the new action to set is the same as the one already set, return
             if (this.variant[this.currentAction] == newAction) return
@@ -133,21 +135,17 @@ export default {
 
 .variant-list-item-wrapper {
     &:not(:last-child) {
-        margin-right: 4px;
-        &.has-action {
-            margin-right: 12px;
-        }
+        margin-right: 8px;
     }
 }
-.variant-item-wrapper {
+.variant .img-wrapper {
     position: relative;
     .your-action {
         position: absolute;
-        top: -12px;
-        right: -10px;
-        .circle {
+        top: 4px;
+        right: 4px;
+        .square {
             box-shadow: $shadowXs;
-            background: white;
         }
     }
 }
@@ -200,6 +198,60 @@ div.header {
             &:last-child button {
                 border-radius: 0 4px 4px 0;
             }
+        }
+    }
+}
+
+.variant {
+    width: 80px;
+    display: inline-block;
+    cursor: pointer;
+    &:not(:last-child) {
+        margin-right: 16px;
+    }
+    .img-wrapper {
+        height: 108px;
+        width: 80px;
+        border-radius: 4px;
+        border: solid 2px $divider;
+        overflow: hidden;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+    }
+    .color-wrapper {
+        overflow: hidden;
+        margin-right: 4px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        span {
+            font-size: 10px;
+            font-weight: 500;
+            color: $dark2;
+        }
+        .circle-img {
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
+            border: solid 1px $light1;
+            position: relative;
+            overflow: hidden;
+            margin-right: 4px;
+            img {
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                position: absolute;
+            }
+        }
+    }
+    &.active {
+        .img-wrapper {
+            border-color: $primary;
         }
     }
 }

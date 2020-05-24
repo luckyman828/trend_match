@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
+                    <!-- <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
                         <div class="img-wrapper">
                             <img :src="variantImage(variant)" @error="imgError(variant)">
                         </div>
@@ -64,7 +64,10 @@
                             <div class="circle-img"><img :src="variantImage(variant)" @error="imgError(variant)"></div>
                             <span>{{variant.name}}</span>
                         </div>
-                    </div>
+                    </div> -->
+                    <VariantListItem v-for="(variant, index) in product.variants" :key="index"
+                    :variant="variant" :product="product" :selection="selection"
+                    @click.native="currentImgIndex = index" :class="{active: currentImgIndex == index}"/>
                 </div>
 
                 <!-- <label>Style number</label>
@@ -168,6 +171,7 @@ import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
+import VariantListItem from './VariantListItem'
 import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
@@ -188,6 +192,7 @@ export default {
         SelectionSelector,
         SelectionPresenterModeButton,
         PresenterQueueFlyin,
+        VariantListItem,
     },
     data: function () { return {
             currentImgIndex: 0,
@@ -401,59 +406,7 @@ export default {
                 white-space: nowrap;
                 overflow-x: auto;
                 margin-bottom: 8px;
-                .variant {
-                    width: 80px;
-                    display: inline-block;
-                    cursor: pointer;
-                    &:not(:last-child) {
-                        margin-right: 16px;
-                    }
-                    .img-wrapper {
-                        height: 108px;
-                        width: 80px;
-                        border-radius: 4px;
-                        border: solid 2px $divider;
-                        overflow: hidden;
-                        img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: contain;
-                            object-position: center;
-                        }
-                    }
-                    .color-wrapper {
-                        overflow: hidden;
-                        margin-right: 4px;
-                        margin-top: 8px;
-                        display: flex;
-                        align-items: center;
-                        span {
-                            font-size: 10px;
-                            font-weight: 500;
-                            color: $dark2;
-                        }
-                        .circle-img {
-                            width: 12px;
-                            height: 12px;
-                            border-radius: 6px;
-                            border: solid 1px $light1;
-                            position: relative;
-                            overflow: hidden;
-                            margin-right: 4px;
-                            img {
-                                left: 50%;
-                                top: 50%;
-                                transform: translate(-50%, -50%);
-                                position: absolute;
-                            }
-                        }
-                    }
-                    &.active {
-                        .img-wrapper {
-                            border-color: $primary;
-                        }
-                    }
-                }
+                display: flex;
             }
         }
     }
