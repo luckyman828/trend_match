@@ -860,12 +860,12 @@ export default {
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
                             if (currentVariantActionIndex >= 0) {
                                 currentAction.variants.splice(currentVariantActionIndex, 1, {
-                                    action: newAction,
+                                    feedback: newAction,
                                     id: variant.id,
                                 })
                             } else {
                                 currentAction.variants.push({
-                                    action: newAction,
+                                    feedback: newAction,
                                     id: variant.id,
                                 })
                             }
@@ -1232,7 +1232,6 @@ export default {
                             return selectionAction ? selectionAction.action : 'None'
                         },
                         set: function(newAction) {
-                            console.log('set variant action')
                             // Find the current action for the variant input for this action action
                             const currentAction = product.actions.find(
                                 action => action.selection_id == product.selectionInputArray[0].selection.id
