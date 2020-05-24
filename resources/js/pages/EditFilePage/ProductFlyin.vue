@@ -454,6 +454,7 @@ export default {
         },
         onAddVariant() {
             this.product.variants.push({
+                id: this.$uuid.v4(),
                 name: null,
                 image: null,
                 blob_id: null,
