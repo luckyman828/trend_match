@@ -1,11 +1,11 @@
 <template>
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
-        <v-popover>
+        <v-popover :disabled="multiSelectionMode">
             <div class="variant-item-wrapper">
                 <div class="variant-list-item pill ghost xs">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
                 </div>
-                <div class="your-action" v-if="variant[currentAction] != 'None'">
+                <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
                     <div class="circle ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
@@ -81,7 +81,8 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
-            currentAction: 'currentSelectionModeAction'
+            currentAction: 'currentSelectionModeAction',
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
     },
     methods: {
