@@ -1,63 +1,24 @@
 <template>
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
-        <v-popover :disabled="multiSelectionMode">
-            <div class="variant">
-                <div class="img-wrapper">
-                    <img :src="variantImage(variant)" @error="imgError(variant)">
-                    <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
-                        <div class="square xs" :class="
-                        variant[currentAction] == 'Focus' ? 'primary'
-                        : variant[currentAction] == 'In' ? 'green'
-                        : 'red'">
-                            <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star"></i>
-                            <i v-if="variant[currentAction] == 'In'" class="fas fa-heart"></i>
-                            <i v-if="variant[currentAction] == 'Out'" class="fas fa-times"></i>
-                        </div>
+        <div class="variant">
+            <div class="img-wrapper">
+                <img :src="variantImage(variant)">
+                <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
+                    <div class="square xs" :class="
+                    variant[currentAction] == 'Focus' ? 'primary'
+                    : variant[currentAction] == 'In' ? 'green'
+                    : 'red'">
+                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star"></i>
+                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart"></i>
+                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times"></i>
                     </div>
-                </div>
-                <div class="color-wrapper">
-                    <div class="circle-img"><img :src="variantImage(variant)" @error="imgError(variant)"></div>
-                    <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
                 </div>
             </div>
-            <template slot="popover">
-                <div class="header">
-                    <h4 class="primary">{{variant.name}}</h4>
-                </div>
-                <div class="action-list">
-
-                    <div class="action-list-item">
-                        <button :class="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
-                        @click="updateVariantAction('Focus')">
-                            <i class="far fa-star"></i>
-                        </button>
-                        <span class="count">{{variant.allFocus}}</span>
-                    </div>
-
-                    <div class="action-list-item">
-                        <button :class="variant[currentAction] == 'In' ? 'green' : 'ghost'"
-                        @click="updateVariantAction('In')">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <span class="count">{{variant.allIns}}</span>
-                    </div>
-
-                    <div class="action-list-item">
-                        <button :class="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
-                        @click="updateVariantAction('Out')">
-                            <i class="far fa-times"></i>
-                        </button>
-                        <span class="count">{{variant.allOuts}}</span>
-                    </div>
-                </div>
-
-                <ActionDistributionList 
-                :feedbackActions="variant.feedbacks" 
-                :alignmentActions="variant.actions"
-                defaultTab="feedback"/>
-
-            </template>
-        </v-popover>
+            <div class="color-wrapper">
+                <div class="circle-img"><img :src="variantImage(variant)"></div>
+                <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -73,6 +34,9 @@ export default {
         'product',
         'selection',
     ],
+    data() { return {
+        tooltipIsVisible: false
+    }},
     components: {
         ActionDistributionList
     },
@@ -206,9 +170,9 @@ div.header {
     width: 80px;
     display: inline-block;
     cursor: pointer;
-    &:not(:last-child) {
-        margin-right: 16px;
-    }
+    // &:not(:last-child) {
+    //     margin-right: 16px;
+    // }
     .img-wrapper {
         height: 108px;
         width: 80px;

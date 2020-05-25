@@ -55,6 +55,7 @@ export default {
         currentTab: 'feedback'
     }},
     created() {
+        console.log('i was created')
         if (this.defaultTab) this.currentTab = this.defaultTab
     }
 }

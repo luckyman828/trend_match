@@ -44,11 +44,12 @@
                 </template>
             </BaseFlyinHeader>
         </template>
-        <template v-slot v-if="show">
+        <!-- <template v-slot v-if="show"> -->
+        <template v-slot v-if="showContent">
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])" @error="imgError(product.variants[currentImgIndex])">
+                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
@@ -56,17 +57,9 @@
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <!-- <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
-                        <div class="img-wrapper">
-                            <img :src="variantImage(variant)" @error="imgError(variant)">
-                        </div>
-                        <div class="color-wrapper">
-                            <div class="circle-img"><img :src="variantImage(variant)" @error="imgError(variant)"></div>
-                            <span>{{variant.name}}</span>
-                        </div>
-                    </div> -->
                     <VariantListItem v-for="(variant, index) in product.variants" :key="index"
                     :variant="variant" :product="product" :selection="selection"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', callbackArg: variant}"
                     @click.native="currentImgIndex = index" :class="{active: currentImgIndex == index}"/>
                 </div>
 
@@ -161,6 +154,12 @@
                 <p>Your presentation will still continue</p>
                 <p>Press any product to access your queue again</p>
             </BaseDialog>
+
+            <BaseTooltip ref="variantTooltip"
+            @show="variant => tooltipVariant = variant">
+                <VariantTooltip :variant="tooltipVariant"/>
+            </BaseTooltip>
+
         </template>
     </BaseFlyin>
 </template>
@@ -173,6 +172,7 @@ import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
 import VariantListItem from './VariantListItem'
 import PresenterQueueFlyin from './PresenterQueueFlyin/'
+import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
@@ -193,11 +193,14 @@ export default {
         SelectionPresenterModeButton,
         PresenterQueueFlyin,
         VariantListItem,
+        VariantTooltip,
     },
     data: function () { return {
             currentImgIndex: 0,
-            showLightbox: false,
             lastBroadcastProductId: null,
+            showContent: false,
+            lazyloadTimeout: null,
+            tooltipVariant: null,
     }},
     watch: {
         product(newVal, oldVal) {
@@ -212,6 +215,12 @@ export default {
         },
         show(newVal, oldVal) {
             if (newVal) {
+                // const lazyDuration = 0
+                // this.lazyloadTimeout = setTimeout(() => {
+                //     this.showContent = true
+                // }, lazyDuration)
+                    this.showContent = true
+
                 // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
                 if (this.broadcastActive && (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)) {
                     this.onBroadcastProduct(this.product)
@@ -220,6 +229,9 @@ export default {
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
             } else {
+                if (this.lazyloadTimeout) clearTimeout(this.lazyloadTimeout)
+                this.showContent = false
+
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
             }
@@ -262,9 +274,6 @@ export default {
             this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
             this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
             this.SET_LIGHTBOX_VISIBLE(true)
-        },
-        imgError (variant) {
-             variant.error = true
         },
         async onCloseSingle() {
             if (this.selection.is_presenting && !await this.$refs.confirmCloseInPresentation.confirm()) {
