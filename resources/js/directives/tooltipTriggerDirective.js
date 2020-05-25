@@ -27,15 +27,19 @@ tooltipTriggerDirective.install = Vue => {
                 tooltipComponent = vnode.context.$refs[binding.value.tooltipRef]
                 tooltipEl = tooltipComponent.$el
 
-                tooltipEl.setAttribute('data-show', '')
+                document.body.appendChild(tooltipEl)
 
-                create()
+                if (!binding.value.disabled) {
+                    tooltipEl.setAttribute('data-show', '')
 
-                tooltipComponent.show(binding.value.showArg)
+                    create()
 
-                hideEvents.forEach(event => {
-                    tooltipEl.addEventListener(event, el.hideTooltipEvent)
-                })
+                    tooltipComponent.show(binding.value.showArg)
+
+                    hideEvents.forEach(event => {
+                        tooltipEl.addEventListener(event, el.hideTooltipEvent)
+                    })
+                }
             }
 
             el.hideTooltipEvent = function(e) {

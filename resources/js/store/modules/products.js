@@ -1240,12 +1240,12 @@ export default {
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
                             if (currentVariantActionIndex >= 0) {
                                 currentAction.variants.splice(currentVariantActionIndex, 1, {
-                                    action: newAction,
+                                    feedback: newAction,
                                     id: variant.id,
                                 })
                             } else {
                                 currentAction.variants.push({
-                                    action: newAction,
+                                    feedback: newAction,
                                     id: variant.id,
                                 })
                             }

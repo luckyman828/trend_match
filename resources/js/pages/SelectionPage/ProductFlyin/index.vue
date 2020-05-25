@@ -59,7 +59,7 @@
                 <div class="product-variants" v-dragscroll>
                     <VariantListItem v-for="(variant, index) in product.variants" :key="index"
                     :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: index}"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: index, disabled: multiSelectionMode}"
                     @click.native="currentImgIndex = index" :class="{active: currentImgIndex == index}"/>
                 </div>
 
@@ -157,7 +157,7 @@
 
             <BaseTooltip ref="variantTooltip"
             @show="variantIndex => tooltipVariant = product.variants[variantIndex]">
-                <VariantTooltip :variant="tooltipVariant"/>
+                <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"/>
             </BaseTooltip>
 
         </template>
@@ -240,6 +240,9 @@ export default {
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
         ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', {
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
+        }),
         product () {
             return this.currentProduct
         },

@@ -48,11 +48,14 @@ export default {
         ActionDistributionList
     },
     props: [
-        'variant'
+        'variant',
+        'product',
+        'selection'
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
+            selectionMode: 'currentSelectionMode',
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
@@ -65,24 +68,32 @@ export default {
 
             // Loop through all the variants. If their action is None, then give them a default action
             this.product.variants.forEach(variant => {
-                if (variant[this.currentAction] == 'None') {
-                    variant[this.currentAction] = 'In'
+                if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
+                    if (newAction == 'Out') variant[this.currentAction] = 'Out'
+                    else variant[this.currentAction] = 'In'
                 }
             })
 
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
+            let currentAction
             
-            // Find the users feedback action for the product and make sure it is not None
-            const authUserFeedback = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
-            if (authUserFeedback.action == 'None') {
-                authUserFeedback.action = newAction
+            if (this.selectionMode == 'Feedback') {
+                // Find the users feedback action for the product and make sure it is not None
+                currentAction = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
+            }
+            if (this.selectionMode == 'Alignment') {
+                // Find the users feedback action for the product and make sure it is not None
+                currentAction = this.product.actions.find(x => x.selection_id == this.selection.id)
+            }
+            if (currentAction.action == 'None') {
+                currentAction.action = newAction
             }
 
             this.insertOrUpdateProductActionPairs({
                 productActionPairs: [{
                     product: this.product, 
-                    action: authUserFeedback
+                    action: currentAction
                 }], 
                 selection: this.selection
             })

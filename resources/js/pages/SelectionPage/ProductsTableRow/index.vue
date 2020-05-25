@@ -26,6 +26,7 @@
                     </div> -->
                     <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
                     :variant="variant" :product="product" :selection="selection"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: index, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
@@ -185,6 +186,11 @@
         :product="product" :focusGroupIndex="focusGroupIndex" :currentAction="currentAction"
         @updateAction="onUpdateAction"/>
 
+        <BaseTooltip ref="variantTooltip"
+        @show="variantIndex => tooltipVariant = product.variants[variantIndex]">
+            <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"/>
+        </BaseTooltip>
+
     </tr>
 </template>
 
@@ -194,6 +200,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import variantImage from '../../../mixins/variantImage'
 import MultiSelectionInputRow from './MultiSelectionInputRow/index'
 import VariantListItem from './VariantListItem'
+import VariantTooltip from '../VariantTooltip'
 
 export default {
     name: 'productsRow',
@@ -207,6 +214,7 @@ export default {
     components: {
         MultiSelectionInputRow,
         VariantListItem,
+        VariantTooltip,
     },
     mixins: [
         variantImage,
@@ -224,10 +232,14 @@ export default {
     data: function() { return {
         focusGroupIndex: null,
         variantIndex: 0,
+        tooltipVariant: null,
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('products', ['currentFocusRowIndex']),
+        ...mapGetters('selections', {
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
+        }),
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },

@@ -225,6 +225,7 @@ export default {
                 })
         },
         async insertOrUpdateProductActionPairs({ commit }, { productActionPairs, selection }) {
+            console.log('insert or update', productActionPairs)
             // Find the selection product if it is not the product we have been passed
             if (!!productActionPairs[0].product.selectionInputArray) {
                 productActionPairs.map(pair => {
@@ -255,7 +256,7 @@ export default {
                     actions: productActionPairs.map(pair => {
                         return {
                             product_id: pair.product.id,
-                            actions: pair.action.action,
+                            action: pair.action.action,
                             variants: pair.action.variants,
                         }
                     }),

@@ -1,6 +1,6 @@
 <template>
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
-        <v-popover :disabled="multiSelectionMode">
+        <!-- <v-popover :disabled="multiSelectionMode"> -->
             <div class="variant-item-wrapper">
                 <div class="variant-list-item pill ghost xs">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
@@ -13,7 +13,7 @@
                     </div>
                 </div>
             </div>
-            <template slot="popover">
+            <!-- <template slot="popover">
                 <div class="header">
                     <h4 class="primary">{{variant.name}}</h4>
                 </div>
@@ -50,7 +50,7 @@
                 defaultTab="feedback"/>
 
             </template>
-        </v-popover>
+        </v-popover> -->
     </div>
 </template>
 
