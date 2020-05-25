@@ -59,7 +59,7 @@
                 <div class="product-variants" v-dragscroll>
                     <VariantListItem v-for="(variant, index) in product.variants" :key="index"
                     :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', callbackArg: variant}"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: index}"
                     @click.native="currentImgIndex = index" :class="{active: currentImgIndex == index}"/>
                 </div>
 
@@ -156,7 +156,7 @@
             </BaseDialog>
 
             <BaseTooltip ref="variantTooltip"
-            @show="variant => tooltipVariant = variant">
+            @show="variantIndex => tooltipVariant = product.variants[variantIndex]">
                 <VariantTooltip :variant="tooltipVariant"/>
             </BaseTooltip>
 

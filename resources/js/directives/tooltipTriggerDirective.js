@@ -31,7 +31,7 @@ tooltipTriggerDirective.install = Vue => {
 
                 create()
 
-                tooltipComponent.show(binding.value.callbackArg)
+                tooltipComponent.show(binding.value.showArg)
 
                 hideEvents.forEach(event => {
                     tooltipEl.addEventListener(event, el.hideTooltipEvent)

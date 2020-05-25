@@ -14,9 +14,9 @@ export default {
         visible: false
     }},
     methods: {
-        show(callbackArg) {
+        show(showArg) {
             this.visible = true
-            this.$emit('show', callbackArg)
+            this.$emit('show', showArg)
         },
         hide() {
             this.visible = false
