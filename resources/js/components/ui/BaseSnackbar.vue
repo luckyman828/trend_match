@@ -77,7 +77,6 @@ export default {
             if (this.snackbar.timeoutCallback) {
                 this.snackbar.timeoutCallback()
             }
-            this.onDeleteSnackbar()
         },
         resetTimerAnimation() {
             this.$nextTick(() => {
@@ -92,8 +91,7 @@ export default {
     created() {
         // Automatically hide the snackbar
         if (this.duration) {
-            // this.timer = new Timer(() => this.onTimeout(), this.duration, () => this.resetTimerAnimation())
-            this.timer = new Timer(() => this.onTimeout(), this.duration, () => this.resetTimerAnimation())
+            this.timer = new Timer(() => this.onDeleteSnackbar(), this.duration, () => this.resetTimerAnimation())
         }
     },
     destroyed() {

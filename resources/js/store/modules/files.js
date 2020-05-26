@@ -280,6 +280,7 @@ export default {
             )
 
             const sendRequest = async () => {
+                console.log('send request!')
                 await axios
                     .delete(apiUrl)
                     .then(response => {
