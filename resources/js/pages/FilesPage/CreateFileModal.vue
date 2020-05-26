@@ -744,6 +744,7 @@ export default {
                             variant = product.variants.find(x => x.name == variantKeyValue)
                             if (!variant) {
                                 variant = {
+                                    id: this.$uuid.v4(),
                                     name: variantKeyValue,
                                     image: null,
                                     sizes: []
