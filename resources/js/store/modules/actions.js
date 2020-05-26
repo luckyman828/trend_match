@@ -82,12 +82,12 @@ export default {
                 products.map(product => {
                     // Loop through all the variants. If their action is None, then give them a default action
                     product.variants.forEach(variant => {
-                        if (variant.your_feedback == 'None') {
-                            variant.your_feedback = action
-                        }
-                        if (action == 'None') {
-                            variant.your_feedback = 'None'
-                        }
+                        // if (variant.your_feedback == 'None') {
+                        variant.your_feedback = action
+                        // }
+                        // if (action == 'None') {
+                        //     variant.your_feedback = 'None'
+                        // }
                     })
                 })
 
