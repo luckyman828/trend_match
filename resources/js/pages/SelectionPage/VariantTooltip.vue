@@ -88,9 +88,20 @@ export default {
                 // Find the users feedback action for the product and make sure it is not None
                 currentAction = this.product.actions.find(x => x.selection_id == this.selection.id)
             }
+
+            // If the product has no action, set it's action to the variants new action
             if (currentAction.action == 'None') {
                 currentAction.action = newAction
             }
+            // If all variants are marked OUT, mark the product OUT
+            else if (!this.product.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
+                currentAction.action = 'Out'
+            }
+            // If at least ONE varaint in IN or FOCUS mark the product as IN
+            else if (this.product.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
+                currentAction.action = 'In'
+            }
+            
 
             this.insertOrUpdateProductActionPairs({
                 productActionPairs: [{
