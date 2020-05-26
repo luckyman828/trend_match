@@ -59,7 +59,6 @@ export default {
         ...mapGetters('selections', {
             selectionMode: 'currentSelectionMode',
             currentAction: 'currentSelectionModeAction',
-            multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
     },
     methods: {
@@ -79,6 +78,7 @@ export default {
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
             let currentAction
+            console.log('update variant action', this.product)
             
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None

@@ -3,7 +3,7 @@
         <div class="variant">
             <div class="img-wrapper">
                 <img :src="variantImage(variant)">
-                <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
+                <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="square xs" :class="
                     variant[currentAction] == 'Focus' ? 'primary'
                     : variant[currentAction] == 'In' ? 'green'

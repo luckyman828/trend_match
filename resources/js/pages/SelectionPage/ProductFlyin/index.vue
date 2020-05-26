@@ -44,8 +44,7 @@
                 </template>
             </BaseFlyinHeader>
         </template>
-        <!-- <template v-slot v-if="show"> -->
-        <template v-slot v-if="showContent">
+        <template v-slot v-if="show">
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
@@ -59,7 +58,7 @@
                 <div class="product-variants" v-dragscroll>
                     <VariantListItem v-for="(variant, index) in product.variants" :key="index"
                     :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant, disabled: multiSelectionMode}"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant}"
                     @click.native="currentImgIndex = index" :class="{active: currentImgIndex == index}"/>
                 </div>
 
@@ -196,11 +195,9 @@ export default {
         VariantTooltip,
     },
     data: function () { return {
-            currentImgIndex: 0,
-            lastBroadcastProductId: null,
-            showContent: false,
-            lazyloadTimeout: null,
-            tooltipVariant: null,
+        currentImgIndex: 0,
+        lastBroadcastProductId: null,
+        tooltipVariant: null,
     }},
     watch: {
         product(newVal, oldVal) {
@@ -215,12 +212,6 @@ export default {
         },
         show(newVal, oldVal) {
             if (newVal) {
-                // const lazyDuration = 0
-                // this.lazyloadTimeout = setTimeout(() => {
-                //     this.showContent = true
-                // }, lazyDuration)
-                    this.showContent = true
-
                 // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
                 if (this.broadcastActive && (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)) {
                     this.onBroadcastProduct(this.product)
@@ -229,9 +220,6 @@ export default {
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
             } else {
-                if (this.lazyloadTimeout) clearTimeout(this.lazyloadTimeout)
-                this.showContent = false
-
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
             }
