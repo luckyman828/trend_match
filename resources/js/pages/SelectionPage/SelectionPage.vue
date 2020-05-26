@@ -175,7 +175,7 @@ export default{
             })
 
             connection.on('SubscribeSelectionsChanged', message => {
-                console.log('authenticated!', message)
+                // console.log('authenticated!', message)
             })   
 
             connection.on('OnSelectionPresentationChanged', async (eventName, selectionIds) => {

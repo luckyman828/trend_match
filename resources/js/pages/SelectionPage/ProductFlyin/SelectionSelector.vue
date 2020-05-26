@@ -44,19 +44,25 @@ export default {
             return this.getSelectionsAvailableForAlignment
         },
     },
+    watch: {
+        currentSelection(newVal) {
+            this.SET_CURRENT_SELECTION()
+        }
+    },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         async onSetCurrentSelection(selection) {
-            // const productToSet = this.currentProduct.selectionInputArray 
-            //     ? this.currentProduct.selectionInputArray.find(x => x.selection.id == selection)
-            //     : this.currentProduct
             this.showSelectionProductPDP({product: this.currentProduct, selection})
         },
+        SET_CURRENT_SELECTION() {
+            // Check the current selection
+            this.selectedSelection = this.availableSelections.find(x => x.id == this.currentSelection.id)
+        }
     },
     created() {
         // Check the current selection
-        this.selectedSelection = this.availableSelections.find(x => x.id == this.currentSelection.id)
+        this.SET_CURRENT_SELECTION()
     }
 }
 </script>
