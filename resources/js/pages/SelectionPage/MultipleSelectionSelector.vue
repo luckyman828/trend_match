@@ -50,6 +50,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('selections', ['fetchSelectionSettings']),
         ...mapMutations('products', ['setCurrentProductFilter']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
@@ -58,6 +59,12 @@ export default {
             // Process all their data
             this.SET_CURRENT_SELECTIONS(selections)
             await this.fetchSelectionProducts({selections, addToState: true})
+
+            // Fetch selection settings
+            await Promise.all(selections.map(async selection => {
+                await this.fetchSelectionSettings(selection)
+            }))
+
             // Set them as current
             this.selectedSelections = selections
             // Set the current tab to `Overview` if we are entering multi-selection mode
