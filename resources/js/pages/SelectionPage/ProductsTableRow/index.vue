@@ -27,7 +27,7 @@
                     <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
                     :variant="variant" :product="product" :selection="selection"
                     v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product}, disabled: multiSelectionMode}"
-                    @mouseenter.native="variantIndex = index"/>
+                    @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
                     </div>
@@ -225,9 +225,9 @@ export default {
                 this.$refs.row.focus()
             }
         },
-        product(newVal, oldVal) {
-            this.variantIndex = 0
-        }
+        // product(newVal, oldVal) {
+        //     this.variantIndex = 0
+        // }
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
@@ -239,6 +239,19 @@ export default {
             }
             else if (amount > 2) {
                 return window.innerWidth > 1260 ? 20 : 15
+            }
+        },
+        onMouseleaveVariant(e) {
+            const target = e.relatedTarget
+            if (target.id != 'variant-tooltip') {
+                this.variantIndex = 0
+            } else {
+                // If the mouse has entered the variant tooltip add an event listener to that tooltip
+                target.addEventListener('mouseleave', this.onMouseleaveVariant)
+            }
+            if (e.target.id == 'variant-tooltip') {
+                // When we leave the tooltip, remove its eventlistener
+                e.target.removeEventListener('mouseleave', this.onMouseleaveVariant)
             }
         },
         onUpdateAction(product, action, selection) {
