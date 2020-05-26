@@ -276,11 +276,8 @@ export default {
             return productsToReturn
         },
         async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {
-            // Set the current PDP selection
-            commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
-
-            // Show the single PDP
-            commit('setSingleVisisble', true)
+            // If the selection has no settings fetched, fetch the settings
+            if (!selection.settings) await dispatch('selections/fetchSelectionSettings', selection, { root: true })
 
             // If we have already fetched the product data from this selection as selectionInput on our current product, simply use that data
             // Find the product in our products map, to be sure we get the original product, since the current product will be overwritten by us now.
@@ -317,8 +314,14 @@ export default {
                 commit('setAvailableProducts', selectionProductsFilteredBySearch)
                 // Set the current product
                 const newCurrentProduct = selectionProducts.find(x => x.id == product.id)
-                commit('setCurrentProduct', newCurrentProduct)
+                commit('setCurrentProduct', newCurrentProduct.selectionInputArray[0].product)
             }
+
+            // Set the current PDP selection
+            commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
+
+            // Show the single PDP
+            commit('setSingleVisisble', true)
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {

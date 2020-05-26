@@ -48,6 +48,9 @@ export default {
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         async onSetCurrentSelection(selection) {
+            // const productToSet = this.currentProduct.selectionInputArray 
+            //     ? this.currentProduct.selectionInputArray.find(x => x.selection.id == selection)
+            //     : this.currentProduct
             this.showSelectionProductPDP({product: this.currentProduct, selection})
         },
     },
