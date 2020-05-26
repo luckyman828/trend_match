@@ -20,10 +20,7 @@ tooltipTriggerDirective.install = Vue => {
                             name: 'flip',
                             enabled: true,
                             options: {
-                                // boundary: document.getElementById('main'),
-                                // padding: 60,
-                                rootBoundary: 'viewport',
-                                altBoundary: true,
+                                padding: 16,
                             },
                         },
                     ],
@@ -44,12 +41,11 @@ tooltipTriggerDirective.install = Vue => {
                 tooltipEl = tooltipComponent.$el
 
                 document.body.appendChild(tooltipEl)
-                // document.getElementById('main').appendChild(tooltipEl)
 
                 if (!el.binding.value.disabled) {
                     tooltipEl.setAttribute('data-show', '')
-
                     tooltipComponent.show(el.binding.value.showArg)
+
                     create()
 
                     hideEvents.forEach(event => {
@@ -61,7 +57,7 @@ tooltipTriggerDirective.install = Vue => {
             el.hideTooltipEvent = function(e) {
                 // Test that we are not hovering over or the tooltip
                 const target = e.relatedTarget
-                if (target != tooltipEl) {
+                if (target != tooltipEl && !tooltipEl.contains(target)) {
                     tooltipEl.removeAttribute('data-show')
                     destroy()
 
