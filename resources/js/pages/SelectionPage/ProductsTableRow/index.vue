@@ -26,7 +26,7 @@
                     </div> -->
                     <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
                     :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: product, disabled: multiSelectionMode}"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
@@ -157,7 +157,7 @@
         @updateAction="onUpdateAction"/>
 
         <BaseTooltip ref="variantTooltip"
-        @show="variantIndex => tooltipVariant = product.variants[variantIndex]">
+        @show="variant => tooltipVariant = variant">
             <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"/>
         </BaseTooltip>
 
