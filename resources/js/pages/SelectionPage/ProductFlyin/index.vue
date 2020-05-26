@@ -156,7 +156,7 @@
 
             <BaseTooltip ref="variantTooltip"
             @show="variant => tooltipVariant = variant">
-                <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"/>
+                <VariantTooltip :variant="tooltipVariant" :selection="currentSelection" :product="product"/>
             </BaseTooltip>
 
         </template>

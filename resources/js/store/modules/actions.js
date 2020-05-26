@@ -228,10 +228,12 @@ export default {
             // Find the selection product if it is not the product we have been passed
             if (!!productActionPairs[0].product.selectionInputArray) {
                 productActionPairs.map(pair => {
-                    const selectionIndex = pair.product.selectionInputArray.findIndex(
-                        x => x.selection.id == selection.id
-                    )
-                    pair.product = pair.product.selectionInputArray[selectionIndex].product
+                    if (pair.product.selectionInputArray) {
+                        const selectionIndex = pair.product.selectionInputArray.findIndex(
+                            x => x.selection.id == selection.id
+                        )
+                        pair.product = pair.product.selectionInputArray[selectionIndex].product
+                    }
                 })
             }
 
