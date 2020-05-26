@@ -26,7 +26,7 @@
                     </div> -->
                     <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
                     :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant, disabled: multiSelectionMode}"
+                    v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
@@ -70,7 +70,7 @@
             <!-- Start Distribution -->
             <td class="focus">
                 <div tabindex="-1" class="square ghost xs tooltip-target" 
-                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'Focus'}}">
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Focus'}}">
                     <span>{{product.alignmentFocus.length +product.focus.length}}</span>
                     <i class="far fa-star"></i>
                 </div>
@@ -78,7 +78,7 @@
 
             <td class="ins">
                 <div class="tooltip-target square ghost xs"
-                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'In'}}">
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'In'}}">
                     <span>{{product.allIns}}</span>
                     <i class="far fa-heart"></i>
                 </div>
@@ -86,7 +86,7 @@
 
             <td class="outs">
                 <div class="square ghost xs tooltip-target"
-                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'Out'}}">
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Out'}}">
                     <span>{{product.alignmentOuts.length + product.outs.length}}</span>
                     <i class="far fa-times-circle"></i>
                 </div>
@@ -94,7 +94,7 @@
 
             <td class="nds">
                 <div class="tooltip-target square ghost xs"
-                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'None'}}">
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'None'}}">
                     <span>{{product.alignmentNds.length+ product.nds.length}}</span>
                 </div>
             </td>
@@ -156,11 +156,6 @@
         :product="product" :focusGroupIndex="focusGroupIndex" :currentAction="currentAction"
         @updateAction="onUpdateAction"/>
 
-        <BaseTooltip ref="variantTooltip"
-        @show="variant => tooltipVariant = variant">
-            <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"/>
-        </BaseTooltip>
-
     </tr>
 </template>
 
@@ -170,7 +165,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import variantImage from '../../../mixins/variantImage'
 import MultiSelectionInputRow from './MultiSelectionInputRow/index'
 import VariantListItem from './VariantListItem'
-import VariantTooltip from '../VariantTooltip'
 
 export default {
     name: 'productsRow',
@@ -180,12 +174,12 @@ export default {
         'selection',
         'currentAction',
         'index',
-        'tooltipComp',
+        'distributionTooltipComp',
+        'variantTooltipComp',
     ],
     components: {
         MultiSelectionInputRow,
         VariantListItem,
-        VariantTooltip,
     },
     mixins: [
         variantImage,
@@ -203,7 +197,6 @@ export default {
     data: function() { return {
         focusGroupIndex: null,
         variantIndex: 0,
-        tooltipVariant: null,
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),

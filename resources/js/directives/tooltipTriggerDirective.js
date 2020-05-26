@@ -13,7 +13,21 @@ tooltipTriggerDirective.install = Vue => {
             el.binding = binding
 
             function create() {
-                popperInstance = createPopper(el, tooltipEl, el.binding.value.popperOptions)
+                // popperInstance = createPopper(el, tooltipEl, el.binding.value.popperOptions)
+                popperInstance = createPopper(el, tooltipEl, {
+                    modifiers: [
+                        {
+                            name: 'flip',
+                            enabled: true,
+                            options: {
+                                // boundary: document.getElementById('main'),
+                                // padding: 60,
+                                rootBoundary: 'viewport',
+                                altBoundary: true,
+                            },
+                        },
+                    ],
+                })
             }
 
             function destroy() {
@@ -30,12 +44,13 @@ tooltipTriggerDirective.install = Vue => {
                 tooltipEl = tooltipComponent.$el
 
                 document.body.appendChild(tooltipEl)
+                // document.getElementById('main').appendChild(tooltipEl)
 
                 if (!el.binding.value.disabled) {
                     tooltipEl.setAttribute('data-show', '')
 
-                    create()
                     tooltipComponent.show(el.binding.value.showArg)
+                    create()
 
                     hideEvents.forEach(event => {
                         tooltipEl.addEventListener(event, el.hideTooltipEvent)

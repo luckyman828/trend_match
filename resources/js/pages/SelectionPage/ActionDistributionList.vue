@@ -20,7 +20,10 @@
         <table class="action-list" v-if="currentTab == 'alignment'">
             <tr class="action" v-for="(action, index) in alignmentActions" :key="index">
                 <td>{{action.action}}</td>
-                <td>{{action.selection ? action.selection.name : 'Unknown'}}</td>
+                <td>
+                    <span class="main">{{action.selection ? action.selection.name : 'Unknown'}}</span>
+                    <span class="sub" v-if="action.action != 'None'">{{action.user ? action.user.name : 'Anonymous'}}</span>
+                </td>
             </tr>
 
             <tr v-if="alignmentActions.length <= 0">
@@ -32,7 +35,10 @@
         <table class="action-list" v-if="currentTab == 'feedback'">
             <tr class="action" v-for="(action, index) in feedbackActions" :key="index">
                 <td>{{action.action}}</td>
-                <td>{{action.user ? action.user.name : 'Anonymous'}}</td>
+                <td>
+                    <span class="main">{{action.user ? action.user.name : 'Anonymous'}}</span>
+                    <span class="sub">{{action.selection ? action.selection.name : 'Unknown'}}</span>
+                </td>
             </tr>
 
             <tr v-if="feedbackActions.length <= 0">
@@ -50,7 +56,6 @@ export default {
         'alignmentActions',
         'feedbackActions',
         'defaultTab',
-
     ],
     data: function() { return {
         currentTab: 'feedback'
@@ -108,6 +113,16 @@ export default {
             &:last-child {
                 padding-right: 16px;
             }
+        }
+        .sub {
+            display: block;
+            font-weight: 400;
+            font-size: 11px;
+            margin-top: -2px;
+            margin-bottom: 2px;
+        }
+        .main {
+            display: block;
         }
     }
 

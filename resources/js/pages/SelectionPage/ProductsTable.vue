@@ -134,7 +134,7 @@
                     @showContext="onShowContextMenu($event, item)"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    :tooltipComp="$refs.actionDistributionTooltip"
+                    :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
@@ -258,6 +258,14 @@
             :actionDistributionTooltipTab="actionDistributionTooltipTab"
             @changeTab="tab => actionDistributionTooltipTab = tab"/>
         </BaseTooltip>
+
+        <BaseTooltip id="variant-tooltip" ref="variantTooltip"
+        @show="showVariantTooltip">
+            <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="tooltipProduct"
+            :actionDistributionTooltipTab="actionDistributionTooltipTab"
+            @changeTab="tab => actionDistributionTooltipTab = tab"/>
+        </BaseTooltip>
+
     </div>
 </template>
 
@@ -267,6 +275,7 @@ import ProductsTableRow from './ProductsTableRow/index'
 import MultipleSelectionSelector from './MultipleSelectionSelector'
 import ActionDistributionTooltip from './ActionDistributionTooltip'
 import sortArray from '../../mixins/sortArray'
+import VariantTooltip from './VariantTooltip'
 
 export default {
     name: 'productsTable',
@@ -283,6 +292,7 @@ export default {
         ProductsTableRow,
         MultipleSelectionSelector,
         ActionDistributionTooltip,
+        VariantTooltip,
     },
     data: function() { return {
         sortKey: 'datasource_id',
@@ -291,6 +301,7 @@ export default {
         showContextMenu: false,
         contextProduct: null,
         tooltipProduct: null,
+        tooltipVariant: null,
         distributionTooltipType: null,
         actionDistributionTooltipTab: 'feedback',
     }},
@@ -362,10 +373,11 @@ export default {
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
+        showVariantTooltip({variant, product}) {
+            this.tooltipVariant = variant
+            this.tooltipProduct = product
+        },
         showDistributionTooltip({product, type}) {
-            console.log('product', product, 'type', type)
-            // console.log('Show tooltip' ,this.productsFilteredBySearch[index])
-            // this.tooltipProduct = this.productsFilteredBySearch[index]
             this.tooltipProduct = product
             this.distributionTooltipType = type
         },

@@ -34,7 +34,8 @@
         <ActionDistributionList 
         :feedbackActions="variant.feedbacks" 
         :alignmentActions="variant.actions"
-        defaultTab="feedback"/>
+        :defaultTab="actionDistributionTooltipTab"
+        @changeTab="event => $emit('changeTab', event)"/>
     </div>
 </template>
 
@@ -50,7 +51,8 @@ export default {
     props: [
         'variant',
         'product',
-        'selection'
+        'selection',
+        'actionDistributionTooltipTab',
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
