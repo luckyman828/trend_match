@@ -26,7 +26,7 @@
                     </div> -->
                     <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
                     :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: index, disabled: multiSelectionMode}"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: product, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
@@ -69,64 +69,34 @@
             
             <!-- Start Distribution -->
             <td class="focus">
-                <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
-                    <div tabindex="-1" class="square ghost xs tooltip-target"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div tabindex="-1" class="square ghost xs tooltip-target" 
+                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'Focus'}}">
+                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
+                    <i class="far fa-star"></i>
+                </div>
             </td>
+
             <td class="ins">
-                <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
-                    <div class="tooltip-target square ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div class="tooltip-target square ghost xs"
+                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'In'}}">
+                    <span>{{product.allIns}}</span>
+                    <i class="far fa-heart"></i>
+                </div>
             </td>
-            <td class="outs ">
-                <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
-                    <div class="square ghost xs tooltip-target"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+
+            <td class="outs">
+                <div class="square ghost xs tooltip-target"
+                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'Out'}}">
+                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
+                    <i class="far fa-times-circle"></i>
+                </div>
             </td>
+
             <td class="nds">
-                <v-popover class="nds" :disabled="product.nds.length <= 0 && product.alignmentNds <= 0">
-                    <div class="tooltip-target square ghost xs"><span>{{product.alignmentNds.length+ product.nds.length}}</span></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentNds" :key="index"
-                            :label="action.selection.name"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div class="tooltip-target square ghost xs"
+                v-tooltip-trigger="{tooltipComp: tooltipComp, showArg: {product, type: 'None'}}">
+                    <span>{{product.alignmentNds.length+ product.nds.length}}</span>
+                </div>
             </td>
             <!-- End Distribution -->
 
@@ -210,6 +180,7 @@ export default {
         'selection',
         'currentAction',
         'index',
+        'tooltipComp',
     ],
     components: {
         MultiSelectionInputRow,

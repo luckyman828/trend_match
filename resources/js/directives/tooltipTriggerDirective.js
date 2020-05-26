@@ -10,9 +10,10 @@ tooltipTriggerDirective.install = Vue => {
             let popperInstance = null
             let tooltipComponent = null
             let tooltipEl = null
+            el.binding = binding
 
             function create() {
-                popperInstance = createPopper(el, tooltipEl, binding.value.popperOptions)
+                popperInstance = createPopper(el, tooltipEl, el.binding.value.popperOptions)
             }
 
             function destroy() {
@@ -24,17 +25,17 @@ tooltipTriggerDirective.install = Vue => {
 
             el.showTooltipEvent = function() {
                 // Set the tooltip
-                tooltipComponent = vnode.context.$refs[binding.value.tooltipRef]
+                if (el.binding.value.tooltipComp) tooltipComponent = el.binding.value.tooltipComp
+                else tooltipComponent = vnode.context.$refs[el.binding.value.tooltipRef]
                 tooltipEl = tooltipComponent.$el
 
                 document.body.appendChild(tooltipEl)
 
-                if (!binding.value.disabled) {
+                if (!el.binding.value.disabled) {
                     tooltipEl.setAttribute('data-show', '')
 
                     create()
-
-                    tooltipComponent.show(binding.value.showArg)
+                    tooltipComponent.show(el.binding.value.showArg)
 
                     hideEvents.forEach(event => {
                         tooltipEl.addEventListener(event, el.hideTooltipEvent)
@@ -64,6 +65,9 @@ tooltipTriggerDirective.install = Vue => {
             hideEvents.forEach(event => {
                 el.addEventListener(event, el.hideTooltipEvent)
             })
+        },
+        componentUpdated: function(el, binding, vnode) {
+            el.binding = binding
         },
         unbind: function(el) {
             const showEvents = ['mouseenter', 'focus']

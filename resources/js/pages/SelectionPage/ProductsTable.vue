@@ -134,9 +134,17 @@
                     @showContext="onShowContextMenu($event, item)"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
+                    :tooltipComp="$refs.actionDistributionTooltip"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
+
+                <!-- <ProductsTableRow class="product-row flex-table-row" v-for="(product, index) in productsFilteredBySearch" :key="product.id"
+                    @showContext="onShowContextMenu($event, item)"
+                    :selection="selection" :currentAction="currentAction"
+                    :product="product" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
+                    :tooltipComp="$refs.actionDistributionTooltip"
+                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/> -->
 
                 <tr v-if="productsFilteredBySearch.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
@@ -243,6 +251,13 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip"
+        @show="showDistributionTooltip">
+            <ActionDistributionTooltip :product="tooltipProduct" :type="distributionTooltipType"
+            :actionDistributionTooltipTab="actionDistributionTooltipTab"
+            @changeTab="tab => actionDistributionTooltipTab = tab"/>
+        </BaseTooltip>
     </div>
 </template>
 
@@ -250,6 +265,7 @@
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ProductsTableRow from './ProductsTableRow/index'
 import MultipleSelectionSelector from './MultipleSelectionSelector'
+import ActionDistributionTooltip from './ActionDistributionTooltip'
 import sortArray from '../../mixins/sortArray'
 
 export default {
@@ -266,6 +282,7 @@ export default {
     components: {
         ProductsTableRow,
         MultipleSelectionSelector,
+        ActionDistributionTooltip,
     },
     data: function() { return {
         sortKey: 'datasource_id',
@@ -273,6 +290,9 @@ export default {
         selectedSelections: [],
         showContextMenu: false,
         contextProduct: null,
+        tooltipProduct: null,
+        distributionTooltipType: null,
+        actionDistributionTooltipTab: 'feedback',
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
@@ -342,6 +362,13 @@ export default {
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
+        showDistributionTooltip({product, type}) {
+            console.log('product', product, 'type', type)
+            // console.log('Show tooltip' ,this.productsFilteredBySearch[index])
+            // this.tooltipProduct = this.productsFilteredBySearch[index]
+            this.tooltipProduct = product
+            this.distributionTooltipType = type
+        },
         onViewSingle(product) {
             this.SET_CURRENT_PDP_SELECTION(this.selection)
             this.setCurrentProduct(product)

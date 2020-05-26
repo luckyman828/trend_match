@@ -5,12 +5,12 @@
             <div class="segment-toggle">
                 <BaseButton targetAreaPadding="16px 4px 16px 16px"
                 :buttonClass="currentTab == 'alignment' ? 'white xs full-width' : 'invisible ghost-hover xs full-width'"
-                @click="currentTab = 'alignment'">
+                @click="setCurrentTab('alignment')">
                     <span>Alignment</span>
                 </BaseButton>
                 <BaseButton targetAreaPadding="16px 16px 16px 4px"
                 :buttonClass="currentTab == 'feedback' ? 'white xs full-width' : 'invisible ghost-hover xs full-width'"
-                @click="currentTab = 'feedback'">
+                @click="setCurrentTab('feedback')">
                     <span>Feedback</span>
                 </BaseButton>
             </div>
@@ -50,12 +50,18 @@ export default {
         'alignmentActions',
         'feedbackActions',
         'defaultTab',
+
     ],
     data: function() { return {
         currentTab: 'feedback'
     }},
+    methods: {
+        setCurrentTab(tab) {
+            this.currentTab = tab
+            this.$emit('changeTab', tab)
+        }
+    },
     created() {
-        console.log('i was created')
         if (this.defaultTab) this.currentTab = this.defaultTab
     }
 }

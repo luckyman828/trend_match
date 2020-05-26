@@ -2,7 +2,7 @@
     <div class="variant-tooltip">
 
         <div class="header">
-            <h4 class="primary">{{variant.name}}</h4>
+            <h4 class="primary">{{variant.name || 'Unnamed'}}</h4>
         </div>
         <div class="action-list">
 

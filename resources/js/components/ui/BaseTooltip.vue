@@ -27,6 +27,11 @@ export default {
 </script>
 
 <style scoped land="scss">
+.tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 .tooltip-inner {
     padding: 0;
 }
