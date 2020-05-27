@@ -491,7 +491,9 @@ export default {
                     xhr.setRequestHeader('x-amz-acl', 'public-read')
                     xhr.setRequestHeader('Content-Type', 'image/jpeg')
                     xhr.upload.onprogress = event => {
-                        return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                        if (callback) {
+                            return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                        }
                     }
                     xhr.onload = () => resolve(xhr)
                     xhr.onerror = () => reject(xhr)

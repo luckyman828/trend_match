@@ -605,12 +605,14 @@ export default {
             // Check that the file is an image
             if (file && file['type'].split('/')[0] === 'image') {
 
+                // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
                         // save the image to upload to the variant with its rotation data,
                         vm.$set(variant, 'imageToUpload', {file: file, progress: 0, uploading: false})
                         // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
+                // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
 
                 // Process the uploaded image
                 const fileReader = new FileReader()
