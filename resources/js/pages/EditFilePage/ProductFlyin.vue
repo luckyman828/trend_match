@@ -516,7 +516,7 @@ export default {
                         file: this.currentFile, 
                         product: productToEdit,
                         variant: editVariant,
-                        image: editVariant.imageToUpload.file, 
+                        image: variant.imageToUpload.file, 
                         callback: progress => {
                             editVariant.imageToUpload.progress = progress
                         }
@@ -608,7 +608,7 @@ export default {
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
                         // save the image to upload to the variant with its rotation data,
-                        vm.$set(variant, 'imageToUpload', {file: file, rotation: imgRotation, progress: 0, uploading: false})
+                        vm.$set(variant, 'imageToUpload', {file: file, progress: 0, uploading: false})
                         // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
 
