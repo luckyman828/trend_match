@@ -587,7 +587,7 @@ export default {
         },
         async onDeleteMultipleFiles(files) {
             if (await this.$refs.deleteMultipleDialog.confirm()) {
-                this.deleteMultipleFiles(files)
+                this.deleteMultipleFiles(JSON.parse(JSON.stringify(files)))
                 this.localSelected = []
             }
         }

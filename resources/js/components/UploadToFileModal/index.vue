@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UploadFilesScreen from './UploadFilesScreen'
 import SelectFieldsScreen from './SelectFieldsScreen'
 import MapFieldsScreen from './MapFieldsScreen'
@@ -209,6 +209,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['updateProduct', 'uploadImage']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async getImageFromURL(url) {
             // Send a request to get the image
             let image
@@ -216,6 +217,11 @@ export default {
                 image = response.data
             }).catch(err => {
                 image = false
+                this.SHOW_SNACKBAR({ 
+                    msg: 'Access Denied to download image to Kollekt. The image URL is used instead. This may mean slower load-times and less stability for your images on Kollekt. Conctact david@kollekt.dk to learn about what you can do.', 
+                    type: 'info', 
+                    iconClass: 'fa-exclamation-triangle', 
+                })
             })
             return image
         },
@@ -665,7 +671,9 @@ export default {
                 await Promise.all(product.variants.map(async variant => {
                     if (variant.image) {
                         const imageFile = await this.getImageFromURL(variant.image)
-                        await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                        if (imageFile) {
+                            await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                        }
                     }
                 }))
             }))

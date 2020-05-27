@@ -322,6 +322,7 @@ export default {
             }
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
+            console.log('delete multiple files', files)
             commit('DELETE_MULTIPLE_FILES', files)
 
             // Start timer for deletion
