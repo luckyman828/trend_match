@@ -49,17 +49,17 @@
                     <div class="input-wrapper multiline disabled">
                         <p>{{productsToExport.length}} products, <br>
                             <template v-if="exportComments">
-                                {{productsToExport.reduce((acc, x) => acc + x.requests.length > 0 ? 1 : 0, 0)}} with requests,
-                            </template><br>
+                                {{productsToExport.filter(x => x.requests.length > 0).length}} with requests,<br>
+                            </template>
                             <template v-if="exportComments">
-                                {{productsToExport.reduce((acc, x) => acc + x.comments.length > 0 ? 1 : 0, 0)}} with comments,
-                            </template><br>
+                                {{productsToExport.filter(x => x.comments.length > 0).length}} with comments,<br>
+                            </template>
                             <template v-if="includeDistribution">
                                 <span>with {{productsToExport.reduce((acc, x) => acc + x.feedbacks.filter(x => x.action != 'None').length, 0)}} feedback actions</span
                                 ><template v-if="includeNotDecided">
                                     <span> ({{productsToExport.reduce((acc, x) => acc + x.nds.length, 0)}} not decided)</span>
-                                </template>,
-                            </template><br>
+                                </template>,<br>
+                            </template>
                             <template v-if="includeDistribution">
                                 <span>with {{productsToExport.reduce((acc, x) => acc + x.actions.filter(x => x.action != 'None').length, 0)}} alignment actions</span
                                 ><template v-if="includeNotDecided">

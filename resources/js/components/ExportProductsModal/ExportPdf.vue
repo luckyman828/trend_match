@@ -129,7 +129,7 @@
                                         : feedback.action != 'None')" 
                                         :key="index"
                                         style="display: -webkit-box; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
-                                            <div style="overflow: hidden; white-space: nowrap; max-width: 60px; min-width: 60px;">
+                                            <div style="overflow: hidden; white-space: nowrap; max-width: 80px; min-width: 80px;">
                                                 <td style="font-size: 10px;">
                                                     <span style="font-size: 10px;">{{feedback.user ? feedback.user.name : 'Anonymous' | truncate(16)}}</span>
                                                 </td>
@@ -138,7 +138,7 @@
                                             style="font-size: 10px; max-width: 28px; min-width: 28px; margin-left: 16px;" 
                                             :style="{textAlign: feedback.action == 'Out' ? 'right' : 'left'}">
                                                 <span v-if="feedback.action != 'None'"
-                                                style="font-size: 12px; margin-bottom: -3px; display: block; margin-top: -2px; font-weight: 900; width: 100%;">
+                                                style="font-size: 12px; margin-bottom: -3px; display: block; margin-top: -2px; font-weight: 900;">
                                                     {{feedback.action == 'Out' ? '⨯' 
                                                     : feedback.action == 'Focus' ? '★' : '♥'}}
                                                 </span>
