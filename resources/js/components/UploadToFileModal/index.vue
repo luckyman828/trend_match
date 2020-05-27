@@ -2,7 +2,7 @@
     <BaseModal :classes="['upload-to-file-modal', currentScreen.class]" :show="show" @close="$emit('close')"
     ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
 
-        <BaseLoader v-if="isSubmitting" msg="Processing products.."/>
+        <BaseLoader v-if="isSubmitting" :msg="submitStatus"/>
 
         <template v-else>
             <UploadFilesScreen v-if="currentScreenIndex == 0" :filesToUpload="filesToUpload"
@@ -61,6 +61,7 @@ export default {
             }
         ],
         isSubmitting: false,
+        submitStatus: null,
         filesToUpload: [],
         currentScreenIndex: 0,
         availableFiles: [],
@@ -103,7 +104,7 @@ export default {
             {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
             {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['picture url','image url','img url','picture','image','img']},
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
             {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -164,7 +165,7 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('files', ['currentFolder']),
+        ...mapGetters('files', ['currentFolder', 'currentFile']),
         ...mapGetters('products', ['products']),
         currentScreen() {
             return this.screens[this.currentScreenIndex]
@@ -207,8 +208,17 @@ export default {
         }
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile']),
-        ...mapActions('products', ['updateProduct']),
+        ...mapActions('products', ['updateProduct', 'uploadImage']),
+        async getImageFromURL(url) {
+            // Send a request to get the image
+            let image
+            await axios.get(url, {responseType: 'blob'}).then(response => {
+                image = response.data
+            }).catch(err => {
+                image = false
+            })
+            return image
+        },
         addFileToUpload(file) {
             this.filesToUpload.push(file)
         },
@@ -647,15 +657,29 @@ export default {
             }
 
             // Instantiate products from the mapped CSVs
+            this.submitStatus = 'Processing products'
             const newProducts = this.instantiateProducts()
 
+            this.submitStatus = 'Uploading images'
+            await Promise.all(newProducts.map(async product => {
+                await Promise.all(product.variants.map(async variant => {
+                    if (variant.image) {
+                        const imageFile = await this.getImageFromURL(variant.image)
+                        await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                    }
+                }))
+            }))
+
+
             // Loop through the instantiated products and find a match in the existing products to update them
+            this.submitStatus = 'Updating products'
             this.products.forEach(product => {
                 const newProduct = newProducts.find(x => x.datasource_id == product.datasource_id)
                 Object.assign(product, newProduct)
             })
 
             // Send an update request to the API
+            this.submitStatus = 'Saving to database'
             await Promise.all(this.products.map(async product => {
                 await this.updateProduct(product)
             }))
@@ -666,6 +690,7 @@ export default {
                 console.log(err)
                 window.alert('Something went wrong. Please try again')
             })
+            this.submitStatus = null
             this.isSubmitting = false
         },
         reset() {

@@ -983,10 +983,8 @@ export default {
             await Promise.all(newProducts.map(async product => {
                 await Promise.all(product.variants.map(async variant => {
                     if (variant.image) {
-                        console.log('init image')
                         const imageFile = await this.getImageFromURL(variant.image)
                         await this.uploadImage({ file: newFile, product, variant, image: imageFile })
-                        console.log('done uploading image')
                     }
                 }))
             }))
