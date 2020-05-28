@@ -358,6 +358,10 @@ export default {
     .products-table-row {
         display: block;
         padding: 0;
+        &:focus {
+            outline: solid 2px $primary;
+            outline-offset: -2px;
+        }
         .circle.tiny {
             margin-left: 8px;
         }

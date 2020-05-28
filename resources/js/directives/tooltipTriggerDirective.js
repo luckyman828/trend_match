@@ -43,6 +43,7 @@ tooltipTriggerDirective.install = Vue => {
                                 const { height } = state.modifiersData.maxSize
                                 // state.styles.popper.maxHeight = `${height - 20}px`
                                 state.styles.popper.maxHeight = `${height - 20}px`
+                                state.styles.popper.height = `${height - 20}px`
                             },
                         },
                     ],

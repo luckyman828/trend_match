@@ -25,7 +25,9 @@
     outline: none;
     box-shadow: none;
 }
-
+:focus {
+    outline-color: $primary;
+}
 *,
 *::before,
 *::after {

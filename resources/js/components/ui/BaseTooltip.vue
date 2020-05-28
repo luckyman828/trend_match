@@ -36,6 +36,8 @@ export default {
 }
 .tooltip-inner {
     padding: 0;
+    height: 100%;
+    overflow-y: auto;
 }
 
 </style>
