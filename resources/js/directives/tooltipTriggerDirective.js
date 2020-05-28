@@ -1,5 +1,6 @@
 const tooltipTriggerDirective = {}
 import { createPopper } from '@popperjs/core'
+import maxSize from 'popper-max-size-modifier'
 
 tooltipTriggerDirective.install = Vue => {
     Vue.directive('tooltip-trigger', {
@@ -23,6 +24,27 @@ tooltipTriggerDirective.install = Vue => {
                                 padding: 16,
                             },
                         },
+                        {
+                            name: 'preventOverflow ',
+                            enabled: true,
+                            options: {},
+                            phase: 'main',
+                        },
+                        maxSize,
+                        {
+                            name: 'applyMaxSize',
+                            enabled: true,
+                            // options: {
+                            //     padding: 50,
+                            // },
+                            phase: 'beforeWrite',
+                            requires: ['maxSize'],
+                            fn({ state }) {
+                                const { height } = state.modifiersData.maxSize
+                                // state.styles.popper.maxHeight = `${height - 20}px`
+                                state.styles.popper.maxHeight = `${height - 20}px`
+                            },
+                        },
                     ],
                 })
             }
@@ -35,6 +57,7 @@ tooltipTriggerDirective.install = Vue => {
             }
 
             el.showTooltipEvent = function() {
+                console.log('show tooltip!')
                 // Set the tooltip
                 if (el.binding.value.tooltipComp) tooltipComponent = el.binding.value.tooltipComp
                 else tooltipComponent = vnode.context.$refs[el.binding.value.tooltipRef]

@@ -156,7 +156,9 @@
 
             <BaseTooltip ref="variantTooltip"
             @show="variant => tooltipVariant = variant">
-                <VariantTooltip :variant="tooltipVariant" :selection="currentSelection" :product="product"/>
+                <VariantTooltip :variant="tooltipVariant" :selection="currentSelection" :product="product"
+                :actionDistributionTooltipTab="actionDistributionTooltipTab"
+                @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
 
         </template>
@@ -198,6 +200,7 @@ export default {
         currentImgIndex: 0,
         lastBroadcastProductId: null,
         tooltipVariant: null,
+        actionDistributionTooltipTab: 'feedback'
     }},
     watch: {
         product(newVal, oldVal) {
