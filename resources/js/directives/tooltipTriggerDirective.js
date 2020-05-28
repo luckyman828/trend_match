@@ -1,5 +1,5 @@
 const tooltipTriggerDirective = {}
-import { createPopper } from '@popperjs/core'
+import { createPopper, auto } from '@popperjs/core'
 import maxSize from 'popper-max-size-modifier'
 
 tooltipTriggerDirective.install = Vue => {
@@ -16,12 +16,14 @@ tooltipTriggerDirective.install = Vue => {
             function create() {
                 // popperInstance = createPopper(el, tooltipEl, el.binding.value.popperOptions)
                 popperInstance = createPopper(el, tooltipEl, {
+                    placement: 'auto',
                     modifiers: [
                         {
                             name: 'flip',
                             enabled: true,
                             options: {
                                 padding: 16,
+                                allowedAutoPlacements: ['top', 'bottom'],
                             },
                         },
                         {
@@ -41,9 +43,13 @@ tooltipTriggerDirective.install = Vue => {
                             requires: ['maxSize'],
                             fn({ state }) {
                                 const { height } = state.modifiersData.maxSize
-                                // state.styles.popper.maxHeight = `${height - 20}px`
-                                state.styles.popper.maxHeight = `${height - 20}px`
-                                state.styles.popper.height = `${height - 20}px`
+                                // Set the maxHeight of the tooltip-inner element
+                                const tooltipInner = state.elements.popper.querySelector('.tooltip-inner')
+                                if (tooltipInner) {
+                                    tooltipInner.style.maxHeight = `${height - 20}px`
+                                } else {
+                                    state.styles.popper.maxHeight = `${height - 20}px`
+                                }
                             },
                         },
                     ],
