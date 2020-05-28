@@ -1,5 +1,6 @@
 import axios from 'axios'
 import sortArray from '../../mixins/sortArray'
+import Compressor from 'compressorjs'
 
 export default {
     namespaced: true,
@@ -464,17 +465,37 @@ export default {
                         reject(err)
                     })
 
+                // PRE-COMPRESS THE IMAGE
+                let compressedImage = image
+                await new Promise((resolve, reject) => {
+                    new Compressor(image, {
+                        quality: 0.8,
+                        checkOrientation: true,
+                        maxHeight: 2016,
+                        success(result) {
+                            compressedImage = result
+                            resolve()
+                        },
+                        error(err) {
+                            console.log(err.message)
+                            reject()
+                        },
+                    })
+                })
+
                 // Next configure a request to the presigned URL
                 const uploadUrl = presignedUrl.presigned_url
 
-                let blob = new Blob([image], { type: image.type })
+                let blob = new Blob([compressedImage], { type: compressedImage.type })
                 let xhr = new XMLHttpRequest()
                 await new Promise((resolve, reject) => {
                     xhr.open('PUT', uploadUrl)
                     xhr.setRequestHeader('x-amz-acl', 'public-read')
                     xhr.setRequestHeader('Content-Type', 'image/jpeg')
                     xhr.upload.onprogress = event => {
-                        return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                        if (callback) {
+                            return callback(parseInt(Math.round((event.loaded / event.total) * 100)))
+                        }
                     }
                     xhr.onload = () => resolve(xhr)
                     xhr.onerror = () => reject(xhr)

@@ -30,6 +30,18 @@
                             Include "Not Decided" in distribution
                         </BaseCheckboxInputField>
                     </div>
+
+                    <!-- <h4>Chunk & Test display</h4>
+                    <div class="form-element">
+                        <label>Chunk Index to export</label>
+                        <BaseInputField type="number" v-model.number="chunkIndex" :value="0"/>
+                    </div>
+                    <h4>Display test export </h4>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="previewPdf">
+                            Show preview
+                        </BaseCheckboxInputField>
+                    </div> -->
                 </template>
 
                 <div class="form-element">
@@ -37,17 +49,17 @@
                     <div class="input-wrapper multiline disabled">
                         <p>{{productsToExport.length}} products, <br>
                             <template v-if="exportComments">
-                                {{productsToExport.reduce((acc, x) => acc + x.requests.length > 0 ? 1 : 0, 0)}} with requests,
-                            </template><br>
+                                {{productsToExport.filter(x => x.requests.length > 0).length}} with requests,<br>
+                            </template>
                             <template v-if="exportComments">
-                                {{productsToExport.reduce((acc, x) => acc + x.comments.length > 0 ? 1 : 0, 0)}} with comments,
-                            </template><br>
+                                {{productsToExport.filter(x => x.comments.length > 0).length}} with comments,<br>
+                            </template>
                             <template v-if="includeDistribution">
                                 <span>with {{productsToExport.reduce((acc, x) => acc + x.feedbacks.filter(x => x.action != 'None').length, 0)}} feedback actions</span
                                 ><template v-if="includeNotDecided">
                                     <span> ({{productsToExport.reduce((acc, x) => acc + x.nds.length, 0)}} not decided)</span>
-                                </template>,
-                            </template><br>
+                                </template>,<br>
+                            </template>
                             <template v-if="includeDistribution">
                                 <span>with {{productsToExport.reduce((acc, x) => acc + x.actions.filter(x => x.action != 'None').length, 0)}} alignment actions</span
                                 ><template v-if="includeNotDecided">
@@ -71,7 +83,7 @@
 
             <ExportPdf ref="exportToPdf" v-if="previewPdf" :products="productsToExport"
             :includeDistribution="includeDistribution" :exportComments="exportComments"
-            :includeNotDecided="includeNotDecided"
+            :includeNotDecided="includeNotDecided" :chunkIndex="chunkIndex"
             @close="previewPdf = false"/>
         </template>
     </BaseModal>
@@ -103,6 +115,7 @@ export default {
         includeDistribution: true,
         includeNotDecided: false,
         previewPdf: false,
+        chunkIndex: 0,
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
@@ -118,7 +131,8 @@ export default {
     methods: {
         printToPdf: async function(event) {
             const vm = this
-            var endpoint = "https://v2018.api2pdf.com/chrome/html"
+            var endpoint = "https://v2018.api2pdf.com/wkhtmltopdf/html"
+            // var endpoint = "https://v2018.api2pdf.com/chrome/html"
             var apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58" //Replace this API key from portal.api2pdf.com
             var config = {
                 headers: {
@@ -145,10 +159,10 @@ export default {
                                 margin: none;
                             }
                             td {
-                                line-height: 1;
+                                line-height: 1.2;
                             }
                             td, p, span {
-                                font-size: 9px;
+                                font-size: 12px;
                             }
                         </style>
                         <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
@@ -156,17 +170,26 @@ export default {
                         <body>${this.$refs.exportToPdf.$refs.pdfWrapper.innerHTML}</body>`, //Use your own HTML
                         // <body>${this.$refs.exportToPdf.$refs.pdfWrapper.innerHTML}</body>`, //Use your own HTML
                         inlinePdf: true,
-                        fileName: (this.currentWorkspace.name + '_' + this.currentFile.title).replace(/ /g, '_'),
+                        fileName: (this.currentWorkspace.title + '_' + this.currentFile.name).replace(/ /g, '_') +'.pdf',
                         options: {
-                            displayHeaderFooter: true,
-                            preferCSSPageSize: true,
+                            // CHROME Headless
+                            // displayHeaderFooter: true,
+                            // preferCSSPageSize: true,
+                            // headerTemplate: `<div class="page-header" style="font-family: Roboto, sans-serif, helvetica, arial; display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;"><div class"col-left" style="padding-left: 38px; width: 33%;"><table><tr><td style="font-size: 6px; font-weight: 700; line-height: 1;">${this.currentFile.name}</td></tr><tr><td style="font-size: 6px; line-height: 1;">${this.formatDate(new Date)}</td></tr></table></div><div class="col-mid"></div><div classs="col-right" style="font-size: 6px; padding-right: 38px; text-align: right; width: 33%">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div></div>`,
+                            // footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
+
+                            // WKHTML
+                            // pageHeight: 792,
+
+                            // BOTH
+                            imageQuality: 30,
+                            lowquality: true,
                             marginLeft: 0,
                             marginRight: 0,
                             marginTop: 0,
                             marginBottom: 0,
-                            headerTemplate: `<div class="page-header" style="font-family: Roboto, sans-serif, helvetica, arial; display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;"><div class"col-left" style="padding-left: 38px; width: 33%;"><table><tr><td style="font-size: 6px; font-weight: 700; line-height: 1;">${this.currentFile.name}</td></tr><tr><td style="font-size: 6px; line-height: 1;">${this.formatDate(new Date)}</td></tr></table></div><div class="col-mid"></div><div classs="col-right" style="font-size: 6px; padding-right: 38px; text-align: right; width: 33%">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div></div>`,
-                            // footerTemplate: '<div class="page-footer" style="width:100%; text-align:right; font-size: 8px; font-weight: 700; font-family: Roboto, sans-serif, helvetica, arial; box-sizing: border-box; padding-right: 32px; padding-bottom: 12px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>'
                         }
+                            
                     }
 
                     await axios.post(endpoint, payload, config)

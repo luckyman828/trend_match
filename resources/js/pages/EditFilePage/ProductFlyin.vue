@@ -53,7 +53,8 @@
                                         <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
-                                <img v-if="variant.image || variant.blob_id" :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
+                                <img v-if="variant.image || variant.blob_id" 
+                                :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
                                         <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -517,7 +518,7 @@ export default {
                         file: this.currentFile, 
                         product: productToEdit,
                         variant: editVariant,
-                        image: editVariant.imageToUpload.file, 
+                        image: variant.imageToUpload.file, 
                         callback: progress => {
                             editVariant.imageToUpload.progress = progress
                         }
@@ -606,12 +607,14 @@ export default {
             // Check that the file is an image
             if (file && file['type'].split('/')[0] === 'image') {
 
+                // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
                         // save the image to upload to the variant with its rotation data,
-                        vm.$set(variant, 'imageToUpload', {file: file, rotation: imgRotation, progress: 0, uploading: false})
+                        vm.$set(variant, 'imageToUpload', {file: file, progress: 0, uploading: false})
                         // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
+                // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
 
                 // Process the uploaded image
                 const fileReader = new FileReader()
@@ -672,25 +675,27 @@ export default {
             })
         },
         async getImageFromURL(url) {
-            // Add to a counter of images we are currently processing
-            this.gettingImagesFromURL++
             // Send a request to get the image
+            this.gettingImagesFromURL++
             let image
             await axios.get(url, {responseType: 'blob'}).then(response => {
                 image = response.data
             }).catch(err => {
                 image = false
+                this.SHOW_SNACKBAR({ 
+                    msg: 'Access Denied to download image to Kollekt. The image URL is used instead. This may mean slower load-times and less stability for your images on Kollekt. Conctact david@kollekt.dk to learn about what you can do.', 
+                    type: 'info', 
+                    iconClass: 'fa-exclamation-triangle', 
+                })
             })
             this.gettingImagesFromURL--
             return image
         },
         async setVariantImageURL(variant, imageURL) {
+            variant.image = imageURL
             const image = await this.getImageFromURL(imageURL)
             if (image) {
                 this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
-                variant.image = imageURL
-            } else {
-                alert('Unable to fetch image from URL. Try manually downloading the image, and upload it as a file. Contact Kollekt Support if the error persists')
             }
         },
     },

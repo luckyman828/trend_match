@@ -60,11 +60,11 @@
             </template>
             <template v-if="currentScreen.name == 'mapFields'">
                 <div class="form-element" style="text-align: center;">
-                    <p>Some text to help understand what mapping means. Should be short.</p>
+                    <!-- <p>Map the fields from your files to Kollekt's data fields</p> -->
                     <p><strong>Select Fields to keep, and match with headers from your file(s).</strong></p>
                 </div>
 
-                <div class="map-fields">
+                <div class="map-fields" v-if="!uploadingFile">
                     <div class="tables">
 
                         <div class="table-wrapper link-ids">
@@ -255,11 +255,14 @@
 
                 </div>
 
+                <BaseLoader v-else :msg="submitStatus"/>
+
                 <div class="form-controls">
-                    <button :disabled="!submitValid" type="submit" class="lg primary full-width"
+                    <BaseButton :disabled="!submitValid || uploadingFile" :type="'submit'" buttonClass="lg primary full-width"
+                    style="width: 100%"
                     @click="submitFiles">
                         <span>Create file</span>
-                    </button>
+                    </BaseButton>
                 </div>
             </template>
 
@@ -327,7 +330,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'createFileModal',
@@ -346,6 +349,7 @@ export default {
         filesToChooseFrom: [],
         newFile: null,
         uploadingFile: false,
+        submitStatus: null,
         availableFiles: [],
         filePreviews: [],
         singleCurrencyFile: false,
@@ -371,7 +375,7 @@ export default {
             {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
             {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['picture url','image url','img url','picture','image','img']},
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
             {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -468,7 +472,8 @@ export default {
     },
     methods: {
         ...mapActions('files', ['insertOrUpdateFile']),
-        ...mapActions('products', ['insertProducts']),
+        ...mapActions('products', ['insertProducts', 'uploadImage']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
             // First check that we have any previews available, and that we have a new value defined
@@ -704,6 +709,21 @@ export default {
             contextMenu.item = assortment
             contextMenu.show(e)
         },
+        async getImageFromURL(url) {
+            // Send a request to get the image
+            let image
+            await axios.get(url, {responseType: 'blob'}).then(response => {
+                image = response.data
+            }).catch(err => {
+                image = false
+                this.SHOW_SNACKBAR({ 
+                    msg: 'Access Denied to download image to Kollekt. The image URL is used instead. This may mean slower load-times and less stability for your images on Kollekt. Conctact david@kollekt.dk to learn about what you can do.', 
+                    type: 'info', 
+                    iconClass: 'fa-exclamation-triangle', 
+                })
+            })
+            return image
+        },
         instantiateProducts() {
             const productsToReturn = []
             
@@ -763,8 +783,6 @@ export default {
                                 // Instantiate an assortment object
                                 // FieldsToMatch[0] = assortment name
                                 const assortmentName = line[thisAssortmentObject.fieldsToMatch[0].newValue.fieldIndex]
-                                console.log(fileIndex)
-                                console.log(assortmentName)
                                 assortment = product.assortments.find(x => x.name == assortmentName)
                                 if (!!assortment || assortmentName) {
                                     if (!assortment) {
@@ -870,7 +888,8 @@ export default {
                                             if (!arrayValueExists) {
                                                 variant[fieldName].push(fieldValue)
                                             }
-                                        } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
+                                        }
+                                        else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
                                             variant[fieldName] = fieldValue
                                         }
                                     }
@@ -957,18 +976,37 @@ export default {
             newFile.workspace_id = this.currentWorkspace.id
 
             this.uploadingFile = true
+            this.submitStatus = 'Uploading'
 
             // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
+            this.submitStatus = 'Creating file'
             await this.insertOrUpdateFile(newFile)
 
             // Then we will instantiate the products and attempt to upload them
+            this.submitStatus = 'Creating products'
             const newProducts = this.instantiateProducts().filter(x => !!x.datasource_id)
+
+            this.submitStatus = 'Uploading images'
+            await Promise.all(newProducts.map(async product => {
+                await Promise.all(product.variants.map(async variant => {
+                    if (variant.image) {
+                        const imageFile = await this.getImageFromURL(variant.image)
+                        if (imageFile) {
+                            await this.uploadImage({ file: newFile, product, variant, image: imageFile })
+                        }
+                    }
+                }))
+            }))
+
+            this.submitStatus = 'Saving new products'
             await this.insertProducts({file: newFile, products: newProducts, addToState: false})
             .then(() => {
                 this.$emit('close')
                 this.reset()
+                this.submitStatus = 'Success'
             }).catch(err => {
                 window.alert('Something went wrong. Please try again')
+                this.submitStatus = 'Error'
             })
             this.uploadingFile = false
         },
