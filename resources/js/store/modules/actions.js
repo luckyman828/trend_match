@@ -63,16 +63,12 @@ export default {
                         selection_id: selection.id,
                         user_id: user.id,
                         user: user,
-                        // variants: product.variants.map(variant => {
-                        //     return {
-                        //         id: variant.id,
-                        //         action: action,
-                        //         selection,
-                        //         selection_id: selection.id,
-                        //         user_id: user.id,
-                        //         user: user,
-                        //     }
-                        // }),
+                        variants: product.variants.map(variant => {
+                            return {
+                                id: variant.id,
+                                feedback: action,
+                            }
+                        }),
                     },
                 }
             })
@@ -298,7 +294,8 @@ export default {
                     if (!existingAction) {
                         productAction.product.feedbacks.push(action)
                     } else {
-                        existingAction.action = action.action
+                        // existingAction.action = action.action
+                        Object.assign(existingAction, action)
                     }
                 }
 
@@ -308,7 +305,8 @@ export default {
                     if (!existingAction) {
                         productAction.product.actions.push(action)
                     } else {
-                        existingAction.action = action.action
+                        // existingAction.action = action.action
+                        Object.assign(existingAction, action)
                     }
 
                     // If is self

@@ -807,6 +807,7 @@ export default {
                 product.variants.forEach(variant => {
                     Object.defineProperty(variant, 'feedbacks', {
                         get: function() {
+                            console.log('get variant feedbacks')
                             const feedbacks = []
                             product.feedbacks.map(feedback => {
                                 const variantFeedbacks = feedback.variants.filter(x => x.id == variant.id)
@@ -1185,6 +1186,9 @@ export default {
                             const feedbacks = []
                             product.feedbacks.map(feedback => {
                                 const variantFeedbacks = feedback.variants.filter(x => x.id == variant.id)
+                                if (variantFeedbacks.length > 0) {
+                                    console.log('get variant feedbacks', variantFeedbacks, feedback)
+                                }
                                 variantFeedbacks.map(variantFeedback => {
                                     feedbacks.push({
                                         id: variantFeedback.id,

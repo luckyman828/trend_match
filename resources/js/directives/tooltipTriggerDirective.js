@@ -64,7 +64,6 @@ tooltipTriggerDirective.install = Vue => {
             }
 
             el.showTooltipEvent = function() {
-                console.log('show tooltip!')
                 // Set the tooltip
                 if (el.binding.value.tooltipComp) tooltipComponent = el.binding.value.tooltipComp
                 else tooltipComponent = vnode.context.$refs[el.binding.value.tooltipRef]
