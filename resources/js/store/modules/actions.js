@@ -279,7 +279,7 @@ export default {
             window.alert('Network error. Please check your connection')
         },
         INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId }) {
-            console.log('insert or update actions', productActions, type, currentSelectionId)
+            // console.log('insert or update actions', productActions, type, currentSelectionId)
             // Loop through our products and update their actions
             productActions.forEach(productAction => {
                 const product = productAction.product
