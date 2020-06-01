@@ -87,7 +87,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="100"
+                    :item-size="140"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -295,8 +295,8 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 64px;
-                        max-width: 64px;
+                        min-width: 100px;
+                        max-width: 100px;
                         height: 100%;
                     }
                     &.delivery {

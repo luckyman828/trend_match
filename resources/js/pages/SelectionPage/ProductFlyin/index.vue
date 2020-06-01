@@ -380,8 +380,8 @@ export default {
             }
             .main-img {
                 cursor: pointer;
-                width: 216px;
-                height: 286px;
+                width: 225px;
+                height: 300px;
                 overflow: hidden;
                 border-radius: 4px;
                 border: solid 2px $divider;

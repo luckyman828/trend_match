@@ -98,6 +98,7 @@ export default {
 @import '~@/_variables.scss';
 
 .variant-list-item-wrapper {
+    margin-bottom: 8px;
     &:not(:last-child) {
         margin-right: 8px;
     }
@@ -167,15 +168,14 @@ div.header {
 }
 
 .variant {
-    width: 80px;
     display: inline-block;
     cursor: pointer;
     // &:not(:last-child) {
     //     margin-right: 16px;
     // }
     .img-wrapper {
-        height: 108px;
-        width: 80px;
+        height: 124px;
+        width: 94px;
         border-radius: 4px;
         border: solid 2px $divider;
         overflow: hidden;
@@ -196,6 +196,7 @@ div.header {
             font-size: 10px;
             font-weight: 500;
             color: $dark2;
+            line-height: 1;
         }
         .circle-img {
             width: 12px;

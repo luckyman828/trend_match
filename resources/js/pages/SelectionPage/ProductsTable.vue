@@ -503,8 +503,8 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 90px;
-                        max-width: 90px;
+                        min-width: 100px;
+                        max-width: 100px;
                         height: 100%;
                     }
                     &.delivery {
