@@ -6,7 +6,8 @@
 
 
                 <div class="page" v-for="(productChunk, index) in chunksToShow" :key="index"
-                style="width: 744pt; height: 1052.5pt; box-sizing: border-box; padding: 60px 38px 38px; position: relative;">
+                style="width: 744pt; height: 1053pt;
+                box-sizing: border-box; padding: 60px 38px 38px; position: relative;">
 
                     <div class="header" style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between;
                     position: absolute; top: 16px; left 0; width: 684pt;">
@@ -53,8 +54,6 @@
                                         border: solid 2px; height: 0; width: 100%; margin-bottom: 8px;
                                         background-size: contain; background-position: center; background-repeat: no-repeat;"
                                         :style="{backgroundImage: `url(${variantImage(product.variants[0])})`}">
-                                            <!-- <img :src="variantImage(product.variants[0])" style="height: 100%; width: 100%; position: absolute;
-                                            left: 0; top: 0; object-fit: contain;"> -->
                                         </div>
                                     </div>
                                     <table class="prices">
@@ -103,7 +102,7 @@
                                                 <td style="font-size: 10px;">
                                                     <span style="font-size: 10px;">{{action.selection.name | truncate(16)}}</span>
                                                 </td>
-                                            </div>
+                                            </div>  
                                             <div v-if="includeDistribution" 
                                             style="font-size: 10px; max-width: 28px; min-width: 28px; margin-left: 16px;" 
                                             :style="{textAlign: product.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}">
@@ -164,7 +163,7 @@
 
                         <VariantList :product="product" v-if="includeVariants"/>
 
-                    </div>
+                    </div> 
                 </div>
             </div>
 
@@ -195,6 +194,7 @@ export default {
         'chunkIndex',
         'includeVariants',
         'testFeaturesEnabled',
+        'chunkSize',
     ],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
@@ -215,9 +215,9 @@ export default {
             return chunkedArr;
         },
         chunksToShow() {
-            if (!this.testFeaturesEnabled) return this.productChunks
+            if (!this.testFeaturesEnabled || this.chunkSize <= 0) return this.productChunks
             const size = this.exportComments ? 3 : 6
-            const target = 12 // MUST be divisible by 6
+            const target = this.chunkSize // MUST be divisible by 6
             const chunkAmount = target / size
             const start = this.chunkIndex * chunkAmount
             return this.productChunks.slice(start, start + chunkAmount)

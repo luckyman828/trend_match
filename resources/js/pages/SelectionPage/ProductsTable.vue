@@ -411,68 +411,6 @@ export default {
             this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
         }
     },
-    created () {
-
-        // Setup event broadcast listening
-
-        // Echo.private(`workspace.${this.currentWorkspaceId}`)
-        // .listen('.action.updated', (e) => {
-        //     const action = e.action
-        //     // console.log('%cPusher: Action Set', 'font-weight: 900')
-        //     this.setAction(action)
-        // })
-        // .listen('.action.deleted', (e) => {
-        //     const action = e.action
-        //     // console.log('%cPusher: Action Deleted', 'font-weight: 900')
-        //     this.destroyAction(action)
-        // })
-        // .listen('.actions.many.updated', (e) => {
-        //     const request = e.request
-        //     // console.log('%cPusher: Action Many Updated', 'font-weight: 900')
-        //     this.setManyActions({ 
-        //         productIds: request.product_ids, 
-        //         task_id: request.task_id,
-        //         user_id: request.user_id,
-        //         action_code: request.action_code,
-        //         is_task_action: request.is_task_action,
-        //     })
-        // })
-        // .listen('.actions.many.created', (e) => {
-        //     const actions = e.actions
-        //     // console.log('%cPusher: Action Many Created', 'font-weight: 900')
-        //     this.setManyActions({
-        //         productIds: actions.map(x => x.product_id),
-        //         task_id: actions[0].task_id,
-        //         user_id: actions[0].user_id,
-        //         action_code: actions[0].action,
-        //         is_task_action: actions[0].is_task_action, 
-        //     })
-        // })
-        // .listen('.comment.updated', (e) => {
-        //     const comment = e.comment
-        //     // console.log('%cPusher: Comment Updated', 'font-weight: 900')
-        //     this.setComment(comment)
-        // })
-        // .listen('.comment.deleted', (e) => {
-        //     const comment = e.comment
-        //     // console.log('%cPusher: Comment deleted', 'font-weight: 900')
-        //     this.destroyComment(comment)
-        // })
-        // .listen('.task.completed', (e) => {
-        //     const fileTask = e.fileTask
-        //     // console.log('%cPusher: Task completed', 'font-weight: 900')
-        //     this.setTaskComplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
-        // })
-        // .listen('.task.uncompleted', (e) => {
-        //     const fileTask = e.fileTask
-        //     // console.log('%cPusher: Task uncompleted', 'font-weight: 900')
-        //     this.setTaskIncomplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
-        // })
-    },
-    destroyed () {
-        // Unsub from pusher broadcasting
-        // Echo.leaveChannel(`workspace.${this.currentWorkspaceId}`);
-    }
 }
 </script>
 
