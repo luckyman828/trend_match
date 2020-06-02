@@ -216,7 +216,7 @@ export default {
         },
         chunksToShow() {
             if (!this.testFeaturesEnabled || this.chunkSize <= 0) return this.productChunks
-            const size = this.exportComments ? 3 : 6
+            const size = this.includeVariants ? 1 : this.exportComments ? 3 : 6
             const target = this.chunkSize // MUST be divisible by 6
             const chunkAmount = target / size
             const start = this.chunkIndex * chunkAmount
