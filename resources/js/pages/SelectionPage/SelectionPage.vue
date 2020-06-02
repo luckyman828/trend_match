@@ -221,9 +221,8 @@ export default{
         },
         feedbackArrivedHandler(selectionId, feedback) {
             if (feedback.user_id != this.authUser.id) {
-                console.log("OnFeedbackArrived", selectionId, feedback)
+                // console.log("OnFeedbackArrived", selectionId, feedback)
                 const product = this.products.find(x => x.id == feedback.product_id)
-                console.log('find feedback product', JSON.parse(JSON.stringify(product)))
                 const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
                 feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
 
