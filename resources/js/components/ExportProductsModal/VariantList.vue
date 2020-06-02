@@ -4,9 +4,11 @@
         <table class="variant-table" style="border-collapse: collapse;">
             <tr>
                 <th></th>
-                <th v-for="(variant, index) in variantsToShow" :key="variant.id"
+                <th v-for="variant in variantsToShow" :key="variant.id"
+                style="text-align: center; padding: 0 8px">
+                <!-- <th v-for="(variant, index) in variantsToShow" :key="variant.id"
                 style="text-align: center;" 
-                :style="[{padding: index == 0 ? '0 16px 0 0' : index == variantsToShow.length - 1 ? '0 0 0 16px' : '0 16px'}]">
+                :style="[{padding: index == 0 ? '0 16px 0 0' : index == variantsToShow.length - 1 ? '0 0 0 16px' : '0 16px'}]"> -->
                     <div class="image" style="height: 48px; display: inline-block; width: 38px;
                     background-size: contain; background-position: center; background-repeat: no-repeat; background-color: #e4e4e4;"
                     :style="{backgroundImage: `url(${variantImage(variant)})`}"></div>
@@ -23,13 +25,15 @@
                 <td class="selection" style="padding-right: 8px; border-bottom: solid 1px #c4c4c4;">
                     <span>{{action.selection.name | truncate(16)}}</span>
                 </td>
-                <td v-for="(variant, index) in variantsToShow" :key="variant.id"
+                <td v-for="variant in variantsToShow" :key="variant.id"
+                style="border-bottom: solid 1px #c4c4c4; border-left: solid 1px #c4c4c4; padding: 1px 12px;"
+                :style="[{textAlign: variant.actions.find(x => x.selection_id == action.selection_id) 
+                && variant.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}]">
+                <!-- <td v-for="(variant, index) in variantsToShow" :key="variant.id"
                 style="border-bottom: solid 1px #c4c4c4; border-left: solid 1px #c4c4c4;"
                 :style="[{textAlign: variant.actions.find(x => x.selection_id == action.selection_id) 
                 && variant.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'},
-                {padding: index == 0 ? '1px 28px 1px 12px' : index == variantsToShow.length - 1 ? '0 12px 0 28px' : '0 28px'}]">
-                <!-- <td v-for="variant in variantsToShow" :key="variant.id"
-                style="font-size: 10px; max-width: 28px; min-width: 28px; margin-left: 16px;"> -->
+                {padding: index == 0 ? '1px 28px 1px 12px' : index == variantsToShow.length - 1 ? '0 12px 0 28px' : '0 28px'}]"> -->
                     <span style="font-size: 12px; margin-bottom: -3px; display: block; margin-top: -2px; font-weight: 900;">
                         <!-- <span>{{variant.actions[0].selection_id == action.selection_id}}</span> -->
                         <!-- <span>{{variant.actions.find(x => x.selection_id == action.selection_id)}}</span> -->

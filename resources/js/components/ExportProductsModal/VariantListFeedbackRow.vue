@@ -3,10 +3,13 @@
         <td class="selection" style="padding-right: 8px; border-bottom: solid 1px #c4c4c4;">
             <span>{{variantFeedbackAuthor.user ? variantFeedbackAuthor.user.name : 'Anonymous' | truncate(16)}}</span>
         </td>
-        <td v-for="(variant, index) in variants" :key="variant.id"
+        <td v-for="variant in variants" :key="variant.id"
+        style="border-bottom: solid 1px #c4c4c4; border-left: solid 1px #c4c4c4; padding: 1px 12px"
+        :style="[{textAlign: getVariantFeedback(variant) == 'Out' ? 'right' : 'left'}]">
+        <!-- <td v-for="(variant, index) in variants" :key="variant.id"
         style="border-bottom: solid 1px #c4c4c4; border-left: solid 1px #c4c4c4;"
         :style="[{textAlign: getVariantFeedback(variant) == 'Out' ? 'right' : 'left'},
-        {padding: index == 0 ? '1px 28px 1px 12px' : index == variant.length - 1 ? '1px 12px 1px 28px' : '1px 28px'}]">
+        {padding: index == 0 ? '1px 28px 1px 12px' : index == variant.length - 1 ? '1px 12px 1px 28px' : '1px 28px'}]"> -->
             <span style="font-size: 12px; margin-bottom: -3px; display: block; margin-top: -2px; font-weight: 900;">
                 {{getVariantFeedback(variant) == 'Out' ? '⨯' 
                 : getVariantFeedback(variant) == 'Focus' ? '★' 
