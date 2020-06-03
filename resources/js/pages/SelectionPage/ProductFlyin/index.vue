@@ -58,8 +58,9 @@
                 <div class="product-variants" v-dragscroll>
                     <VariantListItem v-for="(variant, index) in product.variants" :key="index"
                     :variant="variant" :product="product" :selection="selection"
+                    :class="{'active': currentImgIndex == index}"
                     v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant}"
-                    @click.native="currentImgIndex = index" :class="{active: currentImgIndex == index}"/>
+                    @click.native="currentImgIndex = index"/>
                 </div>
 
                 <!-- <label>Style number</label>

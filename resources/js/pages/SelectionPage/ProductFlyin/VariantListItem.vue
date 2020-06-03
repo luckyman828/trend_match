@@ -102,6 +102,11 @@ export default {
     &:not(:last-child) {
         margin-right: 8px;
     }
+    &.active {
+        .img-wrapper {
+            border-color: $primary;
+        }
+    }
 }
 .variant .img-wrapper {
     position: relative;
