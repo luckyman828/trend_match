@@ -15,9 +15,9 @@
                     <span>{{snackbar.callbackLabel}}</span>
                 </BaseButton>
             </div>
-            <button class="circle"
+            <button class="invisible ghost-hover"
             @click.stop="onDeleteSnackbar">
-                <i class="fas fa-times"></i>
+                <span>Dismiss</span>
             </button>
 
             <div class="timer" v-if="duration">
