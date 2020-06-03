@@ -471,8 +471,9 @@ input[type='submit'] {
     &.disabled,
     &:disabled,
     &[disabled='disabled'] {
-        pointer-events: none;
+        // pointer-events: none;
         opacity: 0.5;
+        cursor: default;
     }
     &:focus {
         outline: none;

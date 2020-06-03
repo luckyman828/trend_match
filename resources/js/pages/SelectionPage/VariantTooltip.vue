@@ -7,26 +7,32 @@
         <div class="action-list">
 
             <div class="action-list-item">
-                <button :class="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
+                <BaseButton :buttonClass="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
+                :disabled="!userWriteAccess.actions.hasAccess" 
+                :disabledTooltip="userWriteAccess.actions.msg"
                 @click="updateVariantAction('Focus')">
                     <i class="far fa-star"></i>
-                </button>
+                </BaseButton>
                 <span class="count">{{variant.allFocus}}</span>
             </div>
 
             <div class="action-list-item">
-                <button :class="variant[currentAction] == 'In' ? 'green' : 'ghost'"
+                <BaseButton :buttonClass="variant[currentAction] == 'In' ? 'green' : 'ghost'"
+                :disabled="!userWriteAccess.actions.hasAccess" 
+                :disabledTooltip="userWriteAccess.actions.msg"
                 @click="updateVariantAction('In')">
                     <i class="far fa-heart"></i>
-                </button>
+                </BaseButton>
                 <span class="count">{{variant.allIns}}</span>
             </div>
 
             <div class="action-list-item">
-                <button :class="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
+                <BaseButton :buttonClass="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
+                :disabled="!userWriteAccess.actions.hasAccess" 
+                :disabledTooltip="userWriteAccess.actions.msg"
                 @click="updateVariantAction('Out')">
                     <i class="far fa-times"></i>
-                </button>
+                </BaseButton>
                 <span class="count">{{variant.allOuts}}</span>
             </div>
         </div>
@@ -59,8 +65,13 @@ export default {
         ...mapGetters('selections', {
             selectionMode: 'currentSelectionMode',
             currentAction: 'currentSelectionModeAction',
+            getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
         }),
+        userWriteAccess () {
+            return this.getUserWriteAccess(this.selection)
+        },
     },
+    
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
         updateVariantAction(newAction) {
