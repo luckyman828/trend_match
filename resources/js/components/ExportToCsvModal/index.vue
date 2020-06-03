@@ -22,6 +22,10 @@
                     <BaseRadioInputField class="form-element" :value="'currentFeedback'" v-model="exportOption">
                         <span>Export Alignment & Feedback</span>
                     </BaseRadioInputField>
+
+                    <BaseRadioInputField class="form-element" :value="'currentVariants'" v-model="exportOption">
+                        <span>Export Variant Alignment & Feedback</span>
+                    </BaseRadioInputField>
                 </div>
                 <div class="form-section">
                     <h4>Export Multiple Selections</h4>
@@ -145,6 +149,8 @@ export default {
                 this.exportRequestsPerSelection()
             if (option == 'comments')
                 this.exportCommentsPerSelection()
+            if (option == 'currentVariants')
+                this.exportCurrentVariantsFeedback()
 
         },
         getDefaultProductRowData(product) {
@@ -248,6 +254,75 @@ export default {
             })
 
             this.exportToCsv(`Kollekt - ${this.currentSelection.name} - Export.csv`, [headers].concat(rows))
+
+        },
+        exportCurrentVariantsFeedback() {
+            const headers = ['Product ID', 'Product Name', 'Variant Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery']
+            const selectionHeaders = []
+            const rows = []
+
+            // Do an initial loop through the all the products and their variants to generate headers
+            const uniqueAlignmentOrigins = []
+            const uniqueFeedbackOrigins = []
+
+            this.productsToExport.forEach(product => {
+
+                // Find all unique alignment origins
+                product.variants.map(variant => {
+                    variant.actions.map(action => {
+                        const existingOrigin = uniqueAlignmentOrigins.find(x => x.selection_id == action.selection_id)
+                        if (!existingOrigin) uniqueAlignmentOrigins.push({
+                            user_id: action.user_id, 
+                            selection_id: action.selection_id, 
+                            user: action.user,
+                            selection: action.selection
+                        })
+                    })
+                })
+
+                // Find all unique feedback origins
+                product.variants.map(variant => {
+                    variant.feedbacks.map(feedback => {
+                        const existingUser = uniqueFeedbackOrigins.find(x => x.user_id == feedback.user_id && x.selection_id == feedback.selection_id)
+                        if (!existingUser) uniqueFeedbackOrigins.push({
+                            user_id: feedback.user_id, 
+                            selection_id: feedback.selection_id, 
+                            user: feedback.user,
+                            selection: feedback.selection
+                        })
+                    })
+                })
+
+            })
+
+            // Add the unique origins to our headers
+            headers.push(...uniqueAlignmentOrigins.map(x => 'Alignment: ' + x.selection.name))
+            headers.push(...uniqueFeedbackOrigins.map(x => `Feedback: ${x.selection.name} - ${x.user ? x.user.name : 'Anonymous'}`))
+
+
+            // Loop through the products again to populate rows with data
+            this.productsToExport.forEach(product => {
+                product.variants.forEach(variant => {
+                    const rowToPush = [product.datasource_id, product.title, variant.name, product.category, product.min_order, product.min_variant_order, product.delivery_date]
+
+                    // Add the aligment
+                    uniqueAlignmentOrigins.forEach(alignmentOrigin => {
+                        const originAction = variant.actions.find(x => x.selection_id == alignmentOrigin.selection_id)
+                        rowToPush.push(originAction ? originAction.action : 'None')
+                    })
+
+                    // Add the feedback
+                    uniqueFeedbackOrigins.forEach(feedbackOrigin => {
+                        const originFeedback = variant.actions.find(x => x.selection_id == feedbackOrigin.selection_id && x.user_id == feedbackOrigin.user_id)
+                        rowToPush.push(originFeedback ? originFeedback.action : 'None')
+                    })
+
+                    // Add the row to our list of rows
+                    rows.push(rowToPush)
+                })
+            })
+
+            this.exportToCsv('Kollekt Variant Input Export.csv', [headers].concat(rows))
 
         },
         exportRequestsPerSelection() {

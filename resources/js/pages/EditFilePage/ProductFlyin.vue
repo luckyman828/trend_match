@@ -455,6 +455,7 @@ export default {
         },
         onAddVariant() {
             this.product.variants.push({
+                id: this.$uuid.v4(),
                 name: null,
                 image: null,
                 blob_id: null,
@@ -752,7 +753,7 @@ export default {
         margin-bottom: 32px;
     }
     .product-variant {
-        width: 180px;
+        width: 182px;
         display: inline-block;
         &:not(:last-child) {
             margin-right: 12px;
@@ -784,9 +785,10 @@ export default {
             }
         }
         .img-wrapper {
-            padding-top: 133.33%; // 4:3 
+            // padding-top: 133.33%; // 4:3 
+            // height: 0;
+            height: 242px;
             width: 100%;
-            height: 0;
             position: relative;
             overflow: hidden;
             display: inline-block;
