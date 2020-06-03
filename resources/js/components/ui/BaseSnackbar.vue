@@ -65,7 +65,7 @@ export default {
     methods: {
         ...mapMutations('alerts', ['DELETE_SNACKBAR']),
         onDeleteSnackbar() {
-            this.DELETE_SNACKBAR(this.snackbar)
+            // this.DELETE_SNACKBAR(this.snackbar)
         },
         onEnter() {
             if (this.timer) this.timer.pause()

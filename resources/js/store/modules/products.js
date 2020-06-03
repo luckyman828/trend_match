@@ -503,12 +503,10 @@ export default {
                 })
                     .then(response => {
                         // On success, set the image on the variant
-                        console.log(presignedUrl)
                         let newUrl = presignedUrl.url
                         // Change the URL from https to https
                         if (newUrl.indexOf('https') < 0) {
                             newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
-                            console.log('new url', newUrl)
                         }
                         variant.image = newUrl
                         resolve(response)
