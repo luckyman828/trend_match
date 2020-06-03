@@ -183,6 +183,7 @@ export default{
                     && this.currentSelection.your_role != 'Owner'
                     && selectionIds.selection_ids.includes(this.currentSelection.id)
                 ) {
+                    console.log('on close')
                     await this.$refs.presentationModeDialog.show()
                     this.$router.push({name: 'files'})
                 }

@@ -100,7 +100,7 @@ export default {
             this.showSingleFile(file)
         }
         const routeFolderId = this.$route.params.folderId
-        if (routeFolderId) {
+        if (routeFolderId && routeFolderId != 0) {
             const folder = await this.fetchFolder(routeFolderId)
             this.setCurrentFolder(folder)
         }

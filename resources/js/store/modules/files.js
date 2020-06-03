@@ -106,11 +106,11 @@ export default {
             })
             return files
         },
-        async fetchFile({ commit, state, rootGetters }, fileid) {
+        async fetchFile({ commit, state, rootGetters }, fileId) {
             // Set the state to loading
             commit('SET_FILES_STATUS', 'loading')
 
-            const apiUrl = `/files/${fileid}`
+            const apiUrl = `/files/${fileId}`
             let file
             await axios
                 .get(apiUrl)
