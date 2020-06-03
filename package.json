@@ -27,6 +27,7 @@
         "@vuex-orm/core": "^0.34.1",
         "@vuex-orm/plugin-change-flags": "^1.2.0",
         "ajv-keywords": "^3.4.1",
+        "ansi-regex": "^5.0.0",
         "blueimp-canvas-to-blob": "^3.27.0",
         "compressorjs": "^1.0.6",
         "es-abstract": "^1.17.5",
