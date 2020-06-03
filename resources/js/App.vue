@@ -71,6 +71,7 @@ export default{
             if (newVal == 'success') {
                 this.initWorkspace()
                 this.initSignalR()
+                this.initCrispChat()
             }
         },
         // Watch for workspace changes
@@ -146,6 +147,9 @@ export default{
                     }
                 })
             })
+        },
+        initCrispChat() {
+            $crisp.push(["set", "user:email", this.authUser.email]);
         },
         // onScroll(e) {
         //     this.didScroll = true
