@@ -215,7 +215,7 @@ export default{
                     action.selection = this.selections.find(x => x.id == action.selection_id)
 
                     const productActions = [{product: selectionProduct, action: action}]
-                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback' })
+                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
                 })
             }
         },
@@ -227,7 +227,7 @@ export default{
                 feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
 
                 const productActions = [{product: selectionProduct, action: feedback}]
-                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback' })
+                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
             }
         },
         bulkAlignmentArrivedHandler(selectionId, alignments) {
@@ -239,7 +239,7 @@ export default{
                     action.selection = this.selections.find(x => x.id == action.selection_id)
 
                     const productActions = [{product: selectionProduct, action: action}]
-                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment' , currentSelectionId: selectionId})
+                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
                 })
             }
         },
@@ -251,7 +251,7 @@ export default{
                 alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
 
                 const productActions = [{product: selectionProduct, action: alignment}]
-                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment' , currentSelectionId: selectionId})
+                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
             }
         },
         requestArrivedHandler() {

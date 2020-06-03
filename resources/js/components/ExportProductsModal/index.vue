@@ -134,7 +134,7 @@ export default {
         previewPdf: false,
         chunkIndex: 0,
         chunkSize: 0,
-        testFeaturesEnabled: true,
+        testFeaturesEnabled: false,
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),

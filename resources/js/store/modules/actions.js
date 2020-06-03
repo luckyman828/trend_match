@@ -37,7 +37,7 @@ export default {
                 }
             }
         },
-        async insertOrUpdateActions({ commit, dispatch }, { products, action, selection, user }) {
+        async insertOrUpdateActions({ commit, dispatch, rootGetters }, { products, action, selection, user }) {
             // Find the selection product if it is not the product we have been passed
             if (!!products[0].selectionInputArray) {
                 products = products.map(product => {
@@ -155,10 +155,12 @@ export default {
                 }
             }
 
+            const authUser = rootGetters['auth/authUser']
             const restoreActions = () => {
                 commit('INSERT_OR_UPDATE_ACTIONS', {
                     productActions: oldActions,
                     type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
+                    authUser,
                 })
             }
 
@@ -166,6 +168,7 @@ export default {
             commit('INSERT_OR_UPDATE_ACTIONS', {
                 productActions,
                 type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
+                authUser,
             })
 
             await axios
@@ -220,7 +223,7 @@ export default {
                     )
                 })
         },
-        async insertOrUpdateProductActionPairs({ commit }, { productActionPairs, selection }) {
+        async insertOrUpdateProductActionPairs({ commit, rootGetters }, { productActionPairs, selection }) {
             // Find the selection product if it is not the product we have been passed
             if (!!productActionPairs[0].product.selectionInputArray) {
                 productActionPairs.map(pair => {
@@ -261,9 +264,11 @@ export default {
             }
 
             // Update state
+            const authUser = rootGetters['auth/authUser']
             commit('INSERT_OR_UPDATE_ACTIONS', {
                 productActions: productActionPairs,
                 type: selection.your_role == 'Member' ? 'Feedback' : 'Alignment',
+                authUser,
             })
 
             await axios.post(apiUrl, requestBody)
@@ -278,7 +283,7 @@ export default {
         alertError: state => {
             window.alert('Network error. Please check your connection')
         },
-        INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId }) {
+        INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId, authUser }) {
             // console.log('insert or update actions', productActions, type, currentSelectionId)
             // Loop through our products and update their actions
             productActions.forEach(productAction => {
@@ -287,7 +292,10 @@ export default {
 
                 // Feedback
                 if (type == 'Feedback') {
-                    product.your_feedback = action.action
+                    // Update the currently displayed action if the user is the authenticated user
+                    if (authUser && action.user_id == authUser.id) {
+                        product.your_feedback = action.action
+                    }
                     // Check if the action already exists in the products feedbacks array
                     const existingAction = product.feedbacks.find(
                         x => x.selection_id == action.selection_id && x.user_id == action.user_id
