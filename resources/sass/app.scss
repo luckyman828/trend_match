@@ -25,6 +25,9 @@
     outline: none;
     box-shadow: none;
 }
+body {
+    background: $bg;
+}
 :focus {
     outline-color: $primary;
 }
@@ -50,7 +53,7 @@ a {
     text-decoration: none;
     color: inherit;
 }
-// FONTS
+// ----------- FONTS
 body,
 html {
     margin: 0;
@@ -115,6 +118,9 @@ textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+
+// ---------- END FONTS
+
 .container {
     margin: auto;
     width: 100%;
@@ -456,9 +462,9 @@ input[type='submit'] {
         font-weight: 500;
         background: none;
         border-color: transparent;
-        color: $dark2;
+        color: $fontButtonInvisible;
         i {
-            color: $dark2;
+            color: $iconButtonInvisible;
         }
         &:not(.ghost-hover):hover {
             background: $light1;
@@ -544,7 +550,7 @@ i {
     &.fad,
     &.fab {
         position: relative;
-        color: $fontIcon;
+        color: $icon;
     }
     &.fad {
         --fa-secondary-color: #3b86ff;

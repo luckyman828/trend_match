@@ -1,5 +1,5 @@
 <template>
-  <div class="vue-component-sidebar sidebar">
+  <div class="vue-component-sidebar sidebar theme-dark">
     <div class="nav">
         <div class="top-items">
             <router-link to="/files" class="sidebar-item">
@@ -69,6 +69,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    background: $bgModuleDark;
 }
 .sidebar-item {
     display: flex;
@@ -78,20 +79,22 @@ export default {
     height: 80px;
     width: 100%;
     font-size: 12px;
-    color: $fontSoft;
+    color: $fontSoftOnDark;
     padding: 0 8px;
     text-align: center;
     cursor: pointer;
     i {
         font-size: 16px;
         margin-bottom: 8px;
+        color: $iconSoftOnDark;
     }
     &:hover, &.router-link-active {
-        background: $bgContentActive;
+        background: $bgModuleActiveDark;
     }
     &.router-link-active {
+      color: $fontModuleActiveOnDark;
       i {
-        color: $primary;
+        color: $iconModuleActiveOnDark;
       }
     }
     @media screen and (max-width: $screenSm) {

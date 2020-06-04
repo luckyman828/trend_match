@@ -27,6 +27,10 @@ export default {
         margin-bottom: 0;
         // font-weight: 700;
         width: 100%;
+        color: $fontSoft;
+        strong {
+            color: $fontSoft;
+        }
         .left, .right {
             display: flex;
             align-items: center;

@@ -285,11 +285,11 @@ export default{
         }
     }
     .main {
-        box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
+        // box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
         padding: 20px 60px;
         overflow-y: scroll;
         overflow-x: auto;
-        background: $grey;
+        // background: $grey;
         @media screen and (max-width: $screenSm) {
             padding: 20px;
         }
