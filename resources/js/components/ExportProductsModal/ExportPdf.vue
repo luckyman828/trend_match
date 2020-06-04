@@ -6,7 +6,7 @@
 
 
                 <div class="page" v-for="(productChunk, index) in chunksToShow" :key="index"
-                style="width: 744pt; height: 1053pt; overflow: hidden;
+                style="width: 744pt; height: 1052.5pt; overflow: hidden;
                 box-sizing: border-box; padding: 60px 38px 38px; position: relative;">
 
                     <div class="header" style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between;
