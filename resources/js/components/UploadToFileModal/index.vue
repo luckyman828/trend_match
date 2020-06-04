@@ -114,6 +114,7 @@ export default {
         ],
         currencyDefaultObject: {
             currencyName: '',
+            nameError: null,
             fileIndex: null,
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -128,6 +129,7 @@ export default {
         },
         currenciesToMatch: [{
             currencyName: '',
+            nameError: null,
             fileIndex: null,
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -202,6 +204,13 @@ export default {
                     if (!this.validateField(field)) {
                         valid = false
                     }
+                }
+            })
+            // Loop through the currencies and look check their names
+            this.currenciesToMatch.forEach(currency => {
+                console.log('valdiate currency', currency)
+                if(currency.fileIndex != null && !this.validateCurrency(currency)) {
+                    valid = false
                 }
             })
             return valid
@@ -341,6 +350,15 @@ export default {
             // Assume no error
             file.keyError = false   
         },
+        validateCurrency(currency) {
+            if (currency.currencyName.length != 3) {
+                currency.nameError = 'Currency must be a <strong>3 letter</strong> currency code.'
+                return false
+            } else {
+                currency.nameError = null
+                return true
+            }
+        },
         validateField(field, limit=10) {
             const fieldName = field.name
             // Find the file the field is mapped to
@@ -392,6 +410,15 @@ export default {
                         const urlReg = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/)
                         if (!urlReg.test(fieldValue)) {
                             field.error = `Must be a <strong>valid URL</strong>.
+                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
+                            valid = false
+                        }
+                    }
+
+                    // Test for correct currency
+                    if (this.singleCurrencyFile && ['currency'].includes(fieldName)) {
+                        if (fieldValue.length != 3) {
+                            field.error = `Currency must be a <strong>3 letter</strong> currency code.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
                             valid = false
                         }
@@ -663,7 +690,11 @@ export default {
                 })
             })
             if (!valid) {
-                alert('Error. One or more fields have an error')
+                this.SHOW_SNACKBAR({ 
+                    msg: `One or more fields have an error'`,
+                    type: 'info', 
+                    iconClass: 'fa-exclamation-circle', 
+                })
                 return
             }
 
@@ -671,17 +702,20 @@ export default {
             this.submitStatus = 'Processing products'
             const newProducts = this.instantiateProducts()
 
-            this.submitStatus = 'Uploading images'
-            await Promise.all(newProducts.map(async product => {
-                await Promise.all(product.variants.map(async variant => {
-                    if (variant.image) {
-                        const imageFile = await this.getImageFromURL(variant.image)
-                        if (imageFile) {
-                            await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+            // Upload images if we are replacing variants
+            if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+                this.submitStatus = 'Uploading images'
+                await Promise.all(newProducts.map(async product => {
+                    await Promise.all(product.variants.map(async variant => {
+                        if (variant.image) {
+                            const imageFile = await this.getImageFromURL(variant.image)
+                            if (imageFile) {
+                                await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                            }
                         }
-                    }
+                    }))
                 }))
-            }))
+            }
 
 
             // Loop through the instantiated products and find a match in the existing products to update them
