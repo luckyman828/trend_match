@@ -18,7 +18,7 @@ $info: $blue;
 $secondary: #69e4a6;
 $secondaryLight: rgba($secondary, 0.35);
 
-$dark: #1b1c1d;
+$dark: #1c293b;
 $dark05: #3c3b54;
 $dark1: #535353;
 $dark15: #707070;
@@ -89,8 +89,9 @@ $borderRadiusModule: 4px;
 $bg: #eff3f6;
 $bgContent: white;
 $bgModule: white;
-$bgContentHover: #fafbfc;
-$bgContentActive: #fafbfc;
+$bgModuleHover: #fafbfc;
+$bgModuleActive: #fafbfc;
+$bgModuleInactive: #e3e8eb;
 $bgContentAlt: $light1;
 
 $bgDark: #1c293b;

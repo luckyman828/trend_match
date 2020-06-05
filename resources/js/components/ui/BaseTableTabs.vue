@@ -36,16 +36,16 @@ export default {
             align-items: center;
             text-align: center;
             border-radius: $borderRadiusModule $borderRadiusModule 0 0;
-            background: $bgContentActive;
+            background: $bgModuleInactive;
             font-weight: 700;
             font-size: 14px;
-            color: $dark15;
+            color: $fontSoft;
             cursor: pointer;
             padding-bottom: $borderRadiusModule;
             box-sizing: content-box;
             &:hover {
-                background: $light2;
-                color: $dark05;
+                background: $bgModuleHover;
+                // color: $bgModuleHover;
             }
             &.active {
                 background: white;

@@ -241,7 +241,7 @@ export default {
         }
     }
     tr {
-        background: white;
+        background: $bgModule;
         min-height: 48px;
         display: flex;
         align-items: center;
@@ -250,7 +250,7 @@ export default {
         &.active {
             outline: solid 1px $primary;
             outline-offset: -1px;
-            background: $bgContentActive;
+            background: $bgModuleActive;
         }
         &:not(.table-top-bar) {
             margin-bottom: 2px;
@@ -260,7 +260,7 @@ export default {
         }
         &:not(.header):not(.footer):not(.table-top-bar) {
             &:hover {
-                background: $light1;
+                background: $bgModuleHover;
                 td {
                     &.title {
                         i {
