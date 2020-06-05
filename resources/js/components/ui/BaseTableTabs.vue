@@ -23,29 +23,29 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    $borderRadius: 4px;
 
     .tabs {
         display: flex;
-        margin-bottom: -$borderRadius;
+        margin-bottom: -$borderRadiusModule;
         .tab {
-            height: 40px;
+            border: $borderModule;
+            height: $heightTableTab;
             width: 220px;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            border-radius: $borderRadius $borderRadius 0 0;
-            background: $light1;
+            border-radius: $borderRadiusModule $borderRadiusModule 0 0;
+            background: $bgModuleInactive;
             font-weight: 700;
             font-size: 14px;
-            color: $dark15;
+            color: $fontSoft;
             cursor: pointer;
-            padding-bottom: $borderRadius;
+            padding-bottom: $borderRadiusModule;
             box-sizing: content-box;
             &:hover {
-                background: $light2;
-                color: $dark05;
+                background: $bgModuleHover;
+                // color: $bgModuleHover;
             }
             &.active {
                 background: white;

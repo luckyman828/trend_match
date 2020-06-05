@@ -61,7 +61,7 @@ export default {
                 overflow: hidden;
             }
             &:hover, &.active {
-                background: $bgContentActive;
+                background: $bgModuleActive;
             }
         }
         .checkbox {

@@ -18,7 +18,7 @@
                     <div class="body">
                         <slot :close="close"/>
                     </div>
-                    <button class="close md circle" @click="close"><i class="fal fa-times"></i></button>
+                    <button class="close md circle" @click="close"><i class="far fa-times"></i></button>
                 </div>
             </div>
         </div>

@@ -5,7 +5,6 @@
         </transition>
     </div>
     <div class="app" id="app-component" v-else-if="authUser && currentWorkspace" :class="{'hide-nav': hideNav}">
-        <TheNavbarLogo/>
         <TheNavbar/>
         <TheSidebar/>
         <div class="main" id="main" ref="main">
@@ -36,7 +35,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TheSidebar from './components/layout/TheSidebar'
 import TheNavbar from './components/layout/TheNavbar'
-import TheNavbarLogo from './components/layout/TheNavbarLogo'
+// import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import TheImageLightbox from './components/layout/TheImageLightbox'
 import TheSnackbarSpawner from './components/layout/TheSnackbarSpawner'
 
@@ -45,7 +44,7 @@ export default{
     components: {
         TheSidebar,
         TheNavbar,
-        TheNavbarLogo,
+        // TheNavbarLogo,
         TheImageLightbox,
         TheSnackbarSpawner,
     },
@@ -266,9 +265,10 @@ export default{
         transition: .3s;
         // grid-template-columns: 160px auto;
         grid-template-columns: 80px auto;
-        grid-template-rows: 72px auto;
+        // grid-template-rows: 72px auto;
+        grid-template-rows: 52px auto;
         grid-template-areas: 
-            "logo navbar" 
+            "sidebar navbar" 
             "sidebar main";
         @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
         only screen and (-o-min-device-pixel-ratio: 13/10),
@@ -290,11 +290,11 @@ export default{
         }
     }
     .main {
-        box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
+        // box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
         padding: 20px 60px;
         overflow-y: scroll;
         overflow-x: auto;
-        background: $grey;
+        background: $bg;
         @media screen and (max-width: $screenSm) {
             padding: 20px;
         }

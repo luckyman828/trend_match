@@ -3,7 +3,7 @@
         <div class="left">
             <button v-if="!placement || placement== 'right'" class="circle close md" 
             @click="$emit('closeFlyin');$emit('close')">
-                <i class="fal fa-times"></i>
+                <i class="far fa-times"></i>
             </button>
             <slot name="left"/>
         </div>
@@ -35,19 +35,24 @@ export default {
 @import '~@/_variables.scss';
 
     .flyin-header {
-        height: 74px;
+        height: 52px;
         background: $bgContent;
         display: flex;
         width: 100%;
         justify-content: space-between;
         // align-items: center;
-        box-shadow: 0px 2px 10px #0000001A;
         padding: 16px;
-        border-bottom: solid 2px $grey2;
+        // box-shadow: 0px 2px 10px #0000001A;
+        // border-bottom: solid 2px $grey2;
+        border-bottom: $borderModule;
+        box-shadow: $shadowModule;
         // position: relative;
         // z-index: 1;
         h3 {
             margin: 0;
+            @media screen and (max-width: $screenXs) {
+                font-size: 14px;
+            }
         }
         .left, .right {
             display: flex;

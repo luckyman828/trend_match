@@ -229,7 +229,6 @@ export default {
             margin-right: 8px;
             width: 24px;
             font-size: 16px;
-            color: $dark2;
             &:first-child {
                 margin-right: 8px;
             }
@@ -237,9 +236,9 @@ export default {
                 position: relative;
                 i {
                     position: absolute;
-                    left: -2px;
+                    left: -3px;
                     bottom: 5px;
-                    font-size: 10px;
+                    font-size: 11px;
                     color: #3b86ff;
                     margin: 0;
                     width: auto;
