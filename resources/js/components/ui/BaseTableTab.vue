@@ -33,7 +33,6 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    $borderRadius: 4px;
     .tab {
         height: 44px;
         width: 220px;
@@ -41,16 +40,23 @@ export default {
         justify-content: center;
         align-items: center;
         text-align: center;
-        border-radius: $borderRadius $borderRadius 0 0;
-        background: $light1;
         font-weight: 700;
         font-size: 14px;
         color: $dark15;
         cursor: pointer;
-        padding-bottom: $borderRadius;
+        padding-bottom: $borderRadiusModule;
+        color: $fontSoft;
+        border: $borderModule;
+        border-radius: $borderRadiusModule $borderRadiusModule 0 0;
+        background: $bgModuleInactive;
+        .pill.count {
+            color: $fontSoft;
+            &.primary {
+                color: white;
+            }
+        }
         &:hover:not(.disabled) {
-            background: $light2;
-            color: $dark05;
+            background: $bgModuleHover;
         }
         &.active {
             background: white;
@@ -62,7 +68,7 @@ export default {
         }
         &.has-count {
             justify-content: space-between;
-            padding: 0 32px $borderRadius;
+            padding: 0 32px $borderRadiusModule;
         }
         &.disabled {
             cursor: default;

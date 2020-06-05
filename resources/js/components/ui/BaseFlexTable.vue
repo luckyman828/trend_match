@@ -2,8 +2,8 @@
     <div class="table-wrapper" ref="tableWrapper">
         <table class="flex-table" ref="table" 
         :class="[{'sticky': sticky}, {'has-tabs': $slots.tabs}]">
-            <div ref="stickyHeader" class="sticky-header" :style="{width: tableWidth - 2+'px'}">
-                <div ref="stickyBg" class="sticky-bg" :style="{width: tableWidth + 10+'px'}"></div>
+            <div ref="stickyHeader" class="sticky-header">
+                <div ref="stickyBg" class="sticky-bg" :style="{width: tableWidth + 32+'px'}"></div>
                 <div ref="stickyInner" class="inner">
                     <div class="tabs-wrapper" v-if="$slots.tabs">
                         <slot name="tabs"/>
@@ -131,14 +131,16 @@ export default {
                     stickyThis.style.top = `${desiredOffset + parentTopDist + tabsHeight}px`
                     this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
                     // Set the position and size of the scroll bg
-                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset}px`
+                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset + tabsHeight}px`
                     this.$refs.stickyBg.style.top = `${parentTopDist}px`
 
                     const tableWidth = this.scrollTable.getBoundingClientRect().width
+                    stickyThis.style.width = tableWidth+'px'
                     this.tableWidth = tableWidth
                 }
                 this.sticky = true
             } else if (this.sticky == true) {
+                stickyThis.style.width = ''
                 this.sticky = false
             }
         },
@@ -191,7 +193,6 @@ export default {
 }
 .flex-table {
     white-space: nowrap;
-    border-spacing: 0 2px;
     display: flex;
     flex-direction: column;
     border: $borderModule;
@@ -214,22 +215,30 @@ export default {
     &.sticky {
         .sticky-bg {
             background: $bg;
-            box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
             position: fixed;
             z-index: -1;
             display: block;
-            transform: translateX(-5px)
+            margin-left: -16px;
         }
         .sticky-header {
             position: fixed;
             z-index: 1;
-            .header {
-                box-shadow: 0px 4px 10px #0000002A;
-                position: static;
+            margin-left: -1px;
+            .inner {
+                box-shadow: $shadowModule;
+                border: $borderModule;
+                border-radius: $borderRadiusModule $borderRadiusModule 0 0;
             }
         }
         .sticky-placeholder {
             display: block;
+        }
+        .tabs-wrapper {
+            display: flex;
+            margin-bottom: -$borderRadiusModule;
+            position: absolute;
+            top: -$heightTableTab;
+            left: 0;
         }
     }
     .sticky-placeholder {

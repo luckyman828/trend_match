@@ -25,9 +25,6 @@
     outline: none;
     box-shadow: none;
 }
-body {
-    background: $bg;
-}
 :focus {
     outline-color: $primary;
 }
@@ -175,7 +172,7 @@ textarea {
             h3 {
                 font-size: 16px;
                 text-align: center;
-                color: $dark2;
+                color: $grey700;
                 font-weight: 400;
                 margin-bottom: 60px;
             }
@@ -264,11 +261,11 @@ textarea {
     justify-content: flex-start;
     .hotkey {
         font-size: 10px;
-        color: $dark2;
+        color: $grey700;
         margin-top: 4px;
         .key {
             border-radius: 2px;
-            border: solid 1px $dark2;
+            border: solid 1px $grey700;
             padding: 1px 4px;
             text-transform: uppercase;
             font-size: 8px;
@@ -306,7 +303,7 @@ input[type='submit'] {
     > span:last-child {
         margin-right: 12px;
     }
-    &:not(.ghost):not(.invisible) i {
+    &:not(.ghost):not(.invisible) i:not(.fa-times) {
         &.fa,
         &.fas,
         &.far,
@@ -380,16 +377,16 @@ input[type='submit'] {
     }
 
     // COLORS
-    border-color: $grey;
-    background: $grey;
+    border-color: $grey500;
+    background: $grey500;
     color: $font;
     &:hover {
-        background: $grey2;
-        border-color: $grey2;
+        background: $grey400;
+        border-color: $grey400;
     }
     &:active {
-        background: $grey2;
-        border-color: $grey;
+        background: $grey400;
+        border-color: $grey500;
     }
     @each $color in $brand-colors {
         &.#{nth($color,1)},
@@ -444,7 +441,7 @@ input[type='submit'] {
     &.ghost-hover:hover {
         background: transparent;
         color: $font;
-        border: solid 1px $dark2;
+        border: solid 1px $grey700;
         i {
             color: $font;
         }
@@ -655,7 +652,7 @@ i {
     border-radius: 4px;
     background: white;
     i {
-        color: $dark2;
+        color: $grey700;
         position: absolute;
         right: 12px;
     }
@@ -723,7 +720,7 @@ i {
         // border-bottom: solid 2px $light2;
         font-size: 14px;
         font-weight: 400;
-        color: $dark2;
+        color: $grey700;
         text-align: center;
         .close {
             position: absolute;
@@ -784,7 +781,7 @@ i {
             // border-bottom: 0;
         }
         .header {
-            color: $dark2;
+            color: $grey700;
         }
         .body {
             background: $darkAlt;
@@ -1166,7 +1163,7 @@ i.has-tooltip {
 //         width: 152px;
 //         display: flex;
 //         align-items: center;
-//         color: $dark2;
+//         color: $grey700;
 //         background: $light2;
 //         border-radius: 8px 8px 0 0;
 //         cursor: pointer;
@@ -1263,7 +1260,7 @@ form {
 .input-wrapper {
     display: block;
     min-height: 40px;
-    border: solid 1px $dark2;
+    border: solid 1px $grey700;
     color: $dark05;
     border-radius: 4px;
     padding: 8px 12px;
@@ -1307,7 +1304,7 @@ form {
         cursor: pointer;
     }
     &.disabled {
-        color: $dark2;
+        color: $grey700;
         cursor: auto;
     }
     &.read-only {
@@ -1551,7 +1548,7 @@ input[type='number']::-webkit-outer-spin-button {
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: $dark2;
+    background: $grey700;
     border-radius: 2px;
     &:hover {
         background: $dark25;

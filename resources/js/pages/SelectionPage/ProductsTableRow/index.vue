@@ -366,7 +366,7 @@ export default {
             margin-left: 8px;
         }
         .img-wrapper {
-            border: solid 1px $light2;
+            border: $borderElSoft;
             height: 100%;
             width: 100%;
             // width: 48px;

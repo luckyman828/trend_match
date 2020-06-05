@@ -55,7 +55,7 @@ export default {
     }
     &:hover {
         .circle {
-            border-color: $dark2;
+            border-color: $borderColorElHover;
         }
         span {
             color: $font;
@@ -64,7 +64,7 @@ export default {
     span {
         font-weight: 700;
         font-size: 12px;
-        color: $dark2;
+        color: $fontSoft;
         line-height: 1;
         &.label {
             color: $font;
@@ -77,14 +77,14 @@ export default {
     align-items: center;
 }
 .pill {
-    background: $bg;
-    border: solid 1px $divider;
+    background: $bgEl;
+    border: $borderEl;
     position: relative;
     .circle {
         position: absolute;
         left: 0;
         background: white;
-        border: solid 2px $divider;
+        border: $borderElHard;
         transition: transform .2s;
     }
     + span {

@@ -2,6 +2,12 @@
   <div class="vue-component-sidebar sidebar theme-dark">
     <div class="nav">
         <div class="top-items">
+            <!-- <TheNavbarLogo class="sidebar-item"/> -->
+            <div class="sidebar-item logo inactive">
+              <img class="hide-screen-sm" src="/images/kollekt_logo_small.svg" />
+              <img class="show-screen-sm" style="height: 100%; width: 52px; margin-left: -8px" src="/images/kollekt_logo_00_1024x1024.svg" />
+            </div>
+
             <router-link to="/files" class="sidebar-item">
               <i class="fas fa-folder"></i><span>Files</span>
             </router-link>
@@ -39,6 +45,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import TheNavbarLogo from './TheNavbarLogo'
 
 import SignoutButton from './SignoutButton'
 
@@ -46,6 +53,7 @@ export default {
   name: "sidebar",
   components: {
     SignoutButton,
+    TheNavbarLogo,
   },
   data: function () { return {
     drawerExpanded: false,
@@ -83,12 +91,15 @@ export default {
     padding: 0 8px;
     text-align: center;
     cursor: pointer;
+    &.inactive {
+      cursor: default;
+    }
     i {
         font-size: 16px;
         margin-bottom: 8px;
         color: $iconSoftOnDark;
     }
-    &:hover, &.router-link-active {
+    &:not(.inactive):hover, &.router-link-active {
         background: $bgModuleActiveDark;
     }
     &.router-link-active {
@@ -101,7 +112,7 @@ export default {
         flex-direction: row;
         justify-content: flex-start;
         transition: width .2s;
-        &:hover {
+        &:not(.inactive):hover {
             width: 160px;
             position: relative;
             z-index: 99;
