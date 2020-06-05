@@ -379,13 +379,13 @@ export default {
         @media screen and (max-width: $screenMd) {
             &:not(.multi-selection) {
                 &.action-Focus {
-                    box-shadow: -6px 0 0px $primary inset;
+                    box-shadow: -8px 0 0px $primary inset;
                 }
                 &.action-In {
-                    box-shadow: -6px 0 0px $green inset;
+                    box-shadow: -8px 0 0px $green inset;
                 }
                 &.action-Out {
-                    box-shadow: -6px 0 0px $red inset;
+                    box-shadow: -8px 0 0px $red inset;
                 }
             }
         }
@@ -437,7 +437,7 @@ export default {
                 &:hover {
                     overflow: visible;
                     .fly-over .inner {
-                        background: $bgContentAlt;
+                        background: $bgModuleHover;
                     }
                     button.options {
                         display: none;
@@ -465,7 +465,7 @@ export default {
                     top: 0;
                     left: -40px;
                     width: 40px;
-                    background: linear-gradient(90deg, transparent, #f3f3f3);
+                    background: linear-gradient(90deg, transparent, $bgModuleHover);
                     pointer-events: none;
                 }
             }

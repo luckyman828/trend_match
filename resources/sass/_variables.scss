@@ -15,6 +15,8 @@ $green500: $green;
 $green600: #49cb8b;
 $green700: #2fa280;
 
+$grey100: #fafcfd;
+$grey200: #f5fafb;
 $grey300: #ebf2f4;
 $grey400: #dfe7ea;
 $grey450: #cfd8dd;
@@ -44,10 +46,9 @@ $secondary: #69e4a6;
 $secondaryLight: rgba($secondary, 0.35);
 
 $dark: #1c293b;
-$dark05: #3c3b54;
+$dark05: #313f52;
 $dark1: #535353;
 $dark15: #707070;
-$dark25: #888;
 $dark2: #a8a8a8;
 $darkAlt: #43425d;
 $darkAlt2: #56556e;
@@ -104,14 +105,12 @@ $screenXs: 1260px;
 // ------- ASSIGN COLORS
 // Backgrounds
 $bg: #e6ecef;
-// $bg: #eff3f6;
-// $bg: #d9e2e8 // ALT BG - More contrast to modules - a little ligher: #e5edf2
 $bgContent: white;
 $bgModule: white;
-$bgModuleHover: #fafbfc;
+$bgModuleHover: $grey300;
 $bgModuleActive: #fafbfc;
 $bgModuleInactive: #cdd8df;
-$bgContentAlt: $light1;
+$bgContentAlt: #fafbfc;
 // $bgEl: #d7dee1;
 $bgEl: #cfd8dd;
 
@@ -157,6 +156,7 @@ $borderColorEl: $bluegrey400;
 $borderColorElHard: $bluegrey500;
 $borderColorElHover: #75869c;
 $borderEl: solid 1px $borderColorEl;
+$borderRadiusEl: 4px;
 $borderElSoft: solid 1px #cddde8;
 $borderElHard: solid 2px $borderColorElHard;
 

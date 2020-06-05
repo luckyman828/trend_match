@@ -50,6 +50,9 @@ export default {
         // z-index: 1;
         h3 {
             margin: 0;
+            @media screen and (max-width: $screenXs) {
+                font-size: 14px;
+            }
         }
         .left, .right {
             display: flex;

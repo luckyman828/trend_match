@@ -283,7 +283,6 @@ input[type='submit'] {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: $font;
     text-decoration: none;
     user-select: none;
     border: solid 1px transparent;
@@ -380,6 +379,7 @@ input[type='submit'] {
     border-color: $grey500;
     background: $grey500;
     color: $font;
+    // color: $dark05;
     &:hover {
         background: $grey400;
         border-color: $grey400;
@@ -1548,10 +1548,10 @@ input[type='number']::-webkit-outer-spin-button {
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: $grey700;
+    background: $grey600;
     border-radius: 2px;
     &:hover {
-        background: $dark25;
+        background: $grey700;
     }
 }
 

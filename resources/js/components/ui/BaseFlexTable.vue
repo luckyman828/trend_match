@@ -208,6 +208,7 @@ export default {
         position: absolute;
         top: -$heightTableTab;
         left: -1px;
+        width: 100%;
     }
     .sticky-bg {
         display: none;

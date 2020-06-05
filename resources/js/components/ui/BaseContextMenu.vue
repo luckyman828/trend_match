@@ -4,7 +4,7 @@
             <strong>
                 <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
             </strong>
-            <button class="circle close" @click="hide"><i class="fal fa-times"></i></button>
+            <button class="circle close" @click="hide"><i class="far fa-times"></i></button>
         </div>
 
         <div class="body">

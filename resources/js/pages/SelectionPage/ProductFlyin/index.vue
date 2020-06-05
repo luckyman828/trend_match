@@ -350,7 +350,11 @@ export default {
             }
             .flyin-header {
                 > .left {
-                    max-width: 380px;
+                    // max-width: 380px;
+                    h3 {
+                        max-width: calc(36vw - 92px);
+                        overflow: hidden;
+                    }
                 }
             }
         }
@@ -384,8 +388,9 @@ export default {
                 width: 225px;
                 height: 300px;
                 overflow: hidden;
-                border-radius: 4px;
                 border: solid 2px $divider;
+                border: $borderElHard;
+                border-radius: $borderRadiusEl;
                 position: relative;
                 img {
                     width: 100%;
