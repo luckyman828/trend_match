@@ -85,74 +85,62 @@ export default {
                 // Check if there is a variant that contains the image variant name
                 const existingVariant = product.variants.find(x => x.name.indexOf(variantName) >= 0)
                 const existingFront = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Front') >= 0)
-                const existingBack = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Front') >= 0)
-                const existingFrontIndex = product.variants.findIndex(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Front') >= 0)
-                const existingBackIndex = product.variants.findIndex(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Front') >= 0)
-                const existingVariantIndex = product.variants.findIndex(x => x.name.indexOf(variantName) >= 0)
+                const existingBack = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Back') >= 0)
+                const existingModel = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Model') >= 0)
                 const isFront = image.name.indexOf('Front') >= 0
                 const isBack = image.name.indexOf('Back') >= 0
-                let existingIsFront = false
-                let existingIsBack = false
+                const isModel = image.name.indexOf('Model') >= 0
                 let addImageTypeToName = false
 
-                // If the variant exists add the new image before or after or replace it
-                // if (existingVariant) {
-                //     // Check if the existing variant is named front or back
-                //     existingIsFront = existingVariant.name.indexOf('Front') >= 0
-                //     existingIsBack = existingVariant.name.indexOf('Back') >= 0
-                //     if (existingIsFront && isBack) {
-                //         // Insert the new variant immediately after the existing
-                //         product.variants.splice(existingVariantIndex + 1, 0, variantToUpdate)
-                //         addNewVariant = true
-                //     }
-                //     else if (existingIsBack && isFront) {
-                //         // Insert the new variant immediately before the existing
-                //         product.variants.splice(existingVariantIndex, 0, variantToUpdate)
-                //         addNewVariant = true
-                //     }
-                //     else {
-                //         // Don't add a new variant - simply update the existing
-                //         variantToUpdate = existingVariant
-                //     }
-                    
-                // }
-
-
-
-                if (existingFront) {
-                    if (isFront) variantToUpdate = existingFront
-                    if (isBack && !existingBack) {
-                        // Insert the new variant immediately after the existing
-                        product.variants.splice(existingFrontIndex + 1, 0, variantToUpdate)
-                        addImageTypeToName = true
-                    }
-                }
-
-                else if (existingBack) {
-                    if (isBack) variantToUpdate = existingFront
-                    if (isFront && !existingFront) {
-                        // Insert the new variant immediately before the existing
-                        product.variants.splice(existingBackIndex, 0, variantToUpdate)
-                        addImageTypeToName = true
-                    }
-                }
-
-                else if (existingVariant) {
+                if (existingVariant && !(existingFront || existingBack || existingModel)) {
+                    console.log('update existing variant')
                     variantToUpdate = existingVariant
                     addImageTypeToName = true
                 }
 
-                // If no variant excists, create it on the product
-                if (!existingVariant) {
-                    product.variants.push(variantToUpdate)
-                    addImageTypeToName = true
+                else {
+
+                    if (isFront) {
+                        if (existingFront) variantToUpdate = existingFront
+                        else {
+                            console.log('add front')
+                            product.variants.push(variantToUpdate)
+                            addImageTypeToName = true
+                        }
+                    }
+                    if (isBack) {
+                        if (existingBack) variantToUpdate = existingBack
+                        else {
+                            console.log('add back')
+                            product.variants.push(variantToUpdate)
+                            addImageTypeToName = true
+                        }
+                    }
+                    if (isModel) {
+                        if (existingModel) variantToUpdate = existingModel
+                        else {
+                            console.log('add model')
+                            product.variants.push(variantToUpdate)
+                            addImageTypeToName = true
+                        }
+                    }
+                    
                 }
+
+
+                // // If no variant excists, create it on the product
+                // if (!existingVariant) {
+                //     console.log('no existing variant')
+                //     product.variants.push(variantToUpdate)
+                //     addImageTypeToName = true
+                // }
 
                 // Set the variant name to indicate if it's the front or the back, if the name doesn't already indicate it
                 // if (addNewVariant || !(existingIsBack || existingIsFront)) {
                 if (addImageTypeToName) {
                     if (isFront) variantToUpdate.name = variantName + ' - Front'
                     if (isBack) variantToUpdate.name = variantName + ' - Back'
+                    if (isModel) variantToUpdate.name = variantName + ' - Model'
                 }
 
                 // Upload the image
@@ -172,7 +160,38 @@ export default {
             // Update all products --> This cannot be done earlier since we cannot be sure if we are in the process of uploading some of the images on the product
             await Promise.all(productsToUpdate.map(async product => {
                 this.updatingCount++
+
+                // Sort the products variants
+                product.variants.sort((a,b) => {
+                    const aIsFront = a.name.indexOf('Front') >= 0
+                    const aIsBack = a.name.indexOf('Back') >= 0
+                    const aIsModel = a.name.indexOf('Model') >= 0
+                    const bIsFront = b.name.indexOf('Front') >= 0
+                    const bIsBack = b.name.indexOf('Back') >= 0
+                    const bIsModel = b.name.indexOf('Model') >= 0
+                    
+                    let aName
+                    if (aIsFront) aName = a.name.substr(0, a.name.indexOf('Front'))
+                    if (aIsBack) aName = a.name.substr(0, a.name.indexOf('Back'))
+                    if (aIsModel) aName = a.name.substr(0, a.name.indexOf('Model'))
+
+                    let bName
+                    if (bIsFront) bName = b.name.substr(0, b.name.indexOf('Front'))
+                    if (bIsBack) bName = b.name.substr(0, b.name.indexOf('Back'))
+                    if (bIsModel) bName = b.name.substr(0, b.name.indexOf('Model'))
+
+                    if (aName != bName) return aName > bName ? 1 : -1
+                    
+                    // Same variant name
+                    if (aIsFront) return -1
+                    if (aIsModel) return 1
+                    if (aIsBack && bIsModel) return -1
+                    if (aIsBack && bIsFront) return 1
+                    
+                })
+
                 await this.updateProduct(product)
+                this.updatingCount--
             })).catch(err => {
                 console.log('error when updating products', err)
             }).then(response => {
