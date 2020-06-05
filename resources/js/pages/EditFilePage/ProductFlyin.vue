@@ -336,8 +336,9 @@ export default {
         idError: null
     }},
     watch: {
-        currentProduct(newVal, oldVal) {
-            this.initProduct()
+        currentProduct: {
+            deep: true,
+            handler: 'initProduct'
         }
     },
     computed: {

@@ -1,7 +1,10 @@
 <template>
     <div class="edit-file-component">
 
-        <ThePageHeader :title="`Editing: ${file.name}`"/>
+        <!-- <ThePageHeader :title="`Editing: ${file.name}`"/> -->
+        <h1>Editing: {{file.name}}</h1>
+
+        <BulkUploadComponent/>
 
         <div class="quick-actions" v-if="productsEligibleForVariantImageShift.length > 0">
             <p>Recommended actions</p>
@@ -25,6 +28,7 @@ import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import ProductsTable from './ProductsTable'
 import EditFileHeader from './EditFileHeader'
 import ProductFlyin from './ProductFlyin'
+import BulkUploadComponent from './BulkUploadComponent'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 // Mixins
 import sortArray from '../../mixins/sortArray'
@@ -35,6 +39,7 @@ export default{
         ProductsTable,
         ProductFlyin,
         ThePageHeader,
+        BulkUploadComponent,
     },
     mixins: [
         sortArray

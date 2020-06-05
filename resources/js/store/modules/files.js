@@ -26,6 +26,7 @@ export default {
         getCurrentFilePath: state => state.path,
         getCurrentFolderStatus: state => state.currentFolderStatus,
         currentFile: state => state.currentFile,
+        getCurrentFile: state => state.currentFile,
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
         getCurrentFolder: state => state.currentFolder,

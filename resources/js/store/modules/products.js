@@ -471,7 +471,8 @@ export default {
                     new Compressor(image, {
                         quality: 0.8,
                         checkOrientation: true,
-                        maxHeight: 2016,
+                        // maxHeight: 2016,
+                        maxHeight: 1080,
                         success(result) {
                             compressedImage = result
                             resolve()
