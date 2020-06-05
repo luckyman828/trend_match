@@ -180,7 +180,10 @@ export default {
                     if (bIsBack) bName = b.name.substr(0, b.name.indexOf('Back'))
                     if (bIsModel) bName = b.name.substr(0, b.name.indexOf('Model'))
 
-                    if (aName != bName) return aName > bName ? 1 : -1
+                    if (aName != bName) {
+                        if (aName > bName) return 1
+                        else return -1
+                    }
                     
                     // Same variant name
                     if (aIsFront) return -1
