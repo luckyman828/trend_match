@@ -1,9 +1,6 @@
 <template>
-    <div class="login-screen" v-if="$route.name == 'login'">
-        <transition name="fade">
-            <router-view></router-view>
-        </transition>
-    </div>
+    <LoginPage v-if="$route.path.startsWith('/login')"/>
+
     <div class="app" id="app-component" v-else-if="authUser && currentWorkspace" :class="{'hide-nav': hideNav}">
         <TheNavbar/>
         <TheSidebar/>
@@ -38,13 +35,14 @@ import TheNavbar from './components/layout/TheNavbar'
 // import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import TheImageLightbox from './components/layout/TheImageLightbox'
 import TheSnackbarSpawner from './components/layout/TheSnackbarSpawner'
+import LoginPage from './pages/LoginPage/'
 
 export default{
     name: 'app',
     components: {
         TheSidebar,
         TheNavbar,
-        // TheNavbarLogo,
+        LoginPage,
         TheImageLightbox,
         TheSnackbarSpawner,
     },
@@ -208,7 +206,7 @@ export default{
             if (this.$route.name != 'login') {
                 if (!!error.response && error.response.status === 401) {
                     // if you ever get an unauthorized, logout the user
-                    this.logout()
+                    // this.logout()
                 }
             }
             return Promise.reject(error.response);

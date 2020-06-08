@@ -253,6 +253,19 @@ textarea {
     color: white;
 }
 
+// LINKS
+.text-link {
+    font-weight: 700;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    &:hover {
+        color: $primary;
+        cursor: pointer;
+    }
+}
+
 // SHAPES: BUTTONS, SQUARES, PILLS, CIRCLES
 .hotkey-wrapper {
     display: inline-flex;
@@ -272,7 +285,7 @@ textarea {
         }
     }
 }
-button,
+button:not(.text-link),
 .button,
 .square,
 .pill,
@@ -492,7 +505,7 @@ input[type='submit'] {
         width: 100%;
     }
 }
-button,
+button:not(.text-link),
 .button,
 input[type='submit'] {
     font-weight: 700;
