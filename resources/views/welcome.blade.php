@@ -21,6 +21,13 @@
             (function(){d=document;s=d.createElement("script");
             s.src="https://client.crisp.chat/l.js";
             s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+            
+            window.CRISP_READY_TRIGGER = function() {
+                const crispChat = document.querySelector('#crisp-chatbox > *:first-child > *:first-child')
+                const crispChatIcon = document.querySelector('#crisp-chatbox > *:first-child > *:nth-child(2)')
+                crispChat.style.setProperty( 'left', '100px', 'important' );
+                crispChatIcon.style.setProperty( 'left', '100px', 'important' );
+            };
         </script>
 
     </head>
