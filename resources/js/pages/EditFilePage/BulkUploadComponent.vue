@@ -93,7 +93,6 @@ export default {
                 let addImageTypeToName = false
 
                 if (existingVariant && !(existingFront || existingBack || existingModel)) {
-                    console.log('update existing variant')
                     variantToUpdate = existingVariant
                     addImageTypeToName = true
                 }
@@ -103,7 +102,6 @@ export default {
                     if (isFront) {
                         if (existingFront) variantToUpdate = existingFront
                         else {
-                            console.log('add front')
                             product.variants.push(variantToUpdate)
                             addImageTypeToName = true
                         }
@@ -111,7 +109,6 @@ export default {
                     if (isBack) {
                         if (existingBack) variantToUpdate = existingBack
                         else {
-                            console.log('add back')
                             product.variants.push(variantToUpdate)
                             addImageTypeToName = true
                         }
@@ -119,7 +116,6 @@ export default {
                     if (isModel) {
                         if (existingModel) variantToUpdate = existingModel
                         else {
-                            console.log('add model')
                             product.variants.push(variantToUpdate)
                             addImageTypeToName = true
                         }
@@ -127,16 +123,7 @@ export default {
                     
                 }
 
-
-                // // If no variant excists, create it on the product
-                // if (!existingVariant) {
-                //     console.log('no existing variant')
-                //     product.variants.push(variantToUpdate)
-                //     addImageTypeToName = true
-                // }
-
                 // Set the variant name to indicate if it's the front or the back, if the name doesn't already indicate it
-                // if (addNewVariant || !(existingIsBack || existingIsFront)) {
                 if (addImageTypeToName) {
                     if (isFront) variantToUpdate.name = variantName + ' - Front'
                     if (isBack) variantToUpdate.name = variantName + ' - Back'
