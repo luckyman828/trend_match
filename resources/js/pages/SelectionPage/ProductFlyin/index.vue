@@ -111,18 +111,18 @@
                 <div class="col-2 minimum">
                     <div>
                         <label>Order min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.quantity"/>
+                        <BaseInputField readOnly=true :value="product.min_order"/>
                     </div>
                     <div>
                         <label>Variant min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
+                        <BaseInputField readOnly=true :value="product.min_variant_order"/>
                     </div>
                 </div>
 
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
                 <label>Description</label>
-                <BaseInputTextArea readOnly=true :value="product.description"/>
+                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
                 <label>Assortments</label>
                 <BaseInputTextArea readOnly=true :value="product.assortments.map(x => x.name).join(',\n')"/>
                 <label>Category</label>
