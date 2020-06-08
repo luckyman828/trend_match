@@ -15,7 +15,7 @@
 
 <script>
 export default {
-    name: 'baseButton',
+    name: 'baseShape',
     props: [
         'shapeClass',
         'targetAreaPadding',

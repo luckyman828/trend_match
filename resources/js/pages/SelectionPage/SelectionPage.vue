@@ -167,9 +167,9 @@ export default{
         },
 
         // SingalR Handlers
-        // subscribeSelectionsChangedHandler(message) {
-        //     //
-        // },
+        subscribeSelectionsChangedHandler(message) {
+            //
+        },
         async selectionPresentationChangedHandler(eventName, selectionIds) {
             if (eventName == 'Begin' 
                 && this.currentSelection.your_role != 'Owner'
@@ -199,6 +199,8 @@ export default{
             }
         },
         requestArrivedHandler(selectionId, request) {
+            console.log('requestArrived')
+            console.log('request arrived', selectionId, request)
             if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
@@ -256,9 +258,6 @@ export default{
                 const productActions = [{product: selectionProduct, action: alignment}]
                 this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
             }
-        },
-        requestArrivedHandler() {
-
         },
 
         async connectToLiveUpdates() {
