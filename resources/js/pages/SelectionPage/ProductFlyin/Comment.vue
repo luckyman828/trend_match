@@ -132,9 +132,10 @@ export default {
         &.edit-active {
             width: 100%;
             max-width: none;
-            margin-bottom: 44px;
+            margin-bottom: 72px;
             .comment {
                 padding: 2px;
+                width: 100%;
                 ::v-deep {
                     .input-wrapper {
                         border: none;
@@ -184,7 +185,6 @@ export default {
         background: white;
         border-radius: 6px;
         display: inline-block;
-        z-index: 1;
         margin-bottom: 4px;
         text-align: left;
         .failed {
@@ -209,14 +209,14 @@ export default {
             background: $yellow;
             color: $dark;
         }
-        &:hover, &.failed {
+        .own &:hover, &.failed {
+            font-weight: 700;
             .controls {
-                opacity: 1;
+                display: inline-flex;
             }
         }
         .controls {
             transition: .3s;
-            opacity: 0;
             position: absolute;
             right: 0;
             bottom: -36px;
@@ -241,9 +241,6 @@ export default {
             .loader {
                 height: 24px;
                 flex-direction: row;
-            }
-            .own & {
-                display: inline-flex;
             }
         }
     }
