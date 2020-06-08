@@ -39,14 +39,17 @@
             <!-- End Comment Controls -->
         </div>
         <div class="save-controls" v-if="editActive">
-            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
+            <button class="invisible ghost-hover" style="margin-right: 8px"
+            @click="editActive = false">
+                <span>Cancel</span>
+            </button>
+            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save', align: 'right'}" 
             @click="onUpdateComment">
                 <span>Save</span>
             </BaseButton>
-            <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
         </div>
 
-        <div class="sender" v-if="displayAuthor">
+        <div class="sender" v-if="displayAuthor && !editActive">
             <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
             {{(comment.user_id == authUser.id) ? 'You' 
             : !commentIsAnonymized && comment.user ? comment.user.name : 'Anonymous'}}
@@ -162,7 +165,7 @@ export default {
     .save-controls {
         position: absolute;
         bottom: -8px;
-        left: 0;
+        right: 0;
         transform: translateY(100%);
         display: flex;
     }
