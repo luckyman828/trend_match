@@ -663,6 +663,8 @@ export default {
         },
         PROCESS_PRODUCTS(state, products) {
             products.map(product => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
                 // ---- START PRICES ----
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
@@ -709,6 +711,8 @@ export default {
         },
         PROCESS_SELECTION_PRODUCTS(state, products) {
             products.map(product => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
                     get: function() {
@@ -805,6 +809,8 @@ export default {
         PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs }) {
             // Use the first product of the
             products.map((product, productIndex) => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
                 // Attach the correct selection product to the base product
                 Vue.set(
                     product,

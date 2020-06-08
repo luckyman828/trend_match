@@ -666,17 +666,21 @@ export default {
             this.submitStatus = 'Processing products'
             const newProducts = this.instantiateProducts()
 
-            this.submitStatus = 'Uploading images'
-            await Promise.all(newProducts.map(async product => {
-                await Promise.all(product.variants.map(async variant => {
-                    if (variant.image) {
-                        const imageFile = await this.getImageFromURL(variant.image)
-                        if (imageFile) {
-                            await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+            if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+
+                this.submitStatus = 'Uploading images'
+                await Promise.all(newProducts.map(async product => {
+                    await Promise.all(product.variants.map(async variant => {
+                        if (variant.image) {
+                            const imageFile = await this.getImageFromURL(variant.image)
+                            if (imageFile) {
+                                await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                            }
                         }
-                    }
+                    }))
                 }))
-            }))
+                
+            }
 
 
             // Loop through the instantiated products and find a match in the existing products to update them
