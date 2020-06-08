@@ -1,12 +1,13 @@
 <template>
-    <div class="example-pdf">
+    <div class="example-pdf" :style="testFeaturesEnabled && {visibility: 'visible'}">
         <div class="overlay" @click="$emit('close')"></div>
         <div class="wrapper" ref="pdfWrapper">
             <div class="inner" style="font-family: 'Roboto', sans-serif, helvetica, arial; position: relative;">
 
 
                 <div class="page" v-for="(productChunk, index) in chunksToShow" :key="index"
-                style="width: 744pt; height: 1052.5pt; box-sizing: border-box; padding: 60px 38px 38px; position: relative;">
+                style="width: 744pt; height: 1053pt; overflow: hidden;
+                box-sizing: border-box; padding: 60px 38px 38px; position: relative;">
 
                     <div class="header" style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between;
                     position: absolute; top: 16px; left 0; width: 684pt;">
@@ -20,12 +21,17 @@
                     </div>
 
                     <div class="product-wrapper" v-for="(product, index) in productChunk" :key="product.datasource_id"
-                    style="display: block; border: solid 2px; border-radius: 4px; height: 306pt; box-sizing: border-box;
-                    padding: 8px 12px; margin-top: 12pt"
-                    :style="[{width: exportComments ? '100%' : '336pt'},
-                    {marginRight: !exportComments && index%2 == 0 ? '12pt' : '0'},
-                    {float: !exportComments && index%2 == 0 ? 'left' : 'right'}]">
-                        <div class="col-wrapper" style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between; height: 100%;">
+                    style="display: block; border: solid 2px; border-radius: 4px; margin-top: 12pt"
+                    :style="[{width: exportComments || includeVariants ? '100%' : '336pt'},
+                    {marginRight: !(exportComments || includeVariants) && index%2 == 0 ? '12pt' : '0'},
+                    {float: !exportComments && index%2 == 0 ? 'left' : 'right'},
+                    {height: includeVariants ? '100%' : '306pt'}]">
+
+                        <div class="col-wrapper" 
+                        style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between;
+                        padding: 8px 12px 16px; box-sizing: border-box;"
+                        :style="{height: includeVariants ? 'auto' : 'height: 336pt'}">
+
                             <div class="col-left" style="display: -webkit-box; -webkit-box-orient: vertical; flex-direction: column;
                             -webkit-box-pack: justify; justify-content: space-between; align-items: space-between;"
                             :style="{width: exportComments ? '24%' : '32%'}">
@@ -48,8 +54,6 @@
                                         border: solid 2px; height: 0; width: 100%; margin-bottom: 8px;
                                         background-size: contain; background-position: center; background-repeat: no-repeat;"
                                         :style="{backgroundImage: `url(${variantImage(product.variants[0])})`}">
-                                            <!-- <img :src="variantImage(product.variants[0])" style="height: 100%; width: 100%; position: absolute;
-                                            left: 0; top: 0; object-fit: contain;"> -->
                                         </div>
                                     </div>
                                     <table class="prices">
@@ -98,7 +102,7 @@
                                                 <td style="font-size: 10px;">
                                                     <span style="font-size: 10px;">{{action.selection.name | truncate(16)}}</span>
                                                 </td>
-                                            </div>
+                                            </div>  
                                             <div v-if="includeDistribution" 
                                             style="font-size: 10px; max-width: 28px; min-width: 28px; margin-left: 16px;" 
                                             :style="{textAlign: product.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}">
@@ -156,7 +160,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                        <VariantList :product="product" v-if="includeVariants"/>
+
+                    </div> 
                 </div>
             </div>
 
@@ -168,6 +175,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../mixins/variantImage'
 import formatDate from '../../mixins/formatDate'
+import VariantList from './VariantList'
 
 export default {
     name: 'exportPdf',
@@ -175,12 +183,18 @@ export default {
         variantImage,
         formatDate,
     ],
+    components: {
+        VariantList
+    },
     props: [
         'products',
         'exportComments',
         'includeDistribution',
         'includeNotDecided',
-        'chunkIndex'
+        'chunkIndex',
+        'includeVariants',
+        'testFeaturesEnabled',
+        'chunkSize',
     ],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
@@ -189,7 +203,7 @@ export default {
         productChunks() {
             const array = this.products
             const chunkedArr = [];
-            const size = this.exportComments ? 3 : 6
+            const size = this.includeVariants ? 1 : this.exportComments ? 3 : 6
             for (let i = 0; i < array.length; i++) {
                 const last = chunkedArr[chunkedArr.length - 1];
                 if (!last || last.length === size) {
@@ -201,12 +215,12 @@ export default {
             return chunkedArr;
         },
         chunksToShow() {
-            return this.productChunks
-            // const size = this.exportComments ? 3 : 6
-            // const target = 12 // MUST be divisible by 6
-            // const chunkAmount = target / size
-            // const start = this.chunkIndex * chunkAmount
-            // return this.productChunks.slice(start, start + chunkAmount)
+            if (!this.testFeaturesEnabled || this.chunkSize <= 0) return this.productChunks
+            const size = this.includeVariants ? 1 : this.exportComments ? 3 : 6
+            const target = this.chunkSize // MUST be divisible by 6
+            const chunkAmount = target / size
+            const start = this.chunkIndex * chunkAmount
+            return this.productChunks.slice(start, start + chunkAmount)
         },
         totalPages() {
             return this.chunksToShow.length

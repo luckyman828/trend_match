@@ -53,6 +53,7 @@ export default {
 
             // Shape products for request
             const productActions = products.map(product => {
+                // Return the products shaped for the request body
                 return {
                     product,
                     action: {
@@ -62,12 +63,30 @@ export default {
                         selection_id: selection.id,
                         user_id: user.id,
                         user: user,
+                        variants: product.variants.map(variant => {
+                            return {
+                                id: variant.id,
+                                feedback: action,
+                            }
+                        }),
                     },
                 }
             })
 
             // Save old actions
             if (selection.your_role == 'Member') {
+                products.map(product => {
+                    // Loop through all the variants. If their action is None, then give them a default action
+                    product.variants.forEach(variant => {
+                        // if (variant.your_feedback == 'None') {
+                        variant.your_feedback = action
+                        // }
+                        // if (action == 'None') {
+                        //     variant.your_feedback = 'None'
+                        // }
+                    })
+                })
+
                 oldActions = products.map(product => {
                     return {
                         product,
@@ -87,10 +106,25 @@ export default {
                         return {
                             product_id: product.id,
                             feedback: action,
+                            variants: product.variants.map(variant => {
+                                return {
+                                    id: variant.id,
+                                    feedback: action,
+                                }
+                            }),
                         }
                     }),
                 }
             } else if (selection.your_role == 'Owner') {
+                products.map(product => {
+                    // Loop through all the variants. If their action is None, then give them a default action
+                    product.variants.forEach(variant => {
+                        // if (variant.action == 'None') {
+                        variant.action = action
+                        // }
+                    })
+                })
+
                 oldActions = products.map(product => {
                     return {
                         product,
@@ -110,6 +144,12 @@ export default {
                         return {
                             product_id: product.id,
                             action: action,
+                            variants: product.variants.map(variant => {
+                                return {
+                                    id: variant.id,
+                                    feedback: action,
+                                }
+                            }),
                         }
                     }),
                 }
@@ -143,7 +183,6 @@ export default {
                                 type: 'success',
                                 callback: async () => {
                                     // Restore the actions
-                                    console.log('restore actions!')
                                     await dispatch('insertOrUpdateProductActionPairs', {
                                         productActionPairs: oldActions,
                                         selection,
@@ -188,10 +227,12 @@ export default {
             // Find the selection product if it is not the product we have been passed
             if (!!productActionPairs[0].product.selectionInputArray) {
                 productActionPairs.map(pair => {
-                    const selectionIndex = pair.product.selectionInputArray.findIndex(
-                        x => x.selection.id == selection.id
-                    )
-                    pair.product = pair.product.selectionInputArray[selectionIndex].product
+                    if (pair.product.selectionInputArray) {
+                        const selectionIndex = pair.product.selectionInputArray.findIndex(
+                            x => x.selection.id == selection.id
+                        )
+                        pair.product = pair.product.selectionInputArray[selectionIndex].product
+                    }
                 })
             }
 
@@ -205,6 +246,7 @@ export default {
                         return {
                             product_id: pair.product.id,
                             feedback: pair.action.action,
+                            variants: pair.action.variants,
                         }
                     }),
                 }
@@ -214,7 +256,8 @@ export default {
                     actions: productActionPairs.map(pair => {
                         return {
                             product_id: pair.product.id,
-                            actions: pair.action.action,
+                            action: pair.action.action,
+                            variants: pair.action.variants,
                         }
                     }),
                 }
@@ -260,7 +303,8 @@ export default {
                     if (!existingAction) {
                         productAction.product.feedbacks.push(action)
                     } else {
-                        existingAction.action = action.action
+                        // existingAction.action = action.action
+                        Object.assign(existingAction, action)
                     }
                 }
 
@@ -270,7 +314,8 @@ export default {
                     if (!existingAction) {
                         productAction.product.actions.push(action)
                     } else {
-                        existingAction.action = action.action
+                        // existingAction.action = action.action
+                        Object.assign(existingAction, action)
                     }
 
                     // If is self

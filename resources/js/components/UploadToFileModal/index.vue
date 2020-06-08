@@ -218,9 +218,13 @@ export default {
             }).catch(err => {
                 image = false
                 this.SHOW_SNACKBAR({ 
-                    msg: 'Access Denied to download image to Kollekt. The image URL is used instead. This may mean slower load-times and less stability for your images on Kollekt. Conctact david@kollekt.dk to learn about what you can do.', 
+                    msg: `
+                        <p><strong>Hey you!</strong><br></p>
+                        <p>We will display your image(s) from <u>${url.substr(0, url.indexOf('/', 10))}</u>.</p>
+                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
+                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
                     type: 'info', 
-                    iconClass: 'fa-exclamation-triangle', 
+                    iconClass: 'fa-info-circle', 
                 })
             })
             return image
@@ -443,6 +447,7 @@ export default {
                                 variant = product.variants.find(x => x.name == variantKeyValue)
                                 if (!variant) {
                                     variant = {
+                                        id: this.$uuid.v4(),
                                         name: variantKeyValue,
                                         image: null,
                                         sizes: []

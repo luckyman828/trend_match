@@ -455,6 +455,7 @@ export default {
         },
         onAddVariant() {
             this.product.variants.push({
+                id: this.$uuid.v4(),
                 name: null,
                 image: null,
                 blob_id: null,
@@ -682,9 +683,13 @@ export default {
             }).catch(err => {
                 image = false
                 this.SHOW_SNACKBAR({ 
-                    msg: 'Access Denied to download image to Kollekt. The image URL is used instead. This may mean slower load-times and less stability for your images on Kollekt. Conctact david@kollekt.dk to learn about what you can do.', 
+                    msg: `
+                        <p><strong>Hey you!</strong><br></p>
+                        <p>We will display your image(s) from <u>${url.substr(0, url.indexOf('/', 10))}</u>.</p>
+                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
+                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
                     type: 'info', 
-                    iconClass: 'fa-exclamation-triangle', 
+                    iconClass: 'fa-info-circle', 
                 })
             })
             this.gettingImagesFromURL--
@@ -748,7 +753,7 @@ export default {
         margin-bottom: 32px;
     }
     .product-variant {
-        width: 180px;
+        width: 182px;
         display: inline-block;
         &:not(:last-child) {
             margin-right: 12px;
@@ -780,9 +785,10 @@ export default {
             }
         }
         .img-wrapper {
-            padding-top: 133.33%; // 4:3 
+            // padding-top: 133.33%; // 4:3 
+            // height: 0;
+            height: 242px;
             width: 100%;
-            height: 0;
             position: relative;
             overflow: hidden;
             display: inline-block;

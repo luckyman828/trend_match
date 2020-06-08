@@ -31,17 +31,32 @@
                         </BaseCheckboxInputField>
                     </div>
 
-                    <!-- <h4>Chunk & Test display</h4>
+                    <h4>Variants</h4>
                     <div class="form-element">
-                        <label>Chunk Index to export</label>
-                        <BaseInputField type="number" v-model.number="chunkIndex" :value="0"/>
-                    </div>
-                    <h4>Display test export </h4>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="previewPdf">
-                            Show preview
+                        <BaseCheckboxInputField v-model="includeVariants">
+                            Include Variant Input
                         </BaseCheckboxInputField>
-                    </div> -->
+                    </div>
+
+                    <!-- Test Only -->
+                    <template v-if="testFeaturesEnabled">
+                        <h4>Chunk & Test display</h4>
+                        <div class="form-element">
+                            <label>Chunk Index to export</label>
+                            <BaseInputField type="number" v-model.number="chunkIndex" :value="0"/>
+                        </div>
+                        <div class="form-element">
+                            <label>Target number of products in PDF (must be divisible by 6)</label>
+                            <BaseInputField type="number" v-model.number="chunkSize"/>
+                        </div>
+                        <h4>Display test export </h4>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="previewPdf">
+                                Show preview
+                            </BaseCheckboxInputField>
+                        </div>
+                    </template>
+                    <!-- End Test -->
                 </template>
 
                 <div class="form-element">
@@ -83,7 +98,8 @@
 
             <ExportPdf ref="exportToPdf" v-if="previewPdf" :products="productsToExport"
             :includeDistribution="includeDistribution" :exportComments="exportComments"
-            :includeNotDecided="includeNotDecided" :chunkIndex="chunkIndex"
+            :includeNotDecided="includeNotDecided" :chunkIndex="chunkIndex" :includeVariants="includeVariants"
+            :testFeaturesEnabled="testFeaturesEnabled" :chunkSize="chunkSize"
             @close="previewPdf = false"/>
         </template>
     </BaseModal>
@@ -114,8 +130,11 @@ export default {
         onlyWithRequests: false,
         includeDistribution: true,
         includeNotDecided: false,
+        includeVariants: false,
         previewPdf: false,
         chunkIndex: 0,
+        chunkSize: 0,
+        testFeaturesEnabled: false,
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
@@ -144,7 +163,7 @@ export default {
             this.exportingPDF = true
             this.previewPdf = true
 
-            this.$nextTick(() => {
+            this.$nextTick(() => { this.$nextTick(() => {
                 this.$nextTick(async () => {
                     const payload = {
                         html: `<head>
@@ -204,7 +223,7 @@ export default {
                     });
                     this.exportingPDF = false
                     this.previewPdf = false
-                })
+                })})
             })
         },
     },

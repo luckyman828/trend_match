@@ -129,7 +129,7 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .products-table-row {
-        height: 98px;
+        height: 138px;
         .img-wrapper {
             border: solid 1px $light2;
             height: 100%;

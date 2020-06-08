@@ -14,6 +14,22 @@
         <link type="text/css" rel="stylesheet" href="{{ mix('css/app.css') }}">
         {{-- <link rel="stylesheet" src="{{ asset('css/vue-styles.css') }}" /> --}}
 
+        {{-- Livechat --}}
+        <script type="text/javascript">
+            window.$crisp=[];
+            window.CRISP_WEBSITE_ID="9b20bd48-3b9d-477c-8ca6-911a0c24e3a2";
+            (function(){d=document;s=d.createElement("script");
+            s.src="https://client.crisp.chat/l.js";
+            s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+            
+            window.CRISP_READY_TRIGGER = function() {
+                const crispChat = document.querySelector('#crisp-chatbox > *:first-child > *:first-child')
+                const crispChatIcon = document.querySelector('#crisp-chatbox > *:first-child > *:nth-child(2)')
+                crispChat.style.setProperty( 'left', '100px', 'important' );
+                crispChatIcon.style.setProperty( 'left', '100px', 'important' );
+            };
+        </script>
+
     </head>
     <body>
         <div class="main-wrapper">

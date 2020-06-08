@@ -125,7 +125,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 208 : 100"
+                    :item-size="currentSelections.length > 1 ? 248 : 140"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -134,9 +134,17 @@
                     @showContext="onShowContextMenu($event, item)"
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
+                    :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
+
+                <!-- <ProductsTableRow class="product-row flex-table-row" v-for="(product, index) in productsFilteredBySearch" :key="product.id"
+                    @showContext="onShowContextMenu($event, item)"
+                    :selection="selection" :currentAction="currentAction"
+                    :product="product" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
+                    :tooltipComp="$refs.actionDistributionTooltip"
+                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/> -->
 
                 <tr v-if="productsFilteredBySearch.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
@@ -243,6 +251,21 @@
                 </div>
             </template>
         </BaseContextMenu>
+
+        <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip"
+        @show="showDistributionTooltip">
+            <ActionDistributionTooltip :product="tooltipProduct" :type="distributionTooltipType"
+            :actionDistributionTooltipTab="actionDistributionTooltipTab"
+            @changeTab="tab => actionDistributionTooltipTab = tab"/>
+        </BaseTooltip>
+
+        <BaseTooltip id="variant-tooltip" ref="variantTooltip"
+        @show="showVariantTooltip">
+            <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="tooltipProduct"
+            :actionDistributionTooltipTab="actionDistributionTooltipTab"
+            @changeTab="tab => actionDistributionTooltipTab = tab"/>
+        </BaseTooltip>
+
     </div>
 </template>
 
@@ -250,7 +273,9 @@
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ProductsTableRow from './ProductsTableRow/index'
 import MultipleSelectionSelector from './MultipleSelectionSelector'
+import ActionDistributionTooltip from './ActionDistributionTooltip'
 import sortArray from '../../mixins/sortArray'
+import VariantTooltip from './VariantTooltip'
 
 export default {
     name: 'productsTable',
@@ -266,6 +291,8 @@ export default {
     components: {
         ProductsTableRow,
         MultipleSelectionSelector,
+        ActionDistributionTooltip,
+        VariantTooltip,
     },
     data: function() { return {
         sortKey: 'datasource_id',
@@ -273,6 +300,10 @@ export default {
         selectedSelections: [],
         showContextMenu: false,
         contextProduct: null,
+        tooltipProduct: null,
+        tooltipVariant: null,
+        distributionTooltipType: null,
+        actionDistributionTooltipTab: 'feedback',
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
@@ -342,6 +373,14 @@ export default {
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
+        showVariantTooltip({variant, product}) {
+            this.tooltipVariant = variant
+            this.tooltipProduct = product
+        },
+        showDistributionTooltip({product, type}) {
+            this.tooltipProduct = product
+            this.distributionTooltipType = type
+        },
         onViewSingle(product) {
             this.SET_CURRENT_PDP_SELECTION(this.selection)
             this.setCurrentProduct(product)
@@ -372,68 +411,6 @@ export default {
             this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
         }
     },
-    created () {
-
-        // Setup event broadcast listening
-
-        // Echo.private(`workspace.${this.currentWorkspaceId}`)
-        // .listen('.action.updated', (e) => {
-        //     const action = e.action
-        //     // console.log('%cPusher: Action Set', 'font-weight: 900')
-        //     this.setAction(action)
-        // })
-        // .listen('.action.deleted', (e) => {
-        //     const action = e.action
-        //     // console.log('%cPusher: Action Deleted', 'font-weight: 900')
-        //     this.destroyAction(action)
-        // })
-        // .listen('.actions.many.updated', (e) => {
-        //     const request = e.request
-        //     // console.log('%cPusher: Action Many Updated', 'font-weight: 900')
-        //     this.setManyActions({ 
-        //         productIds: request.product_ids, 
-        //         task_id: request.task_id,
-        //         user_id: request.user_id,
-        //         action_code: request.action_code,
-        //         is_task_action: request.is_task_action,
-        //     })
-        // })
-        // .listen('.actions.many.created', (e) => {
-        //     const actions = e.actions
-        //     // console.log('%cPusher: Action Many Created', 'font-weight: 900')
-        //     this.setManyActions({
-        //         productIds: actions.map(x => x.product_id),
-        //         task_id: actions[0].task_id,
-        //         user_id: actions[0].user_id,
-        //         action_code: actions[0].action,
-        //         is_task_action: actions[0].is_task_action, 
-        //     })
-        // })
-        // .listen('.comment.updated', (e) => {
-        //     const comment = e.comment
-        //     // console.log('%cPusher: Comment Updated', 'font-weight: 900')
-        //     this.setComment(comment)
-        // })
-        // .listen('.comment.deleted', (e) => {
-        //     const comment = e.comment
-        //     // console.log('%cPusher: Comment deleted', 'font-weight: 900')
-        //     this.destroyComment(comment)
-        // })
-        // .listen('.task.completed', (e) => {
-        //     const fileTask = e.fileTask
-        //     // console.log('%cPusher: Task completed', 'font-weight: 900')
-        //     this.setTaskComplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
-        // })
-        // .listen('.task.uncompleted', (e) => {
-        //     const fileTask = e.fileTask
-        //     // console.log('%cPusher: Task uncompleted', 'font-weight: 900')
-        //     this.setTaskIncomplete({file_id: fileTask.file_id, task_id: fileTask.task_id})
-        // })
-    },
-    destroyed () {
-        // Unsub from pusher broadcasting
-        // Echo.leaveChannel(`workspace.${this.currentWorkspaceId}`);
-    }
 }
 </script>
 
@@ -464,8 +441,8 @@ export default {
                         margin-left: 16px
                     }
                     &.image {
-                        min-width: 70px;
-                        max-width: 70px;
+                        min-width: 100px;
+                        max-width: 100px;
                         height: 100%;
                     }
                     &.delivery {
@@ -528,7 +505,7 @@ export default {
                     //     padding-bottom: 20px;
                     // }
                     &:not(.image):not(.select):not(.action):not(.id) {
-                        padding-bottom: 24px;
+                        padding-bottom: 28px;
                     }
                 }
             }

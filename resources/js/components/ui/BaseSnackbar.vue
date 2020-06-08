@@ -7,7 +7,7 @@
         </div>
         <div class="body">
             <div class="msg">
-                <span>{{snackbar.msg}} <span v-if="snackbar.count > 1">({{snackbar.count}})</span></span>
+                <span><span v-html="snackbar.msg"></span> <span v-if="snackbar.count > 1">({{snackbar.count}})</span></span>
             </div>
             <div class="callback" v-if="snackbar.callback">
                 <BaseButton buttonClass="invisible primary ghost-hover"

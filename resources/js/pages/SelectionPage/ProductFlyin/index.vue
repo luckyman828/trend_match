@@ -48,7 +48,7 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])" @error="imgError(product.variants[currentImgIndex])">
+                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
@@ -56,15 +56,11 @@
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <div class="variant" v-for="(variant, index) in product.variants" :key="index" @click="currentImgIndex = index" :class="{active: currentImgIndex == index}">
-                        <div class="img-wrapper">
-                            <img :src="variantImage(variant)" @error="imgError(variant)">
-                        </div>
-                        <div class="color-wrapper">
-                            <div class="circle-img"><img :src="variantImage(variant)" @error="imgError(variant)"></div>
-                            <span>{{variant.name}}</span>
-                        </div>
-                    </div>
+                    <VariantListItem v-for="(variant, index) in product.variants" :key="index"
+                    :variant="variant" :product="product" :selection="selection"
+                    :class="{'active': currentImgIndex == index}"
+                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant}"
+                    @click.native="currentImgIndex = index"/>
                 </div>
 
                 <!-- <label>Style number</label>
@@ -158,6 +154,14 @@
                 <p>Your presentation will still continue</p>
                 <p>Press any product to access your queue again</p>
             </BaseDialog>
+
+            <BaseTooltip ref="variantTooltip"
+            @show="variant => tooltipVariant = variant">
+                <VariantTooltip :variant="tooltipVariant" :selection="currentSelection" :product="product"
+                :actionDistributionTooltipTab="actionDistributionTooltipTab"
+                @changeTab="tab => actionDistributionTooltipTab = tab"/>
+            </BaseTooltip>
+
         </template>
     </BaseFlyin>
 </template>
@@ -168,7 +172,9 @@ import CommentsSection from './CommentsSection'
 import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
+import VariantListItem from './VariantListItem'
 import PresenterQueueFlyin from './PresenterQueueFlyin/'
+import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 
@@ -188,11 +194,14 @@ export default {
         SelectionSelector,
         SelectionPresenterModeButton,
         PresenterQueueFlyin,
+        VariantListItem,
+        VariantTooltip,
     },
     data: function () { return {
-            currentImgIndex: 0,
-            showLightbox: false,
-            lastBroadcastProductId: null,
+        currentImgIndex: 0,
+        lastBroadcastProductId: null,
+        tooltipVariant: null,
+        actionDistributionTooltipTab: 'feedback'
     }},
     watch: {
         product(newVal, oldVal) {
@@ -223,6 +232,9 @@ export default {
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
         ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', {
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
+        }),
         product () {
             return this.currentProduct
         },
@@ -257,9 +269,6 @@ export default {
             this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
             this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
             this.SET_LIGHTBOX_VISIBLE(true)
-        },
-        imgError (variant) {
-             variant.error = true
         },
         async onCloseSingle() {
             if (this.selection.is_presenting && !await this.$refs.confirmCloseInPresentation.confirm()) {
@@ -372,8 +381,8 @@ export default {
             }
             .main-img {
                 cursor: pointer;
-                width: 216px;
-                height: 286px;
+                width: 225px;
+                height: 300px;
                 overflow: hidden;
                 border-radius: 4px;
                 border: solid 2px $divider;
@@ -401,59 +410,7 @@ export default {
                 white-space: nowrap;
                 overflow-x: auto;
                 margin-bottom: 8px;
-                .variant {
-                    width: 80px;
-                    display: inline-block;
-                    cursor: pointer;
-                    &:not(:last-child) {
-                        margin-right: 16px;
-                    }
-                    .img-wrapper {
-                        height: 108px;
-                        width: 80px;
-                        border-radius: 4px;
-                        border: solid 2px $divider;
-                        overflow: hidden;
-                        img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: contain;
-                            object-position: center;
-                        }
-                    }
-                    .color-wrapper {
-                        overflow: hidden;
-                        margin-right: 4px;
-                        margin-top: 8px;
-                        display: flex;
-                        align-items: center;
-                        span {
-                            font-size: 10px;
-                            font-weight: 500;
-                            color: $dark2;
-                        }
-                        .circle-img {
-                            width: 12px;
-                            height: 12px;
-                            border-radius: 6px;
-                            border: solid 1px $light1;
-                            position: relative;
-                            overflow: hidden;
-                            margin-right: 4px;
-                            img {
-                                left: 50%;
-                                top: 50%;
-                                transform: translate(-50%, -50%);
-                                position: absolute;
-                            }
-                        }
-                    }
-                    &.active {
-                        .img-wrapper {
-                            border-color: $primary;
-                        }
-                    }
-                }
+                display: flex;
             }
         }
     }

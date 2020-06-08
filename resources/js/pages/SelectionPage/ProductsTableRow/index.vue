@@ -12,7 +12,7 @@
             </td>
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
-                    <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                    <img :key="product.id" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex])">
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
@@ -21,9 +21,13 @@
             <td class="title"><span class="clickable" @click="onViewSingle">
                 <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
                 <div class="variant-list">
-                    <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
+                    <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
-                    </div>
+                    </div> -->
+                    <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
+                    :variant="variant" :product="product" :selection="selection"
+                    v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product}, disabled: multiSelectionMode}"
+                    @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
                     <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
                     </div>
@@ -65,64 +69,34 @@
             
             <!-- Start Distribution -->
             <td class="focus">
-                <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
-                    <div tabindex="-1" class="square ghost xs tooltip-target"><span>{{product.alignmentFocus.length +product.focus.length}}</span><i class="far fa-star"></i></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div tabindex="-1" class="square ghost xs tooltip-target" 
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Focus'}}">
+                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
+                    <i class="far fa-star"></i>
+                </div>
             </td>
+
             <td class="ins">
-                <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
-                    <div class="tooltip-target square ghost xs"><span>{{product.allIns}}</span><i class="far fa-heart"></i></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div class="tooltip-target square ghost xs"
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'In'}}">
+                    <span>{{product.allIns}}</span>
+                    <i class="far fa-heart"></i>
+                </div>
             </td>
-            <td class="outs ">
-                <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
-                    <div class="square ghost xs tooltip-target"><span>{{product.alignmentOuts.length + product.outs.length}}</span><i class="far fa-times-circle"></i></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+
+            <td class="outs">
+                <div class="square ghost xs tooltip-target"
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Out'}}">
+                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
+                    <i class="far fa-times-circle"></i>
+                </div>
             </td>
+
             <td class="nds">
-                <v-popover class="nds" :disabled="product.nds.length <= 0 && product.alignmentNds <= 0">
-                    <div class="tooltip-target square ghost xs"><span>{{product.alignmentNds.length+ product.nds.length}}</span></div>
-                    <template slot="popover">
-                        <BaseTooltipList header="ND Alignment" v-if="product.alignmentNds.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentNds" :key="index"
-                            :label="action.selection.name"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="ND Feedback" v-if="product.nds.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.nds" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div class="tooltip-target square ghost xs"
+                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'None'}}">
+                    <span>{{product.alignmentNds.length+ product.nds.length}}</span>
+                </div>
             </td>
             <!-- End Distribution -->
 
@@ -190,6 +164,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 // Mixins
 import variantImage from '../../../mixins/variantImage'
 import MultiSelectionInputRow from './MultiSelectionInputRow/index'
+import VariantListItem from './VariantListItem'
 
 export default {
     name: 'productsRow',
@@ -199,9 +174,12 @@ export default {
         'selection',
         'currentAction',
         'index',
+        'distributionTooltipComp',
+        'variantTooltipComp',
     ],
     components: {
-        MultiSelectionInputRow
+        MultiSelectionInputRow,
+        VariantListItem,
     },
     mixins: [
         variantImage,
@@ -218,10 +196,14 @@ export default {
     },
     data: function() { return {
         focusGroupIndex: null,
+        variantIndex: 0,
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('products', ['currentFocusRowIndex']),
+        ...mapGetters('selections', {
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
+        }),
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },
@@ -242,7 +224,10 @@ export default {
             if (newVal == this.index) {
                 this.$refs.row.focus()
             }
-        }
+        },
+        // product(newVal, oldVal) {
+        //     this.variantIndex = 0
+        // }
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
@@ -254,6 +239,19 @@ export default {
             }
             else if (amount > 2) {
                 return window.innerWidth > 1260 ? 20 : 15
+            }
+        },
+        onMouseleaveVariant(e) {
+            const target = e.relatedTarget
+            if (target.id != 'variant-tooltip') {
+                this.variantIndex = 0
+            } else {
+                // If the mouse has entered the variant tooltip add an event listener to that tooltip
+                target.addEventListener('mouseleave', this.onMouseleaveVariant)
+            }
+            if (e.target.id == 'variant-tooltip') {
+                // When we leave the tooltip, remove its eventlistener
+                e.target.removeEventListener('mouseleave', this.onMouseleaveVariant)
             }
         },
         onUpdateAction(product, action, selection) {
@@ -360,6 +358,10 @@ export default {
     .products-table-row {
         display: block;
         padding: 0;
+        &:focus {
+            outline: solid 2px $primary;
+            outline-offset: -2px;
+        }
         .circle.tiny {
             margin-left: 8px;
         }
@@ -394,13 +396,11 @@ export default {
     .variant-list {
         position: absolute;
         left: 0;
-        bottom: -6px;
-    }
-    .variant-list-item:not(:first-child) {
-        margin-left: 4px;
+        bottom: -12px;
+        display: flex;
     }
     .product-details {
-        height: 98px;
+        height: 138px;
         padding: 8px;
         display: flex;
         align-items: center;

@@ -163,9 +163,103 @@ export default{
             this.insertOrUpdateActions({products, action, selection, user: this.authUser})
         },
 
+        // SingalR Handlers
+        // subscribeSelectionsChangedHandler(message) {
+        //     //
+        // },
+        async selectionPresentationChangedHandler(eventName, selectionIds) {
+            if (eventName == 'Begin' 
+                && this.currentSelection.your_role != 'Owner'
+                && selectionIds.selection_ids.includes(this.currentSelection.id)
+            ) {
+                await this.$refs.presentationModeDialog.show()
+                this.$router.push({name: 'files'})
+            }
+        },
+        commentArrivedHandler(selectionId, comment) {
+            if (comment.user_id != this.authUser.id) {
+                // console.log("OnCommentArrived", selectionId, comment)
+                const product = this.products.find(x => x.id == comment.product_id)
+                const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                if (!comment.selection) {
+                    delete comment.selection
+                }
+                this.INSERT_OR_UPDATE_COMMENT({product: selectionProduct, comment})
+            }
+        },
+        commentDeletedHandler(selectionId, comment) {
+            if (comment.user_id != this.authUser.id) {
+                // console.log("OnCommentDeleted", selectionId, comment)
+                const product = this.products.find(x => x.id == comment.product_id)
+                const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                this.DELETE_COMMENT({product: selectionProduct, commentId: comment.comment_id})
+            }
+        },
+        requestArrivedHandler(selectionId, request) {
+            if (request.author_id != this.authUser.id) {
+                // console.log("OnRequestArrived", selectionId, request)
+                const product = this.products.find(x => x.id == request.product_id)
+                const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                if (!request.selection) {
+                    delete request.selection
+                }
+                this.INSERT_OR_UPDATE_REQUEST({product: selectionProduct, request})
+            }
+        },
+        bulkFeedbackArrivedHandler(selectionId, feedbacks) {
+            if (feedbacks[0].user_id != this.authUser.id) {
+                // console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
+                feedbacks.forEach(action => {
+                    const product = this.products.find(x => x.id == action.product_id)
+                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    action.selection = this.selections.find(x => x.id == action.selection_id)
+
+                    const productActions = [{product: selectionProduct, action: action}]
+                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
+                })
+            }
+        },
+        feedbackArrivedHandler(selectionId, feedback) {
+            if (feedback.user_id != this.authUser.id) {
+                // console.log("OnFeedbackArrived", selectionId, feedback)
+                const product = this.products.find(x => x.id == feedback.product_id)
+                const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
+
+                const productActions = [{product: selectionProduct, action: feedback}]
+                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
+            }
+        },
+        bulkAlignmentArrivedHandler(selectionId, alignments) {
+            if (alignments[0].user_id != this.authUser.id) {
+                // console.log("OnBulkAlignmentArrived", selectionId, alignments)
+                alignments.forEach(action => {
+                    const product = this.products.find(x => x.id == action.product_id)
+                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                    action.selection = this.selections.find(x => x.id == action.selection_id)
+
+                    const productActions = [{product: selectionProduct, action: action}]
+                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
+                })
+            }
+        },
+        alignmentArrivedHandler(selectionId, alignment) {
+            if (alignment.user_id != this.authUser.id) {
+                // console.log("OnAlignmentArrived", selectionId, alignment)
+                const product = this.products.find(x => x.id == alignment.product_id)
+                const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
+                alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
+
+                const productActions = [{product: selectionProduct, action: alignment}]
+                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
+            }
+        },
+        requestArrivedHandler() {
+
+        },
+
         async connectToLiveUpdates() {
             const connection = this.$connection
-            const authUser = this.authUser
 
             // Subscribe to our selections
             this.currentSelections.forEach(selection => {
@@ -174,115 +268,48 @@ export default{
                 });
             })
 
-            connection.on('SubscribeSelectionsChanged', message => {
-                // console.log('authenticated!', message)
-            })   
-
-            connection.on('OnSelectionPresentationChanged', async (eventName, selectionIds) => {
-                if (eventName == 'Begin' 
-                    && this.currentSelection.your_role != 'Owner'
-                    && selectionIds.selection_ids.includes(this.currentSelection.id)
-                ) {
-                    console.log('on close')
-                    await this.$refs.presentationModeDialog.show()
-                    this.$router.push({name: 'files'})
-                }
-            })
-
-            // connection.on('ProductChanged', (eventName, selectionIds) => {
-            //     console.log('ProductChanged', eventName, selectionIds)
-            // })
+            // connection.on('SubscribeSelectionsChanged', this.subscribeSelectionsChangedHandler)  
+            connection.on('OnSelectionPresentationChanged',  this.selectionPresentationChangedHandler)
 
             // Comments
-            connection.on("OnCommentArrived", (selectionId, comment) => {
-                if (comment.user_id != authUser.id) {
-                    // console.log("OnCommentArrived", selectionId, comment)
-                    const product = this.products.find(x => x.id == comment.product_id)
-                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    if (!comment.selection) {
-                        delete comment.selection
-                    }
-                    this.INSERT_OR_UPDATE_COMMENT({product: selectionProduct, comment})
-                }
-            })
-            connection.on("OnCommentDeleted", (selectionId, comment) => {
-                if (comment.user_id != authUser.id) {
-                    // console.log("OnCommentDeleted", selectionId, comment)
-                    const product = this.products.find(x => x.id == comment.product_id)
-                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    this.DELETE_COMMENT({product: selectionProduct, commentId: comment.comment_id})
-                }
-            })
+            connection.on("OnCommentArrived", this.commentArrivedHandler)
+            connection.on("OnCommentDeleted", this.commentDeletedHandler)
 
             // Requests
-            connection.on("OnRequestArrived", (selectionId, request) => {
-                if (request.author_id != authUser.id) {
-                    // console.log("OnRequestArrived", selectionId, request)
-                    const product = this.products.find(x => x.id == request.product_id)
-                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    if (!request.selection) {
-                        delete request.selection
-                    }
-                    this.INSERT_OR_UPDATE_REQUEST({product: selectionProduct, request})
-                }
-            })
+            connection.on("OnRequestArrived", this.requestArrivedHandler)
 
             // Feedback
-            connection.on("OnBulkFeedbackArrived", (selectionId, feedbacks) => {
-                if (feedbacks[0].user_id != authUser.id) {
-                    // console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
-                    feedbacks.forEach(action => {
-                        const product = this.products.find(x => x.id == action.product_id)
-                        const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                        action.selection = this.selections.find(x => x.id == action.selection_id)
-    
-                        const productActions = [{product: selectionProduct, action: action}]
-                        this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser})
-                    })
-                }
-            })
-            // Feedback
-            connection.on("OnFeedbackArrived", (selectionId, feedback) => {
-                if (feedback.user_id != authUser.id) {
-                    // console.log("OnFeedbackArrived", selectionId, feedback)
-                    const product = this.products.find(x => x.id == feedback.product_id)
-                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
-
-                    const productActions = [{product: selectionProduct, action: feedback}]
-                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser})
-                }
-            })
+            connection.on("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)
+            connection.on("OnFeedbackArrived", this.feedbackArrivedHandler)
 
             // Alignment
-            connection.on("OnBulkAlignmentArrived", (selectionId, alignments) => {
-                if (alignments[0].user_id != authUser.id) {
-                    // console.log("OnBulkAlignmentArrived", selectionId, alignments)
-                    alignments.forEach(action => {
-                        const product = this.products.find(x => x.id == action.product_id)
-                        const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                        action.selection = this.selections.find(x => x.id == action.selection_id)
-    
-                        const productActions = [{product: selectionProduct, action: action}]
-                        this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment' , currentSelectionId: selectionId, authUser})
-                    })
-                }
-            })
-            connection.on("OnAlignmentArrived", (selectionId, alignment) => {
-                if (alignment.user_id != authUser.id) {
-                    // console.log("OnAlignmentArrived", selectionId, alignment)
-                    const product = this.products.find(x => x.id == alignment.product_id)
-                    const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
+            connection.on("OnBulkAlignmentArrived", this.bulkAlignmentArrivedHandler)
+            connection.on("OnAlignmentArrived", this.alignmentArrivedHandler)
+        },
+        disconnectSignalR() {
+            const connection = this.$connection
 
-                    const productActions = [{product: selectionProduct, action: alignment}]
-                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment' , currentSelectionId: selectionId, authUser})
-                }
-            })
+            this.$connection.invoke("UnSubscribeAll")
+            connection.off('SubscribeSelectionsChanged', this.subscribeSelectionsChangedHandler)  
+            connection.off('OnSelectionPresentationChanged',  this.selectionPresentationChangedHandler)
 
+            // Comments
+            connection.off("OnCommentArrived", this.commentArrivedHandler)
+            connection.off("OnCommentDeleted", this.commentDeletedHandler)
+
+            // Requests
+            connection.off("OnRequestArrived", this.requestArrivedHandler)
+
+            // Feedback
+            connection.off("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)
+            connection.off("OnFeedbackArrived", this.feedbackArrivedHandler)
+
+            // Alignment
+            connection.off("OnBulkAlignmentArrived", this.bulkAlignmentArrivedHandler)
+            connection.off("OnAlignmentArrived", this.alignmentArrivedHandler)
         }
     },
-    created() {
+    async created() {
         // this.hideQuickOut = this.$cookies.get(`quick_out_${this.currentFile.id}_${this.currentTask.id}`)
         // this.hideQuickIn = this.$cookies.get(`quick_in_${this.currentFile.id}_${this.currentTask.id}`)
 
@@ -294,8 +321,7 @@ export default{
         }
     },
     destroyed() {
-        console.log('unsubscribe all!')
-        this.$connection.invoke("UnSubscribeAll")
+        this.disconnectSignalR()
     }
 }
 </script>

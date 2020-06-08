@@ -23,8 +23,10 @@ Vue.use(VuePapaParse)
 
 import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
-import clickOutsideDirective from './directives//clickOutsideDirective'
+import clickOutsideDirective from './directives/clickOutsideDirective'
 Vue.use(clickOutsideDirective)
+import tooltipTriggerDirective from './directives/tooltipTriggerDirective'
+Vue.use(tooltipTriggerDirective)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'
@@ -37,7 +39,6 @@ Vue.use(VTooltip, {
         defaultTrigger: 'hover focus',
     },
 })
-// VTooltip.options.popover.defaultTrigger = 'hover focus'
 
 import PortalVue from 'portal-vue'
 Vue.use(PortalVue)
