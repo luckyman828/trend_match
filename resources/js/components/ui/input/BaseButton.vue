@@ -14,7 +14,7 @@
 
 
         <!-- Hotkey -->
-        <div class="hotkey" v-if="hotkey">
+        <div class="hotkey" v-if="hotkey" :style="hotkeyStyle">
             <span class="key">{{hotkey.key}}</span>
             <span class="label">{{hotkey.label}}</span>
         </div>
@@ -32,6 +32,11 @@ export default {
         'targetAreaPadding',
         'disabledTooltip',
     ],
+    computed: {
+        hotkeyStyle() {
+            return this.hotkey && this.hotkey.align == 'right' ? {right: 0} : {left: 0}
+        }
+    }
 }
 </script>
 
@@ -45,7 +50,6 @@ export default {
         position: absolute;
         bottom: -6px;
         transform: translate(0, 100%);
-        left: 0;
         display: flex;
         align-items: center;
         white-space: nowrap;
