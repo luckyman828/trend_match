@@ -23,14 +23,20 @@
             s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
             
             window.CRISP_READY_TRIGGER = function() {
-                const crispChat = document.querySelector('#crisp-chatbox > *:first-child > *:first-child')
-                const crispChatIcon = document.querySelector('#crisp-chatbox > *:first-child > *:nth-child(2)')
-                // crispChat.style.setProperty( 'left', '100px', 'important' );
-                // crispChatIcon.style.setProperty( 'left', '100px', 'important' );
-                crispChat.style.setProperty( 'transition', 'right .2s, left .2s', 'important' );
-                crispChatIcon.style.setProperty( 'transition', 'right .2s, left .2s', 'important' );
-                crispChat.id = 'crisp-chat'
-                crispChatIcon.id = 'crisp-chat-icon'
+                setTimeout(function(){
+                    const crispChat = document.querySelector('#crisp-chatbox > *:first-child > *:first-child')
+                    const crispChatIcon = document.querySelector('#crisp-chatbox a[data-maximized]')
+                    // console.log('crisp chat init', crispChatIcon, document.querySelector('#crisp-chatbox'))
+                    if (crispChat) {
+                        crispChat.style.setProperty( 'transition', 'right .2s, left .2s', 'important' )
+                        crispChat.id = 'crisp-chat'
+                    }
+                    if (crispChatIcon) {
+                        crispChatIcon.style.setProperty( 'transition', 'right .2s, left .2s', 'important' )
+                        crispChatIcon.id = 'crisp-chat-icon'
+                    }
+                    // crispChatIconAlt.classList.add = 'crisp-chat-icon'
+                }, 100)
             };
         </script>
 

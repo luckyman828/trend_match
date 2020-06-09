@@ -1117,7 +1117,7 @@ export default {
                 align-items: center;
                 height: 40px;
                 padding: 4px 4px 4px 8px;
-                border: solid 1px $divider;
+                border: solid $dividerWidth $dividerColor;
                 border-radius: 4px;
                 span {
                     color: $primary;

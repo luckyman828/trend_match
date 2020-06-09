@@ -88,7 +88,10 @@ export default {
     align-items: center;
     right: calc(-16px - 242px + 32px);
     background: white;
-    border-radius: 4px;
+    overflow: hidden;
+    border-radius: $borderRadiusModule;
+    border: $borderModule;
+    box-shadow: $shadowModule;
     &.drag-active {
         .draggable {
             flex: 1;
@@ -104,7 +107,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: solid 2px $divider;
+        border-bottom: solid $dividerWidth $dividerColor;
         padding: 8px 16px;
     }
     .body {

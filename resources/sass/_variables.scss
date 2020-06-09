@@ -68,7 +68,11 @@ $succes: $green;
 $fail: $red;
 $warming: $yellow;
 
-$divider: $grey2;
+// $divider: $grey500;
+$divider: $grey600;
+$dividerColor: $grey600;
+$dividerWidth: 1px;
+$borderDivider: solid $dividerWidth $dividerColor;
 $darkenAmount: 10%;
 $lightenAmount: 10%;
 
@@ -147,6 +151,7 @@ $iconButtonInvisible: $icon;
 // Shadows
 $shadowXs: 0 3px 4px rgba(0, 0, 0, 0.2);
 $shadowModule: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
+$shadowEl: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
 
 // Borders
 // $borderModule: 1px solid rgba(168, 198, 223, 0.4);

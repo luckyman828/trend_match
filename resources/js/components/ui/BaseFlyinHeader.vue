@@ -12,7 +12,7 @@
             <BaseFlyinHeaderNavigation v-if="!disableNavigation" :next="next" :prev="prev" @prev="$emit('prev')" @next="$emit('next')"/>
             <button v-if="placement == 'left'" class="circle close md" 
             @click="$emit('closeFlyin');$emit('close')">
-                <i class="fal fa-times"></i>
+                <i class="far fa-times"></i>
             </button>
         </div>
     </div>

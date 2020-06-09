@@ -227,7 +227,7 @@ export default {
                 document.body.addEventListener('keydown', this.keydownHandler)
 
                 // Adjust the placement of the chatbox
-                if (chatIcon) chatIcon.style.setProperty('right', `calc(100vw - ${242 - 24}px)`, 'important');
+                if (chatIcon) chatIcon.style.setProperty('right', `${Math.min(1500 + 24, window.innerWidth - 242 + 24)}px`, 'important');
                 if (chatBox) chatBox.style.setProperty('left', `24px`, 'important');
 
             } else {

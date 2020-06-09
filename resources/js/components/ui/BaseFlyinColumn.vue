@@ -22,23 +22,23 @@ export default {
     .flyin-column {
         overflow-y: hidden;
         &:not(:last-child) {
-            border-right: solid 2px $divider;
+            border-right: $borderDivider;
         }
         &.has-header {
             display: flex;
             flex-direction: column;
         }
-    }
-    .header {
-        height: 60px;
-        padding: 8px 16px;
-        border-bottom: solid 2px $divider;
-        background: white;
-    }
-    .body {
-        padding: 16px 16px 64px;
-        overflow-y: auto;
-        height: 100%;
-        flex: 1;
+        > .header {
+            height: 60px;
+            padding: 8px 16px;
+            border-bottom: $borderDivider;
+            background: white;
+        }
+        > .body {
+            padding: 16px 16px 64px;
+            overflow-y: auto;
+            height: 100%;
+            flex: 1;
+        }
     }
 </style>

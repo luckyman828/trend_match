@@ -1539,17 +1539,17 @@ input[type='number']::-webkit-outer-spin-button {
 
 // SCROLLBARS
 ::-webkit-scrollbar {
-    width: 3px;
+    width: 5px;
     height: 7px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    background: $light2;
+    background: $grey450;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
     background: $grey600;
-    border-radius: 2px;
+    border-radius: 4px;
     &:hover {
         background: $grey700;
     }
