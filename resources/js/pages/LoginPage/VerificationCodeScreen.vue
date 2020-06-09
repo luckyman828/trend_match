@@ -63,11 +63,9 @@ export default {
             this.resendingEmail = false
         },
         async onSubmit() {
-            console.log('verify code!')
             this.isSubmitting = true
             await this.verifyRecoveryCode(this.code).then(success => {
                 if (success) {
-                    console.log('code verified!')
                     this.$router.push({name: 'setNewPassword'})
                 } else {
                     this.error = 'Invalid code'
