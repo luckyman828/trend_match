@@ -29,7 +29,7 @@ export default {
         width: 100%;
         color: $fontSoft;
         strong {
-            color: $fontSoft;
+            color: $grey800;
         }
         .left, .right {
             display: flex;

@@ -44,7 +44,7 @@ export default {
     }
     &.active {
         .pill {
-            background: $green;
+            background: $green400;
             .circle {
                 transform: translateX(calc(100% - 2px));
             }

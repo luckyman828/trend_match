@@ -125,7 +125,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 248 : 140"
+                    :item-size="currentSelections.length > 1 ? 247 : 139"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"

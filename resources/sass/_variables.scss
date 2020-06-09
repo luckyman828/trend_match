@@ -1,27 +1,37 @@
 // Colors
-$primary: #3b86ff;
+// $primary: #3b86ff;
+$primary: #2a46ff;
 $primaryDark: mix(black, $primary, 10%);
 
+$primary300: #7f93ff;
+$primary400: #5f76ff;
+$primary500: $primary;
+$primary600: #1e34db;
+$primary700: #1526b7;
+$primary800: #0d1993;
+$primary900: #08107a;
+
 $blue: #41a2fc;
-$red: #ff6565;
-$orange: #ffb407;
-$yellow: #ffdd1e;
+// $red: #ff6565;
+$red: #ff395e;
+$orange: #686663;
+$yellow: #ffdc16;
 $yellowGreen: #b5cc18;
 
-$green: #5ee2a0;
-$green400: #74e7a8;
-$green500: $green;
+$green: #42e794;
+$green400: #6ff0a2;
+$green500: #42e794;
 // $green600: #44c290;
-$green600: #49cb8b;
-$green700: #2fa280;
+$green600: #30c68a;
+$green700: #21a67d;
 
 $grey100: #fafcfd;
 $grey200: #f5fafb;
-$grey300: #f0f3f4;
+$grey300: #f0f3f4; //#ccdbef
 $grey400: #dfe7ea;
 $grey450: #cfd8dd;
 $grey500: #c7d3db;
-$grey600: #a1aeba;
+$grey600: #a7b2c2;
 $grey700: #68849f;
 $grey800: #425e80;
 $grey900: #27416a;
@@ -32,11 +42,11 @@ $bluegrey300: #c5dfed;
 $bluegrey400: #adc9db;
 $bluegrey500: #8dabc4;
 $bluegrey600: #6787a8;
-$bluegrey700: #47658d;
-$bluegrey800: #2c4771;
-$bluegrey900: #1b315e;
+$bluegrey700: #445f7b;
+$bluegrey800: #2c3f59;
+$bluegrey900: #1c293b;
 
-$success: $green;
+$success: $primary;
 $error: $orange;
 $danger: $red;
 $warning: $yellow;
@@ -107,12 +117,14 @@ $screenXs: 1260px;
 
 // ------- ASSIGN COLORS
 // Backgrounds
-$bg: #e6ecef;
+// $bg: #e6ecef; // #f4f6ff
+$bg: #f4f6ff; // #f4f6ff
 $bgContent: white;
 $bgModule: white;
 $bgModuleHover: $grey300;
 $bgModuleActive: #fafbfc;
-$bgModuleInactive: #cdd8df;
+// $bgModuleInactive: #cdd8df;
+$bgModuleInactive: $grey600;
 $bgContentAlt: #fafbfc;
 // $bgEl: #d7dee1;
 $bgEl: #cfd8dd;
@@ -134,14 +146,14 @@ $fontIcon: $dark2;
 
 $fontModuleActiveOnDark: $bluegrey100;
 
-$fontSoftOnDark: #8dabc4;
+$fontSoftOnDark: $grey300;
 
 $fontButtonInvisible: $fontSoft;
 $fontTableHeader: $fontSoft;
 
 // ICONS
 // $icon: #8dabc4;
-$icon: $bluegrey600;
+$icon: $bluegrey700;
 $iconInFont: $icon;
 $iconSoftOnDark: $bluegrey500;
 
@@ -152,6 +164,7 @@ $iconButtonInvisible: $icon;
 // Shadows
 $shadowXs: 0 3px 4px rgba(0, 0, 0, 0.2);
 $shadowModule: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
+$shadowModuleHard: 0 3px 4px 0 rgba(117, 134, 156, 0.3);
 $shadowEl: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
 
 // Borders
@@ -168,3 +181,11 @@ $borderElHard: solid 2px $borderColorElHard;
 
 // TABLES
 $heightTableTab: 40px;
+
+// TABS
+$bgTab: $grey500; // #c8d1df
+$fontColorTab: white;
+$bgTabActive: white;
+$fontColorTabActive: $primary;
+$bgTabHover: $primary;
+$fontColorTabHover: white;

@@ -45,7 +45,7 @@ export default {
         // box-shadow: 0px 2px 10px #0000001A;
         // border-bottom: solid 2px $grey2;
         border-bottom: $borderModule;
-        box-shadow: $shadowModule;
+        // box-shadow: $shadowModule;
         // position: relative;
         // z-index: 1;
         h3 {

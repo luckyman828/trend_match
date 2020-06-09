@@ -6,9 +6,9 @@
   </defs>
   <g id="kollekt_logo_00_1024x1024" clip-path="url(#clip-kollekt_logo_00_1024x1024)">
     <g id="Group_1" data-name="Group 1" transform="translate(306 161)">
-      <rect id="Rectangle_1472" data-name="Rectangle 1472" width="86" height="457" rx="4" transform="translate(21 223)" fill="#3b86ff"/>
-      <rect id="Rectangle_1473" data-name="Rectangle 1473" width="86" height="457" rx="4" transform="translate(163 137)" fill="#3b86ff"/>
-      <rect id="Rectangle_1474" data-name="Rectangle 1474" width="86" height="457" rx="4" transform="translate(305 23)" fill="#3b86ff"/>
+      <rect id="Rectangle_1472" data-name="Rectangle 1472" width="86" height="457" rx="4" transform="translate(21 223)" fill="#fff"/>
+      <rect id="Rectangle_1473" data-name="Rectangle 1473" width="86" height="457" rx="4" transform="translate(163 137)" fill="#fff"/>
+      <rect id="Rectangle_1474" data-name="Rectangle 1474" width="86" height="457" rx="4" transform="translate(305 23)" fill="#fff"/>
     </g>
   </g>
 </svg>

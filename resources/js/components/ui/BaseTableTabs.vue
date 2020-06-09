@@ -36,21 +36,22 @@ export default {
             align-items: center;
             text-align: center;
             border-radius: $borderRadiusModule $borderRadiusModule 0 0;
-            background: $bgModuleInactive;
+            background: $bgTab;
+            color: $fontColorTab;
             font-weight: 700;
             font-size: 14px;
-            color: $fontSoft;
             cursor: pointer;
             padding-bottom: $borderRadiusModule;
             box-sizing: content-box;
-            &:hover {
-                background: $bgModuleHover;
-                // color: $bgModuleHover;
-            }
             &.active {
-                background: white;
-                color: $primary;
+                background: $bgTabActive;
+                color: $fontColorTabActive;
                 cursor: auto;
+            }
+            &:hover:not(.active) {
+                background: $bgTabHover;
+                color: $fontColorTabHover;
+                // color: $bgModuleHover;
             }
             &:not(:last-child) {
                 margin-right: 8px;

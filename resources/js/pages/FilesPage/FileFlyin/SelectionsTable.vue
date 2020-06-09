@@ -8,7 +8,7 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
-                        <span>{{getSelectionsTree.length}} records</span>
+                        <span><strong>{{getSelectionsTree.length}}</strong> records</span>
                     </template>
                 </BaseTableTopBar>
             </template>

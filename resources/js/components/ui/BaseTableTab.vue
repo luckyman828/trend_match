@@ -45,22 +45,23 @@ export default {
         color: $dark15;
         cursor: pointer;
         padding-bottom: $borderRadiusModule;
-        color: $fontSoft;
         border: $borderModule;
         border-radius: $borderRadiusModule $borderRadiusModule 0 0;
-        background: $bgModuleInactive;
+        background: $bgTab;
+        color: $fontColorTab;
         .pill.count {
             color: $fontSoft;
             &.primary {
                 color: white;
             }
         }
-        &:hover:not(.disabled) {
-            background: $bgModuleHover;
+        &:hover:not(.disabled):not(.active) {
+            background: $bgTabHover;
+            color: $fontColorTabHover;
         }
         &.active {
-            background: white;
-            color: $primary;
+            background: $bgTabActive;
+            color: $fontColorTabActive;
             cursor: auto;
         }
         &:not(:last-child) {

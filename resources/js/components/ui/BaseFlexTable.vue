@@ -263,7 +263,8 @@ export default {
             background: $bgModuleActive;
         }
         &:not(.table-top-bar) {
-            margin-bottom: 2px;
+            border-bottom: $borderModule;
+            // margin-bottom: 2px;
             > * {
                 flex: 1;
             }
@@ -274,7 +275,7 @@ export default {
                 td {
                     &.title {
                         i {
-                            color: $dark05;
+                            color: $primary;
                             transition: 0;
                         }
                     }

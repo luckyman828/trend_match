@@ -239,7 +239,7 @@ export default {
                     left: -3px;
                     bottom: 5px;
                     font-size: 11px;
-                    color: #3b86ff;
+                    color: $primary;
                     margin: 0;
                     width: auto;
                  } 

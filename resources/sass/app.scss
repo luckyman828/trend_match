@@ -550,7 +550,7 @@ i {
         color: $icon;
     }
     &.fad {
-        --fa-secondary-color: #3b86ff;
+        --fa-secondary-color: #2a46ff;
         --fa-secondary-opacity: 1;
     }
     &.xs {
@@ -1256,6 +1256,9 @@ form {
         padding-bottom: 32px;
         margin-bottom: 32px;
     }
+}
+input::placeholder {
+    color: $grey700;
 }
 .input-wrapper {
     display: block;
