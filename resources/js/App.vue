@@ -206,7 +206,7 @@ export default{
             if (this.$route.name != 'login') {
                 if (!!error.response && error.response.status === 401) {
                     // if you ever get an unauthorized, logout the user
-                    // this.logout()
+                    this.logout()
                 }
             }
             return Promise.reject(error.response);
