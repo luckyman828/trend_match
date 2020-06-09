@@ -82,7 +82,7 @@ export default {
     top: 74px;
     right: -16px;
     width: calc(242px - 32px);
-    height: calc(100% - 74px - 32px);
+    height: calc(100% - 74px - 32px - 68px);
     display: flex;
     flex-direction: column;
     align-items: center;

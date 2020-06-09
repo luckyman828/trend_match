@@ -215,6 +215,8 @@ export default {
             }
         },
         show(newVal, oldVal) {
+            const chatIcon = document.getElementById('crisp-chat-icon')
+            const chatBox = document.getElementById('crisp-chat')
             if (newVal) {
                 // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
                 if (this.broadcastActive && (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)) {
@@ -223,9 +225,18 @@ export default {
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
+
+                // Adjust the placement of the chatbox
+                if (chatIcon) chatIcon.style.setProperty('right', `calc(100vw - ${242 - 24}px)`, 'important');
+                if (chatBox) chatBox.style.setProperty('left', `24px`, 'important');
+
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
+
+                // Adjust the placement of the chatbox
+                if (chatIcon) chatIcon.style.removeProperty('right')
+                if (chatBox) chatBox.style.removeProperty('left')
             }
         }
     },
