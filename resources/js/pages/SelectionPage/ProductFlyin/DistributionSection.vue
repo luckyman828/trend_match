@@ -24,7 +24,7 @@
             <div class="tab-body">
                 <!-- Totals -->
                 <template v-if="totalFeedbackInputCount > 0 && totalActionInputCount > 0">
-                    <div class="list-item header">
+                    <div class="list-item list-header">
                         <h4>Total</h4>
                     </div>
                     <div class="distribution-bar list-item">
@@ -39,7 +39,7 @@
 
                 <!-- Alignment -->
                 <template v-if="totalActionInputCount > 0">
-                    <div class="list-item header">
+                    <div class="list-item list-header">
                         <h4>Alignment</h4>
                     </div>
                     <div class="distribution-bar list-item">
@@ -101,7 +101,7 @@
 
                 <!-- Feedback -->
                 <template v-if="totalFeedbackInputCount > 0">
-                    <div class="list-item header">
+                    <div class="list-item list-header">
                         <h4>Feedback</h4>
                     </div>
                     <div class="distribution-bar list-item">
@@ -303,9 +303,10 @@ export default {
         height: 100%;
         text-align: center;
         font-weight: 700;
-        color: $dark2;
+        color: $fontSoft;
         cursor: pointer;
         border-radius: 4px 4px 0 0;
+        border: $borderElSoft;
         &:not(:last-child) {
             margin-right: 4px;
         }
@@ -330,7 +331,7 @@ export default {
             border: $borderEl;
             box-shadow: $shadowEl;
             border-radius: $borderRadiusEl;
-            &.header {
+            &.list-header {
                 padding: 8px 12px 4px;
                 &:not(:first-child) {
                     margin-top: 20px;
@@ -371,7 +372,7 @@ export default {
                 box-shadow: -8px 0 inset $red;
             }
             .nd {
-                box-shadow: -8px 0 inset $grey2;
+                box-shadow: -8px 0 inset $grey600;
             }
             &.distribution-bar {
                 padding: 12px;
@@ -380,7 +381,7 @@ export default {
                     height: 8px;
                     border-radius: 4px;
                     .bg {
-                        fill: $grey;
+                        fill: $grey600;
                     }
                     .focus {
                         fill: $primary;

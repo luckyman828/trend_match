@@ -199,8 +199,6 @@ export default{
             }
         },
         requestArrivedHandler(selectionId, request) {
-            console.log('requestArrived')
-            console.log('request arrived', selectionId, request)
             if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
@@ -331,7 +329,7 @@ export default{
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .quick-actions {
-        border-bottom: solid 2px $light2;
+        border-bottom: $borderDivider;
         padding-bottom: 16px;
         margin-bottom: 16px;
         p {

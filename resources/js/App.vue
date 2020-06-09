@@ -266,7 +266,7 @@ export default{
         // grid-template-columns: 160px auto;
         grid-template-columns: 80px auto;
         // grid-template-rows: 72px auto;
-        grid-template-rows: 52px auto;
+        grid-template-rows: 60px auto;
         grid-template-areas: 
             "sidebar navbar" 
             "sidebar main";

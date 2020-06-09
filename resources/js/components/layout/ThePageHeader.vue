@@ -23,16 +23,16 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 16px;
-    margin-bottom: 16px;
-    border-bottom: solid 2px $light2;
+    // padding-bottom: 16px;
+    // margin-bottom: 16px;
+    // border-bottom: solid 2px $light2;
     > div {
         display: flex;
         align-items: center;
     }
     h1 {
         display: inline-block;
-        margin: 0;
+        // margin: 0;
         margin-right: 12px;
     }
     .stat {

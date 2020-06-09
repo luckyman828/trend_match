@@ -17,11 +17,11 @@ $green700: #2fa280;
 
 $grey100: #fafcfd;
 $grey200: #f5fafb;
-$grey300: #ebf2f4;
+$grey300: #f0f3f4;
 $grey400: #dfe7ea;
 $grey450: #cfd8dd;
-$grey500: #bdd2dd;
-$grey600: #97adbe;
+$grey500: #c7d3db;
+$grey600: #a1aeba;
 $grey700: #68849f;
 $grey800: #425e80;
 $grey900: #27416a;
@@ -78,8 +78,7 @@ $lightenAmount: 10%;
 
 // BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state)
 $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white, mix($dark05, $primary, $darkenAmount)),
-    ('dark', $dark05, mix(white, $dark05, $lightenAmount), white, $dark),
-    ('green', $green500, $green400, white, $green600),
+    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark), ('green', $green500, $green400, white, $green600),
     ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount)),
     ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
@@ -117,6 +116,8 @@ $bgModuleInactive: #cdd8df;
 $bgContentAlt: #fafbfc;
 // $bgEl: #d7dee1;
 $bgEl: #cfd8dd;
+// $bgElInactive: $grey400;
+$bgElInactive: #d5dee1;
 
 $bgDark: #1c293b;
 $bgModuleDark: #1c293b;

@@ -35,7 +35,7 @@ export default {
 @import '~@/_variables.scss';
 
     .flyin-header {
-        height: 52px;
+        height: 60px;
         background: $bgContent;
         display: flex;
         width: 100%;
