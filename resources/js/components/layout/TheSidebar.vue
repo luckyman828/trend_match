@@ -116,7 +116,8 @@ export default {
       color: $fontSoftOnDark;
       text-align: center;
       width: 60px;
-      height: 60px;
+      min-height: 60px;
+      padding: 8px 0;
       border-radius: 4px;
       cursor: pointer;
       &.router-link-active {
