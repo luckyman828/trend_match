@@ -842,6 +842,16 @@ i {
 .popover {
     min-width: 200px;
 }
+.v-popover {
+    .trigger {
+        &:hover {
+            i {
+                font-weight: 900;
+                color: $font;
+            }
+        }
+    }
+}
 
 // V-TOOLTIP
 i.has-tooltip {
