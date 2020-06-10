@@ -40,7 +40,8 @@
             <template v-slot:body>
                 <!-- Selection Members -->
                 <template v-if="currentUsersTableTab == 'Members'">
-                    <tr v-for="(user, index) in selection.users" :key="user.id" class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive(user)}"
+                    <tr v-for="(user, index) in selection.users" :key="user.id" class="user-row table-row" ref="userRow" 
+                    :class="[{active: contextMenuIsActive(user)}, {self: user.id == authUser.id}]"
                     @click.ctrl="$refs.selectBox[index].check()"
                     @contextmenu="showUserContext($event, user)">
                         <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
@@ -317,4 +318,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '~@/_variables.scss';
+
+.user-row {
+    &.self {
+        .title {
+            i {
+                color: $primary;
+            }
+        }
+        font-weight: 500;
+    }
+}
+
 </style>

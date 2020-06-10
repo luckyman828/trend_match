@@ -26,7 +26,9 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <TeamUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                <TeamUsersTableRow :ref="'userRow-'+user.id" 
+                v-for="(user, index) in usersSorted" 
+                :key="user.id" :user="user" :index="index"
                 :contextUser="contextUser"
                 :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)" v-model="selectedUsers" :selectedUsers="selectedUsers"
                 @editCurrency="onEditUserCurrency($event, user)"/>
@@ -194,6 +196,9 @@ export default {
         workspaceUsers() {
             return this.users
         },
+        usersSorted() {
+            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
+        }
     },
     watch: {
         team(newVal, oldVal) {
