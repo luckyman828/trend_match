@@ -45,7 +45,7 @@ export default {
         font-weight: 500;
         margin-top: 2px;
         line-height: 1;
-        &:hover {
+        label:hover &, &:hover {
             background: $bgModuleActive;
             .radiomark {
                 border-color: $primary;
