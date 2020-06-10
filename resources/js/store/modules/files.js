@@ -439,12 +439,18 @@ export default {
                 })
                 .catch(() => {})
         },
-        async SyncExternalImages({ commit, state }, file) {
-            // Get owners for file
-            const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
-            await axios.post(apiUrl).then(response => {
-                const imageMap = response.data.images
-                Vue.set(file, 'owners', response.data)
+        async syncExternalImages({ commit, state }, file) {
+            return new Promise(async (resolve, reject) => {
+                // Get owners for file
+                const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
+                await axios
+                    .post(apiUrl)
+                    .then(response => {
+                        resolve(response.data.images)
+                    })
+                    .catch(err => {
+                        reject(err)
+                    })
             })
         },
     },
