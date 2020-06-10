@@ -150,7 +150,8 @@ export default {
     methods: {
         printToPdf: async function(event) {
             const vm = this
-            var endpoint = "https://v2018.api2pdf.com/wkhtmltopdf/html"
+            // var endpoint = "https://v2018.api2pdf.com/wkhtmltopdf/html"
+            var endpoint = "https://v2.api2pdf.com/wkhtml/pdf/html"
             // var endpoint = "https://v2018.api2pdf.com/chrome/html"
             var apiKey = "16b0a04b-8c9b-48f6-ad41-4149368bff58" //Replace this API key from portal.api2pdf.com
             var config = {
@@ -213,8 +214,9 @@ export default {
 
                     await axios.post(endpoint, payload, config)
                         .then(function(response) {
-                            window.open(response.data.pdf)
-                            vm.generatedPDF = response.data.pdf
+                            console.log('response', response)
+                            window.open(response.data.FileUrl)
+                            vm.generatedPDF = response.data.FileUrl
                         })
                         .catch(function(error) {
                             console.log(error);

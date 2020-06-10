@@ -63,7 +63,7 @@ export default {
         &.read-only {
             .input-wrapper {
                 cursor: text;
-                background: $grey;
+                background: $bgElInactive;
             }
         }
         &.select {

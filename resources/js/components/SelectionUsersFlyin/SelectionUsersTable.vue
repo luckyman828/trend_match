@@ -217,7 +217,9 @@ export default {
             if (!this.selection.users || !this.workspaceUsers) return []
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
-            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
+            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id)).sort((a,b) => {
+                if (a.id == this.authUser.id) return -1
+            })
         },
     },
     methods: {

@@ -76,9 +76,14 @@
                                         <th><label :for="'currency-'+index+'-file'">Linked File</label></th>
                                     </tr>
                                     <tr>
-                                        <td><BaseInputField :id="'currency-'+index+'-name'" 
-                                        class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"/></td>
+                                        <!-- <td><BaseInputField :id="'currency-'+index+'-name'" 
+                                        class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"/></td> -->
+                                        <td><BaseInputField :id="'currency-'+index+'-name'" :errorTooltip="currency.nameError"
+                                        class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"
+                                        @blur="validateCurrency(currency)"
+                                        @input.native="currency.currencyName = currency.currencyName.toUpperCase()"/></td>
                                         <td class="equals"><i class="fas fa-equals"></i></td>
+
                                         <td><BaseInputField :id="'currency-'+index+'-file'" 
                                         class="input-field" disabled=true
                                         :value="currency.fileIndex != null ? availableFiles[currency.fileIndex].fileName : null" 
@@ -301,7 +306,35 @@ export default {
             //     }
             // })
             // return valid
-            return true
+            // return true
+
+            //assume true
+            let valid = true
+            // Check that all files have a valid key
+            this.availableFiles.forEach(file => {
+                if (file.key.fileIndex == null) {
+                    valid = false
+                }
+            })
+            // Loop through the fields and look for errors
+            this.fields.forEach(field => {
+                // Check if the field has been mapped
+                if (field.newValue.fieldIndex != null) {
+                    if (!this.validateField(field)) {
+                        valid = false
+                    }
+                }
+            })
+            // Loop through the currencies and look check their names
+            if (!this.singleCurrencyFile) {
+                this.currenciesToMatch.forEach(currency => {
+                    console.log('valdiate currency', currency)
+                    if(currency.fileIndex != null && !this.validateCurrency(currency)) {
+                        valid = false
+                    }
+                })
+            }
+            return valid
         }
     },
     methods: {
@@ -314,6 +347,15 @@ export default {
                 return fieldValue
             }
             return 'Not matched'
+        },
+        validateCurrency(currency) {
+            if (currency.currencyName.length != 3) {
+                currency.nameError = 'Currency must be a <strong>3 letter</strong> currency code.'
+                return false
+            } else {
+                currency.nameError = null
+                return true
+            }
         },
         validateKey(file) {
             // Assume no error
@@ -370,6 +412,14 @@ export default {
                         const urlReg = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/)
                         if (!urlReg.test(fieldValue)) {
                             field.error = `Must be a <strong>valid URL</strong>.
+                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
+                            valid = false
+                        }
+                    }
+                    // Test for correct currency
+                    if (this.singleCurrencyFile && ['currency'].includes(fieldName)) {
+                        if (fieldValue.length != 3) {
+                            field.error = `Currency must be a <strong>3 letter</strong> currency code.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
                             valid = false
                         }

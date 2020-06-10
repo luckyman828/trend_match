@@ -1,40 +1,43 @@
 <template>
-    <table class="flex-table" ref="table" :class="{'sticky': sticky}">
-        <div ref="stickyHeader" class="sticky-header" :style="tableWidth">
-            <div ref="stickyBg" class="sticky-bg" :style="tableWidth"></div>
-            <div ref="stickyInner" class="inner">
-                <div class="tabs" v-if="$slots.tabs">
-                    <slot name="tabs"/>
-                </div>
-                <div class="rounded-top">
-                    <slot name="topBar"/>
-                    <tr class="header">
-                        <slot name="header"/>
-                    </tr>
+    <div class="table-wrapper" ref="tableWrapper">
+        <table class="flex-table" ref="table" 
+        :class="[{'sticky': sticky}, {'has-tabs': $slots.tabs}]">
+            <div ref="stickyHeader" class="sticky-header">
+                <div ref="stickyBg" class="sticky-bg" :style="{width: tableWidth + 32+'px'}"></div>
+                <div ref="stickyInner" class="inner">
+                    <div class="tabs-wrapper" v-if="$slots.tabs">
+                        <slot name="tabs"/>
+                    </div>
+                    <div class="rounded-top">
+                        <slot name="topBar"/>
+                        <tr class="header">
+                            <slot name="header"/>
+                        </tr>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
-        <div class="body">
-            <!-- Content -->
-            <slot v-if="isReady" name="body"/>
-            <!-- End content -->
+            <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
+            <div class="body">
+                <!-- Content -->
+                <slot v-if="isReady" name="body"/>
+                <!-- End content -->
 
-            <!-- Loading / Error -->
-            <tr class="load-wrapper" v-else>
-                <!-- Loading -->
-                <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'"/>
+                <!-- Loading / Error -->
+                <tr class="load-wrapper" v-else>
+                    <!-- Loading -->
+                    <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'"/>
 
-                <!-- Error  -->
-                <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+                    <!-- Error  -->
+                    <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+                </tr>
+                <!-- End Loading / Error -->
+            </div>
+            <tr class="footer">
+                <td class="select"></td>
+                <slot name="footer"/>
             </tr>
-            <!-- End Loading / Error -->
-        </div>
-        <tr class="footer">
-            <td class="select"></td>
-            <slot name="footer"/>
-        </tr>
-    </table>
+        </table>
+    </div>
 </template>
 
 <script>
@@ -119,22 +122,25 @@ export default {
             const scrollParent = this.scrollParent
             // const parentTopDist = this.getYPos(scrollParent)
             const parentTopDist = scrollParent.getBoundingClientRect().top
+            const tabsHeight = this.$slots.tabs ? 40 : 0
             let scrollDist = scrollParent.scrollTop
-            const threshold = this.distToTop - parentTopDist - desiredOffset
+            const threshold = this.distToTop - parentTopDist - desiredOffset - tabsHeight
             if (scrollDist > threshold) {
                 // // Set width of sticky elements
                 if (this.sticky == false) {
-                    stickyThis.style.top = `${desiredOffset + parentTopDist}px`
+                    stickyThis.style.top = `${desiredOffset + parentTopDist + tabsHeight}px`
                     this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
                     // Set the position and size of the scroll bg
-                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset}px`
+                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset + tabsHeight}px`
                     this.$refs.stickyBg.style.top = `${parentTopDist}px`
 
                     const tableWidth = this.scrollTable.getBoundingClientRect().width
-                    this.tableWidth = `width: ${tableWidth}px`
+                    stickyThis.style.width = tableWidth+'px'
+                    this.tableWidth = tableWidth
                 }
                 this.sticky = true
             } else if (this.sticky == true) {
+                stickyThis.style.width = ''
                 this.sticky = false
             }
         },
@@ -149,7 +155,7 @@ export default {
             let scrollDist = scrollParent.scrollTop
             const threshold = this.distToTop - parentTopDist - desiredOffset
             const tableWidth = this.scrollTable.getBoundingClientRect().width
-            this.tableWidth = `width: ${tableWidth}px`
+            this.tableWidth = tableWidth
         },
         initScrollHeader() {
             if (this.stickyHeader && !this.scrollHeaderInitialized) {
@@ -182,16 +188,27 @@ export default {
 
 <style lang="scss">
 @import '~@/_variables.scss';
-$rowRadius: 4px;
-
+.table-wrapper {
+    padding-top: 4px;
+}
 .flex-table {
     white-space: nowrap;
-    border-spacing: 0 2px;
     display: flex;
     flex-direction: column;
-    .tabs {
+    border: $borderModule;
+    border-radius: $borderRadiusModule;
+    box-shadow: $shadowModule;
+    position: relative;
+    &.has-tabs {
+        margin-top: $heightTableTab;
+    }
+    .tabs-wrapper {
         display: flex;
-        margin-bottom: -$rowRadius;
+        margin-bottom: -$borderRadiusModule;
+        position: absolute;
+        top: -$heightTableTab;
+        left: -1px;
+        width: 100%;
     }
     .sticky-bg {
         display: none;
@@ -199,21 +216,30 @@ $rowRadius: 4px;
     &.sticky {
         .sticky-bg {
             background: $bg;
-            box-shadow: 0 10px 7px -6px rgba(0, 0, 0, 0.05) inset;
             position: fixed;
             z-index: -1;
             display: block;
+            margin-left: -16px;
         }
         .sticky-header {
             position: fixed;
             z-index: 1;
-            .header {
-                box-shadow: 0px 4px 10px #0000002A;
-                position: static;
+            margin-left: -1px;
+            .inner {
+                box-shadow: $shadowModule;
+                border: $borderModule;
+                border-radius: $borderRadiusModule $borderRadiusModule 0 0;
             }
         }
         .sticky-placeholder {
             display: block;
+        }
+        .tabs-wrapper {
+            display: flex;
+            margin-bottom: -$borderRadiusModule;
+            position: absolute;
+            top: -$heightTableTab;
+            left: 0;
         }
     }
     .sticky-placeholder {
@@ -221,11 +247,11 @@ $rowRadius: 4px;
     }
     .rounded-top {
         > :first-child {
-            border-radius: $rowRadius $rowRadius 0 0;
+            border-radius: $borderRadiusModule $borderRadiusModule 0 0;
         }
     }
     tr {
-        background: white;
+        background: $bgModule;
         min-height: 48px;
         display: flex;
         align-items: center;
@@ -234,21 +260,22 @@ $rowRadius: 4px;
         &.active {
             outline: solid 1px $primary;
             outline-offset: -1px;
-            background: $bgContentActive;
+            background: $bgModuleActive;
         }
         &:not(.table-top-bar) {
-            margin-bottom: 2px;
+            border-bottom: $borderModule;
+            // margin-bottom: 2px;
             > * {
                 flex: 1;
             }
         }
         &:not(.header):not(.footer):not(.table-top-bar) {
             &:hover {
-                background: $light1;
+                background: $bgModuleHover;
                 td {
                     &.title {
                         i {
-                            color: $dark05;
+                            color: $primary;
                             transition: 0;
                         }
                     }
@@ -256,13 +283,13 @@ $rowRadius: 4px;
             }
         }
         &.header, &.footer {
-            color: $tableHeader;
+            color: $fontTableHeader;
         }
         &.header {
             height: 32px;
         }
         &.footer {
-            border-radius: 0 0 $rowRadius $rowRadius;
+            border-radius: 0 0 $borderRadiusModule $borderRadiusModule;
             margin-bottom: 0;
             min-height: 16px;
             height: auto;

@@ -503,12 +503,10 @@ export default {
                 })
                     .then(response => {
                         // On success, set the image on the variant
-                        console.log(presignedUrl)
                         let newUrl = presignedUrl.url
                         // Change the URL from https to https
                         if (newUrl.indexOf('https') < 0) {
                             newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
-                            console.log('new url', newUrl)
                         }
                         variant.image = newUrl
                         resolve(response)
@@ -672,6 +670,8 @@ export default {
         },
         PROCESS_PRODUCTS(state, products) {
             products.map(product => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
                 // ---- START PRICES ----
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
@@ -718,6 +718,8 @@ export default {
         },
         PROCESS_SELECTION_PRODUCTS(state, { products, selection, authUser }) {
             products.map(product => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
                 // Currency
                 Object.defineProperty(product, 'yourPrice', {
                     get: function() {
@@ -975,6 +977,8 @@ export default {
         PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs, authUser }) {
             // Use the first product of the
             products.map((product, productIndex) => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
                 // Attach the correct selection product to the base product
                 Vue.set(
                     product,

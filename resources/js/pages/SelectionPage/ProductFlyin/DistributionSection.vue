@@ -2,30 +2,32 @@
     <BaseFlyinColumn class="distribution">
         <template v-slot:header>
             <div class="tab-headers">
-                <span :class="{active: currentTab == 'all'}" class="tab" 
+                <div :class="{active: currentTab == 'all'}" class="tab" 
                 @click="currentTab = 'all'"> ALL
                     <span class="count">{{totalInputCount}}</span>
-                </span>
-                <span :class="{active: currentTab == 'ins'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'ins'}" class="tab" 
                 @click="currentTab = 'ins'"> IN
                     <span class="count">{{product.ins.length + product.focus.length + product.alignmentIns.length + product.alignmentFocus.length}}</span>
-                </span>
-                <span :class="{active: currentTab == 'outs'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'outs'}" class="tab" 
                 @click="currentTab = 'outs'"> OUT
                     <span class="count">{{product.outs.length + product.alignmentOuts.length}}</span>
-                </span>
-                <span :class="{active: currentTab == 'nds'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'nds'}" class="tab" 
                 @click="currentTab = 'nds'"> ND
                     <span class="count">{{product.nds.length + product.alignmentNds.length}}</span>
-                </span>
+                </div>
             </div>
         </template>
         <template v-slot>
             <div class="tab-body">
                 <!-- Totals -->
                 <template v-if="totalFeedbackInputCount > 0 && totalActionInputCount > 0">
-                    <h4 style="margin-top: 0;">Total</h4>
-                    <div class="distribution-bar">
+                    <div class="list-item list-header">
+                        <h4>Total</h4>
+                    </div>
+                    <div class="distribution-bar list-item">
                         <svg>
                             <rect class="bg" height="8px" width="100%"/>
                             <rect class="focus" height="8px" :style="totalFocusStyle"/>
@@ -37,8 +39,10 @@
 
                 <!-- Alignment -->
                 <template v-if="totalActionInputCount > 0">
-                    <h4>Alignment</h4>
-                    <div class="distribution-bar">
+                    <div class="list-item list-header">
+                        <h4>Alignment</h4>
+                    </div>
+                    <div class="distribution-bar list-item">
                         <svg>
                             <rect class="bg" height="8px" width="100%"/>
                             <rect class="focus" height="8px" :style="alignmentFocusStyle"/>
@@ -48,40 +52,48 @@
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="focus" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                            <div class="focus inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
+                                <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
-                            <span class="focus">Focus <i class="fas fa-star"></i></span>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="in" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                            <div class="in inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="out" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                            <div class="out inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
                             </div>
                         </div>
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="nd" v-for="action in product.alignmentNds" :key="`alignment-${action.selection_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
+                        <div class="list-item" v-for="action in product.alignmentNds" :key="`alignment-${action.selection_id}`">
+                            <div class="nd inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -89,8 +101,10 @@
 
                 <!-- Feedback -->
                 <template v-if="totalFeedbackInputCount > 0">
-                    <h4>Feedback</h4>
-                    <div class="distribution-bar">
+                    <div class="list-item list-header">
+                        <h4>Feedback</h4>
+                    </div>
+                    <div class="distribution-bar list-item">
                         <svg>
                             <rect class="bg" height="8px" width="100%"/>
                             <rect class="focus" height="8px" :style="focusStyle"/>
@@ -100,42 +114,50 @@
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="focus" v-for="action in product.focus" :key="`${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.focus" :key="`${action.selection_id}-${action.user_id}`">
+                            <div class="focus inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
+                                <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
-                            <span class="focus">Focus <i class="fas fa-star"></i></span>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="in" v-for="action in product.ins" :key="`${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.ins" :key="`${action.selection_id}-${action.user_id}`">
+                            <div class="in inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="out" v-for="action in product.outs" :key="`${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.outs" :key="`${action.selection_id}-${action.user_id}`">
+                            <div class="out inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
                             </div>
                         </div>
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="nd" v-for="action in product.nds" :key="`${action.selection_id}-${action.user_id}`">
-                            <div>
-                                <span class="selection">{{action.selection.name}}</span>
-                                <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                <span v-if="action.user" class="email">{{action.user.email}}</span>
+                        <div class="list-item" v-for="action in product.nds" :key="`${action.selection_id}-${action.user_id}`">
+                            <div class="nd inner">
+                                <div>
+                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
+                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                </div>
                             </div>
                         </div>
                     </template>
@@ -271,6 +293,8 @@ export default {
     .tab-headers {
         display: flex;
         height: 100%;
+        border-radius: $borderRadiusEl;
+        border: $borderElSoft;
     }
     .tab {
         display: flex;
@@ -281,14 +305,28 @@ export default {
         height: 100%;
         text-align: center;
         font-weight: 700;
-        color: $dark2;
+        color: $fontSoft;
         cursor: pointer;
-        border-radius: 4px 4px 0 0;
+        padding: 2px 1px 2px 2px;
+        user-select: none;
+        &:first-child {
+            border-radius: $borderRadiusEl 0 0 $borderRadiusEl;
+        }
+        &:last-child {
+            border-radius: 0 $borderRadiusEl $borderRadiusEl 0;
+            padding: 2px;
+        }
         &:not(:last-child) {
-            margin-right: 4px;
+            border-right: $borderEl;
         }
         &:hover {
+            padding: 0;
             color: $primary;
+            border: $borderElHover;
+            box-shadow: $shadowEl;
+        }
+        &:active {
+            transform: $transformElActive;
         }
         .count {
             color: $font;
@@ -302,37 +340,31 @@ export default {
         }
     }
     .tab-body {
-        .distribution-bar {
-            padding: 12px;
-            // margin-bottom: 8px;
-            svg {
-                height: 8px;
-                border-radius: 4px;
-                .bg {
-                    fill: $grey;
-                }
-                .focus {
-                    fill: $primary;
-                }
-                .in {
-                    fill: $green;
-                }
-                .out {
-                    fill: $red;
-                }
-            }
-        }
-        > * {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px 4px;
+        .list-item {
             margin-bottom: 4px;
             background: white;
+            border: $borderEl;
+            box-shadow: $shadowEl;
+            border-radius: $borderRadiusEl;
+            &.list-header {
+                padding: 8px 12px 4px;
+                &:not(:first-child) {
+                    margin-top: 20px;
+                }
+                h4 {
+                    margin: 0;
+                }
+            }
+            .inner {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 12px 4px;
+            }
             span {
                 display: block;
             }
-            &.focus {
+            > .focus {
                 box-shadow: -8px 0 inset $primary;
                 .focus {
                     font-size: 10px;
@@ -348,14 +380,34 @@ export default {
                     }
                 }
             }
-            &.in {
+            .in {
                 box-shadow: -8px 0 inset $green;
             }
-            &.out {
+            .out {
                 box-shadow: -8px 0 inset $red;
             }
-            &.nd {
-                box-shadow: -8px 0 inset $grey2;
+            .nd {
+                box-shadow: -8px 0 inset $grey600;
+            }
+            &.distribution-bar {
+                padding: 12px;
+                display: flex;
+                svg {
+                    height: 8px;
+                    border-radius: 4px;
+                    .bg {
+                        fill: $grey600;
+                    }
+                    .focus {
+                        fill: $primary;
+                    }
+                    .in {
+                        fill: $green;
+                    }
+                    .out {
+                        fill: $red;
+                    }
+                }
             }
         }
         .selection {

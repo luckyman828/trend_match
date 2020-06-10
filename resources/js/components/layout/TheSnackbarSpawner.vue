@@ -19,9 +19,9 @@ export default {
 <style scoped lang="scss">
 .snackbar-spawner {
     position: fixed;
-    z-index: 99;
+    z-index: 999;
     right: 16px;
-    bottom: 32px;
+    bottom: 92px;
     display: flex;
     flex-direction: column;
 }

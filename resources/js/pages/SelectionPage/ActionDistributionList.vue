@@ -2,7 +2,7 @@
     <div class="action-distribution-list">
 
         <div class="header">
-            <div class="segment-toggle">
+            <!-- <div class="segment-toggle">
                 <BaseButton targetAreaPadding="16px 4px 16px 16px"
                 :buttonClass="currentTab == 'alignment' ? 'white xs full-width' : 'invisible ghost-hover xs full-width'"
                 @click="setCurrentTab('alignment')">
@@ -13,7 +13,17 @@
                 @click="setCurrentTab('feedback')">
                     <span>Feedback</span>
                 </BaseButton>
-            </div>
+            </div> -->
+            <BaseTabHeaderList>
+                <BaseTabHeader :active="currentTab == 'alignment'" 
+                @click.native="setCurrentTab('alignment')">
+                    <span>Alignment</span>
+                </BaseTabHeader>
+                <BaseTabHeader :active="currentTab == 'feedback'" 
+                @click.native="setCurrentTab('feedback')">
+                    <span>Feedback</span>
+                </BaseTabHeader>
+            </BaseTabHeaderList>
         </div>
 
         <!-- Alignment List -->

@@ -6,7 +6,7 @@
 
 
                 <div class="page" v-for="(productChunk, index) in chunksToShow" :key="index"
-                style="width: 744pt; height: 1053pt; overflow: hidden;
+                style="width: 744pt; height: 1052.5pt; overflow: hidden;
                 box-sizing: border-box; padding: 60px 38px 38px; position: relative;">
 
                     <div class="header" style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between;
@@ -23,14 +23,12 @@
                     <div class="product-wrapper" v-for="(product, index) in productChunk" :key="product.datasource_id"
                     style="display: block; border: solid 2px; border-radius: 4px; margin-top: 12pt"
                     :style="[{width: exportComments || includeVariants ? '100%' : '336pt'},
-                    {marginRight: !(exportComments || includeVariants) && index%2 == 0 ? '12pt' : '0'},
                     {float: !exportComments && index%2 == 0 ? 'left' : 'right'},
                     {height: includeVariants ? '100%' : '306pt'}]">
-
                         <div class="col-wrapper" 
                         style="display: -webkit-box; -webkit-box-pack: justify; justify-content: space-between;
                         padding: 8px 12px 16px; box-sizing: border-box;"
-                        :style="{height: includeVariants ? 'auto' : 'height: 336pt'}">
+                        :style="{height: includeVariants ? 'auto' : '306pt'}">
 
                             <div class="col-left" style="display: -webkit-box; -webkit-box-orient: vertical; flex-direction: column;
                             -webkit-box-pack: justify; justify-content: space-between; align-items: space-between;"

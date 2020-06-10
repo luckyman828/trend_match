@@ -51,7 +51,7 @@
                             <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-succes">Request saved <i class="fas fa-clipboard-check green"></i></small></BaseTempAlert>
                             <template>
                                 <button type="button" class="invisible" @click="cancelRequest"><span>Cancel</span></button>
-                                <button type="button" class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Save</span></button>
+                                <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Save</span></button>
                             </template>
                         </div>
                     </div>

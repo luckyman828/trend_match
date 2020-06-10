@@ -176,6 +176,7 @@ export default {
         ...mapGetters('teams', ['currentTeamStatus', 'availableTeamRoles', 'getCurrentTeam', 'nextTeam', 'prevTeam']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('users', ['users']),
+        ...mapGetters('auth', ['authUser']),
         readyStatus() {
             return this.currentTeamStatus
         },
@@ -186,7 +187,9 @@ export default {
             if (!this.team.users) return []
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
-            return allUsers.filter(workspaceUser => !this.team.users.find(teamUser => teamUser.id == workspaceUser.id))
+            return allUsers.filter(workspaceUser => !this.team.users.find(teamUser => teamUser.id == workspaceUser.id)).sort((a,b) => {
+                if (a.id == this.authUser.id) return -1
+            })
         },
         workspaceUsers() {
             return this.users

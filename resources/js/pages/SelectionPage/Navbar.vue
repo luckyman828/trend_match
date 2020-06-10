@@ -19,8 +19,8 @@
         <div class="items-right">
             <SelectionPresenterModeButton :selection="currentSelection"/>
 
-            <button class="button dark wide" @click="onExport"><span>Export PDF</span></button>
-            <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
+            <button class="button primary wide" @click="onExport"><span>Export PDF</span></button>
+            <button class="button primary wide" @click="onExportCsv"><span>Export CSV</span></button>
         </div>
 
         <ExportProductsModal v-if="exportModalVisible" :show="exportModalVisible" @close="exportModalVisible = false"/>

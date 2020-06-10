@@ -39,14 +39,17 @@
             <!-- End Comment Controls -->
         </div>
         <div class="save-controls" v-if="editActive">
-            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
+            <button class="invisible ghost-hover" style="margin-right: 8px"
+            @click="editActive = false">
+                <span>Cancel</span>
+            </button>
+            <BaseButton buttonClass="primary" :hotkey="{key: 'ENTER', label: 'Save', align: 'right'}" 
             @click="onUpdateComment">
                 <span>Save</span>
             </BaseButton>
-            <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
         </div>
 
-        <div class="sender" v-if="displayAuthor">
+        <div class="sender" v-if="displayAuthor && !editActive">
             <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
             {{(comment.user_id == authUser.id) ? 'You' 
             : !commentIsAnonymized && comment.user ? comment.user.name : 'Anonymous'}}
@@ -132,9 +135,10 @@ export default {
         &.edit-active {
             width: 100%;
             max-width: none;
-            margin-bottom: 44px;
+            margin-bottom: 72px;
             .comment {
                 padding: 2px;
+                width: 100%;
                 ::v-deep {
                     .input-wrapper {
                         border: none;
@@ -161,7 +165,7 @@ export default {
     .save-controls {
         position: absolute;
         bottom: -8px;
-        left: 0;
+        right: 0;
         transform: translateY(100%);
         display: flex;
     }
@@ -184,7 +188,6 @@ export default {
         background: white;
         border-radius: 6px;
         display: inline-block;
-        z-index: 1;
         margin-bottom: 4px;
         text-align: left;
         .failed {
@@ -209,14 +212,14 @@ export default {
             background: $yellow;
             color: $dark;
         }
-        &:hover, &.failed {
+        .own &:hover, &.failed {
+            font-weight: 700;
             .controls {
-                opacity: 1;
+                display: inline-flex;
             }
         }
         .controls {
             transition: .3s;
-            opacity: 0;
             position: absolute;
             right: 0;
             bottom: -36px;
@@ -241,9 +244,6 @@ export default {
             .loader {
                 height: 24px;
                 flex-direction: row;
-            }
-            .own & {
-                display: inline-flex;
             }
         }
     }

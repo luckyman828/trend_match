@@ -111,18 +111,18 @@
                 <div class="col-2 minimum">
                     <div>
                         <label>Order min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.quantity"/>
+                        <BaseInputField readOnly=true :value="product.min_order"/>
                     </div>
                     <div>
                         <label>Variant min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
+                        <BaseInputField readOnly=true :value="product.min_variant_order"/>
                     </div>
                 </div>
 
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
                 <label>Description</label>
-                <BaseInputTextArea readOnly=true :value="product.description"/>
+                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
                 <label>Assortments</label>
                 <BaseInputTextArea readOnly=true :value="product.assortments.map(x => x.name).join(',\n')"/>
                 <label>Category</label>
@@ -223,6 +223,7 @@ export default {
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
+
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
@@ -350,7 +351,11 @@ export default {
             }
             .flyin-header {
                 > .left {
-                    max-width: 380px;
+                    // max-width: 380px;
+                    h3 {
+                        max-width: calc(36vw - 92px);
+                        overflow: hidden;
+                    }
                 }
             }
         }
@@ -384,8 +389,9 @@ export default {
                 width: 225px;
                 height: 300px;
                 overflow: hidden;
-                border-radius: 4px;
                 border: solid 2px $divider;
+                border: $borderElHard;
+                border-radius: $borderRadiusEl;
                 position: relative;
                 img {
                     width: 100%;

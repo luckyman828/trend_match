@@ -168,7 +168,7 @@ export default {
                 max-width: 200px;
             }
             &:hover, &.active {
-                background: $bgContentActive;
+                background: $bgModuleActive;
             }
             &.has-description {
                 label {
@@ -183,7 +183,7 @@ export default {
     .radiobox {
         font-weight: 500;
         &:hover {
-            background: $bgContentActive;
+            background: $bgModuleActive;
             .radiomark {
                 border-color: $primary;
             }

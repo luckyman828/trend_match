@@ -38,7 +38,7 @@
                         </div>
                         <div class="right">
                             <button type="button" class="invisible" @click="writeActive = false"><span>Cancel</span></button>
-                            <button type="button" class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
+                            <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
                         </div>
                     </div>
                 </form>

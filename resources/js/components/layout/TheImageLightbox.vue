@@ -28,7 +28,7 @@ export default {
             const image = this.images[index]
             // Check if it's an image from bestseller
             let imageToReturn = image
-            if (image.search('bestseller') >= 0) {
+            if (image && image.search('bestseller') >= 0) {
                 const thumbnailTrueIndex = image.search('true')
                 // test if the image is shown as thumbnail
                 if (thumbnailTrueIndex >= 0) {

@@ -72,7 +72,7 @@ export default {
 
     th {
         font-size: 12px;
-        color: $tableHeader;
+        color: $fontTableHeader;
         .sort {
             &.active {
                 background: $light1;

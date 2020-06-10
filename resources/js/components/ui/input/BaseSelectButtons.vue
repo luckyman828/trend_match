@@ -240,7 +240,7 @@ export default {
                 // overflow: hidden;
             }
             &:hover, &.active {
-                background: $bgContentActive;
+                background: $bgModuleActive;
             }
             &.has-description {
                 label {

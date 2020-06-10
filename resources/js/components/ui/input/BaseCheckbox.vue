@@ -87,7 +87,7 @@ export default {
             margin: 0;
             height: 18px;
             width: 18px;
-            border: solid $dark2 1px;
+            border: solid $grey700 1px;
             i {
                 color: white;
             }
@@ -108,12 +108,12 @@ export default {
             }
         }
         .checkmark {
-            border: solid $dark2 1px;
+            border: solid $grey700 1px;
             i {
                 color: white;
             }
         }
-        &:hover, .input-wrapper:hover & {
+        label:hover &, &:hover, .input-wrapper:hover & {
             .checkmark {
                 border: solid 2px $primary;
             }

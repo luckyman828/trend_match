@@ -20,7 +20,7 @@
         </div>
         <div class="buttons">
             <div class="hotkey-wrapper" v-tooltip="error">
-                <button class="green" :disabled="error"
+                <button class="primary" :disabled="error"
                 @click="submit">
                     <span>Save</span>
                 </button>
@@ -163,7 +163,7 @@ export default {
             display: flex;
 
             > *:not(:last-child) {
-                margin-right: 16px;
+                margin-right: 8px;
             }
             button {
                 min-width: 80px;

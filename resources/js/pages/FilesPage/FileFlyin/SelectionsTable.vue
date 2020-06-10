@@ -8,7 +8,7 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
-                        <span>{{getSelectionsTree.length}} records</span>
+                        <span><strong>{{getSelectionsTree.length}}</strong> records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -855,6 +855,8 @@ export default {
                 open_from: null,
                 open_to: null,
                 completed_at: null,
+                your_role: null,
+                is_presenting: null,
             }
             // Push new selection to the parent
             if (parent) {

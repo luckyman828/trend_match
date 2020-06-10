@@ -140,8 +140,10 @@
                                                 </tr>
                                                 <tr>
                                                     <td></td>
-                                                    <td><BaseInputField :id="'currency-'+index+'-name'" 
-                                                    class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"/></td>
+                                                    <td><BaseInputField :id="'currency-'+index+'-name'" :errorTooltip="currency.nameError"
+                                                    class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"
+                                                    @blur="validateCurrency(currency)"
+                                                    @input.native="currency.currencyName = currency.currencyName.toUpperCase()"/></td>
                                                     <td><i class="fas fa-equals"></i></td>
                                                     <td><BaseInputField :id="'currency-'+index+'-file'" 
                                                     class="input-field" disabled=true
@@ -385,6 +387,7 @@ export default {
         ],
         currencyDefaultObject: {
             currencyName: '',
+            nameError: null,
             fileIndex: null,
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -399,6 +402,7 @@ export default {
         },
         currenciesToMatch: [{
             currencyName: '',
+            nameError: null,
             fileIndex: null,
             fieldsToMatch: [
                 {name: 'currency', displayName: 'Currency Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
@@ -455,6 +459,14 @@ export default {
                     }
                 }
             })
+            // Loop through the currencies and look check their names
+            if (!this.singleCurrencyFile) {
+                this.currenciesToMatch.forEach(currency => {
+                    if(currency.fileIndex != null && !this.validateCurrency(currency)) {
+                        valid = false
+                    }
+                })
+            }
             return valid
         }
     },
@@ -483,6 +495,15 @@ export default {
                 return fieldValue
             }
             return 'Not matched'
+        },
+        validateCurrency(currency) {
+            if (currency.currencyName.length != 3) {
+                currency.nameError = 'Currency must be a <strong>3 letter</strong> currency code.'
+                return false
+            } else {
+                currency.nameError = null
+                return true
+            }
         },
         validateKey(file) {
             // Assume no error
@@ -539,6 +560,15 @@ export default {
                         const urlReg = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/)
                         if (!urlReg.test(fieldValue)) {
                             field.error = `Must be a <strong>valid URL</strong>.
+                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
+                            valid = false
+                        }
+                    }
+
+                    // Test for correct currency
+                    if (this.singleCurrencyFile && ['currency'].includes(fieldName)) {
+                        if (fieldValue.length != 3) {
+                            field.error = `Currency must be a <strong>3 letter</strong> currency code.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
                             valid = false
                         }
@@ -969,7 +999,11 @@ export default {
                 })
             })
             if (!valid) {
-                alert('Error. One or more fields have an error')
+                this.SHOW_SNACKBAR({ 
+                    msg: `One or more fields have an error'`,
+                    type: 'info', 
+                    iconClass: 'fa-exclamation-circle', 
+                })
                 return
             }
 
@@ -1083,7 +1117,7 @@ export default {
                 align-items: center;
                 height: 40px;
                 padding: 4px 4px 4px 8px;
-                border: solid 1px $divider;
+                border: solid $dividerWidth $dividerColor;
                 border-radius: 4px;
                 span {
                     color: $primary;

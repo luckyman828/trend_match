@@ -70,6 +70,19 @@ export default {
         productsFilteredBySearch: [],
         show: false,
     }},
+    watch: {
+        show(newVal) {
+            // const chatIcon = document.getElementById('crisp-chat-icon')
+            // const chatBox = document.getElementById('crisp-chat')
+            // if (newVal) {
+            //     // Adjust the placement of the chatbox
+            //     if (chatIcon) chatIcon.style.setProperty('right', `calc(100vw - ${400 + 60 + 16}px)`, 'important');
+            // } else {
+            //     // Adjust the placement of the chatbox
+            //     if (chatIcon) chatIcon.style.setProperty('right', `${Math.min(1500 + 24, window.innerWidth - 242 + 24)}px`, 'important');
+            // }
+        }
+    },
     computed: {
         ...mapGetters('products', ['products'])
     },

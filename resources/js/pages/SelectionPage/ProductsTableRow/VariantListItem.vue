@@ -2,9 +2,13 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <!-- <v-popover :disabled="multiSelectionMode"> -->
             <div class="variant-item-wrapper">
-                <div class="variant-list-item pill ghost xs">
+                <BaseShape class="variant-list-item" shapeClass="pill ghost xs"
+                targetAreaPadding="8px 2px">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                </div>
+                </BaseShape>
+                <!-- <div class="variant-list-item pill ghost xs">
+                    <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
+                </div> -->
                 <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
                     <div class="circle ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
@@ -152,9 +156,13 @@ export default {
     }
 }
 .variant-list-item {
-    padding-right: 4px;
-    &:hover {
-        padding-right: 3px;
+    ::v-deep {
+        .base-shape {
+            padding-right: 4px;
+            &:hover {
+                padding-right: 3px;
+            }
+        }
     }
 }
 

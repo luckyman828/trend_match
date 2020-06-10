@@ -4,7 +4,7 @@
             <strong>
                 <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
             </strong>
-            <button class="circle close" @click="hide"><i class="fal fa-times"></i></button>
+            <button class="circle close" @click="hide"><i class="far fa-times"></i></button>
         </div>
 
         <div class="body">
@@ -80,7 +80,7 @@ export default {
                 // Position the contextual menu
                 // Make sure the entire contextual menu is always visible
                 // Define a minimum offset the context menu should keep from the windows edges
-                const offset = 20
+                const offset = 40
                 // menuRect = contextMenu.getBoundingClientRect()
                 const menuHeight = contextMenu.scrollHeight
                 const menuWidth = contextMenu.scrollWidth
@@ -188,8 +188,9 @@ export default {
 
     .context-menu, .context-menu:focus {
         background: white;
-        border-radius: 4px;
-        box-shadow: 0 3px 30px rgba(black, .3);
+        border-radius: $borderRadiusModule;
+        border: $borderModule;
+        box-shadow: $shadowModuleHard;
         z-index: 1;
         position: fixed;
         overflow: hidden;
