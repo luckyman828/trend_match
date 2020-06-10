@@ -31,8 +31,8 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    /* overflow-x: hidden;
+    overflow-y: auto; */
 }
 .tooltip-inner {
     padding: 0;
