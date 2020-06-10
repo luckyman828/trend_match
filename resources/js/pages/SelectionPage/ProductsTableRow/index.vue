@@ -4,7 +4,8 @@
     @click.ctrl="$refs.selectCheckbox.check()">
 
         <div class="product-details">
-            <span v-if="product.newComment" class="circle tiny primary"></span>
+            <div v-if="hasUnreadComment" class="unread-indicator circle xxs primary" 
+            v-tooltip.right="'A message needs a reply'"/>
             
             <td class="select" 
             @click.self="$refs.selectCheckbox.check()">
@@ -216,6 +217,14 @@ export default {
         },
         titleTruncateSize () {
             return window.innerWidth < 1260 ? 16 : 24
+        },
+        hasUnreadComment() {
+            if (this.currentSelectionMode == 'Approval') {
+                return this.product.hasUnreadAlignerComment
+            }
+            if (this.currentSelectionMode == 'Alignment') {
+                return this.product.hasUnreadApproverComment
+            }
         }
     },
     watch: {
@@ -358,6 +367,10 @@ export default {
     .products-table-row {
         display: block;
         padding: 0;
+        .unread-indicator {
+            position: absolute;
+            left: -20px;
+        }
         &:focus {
             outline: solid 2px $primary;
             outline-offset: -2px;

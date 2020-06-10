@@ -74,9 +74,9 @@
                         </v-popover>
 
                         <!-- Temp. disabled until the functionality gets hooked up -->
-                        <!-- <BaseCheckboxInputField class="small" v-model="unreadOnly">
+                        <BaseCheckboxInputField class="small" v-model="unreadOnly">
                             <span>Unread only</span>
-                        </BaseCheckboxInputField> -->
+                        </BaseCheckboxInputField>
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
@@ -438,8 +438,18 @@ export default {
 }
 </script>
 
+<style lang="scss">
+    // RECYCLE SCROLLER
+    .products-table-wrapper {
+        .vue-recycle-scroller__item-wrapper {
+            overflow: visible;
+        }
+    }
+</style>
+
 <style scoped lang="scss">
     @import '~@/_variables.scss';
+
 
     .products-table-wrapper {
         ::v-deep {
