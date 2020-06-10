@@ -293,6 +293,8 @@ export default {
     .tab-headers {
         display: flex;
         height: 100%;
+        border-radius: $borderRadiusEl;
+        border: $borderElSoft;
     }
     .tab {
         display: flex;
@@ -305,12 +307,17 @@ export default {
         font-weight: 700;
         color: $fontSoft;
         cursor: pointer;
-        border-radius: $borderRadiusEl;
-        border: $borderElSoft;
-        padding: 1px;
+        padding: 2px 1px 2px 2px;
         user-select: none;
+        &:first-child {
+            border-radius: $borderRadiusEl 0 0 $borderRadiusEl;
+        }
+        &:last-child {
+            border-radius: 0 $borderRadiusEl $borderRadiusEl 0;
+            padding: 2px;
+        }
         &:not(:last-child) {
-            margin-right: 4px;
+            border-right: $borderEl;
         }
         &:hover {
             padding: 0;
