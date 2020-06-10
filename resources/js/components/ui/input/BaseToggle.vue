@@ -46,7 +46,7 @@ export default {
         .pill {
             background: $green;
             .circle {
-                transform: translateX(calc(100% - 2px));
+                transform: translateX(100%);
             }
             + span {
                 color: $font;
@@ -82,7 +82,7 @@ export default {
     position: relative;
     .circle {
         position: absolute;
-        left: 0;
+        left: -1px;
         background: white;
         border: solid 2px $divider;
         transition: transform .2s;
