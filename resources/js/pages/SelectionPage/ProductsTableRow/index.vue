@@ -101,12 +101,12 @@
             <!-- End Distribution -->
 
             <td class="requests">
-                <button class="ghost xs" @click="onViewSingle">
-                    <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
-                </button>
-                <button class="requests-button ghost xs" @click="onViewSingle">
+                <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests'">
                     <span>{{product.requests.length}}</span><i class="far fa-clipboard-check"></i>
                     <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
+                </button>
+                <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
+                    <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
                 </button>
             </td>
             
