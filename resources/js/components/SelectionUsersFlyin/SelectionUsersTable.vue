@@ -1,5 +1,6 @@
 <template>
     <div class="selection-users-table">
+        <h3>Selection Members</h3>
         <BaseFlexTable :stickyHeader="false"
         :contentStatus="readyStatus"
         loadingMsg="loading users"
@@ -16,10 +17,13 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <h3>Selection Members</h3>
+                        <!-- <h3>Selection Members</h3> -->
+                        <BaseSearchField :searchKey="['name','email']" 
+                        :arrayToSearch="currentUsersTableTab == 'Members' ? selection.users : selection.denied_users" 
+                        v-model="usersFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>{{selection.users ? selection.users.length : 0}} records</span>
+                        <span>showing {{usersFilteredBySearch.length}} of {{selection.users ? selection.users.length : 0}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -27,9 +31,7 @@
                 <BaseTableHeader class="select">
                     <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
                     @change="(checked) => !!checked
-                    ? currentUsersTableTab == 'Members'
-                    ? selected = users
-                    : selected = selection.denied_users
+                    ? selected = usersFilteredBySearch
                     : selected = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
@@ -40,7 +42,7 @@
             <template v-slot:body>
                 <!-- Selection Members -->
                 <template v-if="currentUsersTableTab == 'Members'">
-                    <tr v-for="(user, index) in selection.users" :key="user.id" class="user-row table-row" ref="userRow" 
+                    <tr v-for="(user, index) in usersSorted" :key="user.id" class="user-row table-row" ref="userRow" 
                     :class="[{active: contextMenuIsActive(user)}, {self: user.id == authUser.id}]"
                     @click.ctrl="$refs.selectBox[index].check()"
                     @contextmenu="showUserContext($event, user)">
@@ -67,7 +69,7 @@
                 </template>
                 <!-- Excluded Users -->
                 <template v-if="currentUsersTableTab == 'Excluded'">
-                    <tr v-for="(user, index) in selection.denied_users" :key="user.id" class="user-row table-row" ref="userRow"
+                    <tr v-for="(user, index) in usersSorted" :key="user.id" class="user-row table-row" ref="userRow"
                     @click.ctrl="$refs.selectBox[index].check()"
                     @contextmenu="showExcludedUserContext($event, user)">
                         <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
@@ -186,6 +188,7 @@ export default {
         contextMouseEvent: null,
         currentUsersTableTab: 'Members',
         authUserIsOwner: false,
+        usersFilteredBySearch: [],
     }},
     computed: {
         ...mapGetters('selections', {
@@ -219,6 +222,9 @@ export default {
                 if (a.id == this.authUser.id) return -1
             })
         },
+        usersSorted() {
+            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
+        }
     },
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
@@ -296,7 +302,7 @@ export default {
             // If if we are already sorting by the given key, flip the sort order
             this.sortKey = key
 
-            this.sortArray(this.users, method, key)
+            this.sortArray(this.usersFilteredBySearch, method, key)
         },
         onRemoveUsers(user) {
             // If we have a selection, loop through the selection and remove those
