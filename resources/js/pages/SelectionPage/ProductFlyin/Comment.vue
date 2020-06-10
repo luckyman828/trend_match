@@ -43,7 +43,7 @@
             @click="editActive = false">
                 <span>Cancel</span>
             </button>
-            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save', align: 'right'}" 
+            <BaseButton buttonClass="primary" :hotkey="{key: 'ENTER', label: 'Save', align: 'right'}" 
             @click="onUpdateComment">
                 <span>Save</span>
             </BaseButton>

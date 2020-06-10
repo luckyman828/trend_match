@@ -2,22 +2,22 @@
     <BaseFlyinColumn class="distribution">
         <template v-slot:header>
             <div class="tab-headers">
-                <span :class="{active: currentTab == 'all'}" class="tab" 
+                <div :class="{active: currentTab == 'all'}" class="tab" 
                 @click="currentTab = 'all'"> ALL
                     <span class="count">{{totalInputCount}}</span>
-                </span>
-                <span :class="{active: currentTab == 'ins'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'ins'}" class="tab" 
                 @click="currentTab = 'ins'"> IN
                     <span class="count">{{product.ins.length + product.focus.length + product.alignmentIns.length + product.alignmentFocus.length}}</span>
-                </span>
-                <span :class="{active: currentTab == 'outs'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'outs'}" class="tab" 
                 @click="currentTab = 'outs'"> OUT
                     <span class="count">{{product.outs.length + product.alignmentOuts.length}}</span>
-                </span>
-                <span :class="{active: currentTab == 'nds'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'nds'}" class="tab" 
                 @click="currentTab = 'nds'"> ND
                     <span class="count">{{product.nds.length + product.alignmentNds.length}}</span>
-                </span>
+                </div>
             </div>
         </template>
         <template v-slot>
@@ -305,13 +305,21 @@ export default {
         font-weight: 700;
         color: $fontSoft;
         cursor: pointer;
-        border-radius: 4px 4px 0 0;
+        border-radius: $borderRadiusEl;
         border: $borderElSoft;
+        padding: 1px;
+        user-select: none;
         &:not(:last-child) {
             margin-right: 4px;
         }
         &:hover {
+            padding: 0;
             color: $primary;
+            border: $borderElHover;
+            box-shadow: $shadowEl;
+        }
+        &:active {
+            transform: $transformElActive;
         }
         .count {
             color: $font;

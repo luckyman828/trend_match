@@ -178,6 +178,7 @@ $borderEl: solid 1px $borderColorEl;
 $borderRadiusEl: 4px;
 $borderElSoft: solid 1px #cddde8;
 $borderElHard: solid 2px $borderColorElHard;
+$borderElHover: solid 2px $primary;
 
 // TABLES
 $heightTableTab: 40px;
@@ -189,3 +190,6 @@ $bgTabActive: white;
 $fontColorTabActive: $primary;
 $bgTabHover: $primary;
 $fontColorTabHover: white;
+
+// Button
+$transformElActive: scale(0.97);

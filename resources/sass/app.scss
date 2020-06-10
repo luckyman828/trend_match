@@ -385,8 +385,9 @@ input[type='submit'] {
         border-color: $grey400;
     }
     &:active {
-        background: $grey400;
-        border-color: $grey500;
+        // background: $grey400;
+        // border-color: $grey500;
+        transform: $transformElActive;
     }
     @each $color in $brand-colors {
         &.#{nth($color,1)},
@@ -433,12 +434,12 @@ input[type='submit'] {
         }
         &.#{nth($color,1)}:active,
         &.#{nth($color,1)}-hover:active {
-            background: nth($color, 5);
+            // background: nth($color, 5);
+            transform: $transformElActive;
         }
     }
 
-    &.ghost,
-    &.ghost-hover:hover {
+    &.ghost {
         background: transparent;
         color: $font;
         border: solid 1px $grey700;
@@ -446,11 +447,12 @@ input[type='submit'] {
             color: $font;
         }
     }
-    &.ghost {
+    &.ghost,
+    &.ghost-hover {
         &:hover {
             padding: 0;
             border: solid 2px $primary;
-            i {
+            i:not(.fa-times):not(.fa-ellipsis-h) {
                 font-weight: 900;
             }
         }
@@ -480,7 +482,7 @@ input[type='submit'] {
     }
     &:focus {
         outline: none;
-        box-shadow: 0 0 1px 1px $primary;
+        box-shadow: 0 0 0 1px $primary inset;
     }
 }
 button,
