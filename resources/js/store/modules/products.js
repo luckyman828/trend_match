@@ -700,7 +700,7 @@ export default {
         updateProduct(state, product) {
             // Replace the product with the new
             let stateProduct = state.products.find(x => x.id == product.id)
-            Object.assign(stateProduct, product)
+            if (stateProduct) Object.assign(stateProduct, product)
             // Check if we also need to update the current product
             if (state.currentProduct && state.currentProduct.id == product.id) {
                 Object.assign(state.currentProduct, product)

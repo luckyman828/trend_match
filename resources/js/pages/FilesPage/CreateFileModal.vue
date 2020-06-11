@@ -1037,8 +1037,9 @@ export default {
 
             let imageUploadSuccess = true
             if (this.submitStatus != 'Error') {
-                this.submitStatus = 'Uploading images'
-                const uploadedImages = await this.syncExternalImages(newFile).catch(err => {
+                this.submitStatus = 'Uploading images. This may take a while'
+                await this.syncExternalImages({file: newFile, products: newProducts}).catch(err => {
+                    console.log('uploadImages error', err)
                     imageUploadSuccess = false
                     this.SHOW_SNACKBAR({ 
                         msg: `<p><strong>Hey you!</strong><br></p>
@@ -1050,31 +1051,6 @@ export default {
                     })
                 })
             }
-
-            if (imageUploadSuccess) {
-                this.submitStatus = 'Processing images'
-                console.log('uploaded images', uploadedImages)
-                const productsToUpdate = []
-                uploadedImages.forEach(image => {
-                    const product = newProducts.find(x => x.datasource_id == image.datasource_id)
-                    if (!product) return
-                    const variant = product.variants.find(x => x.id == image.mapping_id)
-                    if (!variant) return
-                    variant.image = url
-                    productsToUpdate.push(product)
-                })
-                await this.updateManyProducts({file: newFile.id, products: productsToUpdate}).catch(err => {
-                    this.SHOW_SNACKBAR({ 
-                        msg: `<p><strong>Hey you!</strong><br></p>
-                        <p>We will display your images from your provided URLs.</p>
-                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
-                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
-                        type: 'info', 
-                        iconClass: 'fa-exclamation-circle', 
-                    })
-                })
-            }
-
 
             if (uploadSuccess) {
                 this.reset()

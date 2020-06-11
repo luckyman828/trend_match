@@ -183,7 +183,6 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, file) {
-            console.log('insert or update file', JSON.parse(JSON.stringify(file)))
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -280,7 +279,6 @@ export default {
             )
 
             const sendRequest = async () => {
-                console.log('send request!')
                 await axios
                     .delete(apiUrl)
                     .then(response => {
@@ -322,7 +320,6 @@ export default {
             }
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
-            console.log('delete multiple files', files)
             commit('DELETE_MULTIPLE_FILES', files)
 
             // Start timer for deletion
@@ -439,14 +436,52 @@ export default {
                 })
                 .catch(() => {})
         },
-        async syncExternalImages({ commit, state }, file) {
+        async syncExternalImages({ commit, state, dispatch }, { file, products }) {
             return new Promise(async (resolve, reject) => {
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
+
+                const imageMaps = []
+                products.map(product => {
+                    product.variants.map(variant => {
+                        if (!variant.image) return
+                        imageMaps.push({
+                            mapping_id: variant.id,
+                            datasource_id: product.id,
+                            url: variant.image,
+                        })
+                    })
+                })
+
                 await axios
-                    .post(apiUrl)
-                    .then(response => {
-                        resolve(response.data.images)
+                    .post(apiUrl, {
+                        max_height: 2016,
+                        max_width: 1512,
+                        images: imageMaps,
+                    })
+                    .then(async response => {
+                        const uploadedImages = response.data.media_url_maps
+                        const productsToUpdate = []
+                        uploadedImages.forEach(image => {
+                            const product = products.find(product =>
+                                product.variants.find(variant => variant.id == image.mapping_id)
+                            )
+                            if (!product) return
+                            const variant = product.variants.find(variant => variant.id == image.mapping_id)
+
+                            if (!variant) return
+                            variant.image = image.cdn_url
+                            productsToUpdate.push(product)
+                        })
+                        await dispatch(
+                            'products/updateManyProducts',
+                            { file, products: productsToUpdate },
+                            { root: true }
+                        ).catch(err => {
+                            reject(err)
+                        })
+
+                        resolve(response.data.media_url_maps)
                     })
                     .catch(err => {
                         reject(err)
