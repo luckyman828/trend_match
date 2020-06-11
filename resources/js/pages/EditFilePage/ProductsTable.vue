@@ -49,6 +49,10 @@
                             </template>
                         </v-popover>
 
+                        <BaseCheckboxInputField class="small" v-model="noImagesOnly">
+                            <span>No images only</span>
+                        </BaseCheckboxInputField>
+
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
 
@@ -221,11 +225,19 @@ export default {
                 this.updateSelectedBuyerGroups(value)
             }
         },
+        noImagesOnly: {
+            get () {
+                return this.$store.getters['products/noImagesOnly']
+            },
+            set (value) {
+                this.setNoImagesOnly(value)
+            }
+        },
     },
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct', 'deleteProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH']),
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'setNoImagesOnly']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products

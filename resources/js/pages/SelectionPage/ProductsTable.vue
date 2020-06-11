@@ -76,6 +76,9 @@
                         <!-- <BaseCheckboxInputField class="small" v-model="unreadOnly">
                             <span>Unread only</span>
                         </BaseCheckboxInputField> -->
+                        <BaseCheckboxInputField class="small" v-model="noImagesOnly">
+                            <span>No images only</span>
+                        </BaseCheckboxInputField>
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>

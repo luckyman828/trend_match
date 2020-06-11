@@ -13,6 +13,7 @@ export default {
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
         unreadOnly: false,
+        noImagesOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
@@ -76,6 +77,9 @@ export default {
         },
         unreadOnly: state => {
             return state.unreadOnly
+        },
+        noImagesOnly: state => {
+            return state.noImagesOnly
         },
         currentProductFilter: state => {
             return state.currentProductFilter
@@ -171,6 +175,7 @@ export default {
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
+            const noImagesOnly = getters.noImagesOnly
             const actionFilter = getters.currentProductFilter
             let productsToReturn = products
 
@@ -200,6 +205,14 @@ export default {
             if (unreadOnly) {
                 const filteredByUnread = productsToReturn.filter(product => product.newComment)
                 productsToReturn = filteredByUnread
+            }
+
+            // Filter by no images
+            if (noImagesOnly) {
+                const filteredByNoImages = productsToReturn.filter(
+                    product => !product.variants.find(x => x.image != null)
+                )
+                productsToReturn = filteredByNoImages
             }
 
             // Filter by actions
@@ -650,6 +663,9 @@ export default {
         },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
+        },
+        setNoImagesOnly(state, payload) {
+            state.noImagesOnly = payload
         },
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
