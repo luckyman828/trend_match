@@ -183,7 +183,6 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, file) {
-            console.log('insert or update file', JSON.parse(JSON.stringify(file)))
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
