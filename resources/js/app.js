@@ -100,6 +100,9 @@ Vue.filter('truncate', function(value, limit) {
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
+Vue.filter('thousandSeparated', function(value) {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+})
 
 const app = new Vue({
     store,

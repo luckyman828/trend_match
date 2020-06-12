@@ -342,6 +342,41 @@ export default {
                     )
                 })
         },
+        async updateSelectionBudget({ commit, dispatch }, selection) {
+            commit('UPDATE_SELECTION', selection)
+            const apiUrl = `/selections/${selection.id}/extra-properties`
+
+            await axios
+                .put(apiUrl, {
+                    budget: selection.budget,
+                })
+                .then(async response => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Selection updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Something went wrong trying to update the selection. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelectionBudget', selection),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+        },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
             // Commit mutation to state
             await commit('ADD_USERS_TO_SELECTION', {
@@ -890,6 +925,9 @@ export default {
             state.currentSelection = selection
         },
         SET_CURRENT_SELECTIONS(state, selections) {
+            // selections.map(selection => {
+            //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
+            // })
             state.currentSelections = selections
         },
         SET_CURRENT_PDP_SELECTION(state, selection) {
@@ -899,6 +937,9 @@ export default {
             state.usersFlyInVisible = bool
         },
         insertSelections(state, { selections, method }) {
+            // selections.map(selection => {
+            //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
+            // })
             // Check if we have already instantiated selections
             if (method == 'set') {
                 state.selections = selections

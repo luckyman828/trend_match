@@ -16,6 +16,7 @@
                 <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
+                <BaseTableHeader class="budget">Budget</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
@@ -1001,10 +1002,17 @@ export default {
                     &.teams {
                         margin-left: auto;
                     }
-                    &.currency {
+                    &.budget {
                         min-width: 100px;
                         max-width: 100px;
                         margin-left: auto;
+                        text-align: right;
+                        padding-right: 16px;
+                    }
+                    &.currency {
+                        min-width: 100px;
+                        max-width: 100px;
+                        // margin-left: auto;
                     }
                     &.teams, &.users {
                         min-width: 76px;
@@ -1035,6 +1043,11 @@ export default {
                         margin-left: auto;
                     }
                 }
+                // > td {
+                //     &.budget {
+                //         text-align: right;
+                //     }
+                // }
             }
         }
     }

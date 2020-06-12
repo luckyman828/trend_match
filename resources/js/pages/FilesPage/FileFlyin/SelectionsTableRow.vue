@@ -23,6 +23,19 @@
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
+            <td class="budget">
+                <v-popover trigger="click" @apply-show="onShowBudgetInput">
+                    <button v-if="userHasEditAccess" class="ghost editable sm">
+                        <span>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
+                    </button>
+                    <span v-else>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
+                    <div slot="popover" class="budget-input-wrapper">
+                        <BaseInputField ref="budgetInput" v-model.number="newBudget" inputClass="small"
+                        :selectOnFocus="true"
+                        @keyup.enter.native="onUpdateBudget(selection)"/>
+                    </div>
+                </v-popover>
+            </td>
             <!-- <td class="items">-</td>s
             <td class="in">-</td>
             <td class="out">-</td>
@@ -122,6 +135,7 @@ export default {
     ],
     data: function() { return {
         childrenExpanded: true,
+        newBudget: 0,
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
@@ -148,9 +162,14 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode']),
+        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode', 'updateSelectionBudget']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
+        },
+        onShowBudgetInput() {
+            setTimeout(() => { // For some reason this.$nextTick() doesn't work here
+                this.$refs.budgetInput.focus()
+            }, 100)
         },
         onGoToSelection() {
             if (!this.moveSelectionActive) {
@@ -208,8 +227,13 @@ export default {
             } else {
                 this.updateSelection(selection)
             }
+        },
+        onUpdateBudget(selection) {
+            selection.budget = this.newBudget
+            this.updateSelectionBudget(selection)
+            this.newBudget = 0
         }
-    }
+    },
 }
 </script>
 

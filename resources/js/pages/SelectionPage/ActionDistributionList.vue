@@ -34,6 +34,7 @@
                     <span class="main">{{action.selection ? action.selection.name : 'Unknown'}}</span>
                     <span class="sub" v-if="action.action != 'None'">{{action.user ? action.user.name : 'Anonymous'}}</span>
                 </td>
+                <td v-if="displayQty" style="text-align: right;">{{action.quantity}}</td>
             </tr>
 
             <tr v-if="alignmentActions.length <= 0">
@@ -66,6 +67,7 @@ export default {
         'alignmentActions',
         'feedbackActions',
         'defaultTab',
+        'displayQty',
     ],
     data: function() { return {
         currentTab: 'feedback'

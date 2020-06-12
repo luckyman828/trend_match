@@ -10,10 +10,11 @@
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
                 </div> -->
                 <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
-                    <div class="circle ghost xs">
+                    <div class="pill ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
+                        <span v-if="selection.budget > 0">{{variant.quantity}}</span>
                     </div>
                 </div>
             </div>
@@ -147,11 +148,12 @@ export default {
     position: relative;
     .your-action {
         position: absolute;
-        top: -12px;
-        right: -10px;
-        .circle {
-            box-shadow: $shadowXs;
+        top: -16px;
+        left: -8px;
+        .pill {
+            box-shadow: $shadowElSoft;
             background: white;
+            height: 18px;
         }
     }
 }
