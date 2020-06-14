@@ -254,9 +254,6 @@ export default{
                 this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
             }
         },
-        requestArrivedHandler() {
-
-        },
 
         async connectToLiveUpdates() {
             const connection = this.$connection
