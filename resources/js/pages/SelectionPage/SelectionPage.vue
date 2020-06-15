@@ -212,7 +212,7 @@ export default{
                 feedbacks.forEach(action => {
                     const product = this.products.find(x => x.id == action.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    action.selection = this.selections.find(x => x.id == action.selection_id)
+                    // action.selection = this.selections.find(x => x.id == action.selection_id)
 
                     const productActions = [{product: selectionProduct, action: action}]
                     this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
@@ -224,7 +224,7 @@ export default{
                 // console.log("OnFeedbackArrived", selectionId, feedback)
                 const product = this.products.find(x => x.id == feedback.product_id)
                 const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
+                // feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
 
                 const productActions = [{product: selectionProduct, action: feedback}]
                 this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
@@ -236,7 +236,7 @@ export default{
                 alignments.forEach(action => {
                     const product = this.products.find(x => x.id == action.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    action.selection = this.selections.find(x => x.id == action.selection_id)
+                    // action.selection = this.selections.find(x => x.id == action.selection_id)
 
                     const productActions = [{product: selectionProduct, action: action}]
                     this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
@@ -248,7 +248,7 @@ export default{
                 // console.log("OnAlignmentArrived", selectionId, alignment)
                 const product = this.products.find(x => x.id == alignment.product_id)
                 const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
+                // alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
 
                 const productActions = [{product: selectionProduct, action: alignment}]
                 this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
