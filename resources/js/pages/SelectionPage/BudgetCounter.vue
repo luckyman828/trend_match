@@ -5,17 +5,23 @@
                 <rect class="total" width=100% height="8px" rx="4px"/>
 
                 <rect class="remaining" :x="`${spendPercentageCapped - 2}%`" :width="`${100 - spendPercentageCapped + 2}%`" height="8px" rx="4px"
-                v-tooltip="`Remaining: <strong>${seperateThousands(currentSelection.budget - totalSpend)} ${currentSelection.currency}</strong>`"/>
+                v-tooltip.bottom="`            
+                    Budget: <strong>${seperateThousands(currentSelection.budget)} ${currentSelection.currency}</strong>
+                    <br>Remaining: <strong>${seperateThousands(currentSelection.budget - totalSpend)} ${currentSelection.currency}</strong>
+                `"/>
 
                 <rect class="spend" :width="`${spendPercentageCapped}%`" height="8px" rx="4px"
                 :class="spendPercentage > 100 ? 'over' : 'under'"
-                v-tooltip="`Spend: <strong>${seperateThousands(totalSpend)} ${currentSelection.currency}</strong>${spendPercentage > 100 ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(currentSelection.budget - totalSpend)} ${currentSelection.currency}</strong>` : ''}`"/>
+                v-tooltip.bottom="`
+                    Budget: <strong>${seperateThousands(currentSelection.budget)} ${currentSelection.currency}</strong>
+                    <br>Spend: <strong>${seperateThousands(totalSpend)} ${currentSelection.currency}</strong>
+                    ${spendPercentage > 100 ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(currentSelection.budget - totalSpend)} ${currentSelection.currency}</strong>` : ''}`"/>
             </svg>
         </div>
         <!-- <div class="indicator circle xs spend primary" :style="{left: `calc(${spendPercentageCapped}% - 4px - ${(76 * spendPercentageCapped) / 100}px)`}"
         v-tooltip="`${seperateThousands(totalSpend)} ${currentSelection.currency}`">
         </div> -->
-        <div class="indicator budget">
+        <div class="indicator budget" v-if="!hideLabel">
             <span>{{currentSelection.budget | thousandSeparated}} {{currentSelection.currency}}</span>
         </div>
     </div>
@@ -25,6 +31,9 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'budgetCounter',
+    props: [
+        'hideLabel'
+    ],
     data() { return {
         // spendPercentage: 50
     }},

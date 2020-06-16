@@ -1,5 +1,6 @@
 <template>
-    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4
+    :class="{'has-budget': showBudget}">
         <template v-slot:header>
             <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
@@ -162,7 +163,7 @@
                 @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
 
-            <BudgetCounter/>
+            <BudgetCounter v-if="showBudget" :hideLabel="true" class="the-budget-counter"/>
 
         </template>
     </BaseFlyin>
@@ -179,7 +180,7 @@ import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
-import BudgetCounter from './BudgetCounter'
+import BudgetCounter from '../BudgetCounter'
 
 export default {
     name: 'productFlyin',
@@ -253,6 +254,9 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.currentSelection)
         },
+        showBudget() {
+            return this.selection.budget > 0
+        }
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
@@ -363,7 +367,31 @@ export default {
                 }
             }
         }
+        &.has-budget {
+            > .flyin {
+                > .body {
+                    margin-top: 8px;
+                    border-top: $borderModule;
+                }
+            }
+            .the-budget-counter {
+                overflow: hidden;
+                .bar {
+                    margin-left: -4px;
+                    margin-right: -4px;
+                }
+            }
+        }
     }
+}
+
+.the-budget-counter {
+    position: absolute;
+    top: 60px;
+    margin: 0;
+    left: 0;
+    max-width: none;
+    width: 100%;
 }
 
 .product-title-wrapper {

@@ -4,7 +4,7 @@
         <div class="header">
             <h4 class="primary">{{variant.name || 'Unnamed'}}</h4>
         </div>
-        <div class="col-2">
+        <div :class="{'col-2': selection.budget > 0}">
             <div class="action-list">
 
                 <div class="action-list-item">
