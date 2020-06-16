@@ -12,6 +12,7 @@
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times"></i>
                     </div>
+                    <span v-if="selection.budget > 0" class="quantity">{{variant.quantity}}</span>
                 </div>
             </div>
             <div class="color-wrapper">
@@ -113,9 +114,17 @@ export default {
     .your-action {
         position: absolute;
         top: 4px;
-        right: 4px;
-        .square {
-            box-shadow: $shadowXs;
+        left: 4px;
+        box-shadow: $shadowXs;
+        background: white;
+        border-radius: 4px;
+        display: flex;
+        line-height: 1;
+        align-items: center;
+        border: $borderEl;
+        span {
+            margin-left: 4px;
+            margin-right: 7px
         }
     }
 }
