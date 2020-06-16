@@ -162,6 +162,8 @@
                 @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
 
+            <BudgetCounter/>
+
         </template>
     </BaseFlyin>
 </template>
@@ -177,6 +179,7 @@ import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
+import BudgetCounter from './BudgetCounter'
 
 export default {
     name: 'productFlyin',
@@ -196,6 +199,7 @@ export default {
         PresenterQueueFlyin,
         VariantListItem,
         VariantTooltip,
+        BudgetCounter,
     },
     data: function () { return {
         currentImgIndex: 0,
