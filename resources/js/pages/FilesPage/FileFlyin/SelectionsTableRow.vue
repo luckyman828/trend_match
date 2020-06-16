@@ -24,7 +24,7 @@
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
             <td class="budget">
-                <v-popover trigger="click" @apply-show="onShowBudgetInput">
+                <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
                     <button v-if="userHasEditAccess" class="ghost editable sm">
                         <span>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
                     </button>
@@ -32,7 +32,8 @@
                     <div slot="popover" class="budget-input-wrapper">
                         <BaseInputField ref="budgetInput" v-model.number="newBudget" inputClass="small"
                         :selectOnFocus="true"
-                        @keyup.enter.native="onUpdateBudget(selection)"/>
+                        @keyup.enter.native="onUpdateBudget(selection); $refs.budgetInputPopover.hide()"/>
+                        <span class="currency">{{selection.currency}}</span>
                     </div>
                 </v-popover>
             </td>
@@ -167,6 +168,7 @@ export default {
             this.childrenExpanded = !this.childrenExpanded
         },
         onShowBudgetInput() {
+            this.newBudget = this.selection.budget
             setTimeout(() => { // For some reason this.$nextTick() doesn't work here
                 this.$refs.budgetInput.focus()
             }, 100)
@@ -296,6 +298,14 @@ export default {
             button {
                 min-width: 72px;
             }
+        }
+    }
+    .budget-input-wrapper {
+        position: relative;
+        .currency {
+            position: absolute;
+            right: 8px;
+            bottom: 5px;
         }
     }
     
