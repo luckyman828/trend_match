@@ -174,5 +174,8 @@ export default {
         height: 0;
     }
 }
+.v-popover .trigger:hover i {
+  color: $iconSoftOnDark;
+}
 
 </style>
