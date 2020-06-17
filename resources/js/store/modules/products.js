@@ -166,6 +166,7 @@ export default {
         },
         productsFiltered(state, getters, rootState, rootGetters) {
             const currentAction = rootGetters['selections/currentSelectionModeAction']
+            const selectionMode = rootGetters['selections/currentSelectionMode']
             const products = getters.products
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
@@ -198,8 +199,12 @@ export default {
 
             // Filer by unread
             if (unreadOnly) {
-                const filteredByUnread = productsToReturn.filter(product => product.newComment)
-                productsToReturn = filteredByUnread
+                if (selectionMode == 'Approval') {
+                    productsToReturn = productsToReturn.filter(product => product.hasUnreadAlignerComment)
+                }
+                if (selectionMode == 'Alignment') {
+                    productsToReturn = productsToReturn.filter(product => product.hasUnreadApproverComment)
+                }
             }
 
             // Filter by actions
@@ -1081,6 +1086,24 @@ export default {
                                 )
                             )
                         }, [])
+                    },
+                })
+
+                Object.defineProperty(product, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        return (
+                            (product.requests.length > 0 && product.comments.length <= 0) ||
+                            (product.comments.length > 0 &&
+                                product.comments[product.comments.length - 1].role != 'Approver')
+                        )
+                    },
+                })
+                Object.defineProperty(product, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            product.comments.length > 0 &&
+                            product.comments[product.comments.length - 1].role == 'Approver'
+                        )
                     },
                 })
 

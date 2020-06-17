@@ -32,6 +32,7 @@ export default {
         min-height: 40px;
         &.small {
             min-height: 32px;
+            padding-left: 8px;
             width: auto;
         }
     }
