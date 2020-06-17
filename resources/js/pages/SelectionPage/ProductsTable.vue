@@ -28,7 +28,8 @@
                 <BaseTableTopBar>
                     <template v-slot:left>
                         <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
+                        ref="searchField"
+                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 
                         <v-popover trigger="click">
                             <button class="ghost">
@@ -306,8 +307,10 @@ export default {
         actionDistributionTooltipTab: 'feedback',
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
+            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
+            'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapState('products', {stateProducts: 'products'}),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess () {
@@ -409,8 +412,29 @@ export default {
         },
         onUpdateMultipleActions(products, action) {
             this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        },
+        onViewSearchProduct() {
+            if (this.productsFilteredBySearch.length > 0) {
+                this.onViewSingle(this.productsFilteredBySearch[0])
+            }
+        },
+        hotkeyHandler(e) {
+            const key = event.code
+            if (event.target.type == 'textarea' 
+                || event.target.tagName.toUpperCase() == 'INPUT') return // Don't mess with user input
+
+            if (key == 'KeyS' && !this.singleVisible) {
+                this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
         }
     },
+    created() {
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
+    }
 }
 </script>
 
