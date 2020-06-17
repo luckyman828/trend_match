@@ -50,7 +50,8 @@
         </div>
         <div class="bottom-drawer" :class="{collapsed: !drawerExpanded}">
           <div class="sidebar-item">
-            <a class="inner" @click="logout">
+            <a class="inner" @click="logout" 
+            v-tooltip.right="displayTooltips && 'Log out'">
                 <i class="far fa-sign-out fa-flip-horizontal"></i>
                 <span>Sign out</span>
             </a>

@@ -1,16 +1,6 @@
 <template>
     <div class="teams">
-        <div class="breadcrumbs">
-            <button class="invisible white-hover">
-                <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
-            </button>
-            <!-- <div class="breadcrumb">
-                <button class="invisible white-hover">
-                    <i class="far fa-folder-open"></i>
-                    <span>Teams</span>
-                </button>
-            </div> -->
-        </div>
+        <Breadcrumbs/>
         <h1>Teams</h1>
         <TeamsTable :teams="teams" :users="users" :authUser="authUser"
         @onNewUser="setAddNewUserModalVisible(true)"/>
@@ -20,11 +10,13 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TeamsTable from './TeamsTable'
+import Breadcrumbs from '../../components/common/Breadcrumbs'
 
 export default {
     name: 'teamsPage',
     components: {
         TeamsTable,
+        Breadcrumbs,
     },
     data: function () { return {
     }},

@@ -1,16 +1,6 @@
 <template>
     <div class="users">
-        <div class="breadcrumbs">
-            <button class="invisible white-hover">
-                <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
-            </button>
-            <!-- <div class="breadcrumb">
-                <button class="invisible white-hover">
-                    <i class="far fa-folder-open"></i>
-                    <span>Teams</span>
-                </button>
-            </div> -->
-        </div>
+        <Breadcrumbs/>
         <h1>Users</h1>
         <!-- <UsersTable :users="users.filter(x => authUserWorkspaceRole == 'Admin' ? true : x.id == authUser.id)" -->
         <UsersTable @onNewUser="setAddNewUserModalVisible(true)"/>
@@ -24,12 +14,14 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UsersTable from './UsersTable'
 import AddUserModal from '../../components/AddUserModal'
+import Breadcrumbs from '../../components/common/Breadcrumbs'
 
 export default {
     name: 'usersPage',
     components: {
         UsersTable,
         AddUserModal,
+        Breadcrumbs,
     },
     data: function () { return {
     }},
