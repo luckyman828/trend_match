@@ -370,13 +370,13 @@ export default {
         .unread-indicator {
             position: absolute;
             left: -20px;
+            @media screen and (max-width: $screenSm) {
+                left: -16px;
+            }
         }
         &:focus {
             outline: solid 2px $primary;
             outline-offset: -2px;
-        }
-        .circle.tiny {
-            margin-left: 8px;
         }
         .img-wrapper {
             border: solid 1px $light2;

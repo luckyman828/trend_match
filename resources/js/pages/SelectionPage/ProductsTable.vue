@@ -391,7 +391,7 @@ export default {
             // this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
             // this.setSingleVisisble(true)
             document.activeElement.blur()
-            this.showSelectionProductPDP({product: this.product, selection: this.selection})
+            this.showSelectionProductPDP({product, selection: this.selection})
         },
         onShowContextMenu(mouseEvent, product) {
             let contextMenu = this.$refs.contextMenu
