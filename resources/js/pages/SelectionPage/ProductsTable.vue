@@ -372,6 +372,7 @@ export default {
         'SET_PRODUCTS_FILTERED_BY_SEARCH']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
+        ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         showVariantTooltip({variant, product}) {
             this.tooltipVariant = variant
@@ -382,11 +383,12 @@ export default {
             this.distributionTooltipType = type
         },
         onViewSingle(product) {
-            this.SET_CURRENT_PDP_SELECTION(this.selection)
-            this.setCurrentProduct(product)
-            this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
-            this.setSingleVisisble(true)
+            // this.SET_CURRENT_PDP_SELECTION(this.selection)
+            // this.setCurrentProduct(product)
+            // this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
+            // this.setSingleVisisble(true)
             document.activeElement.blur()
+            this.showSelectionProductPDP({product, selection: this.selection})
         },
         onShowContextMenu(mouseEvent, product) {
             let contextMenu = this.$refs.contextMenu
