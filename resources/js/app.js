@@ -104,6 +104,15 @@ Vue.filter('thousandSeparated', function(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 })
 
+// Define global mixins
+Vue.mixin({
+    methods: {
+        separateThousands(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        },
+    },
+})
+
 const app = new Vue({
     store,
     router,

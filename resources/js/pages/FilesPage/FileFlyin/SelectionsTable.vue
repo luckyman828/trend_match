@@ -17,6 +17,7 @@
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
                 <BaseTableHeader class="budget">Budget</BaseTableHeader>
+                <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
@@ -1007,7 +1008,12 @@ export default {
                         max-width: 100px;
                         margin-left: auto;
                         text-align: right;
-                        padding-right: 16px;
+                    }
+                    &.budget-spend {
+                        min-width: 64px;
+                        max-width: 64px;
+                        text-align: right;
+                        padding-right: 8px;
                     }
                     &.currency {
                         min-width: 100px;
@@ -1019,8 +1025,8 @@ export default {
                         max-width: 76px;
                     }
                     &.status { // Status
-                        min-width: 180px;
-                        max-width: 180px;
+                        min-width: 156px;
+                        max-width: 156px;
                         margin-left: auto;
                         // display: flex;
                         // align-items: center;

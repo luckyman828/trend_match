@@ -37,6 +37,12 @@
                     </div>
                 </v-popover>
             </td>
+            <td class="budget-spend" :class="{over: budgetSpendPercentage > 100}">
+                <span v-if="selection.budget > 0" 
+                v-tooltip="`${separateThousands(selection.budget_spend)} ${selection.currency}`">
+                    {{budgetSpendPercentage}}%
+                </span>
+            </td>
             <!-- <td class="items">-</td>s
             <td class="in">-</td>
             <td class="out">-</td>
@@ -160,6 +166,9 @@ export default {
         },
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection)
+        },
+        budgetSpendPercentage() {
+            return ((this.selection.budget_spend / this.selection.budget) * 100).toFixed(1)
         }
     },
     methods: {
@@ -306,6 +315,17 @@ export default {
             position: absolute;
             right: 8px;
             bottom: 5px;
+        }
+    }
+    .budget-spend {
+        font-size: 13px;
+        cursor: default;
+        &:hover {
+            font-weight: 700;
+        }
+        &.over {
+            font-weight: 700;
+            color: $red;
         }
     }
     
