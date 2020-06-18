@@ -52,7 +52,7 @@
             <td class="mark-up hide-screen-xs">
                 <span>{{product.yourPrice.mark_up}}</span>
             </td>
-            <td class="currency hide-screen-xs"><span>{{product.yourPrice.currency}}</span></td>
+            <td class="currency hide-screen-xs"><span v-if="product.yourPrice.currency">{{product.yourPrice.currency}}</span></td>
             <!-- End Prices -->
 
             <td class="minimum">
@@ -111,6 +111,13 @@
             </td>
             
             <td class="action">
+                <div class="your-product-qty" v-if="product.your_quantity">
+                    <div class="pill xs ghost">
+                        <i class="fas fa-box primary"></i>
+                        <span>{{product.your_quantity}}</span>
+                    </div>
+                </div>
+
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
                     <div class="fly-over-wrapper">
@@ -429,6 +436,11 @@ export default {
         td.action {
             position: relative;
             height: 100%;
+            .your-product-qty {
+                position: absolute;
+                top: 0;
+                right: 12px;
+            }
             .fly-over-wrapper {
                 overflow: hidden;
                 width: 36px;
