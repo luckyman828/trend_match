@@ -482,8 +482,8 @@
                     </div>
                     
                 </div>
-                <div class="item-group footer">
-                    <div class="item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                <div class="item-group footer item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                    <!-- <div class="item-wrapper" > -->
                         <div>
                             <button class="ghost primary"
                             @click="onCloneSettings">
@@ -494,7 +494,7 @@
                             <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                             <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                         </div>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <BaseContextMenu ref="contextParentLevel" v-slot="slotProps">
