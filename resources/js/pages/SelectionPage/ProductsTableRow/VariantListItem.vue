@@ -5,7 +5,7 @@
                 <BaseShape class="variant-list-item" shapeClass="pill ghost sm"
                 targetAreaPadding="8px 2px">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                    <div class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
+                    <div v-if="selection.budget > 0" class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
                 </BaseShape>
                 <!-- <div class="variant-list-item pill ghost xs">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
@@ -178,9 +178,12 @@ export default {
             padding-bottom: 2px;
             position: relative;
             overflow: hidden;
-            padding-right: 4px;
+            padding-right: 1px;
+            span {
+                margin-right: 8px !important;
+            }
             &:hover {
-                padding-right: 3px;
+                padding-right: 0px;
             }
         }
     }

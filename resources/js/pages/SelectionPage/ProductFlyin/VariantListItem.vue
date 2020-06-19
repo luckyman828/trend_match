@@ -4,16 +4,14 @@
             <div class="img-wrapper">
                 <img :src="variantImage(variant)">
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
-                    <div class="square xs" :class="
-                    variant[currentAction] == 'Focus' ? 'primary'
-                    : variant[currentAction] == 'In' ? 'green'
-                    : 'red'">
-                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star"></i>
-                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart"></i>
-                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times"></i>
+                    <div class="pill ghost xs">
+                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
+                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
+                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
+                        <span v-if="selection.budget > 0" class="quantity">{{variant.quantity}}</span>
                     </div>
-                    <span v-if="selection.budget > 0" class="quantity">{{variant.quantity}}</span>
                 </div>
+                <div class="quantity-progress" v-if="selection.budget > 0" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
             </div>
             <div class="color-wrapper">
                 <div class="circle-img"><img :src="variantImage(variant)"></div>
@@ -60,6 +58,10 @@ export default {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
+        minimumPercentage() {
+            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            return percentage ? percentage.toFixed(0) : 0
+        }
     },
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
@@ -111,21 +113,30 @@ export default {
 }
 .variant .img-wrapper {
     position: relative;
+    overflow: hidden;
+    .quantity-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 8px;
+        background: $bluegrey800;
+        border-radius: 0 4px 4px 0;
+        &.full {
+            background: $green;
+        }
+    }
     .your-action {
         position: absolute;
         top: 4px;
         left: 4px;
-        box-shadow: $shadowXs;
-        background: white;
-        border-radius: 4px;
-        display: flex;
-        line-height: 1;
-        align-items: center;
-        border: $borderEl;
-        span {
-            margin-left: 4px;
-            margin-right: 7px
+        .pill {
+            background: white;
+            box-shadow: $shadowXs;
         }
+        // span {
+        //     margin-left: 4px;
+        //     margin-right: 7px
+        // }
     }
 }
 .variant-list-item {

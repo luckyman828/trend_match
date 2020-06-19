@@ -23,7 +23,7 @@
         <template v-slot>
             <div class="tab-body">
                 <!-- Totals -->
-                <template v-if="totalFeedbackInputCount > 0 && totalActionInputCount > 0">
+                <!-- <template v-if="totalFeedbackInputCount > 0 && totalActionInputCount > 0">
                     <div class="list-item list-header">
                         <h4>Total</h4>
                     </div>
@@ -33,6 +33,22 @@
                             <rect class="focus" height="8px" :style="totalFocusStyle"/>
                             <rect class="in" height="8px" :style="totalInStyle"/>
                             <rect class="out" height="8px" :style="totalOutStyle"/>
+                        </svg>
+                    </div>
+                </template> -->
+
+                <!-- Quantity / Minimum -->
+                 <template v-if="currentSelection.budget > 0">
+                    <div class="list-item list-header">
+                        <h4>Minimum</h4>
+                    </div>
+                    <div class="distribution-bar list-item" v-tooltip="`
+                        <strong>Quantity: </strong> ${product.quantity}
+                        <br><strong>Minimum: </strong> ${product.min_order}
+                    `">
+                        <svg>
+                            <rect class="bg" height="8px" width="100%"/>
+                            <rect :class="minimumPercentage >= 100 ? 'in' : 'progress'" height="8px" :style="{width: `${minimumPercentage}%`}"/>
                         </svg>
                     </div>
                 </template>
@@ -59,6 +75,7 @@
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
                                 </div>
+                                <span class="quantity" v-if="currentSelection.budget > 0"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
                         </div>
@@ -71,6 +88,7 @@
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                    <span class="quantity" v-if="currentSelection.budget > 0"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 </div>
                             </div>
                         </div>
@@ -83,6 +101,7 @@
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                    <span class="quantity" v-if="currentSelection.budget > 0"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 </div>
                             </div>
                         </div>
@@ -183,6 +202,7 @@ export default {
     }},
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['currentSelection']),
         totalFeedbackInputCount() {
             return this.product.feedbacks.length
         },
@@ -278,6 +298,10 @@ export default {
                 x: `${x * 100}%`,
                 width: `${width * 100}%`,
             }
+        },
+        minimumPercentage() {
+            return this.product.min_order ? Math.min((this.product.quantity / this.product.min_order * 100), 100).toFixed(0) : 100
+
         }
     },
     methods: {
@@ -346,6 +370,7 @@ export default {
             border: $borderEl;
             box-shadow: $shadowEl;
             border-radius: $borderRadiusEl;
+            position: relative;
             &.list-header {
                 padding: 8px 12px 4px;
                 &:not(:first-child) {
@@ -363,6 +388,16 @@ export default {
             }
             span {
                 display: block;
+            }
+            .quantity {
+                position: absolute;
+                right: 14px;
+                top: 4px;
+                font-size: 12px;
+                i {
+                    margin-right: 2px;
+                    font-size: 11px;
+                }
             }
             > .focus {
                 box-shadow: -8px 0 inset $primary;
@@ -406,6 +441,9 @@ export default {
                     }
                     .out {
                         fill: $red;
+                    }
+                    .progress {
+                        fill: $bluegrey800;
                     }
                 }
             }

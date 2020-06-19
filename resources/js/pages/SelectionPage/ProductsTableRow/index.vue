@@ -28,7 +28,7 @@
                     :variant="variant" :product="product" :selection="selection"
                     v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
-                    <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
+                    <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
                     </div>
                 </div>
@@ -404,7 +404,7 @@ export default {
     .variant-list {
         position: absolute;
         left: 0;
-        bottom: -12px;
+        bottom: -20px;
         display: flex;
     }
     .product-details {
