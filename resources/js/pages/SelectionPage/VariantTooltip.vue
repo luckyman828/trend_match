@@ -4,7 +4,7 @@
         <div class="header">
             <h4 class="primary">{{variant.name || 'Unnamed'}}</h4>
         </div>
-        <div :class="{'col-2': selection.budget > 0}">
+        <div :class="{'col-2': showQty && selectionMode != 'Approval'}">
             <div class="action-list">
 
                 <div class="action-list-item">
@@ -38,7 +38,7 @@
                 </div>
             </div>
 
-            <div class="quantity-input" v-if="showQty">
+            <div class="quantity-input" v-if="showQty && selectionMode != 'Approval'">
                 <BaseInputField ref="qtyInput" inputClass="small" v-model.number="newQuantity"
                 :selectOnFocus="true" type="number"
                 @keyup.enter.native="onSubmitQuantity"/>

@@ -52,15 +52,15 @@
             <td class="mark-up hide-screen-xs">
                 <span>{{product.yourPrice.mark_up}}</span>
             </td>
-            <td class="currency hide-screen-xs"><span v-if="product.yourPrice.currency">{{product.yourPrice.currency}}</span></td>
+            <td class="currency hide-screen-xs"><span v-if="product.yourPrice.currency != 'Not set'">{{product.yourPrice.currency}}</span></td>
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs">
+                <div class="square ghost xs" v-tooltip="`
+                    ${selection.budget > 0 ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
+                `">
                     <span>
-                        <template v-if="product.min_variant_order">
-                        <span>{{product.min_variant_order}}/</span>
-                        </template>
+                        <span v-if="selection.budget > 0">{{product.quantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
                     <i class="far fa-box"></i>
@@ -440,6 +440,7 @@ export default {
                 position: absolute;
                 top: 0;
                 right: 12px;
+                z-index: 2;
             }
             .fly-over-wrapper {
                 overflow: hidden;

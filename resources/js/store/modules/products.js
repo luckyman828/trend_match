@@ -744,6 +744,32 @@ export default {
                     configurable: true,
                 })
 
+                // Get the selection's quantity
+                Object.defineProperty(product, 'your_quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        product.variants.map(variant => {
+                            const selectionAction = variant.actions.find(
+                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                            )
+                            if (selectionAction) totalQty += selectionAction.quantity
+                        })
+                        return totalQty
+                    },
+                })
+                // Get total
+                Object.defineProperty(product, 'quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        product.variants.map(variant => {
+                            variant.actions.map(action => {
+                                totalQty += action.quantity
+                            })
+                        })
+                        return totalQty
+                    },
+                })
+
                 // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
