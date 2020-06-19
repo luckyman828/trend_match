@@ -15,8 +15,8 @@
               </router-link>
             </div>
 
-            <div class="sidebar-item">
-              <router-link v-if="authUserWorkspaceRole == 'Admin'" to="/teams" class="inner"
+            <div class="sidebar-item" v-if="authUserWorkspaceRole == 'Admin'">
+              <router-link to="/teams" class="inner"
               v-tooltip.right="displayTooltips && 'Teams'">
                 <i class="fas fa-users"></i><span>Teams</span>
               </router-link>

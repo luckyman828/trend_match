@@ -14,7 +14,7 @@ export default {
         availableTeamRoles: [
             {
                 role: 'Member',
-                description: 'Gives feedback on selections and can make commentsw',
+                description: 'Gives feedback on selections and can make comments',
             },
             {
                 role: 'Owner',
