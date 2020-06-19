@@ -5,7 +5,10 @@ import store from './store'
 Vue.use(VueRouter)
 
 // Define route components
-import LoginPage from './pages/Login'
+import LoginScreen from './pages/LoginPage/LoginScreen'
+import RecoverPasswordScreen from './pages/LoginPage/RecoverPasswordScreen'
+import VerificationCodeScreen from './pages/LoginPage/VerificationCodeScreen'
+import SetNewPasswordScreen from './pages/LoginPage/SetNewPasswordScreen'
 import TeamsPage from './pages/TeamsPage'
 import UsersPage from './pages/UsersPage'
 import SelectionPage from './pages/SelectionPage'
@@ -13,7 +16,10 @@ import FilesPage from './pages/FilesPage'
 import EditFilePage from './pages/EditFilePage'
 
 const routes = [
-    { path: '/login', name: 'login', component: LoginPage },
+    { path: '/login', name: 'login', component: LoginScreen },
+    { path: '/login/recover-password', name: 'recoverPassword', component: RecoverPasswordScreen },
+    { path: '/login/verification-code', name: 'verificationCode', component: VerificationCodeScreen },
+    { path: '/login/set-new-password', name: 'setNewPassword', component: SetNewPasswordScreen },
     { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
     { path: '/files', name: 'files', component: FilesPage },
     { path: '/teams', name: 'teams', component: TeamsPage },
@@ -35,9 +41,14 @@ router.beforeEach((to, from, next) => {
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
 
+    if (to.name == 'verificationCode' && !store.getters['auth/getPasswordRecoveryEmail']) {
+        next({ name: 'login' })
+    } else if (to.name == 'setNewPassword' && !store.getters['auth/getPasswordRecoverySessionId']) {
+        next({ name: 'login' })
+    }
+
     // Check that the user is not going to the login page already
-    if (to.path !== '/login' && !store.getters['auth/isAuthenticated']) {
-        // If the user is not authenticated
+    else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {
         next({
             name: 'login',
             params: {
