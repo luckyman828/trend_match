@@ -37,12 +37,12 @@ export default {
         }
         .left {
             > * {
-                margin-right: 16px;
+                margin-right: 8px;
             }
         }
         .right {
             > * {
-                margin-left: 16px;
+                margin-left: 8px;
             }
         }
     }

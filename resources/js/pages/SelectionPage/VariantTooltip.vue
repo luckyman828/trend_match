@@ -119,6 +119,10 @@ export default {
 
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
+            if (newAction == 'Out') {
+                this.variant.quantity = 0
+                this.newQuantity = 0
+            }
             let currentAction
             
             if (this.selectionMode == 'Feedback') {

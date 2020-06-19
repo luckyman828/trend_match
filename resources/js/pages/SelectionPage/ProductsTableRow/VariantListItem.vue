@@ -2,9 +2,10 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <!-- <v-popover :disabled="multiSelectionMode"> -->
             <div class="variant-item-wrapper">
-                <BaseShape class="variant-list-item" shapeClass="pill ghost xs"
+                <BaseShape class="variant-list-item" shapeClass="pill ghost sm"
                 targetAreaPadding="8px 2px">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
+                    <div class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
                 </BaseShape>
                 <!-- <div class="variant-list-item pill ghost xs">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
@@ -89,6 +90,10 @@ export default {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
+        minimumPercentage() {
+            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            return percentage ? percentage.toFixed(0) : 0
+        }
     },
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
@@ -158,8 +163,21 @@ export default {
     }
 }
 .variant-list-item {
+    .bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: $bluegrey800;
+        &.full {
+            background: $green;
+        }
+    }
     ::v-deep {
         .base-shape {
+            padding-bottom: 2px;
+            position: relative;
+            overflow: hidden;
             padding-right: 4px;
             &:hover {
                 padding-right: 3px;

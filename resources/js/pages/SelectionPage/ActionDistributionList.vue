@@ -17,11 +17,11 @@
             <BaseTabHeaderList>
                 <BaseTabHeader :active="currentTab == 'alignment'" 
                 @click.native="setCurrentTab('alignment')">
-                    <span>Alignment</span>
+                    <span>Alignment {{alignmentActions.length}}</span>
                 </BaseTabHeader>
                 <BaseTabHeader :active="currentTab == 'feedback'" 
                 @click.native="setCurrentTab('feedback')">
-                    <span>Feedback</span>
+                    <span>Feedback {{feedbackActions.length}}</span>
                 </BaseTabHeader>
             </BaseTabHeaderList>
         </div>

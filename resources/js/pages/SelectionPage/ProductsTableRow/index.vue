@@ -71,7 +71,7 @@
             <td class="focus">
                 <div tabindex="-1" class="square ghost xs tooltip-target" 
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Focus'}}">
-                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentFocus.length : product.focus.length}}</span>
                     <i class="far fa-star"></i>
                 </div>
             </td>
@@ -79,7 +79,7 @@
             <td class="ins">
                 <div class="tooltip-target square ghost xs"
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'In'}}">
-                    <span>{{product.allIns}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentIns.length : product.ins.length}}</span>
                     <i class="far fa-heart"></i>
                 </div>
             </td>
@@ -87,7 +87,7 @@
             <td class="outs">
                 <div class="square ghost xs tooltip-target"
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Out'}}">
-                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentOuts.length : product.outs.length}}</span>
                     <i class="far fa-times-circle"></i>
                 </div>
             </td>
@@ -95,7 +95,7 @@
             <td class="nds">
                 <div class="tooltip-target square ghost xs"
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'None'}}">
-                    <span>{{product.alignmentNds.length+ product.nds.length}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentNds.length : product.nds.length}}</span>
                 </div>
             </td>
             <!-- End Distribution -->
@@ -183,6 +183,7 @@ export default {
         'index',
         'distributionTooltipComp',
         'variantTooltipComp',
+        'distributionScope',
     ],
     components: {
         MultiSelectionInputRow,
