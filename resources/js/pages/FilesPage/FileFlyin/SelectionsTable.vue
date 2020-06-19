@@ -864,6 +864,7 @@ export default {
                 newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
                 newSelection.type = 'Normal'
+                newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
                 if (!parent.children) {
                     this.$set(parent, 'children', [])
