@@ -12,6 +12,7 @@ export default {
         selectedCategories: [],
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
+        selectedSelections: [],
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
@@ -73,6 +74,9 @@ export default {
         },
         selectedBuyerGroups: state => {
             return state.selectedBuyerGroups
+        },
+        getSelectedSelections: state => {
+            return state.selectedSelections
         },
         unreadOnly: state => {
             return state.unreadOnly
@@ -136,6 +140,33 @@ export default {
                     const found = unique.includes(theBuyingGroup)
                     if (!found) unique.push(theBuyingGroup)
                 }
+            })
+            return unique
+        },
+        getAvailableSelections(state, getters) {
+            const products = getters.products
+            let unique = []
+            products.forEach(product => {
+                // Loop through the products feedback
+                product.feedbacks.forEach(feedback => {
+                    const existsInArray = unique.find(selection => selection.id == feedback.selection_id)
+                    if (!existsInArray) unique.push(feedback.selection)
+                })
+                // Loop through the products alignment
+                product.actions.forEach(action => {
+                    const existsInArray = unique.find(selection => selection.id == action.selection_id)
+                    if (!existsInArray) unique.push(action.selection)
+                })
+                // Loop through the products comments
+                product.comments.forEach(comment => {
+                    const existsInArray = unique.find(selection => selection.id == comment.selection_id)
+                    if (!existsInArray) unique.push(comment.selection)
+                })
+                // Loop through the products requests
+                product.requests.forEach(request => {
+                    const existsInArray = unique.find(selection => selection.id == request.selection_id)
+                    if (!existsInArray) unique.push(request.selection)
+                })
             })
             return unique
         },
@@ -357,6 +388,7 @@ export default {
                             },
                             { root: true }
                         )
+                        commit('updateProduct', product)
 
                         // Add the created ID to the product, if we only have 1 product
                         if (products.length <= 1) {
@@ -651,6 +683,9 @@ export default {
         },
         updateSelectedBuyerGroups(state, payload) {
             state.selectedBuyerGroups = payload
+        },
+        SET_SELECTED_SELECTIONS(state, payload) {
+            state.selectedSelections = payload
         },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload

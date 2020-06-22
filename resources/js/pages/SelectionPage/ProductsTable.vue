@@ -33,7 +33,7 @@
 
                         <v-popover trigger="click">
                             <button class="ghost">
-                                <span>Category </span>
+                                <span>Category</span>
                                 <i class="far fa-chevron-down"></i>
                                 <span v-if="selectedCategories.length > 0" class="circle primary xs">
                                     <span>{{selectedCategories.length}}</span>
@@ -61,7 +61,7 @@
 
                         <v-popover trigger="click">
                             <button class="ghost">
-                                <span>Buyer group </span>
+                                <span>Buyer group</span>
                                 <i class="far fa-chevron-down"></i>
                                 <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
                                     <span>{{selectedBuyerGroups.length}}</span>
@@ -73,13 +73,30 @@
                             </template>
                         </v-popover>
 
+                        <v-popover trigger="click">
+                            <button class="ghost">
+                                <span>Selection Input</span>
+                                <i class="far fa-chevron-down"></i>
+                                <span v-if="selectedSelections.length > 0" class="circle primary xs">
+                                    <span>{{selectedSelections.length}}</span>
+                                </span>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons submitOnChange="true" 
+                                :options="getAvailableSelections" v-model="selectedSelections"
+                                optionNameKey="name" optionValueKey="id"/>
+                            </template>
+                        </v-popover>
+
                         <!-- Temp. disabled until the functionality gets hooked up -->
                         <BaseCheckboxInputField class="small" v-model="unreadOnly">
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
+                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelections=[]; unreadOnly = false">
+                            <span>Clear filter</span>
+                        </button>
 
                     </template>
                     <template v-slot:right>
@@ -298,7 +315,6 @@ export default {
     data: function() { return {
         sortKey: 'datasource_id',
         selectedProducts: [],
-        selectedSelections: [],
         showContextMenu: false,
         contextProduct: null,
         tooltipProduct: null,
@@ -308,7 +324,7 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
-            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
+            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getAvailableSelections']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
             'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapState('products', {stateProducts: 'products'}),
@@ -359,6 +375,14 @@ export default {
                 this.updateSelectedBuyerGroups(value)
             }
         },
+        selectedSelections: {
+            get () {
+                return this.$store.getters['products/getSelectedSelections']
+            },
+            set (value) {
+                this.SET_SELECTED_SELECTIONS(value)
+            }
+        },
         unreadOnly: {
             get () {
                 return this.$store.getters['products/unreadOnly']
@@ -372,7 +396,7 @@ export default {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH']),
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTIONS']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
