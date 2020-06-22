@@ -744,6 +744,32 @@ export default {
                     configurable: true,
                 })
 
+                // Get the selection's quantity
+                Object.defineProperty(product, 'your_quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        product.variants.map(variant => {
+                            const selectionAction = variant.actions.find(
+                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                            )
+                            if (selectionAction) totalQty += selectionAction.quantity
+                        })
+                        return totalQty
+                    },
+                })
+                // Get total
+                Object.defineProperty(product, 'quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        product.variants.map(variant => {
+                            variant.actions.map(action => {
+                                totalQty += action.quantity
+                            })
+                        })
+                        return totalQty
+                    },
+                })
+
                 // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
@@ -870,6 +896,7 @@ export default {
                                     actions.push({
                                         id: variantAction.id,
                                         action: variantAction.feedback,
+                                        quantity: variantAction.quantity,
                                         user_id: action.user_id,
                                         user: action.user,
                                         selection_id: action.selection_id,
@@ -893,15 +920,49 @@ export default {
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
                             if (currentVariantActionIndex >= 0) {
                                 currentAction.variants.splice(currentVariantActionIndex, 1, {
-                                    feedback: newAction,
                                     id: variant.id,
+                                    feedback: newAction,
+                                    quantity: variant.quantity,
                                 })
                             } else {
                                 currentAction.variants.push({
-                                    feedback: newAction,
                                     id: variant.id,
+                                    feedback: newAction,
+                                    quantity: variant.quantity,
                                 })
                             }
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'quantity', {
+                        get: function() {
+                            const selectionAction = variant.actions.find(x => x.selection_id == selection.id)
+                            return selectionAction ? selectionAction.quantity : 0
+                        },
+                        set: function(newQuantity) {
+                            // Find the current action for the variant input for this action action
+                            const currentAction = product.actions.find(action => action.selection_id == selection.id)
+                            // If the user has already made variant input, update the action
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantActionIndex >= 0) {
+                                currentAction.variants.splice(currentVariantActionIndex, 1, {
+                                    id: variant.id,
+                                    feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            } else {
+                                currentAction.variants.push({
+                                    id: variant.id,
+                                    feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            }
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'totalQuantity', {
+                        get: function() {
+                            return variant.actions.reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
 
@@ -1123,6 +1184,32 @@ export default {
                     configurable: true,
                 })
 
+                // Get the selection's quantity
+                Object.defineProperty(product, 'your_quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        product.variants.map(variant => {
+                            const selectionAction = variant.actions.find(
+                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                            )
+                            if (selectionAction) totalQty += selectionAction.quantity
+                        })
+                        return totalQty
+                    },
+                })
+                // Get total
+                Object.defineProperty(product, 'quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        product.variants.map(variant => {
+                            variant.actions.map(action => {
+                                totalQty += action.quantity
+                            })
+                        })
+                        return totalQty
+                    },
+                })
+
                 // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(product, 'ins', {
@@ -1248,6 +1335,7 @@ export default {
                                     actions.push({
                                         id: variantAction.id,
                                         action: variantAction.feedback,
+                                        quantity: variantAction.quantity,
                                         user_id: action.user_id,
                                         user: action.user,
                                         selection_id: action.selection_id,
@@ -1275,15 +1363,53 @@ export default {
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
                             if (currentVariantActionIndex >= 0) {
                                 currentAction.variants.splice(currentVariantActionIndex, 1, {
-                                    feedback: newAction,
                                     id: variant.id,
+                                    feedback: newAction,
+                                    quantity: variant.quantity,
                                 })
                             } else {
                                 currentAction.variants.push({
-                                    feedback: newAction,
                                     id: variant.id,
+                                    feedback: newAction,
+                                    quantity: variant.quantity,
                                 })
                             }
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'quantity', {
+                        get: function() {
+                            const selectionAction = variant.actions.find(
+                                x => x.selection_id == product.selectionInputArray[0].selection.id
+                            )
+                            return selectionAction ? selectionAction.quantity : 0
+                        },
+                        set: function(newQuantity) {
+                            // Find the current action for the variant input for this action action
+                            const currentAction = product.actions.find(
+                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                            )
+                            // If the user has already made variant input, update the action
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantActionIndex >= 0) {
+                                currentAction.variants.splice(currentVariantActionIndex, 1, {
+                                    id: variant.id,
+                                    feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            } else {
+                                currentAction.variants.push({
+                                    id: variant.id,
+                                    feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            }
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'totalQuantity', {
+                        get: function() {
+                            return variant.actions.reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
 

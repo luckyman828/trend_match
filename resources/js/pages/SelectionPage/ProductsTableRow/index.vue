@@ -28,7 +28,7 @@
                     :variant="variant" :product="product" :selection="selection"
                     v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
-                    <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
+                    <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
                         <span>+ {{product.variants.length - 5}} more</span>
                     </div>
                 </div>
@@ -52,15 +52,15 @@
             <td class="mark-up hide-screen-xs">
                 <span>{{product.yourPrice.mark_up}}</span>
             </td>
-            <td class="currency hide-screen-xs"><span>{{product.yourPrice.currency}}</span></td>
+            <td class="currency hide-screen-xs"><span v-if="product.yourPrice.currency != 'Not set'">{{product.yourPrice.currency}}</span></td>
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs">
+                <div class="square ghost xs" v-tooltip="`
+                    ${selection.budget > 0 ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
+                `">
                     <span>
-                        <template v-if="product.min_variant_order">
-                        <span>{{product.min_variant_order}}/</span>
-                        </template>
+                        <span v-if="selection.budget > 0">{{product.quantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
                     <i class="far fa-box"></i>
@@ -71,7 +71,7 @@
             <td class="focus">
                 <div tabindex="-1" class="square ghost xs tooltip-target" 
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Focus'}}">
-                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentFocus.length : product.focus.length}}</span>
                     <i class="far fa-star"></i>
                 </div>
             </td>
@@ -79,7 +79,7 @@
             <td class="ins">
                 <div class="tooltip-target square ghost xs"
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'In'}}">
-                    <span>{{product.allIns}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentIns.length : product.ins.length}}</span>
                     <i class="far fa-heart"></i>
                 </div>
             </td>
@@ -87,7 +87,7 @@
             <td class="outs">
                 <div class="square ghost xs tooltip-target"
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Out'}}">
-                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentOuts.length : product.outs.length}}</span>
                     <i class="far fa-times-circle"></i>
                 </div>
             </td>
@@ -95,7 +95,7 @@
             <td class="nds">
                 <div class="tooltip-target square ghost xs"
                 v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'None'}}">
-                    <span>{{product.alignmentNds.length+ product.nds.length}}</span>
+                    <span>{{distributionScope == 'Alignment' ? product.alignmentNds.length : product.nds.length}}</span>
                 </div>
             </td>
             <!-- End Distribution -->
@@ -111,6 +111,13 @@
             </td>
             
             <td class="action">
+                <div class="your-product-qty" v-if="product.your_quantity">
+                    <div class="pill xs ghost">
+                        <i class="fas fa-box primary"></i>
+                        <span>{{product.your_quantity}}</span>
+                    </div>
+                </div>
+
                 <!-- Single Selection Input only -->
                 <template v-if="currentSelections.length <= 1">
                     <div class="fly-over-wrapper">
@@ -176,6 +183,7 @@ export default {
         'index',
         'distributionTooltipComp',
         'variantTooltipComp',
+        'distributionScope',
     ],
     components: {
         MultiSelectionInputRow,
@@ -396,7 +404,7 @@ export default {
     .variant-list {
         position: absolute;
         left: 0;
-        bottom: -12px;
+        bottom: -20px;
         display: flex;
     }
     .product-details {
@@ -429,6 +437,12 @@ export default {
         td.action {
             position: relative;
             height: 100%;
+            .your-product-qty {
+                position: absolute;
+                top: 0;
+                right: 12px;
+                z-index: 2;
+            }
             .fly-over-wrapper {
                 overflow: hidden;
                 width: 36px;

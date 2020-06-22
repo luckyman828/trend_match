@@ -17,11 +17,11 @@
             <BaseTabHeaderList>
                 <BaseTabHeader :active="currentTab == 'alignment'" 
                 @click.native="setCurrentTab('alignment')">
-                    <span>Alignment</span>
+                    <span>Alignment {{alignmentActions.length}}</span>
                 </BaseTabHeader>
                 <BaseTabHeader :active="currentTab == 'feedback'" 
                 @click.native="setCurrentTab('feedback')">
-                    <span>Feedback</span>
+                    <span>Feedback {{feedbackActions.length}}</span>
                 </BaseTabHeader>
             </BaseTabHeaderList>
         </div>
@@ -34,6 +34,7 @@
                     <span class="main">{{action.selection ? action.selection.name : 'Unknown'}}</span>
                     <span class="sub" v-if="action.action != 'None'">{{action.user ? action.user.name : 'Anonymous'}}</span>
                 </td>
+                <td v-if="displayQty" style="text-align: right;">{{action.quantity}}</td>
             </tr>
 
             <tr v-if="alignmentActions.length <= 0">
@@ -66,6 +67,7 @@ export default {
         'alignmentActions',
         'feedbackActions',
         'defaultTab',
+        'displayQty',
     ],
     data: function() { return {
         currentTab: 'feedback'

@@ -67,6 +67,7 @@ export default {
                             return {
                                 id: variant.id,
                                 feedback: action,
+                                quantity: action == 'Out' ? 0 : variant.quantity,
                             }
                         }),
                     },

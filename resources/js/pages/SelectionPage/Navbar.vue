@@ -14,6 +14,7 @@
         </div>
 
         <div class="items-center">
+            <BudgetCounter v-if="currentSelection && currentSelection.budget > 0"/>
         </div>
 
         <div class="items-right">
@@ -34,6 +35,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
+import BudgetCounter from './BudgetCounter'
 
 export default {
     name: "editFilePageNavbar",
@@ -41,6 +43,7 @@ export default {
         ExportProductsModal,
         ExportToCsvModal,
         SelectionPresenterModeButton,
+        BudgetCounter,
     },
     data: function () { return {
         exportModalVisible: false,

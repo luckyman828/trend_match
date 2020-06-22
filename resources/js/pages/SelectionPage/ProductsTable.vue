@@ -72,6 +72,17 @@
                             </template>
                         </v-popover>
 
+                        <v-popover trigger="click">
+                            <button class="ghost" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
+                                <span>Show input from: {{distributionScope}}</span>
+                                <i class="far fa-chevron-down"></i>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons type="radio" submitOnChange="true" 
+                                :options="['Alignment', 'Feedback']" v-model="distributionScope"/>
+                            </template>
+                        </v-popover>
+
                         <!-- Temp. disabled until the functionality gets hooked up -->
                         <!-- <BaseCheckboxInputField class="small" v-model="unreadOnly">
                             <span>Unread only</span>
@@ -79,6 +90,17 @@
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
+
+                        <!-- <BaseTabHeaderList>
+                            <BaseTabHeader :active="currentTab == 'alignment'" 
+                            @click.native="">
+                                <span>Alignment</span>
+                            </BaseTabHeader>
+                            <BaseTabHeader :active="currentTab == 'feedback'" 
+                            @click.native="setCurrentTab('feedback')">
+                                <span>Feedback</span>
+                            </BaseTabHeader>
+                        </BaseTabHeaderList> -->
 
                     </template>
                     <template v-slot:right>
@@ -135,6 +157,7 @@
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
+                    :distributionScope="distributionScope"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
@@ -304,6 +327,7 @@ export default {
         tooltipVariant: null,
         distributionTooltipType: null,
         actionDistributionTooltipTab: 'feedback',
+        distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),

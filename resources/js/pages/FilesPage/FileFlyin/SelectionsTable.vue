@@ -16,6 +16,8 @@
                 <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
+                <BaseTableHeader class="budget">Budget</BaseTableHeader>
+                <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
@@ -1002,18 +1004,30 @@ export default {
                     &.teams {
                         margin-left: auto;
                     }
-                    &.currency {
+                    &.budget {
                         min-width: 100px;
                         max-width: 100px;
                         margin-left: auto;
+                        text-align: right;
+                    }
+                    &.budget-spend {
+                        min-width: 64px;
+                        max-width: 64px;
+                        text-align: right;
+                        padding-right: 8px;
+                    }
+                    &.currency {
+                        min-width: 100px;
+                        max-width: 100px;
+                        // margin-left: auto;
                     }
                     &.teams, &.users {
                         min-width: 76px;
                         max-width: 76px;
                     }
                     &.status { // Status
-                        min-width: 180px;
-                        max-width: 180px;
+                        min-width: 156px;
+                        max-width: 156px;
                         margin-left: auto;
                         // display: flex;
                         // align-items: center;
@@ -1036,6 +1050,11 @@ export default {
                         margin-left: auto;
                     }
                 }
+                // > td {
+                //     &.budget {
+                //         text-align: right;
+                //     }
+                // }
             }
         }
     }
