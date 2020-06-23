@@ -903,7 +903,7 @@ export default {
                                     })
                                 })
                             })
-                            return feedbacks
+                            return feedbacks.filter(x => x.action != 'None')
                         },
                     })
                     // Get the user's feedback
@@ -951,7 +951,7 @@ export default {
                                     })
                                 })
                             })
-                            return actions
+                            return actions.filter(x => x.action != 'None')
                         },
                     })
                     // Get the selection's action
@@ -1359,7 +1359,7 @@ export default {
                                     })
                                 })
                             })
-                            return feedbacks
+                            return feedbacks.filter(x => x.action != 'None')
                         },
                     })
                     // Get the user's feedback
@@ -1408,7 +1408,7 @@ export default {
                                     })
                                 })
                             })
-                            return actions
+                            return actions.filter(x => x.action != 'None')
                         },
                     })
                     // Get the selection's action
