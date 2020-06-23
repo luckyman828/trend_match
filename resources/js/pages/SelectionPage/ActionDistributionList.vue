@@ -15,19 +15,19 @@
                 </BaseButton>
             </div> -->
             <BaseTabHeaderList>
-                <BaseTabHeader :active="currentTab == 'alignment'" 
-                @click.native="setCurrentTab('alignment')">
+                <BaseTabHeader :active="currentTab == 'Alignment'" 
+                @click.native="setCurrentTab('Alignment')">
                     <span>Alignment {{alignmentActions.length}}</span>
                 </BaseTabHeader>
-                <BaseTabHeader :active="currentTab == 'feedback'" 
-                @click.native="setCurrentTab('feedback')">
+                <BaseTabHeader :active="currentTab == 'Feedback'" 
+                @click.native="setCurrentTab('Feedback')">
                     <span>Feedback {{feedbackActions.length}}</span>
                 </BaseTabHeader>
             </BaseTabHeaderList>
         </div>
 
         <!-- Alignment List -->
-        <table class="action-list" v-if="currentTab == 'alignment'">
+        <table class="action-list" v-if="currentTab == 'Alignment'">
             <tr class="action" v-for="(action, index) in alignmentActions" :key="index">
                 <td>{{action.action}}</td>
                 <td>
@@ -43,7 +43,7 @@
         </table>
 
         <!-- Feedback List -->
-        <table class="action-list" v-if="currentTab == 'feedback'">
+        <table class="action-list" v-if="currentTab == 'Feedback'">
             <tr class="action" v-for="(action, index) in feedbackActions" :key="index">
                 <td>{{action.action}}</td>
                 <td>
@@ -70,7 +70,7 @@ export default {
         'displayQty',
     ],
     data: function() { return {
-        currentTab: 'feedback'
+        currentTab: 'Feedback'
     }},
     methods: {
         setCurrentTab(tab) {

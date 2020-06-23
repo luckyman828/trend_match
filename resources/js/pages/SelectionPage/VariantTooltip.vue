@@ -14,7 +14,7 @@
                     @click="updateVariantAction('Focus')">
                         <i class="far fa-star"></i>
                     </BaseButton>
-                    <span class="count">{{variant.allFocus}}</span>
+                    <span class="count">{{actionDistributionTooltipTab == 'Alignment' ? variant.alignmentFocus.length : variant.focus.length}}</span>
                 </div>
 
                 <div class="action-list-item">
@@ -24,7 +24,7 @@
                     @click="updateVariantAction('In')">
                         <i class="far fa-heart"></i>
                     </BaseButton>
-                    <span class="count">{{variant.allIns}}</span>
+                    <span class="count">{{actionDistributionTooltipTab == 'Alignment' ? variant.alignmentIns.length : variant.ins.length}}</span>
                 </div>
 
                 <div class="action-list-item">
@@ -34,7 +34,7 @@
                     @click="updateVariantAction('Out')">
                         <i class="far fa-times"></i>
                     </BaseButton>
-                    <span class="count">{{variant.allOuts}}</span>
+                    <span class="count">{{actionDistributionTooltipTab == 'Alignment' ? variant.alignmentOuts.length : variant.outs.length}}</span>
                 </div>
             </div>
 
@@ -140,7 +140,7 @@ export default {
             else if (!this.product.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
                 currentAction.action = 'Out'
             }
-            // If at least ONE varaint in IN or FOCUS mark the product as IN
+            // If at least ONE variant in IN or FOCUS mark the product as IN
             else if (this.product.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
                 if (this.product[this.currentAction] != 'Focus') {
                     currentAction.action = 'In'

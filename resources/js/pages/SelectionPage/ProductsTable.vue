@@ -92,17 +92,6 @@
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
 
-                        <!-- <BaseTabHeaderList>
-                            <BaseTabHeader :active="currentTab == 'alignment'" 
-                            @click.native="">
-                                <span>Alignment</span>
-                            </BaseTabHeader>
-                            <BaseTabHeader :active="currentTab == 'feedback'" 
-                            @click.native="setCurrentTab('feedback')">
-                                <span>Feedback</span>
-                            </BaseTabHeader>
-                        </BaseTabHeaderList> -->
-
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
@@ -162,13 +151,6 @@
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
-
-                <!-- <ProductsTableRow class="product-row flex-table-row" v-for="(product, index) in productsFilteredBySearch" :key="product.id"
-                    @showContext="onShowContextMenu($event, item)"
-                    :selection="selection" :currentAction="currentAction"
-                    :product="product" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    :tooltipComp="$refs.actionDistributionTooltip"
-                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/> -->
 
                 <tr v-if="productsFilteredBySearch.length <= 0">
                     <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
@@ -327,8 +309,8 @@ export default {
         tooltipProduct: null,
         tooltipVariant: null,
         distributionTooltipType: null,
-        actionDistributionTooltipTab: 'feedback',
-        distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
+        distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
+        actionDistributionTooltipTab: this.distributionScope,
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
