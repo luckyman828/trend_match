@@ -5,7 +5,7 @@
                 <BaseShape class="variant-list-item" shapeClass="pill ghost sm"
                 targetAreaPadding="8px 2px">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                    <div v-if="selection.budget > 0" class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
+                    <div v-if="showQty" class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
                 </BaseShape>
                 <!-- <div class="variant-list-item pill ghost xs">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
@@ -15,7 +15,7 @@
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="selection.budget > 0">{{variant.quantity}}</span>
+                        <span v-if="showQty">{{variant.quantity}}</span>
                     </div>
                 </div>
             </div>
@@ -89,6 +89,7 @@ export default {
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
         }),
         minimumPercentage() {
             const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)

@@ -778,6 +778,9 @@ export default {
             .drop-area {
                 border: none;
             }
+            .img-wrapper {
+                border: $borderElHard;
+            }
         }
         .progress-wrapper {
             position: absolute;
@@ -808,8 +811,7 @@ export default {
             position: relative;
             overflow: hidden;
             display: inline-block;
-            border-radius: 2px;
-            border: solid 1px $light2;
+            border-radius: $borderRadiusEl;
             overflow: hidden;
             img {
                 width: 100%;

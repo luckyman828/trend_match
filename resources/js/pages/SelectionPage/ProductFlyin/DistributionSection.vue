@@ -38,7 +38,7 @@
                 </template> -->
 
                 <!-- Quantity / Minimum -->
-                 <template v-if="currentSelection.budget > 0">
+                 <template v-if="showQty">
                     <div class="list-item list-header">
                         <h4>Minimum</h4>
                     </div>
@@ -203,6 +203,9 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', {
+            showQty: 'getQuantityModeActive'
+        }),
         totalFeedbackInputCount() {
             return this.product.feedbacks.length
         },

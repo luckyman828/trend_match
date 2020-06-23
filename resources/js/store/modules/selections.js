@@ -50,6 +50,11 @@ export default {
         getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
+        getQuantityModeActive: (state, getters) => {
+            getters.currentSelection &&
+                getters.currentSelection.budget > 0 &&
+                getters.currentSelectionMode == 'Alignment'
+        },
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {
@@ -345,6 +350,7 @@ export default {
         async updateSelectionBudget({ commit, dispatch }, selection) {
             commit('UPDATE_SELECTION', selection)
             const apiUrl = `/selections/${selection.id}/extra-properties`
+            if (!selection.budget) selection.budget = 0
 
             await axios
                 .put(apiUrl, {

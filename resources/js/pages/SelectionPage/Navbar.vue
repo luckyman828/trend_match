@@ -14,7 +14,7 @@
         </div>
 
         <div class="items-center">
-            <BudgetCounter v-if="currentSelection && currentSelection.budget > 0"/>
+            <BudgetCounter v-if="showQty"/>
         </div>
 
         <div class="items-right">
@@ -52,6 +52,9 @@ export default {
     computed: {
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', {
+            showQty: 'getQuantityModeActive'
+        }),
     },
     methods: {
         onExport() {

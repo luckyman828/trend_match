@@ -57,10 +57,10 @@
 
             <td class="minimum">
                 <div class="square ghost xs" v-tooltip="`
-                    ${selection.budget > 0 ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
+                    ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
                 `">
                     <span>
-                        <span v-if="selection.budget > 0">{{product.quantity}} /</span>
+                        <span v-if="showQty">{{product.quantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
                     <i class="far fa-box"></i>
@@ -211,6 +211,7 @@ export default {
         ...mapGetters('products', ['currentFocusRowIndex']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
         }),
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)

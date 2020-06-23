@@ -89,13 +89,11 @@ export default {
             selectionMode: 'currentSelectionMode',
             currentAction: 'currentSelectionModeAction',
             getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
+            showQty: 'getQuantityModeActive'
         }),
         userWriteAccess () {
             return this.getUserWriteAccess(this.selection)
         },
-        showQty() {
-            return this.selection.budget > 0
-        }
     },
     
     methods: {

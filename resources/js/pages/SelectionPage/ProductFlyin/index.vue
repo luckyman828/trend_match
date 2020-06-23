@@ -1,6 +1,6 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4
-    :class="{'has-budget': showBudget}">
+    :class="{'has-budget': showQty}">
         <template v-slot:header>
             <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
@@ -163,7 +163,7 @@
                 @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
 
-            <BudgetCounter v-if="showBudget" :hideLabel="true" class="the-budget-counter"/>
+            <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter"/>
 
         </template>
     </BaseFlyin>
@@ -240,6 +240,7 @@ export default {
         ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
         }),
         product () {
             return this.currentProduct
@@ -254,9 +255,6 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.currentSelection)
         },
-        showBudget() {
-            return this.selection.budget > 0
-        }
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
@@ -421,7 +419,6 @@ export default {
                 width: 225px;
                 height: 300px;
                 overflow: hidden;
-                border: solid 2px $divider;
                 border: $borderElHard;
                 border-radius: $borderRadiusEl;
                 position: relative;
