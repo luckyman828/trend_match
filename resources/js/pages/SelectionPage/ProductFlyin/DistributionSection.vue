@@ -75,7 +75,7 @@
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
                                 </div>
-                                <span class="quantity" v-if="currentSelection.budget > 0"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="currentSelection.budget > 0"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 </div>
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="currentSelection.budget > 0"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 </div>
                             </div>
                         </div>

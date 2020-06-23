@@ -51,9 +51,11 @@ export default {
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
-            getters.currentSelection &&
+            return (
+                getters.currentSelection &&
                 getters.currentSelection.budget > 0 &&
                 getters.currentSelectionMode == 'Alignment'
+            )
         },
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
