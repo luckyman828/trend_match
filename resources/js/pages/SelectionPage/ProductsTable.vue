@@ -85,7 +85,7 @@
                         </v-popover>
 
                         <!-- Temp. disabled until the functionality gets hooked up -->
-                        <BaseCheckboxInputField class="small" v-model="unreadOnly">
+                        <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback'">
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
