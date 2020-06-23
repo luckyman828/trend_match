@@ -183,7 +183,6 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, file) {
-            console.log('insert or update file', JSON.parse(JSON.stringify(file)))
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -415,27 +414,48 @@ export default {
             commit('removeApproverFromFile', { file, user })
             // Send request to API
         },
-        moveFiles({ commit, dispatch }, { destinationFolder, filesToMove }) {
+        moveFiles({ state, rootGetters, commit, dispatch }, { destinationFolderId, filesToMove, undo }) {
+            console.log('move files', destinationFolderId, filesToMove)
+
+            let apiUrl = `/files/${destinationFolderId}/paste`
+            if (destinationFolderId == 0) apiUrl = `/files/${rootGetters['workspaces/currentWorkspace'].id}/paste`
             // Send request to API
-            const apiUrl = `/files/${destinationFolder.id}/paste`
+            const oldFolderId = filesToMove[0].parent_id
             axios
                 .post(apiUrl, {
                     file_ids: filesToMove.map(x => x.id),
                 })
                 .then(response => {
                     // Commit mutation to state
-                    filesToMove.map(x => {
-                        commit('deleteFile', x.id)
-                    })
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${filesToMove.length} files/folders moved`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
+                    if (!undo) {
+                        filesToMove.map(x => {
+                            commit('deleteFile', x.id)
+                        })
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${filesToMove.length} files/folders moved`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                                callback: () => {
+                                    dispatch('moveFiles', { destinationFolderId: oldFolderId, filesToMove, undo: true })
+                                    state.files = state.files.concat(filesToMove)
+                                },
+                                callbackLabel: 'Undo',
+                            },
+                            { root: true }
+                        )
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Move undone`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(() => {})
         },

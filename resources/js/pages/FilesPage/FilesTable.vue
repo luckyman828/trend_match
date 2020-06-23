@@ -30,19 +30,28 @@
             <template v-slot:body>
                 <tr v-for="(folder, index) in foldersToShow" :key="folder.id" class="folder" :class="{active: contextMenuIsActive(folder)}"
                 @contextmenu.prevent="showContextMenu($event, folder, 'folder')"
-                @click.ctrl="$refs.folderCheckbox[index].check()">
+                @click.ctrl="$refs.folderCheckbox[index].check()" @mouseenter="onDragenter(folder)" @mouseleave="onDragLeave">
                     <td class="select">
                         <BaseCheckbox ref="folderCheckbox" :value="folder" :modelValue="selected" v-model="selected"/>
                     </td>
                     <td v-if="toEdit && toEdit.item.id == folder.id && toEdit.type == 'folder' && toEdit.field == 'title'" class="title">
-                        <i v-if="folder.id" class="fas fa-folder dark15"></i>
-                        <i v-else class="far fa-folder dark15"></i>
+                        <i v-if="folder.id" class="fas fa-folder"></i>
+                        <i v-else class="far fa-folder"></i>
                         <BaseEditInputWrapper :activateOnMount="true" :type="'text'" :ref="'editTitleInput-' + toEdit.item.id"
                             :value="toEdit.item.name" :oldValue="folder.name" v-model="toEdit.item.name"
                             @submit="removeUnsavedFolders(); insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit(); removeUnsavedFolders()"/>
                         </td>
-                    <td v-else-if="!folder.id" class="title"><i class="far fa-folder dark15"></i><span>{{folder.name}}</span></td>
-                    <td v-else class="title clickable" @click="setCurrentFolder(folder)"><i class="fas fa-folder dark15"></i><span>{{folder.name}}</span></td>
+
+                    <Draggable v-else :forceFallback="true" fallbackClass="sortable-drag" :fallbackTolerance="10"
+                    :group="{ name: 'folders', pull: 'clone', put: false }"
+                    @start="onDragStart(folder)" @end="onDragEnd">
+                        <td class="title clickable" @click="drag != true && setCurrentFolder(folder)">
+                            <i v-if="!folder.id" class="far fa-folder"></i>
+                            <i v-else class="fas" 
+                            :class="drag == true && dragHoverId == folder.id && filesToMove[0].id != folder.id ? 'fa-folder-open' : 'fa-folder'"></i>
+                            <span>{{folder.name}}</span>
+                        </td>
+                    </Draggable>
                     <!-- <td class="modified">-</td> -->
                     <!-- <td class="deadline">-</td> -->
                     <!-- <td class="items">{{folder.children_count || '-'}}</td> -->
@@ -72,7 +81,15 @@
                             :value="toEdit.item.name" :oldValue="file.name" v-model="toEdit.item.name"
                             @submit="insertOrUpdateFile(toEdit.item); clearToEdit()" @cancel="clearToEdit()"/>
                         </td>
-                    <td v-else class="title clickable" @click="showSingleFile(file)"><i class="fas fa-file dark15"></i><span>{{file.name}}</span></td>
+                    <Draggable v-else :forceFallback="true" fallbackClass="sortable-drag" :fallbackTolerance="10"
+                    :group="{ name: 'files', pull: 'clone', put: false }"
+                    @start="onDragStart(file)" @end="onDragEnd">
+                        <td class="title clickable" @click="!drag && showSingleFile(file)">
+                            <i v-if="!file.id" class="far fa-file"></i>
+                            <i v-else class="fas fa-file"></i>
+                            <span>{{file.name}}</span>
+                        </td>
+                    </Draggable>
                     <!-- <td class="modified">-</td> -->
                     <!-- <td class="deadline">{{file.end_date}}</td> -->
                     <!-- <td class="items">{{file.children_count || '-'}}</td> -->
@@ -345,11 +362,15 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import sortArray from '../../mixins/sortArray'
+import Draggable from 'vuedraggable'
 
 export default {
     name: 'filesTable',
     props: [
     ],
+    components: {
+        Draggable
+    },
     mixins: [
         sortArray
     ],
@@ -374,6 +395,8 @@ export default {
             filesToMove: [],
             destinationFolder: null,
             destinationFolderContent: [],
+            drag: false,
+            dragHoverId: null,
         }
     },
     computed: {
@@ -445,6 +468,27 @@ export default {
         showSingleFile(file) {
             this.$emit('showSingleFile', file)
         },
+        onDragStart(file) {
+            this.drag = true
+            this.filesToMove = [file]
+        },
+        onDragEnd() {
+            this.drag = false
+            const destinationFolder = this.foldersToShow.find(x => x.id == this.dragHoverId)
+            if (!destinationFolder || destinationFolder.id == this.filesToMove[0].id) return
+            this.moveFiles({destinationFolderId: destinationFolder.id, filesToMove: this.filesToMove})
+            this.dragHoverId = null
+        },
+        onDragenter(file) {
+            if (this.drag == true) {
+                this.dragHoverId = file.id
+            }
+        },
+        onDragLeave() {
+            if (this.drag == true) {
+                this.dragHoverId = null
+            }
+        },
         onMoveFiles() {
             // If we have a selection then move that, else move the context file
             if (this.selected.length > 0) {
@@ -467,7 +511,7 @@ export default {
             }
         },
         submitMoveItem() {
-            this.moveFiles({destinationFolder: this.destinationFolder, filesToMove: this.filesToMove})
+            this.moveFiles({destinationFolderId: this.destinationFolder.id, filesToMove: this.filesToMove})
             this.showMoveModal = false
         },
         onEditField(item, type, field) {
@@ -602,6 +646,20 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+.sortable-drag {
+    opacity: 1 !important;
+    z-index: 999;
+    background: white;
+    padding: 8px 16px 8px 8px;
+    border-radius: $borderRadiusEl;
+    border: $borderEl;
+    box-shadow: $shadowEl !important;
+    height: auto !important;
+    span {
+        width: 100%;
+        overflow: hidden;
+    }
+}
 .folders-table {
     position: relative;
     th, td {
@@ -615,6 +673,7 @@ export default {
 }
 .clickable {
     cursor: pointer;
+    user-select: none;
 }
 .show-more {
     width: 100%;
