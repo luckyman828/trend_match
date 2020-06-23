@@ -1,11 +1,14 @@
 <template>
     <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label}]">
-        <div v-tooltip.top="errorTooltip" :class="{'input-wrapper': type == 'select'}" @click="onClick">
+        <div v-tooltip.top="errorTooltip" :class="[{'input-wrapper': type == 'select'}]" @click="onClick">
             <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
             :value="value" :disabled="disabled || readOnly"
-            :class="{'input-wrapper': type != 'select'}" 
-            @input="$emit('input', $event.target.value)" @blur="$emit('blur', $event)" @paste="$emit('paste', $event)">
+            :class="[{'input-wrapper': type != 'select'}, inputClass]" 
+            @input="$emit('input', $event.target.value)" 
+            @blur="$emit('blur', $event)" 
+            @paste="$emit('paste', $event)"
+            @focus="onFocus">
             <div class="icon-right">
                 <slot/>
             </div>
@@ -32,7 +35,9 @@ export default {
         'disabled',
         'readOnly',
         'errorTooltip',
-        'label'
+        'label',
+        'inputClass',
+        'selectOnFocus'
     ],
     computed: {
         inputField() {
@@ -50,6 +55,9 @@ export default {
         },
         select() {
             this.$refs.inputField.select()
+        },
+        onFocus() {
+            if (this.selectOnFocus) this.select()
         }
     }
 }
@@ -63,7 +71,7 @@ export default {
         &.read-only {
             .input-wrapper {
                 cursor: text;
-                background: $grey;
+                background: $bgElInactive;
             }
         }
         &.select {
@@ -101,6 +109,12 @@ export default {
             border: none;
             background: inherit;
             width: 100%;
+        }
+        &.small {
+            + .icon-left, + .icon-right {
+                width: 32px;
+                height: 32px;
+            }
         }
             
     }

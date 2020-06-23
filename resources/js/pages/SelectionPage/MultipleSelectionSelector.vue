@@ -83,6 +83,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+button {
+    border: $borderEl;
+}
 
 </style>

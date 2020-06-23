@@ -1,5 +1,6 @@
 <template>
-    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4
+    :class="{'has-budget': showBudget}">
         <template v-slot:header>
             <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
@@ -162,6 +163,8 @@
                 @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
 
+            <BudgetCounter v-if="showBudget" :hideLabel="true" class="the-budget-counter"/>
+
         </template>
     </BaseFlyin>
 </template>
@@ -177,6 +180,7 @@ import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
+import BudgetCounter from '../BudgetCounter'
 
 export default {
     name: 'productFlyin',
@@ -196,6 +200,7 @@ export default {
         PresenterQueueFlyin,
         VariantListItem,
         VariantTooltip,
+        BudgetCounter,
     },
     data: function () { return {
         currentImgIndex: 0,
@@ -223,6 +228,7 @@ export default {
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
+
             } else {
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
@@ -248,6 +254,9 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.currentSelection)
         },
+        showBudget() {
+            return this.selection.budget > 0
+        }
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
@@ -350,11 +359,39 @@ export default {
             }
             .flyin-header {
                 > .left {
-                    max-width: 380px;
+                    // max-width: 380px;
+                    h3 {
+                        max-width: calc(36vw - 92px);
+                        overflow: hidden;
+                    }
+                }
+            }
+        }
+        &.has-budget {
+            > .flyin {
+                > .body {
+                    margin-top: 8px;
+                    border-top: $borderModule;
+                }
+            }
+            .the-budget-counter {
+                overflow: hidden;
+                .bar {
+                    margin-left: -4px;
+                    margin-right: -4px;
                 }
             }
         }
     }
+}
+
+.the-budget-counter {
+    position: absolute;
+    top: 60px;
+    margin: 0;
+    left: 0;
+    max-width: none;
+    width: 100%;
 }
 
 .product-title-wrapper {
@@ -384,8 +421,9 @@ export default {
                 width: 225px;
                 height: 300px;
                 overflow: hidden;
-                border-radius: 4px;
                 border: solid 2px $divider;
+                border: $borderElHard;
+                border-radius: $borderRadiusEl;
                 position: relative;
                 img {
                     width: 100%;

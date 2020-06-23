@@ -11,7 +11,7 @@
         </td>
         <td class="image clickable" @click="onViewSingle">
             <div class="img-wrapper">
-                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0], {size: 'sm'})">
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
@@ -131,7 +131,8 @@ export default {
     .products-table-row {
         height: 138px;
         .img-wrapper {
-            border: solid 1px $light2;
+            // border: $borderModule;
+            border: $borderElSoft;
             height: 100%;
             width: 100%;
             // width: 48px;

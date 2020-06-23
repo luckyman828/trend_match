@@ -66,7 +66,7 @@
                                     <input :id="'url-input-'+index" :ref="'url-input-'+index" type="url" class="input-wrapper" 
                                     @keyup.enter="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null" @keyup.esc="URLActiveIndex = null">
                                     <div class="buttons-wrapper">
-                                        <span class="button green" @click="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">Save</span>
+                                        <span class="button primary" @click="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">Save</span>
                                         <span class="button ghost" @click="URLActiveIndex = null">Cancel</span>
                                     </div>
                                 </div>
@@ -87,45 +87,55 @@
                     </div>
                 </Draggable>
 
-                <h3>Details</h3>
-                <div class="form-element">
-                    <label for="product-name">Product name</label>
-                    <BaseEditInputWrapper id="product-name" :type="'text'"
-                    :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
-                </div>
-                <div class="col-2">
+                <div class="form-section">
+
+                    <h3>Details</h3>
                     <div class="form-element">
-                        <label for="datasource-id">Product ID</label>
-                        <BaseEditInputWrapper id="datasource-id" :type="'text'" ref="idInput" :maxlength="9" 
-                        :pattern="/^\d+$/" :disabled="!!originalProduct.datasource_id" :value="product.datasource_id"
-                        :oldValue="originalProduct.datasource_id" v-model="product.datasource_id" :error="idError"
-                        @change="validateProductId"/>
+                        <label for="product-name">Product name</label>
+                        <BaseEditInputWrapper id="product-name" :type="'text'"
+                        :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-element">
+                            <label for="datasource-id">Product ID</label>
+                            <BaseEditInputWrapper id="datasource-id" :type="'text'" ref="idInput" :maxlength="9" 
+                            :pattern="/^\d+$/" :disabled="!!originalProduct.datasource_id" :value="product.datasource_id"
+                            :oldValue="originalProduct.datasource_id" v-model="product.datasource_id" :error="idError"
+                            @change="validateProductId"/>
+                        </div>
+                        <div class="form-element">
+                            <label for="delivery">Delivery</label>
+                            <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
+                            :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-element">
+                            <label for="category">Brand</label>
+                            <BaseEditInputWrapper id="brand" :type="'text'" 
+                            :value="product.brand" :oldValue="originalProduct.brand" v-model="product.brand"/>
+                        </div>
+                        <div class="form-element">
+                            <label for="category">Category</label>
+                            <BaseEditInputWrapper id="category" :type="'text'" 
+                            :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
+                        </div>
                     </div>
                     <div class="form-element">
-                        <label for="delivery">Delivery</label>
-                        <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
-                        :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                        <label for="buying-group">Buyer Group</label>
+                        <BaseEditInputWrapper id="buying-group" :type="'text'" 
+                        :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"/>
                     </div>
-                </div>
-                <div class="form-element">
-                    <label for="category">Category</label>
-                    <BaseEditInputWrapper id="category" :type="'text'" 
-                    :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
-                </div>
-                <div class="form-element">
-                    <label for="buying-group">Buyer Group</label>
-                    <BaseEditInputWrapper id="buying-group" :type="'text'" 
-                    :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"/>
-                </div>
-                <div class="form-element">
-                    <label for="composition">Composition</label>
-                    <BaseEditInputWrapper id="composition" :type="'text'" 
-                    :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
-                </div>
-                <div class="form-element">
-                    <label for="description">Description</label>
-                    <BaseEditableTextarea id="description"
-                    :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
+                    <div class="form-element">
+                        <label for="composition">Composition</label>
+                        <BaseEditInputWrapper id="composition" :type="'text'" 
+                        :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
+                    </div>
+                    <div class="form-element">
+                        <label for="description">Description</label>
+                        <BaseEditableTextarea id="description"
+                        :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
+                    </div>
                 </div>
             </BaseFlyinColumn>
 
@@ -748,9 +758,15 @@ export default {
         }
     }
     .form-section {
-        border-bottom: solid 2px $divider;
-        padding-bottom: 32px;
-        margin-bottom: 32px;
+        padding: 16px 16px 32px;
+        border: $borderModule;
+        box-shadow: $shadowModule;
+        border-radius: $borderRadiusModule;
+        // background: $bg;
+        background: white;
+        &:not(:last-child) {
+            margin-bottom: 32px;
+        }
     }
     .product-variant {
         width: 182px;

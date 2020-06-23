@@ -46,8 +46,11 @@ export default {
     align-items: center;
     display: flex;
     padding: 8px 60px;
+    background: $bgModule;
+    border-bottom: $borderModule;
+    box-shadow: $shadowModule;
     @media screen and (max-width: $screenSm) {
-            padding: 8px 20px;
+        padding: 8px 20px;
     }
     > * {
         width: 100%;

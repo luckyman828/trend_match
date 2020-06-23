@@ -8,6 +8,8 @@ export default {
         token: localStorage.getItem('user-token') || '',
         status: '',
         user: null,
+        passwordRecoveryEmail: null,
+        passwordRecoverySessionId: null,
     },
 
     getters: {
@@ -15,6 +17,8 @@ export default {
         authStatus: state => state.status,
         authUser: state => state.user,
         getAuthUserToken: state => state.token,
+        getPasswordRecoveryEmail: state => state.passwordRecoveryEmail,
+        getPasswordRecoverySessionId: state => state.passwordRecoverySessionId,
     },
 
     actions: {
@@ -58,6 +62,63 @@ export default {
             // Refresh the page to clear our state
             router.go()
         },
+        async recoverPassword({ commit, state }, email) {
+            let success
+            commit('SET_PASSWORD_RECOVERY_EMAIL', email)
+
+            const apiUrl = `/auth/recover-password`
+            await axios
+                .post(apiUrl, {
+                    email,
+                })
+                .then(response => {
+                    // return success
+                    success = true
+                })
+                .catch(err => {
+                    console.log('error', err)
+                    success = false
+                })
+            return success
+        },
+        async verifyRecoveryCode({ commit, state }, code) {
+            let success
+
+            const apiUrl = `/auth/verify-code`
+            await axios
+                .post(apiUrl, {
+                    email: state.passwordRecoveryEmail,
+                    code,
+                })
+                .then(response => {
+                    commit('SET_PASSWORD_RECOVERY_SESSION_ID', response.data.session_id)
+                    success = true
+                })
+                .catch(err => {
+                    console.log('error', err)
+                    success = false
+                })
+            return success
+        },
+        async setNewPassword({ commit, state }, password) {
+            let success
+
+            const apiUrl = `/auth/reset-password`
+            await axios
+                .post(apiUrl, {
+                    session_id: state.passwordRecoverySessionId,
+                    password,
+                })
+                .then(response => {
+                    // Save the token to our state
+                    success = true
+                })
+                .catch(err => {
+                    console.log('error', err)
+                    success = false
+                })
+            return success
+        },
         async getAuthUser({ commit, state }) {
             state.status = 'loading'
             let response
@@ -88,6 +149,12 @@ export default {
     mutations: {
         setAuthUser(state, user) {
             state.user = user
+        },
+        SET_PASSWORD_RECOVERY_EMAIL(state, email) {
+            state.passwordRecoveryEmail = email
+        },
+        SET_PASSWORD_RECOVERY_SESSION_ID(state, id) {
+            state.passwordRecoverySessionId = id
         },
     },
 }

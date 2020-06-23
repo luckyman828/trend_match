@@ -1,9 +1,12 @@
 <template>
     <div class="subfile">
-        <ThePageHeader :title="`${currentFile.name}: 
+        <!-- <ThePageHeader :title="`${currentFile.name}: 
         ${!currentSelection.is_open ? '[Locked]' : ''} ${currentSelection.name || 'Untitled Selection'
         }${currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}: 
-        ${currentSelectionMode || 'Access Denied'}`"/>
+        ${currentSelectionMode || 'Access Denied'}`"/> -->
+
+        <h1>{{currentFile.name}}: {{!currentSelection.is_open ? '[Locked]' : ''}} {{currentSelection.name || 'Untitled Selection'}} 
+            {{currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}}: {{currentSelectionMode || 'Access Denied'}}</h1>
 
         <!-- Access denied -->
         <template v-if="!selection.your_role">
@@ -164,9 +167,9 @@ export default{
         },
 
         // SingalR Handlers
-        // subscribeSelectionsChangedHandler(message) {
-        //     //
-        // },
+        subscribeSelectionsChangedHandler(message) {
+            //
+        },
         async selectionPresentationChangedHandler(eventName, selectionIds) {
             if (eventName == 'Begin' 
                 && this.currentSelection.your_role != 'Owner'
@@ -212,7 +215,6 @@ export default{
                 feedbacks.forEach(action => {
                     const product = this.products.find(x => x.id == action.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    // action.selection = this.selections.find(x => x.id == action.selection_id)
 
                     const productActions = [{product: selectionProduct, action: action}]
                     this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
@@ -224,7 +226,6 @@ export default{
                 // console.log("OnFeedbackArrived", selectionId, feedback)
                 const product = this.products.find(x => x.id == feedback.product_id)
                 const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                // feedback.selection = this.selections.find(x => x.id == feedback.selection_id)
 
                 const productActions = [{product: selectionProduct, action: feedback}]
                 this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
@@ -236,7 +237,6 @@ export default{
                 alignments.forEach(action => {
                     const product = this.products.find(x => x.id == action.product_id)
                     const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                    // action.selection = this.selections.find(x => x.id == action.selection_id)
 
                     const productActions = [{product: selectionProduct, action: action}]
                     this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
@@ -248,7 +248,6 @@ export default{
                 // console.log("OnAlignmentArrived", selectionId, alignment)
                 const product = this.products.find(x => x.id == alignment.product_id)
                 const selectionProduct = product.selectionInputArray.find(x => x.selection.id == selectionId).product
-                // alignment.selection = this.selections.find(x => x.id == alignment.selection_id)
 
                 const productActions = [{product: selectionProduct, action: alignment}]
                 this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
@@ -326,7 +325,7 @@ export default{
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .quick-actions {
-        border-bottom: solid 2px $light2;
+        border-bottom: $borderDivider;
         padding-bottom: 16px;
         margin-bottom: 16px;
         p {

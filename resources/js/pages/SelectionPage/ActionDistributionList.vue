@@ -2,7 +2,7 @@
     <div class="action-distribution-list">
 
         <div class="header">
-            <div class="segment-toggle">
+            <!-- <div class="segment-toggle">
                 <BaseButton targetAreaPadding="16px 4px 16px 16px"
                 :buttonClass="currentTab == 'alignment' ? 'white xs full-width' : 'invisible ghost-hover xs full-width'"
                 @click="setCurrentTab('alignment')">
@@ -13,7 +13,17 @@
                 @click="setCurrentTab('feedback')">
                     <span>Feedback</span>
                 </BaseButton>
-            </div>
+            </div> -->
+            <BaseTabHeaderList>
+                <BaseTabHeader :active="currentTab == 'alignment'" 
+                @click.native="setCurrentTab('alignment')">
+                    <span>Alignment {{alignmentActions.length}}</span>
+                </BaseTabHeader>
+                <BaseTabHeader :active="currentTab == 'feedback'" 
+                @click.native="setCurrentTab('feedback')">
+                    <span>Feedback {{feedbackActions.length}}</span>
+                </BaseTabHeader>
+            </BaseTabHeaderList>
         </div>
 
         <!-- Alignment List -->
@@ -24,6 +34,7 @@
                     <span class="main">{{action.selection ? action.selection.name : 'Unknown'}}</span>
                     <span class="sub" v-if="action.action != 'None'">{{action.user ? action.user.name : 'Anonymous'}}</span>
                 </td>
+                <td v-if="displayQty" style="text-align: right;">{{action.quantity}}</td>
             </tr>
 
             <tr v-if="alignmentActions.length <= 0">
@@ -56,6 +67,7 @@ export default {
         'alignmentActions',
         'feedbackActions',
         'defaultTab',
+        'displayQty',
     ],
     data: function() { return {
         currentTab: 'feedback'

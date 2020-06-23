@@ -87,7 +87,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="140"
+                    :item-size="139"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"

@@ -23,6 +23,26 @@
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
             </td>
+            <td class="budget">
+                <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
+                    <button v-if="userHasEditAccess" class="ghost editable sm">
+                        <span>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
+                    </button>
+                    <span v-else>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
+                    <div slot="popover" class="budget-input-wrapper">
+                        <BaseInputField ref="budgetInput" v-model.number="newBudget" inputClass="small"
+                        :selectOnFocus="true"
+                        @keyup.enter.native="onUpdateBudget(selection); $refs.budgetInputPopover.hide()"/>
+                        <span class="currency">{{selection.currency}}</span>
+                    </div>
+                </v-popover>
+            </td>
+            <td class="budget-spend" :class="{over: budgetSpendPercentage > 100}">
+                <span v-if="selection.budget > 0" 
+                v-tooltip="`${separateThousands(selection.budget_spend)} ${selection.currency}`">
+                    {{budgetSpendPercentage}}%
+                </span>
+            </td>
             <!-- <td class="items">-</td>s
             <td class="in">-</td>
             <td class="out">-</td>
@@ -122,6 +142,7 @@ export default {
     ],
     data: function() { return {
         childrenExpanded: true,
+        newBudget: 0,
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
@@ -145,12 +166,21 @@ export default {
         },
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection)
+        },
+        budgetSpendPercentage() {
+            return ((this.selection.budget_spend / this.selection.budget) * 100).toFixed(1)
         }
     },
     methods: {
-        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode']),
+        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode', 'updateSelectionBudget']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
+        },
+        onShowBudgetInput() {
+            this.newBudget = this.selection.budget
+            setTimeout(() => { // For some reason this.$nextTick() doesn't work here
+                this.$refs.budgetInput.focus()
+            }, 100)
         },
         onGoToSelection() {
             if (!this.moveSelectionActive) {
@@ -208,8 +238,13 @@ export default {
             } else {
                 this.updateSelection(selection)
             }
+        },
+        onUpdateBudget(selection) {
+            selection.budget = this.newBudget
+            this.updateSelectionBudget(selection)
+            this.newBudget = 0
         }
-    }
+    },
 }
 </script>
 
@@ -229,7 +264,6 @@ export default {
             margin-right: 8px;
             width: 24px;
             font-size: 16px;
-            color: $dark2;
             &:first-child {
                 margin-right: 8px;
             }
@@ -237,10 +271,10 @@ export default {
                 position: relative;
                 i {
                     position: absolute;
-                    left: -2px;
+                    left: -3px;
                     bottom: 5px;
-                    font-size: 10px;
-                    color: #3b86ff;
+                    font-size: 11px;
+                    color: $primary;
                     margin: 0;
                     width: auto;
                  } 
@@ -273,6 +307,25 @@ export default {
             button {
                 min-width: 72px;
             }
+        }
+    }
+    .budget-input-wrapper {
+        position: relative;
+        .currency {
+            position: absolute;
+            right: 8px;
+            bottom: 5px;
+        }
+    }
+    .budget-spend {
+        font-size: 13px;
+        cursor: default;
+        &:hover {
+            font-weight: 700;
+        }
+        &.over {
+            font-weight: 700;
+            color: $red;
         }
     }
     

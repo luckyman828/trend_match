@@ -1,7 +1,7 @@
 <template>
     <div class="action-distribution-tooltip">
         <div class="header">
-            <h4>{{type}}</h4>
+            <h4>{{type == 'None' ? 'Not Decided' : type}}</h4>
         </div>
 
         <ActionDistributionList
@@ -24,7 +24,7 @@ export default {
     ],
     components: {
         ActionDistributionList
-    }
+    },
 }
 </script>
 

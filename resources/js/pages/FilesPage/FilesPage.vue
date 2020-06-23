@@ -1,26 +1,7 @@
 <template>
     <div class="files-page">
-        <div class="breadcrumbs">
-            <button @click="onSetCurrentFolder(null)" class="invisible white-hover">
-                <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
-            </button>
-            <div class="breadcrumb" v-for="(folder, index) in getCurrentFilePath" :key="folder.id">
-                <template v-if="!currentFolder || folder.id != currentFolder.id">
-                    <button @click="onSetCurrentFolder(folder, index)" class="invisible white-hover">
-                        <i class="far fa-folder"></i>
-                        <span>{{folder.name}}</span>
-                        <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
-                    </button>
-                </template>
-                <template v-else>
-                    <button class="invisible white-hover">
-                        <i class="far fa-folder-open"></i>
-                        <span>{{folder.name}}</span>
-                        <!-- <i class="fas fa-caret-down contextual-menu-icon"></i> -->
-                    </button>
-                </template>
-            </div>
-        </div>
+        <Breadcrumbs/>
+        
         <h1 v-if="!currentFolder">Files</h1>
         <h1 v-else>{{currentFolder.name}}</h1>
 
@@ -44,6 +25,7 @@ import FilesTable from './FilesTable'
 import FileFlyin from './FileFlyin'
 import FileOwnersFlyin from '../../components/FileOwnersFlyin'
 import FileApproversFlyin from '../../components/FileApproversFlyin'
+import Breadcrumbs from '../../components/common/Breadcrumbs'
 
 export default {
     name: 'filesPage',
@@ -52,6 +34,7 @@ export default {
         FileFlyin,
         FileOwnersFlyin,
         FileApproversFlyin,
+        Breadcrumbs,
     },
     data: function() { return {
         fileOwnersFlyinVisible: false,

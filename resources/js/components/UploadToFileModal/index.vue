@@ -217,7 +217,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('products', ['updateProduct', 'uploadImage']),
+        ...mapActions('products', ['updateProduct', 'uploadImage', 'updateFileProducts']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async getImageFromURL(url) {
             // Send a request to get the image
@@ -727,9 +727,10 @@ export default {
 
             // Send an update request to the API
             this.submitStatus = 'Saving to database'
-            await Promise.all(this.products.map(async product => {
-                await this.updateProduct(product)
-            }))
+            // await Promise.all(this.products.map(async product => {
+            //     await this.updateProduct(product)
+            // }))
+            await this.updateFileProducts({fileId: this.currentFile.id, products: this.products})
             .then(() => {
                 this.$emit('close')
                 this.reset()

@@ -14,13 +14,14 @@
         </div>
 
         <div class="items-center">
+            <BudgetCounter v-if="currentSelection && currentSelection.budget > 0"/>
         </div>
 
         <div class="items-right">
             <SelectionPresenterModeButton :selection="currentSelection"/>
 
-            <button class="button dark wide" @click="onExport"><span>Export PDF</span></button>
-            <button class="button dark wide" @click="onExportCsv"><span>Export CSV</span></button>
+            <button class="button primary wide" @click="onExport"><span>Export PDF</span></button>
+            <button class="button primary wide" @click="onExportCsv"><span>Export CSV</span></button>
         </div>
 
         <ExportProductsModal v-if="exportModalVisible" :show="exportModalVisible" @close="exportModalVisible = false"/>
@@ -34,6 +35,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
+import BudgetCounter from './BudgetCounter'
 
 export default {
     name: "editFilePageNavbar",
@@ -41,6 +43,7 @@ export default {
         ExportProductsModal,
         ExportToCsvModal,
         SelectionPresenterModeButton,
+        BudgetCounter,
     },
     data: function () { return {
         exportModalVisible: false,

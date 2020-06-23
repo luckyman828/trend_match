@@ -22,7 +22,7 @@ export default {
     .flyin-column {
         overflow-y: hidden;
         &:not(:last-child) {
-            border-right: solid 2px $divider;
+            border-right: $borderDivider;
         }
         &.has-header {
             display: flex;
@@ -32,7 +32,7 @@ export default {
     .header {
         height: 60px;
         padding: 8px 16px;
-        border-bottom: solid 2px $divider;
+        border-bottom: $borderDivider;
         background: white;
     }
     .body {

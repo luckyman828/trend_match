@@ -34,10 +34,10 @@
                         <v-popover trigger="click">
                             <button class="ghost">
                                 <span>Category</span>
-                                <i class="far fa-chevron-down"></i>
                                 <span v-if="selectedCategories.length > 0" class="circle primary xs">
                                     <span>{{selectedCategories.length}}</span>
                                 </span>
+                                <i class="far fa-chevron-down"></i>
                             </button>
                             <template slot="popover">
                                 <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
@@ -62,10 +62,10 @@
                         <v-popover trigger="click">
                             <button class="ghost">
                                 <span>Buyer group</span>
-                                <i class="far fa-chevron-down"></i>
                                 <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
                                     <span>{{selectedBuyerGroups.length}}</span>
                                 </span>
+                                <i class="far fa-chevron-down"></i>
                             </button>
                             <template slot="popover">
                                 <BaseSelectButtons submitOnChange="true" 
@@ -76,15 +76,26 @@
                         <v-popover trigger="click">
                             <button class="ghost">
                                 <span>Selection Input</span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedSelections.length > 0" class="circle primary xs">
-                                    <span>{{selectedSelections.length}}</span>
+                                <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
+                                    <span>{{selectedSelectionIds.length}}</span>
                                 </span>
+                                <i class="far fa-chevron-down"></i>
                             </button>
                             <template slot="popover">
                                 <BaseSelectButtons submitOnChange="true" 
-                                :options="getAvailableSelections" v-model="selectedSelections"
+                                :options="getAvailableSelections" v-model="selectedSelectionIds"
                                 optionNameKey="name" optionValueKey="id"/>
+                            </template>
+                        </v-popover>
+
+                        <v-popover trigger="click">
+                            <button class="ghost" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
+                                <span>Show input from: {{distributionScope}}</span>
+                                <i class="far fa-chevron-down"></i>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons type="radio" submitOnChange="true" 
+                                :options="['Alignment', 'Feedback']" v-model="distributionScope"/>
                             </template>
                         </v-popover>
 
@@ -93,10 +104,22 @@
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
-                        <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelections=[]; unreadOnly = false">
+                        <button class="invisible primary" 
+                        v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly"
+                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelectionIds=[]; unreadOnly = false">
                             <span>Clear filter</span>
                         </button>
+
+                        <!-- <BaseTabHeaderList>
+                            <BaseTabHeader :active="currentTab == 'alignment'" 
+                            @click.native="">
+                                <span>Alignment</span>
+                            </BaseTabHeader>
+                            <BaseTabHeader :active="currentTab == 'feedback'" 
+                            @click.native="setCurrentTab('feedback')">
+                                <span>Feedback</span>
+                            </BaseTabHeader>
+                        </BaseTabHeaderList> -->
 
                     </template>
                     <template v-slot:right>
@@ -143,7 +166,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 248 : 140"
+                    :item-size="currentSelections.length > 1 ? 247 : 139"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -153,6 +176,7 @@
                     :selection="selection" :currentAction="currentAction"
                     :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
                     :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
+                    :distributionScope="distributionScope"
                     @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
                 </RecycleScroller>
@@ -321,6 +345,7 @@ export default {
         tooltipVariant: null,
         distributionTooltipType: null,
         actionDistributionTooltipTab: 'feedback',
+        distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
@@ -375,12 +400,12 @@ export default {
                 this.updateSelectedBuyerGroups(value)
             }
         },
-        selectedSelections: {
+        selectedSelectionIds: {
             get () {
-                return this.$store.getters['products/getSelectedSelections']
+                return this.$store.getters['products/getSelectedSelectionIds']
             },
             set (value) {
-                this.SET_SELECTED_SELECTIONS(value)
+                this.SET_SELECTED_SELECTION_IDS(value)
             }
         },
         unreadOnly: {
@@ -396,7 +421,7 @@ export default {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTIONS']),
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS']),
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
@@ -599,6 +624,17 @@ export default {
         only screen and (min-resolution: 120dpi)
         {
             
+        }
+    }
+
+    .table-top-bar {
+        button {
+            position: relative;
+            .circle {
+                position: absolute;
+                right: -8px;
+                top: -8px;
+            }
         }
     }
 </style>

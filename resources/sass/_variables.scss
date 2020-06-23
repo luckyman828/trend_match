@@ -1,30 +1,75 @@
-// Body
-$body-bg: #f8fafc;
-
-// Typography
-$font-family-sans-serif: 'Roboto', sans-serif;
-$font-size-base: 0.9rem;
-$line-height-base: 1.6;
-
 // Colors
-$primary: #3b86ff;
+// $primary: #3b86ff;
+$primary: #2a46ff;
 $primaryDark: mix(black, $primary, 10%);
 
-$blue: #3b86ff;
-$red: #ff6565;
-$orange: #f6993f;
-$yellow: #f3e959;
-$green: #5ee2a0;
+$primary300: #7f93ff;
+$primary400: #5f76ff;
+$primary500: $primary;
+$primary600: #1e34db;
+$primary700: #1526b7;
+$primary800: #0d1993;
+$primary900: #08107a;
+
+$blue: #41a2fc;
+// $red: #ff6565;
+// $red: #ff395e;
+$orange: #686663;
+$yellow: #ffdc16;
 $yellowGreen: #b5cc18;
+
+$red100: #ffded7;
+$red200: #ffb7af;
+$red300: #ff8888;
+$red400: #ff6a78;
+$red500: #ff395e;
+$red600: #b71c56;
+$red700: #b71c56;
+$red800: #93124f;
+$red900: #7a0a49;
+$red: $red500;
+
+$green: #42e794;
+$green400: #6ff0a2;
+$green500: #42e794;
+// $green600: #44c290;
+$green600: #30c68a;
+$green700: #21a67d;
+
+$grey100: #fafcfd;
+$grey200: #f5fafb;
+$grey300: #f0f3f4; //#ccdbef
+$grey400: #dfe7ea;
+$grey450: #cfd8dd;
+$grey500: #c7d3db;
+$grey600: #a7b2c2;
+$grey700: #68849f;
+$grey800: #425e80;
+$grey900: #27416a;
+
+$bluegrey100: #edf8fc;
+$bluegrey200: #ddf0f9;
+$bluegrey300: #c5dfed;
+$bluegrey400: #adc9db;
+$bluegrey500: #8dabc4;
+$bluegrey600: #6787a8;
+$bluegrey700: #445f7b;
+$bluegrey800: #2c3f59;
+$bluegrey900: #1c293b;
+
+$success: $primary;
+$error: $orange;
+$danger: $red;
+$warning: $yellow;
+$info: $blue;
 
 $secondary: #69e4a6;
 $secondaryLight: rgba($secondary, 0.35);
 
-$dark: #1b1c1d;
-$dark05: #3c3b54;
+$dark: #1c293b;
+$dark05: #313f52;
 $dark1: #535353;
 $dark15: #707070;
-$dark25: #888;
 $dark2: #a8a8a8;
 $darkAlt: #43425d;
 $darkAlt2: #56556e;
@@ -38,31 +83,23 @@ $light2: #dfdfdf;
 $grey: #e4e4e4;
 $grey2: #cfcfcf;
 
-$font: $dark05;
-$fontSoft: $dark2;
-$fontBody: $dark;
-$fontIcon: $dark2;
-$tableHeader: $dark2;
-
 $button: $grey;
 
 $succes: $green;
 $fail: $red;
 $warming: $yellow;
 
-$bg: #e4e4e4;
-$bgContent: white;
-$bgContentActive: $light1;
-$bgContentAlt: $light1;
-
-$divider: $grey2;
+// $divider: $grey500;
+$divider: $grey600;
+$dividerColor: $grey600;
+$dividerWidth: 1px;
+$borderDivider: solid $dividerWidth $dividerColor;
 $darkenAmount: 10%;
 $lightenAmount: 10%;
 
 // BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state)
 $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white, mix($dark05, $primary, $darkenAmount)),
-    ('dark', $dark05, mix(white, $dark05, $lightenAmount), white, $dark),
-    ('green', $green, mix(white, $green, $lightenAmount), white, mix($dark05, $green, $darkenAmount)),
+    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark), ('green', $green500, $green400, white, $green600),
     ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount)),
     ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
@@ -85,5 +122,86 @@ $screenXs: 1260px;
 // Media Queries
 // $mq-small: "(min-width:)"
 
+// ------- DEFINE COLORS
+
+// ------- END DEFINE COLORS
+
+// ------- ASSIGN COLORS
+// Backgrounds
+// $bg: #e6ecef; // #f4f6ff
+$bg: #f4f6ff; // #f4f6ff
+$bgContent: white;
+$bgModule: white;
+$bgModuleHover: $grey300;
+$bgModuleActive: #fafbfc;
+// $bgModuleInactive: #cdd8df;
+$bgModuleInactive: $grey600;
+$bgContentAlt: #fafbfc;
+// $bgEl: #d7dee1;
+$bgEl: #cfd8dd;
+// $bgElInactive: $grey400;
+$bgElInactive: #d5dee1;
+
+$bgDark: #1c293b;
+$bgModuleDark: #1c293b;
+$bgModuleActiveDark: #273b5c;
+$bgModuleHoverDark: #273b5c;
+
+// -------- END ASSIGN COLORS
+
+// FONTS / TYPOGRAPHY
+$font: #1c293b;
+$fontSoft: #75869c;
+$fontBody: #1c293b;
+$fontIcon: $dark2;
+
+$fontModuleActiveOnDark: $bluegrey100;
+
+$fontSoftOnDark: $grey300;
+
+$fontButtonInvisible: $fontSoft;
+$fontTableHeader: $fontSoft;
+
+// ICONS
+// $icon: #8dabc4;
+$icon: $bluegrey700;
+$iconInFont: $icon;
+$iconSoftOnDark: $bluegrey500;
+
+$iconModuleActiveOnDark: $bluegrey100;
+
+$iconButtonInvisible: $icon;
+
 // Shadows
 $shadowXs: 0 3px 4px rgba(0, 0, 0, 0.2);
+$shadowModule: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
+$shadowModuleHard: 0 3px 4px 0 rgba(117, 134, 156, 0.3);
+$shadowEl: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
+$shadowElSoft: 0 1px 2px 0 rgba(117, 134, 156, 0.3);
+
+// Borders
+// $borderModule: 1px solid rgba(168, 198, 223, 0.4);
+$borderModule: 1px solid #cddde8;
+$borderRadiusModule: 4px;
+$borderColorEl: $bluegrey400;
+$borderColorElHard: $bluegrey500;
+$borderColorElHover: #75869c;
+$borderEl: solid 1px $borderColorEl;
+$borderRadiusEl: 4px;
+$borderElSoft: solid 1px #cddde8;
+$borderElHard: solid 2px $borderColorElHard;
+$borderElHover: solid 2px $primary;
+
+// TABLES
+$heightTableTab: 40px;
+
+// TABS
+$bgTab: $grey500; // #c8d1df
+$fontColorTab: white;
+$bgTabActive: white;
+$fontColorTabActive: $primary;
+$bgTabHover: $primary;
+$fontColorTabHover: white;
+
+// Button
+$transformElActive: scale(0.97);

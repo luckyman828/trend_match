@@ -1,5 +1,5 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive}"
+    <tr class="user-row table-row" ref="userRow" :class="[{active: contextMenuIsActive}, {self: isSelf}]"
     @contextmenu.prevent="$emit('showContextMenu', $event, user)" 
     @click.ctrl="$refs.selectBox.check()">
         <td class="select"><BaseCheckbox ref="selectBox" :value="user" :modelValue="localSelectedUsers" v-model="localSelectedUsers"/></td>
@@ -44,6 +44,7 @@ export default {
         userToEdit: this.user,
     }},
     computed: {
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         localSelectedUsers: {
@@ -52,7 +53,10 @@ export default {
         },
         contextMenuIsActive() {
             return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == this.user.id && this.selectedUsers.length <= 1
-        }
+        },
+        isSelf() {
+            return this.authUser.id == this.user.id
+        },
     },
     methods: {
         ...mapActions('users', ['updateUser']),
@@ -60,6 +64,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+.user-row {
+    &.self {
+        .title {
+            i {
+                color: $primary;
+            }
+        }
+        font-weight: 500;
+    }
+}
 
 </style>

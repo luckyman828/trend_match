@@ -111,7 +111,7 @@ export default {
                 }
             }
             &.header, &.footer {
-                color: $tableHeader;
+                color: $fontTableHeader;
             }
             &.header {
                 height: 32px;

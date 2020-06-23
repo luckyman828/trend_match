@@ -94,6 +94,11 @@ export default {
                 transform: none;
             }
         }
+        &.light {
+            > .flyin {
+                background: white;
+            }
+        }
     }
     .overlay {
         z-index: 11;
