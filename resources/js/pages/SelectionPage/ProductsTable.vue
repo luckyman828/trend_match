@@ -28,7 +28,8 @@
                 <BaseTableTopBar>
                     <template v-slot:left>
                         <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
+                        ref="searchField"
+                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 
                         <v-popover trigger="click">
                             <button class="ghost">
@@ -84,9 +85,9 @@
                         </v-popover>
 
                         <!-- Temp. disabled until the functionality gets hooked up -->
-                        <!-- <BaseCheckboxInputField class="small" v-model="unreadOnly">
+                        <BaseCheckboxInputField class="small" v-model="unreadOnly">
                             <span>Unread only</span>
-                        </BaseCheckboxInputField> -->
+                        </BaseCheckboxInputField>
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
@@ -330,8 +331,10 @@ export default {
         distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
+            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
+            'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapState('products', {stateProducts: 'products'}),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess () {
@@ -397,6 +400,7 @@ export default {
         ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
+        ...mapActions('products', ['showSelectionProductPDP']),
         showVariantTooltip({variant, product}) {
             this.tooltipVariant = variant
             this.tooltipProduct = product
@@ -406,11 +410,12 @@ export default {
             this.distributionTooltipType = type
         },
         onViewSingle(product) {
-            this.SET_CURRENT_PDP_SELECTION(this.selection)
-            this.setCurrentProduct(product)
-            this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
-            this.setSingleVisisble(true)
+            // this.SET_CURRENT_PDP_SELECTION(this.selection)
+            // this.setCurrentProduct(product)
+            // this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
+            // this.setSingleVisisble(true)
             document.activeElement.blur()
+            this.showSelectionProductPDP({product, selection: this.selection})
         },
         onShowContextMenu(mouseEvent, product) {
             let contextMenu = this.$refs.contextMenu
@@ -433,13 +438,44 @@ export default {
         },
         onUpdateMultipleActions(products, action) {
             this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        },
+        onViewSearchProduct() {
+            if (this.productsFilteredBySearch.length > 0) {
+                this.onViewSingle(this.productsFilteredBySearch[0])
+            }
+        },
+        hotkeyHandler(e) {
+            const key = event.code
+            if (event.target.type == 'textarea' 
+                || event.target.tagName.toUpperCase() == 'INPUT') return // Don't mess with user input
+
+            if (key == 'KeyS' && !this.singleVisible) {
+                this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
         }
     },
+    created() {
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
+    }
 }
 </script>
 
+<style lang="scss">
+    // RECYCLE SCROLLER
+    .products-table-wrapper {
+        .vue-recycle-scroller__item-wrapper {
+            overflow: visible;
+        }
+    }
+</style>
+
 <style scoped lang="scss">
     @import '~@/_variables.scss';
+
 
     .products-table-wrapper {
         ::v-deep {

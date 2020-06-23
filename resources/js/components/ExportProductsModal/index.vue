@@ -138,10 +138,10 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('products', ['productsFiltered']),
+        ...mapGetters('products', ['getProductsFilteredBySearch']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
-            const products = this.productsFiltered
+            const products = this.getProductsFilteredBySearch
             if (this.onlyWithRequests) {
                 return products.filter(product => product.requests.length > 0)
             } else return products
