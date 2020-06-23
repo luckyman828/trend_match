@@ -206,7 +206,7 @@ export default {
         currentImgIndex: 0,
         lastBroadcastProductId: null,
         tooltipVariant: null,
-        actionDistributionTooltipTab: 'feedback'
+        actionDistributionTooltipTab: 'Feedback'
     }},
     watch: {
         product(newVal, oldVal) {
