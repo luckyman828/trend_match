@@ -157,10 +157,11 @@ export default {
             })
         },
         onSubmitQuantity() {
-            const newQty = this.newQuantity
+            const newQty = this.newQuantity ? this.newQuantity : 0
             this.variant.quantity = newQty
             let actionToSet = this.variant.action
-            if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
+            if (newQty <= 0) actionToSet = 'Out'
+            else if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
                 actionToSet = 'In'
             }
             // if (newQty == 0) actionToSet = 'Out'
