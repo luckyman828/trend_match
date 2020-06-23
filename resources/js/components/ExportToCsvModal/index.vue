@@ -269,56 +269,36 @@ export default {
 
         },
         exportCurrentSelectionQty() {
-            // const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Action', 'Your Qty', 'Total Qty']
-            // const rows = []
-            // // Loop through the products again to populate rows with data
-            // this.productsToExport.forEach(product => {
-            //     const selectionRequest = product.requests.find(x => x.selection_id == this.currentSelection.id)
 
-            //     const rowToPush = [
-            //         product.datasource_id, 
-            //         product.title, 
-            //         product.category, 
-            //         product.min_order, 
-            //         product.min_variant_order, 
-            //         product.delivery_date, 
-            //         product.action || 'None',
-            //         product.your_quantity,
-            //         product.quantity
-            //     ]
-            //     rows.push(rowToPush)
-            // })
-
-            // this.exportToCsv(`Kollekt - ${this.currentSelection.name} - Export.csv`, [headers].concat(rows))
-            const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Product Total Qty', 'Variant Total Qty', 'Your Qty']
+            const headers = this.defaultCsvHeaders.concat(['Product Total Qty', 'Product Total Spend', 'Variant Total Qty', 'Variant Total Spend', 'Your Qty', 'Your Spend'])
             // Add a header for each selection to export
             const rows = []
-
             this.productsToExport.forEach(product => {
-                product.variants.forEach(variant => {
-                    const rowToPush = [
-                        product.datasource_id, 
-                        product.title, 
-                        product.category, 
-                        product.min_order, 
-                        product.min_variant_order, 
-                        product.delivery_date, 
-                        product.quantity,
-                        variant.totalQuantity,
-                        variant.quantity
-                    ]
 
-                    // // Add the aligment qty
-                    // selectionsToExport.forEach(selection => {
-                    //     const originAction = variant.actions.find(x => x.selection_id == selection.id)
-                    //     rowToPush.push(originAction ? originAction.quantity : 0)
-                    // })
+                let productPrice = {}
+                if (product.prices && product.prices.length > 0) {
+                    if (this.currencyToExport && product.prices.find(x => x.currency == this.currencyToExport)) {
+                        productPrice = product.prices.find(x => x.currency == this.currencyToExport)
+                    } else {
+                        productPrice = product.prices[0]
+                    }
+                }
+
+                product.variants.forEach(variant => {
+                    const rowToPush = this.getDefaultProductRowData(product).concat([
+                        product.quantity,
+                        product.quantity * productPrice.wholesale_price,
+                        variant.totalQuantity,
+                        variant.totalQuantity * productPrice.wholesale_price,
+                        variant.quantity,
+                        variant.quantity * productPrice.wholesale_price
+                    ])
 
                     rows.push(rowToPush)
                 })
             })
 
-            this.exportToCsv('Kollekt Request Export.csv', [headers].concat(rows))
+            this.exportToCsv('Kollekt Quantity Export.csv', [headers].concat(rows))
 
         },
         exportCurrentVariantsFeedback() {
@@ -423,29 +403,49 @@ export default {
 
         },
         exportQtyPerSelection() {
-            const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Product Total Qty', 'Variant Total Qty']
+            // const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Product Total Qty', 'Variant Total Qty']
+            const headers = this.defaultCsvHeaders.concat([
+                'Variant Name', 'Product Total Qty', 'Product Total Spend', 'Variant Total Qty', 'Variant Total Spend',
+            ])
+            // const headers = this.getDefaultProductRowData().concat([
+            //     'Variant Name', 'Product Total Qty', 'Variant Total Qty'
+            // ])
             // Add a header for each selection to export
             const selectionsToExport = this.selectionsToExport
-            headers.push(...this.selectionsToExport.map(x => x.name))
+            // headers.push(...this.selectionsToExport.map(x => x.name))
+            selectionsToExport.map(selection => {
+                headers.push(selection.name + 'Qty')
+                headers.push(selection.name + 'Spend')
+            })
             const rows = []
 
             this.productsToExport.forEach(product => {
+
+                let productPrice = {}
+                if (product.prices && product.prices.length > 0) {
+                    if (this.currencyToExport && product.prices.find(x => x.currency == this.currencyToExport)) {
+                        productPrice = product.prices.find(x => x.currency == this.currencyToExport)
+                    } else {
+                        productPrice = product.prices[0]
+                    }
+                }
+
                 product.variants.forEach(variant => {
-                    const rowToPush = [
-                        product.datasource_id, 
-                        product.title, 
-                        product.category, 
-                        product.min_order, 
-                        product.min_variant_order, 
-                        product.delivery_date, 
+                    const rowToPush = this.getDefaultProductRowData(product).concat([
+                        variant.name,
                         product.quantity,
-                        variant.totalQuantity
-                    ]
+                        product.quantity * productPrice.wholesale_price,
+                        variant.totalQuantity,
+                        variant.totalQuantity * productPrice.wholesale_price
+                    ])
 
                     // Add the aligment qty
                     selectionsToExport.forEach(selection => {
                         const originAction = variant.actions.find(x => x.selection_id == selection.id)
                         rowToPush.push(originAction ? originAction.quantity : 0)
+
+                        // Add the variant spend
+                        rowToPush.push(originAction ? originAction.quantity * productPrice.wholesale_price : 0)
                     })
 
                     rows.push(rowToPush)
