@@ -1,5 +1,5 @@
 <template>
-    <div class="products-table-wrapper">
+    <div class="products-table-wrapper" ref="table" @focusout="onBlur">
 
         <BaseFlexTable class="products-table" :stickyHeader=true>
             <template v-slot:tabs>
@@ -314,7 +314,7 @@ export default {
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
-            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
+            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'currentFocusRowIndex']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
             'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapState('products', {stateProducts: 'products'}),
@@ -383,6 +383,7 @@ export default {
         ...mapActions('comments', ['setComment', 'destroyComment']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapMutations('products', ['setCurrentFocusRowIndex']),
         showVariantTooltip({variant, product}) {
             this.tooltipVariant = variant
             this.tooltipProduct = product
@@ -426,14 +427,26 @@ export default {
                 this.onViewSingle(this.productsFilteredBySearch[0])
             }
         },
+        onBlur(e) {
+            if (!this.$refs.table.contains(e.relatedTarget)) {
+                this.setCurrentFocusRowIndex(null)
+            }
+        },
         hotkeyHandler(e) {
-            const key = event.code
-            if (event.target.type == 'textarea' 
-                || event.target.tagName.toUpperCase() == 'INPUT') return // Don't mess with user input
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
 
-            if (key == 'KeyS' && !this.singleVisible) {
+            if (key == 'KeyS') {
                 this.$refs.searchField.setFocus()
                 e.preventDefault() // Avoid entering an "s" in the search field
+            }
+            if (key == 'Tab' && !e.shiftKey) {
+                if (this.currentFocusRowIndex == null) {
+                    e.preventDefault()
+                    this.setCurrentFocusRowIndex(0)
+                }
             }
         }
     },

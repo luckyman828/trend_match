@@ -280,6 +280,9 @@ export default {
         },
         onRowFocus() {
             this.focusGroupIndex = null
+            if (this.currentFocusRowIndex != this.index) {
+                this.setCurrentFocusRowIndex(this.index)
+            }
         },
         focusNext(event) {
             if (this.currentSelections.length <= 1) {
@@ -326,9 +329,11 @@ export default {
             this.setCurrentFocusRowIndex(this.index+1)
         },
         focusPrevRow(event) {
-            // Get the previous row
-            event.preventDefault()
-            this.setCurrentFocusRowIndex(this.index-1)
+            if (this.index > 0) {
+                // Get the previous row
+                event.preventDefault()
+                this.setCurrentFocusRowIndex(this.index-1)
+            }
         },
         hotkeyHandler(event) {
             const key = event.code

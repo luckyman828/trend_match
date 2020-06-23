@@ -452,7 +452,7 @@ export default {
                 })
             })
 
-            this.exportToCsv('Kollekt Request Export.csv', [headers].concat(rows))
+            this.exportToCsv('Kollekt Quantity Export.csv', [headers].concat(rows))
 
         },
         exportCommentsPerSelection() {
