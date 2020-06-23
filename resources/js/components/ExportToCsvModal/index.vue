@@ -26,6 +26,10 @@
                     <BaseRadioInputField class="form-element" :value="'currentVariants'" v-model="exportOption">
                         <span>Export Variant Alignment & Feedback</span>
                     </BaseRadioInputField>
+
+                    <BaseRadioInputField class="form-element" :value="'currentQty'" v-model="exportOption">
+                        <span>Export Quantity</span>
+                    </BaseRadioInputField>
                 </div>
                 <div class="form-section">
                     <h4>Export Multiple Selections</h4>
@@ -49,6 +53,10 @@
 
                     <BaseRadioInputField class="form-element" :value="'comments'" v-model="exportOption">
                         <span>Export Comments</span>
+                    </BaseRadioInputField>
+
+                    <BaseRadioInputField class="form-element" :value="'quantity'" v-model="exportOption">
+                        <span>Export Quantity</span>
                     </BaseRadioInputField>
 
 
@@ -143,12 +151,16 @@ export default {
                 this.exportCurrentSelection()
             if (option == 'currentFeedback')
                 this.exportCurrentSelectionFeedback()
+            if (option == 'currentQty')
+                this.exportCurrentSelectionQty()
             if (option == 'alignments')
                 this.exportActionsPerSelection()
             if (option == 'requests')
                 this.exportRequestsPerSelection()
             if (option == 'comments')
                 this.exportCommentsPerSelection()
+            if (option == 'quantity')
+                this.exportQtyPerSelection()
             if (option == 'currentVariants')
                 this.exportCurrentVariantsFeedback()
 
@@ -256,6 +268,59 @@ export default {
             this.exportToCsv(`Kollekt - ${this.currentSelection.name} - Export.csv`, [headers].concat(rows))
 
         },
+        exportCurrentSelectionQty() {
+            // const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Action', 'Your Qty', 'Total Qty']
+            // const rows = []
+            // // Loop through the products again to populate rows with data
+            // this.productsToExport.forEach(product => {
+            //     const selectionRequest = product.requests.find(x => x.selection_id == this.currentSelection.id)
+
+            //     const rowToPush = [
+            //         product.datasource_id, 
+            //         product.title, 
+            //         product.category, 
+            //         product.min_order, 
+            //         product.min_variant_order, 
+            //         product.delivery_date, 
+            //         product.action || 'None',
+            //         product.your_quantity,
+            //         product.quantity
+            //     ]
+            //     rows.push(rowToPush)
+            // })
+
+            // this.exportToCsv(`Kollekt - ${this.currentSelection.name} - Export.csv`, [headers].concat(rows))
+            const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Product Total Qty', 'Variant Total Qty', 'Your Qty']
+            // Add a header for each selection to export
+            const rows = []
+
+            this.productsToExport.forEach(product => {
+                product.variants.forEach(variant => {
+                    const rowToPush = [
+                        product.datasource_id, 
+                        product.title, 
+                        product.category, 
+                        product.min_order, 
+                        product.min_variant_order, 
+                        product.delivery_date, 
+                        product.quantity,
+                        variant.totalQuantity,
+                        variant.quantity
+                    ]
+
+                    // // Add the aligment qty
+                    // selectionsToExport.forEach(selection => {
+                    //     const originAction = variant.actions.find(x => x.selection_id == selection.id)
+                    //     rowToPush.push(originAction ? originAction.quantity : 0)
+                    // })
+
+                    rows.push(rowToPush)
+                })
+            })
+
+            this.exportToCsv('Kollekt Request Export.csv', [headers].concat(rows))
+
+        },
         exportCurrentVariantsFeedback() {
             const headers = ['Product ID', 'Product Name', 'Variant Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery']
             const selectionHeaders = []
@@ -353,6 +418,39 @@ export default {
             })
             // Add request headers to our headers
             headers.push(...selectionHeaders)
+
+            this.exportToCsv('Kollekt Request Export.csv', [headers].concat(rows))
+
+        },
+        exportQtyPerSelection() {
+            const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Product Total Qty', 'Variant Total Qty']
+            // Add a header for each selection to export
+            const selectionsToExport = this.selectionsToExport
+            headers.push(...this.selectionsToExport.map(x => x.name))
+            const rows = []
+
+            this.productsToExport.forEach(product => {
+                product.variants.forEach(variant => {
+                    const rowToPush = [
+                        product.datasource_id, 
+                        product.title, 
+                        product.category, 
+                        product.min_order, 
+                        product.min_variant_order, 
+                        product.delivery_date, 
+                        product.quantity,
+                        variant.totalQuantity
+                    ]
+
+                    // Add the aligment qty
+                    selectionsToExport.forEach(selection => {
+                        const originAction = variant.actions.find(x => x.selection_id == selection.id)
+                        rowToPush.push(originAction ? originAction.quantity : 0)
+                    })
+
+                    rows.push(rowToPush)
+                })
+            })
 
             this.exportToCsv('Kollekt Request Export.csv', [headers].concat(rows))
 
