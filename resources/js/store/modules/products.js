@@ -1225,8 +1225,10 @@ export default {
                 // Set the current action for the user
                 Object.defineProperty(product, 'action', {
                     get: function() {
-                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
-                            .action
+                        const selectionAction = product.actions.find(
+                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                        )
+                        return selectionAction ? selectionAction.action : 'None'
                     },
                     set: function(value) {
                         product.actions.find(
