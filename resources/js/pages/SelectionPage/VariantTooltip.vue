@@ -110,6 +110,7 @@ export default {
             // Loop through all the variants. If their action is None, then give them a default action
             this.product.variants.forEach(variant => {
                 if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
+                    console.log('set variant action')
                     if (newAction == 'Out') variant[this.currentAction] = 'Out'
                     else variant[this.currentAction] = 'In'
                 }
@@ -157,15 +158,14 @@ export default {
             })
         },
         onSubmitQuantity() {
-            const newQty = this.newQuantity ? this.newQuantity : 0
-            this.variant.quantity = newQty
             let actionToSet = this.variant.action
+            const newQty = this.newQuantity ? this.newQuantity : 0
             if (newQty <= 0) actionToSet = 'Out'
             else if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
                 actionToSet = 'In'
             }
-            // if (newQty == 0) actionToSet = 'Out'
             this.updateVariantAction(actionToSet)
+            this.variant.quantity = newQty
         }
     },
     mounted() {

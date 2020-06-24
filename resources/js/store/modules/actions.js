@@ -239,6 +239,7 @@ export default {
 
             let apiUrl
             let requestBody
+            console.log('update product action pairs', productActionPairs)
 
             if (selection.your_role == 'Member') {
                 apiUrl = `/selections/${selection.id}/feedback`

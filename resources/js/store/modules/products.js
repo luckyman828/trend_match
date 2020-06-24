@@ -1452,6 +1452,7 @@ export default {
                             return selectionAction ? selectionAction.quantity : 0
                         },
                         set: function(newQuantity) {
+                            console.log('set quantity')
                             // Find the current action for the variant input for this action action
                             const currentAction = product.actions.find(
                                 action => action.selection_id == product.selectionInputArray[0].selection.id
