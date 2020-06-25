@@ -39,7 +39,7 @@
             </td>
             <td class="budget-spend" :class="{over: budgetSpendPercentage > 100}">
                 <span v-if="selection.budget > 0" 
-                v-tooltip="`${separateThousands(selection.budget_spend)} ${selection.currency}`">
+                v-tooltip="`${separateThousands(selection.budget_spend.toFixed(0))} ${selection.currency}`">
                     {{budgetSpendPercentage}}%
                 </span>
             </td>

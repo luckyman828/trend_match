@@ -41,6 +41,8 @@
             <div class="quantity-input" v-if="showQty && selectionMode != 'Approval'">
                 <BaseInputField ref="qtyInput" inputClass="small" v-model.number="newQuantity"
                 :selectOnFocus="true" type="number"
+                :disabled="!userWriteAccess.actions.hasAccess" :readOnly="!userWriteAccess.actions.hasAccess"
+                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @keyup.enter.native="onSubmitQuantity"/>
                 <div class="total" v-tooltip.right="'total quantity input / variant minimum'">
                     <span>{{variant.totalQuantity}} / {{product.min_variant_order}}</span>
