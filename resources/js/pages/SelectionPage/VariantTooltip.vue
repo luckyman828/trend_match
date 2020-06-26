@@ -69,6 +69,7 @@ export default {
     props: [
         'variant',
         'product',
+        'selectionInput',
         'selection',
         'actionDistributionTooltipTab',
     ],
@@ -99,7 +100,7 @@ export default {
     },
     
     methods: {
-        ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
+        ...mapActions('actions', ['updateFeedbacks', 'updateActions']),
         focusQtyInput() {
             if (this.showQty) {
                 this.$refs.qtyInput.focus()
@@ -123,15 +124,15 @@ export default {
                 this.variant.quantity = 0
                 this.newQuantity = 0
             }
-            let currentAction
+            let currentAction 
             
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None
-                currentAction = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
+                currentAction = this.selectionInput.yourSelectionFeedback
             }
             if (this.selectionMode == 'Alignment') {
                 // Find the users feedback action for the product and make sure it is not None
-                currentAction = this.product.actions.find(x => x.selection_id == this.selection.id)
+                currentAction = this.selectionInput.selectionAction
             }
 
             // If the product has no action, set it's action to the variants new action
@@ -139,24 +140,23 @@ export default {
                 currentAction.action = newAction
             }
             // If all variants are marked OUT, mark the product OUT
-            else if (!this.product.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
+            else if (!this.selectionInput.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
                 currentAction.action = 'Out'
             }
             // If at least ONE varaint in IN or FOCUS mark the product as IN
-            else if (this.product.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
-                if (this.product[this.currentAction] != 'Focus') {
+            else if (this.selectionInput.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
+                if (this.selectionInput[this.currentAction] != 'Focus') {
                     currentAction.action = 'In'
                 }
             }
-            
 
-            this.insertOrUpdateProductActionPairs({
-                productActionPairs: [{
-                    product: this.product, 
-                    action: currentAction
-                }], 
-                selection: this.selection
-            })
+            if (this.selectionMode == 'Feedback') {
+                this.updateFeedbacks({actions: [currentAction], newAction})
+            }
+            if (this.selectionMode == 'Alignment') {
+                this.updateActions({actions: [currentAction], newAction})
+            }
+
         },
         onSubmitQuantity() {
             const newQty = this.newQuantity

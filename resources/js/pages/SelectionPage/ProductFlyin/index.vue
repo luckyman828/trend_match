@@ -1,7 +1,7 @@
 <template>
     <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4
     :class="{'has-budget': showBudget}">
-        <template v-slot:header>
+        <template v-slot:header v-if="show">
             <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
                 <template v-slot:left>
@@ -15,29 +15,29 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <SelectionPresenterModeButton :selection="currentSelection" @toggle="onTogglePresenterMode"/>
+                        <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
                     </div>
                     <div class="item-group">
-                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !currentSelection.is_presenting"/>
+                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                     </div>
                     <div class="item-group">
-                        <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                        <BaseButton :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
                         :disabled="!userWriteAccess.actions.hasAccess" 
                         v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction(product, 'Focus', currentSelection)">
+                        @click="onUpdateAction('Focus')">
                             <i class="far fa-star"></i>
                         </BaseButton>
-                        <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
+                        <BaseButton :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'"
                         :disabled="!userWriteAccess.actions.hasAccess" 
                         v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction(product, 'In', currentSelection)">
+                        @click="onUpdateAction('In')">
                             <i class="far fa-heart"></i>
                             <span>In</span>
                         </BaseButton>
-                        <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
+                        <BaseButton :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'"
                         :disabled="!userWriteAccess.actions.hasAccess" 
                         v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction(product, 'Out', currentSelection)">
+                        @click="onUpdateAction('Out')">
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
                         </BaseButton>
@@ -49,7 +49,7 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
+                    <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
@@ -57,8 +57,8 @@
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <VariantListItem v-for="(variant, index) in product.variants" :key="index"
-                    :variant="variant" :product="product" :selection="selection"
+                    <VariantListItem v-for="(variant, index) in selectionInput.variants" :key="index"
+                    :variant="variant" :product="product" :selection="selection" :selectionInput="selectionInput"
                     :class="{'active': currentImgIndex == index}"
                     v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant}"
                     @click.native="currentImgIndex = index"/>
@@ -131,18 +131,18 @@
 
             </BaseFlyinColumn>
 
-            <DistributionSection :product="currentProduct"/>
+            <DistributionSection :selectionInput="selectionInput" :product="product"/>
 
             <RequestsSection class="comments" ref="requestsSection"
-            :product="product" :selection="currentSelection" :requests="product.requests"
+            :selectionInput="selectionInput" :requests="selectionInput.requests"
             @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
             <CommentsSection class="comments" ref="commentsSection"
-            :product="product" :selection="currentSelection"
+            :selectionInput="selectionInput"
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
-            <PresenterQueueFlyin :product="product" v-if="currentSelection.is_presenting && show"/>
+            <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
 
             <BaseDialog ref="confirmCloseInPresentation" type="confirm"
             confirmColor="dark" confirmText="Okay, close it">
@@ -158,12 +158,12 @@
 
             <BaseTooltip ref="variantTooltip"
             @show="variant => tooltipVariant = variant">
-                <VariantTooltip :variant="tooltipVariant" :selection="currentSelection" :product="product"
-                :actionDistributionTooltipTab="actionDistributionTooltipTab"
+                <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"
+                :actionDistributionTooltipTab="actionDistributionTooltipTab" :selectionInput="selectionInput"
                 @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
 
-            <BudgetCounter v-if="showBudget" :hideLabel="true" class="the-budget-counter"/>
+            <BudgetCounter v-if="showBudget" :hideLabel="true" class="the-budget-counter" :selection="selection"/>
 
         </template>
     </BaseFlyin>
@@ -186,7 +186,6 @@ export default {
     name: 'productFlyin',
     props: [
         'show',
-        'selection',
     ],
     mixins: [
         variantImage
@@ -236,26 +235,32 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('products', {
+            availableProducts: 'getProductsFilteredBySearch'
+        }),
         ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
+        selectionInput() {
+            return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
+        },
         product () {
             return this.currentProduct
         },
-        broadcastActive () {return this.currentSelection.is_presenting},
-        currentSelection () { return this.getCurrentPDPSelection },
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
+        broadcastActive () {return this.selection.is_presenting},
+        selection () { return this.getCurrentPDPSelection },
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
         currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
         currentAction () {
             return this.currentSelectionModeAction
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
+            return this.getAuthUserSelectionWriteAccess(this.selection)
         },
         showBudget() {
-            return this.selection.budget > 0
+            return this.selection && this.selection.budget > 0
         }
     },
     methods: {
@@ -271,8 +276,8 @@ export default {
             this.lastBroadcastProductId = product.id
             this.broadcastProduct(product)
         },
-        onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
+        onUpdateAction(action) {
+            this.$emit('updateAction', action, this.selectionInput)
         },
         onShowLightbox() {
             this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
@@ -310,11 +315,11 @@ export default {
 
                 if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')
-                        this.onUpdateAction(this.product, 'In', this.currentSelection)
+                        this.onUpdateAction('In')
                     if (key == 'KeyO')
-                        this.onUpdateAction(this.product, 'Out', this.currentSelection)
+                        this.onUpdateAction('Out')
                     if (key == 'KeyF' || key == 'KeyU')
-                        this.onUpdateAction(this.product, 'Focus', this.currentSelection)
+                        this.onUpdateAction('Focus')
                 }
             }
         },

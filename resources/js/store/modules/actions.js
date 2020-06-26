@@ -37,14 +37,52 @@ export default {
                 }
             }
         },
-        async insertOrUpdateActions({ commit, dispatch, rootGetters }, { products, action, selection, user }) {
-            // Find the selection product if it is not the product we have been passed
-            if (!!products[0].selectionInputArray) {
-                products = products.map(product => {
-                    const selectionIndex = product.selectionInputArray.findIndex(x => x.selection.id == selection.id)
-                    return product.selectionInputArray[selectionIndex].product
-                })
-            }
+        async insertOrUpdateActions({ commit, rootGetters }, { products, action, selection, user }) {
+            const selectionMode = rootGetters['selections/currentSelectionMode']
+            const authUser = rootGetters['auth/authUser']
+
+            let apiUrl
+            let requestBody
+            let oldActions
+
+            if (selectionMode == 'Alignment') {
+                apiUrl = `/selections/${selection.id}/actions`
+                requestBody = {
+                    actions: products.map(product => {
+                        return {
+                            product_id: product.id,
+                            action: action,
+                            variants: product.variants.map(variant => {
+                                return {
+                                    id: variant.id,
+                                    feedback: action,
+                                    quantity: action,
+                                }
+                            }),
+                        }
+                    }),
+                }
+            } else if (selectionMode == 'Feedback') {
+                apiUrl = `/selections/${selection.id}/feedback`
+                requestBody = {
+                    feedbacks: products.map(product => {
+                        return {
+                            product_id: product.id,
+                            feedback: action,
+                            variants: product.variants.map(variant => {
+                                return {
+                                    id: variant.id,
+                                    feedback: action,
+                                }
+                            }),
+                        }
+                    }),
+                }
+            } else return
+        },
+        async insertOrUpdateActions({ commit, dispatch, rootGetters }, { products, selectionInput, action, user }) {
+            console.log('insert or update actions', products, action, selectionInput, user)
+            // productSelectionInputPairs = [product, selectionInput]
 
             // type = action|feedback
             let apiUrl
@@ -52,18 +90,21 @@ export default {
             let oldActions
 
             // Shape products for request
-            const productActions = products.map(product => {
+            console.log('init product actions', products)
+            const productActions = productSelectionInputPairList.map(productSelectionInputPair => {
+                const product = productSelectionInputPairList.product
+                const selectionInput = productSelectionInputPairList.selectionInput
+                console.log('product actions', product)
                 // Return the products shaped for the request body
                 return {
                     product,
                     action: {
                         action,
-                        product_id: product.id,
-                        selection,
-                        selection_id: selection.id,
+                        selection: selectionInput.selection,
+                        selection_id: selectionInput.selection_id,
                         user_id: user.id,
                         user: user,
-                        variants: product.variants.map(variant => {
+                        variants: selectionInput.variants.map(variant => {
                             return {
                                 id: variant.id,
                                 feedback: action,
@@ -226,13 +267,13 @@ export default {
         },
         async insertOrUpdateProductActionPairs({ commit, rootGetters }, { productActionPairs, selection }) {
             // Find the selection product if it is not the product we have been passed
-            if (!!productActionPairs[0].product.selectionInputArray) {
+            if (!!productActionPairs[0].product.selectionInputList) {
                 productActionPairs.map(pair => {
-                    if (pair.product.selectionInputArray) {
-                        const selectionIndex = pair.product.selectionInputArray.findIndex(
+                    if (pair.product.selectionInputList) {
+                        const selectionIndex = pair.product.selectionInputList.findIndex(
                             x => x.selection.id == selection.id
                         )
-                        pair.product = pair.product.selectionInputArray[selectionIndex].product
+                        pair.product = pair.product.selectionInputList[selectionIndex].product
                     }
                 })
             }
@@ -274,6 +315,62 @@ export default {
 
             await axios.post(apiUrl, requestBody)
         },
+        async updateActions({ commit, rootGetters }, { actions, newAction }) {
+            console.log('updateAction', actions, newAction)
+            // Save the old action
+            const oldActions = JSON.parse(JSON.stringify(actions))
+            // Update the action
+            commit('UPDATE_ACTIONS', { actions, newAction })
+
+            const authUser = rootGetters['auth/authUser']
+
+            const apiUrl = `/selections/${actions[0].selection_id}/actions`
+            const requestBody = {
+                actions: actions.map(action => {
+                    return {
+                        product_id: action.product_id,
+                        action: newAction,
+                        variants: action.variants,
+                    }
+                }),
+            }
+
+            axios
+                .post(apiUrl, requestBody)
+                .then(response => {
+                    // action.action = newAction
+                })
+                .catch(err => {
+                    // action.action = oldAction
+                })
+        },
+        async updateFeedbacks({ commit, rootGetters }, { actions, newAction }) {
+            console.log('update feeedback', actions, newAction)
+            // Save the old action
+            const oldActions = JSON.parse(JSON.stringify(actions))
+            // Update the action
+            commit('UPDATE_ACTIONS', { actions, newAction })
+
+            const apiUrl = `/selections/${actions[0].selection_id}/feedback`
+            const requestBody = {
+                feedbacks: actions.map(action => {
+                    return {
+                        product_id: action.product_id,
+                        action: newAction,
+                        variants: action.variants,
+                    }
+                }),
+            }
+
+            axios
+                .post(apiUrl, requestBody)
+                .then(response => {
+                    // action.action = newAction
+                })
+                .catch(err => {
+                    // action.action = oldAction
+                })
+        },
     },
 
     mutations: {
@@ -285,7 +382,6 @@ export default {
             window.alert('Network error. Please check your connection')
         },
         INSERT_OR_UPDATE_ACTIONS(state, { productActions, type, currentSelectionId, authUser }) {
-            // console.log('insert or update actions', productActions, type, currentSelectionId)
             // Loop through our products and update their actions
             productActions.forEach(productAction => {
                 const product = productAction.product
@@ -311,37 +407,29 @@ export default {
 
                 // Alignment
                 if (type == 'Alignment') {
-                    const existingAction = product.actions.find(x => x.selection_id == action.selection_id)
-                    if (!existingAction) {
-                        productAction.product.actions.push(action)
-                    } else {
-                        // existingAction.action = action.action
-                        Object.assign(existingAction, action)
-                    }
-
-                    // If is self
-                    if (!currentSelectionId || action.selection_id == currentSelectionId) {
-                        Vue.set(product, 'action', action.action)
-                        Vue.set(product, 'action_author', action.user)
-                    }
+                    product.selectionInputList.forEach(selectionInput => {
+                        const existingAction = selectionInput.actions.find(x => x.selection_id == action.selection_id)
+                        if (!existingAction) {
+                            productAction.product.actions.push(action)
+                        } else {
+                            // existingAction.action = action.action
+                            Object.assign(existingAction, action)
+                        }
+                    })
                 }
             })
         },
-        UPDATE_ACTIONS(state, { product, action, selection, user, type }) {
-            if (type == 'Feedback') {
-                const existingAction = product.feedbacks.find(
-                    x => x.selection_id == selection.id && x.user_id == user.id
-                )
-                if (!!existingAction) {
-                    existingAction.action = action
+        UPDATE_ACTIONS(state, { actions, newAction }) {
+            actions.forEach(action => {
+                action.action = newAction
+                // Update variant actions - if the product is OUT no variant can be IN
+                if (newAction == 'Out') {
+                    action.variants.map(variant => {
+                        variant.feedback = 'Out'
+                        variant.quantity = 0
+                    })
                 }
-            }
-            if (type == 'Alignment') {
-                const existingAction = product.actions.find(x => x.selection_id == selection.id)
-                if (!!existingAction) {
-                    existingAction.action = action
-                }
-            }
+            })
         },
     },
 }

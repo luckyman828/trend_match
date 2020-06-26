@@ -1,9 +1,7 @@
 <template>
-    <tr class="products-table-row" :class="'action-'+product.currentAction"
+    <tr class="products-table-row"
     @contextmenu.prevent="$emit('showContextMenu', $event, product)"
     @click.ctrl="$refs.selectCheckbox.check()">
-
-        <span v-if="product.newComment" class="circle tiny primary"></span>
         
         <td class="select" 
         @click.self="$refs.selectCheckbox.check()">

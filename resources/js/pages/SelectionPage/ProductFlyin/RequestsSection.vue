@@ -12,10 +12,10 @@
                 <div class="selection-request" v-if="selectionRequest">
                     <request :request="selectionRequest"/>
                 </div>
-                <div v-if="requests.find(x => x.selection_id != selection.id)" class="break-line">Showing requests from other selections(s)</div>
+                <div v-if="requests.find(x => x.selection_id != selectionInput.selection_id)" class="break-line">Showing requests from other selections(s)</div>
                 <request :request="request" :key="request.id" 
                 v-for="request in requests
-                .filter(x => x.selection_id != selection.id)
+                .filter(x => x.selection_id != selectionInput.selection_id)
                 .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)"/>
             </div>
 
@@ -69,9 +69,8 @@ import BaseTempAlert from '../../../components/ui/BaseTempAlert'
 export default {
     name: 'requestsSection',
     props: [
-        'product',
-        'selection',
         'requests',
+        'selectionInput',
     ],
     components: {
         Request,
@@ -88,13 +87,8 @@ export default {
         // selectionRequest: null,
     }},
     watch: {
-        product: function(newVal, oldVal) {
-            // if (newVal.id != oldVal.id)
-                this.update()
-        },
-        selection: function(newVal, oldVal) {
-            if (newVal.id != oldVal.id)
-                this.update()
+        selectionInput: function(newVal, oldVal) {
+            this.update()
         },
         requests: function(newVal, oldVal) {
             this.update()
@@ -106,15 +100,15 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
         submitDisabled () {
             return this.newRequest.content.length < 1 
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection)
         },
         selectionRequest () {
-            return this.requests.find(x => x.selection_id == this.selection.id)
+            return this.selectionInput.selectionRequest
         }
     },
     methods: {
@@ -135,7 +129,7 @@ export default {
             this.newRequest.content = (this.selectionRequest) ? this.selectionRequest.content : ''
         },
         onDeleteRequest() {
-            this.deleteRequest({product: this.product, request: this.selectionRequest})
+            this.deleteRequest({selectionInput: this.selectionInput, request: this.selectionRequest})
             this.selectionRequest = null
         },
         async onSubmit(e) {
@@ -150,14 +144,14 @@ export default {
             const requestToPost = {
                 id: this.selectionRequest ? this.selectionRequest.id : null,
                 author_id: this.authUser.id,
-                product_id: this.product.id,
-                selection_id: this.selection.id,
+                product_id: this.selectionInput.product_id,
+                selection_id: this.selectionInput.selection_id,
                 content: this.newRequest.content,
                 author: this.authUser,
-                selection: this.selection
+                selection: this.selectionInput.selection
             }
             // dispatch action
-            this.insertOrUpdateRequest({product: this.product, request: requestToPost})
+            this.insertOrUpdateRequest({selectionInput: this.selectionInput, request: requestToPost})
             this.submitting = false
 
             // Update the selection request

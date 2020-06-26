@@ -5,8 +5,8 @@
         </div>
 
         <ActionDistributionList
-        :feedbackActions="product.feedbacks.filter(x => x.action == type)" 
-        :alignmentActions="product.actions.filter(x => x.action == type)"
+        :feedbackActions="selectionInput.feedbacks.filter(x => x.action == type)" 
+        :alignmentActions="selectionInput.actions.filter(x => x.action == type)"
         :defaultTab="actionDistributionTooltipTab"
         @changeTab="event => $emit('changeTab', event)"/>
     </div>
@@ -18,7 +18,7 @@ import ActionDistributionList from './ActionDistributionList'
 export default {
     name: 'actionDistributionTooltip',
     props: [
-        'product',
+        'selectionInput',
         'type',
         'actionDistributionTooltipTab'
     ],

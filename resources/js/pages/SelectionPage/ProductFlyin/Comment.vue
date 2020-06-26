@@ -73,8 +73,7 @@ export default {
     name: 'comment',
     props: [
         'comment',
-        'product',
-        'selection',
+        'selectionInput',
         'displayAuthor',
     ],
     data: function() {
@@ -95,8 +94,8 @@ export default {
             || this.comment.focus
         },
         commentIsAnonymized() {
-            const yourRole = this.selection.your_role
-            const displayRole = this.selection.settings.anonymize_comment
+            const yourRole = this.selectionInput.selection.your_role
+            const displayRole = this.selectionInput.selection.settings.anonymize_comment
             if (this.authUserWorkspaceRole == 'Admin') return false
             return displayRole == 'None' || displayRole == 'Owner' && yourRole != 'Owner'
         }
@@ -105,14 +104,14 @@ export default {
         ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
         async onDeleteComment() {
             if (await this.$refs.confirmDeleteComment.confirm()) {
-                this.deleteComment({product: this.product, comment: this.comment})
+                this.deleteComment({selectionInput: this.selectionInput, comment: this.comment})
             }
         },
         retrySubmitComment() {
-            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
         },
         onUpdateComment() {
-            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
             this.editActive = false
         },
         onEditComment() {

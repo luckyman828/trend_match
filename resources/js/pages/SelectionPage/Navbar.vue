@@ -14,7 +14,7 @@
         </div>
 
         <div class="items-center">
-            <BudgetCounter v-if="currentSelection && currentSelection.budget > 0"/>
+            <BudgetCounter v-if="currentSelection && currentSelection.budget > 0" :selection="currentSelection"/>
         </div>
 
         <div class="items-right">

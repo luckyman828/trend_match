@@ -29,6 +29,10 @@ export default {
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
+        getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
+            const activeSelection = rootGetters['selections/getCurrentSelections'][0]
+            return product.selectionInputList.find(selectionInput => selectionInput.selection_id == activeSelection.id)
+        },
         availableProducts: state => {
             return state.availableProducts
         },
@@ -36,34 +40,30 @@ export default {
             // If we have a nextProduct in our presenterQueue, then use that instead
             const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
             if (nextPresentationQueueProduct) {
-                if (nextPresentationQueueProduct.selectionInputArray) {
-                    return nextPresentationQueueProduct.selectionInputArray[0].product
-                }
                 return nextPresentationQueueProduct
             }
 
+            const availableProducts = getters.getProductsFilteredBySearch
             // Find the index of the current product
-            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            const index = availableProducts.findIndex(x => x.id == state.currentProduct.id)
             // Check that the current is not the last in the array
-            if (index + 1 < state.availableProducts.length) {
-                return state.availableProducts[index + 1]
+            if (index + 1 < availableProducts.length) {
+                return availableProducts[index + 1]
             }
         },
         prevProduct: (state, getters, rootState, rootGetters) => {
             // If we have a prevProduct in our presenterQueue, then use that instead
             const prevPresentationQueueProduct = rootGetters['presenterQueue/getPrevProduct']
             if (prevPresentationQueueProduct) {
-                if (prevPresentationQueueProduct.selectionInputArray) {
-                    return prevPresentationQueueProduct.selectionInputArray[0].product
-                }
                 return prevPresentationQueueProduct
             }
 
+            const availableProducts = getters.getProductsFilteredBySearch
             // Find the index of the current product
-            const index = state.availableProducts.findIndex(x => x.id == state.currentProduct.id)
+            const index = availableProducts.findIndex(x => x.id == state.currentProduct.id)
             // Check that the current is not the first in the array
             if (index > 0) {
-                return state.availableProducts[index - 1]
+                return availableProducts[index - 1]
             }
         },
         selectedCategories: state => {
@@ -96,9 +96,8 @@ export default {
         commentsCreated: state => {
             return state.commentsCreated
         },
-        products: (state, getters, rootState, rootGetters) => {
-            return state.products
-        },
+        products: state => state.products,
+        getProducts: state => state.products,
         availableCategories(state, getters) {
             const products = getters.products
             let uniqueCategories = []
@@ -140,33 +139,6 @@ export default {
                     const found = unique.includes(theBuyingGroup)
                     if (!found) unique.push(theBuyingGroup)
                 }
-            })
-            return unique
-        },
-        getAvailableSelections(state, getters) {
-            const products = getters.products
-            let unique = []
-            products.forEach(product => {
-                // Loop through the products feedback
-                product.feedbacks.forEach(feedback => {
-                    const existsInArray = unique.find(selection => selection.id == feedback.selection_id)
-                    if (!existsInArray) unique.push(feedback.selection)
-                })
-                // Loop through the products alignment
-                product.actions.forEach(action => {
-                    const existsInArray = unique.find(selection => selection.id == action.selection_id)
-                    if (!existsInArray) unique.push(action.selection)
-                })
-                // Loop through the products comments
-                product.comments.forEach(comment => {
-                    const existsInArray = unique.find(selection => selection.id == comment.selection_id)
-                    if (!existsInArray) unique.push(comment.selection)
-                })
-                // Loop through the products requests
-                product.requests.forEach(request => {
-                    const existsInArray = unique.find(selection => selection.id == request.selection_id)
-                    if (!existsInArray) unique.push(request.selection)
-                })
             })
             return unique
         },
@@ -266,7 +238,7 @@ export default {
                     products = response.data
                     if (addToState) {
                         commit('insertProducts', { products, method: 'set' })
-                        commit('PROCESS_PRODUCTS', products)
+                        commit('INIT_PRODUCTS', products)
                     }
                     commit('SET_PRODUCTS_STATUS', 'success')
                 })
@@ -275,86 +247,90 @@ export default {
                 })
             return products
         },
-        async fetchSelectionProducts({ commit, dispatch, rootGetters }, { selections, addToState = true }) {
+        async fetchSelectionProductInput({ commit, dispatch, rootGetters }, selection) {
             commit('SET_PRODUCTS_STATUS', 'loading')
-            const authUser = rootGetters['auth/authUser']
-
-            const selectionProductArrayPairs = []
-            let productsToReturn
-
-            // Loop through the selections and fetch all the products
-            await Promise.all(
-                selections.map(async selection => {
-                    const apiUrl = `/selections/${selection.id}/products`
-                    await axios.get(apiUrl).then(async response => {
-                        const products = response.data
-                        await commit('PROCESS_SELECTION_PRODUCTS', { products, selection, authUser })
-                        selectionProductArrayPairs.push({ selection, products })
-                    })
-                })
-            )
+            let selectionProductInput
+            const apiUrl = `/selections/${selection.id}/products`
+            await axios
+                .get(apiUrl)
                 .then(async response => {
-                    // Fetch fresh products
-                    const freshProducts = await dispatch('fetchProducts', {
-                        fileId: selections[0].file_id,
-                        addToState: false,
-                    })
-                    await commit('PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS', {
-                        products: freshProducts,
-                        selectionProductArrayPairs,
-                        authUser,
-                    })
-                    productsToReturn = freshProducts
-                    if (addToState) commit('insertProducts', { products: productsToReturn, method: 'set' })
+                    const products = response.data
+                    selectionProductInput = { selection, products }
+                })
+                .then(() => {
                     commit('SET_PRODUCTS_STATUS', 'success')
                 })
                 .catch(err => {
                     console.log(err)
                     commit('SET_PRODUCTS_STATUS', 'error')
                 })
+            return selectionProductInput
+        },
+        async fetchSelectionProducts({ commit, dispatch, rootGetters }, selection) {
+            let productsToReturn
+            // return new Promise(async (resolve, reject) => {
+            commit('SET_PRODUCTS_STATUS', 'loading')
+            const authUser = rootGetters['auth/authUser']
+            // Fetch the raw products
+            const products = await dispatch('fetchProducts', { fileId: selection.file_id, addToState: false })
+
+            // Fetch the selection input for the products
+            const selectionProductInput = await dispatch('fetchSelectionProductInput', selection)
+
+            // Process the selection products
+            // commit('INIT_PRODUCTS', products)
+            // commit('INIT_SELECTION_PRODUCTS', { products, authUser })
+            commit('MERGE_PRODUCTS_WITH_SELECTION_INPUT', {
+                selectionProductInput,
+                authUser,
+            })
+            commit('SET_PRODUCTS_STATUS', 'success')
+            productsToReturn = products
             return productsToReturn
         },
         async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {
             // If the selection has no settings fetched, fetch the settings
             if (!selection.settings) await dispatch('selections/fetchSelectionSettings', selection, { root: true })
 
-            // If we have already fetched the product data from this selection as selectionInput on our current product, simply use that data
-            // Find the product in our products map, to be sure we get the original product, since the current product will be overwritten by us now.
-            const productMap = getters.products
-            const stateProduct = productMap.find(x => x.id == product.id)
-            const existingSelectionInput = stateProduct.selectionInputArray.find(x => x.selection.id == selection.id)
-            if (existingSelectionInput) {
-                // Set the current product
-                commit('setCurrentProduct', existingSelectionInput.product)
-                // Set our avaialble products to the products from the chosen selection so we can navigate back and forth
-                const newAvailableProducts = productMap.map(product => {
-                    const selectionInput = product.selectionInputArray.find(x => x.selection.id == selection.id)
-                    return selectionInput.product
-                })
-                // Filter our products by search
-                const selectionProductsFilteredBySearch = newAvailableProducts.filter(product =>
-                    getters.getProductsFilteredBySearch.find(x => x.id == product.id)
-                )
-                commit('setAvailableProducts', selectionProductsFilteredBySearch)
-            }
+            commit('setCurrentProduct', product)
 
-            // If we have not already fetched the data for this selection
-            else {
-                // Fetch the products for this selection, but don't save them to our state, since we only need them for our available products
-                const selectionProducts = await dispatch('fetchSelectionProducts', {
-                    selections: [selection],
-                    addToState: false,
-                })
-                // Filter our products by search
-                const selectionProductsFilteredBySearch = selectionProducts.filter(product =>
-                    getters.getProductsFilteredBySearch.find(x => x.id == product.id)
-                )
-                // Set our available products equal to the recently fetched products
-                commit('setAvailableProducts', selectionProductsFilteredBySearch)
-                // Set the current product
-                const newCurrentProduct = selectionProducts.find(x => x.id == product.id)
-                commit('setCurrentProduct', newCurrentProduct.selectionInputArray[0].product)
-            }
+            // // If we have already fetched the product data from this selection as selectionInput on our current product, simply use that data
+            // // Find the product in our products map, to be sure we get the original product, since the current product will be overwritten by us now.
+            // const productMap = getters.products
+            // const stateProduct = productMap.find(x => x.id == product.id)
+            // const existingSelectionInput = stateProduct.selectionInputList.find(x => x.selection.id == selection.id)
+            // if (existingSelectionInput) {
+            //     // Set the current product
+            //     commit('setCurrentProduct', existingSelectionInput.product)
+            //     // Set our avaialble products to the products from the chosen selection so we can navigate back and forth
+            //     const newAvailableProducts = productMap.map(product => {
+            //         const selectionInput = product.selectionInputList.find(x => x.selection.id == selection.id)
+            //         return selectionInput.product
+            //     })
+            //     // Filter our products by search
+            //     const selectionProductsFilteredBySearch = newAvailableProducts.filter(product =>
+            //         getters.getProductsFilteredBySearch.find(x => x.id == product.id)
+            //     )
+            //     commit('setAvailableProducts', selectionProductsFilteredBySearch)
+            // }
+
+            // // If we have not already fetched the data for this selection
+            // else {
+            //     // Fetch the products for this selection, but don't save them to our state, since we only need them for our available products
+            //     const selectionProducts = await dispatch('fetchSelectionProducts', {
+            //         selections: [selection],
+            //         addToState: false,
+            //     })
+            //     // Filter our products by search
+            //     const selectionProductsFilteredBySearch = selectionProducts.filter(product =>
+            //         getters.getProductsFilteredBySearch.find(x => x.id == product.id)
+            //     )
+            //     // Set our available products equal to the recently fetched products
+            //     commit('setAvailableProducts', selectionProductsFilteredBySearch)
+            //     // Set the current product
+            //     const newCurrentProduct = selectionProducts.find(x => x.id == product.id)
+            //     commit('setCurrentProduct', newCurrentProduct.selectionInputList[0].product)
+            // }
 
             // Set the current PDP selection
             commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
@@ -366,7 +342,7 @@ export default {
             return new Promise((resolve, reject) => {
                 if (addToState) {
                     commit('insertProducts', { products, method: 'add' })
-                    commit('PROCESS_PRODUCTS', products)
+                    commit('INIT_PRODUCTS', products)
                     commit('SORT_PRODUCTS')
                 }
                 const apiUrl = `/files/${file.id}/products`
@@ -664,570 +640,80 @@ export default {
                 }
             })
         },
-    },
-
-    mutations: {
-        //Set the loading status of the app
-        setLoading(state, bool) {
-            state.loading = bool
+        initSelectionProducts({ state, getters, rootGetters }, { product, selectionId }) {
+            const newProduct = JSON.parse(JSON.stringify(product))
+            newProduct.selectionInputList.filter((x, index) => index < 1)
+            return newProduct
         },
-        SORT_PRODUCTS(state) {
-            if (state.lastSort) {
-                sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
-            }
-        },
-        SET_PRODUCTS_STATUS(state, status) {
-            state.status = status
-        },
-        insertProducts(state, { products, method }) {
-            // Loop through the products and format their data as necessary
-            products.forEach(product => {
-                // Cast datasource_if to a number
-                product.datasource_id = parseInt(product.datasource_id)
-                // Format delivery_date
-                if (product.delivery_date) {
-                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        month: 'long',
-                        year: 'numeric',
-                    })
-                }
-            })
-            if (method == 'add') {
-                // Add to existing products
-                state.products = state.products.concat(products)
-            } else {
-                state.products = products
-            }
-        },
-        DELETE_PRODUCTS(state, products) {
-            for (let i = products.length; i--; ) {
-                const index = state.products.findIndex(x => x.id == products[i].id)
-                state.products.splice(index, 1)
-            }
-        },
-        SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
-            state.productsFilteredBySearch = products
-        },
-        setCurrentProduct(state, product) {
-            state.currentProduct = product
-        },
-        setCurrentFocusRowIndex(state, index) {
-            state.currentFocusRowIndex = index
-        },
-        setAvailableProducts(state, products) {
-            state.availableProducts = products
-        },
-        updateSelectedCategories(state, payload) {
-            state.selectedCategories = payload
-        },
-        updateSelectedDeliveryDates(state, payload) {
-            state.selectedDeliveryDates = payload
-        },
-        updateSelectedBuyerGroups(state, payload) {
-            state.selectedBuyerGroups = payload
-        },
-        SET_SELECTED_SELECTION_IDS(state, payload) {
-            state.selectedSelectionIds = payload
-        },
-        setUnreadOnly(state, payload) {
-            state.unreadOnly = payload
-        },
-        setCurrentProductFilter(state, payload) {
-            state.currentProductFilter = payload
-        },
-        setSingleVisisble(state, bool) {
-            state.singleVisible = bool
-        },
-        updateProduct(state, product) {
-            // Replace the product with the new
-            let stateProduct = state.products.find(x => x.id == product.id)
-            Object.assign(stateProduct, product)
-            // Check if we also need to update the current product
-            if (state.currentProduct && state.currentProduct.id == product.id) {
-                Object.assign(state.currentProduct, product)
-            }
-        },
-        alertError: state => {
-            window.alert('Network error. Please check your connection')
-        },
-        PROCESS_PRODUCTS(state, products) {
+        initSelectionProducts({ state, getters, rootGetters }, products) {
+            const authUser = rootGetters['auth/authUser']
+            const activeSelectionList = rootGetters['selections/getCurrentSelections']
             products.map(product => {
-                // Name
-                product.title = product.title ? product.title : 'Unnamed'
-                // ---- START PRICES ----
-                // Currency
-                Object.defineProperty(product, 'yourPrice', {
-                    get: function() {
-                        // Check if the product has any prices
-                        if (product.prices.length <= 0) {
-                            // If no prices are available, return a default empty price object
-                            return {
-                                currency: 'Not set',
-                                mark_up: null,
-                                wholesale_price: null,
-                                recommended_retail_price: null,
-                            }
-                        }
-                        // Else check if we have a preferred currency set, and try to match that
-                        if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
-                            if (preferredPrice) return preferredPrice
-                            else return product.prices[0]
-                        } else {
-                            return product.prices[0]
-                        }
-                    },
-                    configurable: true,
-                })
-                //Define default prices directly on the product
-                Object.defineProperty(product, 'wholesale_price', {
-                    get: function() {
-                        return product.yourPrice.wholesale_price
-                    },
-                })
-                Object.defineProperty(product, 'recommended_retail_price', {
-                    get: function() {
-                        return product.yourPrice.recommended_retail_price
-                    },
-                })
-                Object.defineProperty(product, 'mark_up', {
-                    get: function() {
-                        return product.yourPrice.mark_up
-                    },
-                })
-                // ---- END PRICES ----
-            })
-        },
-        PROCESS_SELECTION_PRODUCTS(state, { products, selection, authUser }) {
-            products.map(product => {
-                // Name
-                product.title = product.title ? product.title : 'Unnamed'
-                // Currency
-                Object.defineProperty(product, 'yourPrice', {
-                    get: function() {
-                        // Check if the product has any prices
-                        if (product.prices.length <= 0) {
-                            // If no prices are available, return a default empty price object
-                            return {
-                                currency: 'Not set',
-                                mark_up: null,
-                                wholesale_price: null,
-                                recommended_retail_price: null,
-                            }
-                        }
-                        // Else check if we have a preferred currency set, and try to match that
-                        if (product.preferred_currency) {
-                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
-                            if (preferredPrice) return preferredPrice
-                        }
-                        // If nothing else worked, return the first available price
-                        return product.prices[0]
-                    },
-                    configurable: true,
-                })
-
-                // Get the selection's quantity
-                Object.defineProperty(product, 'your_quantity', {
-                    get: function() {
-                        let totalQty = 0
-                        product.variants.map(variant => {
-                            const selectionAction = variant.actions.find(
-                                action => action.selection_id == product.selectionInputArray[0].selection.id
-                            )
-                            if (selectionAction) totalQty += selectionAction.quantity
-                        })
-                        return totalQty
-                    },
-                })
-                // Get total
-                Object.defineProperty(product, 'quantity', {
-                    get: function() {
-                        let totalQty = 0
-                        product.variants.map(variant => {
-                            variant.actions.map(action => {
-                                totalQty += action.quantity
-                            })
-                        })
-                        return totalQty
-                    },
-                })
-
-                // Dynamically Calculated Actions
-                // Feedback Actions
-                Object.defineProperty(product, 'ins', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'In')
-                    },
-                    configurable: true,
-                })
-                Object.defineProperty(product, 'outs', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Out')
-                    },
-                })
-                Object.defineProperty(product, 'focus', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'Focus')
-                    },
-                })
-                Object.defineProperty(product, 'nds', {
-                    get: function() {
-                        return product.feedbacks.filter(x => x.action == 'None')
-                    },
-                })
-                // Alignment Actions
-                Object.defineProperty(product, 'alignmentIns', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'In')
-                    },
-                })
-                Object.defineProperty(product, 'alignmentOuts', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'Out')
-                    },
-                })
-                Object.defineProperty(product, 'alignmentFocus', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'Focus')
-                    },
-                })
-                Object.defineProperty(product, 'alignmentNds', {
-                    get: function() {
-                        return product.actions.filter(x => x.action == 'None')
-                    },
-                })
-                // All Actions
-                Object.defineProperty(product, 'allIns', {
-                    get: function() {
-                        return product.ins.length + product.alignmentIns.length
-                    },
-                })
-                Object.defineProperty(product, 'allOuts', {
-                    get: function() {
-                        return product.outs.length + product.alignmentOuts.length
-                    },
-                })
-                Object.defineProperty(product, 'allFocus', {
-                    get: function() {
-                        return product.focus.length + product.alignmentFocus.length
-                    },
-                })
-                Object.defineProperty(product, 'allNds', {
-                    get: function() {
-                        return product.nds.length + product.alignmentNds.length
-                    },
-                })
-                // Remove deleted comments
-                Vue.set(product, 'comments', product.comments.filter(x => !x.is_deleted))
-
-                // PROCESS VARIANTS
-                product.variants.forEach(variant => {
-                    Object.defineProperty(variant, 'feedbacks', {
-                        get: function() {
-                            const feedbacks = []
-                            product.feedbacks.map(feedback => {
-                                const variantFeedbacks = feedback.variants.filter(x => x.id == variant.id)
-                                variantFeedbacks.map(variantFeedback => {
-                                    feedbacks.push({
-                                        id: variantFeedback.id,
-                                        action: variantFeedback.feedback,
-                                        user_id: feedback.user_id,
-                                        user: feedback.user,
-                                        selection_id: feedback.selection_id,
-                                        selection: feedback.selection,
-                                    })
-                                })
-                            })
-                            return feedbacks
-                        },
-                    })
-                    // Get the user's feedback
-                    Object.defineProperty(variant, 'your_feedback', {
-                        get: function() {
-                            const userFeedback = variant.feedbacks.find(x => x.user_id == authUser.id)
-                            return userFeedback ? userFeedback.action : 'None'
-                        },
-                        set: function(newAction) {
-                            // Find the user feedback for the variant input for this feedback action
-                            const userFeedback = product.feedbacks.find(
-                                // feedback => feedback.user_id == authUser.id && feedback.selection_id == selection.id
-                                feedback => feedback.user_id == authUser.id
-                            )
-                            // If the user has already made variant input, update the action
-                            const userVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
-                            if (userVariantFeedbackIndex >= 0) {
-                                userFeedback.variants.splice(userVariantFeedbackIndex, 1, {
-                                    feedback: newAction,
-                                    id: variant.id,
-                                })
-                            } else {
-                                userFeedback.variants.push({
-                                    feedback: newAction,
-                                    id: variant.id,
-                                })
-                            }
-                        },
-                    })
-
-                    Object.defineProperty(variant, 'actions', {
-                        get: function() {
-                            const actions = []
-                            product.actions.map(action => {
-                                const variantActions = action.variants.filter(x => x.id == variant.id)
-                                variantActions.map(variantAction => {
-                                    actions.push({
-                                        id: variantAction.id,
-                                        action: variantAction.feedback,
-                                        quantity: variantAction.quantity,
-                                        user_id: action.user_id,
-                                        user: action.user,
-                                        selection_id: action.selection_id,
-                                        selection: action.selection,
-                                    })
-                                })
-                            })
-                            return actions
-                        },
-                    })
-                    // Get the selection's action
-                    Object.defineProperty(variant, 'action', {
-                        get: function() {
-                            const selectionAction = variant.actions.find(x => x.selection_id == selection.id)
-                            return selectionAction ? selectionAction.action : 'None'
-                        },
-                        set: function(newAction) {
-                            // Find the current action for the variant input for this action action
-                            const currentAction = product.actions.find(action => action.selection_id == selection.id)
-                            // If the user has already made variant input, update the action
-                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
-                            if (currentVariantActionIndex >= 0) {
-                                currentAction.variants.splice(currentVariantActionIndex, 1, {
-                                    id: variant.id,
-                                    feedback: newAction,
-                                    quantity: variant.quantity,
-                                })
-                            } else {
-                                currentAction.variants.push({
-                                    id: variant.id,
-                                    feedback: newAction,
-                                    quantity: variant.quantity,
-                                })
-                            }
-                        },
-                    })
-                    // Get the selection's quantity
-                    Object.defineProperty(variant, 'quantity', {
-                        get: function() {
-                            const selectionAction = variant.actions.find(x => x.selection_id == selection.id)
-                            return selectionAction ? selectionAction.quantity : 0
-                        },
-                        set: function(newQuantity) {
-                            // Find the current action for the variant input for this action action
-                            const currentAction = product.actions.find(action => action.selection_id == selection.id)
-                            // If the user has already made variant input, update the action
-                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
-                            if (currentVariantActionIndex >= 0) {
-                                currentAction.variants.splice(currentVariantActionIndex, 1, {
-                                    id: variant.id,
-                                    feedback: variant.action,
-                                    quantity: newQuantity,
-                                })
-                            } else {
-                                currentAction.variants.push({
-                                    id: variant.id,
-                                    feedback: variant.action,
-                                    quantity: newQuantity,
-                                })
-                            }
-                        },
-                    })
-                    // Get the selection's quantity
-                    Object.defineProperty(variant, 'totalQuantity', {
-                        get: function() {
-                            return variant.actions.reduce((total, x) => (total += x.quantity), 0)
-                        },
-                    })
-
-                    // Feedback Actions
-                    Object.defineProperty(variant, 'ins', {
-                        get: function() {
-                            return variant.feedbacks.filter(x => x.action == 'In')
-                        },
-                        configurable: true,
-                    })
-                    Object.defineProperty(variant, 'outs', {
-                        get: function() {
-                            return variant.feedbacks.filter(x => x.action == 'Out')
-                        },
-                    })
-                    Object.defineProperty(variant, 'focus', {
-                        get: function() {
-                            return variant.feedbacks.filter(x => x.action == 'Focus')
-                        },
-                    })
-                    Object.defineProperty(variant, 'nds', {
-                        get: function() {
-                            return variant.feedbacks.filter(x => x.action == 'None')
-                        },
-                    })
-
-                    // Alignment Actions
-                    Object.defineProperty(variant, 'alignmentIns', {
-                        get: function() {
-                            return variant.actions.filter(x => x.action == 'In')
-                        },
-                    })
-                    Object.defineProperty(variant, 'alignmentOuts', {
-                        get: function() {
-                            return variant.actions.filter(x => x.action == 'Out')
-                        },
-                    })
-                    Object.defineProperty(variant, 'alignmentFocus', {
-                        get: function() {
-                            return variant.actions.filter(x => x.action == 'Focus')
-                        },
-                    })
-                    Object.defineProperty(variant, 'alignmentNds', {
-                        get: function() {
-                            return variant.actions.filter(x => x.action == 'None')
-                        },
-                    })
-                    // All Actions
-                    Object.defineProperty(variant, 'allIns', {
-                        get: function() {
-                            return variant.ins.length + variant.alignmentIns.length
-                        },
-                    })
-                    Object.defineProperty(variant, 'allOuts', {
-                        get: function() {
-                            return variant.outs.length + variant.alignmentOuts.length
-                        },
-                    })
-                    Object.defineProperty(variant, 'allFocus', {
-                        get: function() {
-                            return variant.focus.length + variant.alignmentFocus.length
-                        },
-                    })
-                    Object.defineProperty(variant, 'allNds', {
-                        get: function() {
-                            return variant.nds.length + variant.alignmentNds.length
-                        },
-                    })
-                })
-                // END PROCESS VARIANTS
-            })
-        },
-        PROCESS_PRODUCTS_FOR_MULTIPLE_SELECTIONS(state, { products, selectionProductArrayPairs, authUser }) {
-            // Use the first product of the
-            products.map((product, productIndex) => {
-                // Name
-                product.title = product.title ? product.title : 'Unnamed'
-                // Attach the correct selection product to the base product
-                Vue.set(
-                    product,
-                    'selectionInputArray',
-                    selectionProductArrayPairs.map(x => {
-                        return {
-                            selection: x.selection,
-                            product: x.products[productIndex],
-                        }
-                    })
-                )
-
-                // ---- START PRICES ----
-                const preferred_currency = product.selectionInputArray[0].product.preferred_currency
-                // Currency
-                Object.defineProperty(product, 'yourPrice', {
-                    get: function() {
-                        // Check if the product has any prices
-                        if (product.prices.length <= 0) {
-                            // If no prices are available, return a default empty price object
-                            return {
-                                currency: 'Not set',
-                                mark_up: null,
-                                wholesale_price: null,
-                                recommended_retail_price: null,
-                            }
-                        }
-                        // Else check if we have a preferred currency set, and try to match that
-                        if (preferred_currency) {
-                            const preferredPrice = product.prices.find(x => x.currency == preferred_currency)
-                            if (preferredPrice) return preferredPrice
-                        }
-                        // If nothing else worked, return the first available price
-                        return product.prices[0]
-                    },
-                    configurable: true,
-                })
-
-                //Define default prices directly on the product
-                Object.defineProperty(product, 'wholesale_price', {
-                    get: function() {
-                        return product.yourPrice.wholesale_price
-                    },
-                })
-                Object.defineProperty(product, 'recommended_retail_price', {
-                    get: function() {
-                        return product.yourPrice.recommended_retail_price
-                    },
-                })
-                Object.defineProperty(product, 'mark_up', {
-                    get: function() {
-                        return product.yourPrice.mark_up
-                    },
-                })
-                // ---- END PRICES ----
+                // Instantiate the selectionInputList on the product
+                Vue.set(product, 'selectionInputList', [])
 
                 Object.defineProperty(product, 'feedbacks', {
                     get: function() {
-                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                        const allFeedback = product.selectionInputList.reduce((acc, selectionInput) => {
                             return acc.concat(
-                                selectionProductPair.product.feedbacks.filter(
+                                selectionInput.feedbacks.filter(
                                     action =>
                                         !acc.find(existingAction => existingAction.selection_id == action.selection_id)
                                 )
                             )
                         }, [])
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allFeedback.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allFeedback
                     },
                 })
                 Object.defineProperty(product, 'actions', {
                     get: function() {
-                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                        const allActions = product.selectionInputList.reduce((acc, selectionInput) => {
                             return acc.concat(
-                                selectionProductPair.product.actions.filter(
+                                selectionInput.actions.filter(
                                     action =>
                                         !acc.find(existingAction => existingAction.selection_id == action.selection_id)
                                 )
                             )
                         }, [])
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allActions.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allActions
                     },
                 })
                 Object.defineProperty(product, 'comments', {
                     get: function() {
-                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                        const allComments = product.selectionInputList.reduce((acc, selectionInput) => {
                             return acc.concat(
-                                selectionProductPair.product.comments.filter(
+                                selectionInput.comments.filter(
                                     comment =>
                                         !acc.find(existingComment => existingComment.id == comment.id) &&
                                         !comment.is_deleted
                                 )
                             )
                         }, [])
-                        // .filter(comment => {
-                        //     if (state.selectedSelectionIds.length <= 0) return true
-                        //     return !!state.selectedSelectionIds.find(x => x == comment.selection_id)
-                        // })
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allComments.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allComments
                     },
                 })
                 Object.defineProperty(product, 'requests', {
                     get: function() {
-                        return product.selectionInputArray.reduce((acc, selectionProductPair) => {
+                        const allRequests = product.selectionInputList.reduce((acc, selectionInput) => {
                             return acc.concat(
-                                selectionProductPair.product.requests.filter(
+                                selectionInput.requests.filter(
                                     request => !acc.find(existingRequest => existingRequest.id == request.id)
                                 )
                             )
                         }, [])
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allRequests.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allRequests
                     },
                 })
 
@@ -1252,11 +738,11 @@ export default {
                 // Set the current action for the user
                 Object.defineProperty(product, 'your_feedback', {
                     get: function() {
-                        return product.selectionInputArray[0].product.your_feedback
+                        return product.selectionInputList[0].your_feedback
                     },
                     set: function(value) {
                         product.feedbacks.find(
-                            x => x.selection_id == product.selectionInputArray[0].selection.id
+                            x => x.selection_id == product.selectionInputList[0].selection_id
                         ).action = value
                     },
                     configurable: true,
@@ -1264,26 +750,32 @@ export default {
                 // Set the current action for the user
                 Object.defineProperty(product, 'action', {
                     get: function() {
-                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
-                            .action
+                        const selectionAction = product.actions.find(
+                            x => x.selection_id == product.selectionInputList[0].selection.id
+                        )
+                        return selectionAction ? selectionAction.action : 'None'
                     },
                     set: function(value) {
-                        product.actions.find(
-                            x => x.selection_id == product.selectionInputArray[0].selection.id
-                        ).action = value
+                        const selectionAction = product.actions.find(
+                            x => x.selection_id == product.selectionInputList[0].selection.id
+                        )
+                        if (selectionAction) selectionAction.action = value
                     },
                     configurable: true,
                 })
                 // Set the current action for the user
                 Object.defineProperty(product, 'action_author', {
                     get: function() {
-                        return product.actions.find(x => x.selection_id == product.selectionInputArray[0].selection.id)
-                            .user
+                        const selectionAction = product.actions.find(
+                            x => x.selection_id == product.selectionInputList[0].selection.id
+                        )
+                        return selectionAction ? selectionAction.user : null
                     },
                     set: function(value) {
-                        product.actions.find(
-                            x => x.selection_id == product.selectionInputArray[0].selection.id
-                        ).user = value
+                        const selectionAction = product.actions.find(
+                            x => x.selection_id == product.selectionInputList[0].selection.id
+                        )
+                        if (selectionAction) selectionAction.user = value
                     },
                     configurable: true,
                 })
@@ -1294,7 +786,7 @@ export default {
                         let totalQty = 0
                         product.variants.map(variant => {
                             const selectionAction = variant.actions.find(
-                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                                action => action.selection_id == product.selectionInputList[0].selection_id
                             )
                             if (selectionAction) totalQty += selectionAction.quantity
                         })
@@ -1412,7 +904,7 @@ export default {
                             const userFeedback = product.feedbacks.find(
                                 feedback =>
                                     feedback.user_id == authUser.id &&
-                                    feedback.selection_id == product.selectionInputArray[0].selection.id
+                                    feedback.selection_id == product.selectionInputList[0].selection_id
                             )
                             // If the user has already made variant input, update the action
                             const userVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
@@ -1454,14 +946,14 @@ export default {
                     Object.defineProperty(variant, 'action', {
                         get: function() {
                             const selectionAction = variant.actions.find(
-                                x => x.selection_id == product.selectionInputArray[0].selection.id
+                                x => x.selection_id == product.selectionInputList[0].selection_id
                             )
                             return selectionAction ? selectionAction.action : 'None'
                         },
                         set: function(newAction) {
                             // Find the current action for the variant input for this action action
                             const currentAction = product.actions.find(
-                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                                action => action.selection_id == product.selectionInputList[0].selection_id
                             )
                             // If the user has already made variant input, update the action
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
@@ -1484,14 +976,14 @@ export default {
                     Object.defineProperty(variant, 'quantity', {
                         get: function() {
                             const selectionAction = variant.actions.find(
-                                x => x.selection_id == product.selectionInputArray[0].selection.id
+                                x => x.selection_id == product.selectionInputList[0].selection_id
                             )
                             return selectionAction ? selectionAction.quantity : 0
                         },
                         set: function(newQuantity) {
                             // Find the current action for the variant input for this action action
                             const currentAction = product.actions.find(
-                                action => action.selection_id == product.selectionInputArray[0].selection.id
+                                action => action.selection_id == product.selectionInputList[0].selection_id
                             )
                             // If the user has already made variant input, update the action
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
@@ -1584,6 +1076,553 @@ export default {
                     })
                 })
                 // END PROCESS VARIANTS
+            })
+        },
+    },
+
+    mutations: {
+        //Set the loading status of the app
+        setLoading(state, bool) {
+            state.loading = bool
+        },
+        SORT_PRODUCTS(state) {
+            if (state.lastSort) {
+                sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
+            }
+        },
+        SET_PRODUCTS_STATUS(state, status) {
+            state.status = status
+        },
+        insertProducts(state, { products, method }) {
+            // Loop through the products and format their data as necessary
+            products.forEach(product => {
+                // Cast datasource_if to a number
+                product.datasource_id = parseInt(product.datasource_id)
+                // Format delivery_date
+                if (product.delivery_date) {
+                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        month: 'long',
+                        year: 'numeric',
+                    })
+                }
+            })
+            if (method == 'add') {
+                // Add to existing products
+                state.products = state.products.concat(products)
+            } else {
+                state.products = products
+            }
+        },
+        DELETE_PRODUCTS(state, products) {
+            for (let i = products.length; i--; ) {
+                const index = state.products.findIndex(x => x.id == products[i].id)
+                state.products.splice(index, 1)
+            }
+        },
+        SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
+            state.productsFilteredBySearch = products
+        },
+        setCurrentProduct(state, product) {
+            state.currentProduct = product
+        },
+        setCurrentFocusRowIndex(state, index) {
+            state.currentFocusRowIndex = index
+        },
+        setAvailableProducts(state, products) {
+            state.availableProducts = products
+        },
+        updateSelectedCategories(state, payload) {
+            state.selectedCategories = payload
+        },
+        updateSelectedDeliveryDates(state, payload) {
+            state.selectedDeliveryDates = payload
+        },
+        updateSelectedBuyerGroups(state, payload) {
+            state.selectedBuyerGroups = payload
+        },
+        SET_SELECTED_SELECTION_IDS(state, payload) {
+            state.selectedSelectionIds = payload
+        },
+        setUnreadOnly(state, payload) {
+            state.unreadOnly = payload
+        },
+        setCurrentProductFilter(state, payload) {
+            state.currentProductFilter = payload
+        },
+        setSingleVisisble(state, bool) {
+            state.singleVisible = bool
+        },
+        updateProduct(state, product) {
+            // Replace the product with the new
+            let stateProduct = state.products.find(x => x.id == product.id)
+            Object.assign(stateProduct, product)
+            // Check if we also need to update the current product
+            if (state.currentProduct && state.currentProduct.id == product.id) {
+                Object.assign(state.currentProduct, product)
+            }
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
+        },
+        INIT_PRODUCTS(state, products) {
+            console.log('init products')
+            products.map(product => {
+                // Name
+                product.title = product.title ? product.title : 'Unnamed'
+
+                // Instantiate the selectionInputList on the product
+                Vue.set(product, 'selectionInputList', [])
+
+                // ---- START PRICES ----
+                // Currency
+                Object.defineProperty(product, 'yourPrice', {
+                    get: function() {
+                        // Check if the product has any prices
+                        if (product.prices.length <= 0) {
+                            // If no prices are available, return a default empty price object
+                            return {
+                                currency: 'Not set',
+                                mark_up: null,
+                                wholesale_price: null,
+                                recommended_retail_price: null,
+                            }
+                        }
+                        const productHasSelectionInput =
+                            product.selectionInputList && product.selectionInputList.length > 0
+                        const preferred_currency = productHasSelectionInput
+                            ? product.selectionInputList[0].preferred_currency
+                            : null
+                        // Else check if we have a preferred currency set, and try to match that
+                        if (preferred_currency) {
+                            const preferredPrice = product.prices.find(x => x.currency == preferred_currency)
+                            if (preferredPrice) return preferredPrice
+                        }
+                        // If nothing else worked, return the first available price
+                        return product.prices[0]
+                    },
+                    configurable: true,
+                })
+                //Define default prices directly on the product
+                Object.defineProperty(product, 'wholesale_price', {
+                    get: function() {
+                        return product.yourPrice.wholesale_price
+                    },
+                })
+                Object.defineProperty(product, 'recommended_retail_price', {
+                    get: function() {
+                        return product.yourPrice.recommended_retail_price
+                    },
+                })
+                Object.defineProperty(product, 'mark_up', {
+                    get: function() {
+                        return product.yourPrice.mark_up
+                    },
+                })
+                // ---- END PRICES ----
+            })
+        },
+        // INIT_SELECTION_PRODUCTS(state, { products, authUser }) {
+        //     products.map(product => {
+        //         // Instantiate the selectionInputList on the product
+        //         Vue.set(product, 'selectionInputList', [])
+        //     })
+        // },
+        MERGE_PRODUCTS_WITH_SELECTION_INPUT(state, { selectionProductInput, authUser }) {
+            const products = state.products
+            products.map(product => {
+                const rawSelectionInput = selectionProductInput.products.find(x => x.id == product.id)
+                const selectionInput = {}
+                Vue.set(selectionInput, 'rawSelectionInput', rawSelectionInput)
+                Vue.set(selectionInput, 'selection_id', selectionProductInput.selection.id)
+                Vue.set(selectionInput, 'selection', selectionProductInput.selection)
+                Vue.set(selectionInput, 'product_id', product.id)
+                Vue.set(selectionInput, 'product', product)
+                Vue.set(selectionInput, 'variants', rawSelectionInput.variants)
+
+                Object.defineProperty(selectionInput, 'variants', {
+                    get: function() {
+                        return rawSelectionInput.variants
+                    },
+                })
+                Object.defineProperty(selectionInput, 'feedbacks', {
+                    get: function() {
+                        const allFeedback = rawSelectionInput.feedbacks
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allFeedback.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allFeedback
+                    },
+                })
+                Object.defineProperty(selectionInput, 'actions', {
+                    get: function() {
+                        const allActions = rawSelectionInput.actions
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allActions.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allActions
+                    },
+                })
+                Object.defineProperty(selectionInput, 'comments', {
+                    get: function() {
+                        const allComments = rawSelectionInput.comments
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allComments.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allComments
+                    },
+                })
+                Object.defineProperty(selectionInput, 'requests', {
+                    get: function() {
+                        const allRequests = rawSelectionInput.requests
+                        if (state.selectedSelectionIds.length > 0) {
+                            return allRequests.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        }
+                        return allRequests
+                    },
+                })
+                Object.defineProperty(selectionInput, 'selectionRequest', {
+                    get: function() {
+                        return selectionInput.requests.find(x => x.selection_id == selectionInput.selection_id)
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasAuthUserRequest', {
+                    get: function() {
+                        return !!selectionInput.requests.find(x => x.user_id == authUser.id)
+                    },
+                })
+
+                Object.defineProperty(selectionInput, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        return (
+                            (selectionInput.requests.length > 0 && selectionInput.comments.length <= 0) ||
+                            (selectionInput.comments.length > 0 &&
+                                selectionInput.comments[selectionInput.comments.length - 1].role != 'Approver')
+                        )
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            selectionInput.comments.length > 0 &&
+                            selectionInput.comments[selectionInput.comments.length - 1].role == 'Approver'
+                        )
+                    },
+                })
+
+                // Set the current action for the user
+                Object.defineProperty(selectionInput, 'your_feedback', {
+                    get: function() {
+                        return rawSelectionInput.feedbacks.find(
+                            x => x.selection_id == selectionInput.selection_id && x.user_id == authUser.id
+                        ).action
+                    },
+                    set: function(value) {
+                        rawSelectionInput.feedbacks.find(
+                            x => x.selection_id == selectionInput.selection_id && x.user_id == authUser.id
+                        ).action = value
+                    },
+                })
+                // Set the current action for the user
+                Object.defineProperty(selectionInput, 'action', {
+                    get: function() {
+                        return rawSelectionInput.actions.find(x => x.selection_id == selectionInput.selection_id).action
+                    },
+                    set: function(value) {
+                        rawSelectionInput.actions.find(
+                            x => x.selection_id == selectionInput.selection_id
+                        ).action = value
+                    },
+                })
+                // Set the current action for the user
+                Object.defineProperty(selectionInput, 'yourSelectionFeedback', {
+                    get: function() {
+                        return rawSelectionInput.feedbacks.find(
+                            x => x.selection_id == selectionInput.selection_id && x.user_id == authUser.id
+                        )
+                    },
+                    set: function(value) {
+                        const rawAction = rawSelectionInput.feedbacks.find(
+                            x => x.selection_id == selectionInput.selection_id && x.user_id == authUser.id
+                        )
+                        Object.assign(rawAction, value)
+                    },
+                })
+                // Set the current action for the user
+                Object.defineProperty(selectionInput, 'selectionAction', {
+                    get: function() {
+                        return rawSelectionInput.actions.find(x => x.selection_id == selectionInput.selection_id)
+                    },
+                    set: function(value) {
+                        const rawAction = rawSelectionInput.actions.find(
+                            x => x.selection_id == selectionInput.selection_id
+                        )
+                        Object.assign(rawAction, value)
+                    },
+                })
+                // Set the current action for the user
+                Object.defineProperty(selectionInput, 'action_author', {
+                    get: function() {
+                        return rawSelectionInput.actions.find(
+                            x => x.selection_id == selectionInput.selection_id && x.user_id == authUser.id
+                        ).user
+                    },
+                    set: function(value) {
+                        rawSelectionInput.action_author = value
+                    },
+                })
+
+                // Get the selection's quantity
+                Object.defineProperty(selectionInput, 'quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            totalQty += variant.quantity
+                        })
+                        return totalQty
+                    },
+                })
+                // Get total
+                Object.defineProperty(selectionInput, 'totalQuantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            variant.actions.map(action => {
+                                totalQty += action.quantity
+                            })
+                        })
+                        return totalQty
+                    },
+                })
+
+                // Dynamically Calculated Actions
+                // Feedback Actions
+                Object.defineProperty(selectionInput, 'ins', {
+                    get: function() {
+                        return selectionInput.feedbacks.filter(x => x.action == 'In')
+                    },
+                    configurable: true,
+                })
+                Object.defineProperty(selectionInput, 'outs', {
+                    get: function() {
+                        return selectionInput.feedbacks.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(selectionInput, 'focus', {
+                    get: function() {
+                        return selectionInput.feedbacks.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(selectionInput, 'nds', {
+                    get: function() {
+                        return selectionInput.feedbacks.filter(x => x.action == 'None')
+                    },
+                })
+                // Alignment Actions
+                Object.defineProperty(selectionInput, 'alignmentIns', {
+                    get: function() {
+                        return selectionInput.actions.filter(x => x.action == 'In')
+                    },
+                })
+                Object.defineProperty(selectionInput, 'alignmentOuts', {
+                    get: function() {
+                        return selectionInput.actions.filter(x => x.action == 'Out')
+                    },
+                })
+                Object.defineProperty(selectionInput, 'alignmentFocus', {
+                    get: function() {
+                        return selectionInput.actions.filter(x => x.action == 'Focus')
+                    },
+                })
+                Object.defineProperty(selectionInput, 'alignmentNds', {
+                    get: function() {
+                        return selectionInput.actions.filter(x => x.action == 'None')
+                    },
+                })
+
+                // PROCESS VARIANTS
+                selectionInput.variants.forEach(variant => {
+                    Object.defineProperty(variant, 'feedbacks', {
+                        get: function() {
+                            const feedbacks = []
+                            selectionInput.feedbacks.map(feedback => {
+                                const variantFeedbacks = feedback.variants.filter(x => x.id == variant.id)
+                                variantFeedbacks.map(variantFeedback => {
+                                    feedbacks.push({
+                                        id: variantFeedback.id,
+                                        action: variantFeedback.feedback,
+                                        user_id: feedback.user_id,
+                                        user: feedback.user,
+                                        selection_id: feedback.selection_id,
+                                        selection: feedback.selection,
+                                    })
+                                })
+                            })
+                            return feedbacks
+                        },
+                    })
+                    // Get the user's feedback
+                    Object.defineProperty(variant, 'your_feedback', {
+                        get: function() {
+                            const userFeedback = variant.feedbacks.find(x => x.user_id == authUser.id)
+                            return userFeedback ? userFeedback.action : 'None'
+                        },
+                        set: function(newAction) {
+                            // Find the user feedback for the variant input for this feedback action
+                            const userFeedback = selectionInput.feedbacks.find(
+                                feedback =>
+                                    feedback.user_id == authUser.id &&
+                                    feedback.selection_id == selectionInput.selection_id
+                            )
+                            // If the user has already made variant input, update the action
+                            const userVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
+                            if (userVariantFeedbackIndex >= 0) {
+                                userFeedback.variants.splice(userVariantFeedbackIndex, 1, {
+                                    feedback: newAction,
+                                    id: variant.id,
+                                })
+                            } else {
+                                userFeedback.variants.push({
+                                    feedback: newAction,
+                                    id: variant.id,
+                                })
+                            }
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'actions', {
+                        get: function() {
+                            const actions = []
+                            selectionInput.actions.map(action => {
+                                const variantActions = action.variants.filter(x => x.id == variant.id)
+                                variantActions.map(variantAction => {
+                                    actions.push({
+                                        id: variantAction.id,
+                                        action: variantAction.feedback,
+                                        quantity: variantAction.quantity,
+                                        user_id: action.user_id,
+                                        user: action.user,
+                                        selection_id: action.selection_id,
+                                        selection: action.selection,
+                                    })
+                                })
+                            })
+                            return actions
+                        },
+                    })
+                    // Get the selection's action
+                    Object.defineProperty(variant, 'action', {
+                        get: function() {
+                            const selectionAction = variant.actions.find(
+                                x => x.selection_id == selectionInput.selection_id
+                            )
+                            return selectionAction ? selectionAction.action : 'None'
+                        },
+                        set: function(newAction) {
+                            // Find the current action for the variant input for this action action
+                            const currentAction = selectionInput.actions.find(
+                                action => action.selection_id == selectionInput.selection_id
+                            )
+                            // If the user has already made variant input, update the action
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantActionIndex >= 0) {
+                                currentAction.variants.splice(currentVariantActionIndex, 1, {
+                                    id: variant.id,
+                                    feedback: newAction,
+                                    quantity: variant.quantity,
+                                })
+                            } else {
+                                currentAction.variants.push({
+                                    id: variant.id,
+                                    feedback: newAction,
+                                    quantity: variant.quantity,
+                                })
+                            }
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'quantity', {
+                        get: function() {
+                            const selectionAction = variant.actions.find(
+                                x => x.selection_id == selectionInput.selection_id
+                            )
+                            return selectionAction ? selectionAction.quantity : 0
+                        },
+                        set: function(newQuantity) {
+                            // Find the current action for the variant input for this action action
+                            const currentAction = selectionInput.actions.find(
+                                action => action.selection_id == selectionInput.selection_id
+                            )
+                            // If the user has already made variant input, update the action
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantActionIndex >= 0) {
+                                currentAction.variants.splice(currentVariantActionIndex, 1, {
+                                    id: variant.id,
+                                    feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            } else {
+                                currentAction.variants.push({
+                                    id: variant.id,
+                                    feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            }
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'totalQuantity', {
+                        get: function() {
+                            return variant.actions.reduce((total, x) => (total += x.quantity), 0)
+                        },
+                    })
+
+                    // Feedback Actions
+                    Object.defineProperty(variant, 'ins', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'In')
+                        },
+                        configurable: true,
+                    })
+                    Object.defineProperty(variant, 'outs', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'Out')
+                        },
+                    })
+                    Object.defineProperty(variant, 'focus', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'Focus')
+                        },
+                    })
+                    Object.defineProperty(variant, 'nds', {
+                        get: function() {
+                            return variant.feedbacks.filter(x => x.action == 'None')
+                        },
+                    })
+
+                    // Alignment Actions
+                    Object.defineProperty(variant, 'alignmentIns', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'In')
+                        },
+                    })
+                    Object.defineProperty(variant, 'alignmentOuts', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'Out')
+                        },
+                    })
+                    Object.defineProperty(variant, 'alignmentFocus', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'Focus')
+                        },
+                    })
+                    Object.defineProperty(variant, 'alignmentNds', {
+                        get: function() {
+                            return variant.actions.filter(x => x.action == 'None')
+                        },
+                    })
+                })
+
+                product.selectionInputList.push(selectionInput)
             })
         },
         SET_LAST_SORT(state, { method, key }) {

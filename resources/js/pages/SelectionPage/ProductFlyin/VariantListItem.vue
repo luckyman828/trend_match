@@ -32,6 +32,7 @@ export default {
         'variant',
         'product',
         'selection',
+        'selectionInput',
     ],
     data() { return {
         tooltipIsVisible: false
@@ -63,37 +64,6 @@ export default {
             return percentage ? percentage.toFixed(0) : 0
         }
     },
-    methods: {
-        ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
-        updateVariantAction(newAction) {
-            // If the new action to set is the same as the one already set, return
-            if (this.variant[this.currentAction] == newAction) return
-
-            // Loop through all the variants. If their action is None, then give them a default action
-            this.product.variants.forEach(variant => {
-                if (variant[this.currentAction] == 'None') {
-                    variant[this.currentAction] = 'In'
-                }
-            })
-
-            // Set the variant feedback
-            this.variant[this.currentAction] = newAction
-            
-            // Find the users feedback action for the product and make sure it is not None
-            const authUserFeedback = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
-            if (authUserFeedback.action == 'None') {
-                authUserFeedback.action = newAction
-            }
-
-            this.insertOrUpdateProductActionPairs({
-                productActionPairs: [{
-                    product: this.product, 
-                    action: authUserFeedback
-                }], 
-                selection: this.selection
-            })
-        }
-    }
 }
 </script>
 

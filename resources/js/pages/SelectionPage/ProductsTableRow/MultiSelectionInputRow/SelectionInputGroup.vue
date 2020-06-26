@@ -1,5 +1,5 @@
 <template>
-    <div class="selection-input-group" v-if="product" tabindex="0" ref="selectionInputGroup"
+    <div class="selection-input-group" v-if="selectionInput" tabindex="0" ref="selectionInputGroup"
     @keyup="keypressHandler($event)">
         <span class="name"
         @click="onViewSingle">
@@ -8,23 +8,23 @@
         <div class="selection-action-buttons">
 
             <div class="selection-action">
-                <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                <BaseButton :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                @click="onUpdateAction(product, 'Focus', selection)">
+                @click="onUpdateAction('Focus', selectionInput)">
                     <!-- <span>F</span> -->
                     <i class="far fa-star"></i>
                 </BaseButton>
 
-                <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
-                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
+                <v-popover class="focus" :disabled="selectionInput.focus.length <= 0 && selectionInput.alignmentFocus.length <= 0">
+                    <span>{{selectionInput.alignmentFocus.length +selectionInput.focus.length}}</span>
                     <template slot="popover">
-                        <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
+                        <BaseTooltipList header="Focus Alignment" v-if="selectionInput.alignmentFocus.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in selectionInput.alignmentFocus" :key="index"
                             :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                         </BaseTooltipList>
-                        <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
+                        <BaseTooltipList header="Focus Feedback" v-if="selectionInput.focus.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in selectionInput.focus" :key="index"
                             :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                         </BaseTooltipList>
                     </template>
@@ -32,23 +32,23 @@
             </div>
 
             <div class="selection-action">
-                <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                <BaseButton :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'" 
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                @click="onUpdateAction(product, 'In', selection)">
+                @click="onUpdateAction('In', selectionInput)">
                     <!-- <span>I</span> -->
                     <i class="far fa-heart"></i>
                 </BaseButton>
 
-                <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
-                    <span>{{product.alignmentIns.length + product.ins.length}}</span>
+                <v-popover class="ins" :disabled="selectionInput.ins.length <= 0 && selectionInput.alignmentIns.length <= 0">
+                    <span>{{selectionInput.alignmentIns.length + selectionInput.ins.length}}</span>
                     <template slot="popover">
-                        <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
+                        <BaseTooltipList header="Ins Alignment" v-if="selectionInput.alignmentIns.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in selectionInput.alignmentIns" :key="index"
                             :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                         </BaseTooltipList>
-                        <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
+                        <BaseTooltipList header="Ins Feedback" v-if="selectionInput.ins.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in selectionInput.ins" :key="index"
                             :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                         </BaseTooltipList>
                     </template>
@@ -56,23 +56,23 @@
             </div>
 
             <div class="selection-action">
-                <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                <BaseButton :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'" 
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                @click="onUpdateAction(product, 'Out', selection)">
+                @click="onUpdateAction('Out', selectionInput)">
                     <!-- <span>O</span> -->
                     <i class="far fa-times-circle"></i>
                 </BaseButton>
                 
-                <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
-                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
+                <v-popover class="outs" :disabled="selectionInput.outs.length <= 0 && selectionInput.alignmentOuts.length <= 0">
+                    <span>{{selectionInput.alignmentOuts.length + selectionInput.outs.length}}</span>
                     <template slot="popover">
-                        <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
+                        <BaseTooltipList header="Outs Alignment" v-if="selectionInput.alignmentOuts.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in selectionInput.alignmentOuts" :key="index"
                             :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                         </BaseTooltipList>
-                        <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
+                        <BaseTooltipList header="Outs Feedback" v-if="selectionInput.outs.length > 0">
+                            <BaseTooltipListItem v-for="(action, index) in selectionInput.outs" :key="index"
                             :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
                         </BaseTooltipList>
                     </template>
@@ -90,6 +90,7 @@ export default {
     props: [
         'index',
         'product',
+        'selectionInput',
         'selection',
         'currentAction',
         'focusGroupIndex',
@@ -110,11 +111,20 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
-        onViewSingle() {
+        async onViewSingle() {
             this.showSelectionProductPDP({product: this.product, selection: this.selection})
+            // Find the newly added selections that we haven't already fethed input for
+            const newSelections = selections.filter(selection => !this.getProductSelectionInputList.find(x => x.selection.id == selection.id))
+            // Fetch data for all the selections
+            if (newSelections.length > 0) {
+                await Promise.all(newSelections.map(async selection => {
+                    await this.fetchSelectionProducts(selection)
+                    await this.fetchSelectionSettings(selection)
+                }))
+            }
         },
-        onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
+        onUpdateAction(action, selectionInput) {
+            this.$emit('updateAction', action, selectionInput)
         },
         keypressHandler(event) {
             const key = event.code
@@ -122,11 +132,11 @@ export default {
                 this.onViewSingle()
             if (this.userWriteAccess.actions.hasAccess) {
                 if (key == 'KeyI')
-                    this.onUpdateAction(this.product, 'In', this.selection)
+                    this.onUpdateAction('In', this.selectionInput)
                 if (key == 'KeyO')
-                    this.onUpdateAction(this.product, 'Out', this.selection)
+                    this.onUpdateAction('Out', this.selectionInput)
                 if (key == 'KeyF' || key == 'KeyU')
-                    this.onUpdateAction(this.product, 'Focus', this.selection)
+                    this.onUpdateAction('Focus', this.selectionInput)
             }
         }
     }
