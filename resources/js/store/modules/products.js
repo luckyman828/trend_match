@@ -1234,5 +1234,91 @@ export default {
         SET_LAST_SORT(state, { method, key }) {
             state.lastSort = { method, key }
         },
+        UPDATE_ACTIONS(state, { actions, newAction, user }) {
+            // DESC: Sets all actions to the value of new action
+            actions.forEach(action => {
+                // Find the actions product
+                const product = state.products.find(product => product.id == action.product_id)
+                // If we didn't find the product, simply update the actions action
+                if (!product) {
+                    action.action = newAction
+                    action.user = user
+                    return
+                }
+                // Loop through the products selectionInput and update the action in all of them (sync)
+                product.selectionInputList.forEach(selectionInput => {
+                    const selectionAction = selectionInput.actions.find(x => x.selection_id == action.selection_id)
+                    if (selectionAction) {
+                        selectionAction.action = newAction
+                        selectionAction.user = user
+                        // Update variant actions - if the product is OUT no variant can be IN
+                        if (newAction == 'Out') {
+                            action.variants.map(variant => {
+                                variant.feedback = 'Out'
+                                variant.quantity = 0
+                            })
+                        }
+                    }
+                })
+            })
+        },
+        SET_ACTIONS(state, actions) {
+            // DESC: Sets all actions matching the provided actions equal to the actions provided
+            actions.forEach(action => {
+                // Find the actions product
+                const product = state.products.find(product => product.id == action.product_id)
+                // Loop through the products selectionInput and update the action in all of them (sync)
+                product.selectionInputList.forEach(selectionInput => {
+                    const selectionAction = selectionInput.actions.find(x => x.selection_id == action.selection_id)
+                    if (selectionAction) {
+                        Object.assign(selectionAction, action)
+                    }
+                })
+            })
+        },
+        UPDATE_FEEDBACKS(state, { actions, newAction, user }) {
+            actions.forEach(action => {
+                // Find the actions product
+                const product = state.products.find(product => product.id == action.product_id)
+                // If we didn't find the product, simply update the actions action
+                if (!product) {
+                    action.action = newAction
+                    action.user = user
+                    return
+                }
+                // Loop through the products selectionInput and update the action in all of them (sync)
+                product.selectionInputList.forEach(selectionInput => {
+                    const selectionAction = selectionInput.feedbacks.find(
+                        x => x.selection_id == action.selection_id && x.user_id == action.user_id
+                    )
+                    if (selectionAction) {
+                        selectionAction.action = newAction
+                        selectionAction.user = user
+                        // Update variant actions - if the product is OUT no variant can be IN
+                        if (newAction == 'Out') {
+                            action.variants.map(variant => {
+                                variant.feedback = 'Out'
+                                variant.quantity = 0
+                            })
+                        }
+                    }
+                })
+            })
+        },
+        SET_FEEDBACKS(state, actions) {
+            actions.forEach(action => {
+                // Find the actions product
+                const product = state.products.find(product => product.id == action.product_id)
+                // Loop through the products selectionInput and update the action in all of them (sync)
+                product.selectionInputList.forEach(selectionInput => {
+                    const selectionAction = selectionInput.feedbacks.find(
+                        x => x.selection_id == action.selection_id && x.user_id == action.user_id
+                    )
+                    if (selectionAction) {
+                        Object.assign(selectionAction, action)
+                    }
+                })
+            })
+        },
     },
 }

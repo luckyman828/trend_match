@@ -135,11 +135,10 @@ export default{
         },
     },
     methods: {
-        ...mapMutations('products', ['setSingleVisisble']),
+        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
-        ...mapMutations('actions', ['INSERT_OR_UPDATE_ACTIONS']),
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
                 if (this.currentSelectionMode == 'Feedback') {
@@ -226,46 +225,22 @@ export default{
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {
-                // console.log("OnBulkFeedbackArrived", selectionId, feedbacks)
-                feedbacks.forEach(action => {
-                    const product = this.products.find(x => x.id == action.product_id)
-                    const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-
-                    const productActions = [{product: selectionProduct, action: action}]
-                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
-                })
+                this.SET_FEEDBACKS(feedbacks)
             }
         },
         feedbackArrivedHandler(selectionId, feedback) {
             if (feedback.user_id != this.authUser.id) {
-                // console.log("OnFeedbackArrived", selectionId, feedback)
-                const product = this.products.find(x => x.id == feedback.product_id)
-                const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-
-                const productActions = [{product: selectionProduct, action: feedback}]
-                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Feedback', authUser: this.authUser})
+                this.SET_FEEDBACKS([feedback])
             }
         },
         bulkAlignmentArrivedHandler(selectionId, alignments) {
             if (alignments[0].user_id != this.authUser.id) {
-                // console.log("OnBulkAlignmentArrived", selectionId, alignments)
-                alignments.forEach(action => {
-                    const product = this.products.find(x => x.id == action.product_id)
-                    const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-
-                    const productActions = [{product: selectionProduct, action: action}]
-                    this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
-                })
+                this.SET_ACTIONS(alignments)
             }
         },
         alignmentArrivedHandler(selectionId, alignment) {
             if (alignment.user_id != this.authUser.id) {
-                // console.log("OnAlignmentArrived", selectionId, alignment)
-                const product = this.products.find(x => x.id == alignment.product_id)
-                const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-
-                const productActions = [{product: selectionProduct, action: alignment}]
-                this.INSERT_OR_UPDATE_ACTIONS({ productActions, type: 'Alignment', currentSelectionId: selectionId, authUser: this.authUser})
+                this.SET_ACTIONS([alignment])
             }
         },
 
