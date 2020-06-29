@@ -120,6 +120,7 @@ export default{
         productsNoIn() {
             return this.products.filter(product => {
                 const selectionInput = this.getActiveSelectionInput(product)
+                if (!selectionInput) return false
                 return (!selectionInput[this.currentAction] || selectionInput[this.currentAction] == 'None') 
                 && selectionInput.ins.length <= 0 && selectionInput.focus.length <= 0 && selectionInput.alignmentIns.length <= 0 && selectionInput.alignmentFocus.length <= 0
             })
@@ -127,6 +128,7 @@ export default{
         productsNoOutNoComment() {
             return this.products.filter(product => {
                 const selectionInput = this.getActiveSelectionInput(product)
+                if (!selectionInput) return false
                 return (!selectionInput[this.currentAction] || selectionInput[this.currentAction] == 'None') 
                 && selectionInput.comments.length <= 0 && selectionInput.outs.length <= 0 && selectionInput.requests.length <= 0 && selectionInput.alignmentOuts.length <= 0
             })

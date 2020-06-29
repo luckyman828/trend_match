@@ -53,7 +53,7 @@ export default {
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelectionSettings']),
-        ...mapMutations('products', ['setCurrentProductFilter']),
+        ...mapMutations('products', ['setCurrentProductFilter', 'SORT_PRODUCTS']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
             const selections = this.selectedSelections

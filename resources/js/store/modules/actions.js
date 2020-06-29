@@ -320,7 +320,7 @@ export default {
             // Save the old action
             const oldActions = JSON.parse(JSON.stringify(actions))
             // Update the action
-            commit('UPDATE_ACTIONS', { actions, newAction })
+            commit('UPDATE_ACTIONS', { actions, newAction, products: rootGetters['products/products'] })
 
             const authUser = rootGetters['auth/authUser']
 
@@ -349,7 +349,7 @@ export default {
             // Save the old action
             const oldActions = JSON.parse(JSON.stringify(actions))
             // Update the action
-            commit('UPDATE_ACTIONS', { actions, newAction })
+            commit('UPDATE_FEEDBACKS', { actions, newAction, products: rootGetters['products/products'] })
 
             const apiUrl = `/selections/${actions[0].selection_id}/feedback`
             const requestBody = {
@@ -419,16 +419,56 @@ export default {
                 }
             })
         },
-        UPDATE_ACTIONS(state, { actions, newAction }) {
+        UPDATE_ACTIONS(state, { actions, newAction, products }) {
             actions.forEach(action => {
-                action.action = newAction
-                // Update variant actions - if the product is OUT no variant can be IN
-                if (newAction == 'Out') {
-                    action.variants.map(variant => {
-                        variant.feedback = 'Out'
-                        variant.quantity = 0
-                    })
+                // Find the actions product
+                const product = products.find(product => product.id == action.product_id)
+                // If we didn't find the product, simply update the actions action
+                if (!product) {
+                    action.action = newAction
+                    return
                 }
+                // Loop through the products selectionInput and update the action in all of them (sync)
+                product.selectionInputList.forEach(selectionInput => {
+                    const selectionAction = selectionInput.actions.find(x => x.selection_id == action.selection_id)
+                    if (selectionAction) {
+                        selectionAction.action = newAction
+                        // Update variant actions - if the product is OUT no variant can be IN
+                        if (newAction == 'Out') {
+                            action.variants.map(variant => {
+                                variant.feedback = 'Out'
+                                variant.quantity = 0
+                            })
+                        }
+                    }
+                })
+            })
+        },
+        UPDATE_FEEDBACKS(state, { actions, newAction, products }) {
+            actions.forEach(action => {
+                // Find the actions product
+                const product = products.find(product => product.id == action.product_id)
+                // If we didn't find the product, simply update the actions action
+                if (!product) {
+                    action.action = newAction
+                    return
+                }
+                // Loop through the products selectionInput and update the action in all of them (sync)
+                product.selectionInputList.forEach(selectionInput => {
+                    const selectionAction = selectionInput.feedbacks.find(
+                        x => x.selection_id == action.selection_id && x.user_id == action.user_id
+                    )
+                    if (selectionAction) {
+                        selectionAction.action = newAction
+                        // Update variant actions - if the product is OUT no variant can be IN
+                        if (newAction == 'Out') {
+                            action.variants.map(variant => {
+                                variant.feedback = 'Out'
+                                variant.quantity = 0
+                            })
+                        }
+                    }
+                })
             })
         },
     },

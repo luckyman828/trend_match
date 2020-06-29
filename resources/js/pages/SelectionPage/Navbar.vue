@@ -14,7 +14,7 @@
         </div>
 
         <div class="items-center">
-            <BudgetCounter v-if="currentSelection && currentSelection.budget > 0" :selection="currentSelection"/>
+            <BudgetCounter v-if="productsStatus == 'success' && currentSelection && currentSelection.budget > 0" :selection="currentSelection"/>
         </div>
 
         <div class="items-right">
@@ -52,6 +52,7 @@ export default {
     computed: {
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('products', ['productsStatus']),
     },
     methods: {
         onExport() {

@@ -156,15 +156,15 @@
                 <!-- Single Selection Only -->
                 <template v-if="getCurrentSelections.length == 1">
                     <BaseTableHeader class="focus"></BaseTableHeader>
-                    <BaseTableHeader class="ins" :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
+                    <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
                     @sort="onSort" :descDefault="true">In</BaseTableHeader>
-                    <BaseTableHeader class="outs" :sortKey="'allOuts'" :currentSortKey="sortKey"
+                    <BaseTableHeader class="outs" :sortKey="distributionScope == 'Alignment' ? 'alignmentOuts' : 'outs'" :currentSortKey="sortKey"
                     @sort="onSort" :descDefault="true">Out</BaseTableHeader>
-                    <BaseTableHeader class="nds" :sortKey="'allNds'" :currentSortKey="sortKey"
+                    <BaseTableHeader class="nds" :sortKey="distributionScope == 'Alignment' ? 'alignmentNds' : 'nds'" :currentSortKey="sortKey"
                     @sort="onSort" :descDefault="true">ND</BaseTableHeader>
+                    <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
+                    @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
                 </template>
-                <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -467,6 +467,7 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
+            // console.log('on sort', this.stateProducts, sortAsc, sortKey)
             this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
