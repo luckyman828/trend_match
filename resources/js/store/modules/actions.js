@@ -148,7 +148,7 @@ export default {
                 feedbacks: actions.map(action => {
                     return {
                         product_id: action.product_id,
-                        action: newAction,
+                        feedback: newAction,
                         variants: action.variants,
                     }
                 }),
@@ -212,7 +212,7 @@ export default {
                 feedbacks: actions.map(action => {
                     return {
                         product_id: action.product_id,
-                        action: action.action,
+                        feedback: action.action,
                         variants: action.variants,
                     }
                 }),
