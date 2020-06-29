@@ -30,14 +30,14 @@
                 <div class="form-section">
                     <h4>Export Multiple Selections</h4>
 
-                    <div class="form-element">
+                    <!-- <div class="form-element">
                         <label for="selections-selector">Choose selections to export</label>
                         <BaseInputField id="selections-selector" type="select" :disabled="true"
                         :value="`Exporting from ${selectionsToExport.length} Selections`"
                         @click="showSelectionsContext($event)">
                             <i class="far fa-chevron-down"></i>
                         </BaseInputField>
-                    </div>
+                    </div> -->
 
                     <BaseRadioInputField class="form-element" :value="'alignments'" v-model="exportOption">
                         <span>Export Alignments</span>
@@ -60,18 +60,18 @@
                 </div>
 
             </form>
-            <BaseContextMenu ref="selectionsContext">
+            <!-- <BaseContextMenu ref="selectionsContext">
                 <template v-slot:header>
                     <span>Choose selections to export</span>
                 </template>
                 <template v-slot="slotProps">
-                    <BaseSelectButtons :options="selections" optionNameKey="name"
+                    <BaseSelectButtons :options="getSelectionsAvailableForInputFiltering" optionNameKey="name"
                     v-model="selectionsToExport" :submitOnChange="true"/>
                     <div class="item-wrapper">
                         <button style="margin-bottom: 8px; margin-top: -8px;" @click="slotProps.hide()" class="ghost full-width"><span>Apply & Close</span></button>
                     </div>
                 </template>
-            </BaseContextMenu>
+            </BaseContextMenu> -->
 
             <BaseContextMenu ref="currencyContext">
                 <template v-slot:header>
@@ -103,19 +103,25 @@ export default {
         exportToCsv
     ],
     data: function () { return {
-        selectionsToExport: [],
+        // selectionsToExport: [],
         currencyToExport: null,
         exportOption: null,
         defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus', 'getSelections']),
-        ...mapGetters('products', ['productsFiltered']),
+        ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus', 'getSelections', 'getSelectionsAvailableForInputFiltering']),
+        ...mapGetters('products', ['productsFiltered', 'getActiveSelectionInput', 'getSelectedSelectionIds']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.productsFiltered
             return products
+        },
+        selectionsToExport() {
+            if (this.getSelectedSelectionIds.length <= 0) return this.getSelectionsAvailableForInputFiltering
+            return this.getSelectedSelectionIds.map(selectionId => {
+                return this.getSelectionsAvailableForInputFiltering.find(selection => selection.id == selectionId)
+            })
         },
         availaleCurrencies() {
             const currenciesToReturn = []
@@ -182,10 +188,11 @@ export default {
             const rows = []
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
                 const rowToPush = this.getDefaultProductRowData(product)
                 // Add the action input to the row
                 selectionHeaders.forEach(header => {
-                    const selectionAction = product.actions.find(x => x.selection.name == header)
+                    const selectionAction = selectionInput.actions.find(x => x.selection.name == header)
                     if (selectionAction) rowToPush.push(selectionAction.action)
                     else rowToPush.push('None')
                 })
@@ -204,10 +211,11 @@ export default {
             const rows = []
             // Loop through the products and generate headers
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
                 // Add the product's ID and Name to the the row array
 
                 // Loop through the product's actions
-                product.feedbacks.forEach(feedback => {
+                selectionInput.feedbacks.forEach(feedback => {
                     // Test if we need to add their selection to the headers
                     if (!selectionHeaders.includes(feedback.user.name) && feedback.selection_id == this.currentSelection.id){
                         selectionHeaders.push(feedback.user.name)
@@ -217,10 +225,11 @@ export default {
             })
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
-                const rowToPush = [product.datasource_id, product.title, product.category, product.min_order, product.min_variant_order, product.delivery_date, product.action || 'None']
+                const selectionInput = this.getActiveSelectionInput(product)
+                const rowToPush = [product.datasource_id, product.title, product.category, product.min_order, product.min_variant_order, product.delivery_date, selectionInput.action || 'None']
                 // Add the feedback input to the row
                 selectionHeaders.forEach(header => {
-                    const selectionFeedback = product.feedbacks.find(x => `${x.user.name}` == header)
+                    const selectionFeedback = selectionInput.feedbacks.find(x => `${x.user.name}` == header)
                     if (selectionFeedback) rowToPush.push(selectionFeedback.action)
                     else rowToPush.push('None')
                 })
@@ -238,7 +247,8 @@ export default {
             const rows = []
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
-                const selectionRequest = product.requests.find(x => x.selection_id == this.currentSelection.id)
+                const selectionInput = this.getActiveSelectionInput(product)
+                const selectionRequest = selectionInput.requests.find(x => x.selection_id == this.currentSelection.id)
 
                 const rowToPush = [
                     product.datasource_id, 
@@ -247,7 +257,7 @@ export default {
                     product.min_order, 
                     product.min_variant_order, 
                     product.delivery_date, 
-                    product.action || 'None',
+                    selectionInput.action || 'None',
                     selectionRequest ? selectionRequest.content : ''
                 ]
                 rows.push(rowToPush)
@@ -266,9 +276,10 @@ export default {
             const uniqueFeedbackOrigins = []
 
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
 
                 // Find all unique alignment origins
-                product.variants.map(variant => {
+                selectionInput.variants.map(variant => {
                     variant.actions.map(action => {
                         const existingOrigin = uniqueAlignmentOrigins.find(x => x.selection_id == action.selection_id)
                         if (!existingOrigin) uniqueAlignmentOrigins.push({
@@ -281,7 +292,7 @@ export default {
                 })
 
                 // Find all unique feedback origins
-                product.variants.map(variant => {
+                selectionInput.variants.map(variant => {
                     variant.feedbacks.map(feedback => {
                         const existingUser = uniqueFeedbackOrigins.find(x => x.user_id == feedback.user_id && x.selection_id == feedback.selection_id)
                         if (!existingUser) uniqueFeedbackOrigins.push({
@@ -302,7 +313,8 @@ export default {
 
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
-                product.variants.forEach(variant => {
+                const selectionInput = this.getActiveSelectionInput(product)
+                selectionInput.variants.forEach(variant => {
                     const rowToPush = [product.datasource_id, product.title, variant.name, product.category, product.min_order, product.min_variant_order, product.delivery_date]
 
                     // Add the aligment
@@ -332,6 +344,7 @@ export default {
             const rows = []
             // Loop through the products
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
                 // Add the product's ID and Name to the the row array
                 const rowToPush = [
                     product.datasource_id, 
@@ -344,7 +357,7 @@ export default {
 
                 // Add the request input to the row
                 selectionHeaders.forEach(header => {
-                    const selectionRequest = product.requests.find(x => `${x.selection.name}` == header)
+                    const selectionRequest = selectionInput.requests.find(x => `${x.selection.name}` == header)
                     if (selectionRequest) rowToPush.push(selectionRequest.content)
                     else rowToPush.push('')
                 })
@@ -359,12 +372,23 @@ export default {
         },
         exportCommentsPerSelection() {
             const headers = ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery']
-            // Add a header for each selection to export
-            const selectionHeaders = [...this.selectionsToExport.map(x => x.name)]
+            // Add a header for each selection and user to export
+            const selectionHeaders = []
+            this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
+                selectionInput.comments.filter(comment => this.selectionsToExport.find(selection => selection.id == comment.selection_id)).forEach(comment => {
+                    const commentAuthor = `${comment.user.name} (${comment.selection.name})`
+                    const commentAuthorAdded = selectionHeaders.find(x => commentAuthor == x)
+                    if (!commentAuthorAdded) selectionHeaders.push(commentAuthor)
+                })
+            })
+
+
             const rows = []
 
             // Loop through the products again to populate rows with data
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
                 // Add the product's ID and Name to the the row array
                 const rowToPush = [
                     product.datasource_id, 
@@ -380,7 +404,7 @@ export default {
                 const extraCells = []
                 let headerIndex = 0
                 selectionHeaders.forEach(header => {
-                    const selectionComments = product.comments.filter(x => `${x.user.name} (${x.selection.name})` == header)
+                    const selectionComments = selectionInput.comments.filter(x => `${x.user.name} (${x.selection.name})` == header)
                     if (selectionComments.length > 0) {
                         cellsToPush.push(selectionComments[0].content)
                         if (selectionComments.length > 1) {
@@ -444,16 +468,9 @@ export default {
     mounted() {
         this.currencyToExport = this.availaleCurrencies[0]
     },
-    created() {
-        if (this.selectionsStatus != 'success' && this.selectionsStatus != 'loading') {
-            this.fetchSelections({fileId: this.currentFile.id}).then(selections => {
-                // Preset the selections to export to all selections
-                this.selectionsToExport = selections
-            })
-        } else {
-            this.selectionsToExport = this.getSelections
-        }
-    }
+    // created() {
+    //     this.selectionsToExport = this.getSelectionsAvailableForInputFiltering
+    // }
 };
 </script>
 
