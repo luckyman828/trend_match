@@ -164,6 +164,7 @@
 
         <MultiSelectionInputRow v-if="multiSelectionMode"
         :product="product" :focusGroupIndex="focusGroupIndex" :currentAction="currentAction"
+        :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
         @updateAction="onUpdateAction"/>
 
     </tr>

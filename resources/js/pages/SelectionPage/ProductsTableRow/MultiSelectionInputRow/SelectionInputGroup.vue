@@ -16,19 +16,9 @@
                     <i class="far fa-star"></i>
                 </BaseButton>
 
-                <v-popover class="focus" :disabled="selectionInput.focus.length <= 0 && selectionInput.alignmentFocus.length <= 0">
-                    <span>{{selectionInput.alignmentFocus.length +selectionInput.focus.length}}</span>
-                    <template slot="popover">
-                        <BaseTooltipList header="Focus Alignment" v-if="selectionInput.alignmentFocus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in selectionInput.alignmentFocus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Focus Feedback" v-if="selectionInput.focus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in selectionInput.focus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Focus'}}">
+                    {{distributionScope == 'Alignment' ? selectionInput.alignmentFocus.length : selectionInput.focus.length}}
+                </div>
             </div>
 
             <div class="selection-action">
@@ -40,19 +30,9 @@
                     <i class="far fa-heart"></i>
                 </BaseButton>
 
-                <v-popover class="ins" :disabled="selectionInput.ins.length <= 0 && selectionInput.alignmentIns.length <= 0">
-                    <span>{{selectionInput.alignmentIns.length + selectionInput.ins.length}}</span>
-                    <template slot="popover">
-                        <BaseTooltipList header="Ins Alignment" v-if="selectionInput.alignmentIns.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in selectionInput.alignmentIns" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Ins Feedback" v-if="selectionInput.ins.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in selectionInput.ins" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'In'}}">
+                    {{distributionScope == 'Alignment' ? selectionInput.alignmentIns.length : selectionInput.ins.length}}
+                </div>
             </div>
 
             <div class="selection-action">
@@ -64,19 +44,9 @@
                     <i class="far fa-times-circle"></i>
                 </BaseButton>
                 
-                <v-popover class="outs" :disabled="selectionInput.outs.length <= 0 && selectionInput.alignmentOuts.length <= 0">
-                    <span>{{selectionInput.alignmentOuts.length + selectionInput.outs.length}}</span>
-                    <template slot="popover">
-                        <BaseTooltipList header="Outs Alignment" v-if="selectionInput.alignmentOuts.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in selectionInput.alignmentOuts" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Outs Feedback" v-if="selectionInput.outs.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in selectionInput.outs" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Out'}}">
+                    {{distributionScope == 'Alignment' ? selectionInput.alignmentOuts.length : selectionInput.outs.length}}
+                </div>
             </div>
 
         </div>
@@ -94,6 +64,8 @@ export default {
         'selection',
         'currentAction',
         'focusGroupIndex',
+        'distributionTooltipComp',
+        'distributionScope',
     ],
     watch: {
         // Watch for changes to the current focus index 
@@ -113,15 +85,6 @@ export default {
         ...mapActions('products', ['showSelectionProductPDP']),
         async onViewSingle() {
             this.showSelectionProductPDP({product: this.product, selection: this.selection})
-            // Find the newly added selections that we haven't already fethed input for
-            const newSelections = selections.filter(selection => !this.getProductSelectionInputList.find(x => x.selection.id == selection.id))
-            // Fetch data for all the selections
-            if (newSelections.length > 0) {
-                await Promise.all(newSelections.map(async selection => {
-                    await this.fetchSelectionProducts(selection)
-                    await this.fetchSelectionSettings(selection)
-                }))
-            }
         },
         onUpdateAction(action, selectionInput) {
             this.$emit('updateAction', action, selectionInput)

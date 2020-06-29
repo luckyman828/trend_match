@@ -3,6 +3,7 @@
         <SelectionInputGroup v-for="(selectionInput, index) in product.selectionInputList" :key="selectionInput.selection.id"
         :selection="selectionInput.selection" :product="product" :selectionInput="selectionInput" :index="index"
         :currentAction="currentAction" :focusGroupIndex="focusGroupIndex"
+        :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
         @updateAction="onUpdateAction"/>
     </div>
 </template>
@@ -16,6 +17,8 @@ export default {
         'product',
         'currentAction',
         'focusGroupIndex',
+        'distributionTooltipComp',
+        'distributionScope',
     ],
     components: {
         SelectionInputGroup
