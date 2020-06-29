@@ -606,6 +606,17 @@ export default {
 
                 // ---- START PRICES ----
                 // Currency
+                Object.defineProperty(product, 'preferred_currency', {
+                    get: function() {
+                        // Check if the product has any prices
+                        const productHasSelectionInput =
+                            product.selectionInputList && product.selectionInputList.length > 0
+                        if (!productHasSelectionInput) return
+                        return product.selectionInputList.find(
+                            x => x.selection_id == rootGetters['selections/currentSelection'].id
+                        ).preferred_currency
+                    },
+                })
                 Object.defineProperty(product, 'yourPrice', {
                     get: function() {
                         // Check if the product has any prices
@@ -618,20 +629,14 @@ export default {
                                 recommended_retail_price: null,
                             }
                         }
-                        const productHasSelectionInput =
-                            product.selectionInputList && product.selectionInputList.length > 0
-                        const preferred_currency = productHasSelectionInput
-                            ? product.selectionInputList[0].preferred_currency
-                            : null
                         // Else check if we have a preferred currency set, and try to match that
-                        if (preferred_currency) {
-                            const preferredPrice = product.prices.find(x => x.currency == preferred_currency)
+                        if (product.preferred_currency) {
+                            const preferredPrice = product.prices.find(x => x.currency == product.preferred_currency)
                             if (preferredPrice) return preferredPrice
                         }
                         // If nothing else worked, return the first available price
                         return product.prices[0]
                     },
-                    configurable: true,
                 })
                 //Define default prices directly on the product
                 Object.defineProperty(product, 'wholesale_price', {
@@ -823,6 +828,11 @@ export default {
                 Vue.set(selectionInput, 'product', product)
                 Vue.set(selectionInput, 'variants', rawSelectionInput.variants)
 
+                Object.defineProperty(selectionInput, 'preferred_currency', {
+                    get: function() {
+                        return rawSelectionInput.preferred_currency
+                    },
+                })
                 Object.defineProperty(selectionInput, 'variants', {
                     get: function() {
                         return rawSelectionInput.variants
