@@ -3,18 +3,18 @@
 
         <BaseFlexTable class="products-table" :stickyHeader=true>
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="productTotals.all" 
+                <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
                 v-model="currentProductFilter"
                 modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" 
+                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="ins"/>
-                <BaseTableTab :label="`Out`" :count="productTotals.outs" 
+                <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="outs"/>
-                <BaseTableTab :label="`Nds`" :count="productTotals.nds" 
+                <BaseTableTab :label="`Nds`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="nds"/>
@@ -127,8 +127,8 @@
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="productsFilteredBySearch.length != productTotals.all">{{productsFilteredBySearch.length}}/{{productTotals.all}} showing</span>
-                        <span v-else>{{productTotals.all}} records</span>
+                        <span v-if="productsFilteredBySearch.length != stateProducts.length">{{productsFilteredBySearch.length}}/{{stateProducts.length}} showing</span>
+                        <span v-else>{{stateProducts.length}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -359,7 +359,7 @@ export default {
         distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
+        ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 
             'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
             'currentSelectionMode', 'getAuthUserSelectionWriteAccess', 'getSelectionsAvailableForInputFiltering']),

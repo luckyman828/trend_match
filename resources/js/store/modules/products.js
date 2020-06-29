@@ -176,6 +176,7 @@ export default {
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
             const actionFilter = getters.currentProductFilter
+            const getSelectionInput = getters.getActiveSelectionInput
             let productsToReturn = products
 
             // First filter by category
@@ -203,20 +204,31 @@ export default {
             // Filer by unread
             if (unreadOnly) {
                 if (selectionMode == 'Approval') {
-                    productsToReturn = productsToReturn.filter(product => product.hasUnreadAlignerComment)
+                    productsToReturn = productsToReturn.filter(
+                        product => getSelectionInput(product).hasUnreadAlignerComment
+                    )
                 }
                 if (selectionMode == 'Alignment') {
-                    productsToReturn = productsToReturn.filter(product => product.hasUnreadApproverComment)
+                    productsToReturn = productsToReturn.filter(
+                        product => getSelectionInput(product).hasUnreadApproverComment
+                    )
                 }
             }
 
             // Filter by actions
             if (['ins', 'outs', 'nds'].includes(actionFilter)) {
                 const filteredByAction = productsToReturn.filter(product => {
-                    if (actionFilter == 'nds') return !product[currentAction] || product[currentAction] == 'None'
-                    if (actionFilter == 'outs') return product[currentAction] == 'Out'
+                    if (actionFilter == 'nds')
+                        return (
+                            !getSelectionInput(product)[currentAction] ||
+                            getSelectionInput(product)[currentAction] == 'None'
+                        )
+                    if (actionFilter == 'outs') return getSelectionInput(product)[currentAction] == 'Out'
                     if (actionFilter == 'ins')
-                        return product[currentAction] == 'In' || product[currentAction] == 'Focus'
+                        return (
+                            getSelectionInput(product)[currentAction] == 'In' ||
+                            getSelectionInput(product)[currentAction] == 'Focus'
+                        )
                 })
                 productsToReturn = filteredByAction
             }

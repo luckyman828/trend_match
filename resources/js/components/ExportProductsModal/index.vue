@@ -64,21 +64,21 @@
                     <div class="input-wrapper multiline disabled">
                         <p>{{productsToExport.length}} products, <br>
                             <template v-if="exportComments">
-                                {{productsToExport.filter(x => x.requests.length > 0).length}} with requests,<br>
+                                {{productsToExport.filter(x => getActiveSelectionInput(x).requests.length > 0).length}} with requests,<br>
                             </template>
                             <template v-if="exportComments">
-                                {{productsToExport.filter(x => x.comments.length > 0).length}} with comments,<br>
+                                {{productsToExport.filter(x => getActiveSelectionInput(x).comments.length > 0).length}} with comments,<br>
                             </template>
                             <template v-if="includeDistribution">
-                                <span>with {{productsToExport.reduce((acc, x) => acc + x.feedbacks.filter(x => x.action != 'None').length, 0)}} feedback actions</span
+                                <span>with {{productsToExport.reduce((acc, x) => acc + getActiveSelectionInput(x).feedbacks.filter(x => x.action != 'None').length, 0)}} feedback actions</span
                                 ><template v-if="includeNotDecided">
-                                    <span> ({{productsToExport.reduce((acc, x) => acc + x.nds.length, 0)}} not decided)</span>
+                                    <span> ({{productsToExport.reduce((acc, x) => acc + getActiveSelectionInput(x).nds.length, 0)}} not decided)</span>
                                 </template>,<br>
                             </template>
                             <template v-if="includeDistribution">
-                                <span>with {{productsToExport.reduce((acc, x) => acc + x.actions.filter(x => x.action != 'None').length, 0)}} alignment actions</span
+                                <span>with {{productsToExport.reduce((acc, x) => acc + getActiveSelectionInput(x).actions.filter(x => x.action != 'None').length, 0)}} alignment actions</span
                                 ><template v-if="includeNotDecided">
-                                    <span> ({{productsToExport.reduce((acc, x) => acc + x.alignmentNds.length, 0)}} not decided)</span>
+                                    <span> ({{productsToExport.reduce((acc, x) => acc + getActiveSelectionInput(x).alignmentNds.length, 0)}} not decided)</span>
                                 </template>,
                             </template>
                         </p>
@@ -109,7 +109,6 @@
 import axios from 'axios';
 import { mapActions, mapGetters } from 'vuex'
 import ExportPdf from './ExportPdf'
-import formatDate from '../../mixins/formatDate'
 
 
 export default {
@@ -120,9 +119,6 @@ export default {
     components: {
         ExportPdf
     },
-    mixins: [
-        formatDate
-    ],
     data: function () { return {
         exportingPDF: false,
         exportComments: this.$route.name == 'selection' ? true : false,
@@ -140,10 +136,11 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('products', ['getProductsFilteredBySearch']),
         ...mapGetters('files', ['currentFile']),
+        ...mapGetters('products', ['getActiveSelectionInput']),
         productsToExport() {
             const products = this.getProductsFilteredBySearch
             if (this.onlyWithRequests) {
-                return products.filter(product => product.requests.length > 0)
+                return products.filter(product => this.getActiveSelectionInput(product).requests.length > 0)
             } else return products
         }
     },
