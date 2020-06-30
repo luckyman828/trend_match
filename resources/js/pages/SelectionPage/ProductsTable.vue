@@ -355,7 +355,7 @@ export default {
         tooltipVariant: null,
         tooltipProduct: null,
         distributionTooltipType: null,
-        actionDistributionTooltipTab: 'feedback',
+        actionDistributionTooltipTab: this.selection.type == 'Master' ? 'alignment' : 'feedback',
         distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
     }},
     computed: {
