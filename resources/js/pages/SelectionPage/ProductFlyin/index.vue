@@ -48,7 +48,7 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
+                    <img :src="variantImage(product.variants[currentImgIndex], 'sm')">
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
@@ -264,7 +264,6 @@ export default {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
-        ...mapMutations('chatbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)

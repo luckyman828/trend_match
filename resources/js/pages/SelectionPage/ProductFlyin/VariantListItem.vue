@@ -2,7 +2,7 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <div class="variant">
             <div class="img-wrapper">
-                <img :src="variantImage(variant)">
+                <img :src="variantImage(variant,'sm')">
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="square xs" :class="
                     variant[currentAction] == 'Focus' ? 'primary'
@@ -15,7 +15,7 @@
                 </div>
             </div>
             <div class="color-wrapper">
-                <div class="circle-img"><img :src="variantImage(variant)"></div>
+                <div class="circle-img"><img :src="variantImage(variant, 'sm')"></div>
                 <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
             </div>
         </div>

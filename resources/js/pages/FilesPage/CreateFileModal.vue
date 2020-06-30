@@ -1038,8 +1038,7 @@ export default {
             let imageUploadSuccess = true
             if (this.submitStatus != 'Error') {
                 this.submitStatus = 'Uploading images. This may take a while'
-                await this.syncExternalImages({file: newFile, products: newProducts}).catch(err => {
-                    console.log('uploadImages error', err)
+                await this.syncExternalImages({file: newFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
                     imageUploadSuccess = false
                     this.SHOW_SNACKBAR({ 
                         msg: `<p><strong>Hey you!</strong><br></p>
@@ -1050,6 +1049,7 @@ export default {
                         iconClass: 'fa-exclamation-circle', 
                     })
                 })
+                console.log('Done syncing images')
             }
 
             if (uploadSuccess) {
@@ -1057,6 +1057,9 @@ export default {
                 this.$emit('close')
             }
             this.uploadingFile = false
+        },
+        uploadImagesProgressCalback(progress) {
+            this.submitStatus = `Uploading images. This may take a while. ${progress}% done.`
         },
         reset() {
             this.availableFiles = []

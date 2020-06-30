@@ -436,7 +436,7 @@ export default {
                 })
                 .catch(() => {})
         },
-        async syncExternalImages({ commit, state, dispatch }, { file, products }) {
+        async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
             return new Promise(async (resolve, reject) => {
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
@@ -447,45 +447,64 @@ export default {
                         if (!variant.image) return
                         imageMaps.push({
                             mapping_id: variant.id,
-                            datasource_id: product.id,
+                            datasource_id: product.datasource_id,
                             url: variant.image,
                         })
                     })
                 })
 
-                await axios
-                    .post(apiUrl, {
-                        max_height: 2016,
-                        max_width: 1512,
-                        images: imageMaps,
-                    })
-                    .then(async response => {
-                        const uploadedImages = response.data.media_url_maps
-                        const productsToUpdate = []
-                        uploadedImages.forEach(image => {
-                            const product = products.find(product =>
-                                product.variants.find(variant => variant.id == image.mapping_id)
-                            )
-                            if (!product) return
-                            const variant = product.variants.find(variant => variant.id == image.mapping_id)
+                const productsToUpdate = []
 
-                            if (!variant) return
-                            variant.image = image.cdn_url
-                            productsToUpdate.push(product)
+                // Chunk the images
+                const array_chunks = (array, chunk_size) =>
+                    Array(Math.ceil(array.length / chunk_size))
+                        .fill()
+                        .map((_, index) => index * chunk_size)
+                        .map(begin => array.slice(begin, begin + chunk_size))
+                const imageMapChunks = array_chunks(imageMaps, 8)
+
+                // Upload a chunk at a time
+                let chunkIndex = 0
+                for await (const imageMaps of imageMapChunks) {
+                    await axios
+                        .post(apiUrl, {
+                            max_height: 2016,
+                            max_width: 1512,
+                            images: imageMaps,
                         })
-                        await dispatch(
-                            'products/updateManyProducts',
-                            { file, products: productsToUpdate },
-                            { root: true }
-                        ).catch(err => {
+                        .then(async response => {
+                            if (progressCallback) {
+                                const progressPercentage = ((chunkIndex / imageMapChunks.length) * 100).toFixed(0)
+                                progressCallback(progressPercentage)
+                            }
+                            const uploadedImages = response.data.media_url_maps
+                            uploadedImages.forEach(image => {
+                                const product = products.find(product =>
+                                    product.variants.find(variant => variant.id == image.mapping_id)
+                                )
+                                if (!product) return
+                                const variant = product.variants.find(variant => variant.id == image.mapping_id)
+
+                                if (!variant) return
+                                variant.image = image.cdn_url
+                                productsToUpdate.push(product)
+                            })
+                        })
+                        .catch(err => {
                             reject(err)
                         })
+                    chunkIndex++
+                }
 
-                        resolve(response.data.media_url_maps)
-                    })
-                    .catch(err => {
-                        reject(err)
-                    })
+                // Update the products when we are done uploading
+                await dispatch(
+                    'products/updateManyProducts',
+                    { file, products: productsToUpdate },
+                    { root: true }
+                ).catch(err => {
+                    reject(err)
+                })
+                resolve()
             })
         },
     },

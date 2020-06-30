@@ -11,7 +11,7 @@
         </td>
         <td class="image clickable" @click="onViewSingle">
             <div class="img-wrapper">
-                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0], 'sm')">
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
