@@ -14,7 +14,7 @@
         </div>
 
         <div class="items-center">
-            <BudgetCounter v-if="showQty"/>
+            <BudgetCounter v-if="productsStatus == 'success' && currentSelection && showQty" :selection="currentSelection"/>
         </div>
 
         <div class="items-right">
@@ -55,6 +55,7 @@ export default {
         ...mapGetters('selections', {
             showQty: 'getQuantityModeActive'
         }),
+        ...mapGetters('products', ['productsStatus']),
     },
     methods: {
         onExport() {

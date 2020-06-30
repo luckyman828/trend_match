@@ -1,9 +1,12 @@
 <template>
     <div class="multi-selection-input-row flex-table-row">
-        <SelectionInputGroup v-for="(selectionInput, index) in product.selectionInputArray" :key="selectionInput.selection.id"
-        :selection="selectionInput.selection" :product="selectionInput.product" :index="index"
+        <SelectionInputGroup v-for="(selectionInput, index) 
+        in product.selectionInputList.filter(selectionInput => getCurrentSelections.find(selection => selectionInput.selection_id == selection.id))" 
+        :key="selectionInput.selection.id"
+        :selection="selectionInput.selection" :product="product" :selectionInput="selectionInput" :index="index"
         :currentAction="currentAction" :focusGroupIndex="focusGroupIndex"
-        @updateAction="(product, action, selection) => onUpdateAction(product, action, selection)"/>
+        :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
+        @updateAction="onUpdateAction"/>
     </div>
 </template>
 
@@ -16,27 +19,31 @@ export default {
         'product',
         'currentAction',
         'focusGroupIndex',
+        'distributionTooltipComp',
+        'distributionScope',
     ],
     components: {
         SelectionInputGroup
     },
     computed: {
-        ...mapGetters('auth', ['authUser'])
+        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['getCurrentSelections'])
     },
     methods: {
         ...mapMutations('actions', ['UPDATE_ACTIONS']),
-        onUpdateAction(product, action, selection) {
+        onUpdateAction(action, selectionInput) {
             // Update all actions
-            this.product.selectionInputArray.forEach(selectionProductPair => {
-                this.UPDATE_ACTIONS({
-                    product: selectionProductPair.product,
-                    action: product.action == action ? 'None' : action,
-                    selection,
-                    user: this.authUser,
-                    type: 'Alignment'
-                })
-            })
-            this.$emit('updateAction', product, action, selection)
+            // this.product.selectionInputList.forEach(selectionInput => {
+            //     this.UPDATE_ACTIONS({
+            //         product: selectionInput,
+            //         action: selectionInput.action == action ? 'None' : action,
+            //         selection,
+            //         user: this.authUser,
+            //         type: 'Alignment'
+            //     })
+            // })
+            // console.log('on updaet action', product, action, selection)
+            this.$emit('updateAction', action, selectionInput)
         }
     }
 }

@@ -3,18 +3,18 @@
 
         <BaseFlexTable class="products-table" :stickyHeader=true>
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="productTotals.all" 
+                <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
                 v-model="currentProductFilter"
                 modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" 
+                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="ins"/>
-                <BaseTableTab :label="`Out`" :count="productTotals.outs" 
+                <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="outs"/>
-                <BaseTableTab :label="`Nds`" :count="productTotals.nds" 
+                <BaseTableTab :label="`Nds`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 modelValue="nds"/>
@@ -31,45 +31,63 @@
                         ref="searchField"
                         v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Category </span>
-                                <i class="far fa-chevron-down"></i>
+                        <v-popover trigger="click" :disabled="availableCategories.length <= 0">
+                            <BaseButton buttonClass="ghost" :disabled="availableCategories.length <= 0"
+                            disabledTooltip="No categories available">
+                                <span>Category</span>
                                 <span v-if="selectedCategories.length > 0" class="circle primary xs">
                                     <span>{{selectedCategories.length}}</span>
                                 </span>
-                            </button>
+                                <i class="far fa-chevron-down"></i>
+                            </BaseButton>
                             <template slot="popover">
                                 <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
                                 :options="availableCategories" v-model="selectedCategories"/>
                             </template>
                         </v-popover>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
+                        <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0">
+                            <BaseButton buttonClass="ghost" :disabled="availableDeliveryDates.length <= 0"
+                            disabledTooltip="No delivery dates available">
                                 <span>Delivery</span>
                                 <i class="far fa-chevron-down"></i>
                                 <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
                                     <span>{{selectedDeliveryDates.length}}</span>
                                 </span>
-                            </button>
+                            </BaseButton>
                             <template slot="popover">
                                 <BaseSelectButtons submitOnChange="true" 
                                 :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
                             </template>
                         </v-popover>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Buyer group </span>
-                                <i class="far fa-chevron-down"></i>
+                        <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0">
+                            <BaseButton buttonClass="ghost" :disabled="availableBuyerGroups.length <= 0"
+                            disabledTooltip="No buyer groups available">
+                                <span>Buyer group</span>
                                 <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
                                     <span>{{selectedBuyerGroups.length}}</span>
                                 </span>
-                            </button>
+                                <i class="far fa-chevron-down"></i>
+                            </BaseButton>
                             <template slot="popover">
                                 <BaseSelectButtons submitOnChange="true" 
                                 :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
+                            </template>
+                        </v-popover>
+
+                        <v-popover trigger="click">
+                            <button class="ghost">
+                                <span>Selection Input</span>
+                                <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
+                                    <span>{{selectedSelectionIds.length}}</span>
+                                </span>
+                                <i class="far fa-chevron-down"></i>
+                            </button>
+                            <template slot="popover">
+                                <BaseSelectButtons submitOnChange="true" 
+                                :options="getSelectionsAvailableForInputFiltering" v-model="selectedSelectionIds"
+                                optionNameKey="name" optionValueKey="id"/>
                             </template>
                         </v-popover>
 
@@ -89,14 +107,17 @@
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
-                        <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
+                        <button class="invisible primary" 
+                        v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly"
+                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelectionIds=[]; unreadOnly = false">
+                            <span>Clear filter</span>
+                        </button>
 
                     </template>
                     <template v-slot:right>
                         <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="productsFilteredBySearch.length != productTotals.all">{{productsFilteredBySearch.length}}/{{productTotals.all}} showing</span>
-                        <span v-else>{{productTotals.all}} records</span>
+                        <span v-if="productsFilteredBySearch.length != stateProducts.length">{{productsFilteredBySearch.length}}/{{stateProducts.length}} showing</span>
+                        <span v-else>{{stateProducts.length}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -121,15 +142,18 @@
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 v-tooltip="{content: 'Minimum per Variant / Minimum per Order', delay: {show: 300}}"
                 @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
-                <BaseTableHeader class="focus"></BaseTableHeader>
-                <BaseTableHeader class="ins" :sortKey="['allFocus', 'allIns']" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">In</BaseTableHeader>
-                <BaseTableHeader class="outs" :sortKey="'allOuts'" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">Out</BaseTableHeader>
-                <BaseTableHeader class="nds" :sortKey="'allNds'" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">ND</BaseTableHeader>
-                <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
+                <!-- Single Selection Only -->
+                <template v-if="getCurrentSelections.length == 1">
+                    <BaseTableHeader class="focus"></BaseTableHeader>
+                    <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
+                    @sort="onSort" :descDefault="true">In</BaseTableHeader>
+                    <BaseTableHeader class="outs" :sortKey="distributionScope == 'Alignment' ? 'alignmentOuts' : 'outs'" :currentSortKey="sortKey"
+                    @sort="onSort" :descDefault="true">Out</BaseTableHeader>
+                    <BaseTableHeader class="nds" :sortKey="distributionScope == 'Alignment' ? 'alignmentNds' : 'nds'" :currentSortKey="sortKey"
+                    @sort="onSort" :descDefault="true">ND</BaseTableHeader>
+                    <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
+                    @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
+                </template>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -161,32 +185,36 @@
 
         <BaseContextMenu ref="contextMenu"
             :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyV']"
-            @keybind-v="onViewSingle(contextProduct)"
+            @keybind-v="onViewSingle(contextSelectionInput)"
+            @keybind-i="userWriteAccess.actions.hasAccess && onUpdateAction('In', contextSelectionInput)"
+            @keybind-o="userWriteAccess.actions.hasAccess && onUpdateAction('Out', contextSelectionInput)"
+            @keybind-f="userWriteAccess.actions.hasAccess && onUpdateAction('Focus', contextSelectionInput)"
+            @keybind-u="userWriteAccess.actions.hasAccess && onUpdateAction('Focus', contextSelectionInput)"
         >
-            <template v-if="contextProduct">
+            <template v-if="contextSelectionInput">
                 <div class="item-group">
   
                     <BaseContextMenuItem 
-                    :iconClass="contextProduct[currentAction] == 'In' ? 'fas green fa-heart' : 'far fa-heart'"
+                    :iconClass="contextSelectionInput[currentAction] == 'In' ? 'fas green fa-heart' : 'far fa-heart'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                    @click="onUpdateAction(contextProduct, 'In', selection)">
+                    @click="onUpdateAction('In', contextSelectionInput)">
                         <span><u>I</u>n</span>
                     </BaseContextMenuItem>
 
                     <BaseContextMenuItem 
-                    :iconClass="contextProduct[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
+                    :iconClass="contextSelectionInput[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                    @click="onUpdateAction(contextProduct, 'Out', selection)">
+                    @click="onUpdateAction('Out', contextSelectionInput)">
                         <span><u>O</u>ut</span>
                     </BaseContextMenuItem>
 
                     <BaseContextMenuItem 
-                    :iconClass="contextProduct[currentAction] == 'Focus' ? 'fas primary fa-star' : 'far fa-star'"
+                    :iconClass="contextSelectionInput[currentAction] == 'Focus' ? 'fas primary fa-star' : 'far fa-star'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                    @click="onUpdateAction(contextProduct, 'Focus', selection)">
+                    @click="onUpdateAction('Focus', contextSelectionInput)">
                         <span><u>F</u>oc<u>u</u>s</span>
                     </BaseContextMenuItem>
 
@@ -260,14 +288,14 @@
 
         <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip"
         @show="showDistributionTooltip">
-            <ActionDistributionTooltip :product="tooltipProduct" :type="distributionTooltipType"
+            <ActionDistributionTooltip :selectionInput="tooltipSelectionInput" :type="distributionTooltipType"
             :actionDistributionTooltipTab="actionDistributionTooltipTab"
             @changeTab="tab => actionDistributionTooltipTab = tab"/>
         </BaseTooltip>
 
         <BaseTooltip id="variant-tooltip" ref="variantTooltip"
         @show="showVariantTooltip">
-            <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="tooltipProduct"
+            <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="tooltipProduct" :selectionInput="tooltipSelectionInput"
             :actionDistributionTooltipTab="actionDistributionTooltipTab"
             @changeTab="tab => actionDistributionTooltipTab = tab"/>
         </BaseTooltip>
@@ -303,20 +331,20 @@ export default {
     data: function() { return {
         sortKey: 'datasource_id',
         selectedProducts: [],
-        selectedSelections: [],
         showContextMenu: false,
         contextProduct: null,
-        tooltipProduct: null,
+        tooltipSelectionInput: null,
         tooltipVariant: null,
+        tooltipProduct: null,
         distributionTooltipType: null,
         distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
         actionDistributionTooltipTab: this.distributionScope,
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
-            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'currentFocusRowIndex']),
+        ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
+            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
-            'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
+            'currentSelectionMode', 'getAuthUserSelectionWriteAccess', 'getSelectionsAvailableForInputFiltering']),
         ...mapState('products', {stateProducts: 'products'}),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess () {
@@ -324,6 +352,10 @@ export default {
         },
         currentSelections() {
             return this.getCurrentSelections
+        },
+        contextSelectionInput() {
+            if (!this.contextProduct) return
+            return this.getActiveSelectionInput(this.contextProduct)
         },
         productsFilteredBySearch: {
             get() {
@@ -365,6 +397,14 @@ export default {
                 this.updateSelectedBuyerGroups(value)
             }
         },
+        selectedSelectionIds: {
+            get () {
+                return this.$store.getters['products/getSelectedSelectionIds']
+            },
+            set (value) {
+                this.SET_SELECTED_SELECTION_IDS(value)
+            }
+        },
         unreadOnly: {
             get () {
                 return this.$store.getters['products/unreadOnly']
@@ -378,25 +418,21 @@ export default {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH']),
-        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
-        ...mapActions('comments', ['setComment', 'destroyComment']),
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS']),
+        ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
-        showVariantTooltip({variant, product}) {
+        showVariantTooltip({variant, product, selectionInput}) {
             this.tooltipVariant = variant
             this.tooltipProduct = product
+            this.tooltipSelectionInput = selectionInput
         },
-        showDistributionTooltip({product, type}) {
-            this.tooltipProduct = product
+        showDistributionTooltip({selectionInput, type}) {
+            this.tooltipSelectionInput = selectionInput
             this.distributionTooltipType = type
         },
         onViewSingle(product) {
-            // this.SET_CURRENT_PDP_SELECTION(this.selection)
-            // this.setCurrentProduct(product)
-            // this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
-            // this.setSingleVisisble(true)
             document.activeElement.blur()
             this.showSelectionProductPDP({product, selection: this.selection})
         },
@@ -414,13 +450,27 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
+            // console.log('on sort', this.stateProducts, sortAsc, sortKey)
             this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
-        onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
+        onUpdateAction(action, selectionInput) {
+            this.$emit('updateAction', action, selectionInput)
         },
-        onUpdateMultipleActions(products, action) {
-            this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
+        onUpdateMultipleActions(products, newAction) {
+            if (this.currentSelectionMode == 'Feedback') {
+                const actions = products.map(product => {
+                    const selectionInput = this.getActiveSelectionInput(product)
+                    return selectionInput.yourSelectionFeedback
+                })
+                this.updateFeedbacks({actions, newAction})
+            }
+            if (this.currentSelectionMode == 'Alignment') {
+                const actions = products.map(product => {
+                    const selectionInput = this.getActiveSelectionInput(product)
+                    return selectionInput.selectionAction
+                })
+                this.updateActions({actions, newAction})
+            }
         },
         onViewSearchProduct() {
             if (this.productsFilteredBySearch.length > 0) {
@@ -594,6 +644,17 @@ export default {
         only screen and (min-resolution: 120dpi)
         {
             
+        }
+    }
+
+    .table-top-bar {
+        button {
+            position: relative;
+            .circle {
+                position: absolute;
+                right: -8px;
+                top: -8px;
+            }
         }
     }
 </style>

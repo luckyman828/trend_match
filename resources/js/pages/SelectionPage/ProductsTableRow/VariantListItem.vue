@@ -69,6 +69,7 @@ export default {
     props: [
         'variant',
         'product',
+        'selectionInput',
         'selection',
     ],
     components: {
@@ -112,7 +113,7 @@ export default {
             if (this.variant[this.currentAction] == newAction) return
 
             // Loop through all the variants. If their action is None, then give them a default action
-            this.product.variants.forEach(variant => {
+            this.selectionInput.variants.forEach(variant => {
                 if (variant[this.currentAction] == 'None') {
                     variant[this.currentAction] = 'In'
                 }
@@ -122,7 +123,7 @@ export default {
             this.variant[this.currentAction] = newAction
             
             // Find the users feedback action for the product and make sure it is not None
-            const authUserFeedback = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
+            const authUserFeedback = this.selectionInput.feedbacks.find(x => x.user_id == this.authUser.id)
             if (authUserFeedback.action == 'None') {
                 authUserFeedback.action = newAction
             }

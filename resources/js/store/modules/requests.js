@@ -41,9 +41,9 @@ export default {
                 }
             }
         },
-        async insertOrUpdateRequest({ commit, dispatch }, { product, request }) {
+        async insertOrUpdateRequest({ commit, dispatch }, { selectionInput, request }) {
             // Update our state
-            commit('INSERT_OR_UPDATE_REQUEST', { product, request })
+            commit('INSERT_OR_UPDATE_REQUEST', { selectionInput, request })
             let requestMethod
             let apiUrl
             // check if the provided request should be posted or updates
@@ -53,7 +53,7 @@ export default {
             } else {
                 requestMethod = 'post'
                 // Add the new request to our product
-                apiUrl = `/selections/${request.selection_id}/products/${product.id}/requests`
+                apiUrl = `/selections/${selectionInput.selection_id}/products/${selectionInput.product_id}/requests`
             }
 
             await axios({
@@ -80,7 +80,7 @@ export default {
                                 'Error on request. Please try again. If the error persists, please contact Kollekt support.',
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
-                            callback: () => dispatch('insertOrUpdateRequest', { product, request }),
+                            callback: () => dispatch('insertOrUpdateRequest', { selectionInput, request }),
                             callbackLabel: 'Retry',
                             duration: 0,
                         },
@@ -88,9 +88,9 @@ export default {
                     )
                 })
         },
-        async deleteRequest({ commit }, { product, request }) {
+        async deleteRequest({ commit }, { selectionInput, request }) {
             // Delete the request from our state
-            commit('deleteRequest', { product, request })
+            commit('deleteRequest', { selectionInput, request })
 
             // Config API endpoint
             const apiUrl = `/requests/${request.id}`
@@ -106,21 +106,21 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        INSERT_OR_UPDATE_REQUEST(state, { product, request }) {
+        INSERT_OR_UPDATE_REQUEST(state, { selectionInput, request }) {
             // First see if the request already exists
-            const existingRequestIndex = product.requests.findIndex(x => x.id == request.id)
+            const existingRequestIndex = selectionInput.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
-                const updatedRequest = Object.assign(product.requests[existingRequestIndex], request)
-                Vue.set(product.requests, existingRequestIndex, updatedRequest)
+                const updatedRequest = Object.assign(selectionInput.requests[existingRequestIndex], request)
+                Vue.set(selectionInput.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
             else {
-                product.requests.push(request)
+                selectionInput.requests.push(request)
             }
         },
-        deleteRequest(state, { product, request }) {
-            const requestIndex = product.requests.findIndex(x => x.id == request.id)
-            product.requests.splice(requestIndex, 1)
+        deleteRequest(state, { selectionInput, request }) {
+            const requestIndex = selectionInput.requests.findIndex(x => x.id == request.id)
+            selectionInput.requests.splice(requestIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

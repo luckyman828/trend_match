@@ -155,6 +155,47 @@ export default {
                 },
             }
         },
+        getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
+            const products = rootGetters['products/getProducts']
+            const activeSelections = getters.getCurrentSelections
+            const availableSelections = []
+            products.forEach(product => {
+                // Find the selection input available
+                const selectionInputListFiltered = product.selectionInputList.filter(
+                    selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
+                )
+
+                selectionInputListFiltered.forEach(selectionInput => {
+                    // Loop through the products feedback
+                    selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == feedback.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(feedback.selection)
+                    })
+                    // Loop through the products alignment
+                    selectionInput.rawSelectionInput.actions.forEach(action => {
+                        const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
+                        if (!existsInArray) availableSelections.push(action.selection)
+                    })
+                    // Loop through the products comments
+                    selectionInput.rawSelectionInput.comments.forEach(comment => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == comment.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(comment.selection)
+                    })
+                    // Loop through the products requests
+                    selectionInput.rawSelectionInput.requests.forEach(request => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == request.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(request.selection)
+                    })
+                })
+            })
+            return availableSelections
+        },
     },
 
     actions: {

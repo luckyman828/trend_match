@@ -6,23 +6,23 @@
 
                 <rect class="remaining" :x="`${spendPercentageCapped - 2}%`" :width="`${100 - spendPercentageCapped + 2}%`" height="8px" rx="4px"
                 v-tooltip.bottom="`            
-                    Budget: <strong>${seperateThousands(currentSelection.budget)} ${currentSelection.currency}</strong>
-                    <br>Remaining: <strong>${seperateThousands(currentSelection.budget - totalSpend)} ${currentSelection.currency}</strong>
+                    Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
+                    <br>Remaining: <strong>${seperateThousands(selection.budget - totalSpend)} ${selection.currency}</strong>
                 `"/>
 
                 <rect class="spend" :width="`${spendPercentageCapped}%`" height="8px" rx="4px"
                 :class="spendPercentage > 100 ? 'over' : 'under'"
                 v-tooltip.bottom="`
-                    Budget: <strong>${seperateThousands(currentSelection.budget)} ${currentSelection.currency}</strong>
-                    <br>Spend: <strong>${seperateThousands(totalSpend)} ${currentSelection.currency}</strong>
-                    ${spendPercentage > 100 ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(currentSelection.budget - totalSpend)} ${currentSelection.currency}</strong>` : ''}`"/>
+                    Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
+                    <br>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
+                    ${spendPercentage > 100 ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(selection.budget - totalSpend)} ${selection.currency}</strong>` : ''}`"/>
             </svg>
         </div>
         <!-- <div class="indicator circle xs spend primary" :style="{left: `calc(${spendPercentageCapped}% - 4px - ${(76 * spendPercentageCapped) / 100}px)`}"
-        v-tooltip="`${seperateThousands(totalSpend)} ${currentSelection.currency}`">
+        v-tooltip="`${seperateThousands(totalSpend)} ${selection.currency}`">
         </div> -->
         <div class="indicator budget" v-if="!hideLabel">
-            <span>{{currentSelection.budget | thousandSeparated}} {{currentSelection.currency}}</span>
+            <span>{{selection.budget | thousandSeparated}} {{selection.currency}}</span>
         </div>
     </div>
 </template>
@@ -32,20 +32,22 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'budgetCounter',
     props: [
-        'hideLabel'
+        'hideLabel',
+        'selection'
     ],
     data() { return {
         // spendPercentage: 50
     }},
     computed: {
-        ...mapGetters('selections', ['currentSelection']),
-        ...mapGetters('products', ['products']),
+        ...mapGetters('products', ['products', 'getActiveSelectionInput']),
         totalSpend() {
             let total = 0
             this.products.map(product => {
-                product.variants.map(variant => {
-                    if (!this.currentSelection.currency) return
-                    const productPrice = product.prices.find(x => x.currency == this.currentSelection.currency)
+                const selectionInput = this.getActiveSelectionInput(product)
+                if (!selectionInput) return
+                selectionInput.variants.map(variant => {
+                    if (!this.selection.currency) return
+                    const productPrice = product.prices.find(x => x.currency == this.selection.currency)
                     if (!productPrice) return 
                     total += variant.quantity * productPrice.wholesale_price
                 })
@@ -53,10 +55,10 @@ export default {
             return total
         },
         spendPercentage() {
-            return ((this.totalSpend / this.currentSelection.budget) * 100)
+            return ((this.totalSpend / this.selection.budget) * 100)
         },
         spendPercentageCapped() {
-            return Math.min(((this.totalSpend / this.currentSelection.budget) * 100), 100)
+            return Math.min(((this.totalSpend / this.selection.budget) * 100), 100)
         }
     },
     methods: {

@@ -50,9 +50,17 @@ export default {
         }
     },
     methods: {
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'fetchSelectionProducts']),
+        ...mapActions('selections', ['fetchSelectionSettings']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         async onSetCurrentSelection(selection) {
+            // Find the newly added selections that we haven't already fethed input for
+            const selectionIsNew = !this.products[0].selectionInputList.find(x => x.selection_id == selection.id)
+            // Fetch data for all the selections
+            if (selectionIsNew) {
+                await this.fetchSelectionProducts(selection)
+                await this.fetchSelectionSettings(selection)
+            }
             this.showSelectionProductPDP({product: this.currentProduct, selection})
         },
         SET_CURRENT_SELECTION() {
