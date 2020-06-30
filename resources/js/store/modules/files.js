@@ -464,7 +464,7 @@ export default {
                 const imageMapChunks = array_chunks(imageMaps, 8)
 
                 // Upload a chunk at a time
-                let chunkIndex = 0
+                let chunkIndex = 1
                 for await (const imageMaps of imageMapChunks) {
                     await axios
                         .post(apiUrl, {

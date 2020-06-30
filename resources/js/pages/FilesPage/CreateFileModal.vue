@@ -1059,7 +1059,8 @@ export default {
             this.uploadingFile = false
         },
         uploadImagesProgressCalback(progress) {
-            this.submitStatus = `Uploading images. This may take a while. ${progress}% done.`
+            this.submitStatus = `Uploading images. This may take a while.<br>
+            <strong>${progress}%</strong> done.`
         },
         reset() {
             this.availableFiles = []
