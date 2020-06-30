@@ -530,7 +530,7 @@ export default {
             if (await this.$refs.deleteFolderDialog.confirm()) {
                 this.deleteFile(folder)
                 // Remove the item from our selection
-                this.selected = this.selected.filter(x => x.id != folderId)
+                this.selected = this.selected.filter(x => x.id != folder.id)
             }
         },
         onNewFolder() {
@@ -576,7 +576,7 @@ export default {
             if (await this.$refs.deleteFileDialog.confirm()) {
                 this.deleteFile(file)
                 // Remove the item from our selection
-                this.selected = this.selected.filter(x => x.id != fileId)
+                this.selected = this.selected.filter(x => x.id != file.id)
             }
         },
         onRenameFile(file, index) {
