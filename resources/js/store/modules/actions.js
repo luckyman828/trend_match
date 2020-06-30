@@ -18,6 +18,10 @@ export default {
             // Save the old actions
             const oldActions = JSON.parse(JSON.stringify(actions))
             const authUser = rootGetters['auth/authUser']
+
+            // Figure out variant input
+            console.log('update actions', actions)
+
             // Update the action
             commit(
                 'products/UPDATE_ACTIONS',

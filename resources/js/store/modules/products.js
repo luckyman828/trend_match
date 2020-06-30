@@ -1251,12 +1251,17 @@ export default {
                         selectionAction.action = newAction
                         selectionAction.user = user
                         // Update variant actions - if the product is OUT no variant can be IN
-                        if (newAction == 'Out') {
-                            action.variants.map(variant => {
-                                variant.feedback = 'Out'
+                        selectionInput.variants.map(variant => {
+                            // Check if an action for the variant already exists
+                            if (variant.action == 'None') {
+                                variant.action = newAction
+                            }
+                            // variant.action = newAction
+                            if (newAction == 'Out') {
+                                variant.action = 'Out'
                                 variant.quantity = 0
-                            })
-                        }
+                            }
+                        })
                     }
                 })
             })
@@ -1294,12 +1299,16 @@ export default {
                         selectionAction.action = newAction
                         selectionAction.user = user
                         // Update variant actions - if the product is OUT no variant can be IN
-                        if (newAction == 'Out') {
-                            action.variants.map(variant => {
-                                variant.feedback = 'Out'
-                                variant.quantity = 0
-                            })
-                        }
+                        selectionInput.variants.map(variant => {
+                            // Check if an action for the variant already exists
+                            if (variant.your_feedback == 'None') {
+                                variant.your_feedback = newAction
+                            }
+                            // variant.action = newAction
+                            if (newAction == 'Out') {
+                                variant.your_feedback = 'Out'
+                            }
+                        })
                     }
                 })
             })

@@ -39,6 +39,7 @@
             </div>
 
             <div class="quantity-input" v-if="showQty && selectionMode != 'Approval'">
+                <p>Hello</p>
                 <BaseInputField ref="qtyInput" inputClass="small" v-model.number="newQuantity"
                 :selectOnFocus="true" type="number"
                 @keyup.enter.native="onSubmitQuantity"/>
@@ -124,7 +125,8 @@ export default {
                 this.variant.quantity = 0
                 this.newQuantity = 0
             }
-            let currentAction 
+            let currentAction
+            let newProductAction
             
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None
@@ -137,24 +139,30 @@ export default {
 
             // If the product has no action, set it's action to the variants new action
             if (currentAction.action == 'None') {
-                currentAction.action = newAction
+                console.log('set current action - was none')
+                // currentAction.action = newAction
+                newProductAction = newAction
             }
             // If all variants are marked OUT, mark the product OUT
             else if (!this.selectionInput.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
-                currentAction.action = 'Out'
+                // currentAction.action = 'Out'
+                newProductAction = 'Out'
+                console.log('set current action - was none')
             }
             // If at least ONE varaint in IN or FOCUS mark the product as IN
             else if (this.selectionInput.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
                 if (this.selectionInput[this.currentAction] != 'Focus') {
-                    currentAction.action = 'In'
+                    // currentAction.action = 'In'
+                    newProductAction = 'In'
+                    console.log('set current action - was none')
                 }
             }
 
             if (this.selectionMode == 'Feedback') {
-                this.updateFeedbacks({actions: [currentAction], newAction})
+                this.updateFeedbacks({actions: [currentAction], newAction: newProductAction})
             }
             if (this.selectionMode == 'Alignment') {
-                this.updateActions({actions: [currentAction], newAction})
+                this.updateActions({actions: [currentAction], newAction: newProductAction})
             }
 
         },
@@ -165,7 +173,7 @@ export default {
             if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
                 actionToSet = 'In'
             }
-            // if (newQty == 0) actionToSet = 'Out'
+            if (newQty == 0) actionToSet = 'Out'
             this.updateVariantAction(actionToSet)
         }
     },
