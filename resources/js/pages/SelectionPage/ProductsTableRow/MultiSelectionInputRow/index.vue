@@ -1,6 +1,8 @@
 <template>
     <div class="multi-selection-input-row flex-table-row">
-        <SelectionInputGroup v-for="(selectionInput, index) in product.selectionInputList" :key="selectionInput.selection.id"
+        <SelectionInputGroup v-for="(selectionInput, index) 
+        in product.selectionInputList.filter(selectionInput => getCurrentSelections.find(selection => selectionInput.selection_id == selection.id))" 
+        :key="selectionInput.selection.id"
         :selection="selectionInput.selection" :product="product" :selectionInput="selectionInput" :index="index"
         :currentAction="currentAction" :focusGroupIndex="focusGroupIndex"
         :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
@@ -24,7 +26,8 @@ export default {
         SelectionInputGroup
     },
     computed: {
-        ...mapGetters('auth', ['authUser'])
+        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['getCurrentSelections'])
     },
     methods: {
         ...mapMutations('actions', ['UPDATE_ACTIONS']),

@@ -1,9 +1,9 @@
 <template>
     <div class="selection-input-group" v-if="selectionInput" tabindex="0" ref="selectionInputGroup"
     @keyup="keypressHandler($event)">
-        <span class="name"
+        <span class="name" v-tooltip="selection.name.length > 18 ? selection.name : ''"
         @click="onViewSingle">
-            {{selection.name}}
+            {{selection.name | truncate(18)}}
         </span>
         <div class="selection-action-buttons">
 
