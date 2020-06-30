@@ -197,30 +197,21 @@ export default{
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentArrived", selectionId, comment)
                 const product = this.products.find(x => x.id == comment.product_id)
-                const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-                if (!comment.selection) {
-                    delete comment.selection
-                }
-                this.INSERT_OR_UPDATE_COMMENT({product: selectionProduct, comment})
+                this.INSERT_OR_UPDATE_COMMENT({selectionInput: this.getActiveSelectionInput(product), comment})
             }
         },
         commentDeletedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentDeleted", selectionId, comment)
                 const product = this.products.find(x => x.id == comment.product_id)
-                const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-                this.DELETE_COMMENT({product: selectionProduct, commentId: comment.comment_id})
+                this.DELETE_COMMENT({selectionInput: this.getActiveSelectionInput(product), comment})
             }
         },
         requestArrivedHandler(selectionId, request) {
             if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
-                const selectionProduct = product.selectionInputList.find(x => x.selection.id == selectionId).product
-                if (!request.selection) {
-                    delete request.selection
-                }
-                this.INSERT_OR_UPDATE_REQUEST({product: selectionProduct, request})
+                this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
             }
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
