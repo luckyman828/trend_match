@@ -235,8 +235,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_feedback')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_feedback')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -315,8 +315,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_action')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_action')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -395,8 +395,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_comment')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_comment')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -475,8 +475,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_request')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -517,6 +517,13 @@
                     <BaseSelectButtons type="radio" :submitOnChange="true"
                     v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
                     :options="displayLevelOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
+
+                <BaseContextMenu ref="contextAuthorLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
+                    :options="displayAuthorOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
 
@@ -657,6 +664,16 @@ export default {
                 value: 'Owner',
                 label: 'Owners'
             },
+        ],
+        displayAuthorOptions: [
+            {
+                value: 'Member',
+                label: 'Everyone'
+            },
+            {
+                value: 'Owner',
+                label: 'Owners'
+            },
             {
                 value: 'None',
                 label: 'No one'
@@ -726,12 +743,14 @@ export default {
             this.contextSelectionOption = option
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextParentLevel.show(e)
         },
         showChildLevelContext(e, option) {
             this.contextSelectionOption = option
             this.$refs.contextParentLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextChildLevel.show(e)
         },
         showDisplayLevelContext(e, settings, key) {
@@ -739,7 +758,16 @@ export default {
             this.contextSelectionSettingsKey = key
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextDisplayLevel.show(e)
+        },
+        showDisplayAuthorContext(e, settings, key) {
+            this.contextSelectionSettings = settings
+            this.contextSelectionSettingsKey = key
+            this.$refs.contextParentLevel.hide()
+            this.$refs.contextChildLevel.hide()
+            this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.show(e)
         },
         onCloneSettings(e) {
             this.$refs.contextCloneSettings.show(e)
