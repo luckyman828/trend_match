@@ -332,7 +332,6 @@ export default {
                             },
                             { root: true }
                         )
-                        commit('updateProduct', product)
 
                         // Add the created ID to the product, if we only have 1 product
                         if (products.length <= 1) {
