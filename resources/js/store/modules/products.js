@@ -471,6 +471,47 @@ export default {
                     })
             })
         },
+        async updateManyProducts({ commit, dispatch }, { file, products }) {
+            return new Promise((resolve, reject) => {
+                const apiUrl = `/products?file_id=${file.id}`
+                axios
+                    .post(apiUrl, {
+                        method: 'Add',
+                        products,
+                    })
+                    .then(response => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${products.length} products updated`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+
+                        products.map(product => {
+                            commit('updateProduct', product)
+                        })
+                        resolve(response)
+                    })
+                    .catch(err => {
+                        reject(err)
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong when updating products. Please try again.',
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('updateManyProducts', { file, products }),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                    })
+            })
+        },
         async uploadImage({ commit, dispatch }, { file, product, variant, image, callback }) {
             return new Promise(async (resolve, reject) => {
                 // First generate presigned URL we can put the image to from the API
@@ -816,7 +857,7 @@ export default {
         updateProduct(state, product) {
             // Replace the product with the new
             let stateProduct = state.products.find(x => x.id == product.id)
-            Object.assign(stateProduct, product)
+            if (stateProduct) Object.assign(stateProduct, product)
             // Check if we also need to update the current product
             if (state.currentProduct && state.currentProduct.id == product.id) {
                 Object.assign(state.currentProduct, product)

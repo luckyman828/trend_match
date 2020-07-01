@@ -53,7 +53,7 @@
                                         <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
-                                <img v-if="variant.image || variant.blob_id" 
+                                <img v-if="variant.image || variant.blob_id"  :key="`image-${variant.id ? variant.id : index}`"
                                 :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
@@ -411,6 +411,7 @@ export default {
         },
     },
     methods: {
+        ...mapActions('files', ['syncExternalImages']),
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts', 'initProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
@@ -548,10 +549,7 @@ export default {
                         product: productToEdit,
                         variant: editVariant,
                         image: variant.imageToUpload.file, 
-                        callback: progress => {
-                            editVariant.imageToUpload.progress = progress
-                        }
-                    }).then(response => {
+                    }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
                         // Remove the image to upload
                         delete variant.imageToUpload
                     }).catch(err => {
@@ -726,10 +724,12 @@ export default {
         },
         async setVariantImageURL(variant, imageURL) {
             variant.image = imageURL
-            const image = await this.getImageFromURL(imageURL)
-            if (image) {
-                this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
-            }
+            await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
+            // const image = await this.getImageFromURL(imageURL)
+            // if (image) {
+            //     this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
+            // }
+            
         },
     },
     created() {
