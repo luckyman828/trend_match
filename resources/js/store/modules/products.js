@@ -13,6 +13,7 @@ export default {
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
+        advancedFilter: null,
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
@@ -77,6 +78,12 @@ export default {
         },
         getSelectedSelectionIds: state => {
             return state.selectedSelectionIds
+        },
+        getHasAdvancedFilter: state => {
+            return !!state.advancedFilter && state.advancedFilter.length > 0
+        },
+        getAdvancedFilter: state => {
+            return state.advancedFilter
         },
         unreadOnly: state => {
             return state.unreadOnly
@@ -213,6 +220,30 @@ export default {
                         product => getSelectionInput(product).hasUnreadApproverComment
                     )
                 }
+            }
+
+            // Filter by advanced filters
+            console.log('filter b advanced', getters.getHasAdvancedFilter, getters.advancedFilter)
+            if (getters.getHasAdvancedFilter) {
+                console.log('filter by advanced filter')
+                productsToReturn = productsToReturn.filter(product => {
+                    let include = true
+                    getters.getAdvancedFilter.forEach((filter, index) => {
+                        const filterKey = filter.key.value
+                        const keyValue = Array.isArray(product[filterKey])
+                            ? product[filterKey].length
+                            : product[filterKey]
+                        const operator = filter.operator
+                        const value = filter.value
+                        if (index == 0) console.log('filter products', keyValue, operator, value)
+                        if (operator == '>' && keyValue <= value) include = false
+                        if (operator == '>=' && keyValue < value) include = false
+                        if (operator == '=' && keyValue != value) include = false
+                        if (operator == '<=' && keyValue > value) include = false
+                        if (operator == '<' && keyValue >= value) include = false
+                    })
+                    return include
+                })
             }
 
             // Filter by actions
@@ -803,6 +834,9 @@ export default {
         },
         SET_SELECTED_SELECTION_IDS(state, payload) {
             state.selectedSelectionIds = payload
+        },
+        SET_ADVANCED_FILTER(state, payload) {
+            state.advancedFilter = payload
         },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload

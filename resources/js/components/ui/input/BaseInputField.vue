@@ -1,6 +1,6 @@
 <template>
     <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label}]">
-        <div v-tooltip.top="errorTooltip" :class="[{'input-wrapper': type == 'select'}]" @click="onClick">
+        <div v-tooltip.top="errorTooltip" :class="[{'input-wrapper': type == 'select'}, inputClass]" @click="onClick">
             <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
             :value="value" :disabled="disabled || readOnly"
