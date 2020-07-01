@@ -20,14 +20,25 @@ export default {
         availableSelectionRoles: [
             {
                 role: 'Member',
-                description: 'Gives feedback and makes comments',
+                description: "No rights, other than the ones provided by the user's job",
             },
             {
                 role: 'Owner',
+                description:
+                    'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
+            },
+        ],
+        availableSelectionJobs: [
+            {
+                role: 'Feedback',
+                description: 'Gives feedback and makes comments',
+            },
+            {
+                role: 'Alignment',
                 description: 'Aligns the selection',
             },
             {
-                role: 'Approver',
+                role: 'Approval',
                 description: 'Replies to requests',
             },
         ],
@@ -128,6 +139,9 @@ export default {
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
         },
+        getAvailableSelectionJobs: state => {
+            return state.availableSelectionJobs
+        },
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
         },
@@ -206,6 +220,7 @@ export default {
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
+            console.log('fetch selection')
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
             commit('SET_SELECTION_USERS_STATUS', 'loading')
             commit('SET_SELECTION_TEAMS_STATUS', 'loading')
@@ -539,7 +554,7 @@ export default {
                         { root: true }
                     )
                 })
-            dispatch('calculateSelectionUsers', selection)
+            // dispatch('calculateSelectionUsers', selection)
         },
         async removeUsersFromSelection({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
@@ -754,6 +769,7 @@ export default {
             }
         },
         async calculateSelectionUsers({ commit, dispatch }, selection) {
+            console.log('calculate selection users')
             // This functions finds all the users who have access to the selection and adds them to the users array on the selection
             const newSelection = await dispatch('fetchSelection', { selectionId: selection.id })
             commit('setSelectionUsers', { selection, users: newSelection.users })
@@ -1063,6 +1079,30 @@ export default {
                         return !!from && now > from
                     },
                 })
+
+                // Start process users
+                if (selection.users) {
+                    selection.users.map(user => {
+                        Object.defineProperty(user, 'job', {
+                            get: () => {
+                                return user.roles.filter(x => !['Owner', 'Member'].includes(x))[0]
+                            },
+                            set: function(value) {
+                                console.log('set user job', value)
+                                // Find the existing value
+                                const currentJobIndex = user.roles.findIndex(job => !['Owner', 'Member'].includes(job))
+                                if (currentJobIndex >= 0) {
+                                    user.roles.splice(currentJobIndex, 1, value)
+                                } else {
+                                    user.roles.push(value)
+                                }
+                                console.log(user.roles)
+                            },
+                        })
+                    })
+                }
+
+                // End process users
             })
         },
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {
