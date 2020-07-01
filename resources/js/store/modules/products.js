@@ -1258,8 +1258,8 @@ export default {
                                 variant.action = newAction
                             }
                             // variant.action = newAction
-                            if (newAction == 'Out') {
-                                variant.action = 'Out'
+                            if (['Out', 'None'].includes(newAction)) {
+                                variant.action = newAction
                                 variant.quantity = 0
                             }
                         })
@@ -1306,8 +1306,8 @@ export default {
                                 variant.your_feedback = newAction
                             }
                             // variant.action = newAction
-                            if (newAction == 'Out') {
-                                variant.your_feedback = 'Out'
+                            if (['Out', 'None'].includes(newAction)) {
+                                variant.your_feedback = newAction
                             }
                         })
                     }
