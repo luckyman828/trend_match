@@ -250,9 +250,7 @@ export default {
                     products = response.data
                     if (addToState) {
                         commit('insertProducts', { products, method: 'set' })
-                        dispatch('initProducts', {
-                            products,
-                        })
+                        dispatch('initProducts', products)
                     }
                     commit('SET_PRODUCTS_STATUS', 'success')
                 })
@@ -607,7 +605,7 @@ export default {
                 }
             })
         },
-        initProducts({ state, rootGetters }, { products }) {
+        initProducts({ state, rootGetters }, products) {
             products.map(product => {
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'

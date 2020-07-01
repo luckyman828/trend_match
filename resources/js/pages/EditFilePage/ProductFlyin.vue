@@ -399,7 +399,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts', 'initProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async onDeleteProduct() {
@@ -420,6 +420,7 @@ export default {
         initProduct() {
             // Make a copy of the product, so we can check for changes compared to the original
             this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+            this.initProducts([this.productToEdit])
 
             // Check if the product has any currencies, else add a default currency
             // if (this.productToEdit.prices.length < 1) {
