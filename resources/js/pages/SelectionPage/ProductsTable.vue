@@ -338,7 +338,7 @@ export default {
         tooltipProduct: null,
         distributionTooltipType: null,
         distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
-        actionDistributionTooltipTab: this.distributionScope,
+        actionDistributionTooltipTab: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
     }},
     computed: {
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
