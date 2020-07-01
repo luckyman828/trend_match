@@ -12,7 +12,7 @@
                 :optionNameKey="optionNameKey" :search="search" @submit="submit" @unset="$emit('unset')"/>
             </div>
         </template>
-        <template v-slot:footer="slotProps">
+        <template v-slot:footer="slotProps" v-if="!submitOnChange">
             <div class="item-wrapper">
                 <button class="primary" :class="{disabled: submitDisabled}" style="margin-right: 8px;" 
                 @click="submit() ;slotProps.hide();">
