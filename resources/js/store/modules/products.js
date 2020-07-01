@@ -208,10 +208,11 @@ export default {
             }
 
             // Filter by actions
-            if (['ins', 'outs', 'nds'].includes(actionFilter)) {
+            if (['ins', 'outs', 'nds', 'focus'].includes(actionFilter)) {
                 const filteredByAction = productsToReturn.filter(product => {
                     if (actionFilter == 'nds') return !product[currentAction] || product[currentAction] == 'None'
                     if (actionFilter == 'outs') return product[currentAction] == 'Out'
+                    if (actionFilter == 'focus') return product[currentAction] == 'Focus'
                     if (actionFilter == 'ins')
                         return product[currentAction] == 'In' || product[currentAction] == 'Focus'
                 })

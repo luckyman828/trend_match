@@ -9,7 +9,7 @@
                 <BaseTableTab :label="`In`" :count="productTotals.ins + productTotals.focus" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="ins"/>
+                :modelValue="InsTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/>
                 <BaseTableTab :label="`Out`" :count="productTotals.outs" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -311,6 +311,7 @@ export default {
         distributionTooltipType: null,
         distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
         actionDistributionTooltipTab: this.distributionScope,
+        InsTabValue: 'ins',
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
@@ -384,6 +385,12 @@ export default {
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        onToggleFocusOnly(focusOnly) {
+            console.log('on toggle focus', focusOnly)
+            if (this.currentProductFilter == 'ins' && focusOnly) this.currentProductFilter = 'focus'
+            if (this.currentProductFilter == 'focus' && !focusOnly) this.currentProductFilter = 'ins'
+            this.InsTabValue = focusOnly ? 'focus' : 'ins'
+        },
         showVariantTooltip({variant, product}) {
             this.tooltipVariant = variant
             this.tooltipProduct = product
