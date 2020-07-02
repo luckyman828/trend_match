@@ -1,5 +1,6 @@
 <template>
     <div class="conditional-filters">
+        <div class="overlay" v-close-popover></div>
         <h3>Advanced filters</h3>
 
         <template></template>
@@ -21,7 +22,8 @@
                 <template slot="popover">
                     <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
                     type="radio" :submitOnChange="true" 
-                    :options="availableOperators" v-model="keyFilter.operator"/>
+                    :options="availableOperators" optionNameKey="name" optionValueKey="value"
+                    v-model="keyFilter.operator"/>
                 </template>
             </v-popover>
 
@@ -53,7 +55,7 @@
                     :value="userFilter.operator" type="select" inputClass="small"/>
                     <template slot="popover">
                         <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
-                        type="radio" :submitOnChange="true" 
+                        type="radio" :submitOnChange="true" optionNameKey="name" optionValueKey="value"
                         :options="availableUserOperators" v-model="userFilter.operator"/>
                     </template>
                 </v-popover>
@@ -185,8 +187,12 @@ export default {
             operator: '=',
             user: {name: 'Choose user'},
         },
-        availableOperators: ['>', '<', '=', '!=', '<=', '>='],
-        availableUserOperators: ['=', '!='],
+        availableOperators: [
+            {name: '> Greater than', value: '>'}, {name: '< Less than', value: '<'}, {name: '= Equal to', value: '='}, {name: '!= Not equal to', value: '!='}
+        ],
+        availableUserOperators: [
+            {name: '= Equal to', value: '='}, {name: '!= Not equal to', value: '!='}
+        ],
         availableActionTypes: ['In', 'Out', 'Focus', 'None'],
         keyFilters: [],
         contextKeyFilter: [],
@@ -285,7 +291,16 @@ export default {
 <style lang="scss" scoped>
 .conditional-filters {
     padding: 16px;
-    width: 300px;
+    width: 298px;
+    .overlay {
+        display: block;
+        height: 200vh;
+        width: 200vw;
+        top: -100vh;
+        left: -100vw;
+        z-index: -1;
+        background: none;
+    }
     .key-filter {
         display: flex;
         margin-bottom: 8px;
