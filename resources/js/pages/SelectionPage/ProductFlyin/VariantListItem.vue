@@ -2,7 +2,7 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <div class="variant">
             <div class="img-wrapper">
-                <img :src="variantImage(variant)">
+                <img :src="variantImage(variant,'sm')">
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="pill ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
@@ -14,7 +14,7 @@
                 <div class="quantity-progress" v-if="selection.budget > 0" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
             </div>
             <div class="color-wrapper">
-                <div class="circle-img"><img :src="variantImage(variant)"></div>
+                <div class="circle-img"><img :src="variantImage(variant, 'sm')"></div>
                 <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
             </div>
         </div>

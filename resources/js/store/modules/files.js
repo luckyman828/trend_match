@@ -279,7 +279,6 @@ export default {
             )
 
             const sendRequest = async () => {
-                console.log('send request!')
                 await axios
                     .delete(apiUrl)
                     .then(response => {
@@ -321,7 +320,6 @@ export default {
             }
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
-            console.log('delete multiple files', files)
             commit('DELETE_MULTIPLE_FILES', files)
 
             // Start timer for deletion
@@ -458,6 +456,77 @@ export default {
                     }
                 })
                 .catch(() => {})
+        },
+        async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
+            return new Promise(async (resolve, reject) => {
+                // Get owners for file
+                const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
+
+                const imageMaps = []
+                products.map(product => {
+                    product.variants.map(variant => {
+                        if (!variant.image) return
+                        imageMaps.push({
+                            mapping_id: variant.id,
+                            datasource_id: product.datasource_id,
+                            url: variant.image,
+                        })
+                    })
+                })
+
+                const productsToUpdate = []
+
+                // Chunk the images
+                const array_chunks = (array, chunk_size) =>
+                    Array(Math.ceil(array.length / chunk_size))
+                        .fill()
+                        .map((_, index) => index * chunk_size)
+                        .map(begin => array.slice(begin, begin + chunk_size))
+                const imageMapChunks = array_chunks(imageMaps, 8)
+
+                // Upload a chunk at a time
+                let chunkIndex = 1
+                for await (const imageMaps of imageMapChunks) {
+                    await axios
+                        .post(apiUrl, {
+                            max_height: 2016,
+                            max_width: 1512,
+                            images: imageMaps,
+                        })
+                        .then(async response => {
+                            if (progressCallback) {
+                                const progressPercentage = ((chunkIndex / imageMapChunks.length) * 100).toFixed(0)
+                                progressCallback(progressPercentage)
+                            }
+                            const uploadedImages = response.data.media_url_maps
+                            uploadedImages.forEach(image => {
+                                const product = products.find(product =>
+                                    product.variants.find(variant => variant.id == image.mapping_id)
+                                )
+                                if (!product) return
+                                const variant = product.variants.find(variant => variant.id == image.mapping_id)
+
+                                if (!variant) return
+                                variant.image = image.cdn_url
+                                productsToUpdate.push(product)
+                            })
+                        })
+                        .catch(err => {
+                            reject(err)
+                        })
+                    chunkIndex++
+                }
+
+                // Update the products when we are done uploading
+                await dispatch(
+                    'products/updateManyProducts',
+                    { file, products: productsToUpdate },
+                    { root: true }
+                ).catch(err => {
+                    reject(err)
+                })
+                resolve()
+            })
         },
     },
 

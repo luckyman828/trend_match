@@ -64,5 +64,6 @@ svg {
     font-size: 12px;
     font-weight: 700;
     color: $fontSoft;
+    text-align: center;
 }
 </style>
