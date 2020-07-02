@@ -22,6 +22,7 @@ export default {
         status: null,
         currentFocusRowIndex: null,
         lastSort: null,
+        distributionScope: 'Feedback',
     },
 
     getters: {
@@ -30,6 +31,7 @@ export default {
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
+        getDistributionScope: state => state.distributionScope,
         getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
             const activeSelection = rootGetters['selections/getCurrentSelections'][0]
             return product.selectionInputList.find(selectionInput => selectionInput.selection_id == activeSelection.id)
@@ -223,13 +225,19 @@ export default {
             }
 
             // Filter by advanced filters
-            console.log('filter b advanced', getters.getHasAdvancedFilter, getters.advancedFilter)
             if (getters.getHasAdvancedFilter) {
-                console.log('filter by advanced filter')
                 productsToReturn = productsToReturn.filter(product => {
                     let include = true
                     getters.getAdvancedFilter.forEach((filter, index) => {
-                        const filterKey = filter.key.value
+                        let filterKey = filter.key.value
+                        if (getters.getDistributionScope == 'Alignment' && filterKey == 'ins')
+                            filterKey = 'alignmentIns'
+                        if (getters.getDistributionScope == 'Alignment' && filterKey == 'outs')
+                            filterKey = 'alignmentOuts'
+                        if (getters.getDistributionScope == 'Alignment' && filterKey == 'focus')
+                            filterKey = 'alignmentFocus'
+                        if (getters.getDistributionScope == 'Alignment' && filterKey == 'nds')
+                            filterKey = 'alignmentNds'
                         const keyValue = Array.isArray(product[filterKey])
                             ? product[filterKey].length
                             : product[filterKey]
@@ -1360,6 +1368,9 @@ export default {
                     }
                 })
             })
+        },
+        SET_DISTRIBUTION_SCOPE(state, newScope) {
+            state.distributionScope = newScope
         },
     },
 }

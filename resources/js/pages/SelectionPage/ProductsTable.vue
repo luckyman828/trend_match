@@ -356,8 +356,7 @@ export default {
         tooltipVariant: null,
         tooltipProduct: null,
         distributionTooltipType: null,
-        distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
-        actionDistributionTooltipTab: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
+        actionDistributionTooltipTab: 'Feedback',
         showAdvancedFilters: false,
     }},
     computed: {
@@ -383,6 +382,14 @@ export default {
             },
             set(value) {
                 this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
+            }
+        },
+        distributionScope: {
+            get() {
+                return this.$store.getters['products/getDistributionScope']
+            },
+            set(value) {
+                this.SET_DISTRIBUTION_SCOPE(value)
             }
         },
         currentProductFilter: {
@@ -438,7 +445,7 @@ export default {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER']),
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
@@ -522,6 +529,9 @@ export default {
     },
     created() {
         document.addEventListener('keydown', this.hotkeyHandler)
+        // Preset distribution scope
+        this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
+        this.actionDistributionTooltipTab = this.distributionScope
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)

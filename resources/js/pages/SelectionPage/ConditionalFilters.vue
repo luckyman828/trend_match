@@ -141,7 +141,11 @@ export default {
             return this.products.filter(product => {
                 let include = true
                 this.keyFilters.forEach(filter => {
-                    const filterKey = filter.key.value
+                    let filterKey = filter.key.value
+                    if (this.distributionScope == 'Alignment' && filterKey == 'ins') filterKey = 'alignmentIns'
+                    if (this.distributionScope == 'Alignment' && filterKey == 'outs') filterKey = 'alignmentOuts'
+                    if (this.distributionScope == 'Alignment' && filterKey == 'focus') filterKey = 'alignmentFocus'
+                    if (this.distributionScope == 'Alignment' && filterKey == 'nds') filterKey = 'alignmentNds'
                     const keyValue = Array.isArray(product[filterKey]) ? product[filterKey].length : product[filterKey]
                     const operator = filter.operator
                     const value = filter.value
