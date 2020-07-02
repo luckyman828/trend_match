@@ -418,6 +418,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
+                            job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -1081,26 +1082,26 @@ export default {
                 })
 
                 // Start process users
-                if (selection.users) {
-                    selection.users.map(user => {
-                        Object.defineProperty(user, 'job', {
-                            get: () => {
-                                return user.roles.filter(x => !['Owner', 'Member'].includes(x))[0]
-                            },
-                            set: function(value) {
-                                console.log('set user job', value)
-                                // Find the existing value
-                                const currentJobIndex = user.roles.findIndex(job => !['Owner', 'Member'].includes(job))
-                                if (currentJobIndex >= 0) {
-                                    user.roles.splice(currentJobIndex, 1, value)
-                                } else {
-                                    user.roles.push(value)
-                                }
-                                console.log(user.roles)
-                            },
-                        })
-                    })
-                }
+                // if (selection.users) {
+                //     selection.users.map(user => {
+                //         Object.defineProperty(user, 'job', {
+                //             get: () => {
+                //                 return user.roles.filter(x => !['Owner', 'Member'].includes(x))[0]
+                //             },
+                //             set: function(value) {
+                //                 console.log('set user job', value)
+                //                 // Find the existing value
+                //                 const currentJobIndex = user.roles.findIndex(job => !['Owner', 'Member'].includes(job))
+                //                 if (currentJobIndex >= 0) {
+                //                     user.roles.splice(currentJobIndex, 1, value)
+                //                 } else {
+                //                     user.roles.push(value)
+                //                 }
+                //                 console.log(user.roles)
+                //             },
+                //         })
+                //     })
+                // }
 
                 // End process users
             })
