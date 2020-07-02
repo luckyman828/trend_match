@@ -55,7 +55,7 @@ export default {
         ...mapGetters('products', ['products']),
     },
     methods: {
-        ...mapActions('products', ['setAvailableProducts', 'instantiateNewProduct']),
+        ...mapActions('products', ['instantiateNewProduct']),
         ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble', 'updateProduct']),
         async onNewProduct() {
             const newProduct = await this.instantiateNewProduct()

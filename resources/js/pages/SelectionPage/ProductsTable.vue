@@ -417,7 +417,7 @@ export default {
     methods: {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
-        'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
+        'updateSelectedBuyerGroups','setCurrentProduct',
         'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),

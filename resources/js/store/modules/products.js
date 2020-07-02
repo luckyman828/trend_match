@@ -36,6 +36,9 @@ export default {
         availableProducts: state => {
             return state.availableProducts
         },
+        getAvailableProducts: state => {
+            return state.availableProducts
+        },
         nextProduct: (state, getters, rootState, rootGetters) => {
             // If we have a nextProduct in our presenterQueue, then use that instead
             const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
@@ -43,7 +46,7 @@ export default {
                 return nextPresentationQueueProduct
             }
 
-            const availableProducts = getters.getProductsFilteredBySearch
+            const availableProducts = getters.getAvailableProducts
             // Find the index of the current product
             const index = availableProducts.findIndex(x => x.id == state.currentProduct.id)
             // Check that the current is not the last in the array
@@ -58,7 +61,7 @@ export default {
                 return prevPresentationQueueProduct
             }
 
-            const availableProducts = getters.getProductsFilteredBySearch
+            const availableProducts = getters.getAvailableProducts
             // Find the index of the current product
             const index = availableProducts.findIndex(x => x.id == state.currentProduct.id)
             // Check that the current is not the first in the array
@@ -301,6 +304,9 @@ export default {
             // Set the current PDP selection
             commit('selections/SET_CURRENT_PDP_SELECTION', selection, { root: true })
 
+            // Save the list of products that should be available in pdp navigation
+            commit('SET_AVAILABLE_PRODUCTS', getters.getProductsFilteredBySearch)
+
             // Show the single PDP
             commit('setSingleVisisble', true)
         },
@@ -421,9 +427,6 @@ export default {
         },
         setCurrentProduct({ commit }, product) {
             commit('setCurrentProduct', product)
-        },
-        setAvailableProducts({ commit }, products) {
-            commit('setAvailableProducts', products)
         },
         showNextProduct({ commit, getters }) {
             commit('setCurrentProduct', getters.nextProduct)
@@ -789,7 +792,7 @@ export default {
         setCurrentFocusRowIndex(state, index) {
             state.currentFocusRowIndex = index
         },
-        setAvailableProducts(state, products) {
+        SET_AVAILABLE_PRODUCTS(state, products) {
             state.availableProducts = products
         },
         updateSelectedCategories(state, payload) {
@@ -1151,7 +1154,6 @@ export default {
                             return selectionAction ? selectionAction.quantity : 0
                         },
                         set: function(newQuantity) {
-                            console.log('set quantity')
                             // Find the current action for the variant input for this action action
                             const currentAction = selectionInput.actions.find(
                                 action => action.selection_id == selectionInput.selection_id

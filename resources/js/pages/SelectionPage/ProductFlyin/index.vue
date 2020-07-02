@@ -237,7 +237,7 @@ export default {
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
-            availableProducts: 'getProductsFilteredBySearch'
+            availableProducts: 'getAvailableProducts'
         }),
         ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('selections', {
