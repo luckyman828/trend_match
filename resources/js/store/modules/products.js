@@ -13,6 +13,7 @@ export default {
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
+        advancedFilter: null,
         unreadOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
@@ -21,6 +22,7 @@ export default {
         status: null,
         currentFocusRowIndex: null,
         lastSort: null,
+        distributionScope: 'Feedback',
     },
 
     getters: {
@@ -29,6 +31,7 @@ export default {
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
+        getDistributionScope: state => state.distributionScope,
         getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
             const activeSelection = rootGetters['selections/getCurrentSelections'][0]
             return product.selectionInputList.find(selectionInput => selectionInput.selection_id == activeSelection.id)
@@ -80,6 +83,12 @@ export default {
         },
         getSelectedSelectionIds: state => {
             return state.selectedSelectionIds
+        },
+        getHasAdvancedFilter: state => {
+            return !!state.advancedFilter && state.advancedFilter.length > 0
+        },
+        getAdvancedFilter: state => {
+            return state.advancedFilter
         },
         unreadOnly: state => {
             return state.unreadOnly
@@ -216,6 +225,78 @@ export default {
                         product => getSelectionInput(product).hasUnreadApproverComment
                     )
                 }
+            }
+
+            // Filter by advanced filters
+            if (getters.getHasAdvancedFilter) {
+                productsToReturn = productsToReturn.filter(product => {
+                    let include = true
+                    getters.getAdvancedFilter.forEach((filter, index) => {
+                        // FILTER BY USER FEEDBACK
+                        if (filter.type == 'user') {
+                            if (!filter.user.user_id) return
+                            const operator = filter.operator
+                            const userId = filter.user.user_id
+                            const selectionId = filter.user.selection_id
+                            const selectionInput = getSelectionInput(product)
+                            const userFeedback = selectionInput.feedbacks.find(
+                                feedback => feedback.user_id == userId && feedback.selection_id == selectionId
+                            )
+                            if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
+                                include = false
+                            if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.actionType))
+                                include = false
+                        }
+
+                        // FILTER BY KEY
+                        else {
+                            if (filter.key.value == null) return
+                            let filterKey = filter.key.value
+                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'ins')
+                                filterKey = 'alignmentIns'
+                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'outs')
+                                filterKey = 'alignmentOuts'
+                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'focus')
+                                filterKey = 'alignmentFocus'
+                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'nds')
+                                filterKey = 'alignmentNds'
+                            const keyValue = Array.isArray(product[filterKey])
+                                ? product[filterKey].length
+                                : product[filterKey]
+                            const operator = filter.operator
+                            const value = filter.value
+                            if (operator == '>' && keyValue <= value) include = false
+                            if (operator == '>=' && keyValue < value) include = false
+                            if (operator == '=' && keyValue != value) include = false
+                            if (operator == '!=' && keyValue == value) include = false
+                            if (operator == '<=' && keyValue > value) include = false
+                            if (operator == '<' && keyValue >= value) include = false
+                        }
+
+                        // let filterKey = filter.key.value
+                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'ins')
+                        //     filterKey = 'alignmentIns'
+                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'outs')
+                        //     filterKey = 'alignmentOuts'
+                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'focus')
+                        //     filterKey = 'alignmentFocus'
+                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'nds')
+                        //     filterKey = 'alignmentNds'
+                        // const keyValue = Array.isArray(product[filterKey])
+                        //     ? product[filterKey].length
+                        //     : product[filterKey]
+                        // const operator = filter.operator
+                        // const value = filter.value
+                        // if (index == 0) console.log('filter products', keyValue, operator, value)
+                        // if (operator == '>' && keyValue <= value) include = false
+                        // if (operator == '>=' && keyValue < value) include = false
+                        // if (operator == '=' && keyValue != value) include = false
+                        // if (operator == '!=' && keyValue == value) include = false
+                        // if (operator == '<=' && keyValue > value) include = false
+                        // if (operator == '<' && keyValue >= value) include = false
+                    })
+                    return include
+                })
             }
 
             // Filter by actions
@@ -848,6 +929,9 @@ export default {
         SET_SELECTED_SELECTION_IDS(state, payload) {
             state.selectedSelectionIds = payload
         },
+        SET_ADVANCED_FILTER(state, payload) {
+            state.advancedFilter = payload
+        },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
         },
@@ -1369,6 +1453,9 @@ export default {
                     }
                 })
             })
+        },
+        SET_DISTRIBUTION_SCOPE(state, newScope) {
+            state.distributionScope = newScope
         },
     },
 }

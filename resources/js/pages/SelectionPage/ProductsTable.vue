@@ -31,6 +31,22 @@
                         ref="searchField"
                         v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 
+                        <v-popover trigger="click" :autoHide="false">
+                            <!-- <button class="ghost">
+                                <span>Advanced Filters</span>
+                            </button> -->
+                            <BaseButton buttonClass="ghost" @click="showAdvancedFilters = true">
+                                <span>Advanced Filters</span>
+                                <div v-if="getHasAdvancedFilter" class="circle primary xs">
+                                    <span>{{getAdvancedFilter.length}}</span>
+                                </div>
+                                <i class="far fa-chevron-down"></i>
+                            </BaseButton>
+                            <template slot="popover">
+                                <ConditionalFilters :distributionScope="distributionScope"/>
+                            </template>
+                        </v-popover>
+
                         <v-popover trigger="click" :disabled="availableCategories.length <= 0">
                             <BaseButton buttonClass="ghost" :disabled="availableCategories.length <= 0"
                             disabledTooltip="No categories available">
@@ -108,8 +124,9 @@
                         </BaseCheckboxInputField>
 
                         <button class="invisible primary" 
-                        v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelectionIds=[]; unreadOnly = false">
+                        v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
+                        || getHasAdvancedFilter"
+                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelectionIds=[]; unreadOnly = false; SET_ADVANCED_FILTER()">
                             <span>Clear filter</span>
                         </button>
 
@@ -310,6 +327,7 @@ import MultipleSelectionSelector from './MultipleSelectionSelector'
 import ActionDistributionTooltip from './ActionDistributionTooltip'
 import sortArray from '../../mixins/sortArray'
 import VariantTooltip from './VariantTooltip'
+import ConditionalFilters from './ConditionalFilters'
 
 export default {
     name: 'productsTable',
@@ -327,6 +345,7 @@ export default {
         MultipleSelectionSelector,
         ActionDistributionTooltip,
         VariantTooltip,
+        ConditionalFilters,
     },
     data: function() { return {
         sortKey: 'datasource_id',
@@ -337,12 +356,12 @@ export default {
         tooltipVariant: null,
         tooltipProduct: null,
         distributionTooltipType: null,
-        distributionScope: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
-        actionDistributionTooltipTab: this.selection.type == 'Master' ? 'Alignment' : 'Feedback',
+        actionDistributionTooltipTab: 'Feedback',
+        showAdvancedFilters: false,
     }},
     computed: {
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
-            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput']),
+            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput', 'getHasAdvancedFilter', 'getAdvancedFilter']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
             'currentSelectionMode', 'getAuthUserSelectionWriteAccess', 'getSelectionsAvailableForInputFiltering']),
         ...mapState('products', {stateProducts: 'products'}),
@@ -363,6 +382,14 @@ export default {
             },
             set(value) {
                 this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
+            }
+        },
+        distributionScope: {
+            get() {
+                return this.$store.getters['products/getDistributionScope']
+            },
+            set(value) {
+                this.SET_DISTRIBUTION_SCOPE(value)
             }
         },
         currentProductFilter: {
@@ -417,8 +444,8 @@ export default {
     methods: {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
-        'updateSelectedBuyerGroups','setCurrentProduct',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS']),
+        'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
@@ -502,6 +529,9 @@ export default {
     },
     created() {
         document.addEventListener('keydown', this.hotkeyHandler)
+        // Preset distribution scope
+        this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
+        this.actionDistributionTooltipTab = this.distributionScope
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
