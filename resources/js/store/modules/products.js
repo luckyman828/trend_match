@@ -911,7 +911,7 @@ export default {
                 })
                 Object.defineProperty(selectionInput, 'comments', {
                     get: function() {
-                        const allComments = rawSelectionInput.comments
+                        const allComments = rawSelectionInput.comments.filter(comment => !comment.is_deleted)
                         if (state.selectedSelectionIds.length > 0) {
                             return allComments.filter(x => state.selectedSelectionIds.includes(x.selection_id))
                         }

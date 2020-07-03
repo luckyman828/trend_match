@@ -9,7 +9,7 @@
 
         <template v-slot>
             <div class="comments-wrapper">
-                <comment v-for="(comment, index) in commentsSorted.filter(comment => !comment.is_deleted)" 
+                <comment v-for="(comment, index) in commentsSorted" 
                 :key="index" :comment="comment" :selectionInput="selectionInput"
                 :displayAuthor="selectionInput.comments[index+1] ? 
                 (selectionInput.comments[index+1].user_id != comment.user_id || selectionInput.comments[index+1].selection_id != comment.selection_id) 
