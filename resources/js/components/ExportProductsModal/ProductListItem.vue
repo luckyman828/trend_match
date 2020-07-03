@@ -168,7 +168,41 @@ export default {
         ...mapGetters('products', ['getActiveSelectionInput']),
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
-        }
+        },
+        // feedbackListUsers() {
+        //     const usersToReturn = []
+        //     // Find the users to add from the feedbacks array
+        //     this.selectionInput.feedbacks.map(feedback => {
+        //         // Don't include undecided users if the setting is set
+        //         if (!this.includeNotDecided && feedback.action == 'None') return
+        //         // Add the users
+        //         return {
+        //             user: feedback.user,
+        //             user_id: feedback.user_id,
+        //             selection: feedback.selection,
+        //             selection_id: feedback.selection_id,
+        //             action: feedback.action,
+        //             comments: []
+        //         }
+        //     })
+        //     // Find users from comments
+        //     this.selectionInput.comments.map(comment => {
+        //         const existingUser = usersToReturn.find(x => x.user_id == comment.user_id && x.selection_id == comment.selection_id)
+        //         if (existingUser) {
+        //             existingUser.comments.push(comment)
+        //         }
+        //         else {
+        //             return {
+        //                 user: comment.user,
+        //                 user_id: comment.user_id,
+        //                 selection: comment.selection,
+        //                 selection_id: comment.selection_id,
+        //                 action: null,
+        //                 comments: [comment]
+        //             }
+        //         }
+        //     })
+        // }
     }
 }
 </script>

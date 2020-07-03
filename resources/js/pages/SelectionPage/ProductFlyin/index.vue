@@ -49,11 +49,7 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-<<<<<<< HEAD
-                    <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
-=======
-                    <img :src="variantImage(product.variants[currentImgIndex], 'sm')">
->>>>>>> feat/fetch_images_to_blob
+                    <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')">
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
