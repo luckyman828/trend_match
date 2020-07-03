@@ -30,7 +30,7 @@
                         <div class="img-wrapper" style="position: relative; padding-top: 133.3333%;
                         border: solid 2px; height: 0; width: 100%; margin-bottom: 8px;
                         background-size: contain; background-position: center; background-repeat: no-repeat;"
-                        :style="{backgroundImage: `url(${variantImage(product.variants[0]), 'sm'})`}">
+                        :style="{backgroundImage: `url(${variantImage(product.variants[0], 'sm')})`}">
                         </div>
                     </div>
                     <table class="prices">
@@ -106,13 +106,12 @@
                     <div class="feedback-wrapper" style="border-bottom: solid 1px #E4E4E4;">
                         <strong style="font-size: 11px; margin-bottom: 4px; display: block;">Feedback & Comments</strong>
                             <div class="row" v-for="(feedback, index) 
-                        in selectionInput.feedbacks.filter(feedback => includeNotDecided ? true
-                        : feedback.action != 'None')" 
+                        in feedbackListUsers" 
                         :key="index"
                         style="display: -webkit-box; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
-                            <div style="overflow: hidden; white-space: nowrap; max-width: 80px; min-width: 80px;">
+                            <div style="overflow: hidden; white-space: nowrap; max-width: 120px; min-width: 120px;">
                                 <td style="font-size: 10px;">
-                                    <span style="font-size: 10px;">{{feedback.user ? feedback.user.name : 'Anonymous' | truncate(16)}}</span>
+                                    <span style="font-size: 10px;">{{feedback.user ? feedback.user.name : 'Anonymous' | truncate(12)}} ({{feedback.selection.name | truncate(10)}})</span>
                                 </td>
                             </div>
                             <div v-if="includeDistribution" 
@@ -127,9 +126,9 @@
                             <div v-if="exportComments" 
                             style="font-size: 10px; flex: 1; margin-left: 16px; padding: 1px;">
                                 <span style="font-size: 10px; display: block; margin-bottom: 4px;" 
-                                v-for="(comments, index) in selectionInput.comments.filter(x => x.user_id == feedback.user_id)" 
-                                :key="'comment-'+index">
-                                    {{comments.content}}
+                                v-for="comment in feedback.comments" 
+                                :key="comment.id">
+                                    {{comment.content}}
                                 </span>
                             </div>
                         </div>
@@ -169,40 +168,43 @@ export default {
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },
-        // feedbackListUsers() {
-        //     const usersToReturn = []
-        //     // Find the users to add from the feedbacks array
-        //     this.selectionInput.feedbacks.map(feedback => {
-        //         // Don't include undecided users if the setting is set
-        //         if (!this.includeNotDecided && feedback.action == 'None') return
-        //         // Add the users
-        //         return {
-        //             user: feedback.user,
-        //             user_id: feedback.user_id,
-        //             selection: feedback.selection,
-        //             selection_id: feedback.selection_id,
-        //             action: feedback.action,
-        //             comments: []
-        //         }
-        //     })
-        //     // Find users from comments
-        //     this.selectionInput.comments.map(comment => {
-        //         const existingUser = usersToReturn.find(x => x.user_id == comment.user_id && x.selection_id == comment.selection_id)
-        //         if (existingUser) {
-        //             existingUser.comments.push(comment)
-        //         }
-        //         else {
-        //             return {
-        //                 user: comment.user,
-        //                 user_id: comment.user_id,
-        //                 selection: comment.selection,
-        //                 selection_id: comment.selection_id,
-        //                 action: null,
-        //                 comments: [comment]
-        //             }
-        //         }
-        //     })
-        // }
+        feedbackListUsers() {
+            const usersToReturn = []
+            // Find the users to add from the feedbacks array
+            this.selectionInput.feedbacks.map(feedback => {
+                // Don't include undecided users if the setting is set
+                if (!this.includeNotDecided && feedback.action == 'None') return
+                // Add the users
+                usersToReturn.push({
+                    user: feedback.user,
+                    user_id: feedback.user_id,
+                    selection: feedback.selection,
+                    selection_id: feedback.selection_id,
+                    action: feedback.action,
+                    comments: []
+                })
+            })
+            // Find users from comments
+            if (this.exportComments) {
+                this.selectionInput.comments.map(comment => {
+                    const existingUser = usersToReturn.find(x => x.user_id == comment.user_id && x.selection_id == comment.selection_id)
+                    if (existingUser) {
+                        existingUser.comments.push(comment)
+                    }
+                    else {
+                        usersToReturn.push({
+                            user: comment.user,
+                            user_id: comment.user_id,
+                            selection: comment.selection,
+                            selection_id: comment.selection_id,
+                            action: 'None',
+                            comments: [comment]
+                        })
+                    }
+                })
+            }
+            return usersToReturn
+        }
     }
 }
 </script>
