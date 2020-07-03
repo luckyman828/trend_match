@@ -126,7 +126,7 @@
                         <button class="invisible primary" 
                         v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
                         || getHasAdvancedFilter"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; selectedSelectionIds=[]; unreadOnly = false; SET_ADVANCED_FILTER()">
+                        @click="resetFilters">
                             <span>Clear filter</span>
                         </button>
 
@@ -450,6 +450,14 @@ export default {
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        resetFilters() {
+            this.selectedCategories = []
+            this.selectedDeliveryDates = []
+            this.selectedBuyerGroups = []
+            this.selectedSelectionIds = []
+            this.unreadOnly = false
+            this.SET_ADVANCED_FILTER()
+        },
         showVariantTooltip({variant, product, selectionInput}) {
             this.tooltipVariant = variant
             this.tooltipProduct = product
@@ -535,6 +543,8 @@ export default {
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
+        // Reset all filters
+        this.resetFilters()
     }
 }
 </script>
