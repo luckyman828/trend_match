@@ -100,7 +100,6 @@ export default {
                 data: dataToPost,
             })
                 .then(response => {
-                    console.log(response)
                     succes = true
                     commit('ADD_USERS', response.data)
                     // Display message

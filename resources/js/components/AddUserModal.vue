@@ -4,7 +4,8 @@
         <form novalidate @submit="!submitDisabled && onSubmit($event)">
             <div class="user-wrapper" v-for="(user, index) in usersToAdd" :key="index"
             :class="user.status" ref="userWrapper">
-                <div class="info" v-if="user.status == 'ignore'">
+                <div class="info" v-if="user.status == 'ignore'"
+                v-tooltip="'This user already exists and will not have their name or password updated.'">
                     <i class="far fa-info-circle"></i> 
                     <span>User will be ignored</span>
                 </div>
@@ -47,6 +48,20 @@
                 </button>
             </div>
         </form>
+
+        <BaseDialog ref="ignoredUsersUsersDialog" type="dialog"
+        confirmColor="primary" confirmText="Got it">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-users"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-building"></i>
+            </div>
+            <h3>Success! {{ignoredUsers.length}} users ignored</h3>
+            <p>The following users already existed.<br>We have not updated their name or password:</p>
+            <div class="ignored-users-list">
+                <li v-for="(user, index) in ignoredUsers" :key="index">{{user.name}} ({{user.email}})</li>
+            </div>
+        </BaseDialog>
     </BaseModal>
 </template>
 
@@ -67,6 +82,7 @@ export default {
             passwordErr: null
         },
         submitDisabled: false,
+        ignoredUsers: []
     }},
     props: [
         'users',
@@ -117,12 +133,15 @@ export default {
                 }
             })
             this.validateUsers()
+            // Scroll to the last user
+            this.$nextTick(() => { this.$nextTick(() => {
+                this.$refs.userWrapper[this.usersToAdd.length-1].scrollIntoView()
+            })})
         },
-        onSubmit(e) {
+        async onSubmit(e) {
             e.preventDefault()
             // Check that the form fields are valid
             const userValidation = this.validateUsers()
-            console.log('user validation', userValidation)
             if (!userValidation.valid) {
                 this.SHOW_SNACKBAR({ 
                     msg: `One or more users have an error'`,
@@ -131,7 +150,6 @@ export default {
                     callback: () => {
                         const errorIndex = userValidation.errorIndexes[0]
                         const errorEl = this.$refs.userWrapper[errorIndex]
-                        console.log('error user', errorEl)
                         errorEl.scrollIntoView()
                         
                     },
@@ -140,15 +158,13 @@ export default {
                 return
             }
             // Submit form
-            this.addUsersToWorkspace(this.usersToAdd).then(success => {
-                if (success) {
-                    // Close modal on success
-                    this.$emit('close')
-                } else {
-                    // Display error
-                }
-            })
+            await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore'))
+            this.ignoredUsers = this.usersToAdd.filter(x => x.status == 'ignore')
+            if (this.ignoredUsers.length > 0) {
+                await this.$refs.ignoredUsersUsersDialog.show()
+            }
             this.reset()
+            this.$emit('close')
         },
         validateEmail(user, index) {
             const email = user.email
@@ -166,7 +182,7 @@ export default {
             if (emailExists) {
                 user.emailErr = 'A user with this email already exists on the workspace'
                 user.status = 'ignore'
-                return false
+                return true
             }
 
             // Check if there is a user earlier in this form with the same email
@@ -175,7 +191,7 @@ export default {
             if (emailExistsInForm) {
                 user.emailErr = 'Duplicate: A user with this email already exists in this form'
                 user.status = 'ignore'
-                return false
+                return true
             }
 
             user.emailErr = null
@@ -184,7 +200,7 @@ export default {
 
         },
         validatePassword(user, index) {
-            if (user.status == 'ignore') return
+            if (user.status == 'ignore') return true
 
             const password = user.password
             if (password.length < 8) {
@@ -201,7 +217,9 @@ export default {
             let valid = true
             let errorIndexes = []
             this.usersToAdd.forEach((user, index) => {
-                if (!this.validateEmail(user, index) || !this.validatePassword(user, index)) {
+                const emailValid = this.validateEmail(user, index)
+                const passwordValid = this.validatePassword(user, index)
+                if (!emailValid || !passwordValid) {
                     valid = false
                     errorIndexes.push(index)
                 }
@@ -210,7 +228,7 @@ export default {
             return {valid, errorIndexes}
         },
         reset() {
-            this.submitDisabled = true
+            // this.submitDisabled = true
             this.usersToAdd = [JSON.parse(JSON.stringify(this.userDefaultObject))]
         }
     },
@@ -234,6 +252,9 @@ export default {
         border: $borderModule;
         margin-bottom: 20px;
         background: $bgContent;
+        .info {
+            display: inline-block;
+        }
         &.error {
             border-left: 12px solid $danger;
         }
@@ -279,5 +300,9 @@ export default {
             margin-top: 3px;
         }
     }
-
+.ignored-users-list {
+    text-align: left;
+    font-size: 13px;
+    margin-top: 12px;
+}
 </style>
