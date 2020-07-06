@@ -35,7 +35,7 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchSelectionProducts']),
-        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment', 'fetchSelectionSettings']),
+        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
         ...mapActions('teams', ['fetchTeamUsers']),
         ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
         async fetchSelectionTeamsUsers(teams) {
@@ -58,11 +58,10 @@ export default {
             await this.fetchSelectionProducts({selections: [selection], addToState: true})
 
             // Fetch selection settings
-            await this.fetchSelectionSettings(selection)
+            await this.fetchSelectionSettings(selection) // Used to know whether comments are anonyized or not
     
             // Fetch selections that are available for alignment for the auth user
             const selections = await this.fetchSelections({fileId})
-            await this.filterSelectionsByAvailabilityForAlignment(selections)
     
             this.loadingData = false
         }

@@ -37,7 +37,7 @@
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
-                <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'job'" :currentSortKey="sortKey" @sort="sortUsers">Job</BaseTableHeader>
+                <!-- <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'job'" :currentSortKey="sortKey" @sort="sortUsers">Job</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -60,13 +60,13 @@
                             </button>
                             <span v-else>{{user.role}}</span>
                         </td>
-                        <td class="role">
+                        <!-- <td class="job">
                             <button v-if="userHasEditAccess" class="ghost editable sm" 
                             @click="showJobContext($event, user)">
                                 <span>{{user.job}}</span>
                             </button>
                             <span v-else>{{user.job}}</span>
-                        </td>
+                        </td> -->
                         <td class="action">
                             <button v-if="userHasEditAccess" class="invisible ghost-hover" 
                             @click="showUserContext($event, user)">

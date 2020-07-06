@@ -16,7 +16,6 @@ export default {
         selections: [],
         usersFlyInVisible: false,
         currentSelections: [],
-        selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
             {
                 role: 'Member',
@@ -59,7 +58,7 @@ export default {
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_role == 'Alignment'),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
             return (
@@ -194,29 +193,6 @@ export default {
                     })
                 commit('setLoading', false)
                 resolve(selections)
-            })
-        },
-        async filterSelectionsByAvailabilityForAlignment({ commit, getters, state, dispatch }, selections) {
-            const selectionsToReturn = []
-            await Promise.all(
-                selections.map(async selection => {
-                    const fetchedSelection = await dispatch('fetchSelection', {
-                        selectionId: selection.id,
-                        addToState: false,
-                    })
-                    selectionsToReturn.push(fetchedSelection)
-                })
-            )
-            const selectionsFiltered = selectionsToReturn.filter(selection => {
-                return (
-                    (getters.getAuthUserHasSelectionEditAccess(selection) || selection.is_visible) &&
-                    selection.your_role == 'Owner'
-                )
-            })
-            state.selectionsAvailableForAlignment = selectionsFiltered
-            return selectionsFiltered.sort((a, b) => {
-                if (a.type == 'Master') return -1
-                if (b.parent_id == a.id) return -1
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
@@ -418,7 +394,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
-                            job: ignoreRole ? 'Feedback' : user.job,
+                            // job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -871,11 +847,22 @@ export default {
                 dispatch('openAllSelectionDescendants', childSelection)
             })
         },
+        // Function that loops through all the children in the provided selection tree and sets their properties based on the provided properties array
+        async UPDATE_SELECTION_DESCENDANTS({ commit, dispatch }, { selectionTree, properties }) {
+            selectionTree.children.forEach(child => {
+                dispatch('UPDATE_SELECTION_DESCENDANTS', { selectionTree: child, properties })
+                properties.forEach(property => {
+                    Vue.set(child, property.name, property.value)
+                })
+            })
+        },
         async togglePresenterMode({ getters, dispatch, commit }, selection) {
             const apiUrl = `/selections/${selection.id}/presentation`
+            const selectionTree = getters.getSelectionTree(selection)
             // Assunme success
             let success = true
             if (!selection.is_presenting) {
+                // START PRESENTATION
                 await axios
                     .post(apiUrl)
                     .then(() => {
@@ -889,8 +876,11 @@ export default {
                             selection.open_to = null
                         }
                         dispatch('updateSelection', selection)
-                        const selectionTree = getters.getSelectionTree(selection)
                         dispatch('openAllSelectionDescendants', selectionTree)
+                        dispatch('UPDATE_SELECTION_DESCENDANTS', {
+                            selectionTree: selectionTree,
+                            properties: [{ name: 'presentation_inherit_from', value: selection.id }],
+                        })
                     })
                     .catch(err => {
                         console.log(err)
@@ -906,18 +896,27 @@ export default {
                         success = false
                     })
             } else {
-                await axios.delete(apiUrl).catch(err => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Something went wrong trying to stop presentation mode. Please try again.',
-                            type: 'warning',
-                            iconClass: 'fa-exclamation-triangle',
-                        },
-                        { root: true }
-                    )
-                    success = false
-                })
+                // END PRESENTATION
+                await axios
+                    .delete(apiUrl)
+                    .then(() => {
+                        dispatch('UPDATE_SELECTION_DESCENDANTS', {
+                            selectionTree: selectionTree,
+                            properties: [{ name: 'presentation_inherit_from', value: 0 }],
+                        })
+                    })
+                    .catch(err => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong trying to stop presentation mode. Please try again.',
+                                type: 'warning',
+                                iconClass: 'fa-exclamation-triangle',
+                            },
+                            { root: true }
+                        )
+                        success = false
+                    })
             }
             if (!success) return
 
