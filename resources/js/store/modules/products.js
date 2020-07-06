@@ -300,7 +300,7 @@ export default {
             }
 
             // Filter by actions
-            if (['ins', 'outs', 'nds'].includes(actionFilter)) {
+            if (['ins', 'outs', 'nds', 'focus'].includes(actionFilter)) {
                 const filteredByAction = productsToReturn.filter(product => {
                     if (actionFilter == 'nds')
                         return (
@@ -308,6 +308,7 @@ export default {
                             getSelectionInput(product)[currentAction] == 'None'
                         )
                     if (actionFilter == 'outs') return getSelectionInput(product)[currentAction] == 'Out'
+                    if (actionFilter == 'focus') return getSelectionInput(product)[currentAction] == 'Focus'
                     if (actionFilter == 'ins')
                         return (
                             getSelectionInput(product)[currentAction] == 'In' ||

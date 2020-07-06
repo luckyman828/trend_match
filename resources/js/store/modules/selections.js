@@ -16,18 +16,28 @@ export default {
         selections: [],
         usersFlyInVisible: false,
         currentSelections: [],
-        selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
             {
                 role: 'Member',
-                description: 'Gives feedback and makes comments',
+                description: "No rights, other than the ones provided by the user's job",
             },
             {
                 role: 'Owner',
+                description:
+                    'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
+            },
+        ],
+        availableSelectionJobs: [
+            {
+                role: 'Feedback',
+                description: 'Gives feedback and makes comments',
+            },
+            {
+                role: 'Alignment',
                 description: 'Aligns the selection',
             },
             {
-                role: 'Approver',
+                role: 'Approval',
                 description: 'Replies to requests',
             },
         ],
@@ -48,7 +58,7 @@ export default {
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_role == 'Alignment'),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
             return (
@@ -127,6 +137,9 @@ export default {
         },
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
+        },
+        getAvailableSelectionJobs: state => {
+            return state.availableSelectionJobs
         },
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
@@ -223,30 +236,8 @@ export default {
                 resolve(selections)
             })
         },
-        async filterSelectionsByAvailabilityForAlignment({ commit, getters, state, dispatch }, selections) {
-            const selectionsToReturn = []
-            await Promise.all(
-                selections.map(async selection => {
-                    const fetchedSelection = await dispatch('fetchSelection', {
-                        selectionId: selection.id,
-                        addToState: false,
-                    })
-                    selectionsToReturn.push(fetchedSelection)
-                })
-            )
-            const selectionsFiltered = selectionsToReturn.filter(selection => {
-                return (
-                    (getters.getAuthUserHasSelectionEditAccess(selection) || selection.is_visible) &&
-                    selection.your_role == 'Owner'
-                )
-            })
-            state.selectionsAvailableForAlignment = selectionsFiltered
-            return selectionsFiltered.sort((a, b) => {
-                if (a.type == 'Master') return -1
-                if (b.parent_id == a.id) return -1
-            })
-        },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
+            console.log('fetch selection')
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
             commit('SET_SELECTION_USERS_STATUS', 'loading')
             commit('SET_SELECTION_TEAMS_STATUS', 'loading')
@@ -444,6 +435,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
+                            // job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -580,7 +572,7 @@ export default {
                         { root: true }
                     )
                 })
-            dispatch('calculateSelectionUsers', selection)
+            // dispatch('calculateSelectionUsers', selection)
         },
         async removeUsersFromSelection({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
@@ -795,6 +787,7 @@ export default {
             }
         },
         async calculateSelectionUsers({ commit, dispatch }, selection) {
+            console.log('calculate selection users')
             // This functions finds all the users who have access to the selection and adds them to the users array on the selection
             const newSelection = await dispatch('fetchSelection', { selectionId: selection.id })
             commit('setSelectionUsers', { selection, users: newSelection.users })
@@ -895,11 +888,22 @@ export default {
                 dispatch('openAllSelectionDescendants', childSelection)
             })
         },
+        // Function that loops through all the children in the provided selection tree and sets their properties based on the provided properties array
+        async UPDATE_SELECTION_DESCENDANTS({ commit, dispatch }, { selectionTree, properties }) {
+            selectionTree.children.forEach(child => {
+                dispatch('UPDATE_SELECTION_DESCENDANTS', { selectionTree: child, properties })
+                properties.forEach(property => {
+                    Vue.set(child, property.name, property.value)
+                })
+            })
+        },
         async togglePresenterMode({ getters, dispatch, commit }, selection) {
             const apiUrl = `/selections/${selection.id}/presentation`
+            const selectionTree = getters.getSelectionTree(selection)
             // Assunme success
             let success = true
             if (!selection.is_presenting) {
+                // START PRESENTATION
                 await axios
                     .post(apiUrl)
                     .then(() => {
@@ -913,8 +917,11 @@ export default {
                             selection.open_to = null
                         }
                         dispatch('updateSelection', selection)
-                        const selectionTree = getters.getSelectionTree(selection)
                         dispatch('openAllSelectionDescendants', selectionTree)
+                        dispatch('UPDATE_SELECTION_DESCENDANTS', {
+                            selectionTree: selectionTree,
+                            properties: [{ name: 'presentation_inherit_from', value: selection.id }],
+                        })
                     })
                     .catch(err => {
                         console.log(err)
@@ -930,18 +937,27 @@ export default {
                         success = false
                     })
             } else {
-                await axios.delete(apiUrl).catch(err => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Something went wrong trying to stop presentation mode. Please try again.',
-                            type: 'warning',
-                            iconClass: 'fa-exclamation-triangle',
-                        },
-                        { root: true }
-                    )
-                    success = false
-                })
+                // END PRESENTATION
+                await axios
+                    .delete(apiUrl)
+                    .then(() => {
+                        dispatch('UPDATE_SELECTION_DESCENDANTS', {
+                            selectionTree: selectionTree,
+                            properties: [{ name: 'presentation_inherit_from', value: 0 }],
+                        })
+                    })
+                    .catch(err => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong trying to stop presentation mode. Please try again.',
+                                type: 'warning',
+                                iconClass: 'fa-exclamation-triangle',
+                            },
+                            { root: true }
+                        )
+                        success = false
+                    })
             }
             if (!success) return
 
@@ -1104,6 +1120,30 @@ export default {
                         return !!from && now > from
                     },
                 })
+
+                // Start process users
+                // if (selection.users) {
+                //     selection.users.map(user => {
+                //         Object.defineProperty(user, 'job', {
+                //             get: () => {
+                //                 return user.roles.filter(x => !['Owner', 'Member'].includes(x))[0]
+                //             },
+                //             set: function(value) {
+                //                 console.log('set user job', value)
+                //                 // Find the existing value
+                //                 const currentJobIndex = user.roles.findIndex(job => !['Owner', 'Member'].includes(job))
+                //                 if (currentJobIndex >= 0) {
+                //                     user.roles.splice(currentJobIndex, 1, value)
+                //                 } else {
+                //                     user.roles.push(value)
+                //                 }
+                //                 console.log(user.roles)
+                //             },
+                //         })
+                //     })
+                // }
+
+                // End process users
             })
         },
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {

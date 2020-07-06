@@ -17,8 +17,8 @@
                 @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', {selection, parent})"/>
             </td>
             <!-- Viewing -->
-            <td v-else class="title" :class="{'clickable': !selection.is_presenting || (selection.your_role == 'Owner' && selection.type == 'Master')}"
-            @click="(!selection.is_presenting || (selection.your_role == 'Owner' && selection.type == 'Master')) && onGoToSelection()" :style="selectionWidth">
+            <td v-else class="title" :class="{'clickable': !selection.is_presenting || selection.your_role == 'Owner'}"
+            @click="(!selection.is_presenting || selection.your_role == 'Owner') && onGoToSelection()" :style="selectionWidth">
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
@@ -89,7 +89,9 @@
                 <span v-else>-</span>
             </td>
             <td class="presentation">
-                <SelectionPresenterModeButton v-if="isMaster" :selection="selection" :showLabel="false"/>
+                <SelectionPresenterModeButton 
+                v-if="selection.presentation_inherit_from == 0 && selection.your_job == 'Alignment'"
+                :selection="selection" :showLabel="false"/>
                 <div v-else-if="selection.is_presenting" class="pill primary sm"
                 v-tooltip="'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'">
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" 

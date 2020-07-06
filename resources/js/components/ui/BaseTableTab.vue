@@ -1,6 +1,7 @@
 <template>
     <div class="tab" :class="[{'active': active}, {'has-count': count != null}, {'disabled': disabled}]" @click="!disabled && change($event)">
         <span>{{label}}</span>
+        <div class="toggle" v-if="toggle"><BaseCheckbox @change="$emit('toggle', $event)"/>{{toggle}}</div>
         <span v-if="count != null" class="count pill sm" :class="active ? 'primary' : 'white'">
             <span>{{count}}</span>
         </span>
@@ -16,6 +17,7 @@ export default {
         'label',
         'count',
         'disabled',
+        'toggle',
     ],
     computed: {
         active() {
@@ -49,6 +51,13 @@ export default {
         border-radius: $borderRadiusModule $borderRadiusModule 0 0;
         background: $bgTab;
         color: $fontColorTab;
+        .toggle {
+            display: flex;
+            font-size: 12px;
+            .checkbox {
+                margin-right: 4px;
+            }
+        }
         .pill.count {
             color: $fontSoft;
             &.primary {

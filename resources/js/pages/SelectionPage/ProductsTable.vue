@@ -6,10 +6,14 @@
                 <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
                 v-model="currentProductFilter"
                 modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
+                <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="ins"/>
+                modelValue="ins"/> -->
+                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => InsTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
+                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                :modelValue="InsTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/>
                 <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -358,6 +362,7 @@ export default {
         distributionTooltipType: null,
         actionDistributionTooltipTab: 'Feedback',
         showAdvancedFilters: false,
+        InsTabValue: 'ins',
     }},
     computed: {
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
@@ -457,6 +462,11 @@ export default {
             this.selectedSelectionIds = []
             this.unreadOnly = false
             this.SET_ADVANCED_FILTER()
+        },
+        onToggleFocusOnly(focusOnly) {
+            if (this.currentProductFilter == 'ins' && focusOnly) this.currentProductFilter = 'focus'
+            if (this.currentProductFilter == 'focus' && !focusOnly) this.currentProductFilter = 'ins'
+            this.InsTabValue = focusOnly ? 'focus' : 'ins'
         },
         showVariantTooltip({variant, product, selectionInput}) {
             this.tooltipVariant = variant

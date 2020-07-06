@@ -61,11 +61,10 @@ export default {
             await this.fetchSelectionProducts(selection)
 
             // Fetch selection settings
-            await this.fetchSelectionSettings(selection)
+            await this.fetchSelectionSettings(selection) // Used to know whether comments are anonyized or not
     
             // Fetch selections that are available for alignment for the auth user
             const selections = await this.fetchSelections({fileId})
-            await this.filterSelectionsByAvailabilityForAlignment(selections)
     
             this.loadingData = false
         }

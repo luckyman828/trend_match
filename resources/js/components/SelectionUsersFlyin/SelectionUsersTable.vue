@@ -37,6 +37,7 @@
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
+                <!-- <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'job'" :currentSortKey="sortKey" @sort="sortUsers">Job</BaseTableHeader> -->
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
@@ -59,6 +60,13 @@
                             </button>
                             <span v-else>{{user.role}}</span>
                         </td>
+                        <!-- <td class="job">
+                            <button v-if="userHasEditAccess" class="ghost editable sm" 
+                            @click="showJobContext($event, user)">
+                                <span>{{user.job}}</span>
+                            </button>
+                            <span v-else>{{user.job}}</span>
+                        </td> -->
                         <td class="action">
                             <button v-if="userHasEditAccess" class="invisible ghost-hover" 
                             @click="showUserContext($event, user)">
@@ -101,6 +109,7 @@
         <BaseContextMenu ref="contextMenuUser" class="context-user"
         :hotkeys="['KeyC', 'KeyR', 'KeyE']"
         @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
+        @keybind-j="showJobContext(contextMouseEvent, contextUser)"
         @keybind-r="onRemoveUsers(contextUser)"
         @keybind-e="onRemoveUsers(contextUser)">
             <!-- Manually added users  -->
@@ -112,6 +121,11 @@
                     <div class="item" @click.stop="showRoleContext(contextMouseEvent, contextUser)">
                         <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
                         <span><u>C</u>hange role{{selected.length > 0 ? 's' : ''}}</span>
+                    </div>
+
+                    <div class="item" @click.stop="showJobContext(contextMouseEvent, contextUser)">
+                        <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
+                        <span>Change <u>j</u>ob{{selected.length > 0 ? 's' : ''}}</span>
                     </div>
                 </div>
                 <div class="item-group">
@@ -160,10 +174,24 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="filteredAvailableSelectionRoles"
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
                     :optionNameKey="'role'" :optionValueKey="'role'"
                     @submit="onUpdateSelectionUsersRole();slotProps.hide()"/>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuJob" class="context-role">
+            <template v-slot:header>
+                Change Selection Job
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="filteredAvailableSelectionJobs"
+                    v-model="userToEdit.job" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'role'" :optionValueKey="'role'"
+                    @submit="onUpdateSelectionUsersJob();slotProps.hide()"/>
                 </div>
             </template>
         </BaseContextMenu>
@@ -196,6 +224,7 @@ export default {
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
             getSelectionUsersStatus: 'getSelectionUsersStatus',
             availableSelectionRoles: 'availableSelectionRoles',
+            availableSelectionJobs: 'getAvailableSelectionJobs',
         }),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
@@ -209,8 +238,8 @@ export default {
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
-        filteredAvailableSelectionRoles() {
-            return this.availableSelectionRoles.filter(x => {
+        filteredAvailableSelectionJobs() {
+            return this.availableSelectionJobs.filter(x => {
                 return this.selection.type != 'Master' ? x.role != 'Approver' : true
             })
         },
@@ -227,7 +256,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
+        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection', 'fetchSelection']),
         ...mapActions('users', ['fetchUsers']),
         ...mapMutations('selections', ['UPDATE_SELECTION']),
         initData(forceRefresh) {
@@ -260,7 +289,15 @@ export default {
         showRoleContext(e, user) {
             const contextMenu = this.$refs.contextMenuRole
             this.contextUser = user
-            this.userToEdit = JSON.parse(JSON.stringify(user))
+            // this.userToEdit = JSON.parse(JSON.stringify(user))
+            this.userToEdit = user
+            contextMenu.show(e)
+        },
+        showJobContext(e, user) {
+            const contextMenu = this.$refs.contextMenuJob
+            this.contextUser = user
+            // this.userToEdit = JSON.parse(JSON.stringify(user))
+            this.userToEdit = user
             contextMenu.show(e)
         },
         onAddUser(e) {
@@ -293,8 +330,29 @@ export default {
             // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
-                console.log('update selection ')
                 this.selection.your_role = authUser.role
+                this.UPDATE_SELECTION(this.selection)
+            }
+        },
+        onUpdateSelectionUsersJob() {
+            // Define the user to base the new role to set on
+            const baseUser = this.userToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            let usersToPost
+            if (this.selected.length > 0) {
+                usersToPost = this.selected.map(user => {
+                    user.job = baseUser.job
+                    return user
+                })
+            } else usersToPost = [baseUser]
+            // Update users
+            this.updateSelectionUsers({selection: this.selection, users: usersToPost})
+            
+            // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
+            const authUser = usersToPost.find(x => x.id == this.authUser.id)
+            if (authUser) {
+                this.selection.your_job = authUser.job
                 this.UPDATE_SELECTION(this.selection)
             }
         },

@@ -1,7 +1,7 @@
 <template>
     <div class="presenter-mode-button-wrapper">
-        <BaseToggle v-if="selection && selection.type == 'Master'"
-            :disabled="selection.your_role != 'Owner'"
+        <BaseToggle v-if="selection"
+            :disabled="selection.your_job != 'Alignment'"
             disabledTooltip="Only Selection Owners can activate Presentation Mode"
             :label="showLabel ? 'Presentation' : ''" sizeClass="xs"
             :isActive="selection && selection.is_presenting"
