@@ -49,7 +49,8 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')">
+                    <!-- <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')"> -->
+                    <BaseVariantImg :key="product.id + '-' + currentImgIndex" v-if="product.variants.length > 0" :variant="product.variants[currentImgIndex]" size="sm"/>
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>

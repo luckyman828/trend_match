@@ -39,7 +39,6 @@
             </div>
 
             <div class="quantity-input" v-if="showQty && selectionMode != 'Approval'">
-                <p>Hello</p>
                 <BaseInputField ref="qtyInput" inputClass="small" v-model.number="newQuantity"
                 :selectOnFocus="true" type="number"
                 :disabled="!userWriteAccess.actions.hasAccess" :readOnly="!userWriteAccess.actions.hasAccess"
@@ -114,7 +113,6 @@ export default {
             // Loop through all the variants. If their action is None, then give them a default action
             this.product.variants.forEach(variant => {
                 if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
-                    console.log('set variant action')
                     if (newAction == 'Out') variant[this.currentAction] = 'Out'
                     else variant[this.currentAction] = 'In'
                 }

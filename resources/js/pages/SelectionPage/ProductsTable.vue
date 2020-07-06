@@ -25,7 +25,7 @@
 
             </template>
             <template v-slot:topBar>
-                <BaseTableTopBar>
+                <BaseTableTopBar class="table-top-bar">
                     <template v-slot:left>
                         <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
                         ref="searchField"
@@ -35,7 +35,7 @@
                             <!-- <button class="ghost">
                                 <span>Advanced Filters</span>
                             </button> -->
-                            <BaseButton buttonClass="ghost" @click="showAdvancedFilters = true">
+                            <BaseButton buttonClass="ghost filter-button" @click="showAdvancedFilters = true">
                                 <span>Advanced Filters</span>
                                 <div v-if="getHasAdvancedFilter" class="circle primary xs">
                                     <span>{{getAdvancedFilter.length}}</span>
@@ -48,7 +48,7 @@
                         </v-popover>
 
                         <v-popover trigger="click" :disabled="availableCategories.length <= 0">
-                            <BaseButton buttonClass="ghost" :disabled="availableCategories.length <= 0"
+                            <BaseButton buttonClass="ghost filter-button" :disabled="availableCategories.length <= 0"
                             disabledTooltip="No categories available">
                                 <span>Category</span>
                                 <span v-if="selectedCategories.length > 0" class="circle primary xs">
@@ -63,7 +63,7 @@
                         </v-popover>
 
                         <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0">
-                            <BaseButton buttonClass="ghost" :disabled="availableDeliveryDates.length <= 0"
+                            <BaseButton buttonClass="ghost filter-button" :disabled="availableDeliveryDates.length <= 0"
                             disabledTooltip="No delivery dates available">
                                 <span>Delivery</span>
                                 <i class="far fa-chevron-down"></i>
@@ -78,7 +78,7 @@
                         </v-popover>
 
                         <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0">
-                            <BaseButton buttonClass="ghost" :disabled="availableBuyerGroups.length <= 0"
+                            <BaseButton buttonClass="ghost filter-button" :disabled="availableBuyerGroups.length <= 0"
                             disabledTooltip="No buyer groups available">
                                 <span>Buyer group</span>
                                 <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
@@ -93,7 +93,7 @@
                         </v-popover>
 
                         <v-popover trigger="click">
-                            <button class="ghost">
+                            <button class="ghost filter-button">
                                 <span>Selection Input</span>
                                 <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
                                     <span>{{selectedSelectionIds.length}}</span>
@@ -108,7 +108,7 @@
                         </v-popover>
 
                         <v-popover trigger="click">
-                            <button class="ghost" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
+                            <button class="ghost filter-button" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
                                 <span>Show input from: {{distributionScope}}</span>
                                 <i class="far fa-chevron-down"></i>
                             </button>
@@ -676,17 +676,6 @@ export default {
         }
     }
 
-    // SMALL SCREENS AND HIGH DPI
-    @media screen and (max-width: $screenMd) {
-
-        @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
-        only screen and (-o-min-device-pixel-ratio: 13/10),
-        only screen and (min-resolution: 120dpi)
-        {
-            
-        }
-    }
-
     .table-top-bar {
         button {
             position: relative;
@@ -694,6 +683,19 @@ export default {
                 position: absolute;
                 right: -8px;
                 top: -8px;
+            }
+        }
+    }
+    .filter-button {
+        @media screen and (max-width: $screenSm) {
+            span {
+                margin-right: 8px;
+                &:first-child {
+                    margin-left: 8px;
+                }
+            }
+            .fa-chevron-down {
+                display: none;
             }
         }
     }

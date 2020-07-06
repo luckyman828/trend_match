@@ -2,7 +2,8 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <div class="variant">
             <div class="img-wrapper">
-                <img :src="variantImage(variant,'sm')">
+                <!-- <img :src="variantImage(variant,'sm')"> -->
+                <BaseVariantImg :variant="variant" size="sm"/>
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="pill ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
