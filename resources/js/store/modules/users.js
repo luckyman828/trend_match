@@ -267,6 +267,19 @@ export default {
                     )
                 })
         },
+        async searchForUser({ commit }, query) {
+            const apiUrl = `/users?${query}`
+            let result
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    result = response.data
+                })
+                .catch(err => {
+                    console.log('error in search for users', err)
+                })
+            return result
+        },
     },
 
     mutations: {
