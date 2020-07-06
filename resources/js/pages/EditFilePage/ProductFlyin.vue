@@ -93,7 +93,8 @@
                     <div class="form-element">
                         <label for="product-name">Product name</label>
                         <BaseEditInputWrapper id="product-name" :type="'text'"
-                        :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
+                        :value="product.title" :oldValue="originalProduct.title" v-model="product.title"
+                        @submit="onSubmitField"/>
                     </div>
                     <div class="col-2">
                         <div class="form-element">
@@ -101,40 +102,46 @@
                             <BaseEditInputWrapper id="datasource-id" :type="'text'" ref="idInput" :maxlength="9" 
                             :pattern="/^\d+$/" :disabled="!!originalProduct.datasource_id" :value="product.datasource_id"
                             :oldValue="originalProduct.datasource_id" v-model="product.datasource_id" :error="idError"
-                            @change="validateProductId"/>
+                            @change="validateProductId" @submit="onSubmitField"/>
                         </div>
                         <div class="form-element">
                             <label for="delivery">Delivery</label>
                             <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
-                            :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                            :oldValue="originalProduct.delivery_date" v-model="product.delivery_date" 
+                            @submit="onSubmitField"/>
                         </div>
                     </div>
                     <div class="col-2">
                         <div class="form-element">
                             <label for="category">Brand</label>
                             <BaseEditInputWrapper id="brand" :type="'text'" 
-                            :value="product.brand" :oldValue="originalProduct.brand" v-model="product.brand"/>
+                            :value="product.brand" :oldValue="originalProduct.brand" v-model="product.brand"
+                            @submit="onSubmitField"/>
                         </div>
                         <div class="form-element">
                             <label for="category">Category</label>
                             <BaseEditInputWrapper id="category" :type="'text'" 
-                            :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
+                            :value="product.category" :oldValue="originalProduct.category" v-model="product.category"
+                            @submit="onSubmitField"/>
                         </div>
                     </div>
                     <div class="form-element">
                         <label for="buying-group">Buyer Group</label>
                         <BaseEditInputWrapper id="buying-group" :type="'text'" 
-                        :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"/>
+                        :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"
+                        @submit="onSubmitField"/>
                     </div>
                     <div class="form-element">
                         <label for="composition">Composition</label>
                         <BaseEditInputWrapper id="composition" :type="'text'" 
-                        :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
+                        :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"
+                        @submit="onSubmitField"/>
                     </div>
                     <div class="form-element">
                         <label for="description">Description</label>
                         <BaseEditableTextarea id="description"
-                        :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
+                        :oldValue="originalProduct.sale_description" v-model="product.sale_description"
+                        @submit="onSubmitField"/>
                     </div>
                 </div>
             </BaseFlyinColumn>
@@ -146,12 +153,14 @@
                         <div>
                             <label for="min-order">Order minimum (pcs)</label>
                             <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                            :oldValue="originalProduct.min_order" v-model.number="product.min_order"/>
+                            :oldValue="originalProduct.min_order" v-model.number="product.min_order"
+                            @submit="onSubmitField"/>
                         </div>
                         <div>
                             <label for="min-order">Variant minimum (pcs)</label>
                             <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                            :oldValue="originalProduct.min_variant_order" v-model.number="product.min_variant_order"/>
+                            :oldValue="originalProduct.min_variant_order" v-model.number="product.min_variant_order"
+                            @submit="onSubmitField"/>
                         </div>
                     </div>
                 </div>
@@ -176,12 +185,14 @@
 
                         <BaseEditInputWrapper :id="'wholesale'" :type="'number'" 
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].wholesale_price : null" 
-                        v-model.number="price.wholesale_price" @submit="calculateMarkup({price, whs: $event})" @activate="savedMarkup = price.mark_up"
+                        v-model.number="price.wholesale_price" @submit="calculateMarkup({price, whs: $event}); onSubmitField()" 
+                        @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, whs: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].recommended_retail_price : null" 
-                        v-model.number="price.recommended_retail_price" @submit="calculateMarkup({price, rrp: $event})" @activate="savedMarkup = price.mark_up"
+                        v-model.number="price.recommended_retail_price" @submit="calculateMarkup({price, rrp: $event}); onSubmitField()" 
+                        @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, rrp: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
                         <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span>
@@ -209,15 +220,18 @@
                     <div class="col-4 form-element" v-for="(assortment, index) in product.assortments" :key="index">
                         <BaseEditInputWrapper
                         :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].name : null" 
-                        v-model="assortment.name"/>
+                        v-model="assortment.name"
+                        @submit="onSubmitField"/>
 
                         <BaseEditInputWrapper type="number"
                         :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].box_size : null" 
-                        v-model.number="assortment.box_size"/>
+                        v-model.number="assortment.box_size"
+                        @submit="onSubmitField"/>
 
                         <BaseEditInputWrapper type="number"
                         :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].box_ean : null" 
-                        v-model.number="assortment.box_ean"/>
+                        v-model.number="assortment.box_ean"
+                        @submit="onSubmitField"/>
 
                         <div style="display: flex; align-items: center;">
                             <button class="invisible ghost-hover" @click="removeAssortment(index)">
@@ -237,7 +251,8 @@
                     <div class="col-2 form-element" v-for="(ean, index) in product.eans" :key="index">
                         <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
                         :oldValue="originalProduct.eans[index]" 
-                        v-model="product.eans[index]" :value="ean"/>
+                        v-model="product.eans[index]" :value="ean"
+                        @submit="onSubmitField"/>
 
                         <div style="display: flex; align-items: center;">
                             <button class="invisible ghost-hover" @click="removeEAN(index)">
@@ -501,6 +516,10 @@ export default {
                 // Add a blank variant if the last one is deleted
                 this.onAddVariant()
             }
+        },
+        onSubmitField() {
+            console.log('on submit field')
+            this.onUpdateProduct()
         },
         async onUpdateProduct() {
             // Prepare the file to fit the database schema
