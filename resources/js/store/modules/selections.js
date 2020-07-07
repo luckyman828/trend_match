@@ -58,7 +58,7 @@ export default {
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_role == 'Alignment'),
+        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
             return (
