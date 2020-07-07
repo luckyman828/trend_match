@@ -326,7 +326,7 @@ export default {
         margin-top: 20px;
         margin-bottom: 12px;
     }
-    .request-succes {
+    .request-success {
         margin-right: 8px;
         font-weight: 500;
     }

@@ -42,7 +42,7 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             commit('updateUsers', usersToUpdate)
 
-            let succes
+            let success
             const apiUrl = `/workspaces/${workspaceId}/users`
 
             await axios({
@@ -54,7 +54,7 @@ export default {
                 },
             })
                 .then(response => {
-                    succes = true
+                    success = true
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -69,7 +69,7 @@ export default {
                     )
                 })
                 .catch(err => {
-                    succes = false
+                    success = false
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -84,52 +84,56 @@ export default {
                         { root: true }
                     )
                 })
-            return succes
+            return success
         },
         async addUsersToWorkspace({ commit, rootGetters, dispatch }, usersToAdd) {
-            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
-            let succes
+            return new Promise((resolve, reject) => {
+                if (usersToAdd.length <= 0) {
+                    resolve()
+                    return
+                }
+                const workspaceId = rootGetters['workspaces/currentWorkspace'].id
 
-            const apiUrl = `/workspaces/${workspaceId}/users-email`
+                const apiUrl = `/workspaces/${workspaceId}/users-email`
 
-            // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
-            let dataToPost = { users: usersToAdd }
-            await axios({
-                method: 'post',
-                url: apiUrl,
-                data: dataToPost,
+                // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
+                let dataToPost = { users: usersToAdd }
+                axios({
+                    method: 'post',
+                    url: apiUrl,
+                    data: dataToPost,
+                })
+                    .then(response => {
+                        commit('ADD_USERS', response.data)
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''} added`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                        resolve()
+                    })
+                    .catch(err => {
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Error when adding user. Please try again.`,
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('addUsersToWorkspace', usersToAdd),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                        reject(err)
+                    })
             })
-                .then(response => {
-                    succes = true
-                    commit('ADD_USERS', response.data)
-                    // Display message
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''} added`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                })
-                .catch(err => {
-                    succes = false
-                    // Display message
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `Error when adding user. Please try again.`,
-                            iconClass: 'fa-exclamation-triangle',
-                            type: 'warning',
-                            callback: () => dispatch('addUsersToWorkspace', usersToAdd),
-                            callbackLabel: 'Retry',
-                            duration: 0,
-                        },
-                        { root: true }
-                    )
-                })
-            return succes
         },
         async removeUsersFromWorkspace({ commit, dispatch }, { workspaceId, users }) {
             commit('removeUsers', users)

@@ -64,10 +64,10 @@ export default {
             const apiUrl = `/workspaces/${workspaceId}/files`
 
             let tryCount = 3
-            let succes = false
+            let success = false
 
             let files
-            while (tryCount-- > 0 && !succes) {
+            while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`).catch(err => {
                         'error???'
@@ -79,7 +79,7 @@ export default {
                         commit('SET_CURRENT_FOLDER_STATUS', 'success')
                         commit('SET_FILES_STATUS', 'success')
                     }
-                    succes = true
+                    success = true
                 } catch (err) {
                     if (tryCount <= 0) {
                         if (addToState) {

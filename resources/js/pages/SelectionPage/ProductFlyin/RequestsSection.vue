@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="right">
-                            <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-succes">Request saved <i class="fas fa-clipboard-check green"></i></small></BaseTempAlert>
+                            <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-success">Request saved <i class="fas fa-clipboard-check green"></i></small></BaseTempAlert>
                             <template>
                                 <button type="button" class="invisible" @click="cancelRequest"><span>Cancel</span></button>
                                 <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Save</span></button>
@@ -394,7 +394,7 @@ export default {
         margin-top: 20px;
         margin-bottom: 12px;
     }
-    .request-succes {
+    .request-success {
         margin-right: 8px;
         font-weight: 500;
     }

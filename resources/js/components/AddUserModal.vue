@@ -144,7 +144,7 @@ export default {
             const userValidation = this.validateUsers()
             if (!userValidation.valid) {
                 this.SHOW_SNACKBAR({ 
-                    msg: `One or more users have an error'`,
+                    msg: `One or more users have an error`,
                     type: 'info', 
                     iconClass: 'fa-exclamation-circle',
                     callback: () => {
@@ -158,13 +158,14 @@ export default {
                 return
             }
             // Submit form
-            await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore'))
-            this.ignoredUsers = this.usersToAdd.filter(x => x.status == 'ignore')
-            if (this.ignoredUsers.length > 0) {
-                await this.$refs.ignoredUsersUsersDialog.show()
-            }
-            this.reset()
-            this.$emit('close')
+            await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore')).then(async () => {
+                this.ignoredUsers = this.usersToAdd.filter(x => x.status == 'ignore')
+                if (this.ignoredUsers.length > 0) {
+                    await this.$refs.ignoredUsersUsersDialog.show()
+                }
+                this.reset()
+                this.$emit('close')
+            }).catch(err => {})
         },
         validateEmail(user, index) {
             const email = user.email

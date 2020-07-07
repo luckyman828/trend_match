@@ -21,7 +21,7 @@ class InviteController extends Controller
         $team_invite = TeamInvite::find(['email' => $request->email, 'team_id' => $request->team_id]);
         if ( $team_invite ) {
             $team_invite->delete();
-            return "succes";
+            return "success";
         }
         else return $request;
     }

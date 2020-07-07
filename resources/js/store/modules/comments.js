@@ -26,13 +26,13 @@ export default {
             const apiUrl = `/api/file/${file_id}/comments`
 
             let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
+            let success = false
+            while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     Comment.create({ data: response.data })
                     commit('setLoading', false)
-                    succes = true
+                    success = true
                 } catch (err) {
                     // console.log('API error in comments.js :')
                     // console.log(err.response)
