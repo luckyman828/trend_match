@@ -697,7 +697,7 @@ export default {
         }
     }
     .filter-button {
-        @media screen and (max-width: $screenSm) {
+        @media screen and (max-width: $screenMd) {
             span {
                 margin-right: 8px;
                 &:first-child {
