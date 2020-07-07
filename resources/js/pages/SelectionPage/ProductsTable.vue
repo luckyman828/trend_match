@@ -6,14 +6,14 @@
                 <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
                 v-model="currentProductFilter"
                 modelValue="overview"/>
-                <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
+                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="ins"/> -->
-                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => InsTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
+                :modelValue="insTabValue"/>
+                <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                :modelValue="InsTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/>
+                :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
                 <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -127,6 +127,12 @@
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
+                        <BaseCheckboxInputField class="small" v-if="['ins', 'focus'].includes(currentProductFilter)"
+                        :value="insTabValue == 'focus'"
+                        @check="onToggleFocusOnly">
+                            <span>Focus only</span>
+                        </BaseCheckboxInputField>
+
                         <button class="invisible primary" 
                         v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
                         || getHasAdvancedFilter"
@@ -136,9 +142,14 @@
 
                     </template>
                     <template v-slot:right>
-                        <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="productsFilteredBySearch.length != stateProducts.length">{{productsFilteredBySearch.length}}/{{stateProducts.length}} showing</span>
-                        <span v-else>{{stateProducts.length}} records</span>
+                        <template v-if="selectedProducts.length > 0">
+                            <span class="hide-screen-md">{{selectedProducts.length}} selected</span>
+                            <span class="show-screen-md">({{selectedProducts.length}})</span>
+                        </template>
+                        <span v-if="productsFilteredBySearch.length != stateProducts.length">
+                            {{productsFilteredBySearch.length}}/{{stateProducts.length}}<span class="hide-screen-md"> showing</span>
+                        </span>
+                        <span v-else>{{stateProducts.length}}<span class="hide-screen-md"> records</span></span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -362,7 +373,7 @@ export default {
         distributionTooltipType: null,
         actionDistributionTooltipTab: 'Feedback',
         showAdvancedFilters: false,
-        InsTabValue: 'ins',
+        insTabValue: 'ins',
     }},
     computed: {
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
@@ -466,7 +477,7 @@ export default {
         onToggleFocusOnly(focusOnly) {
             if (this.currentProductFilter == 'ins' && focusOnly) this.currentProductFilter = 'focus'
             if (this.currentProductFilter == 'focus' && !focusOnly) this.currentProductFilter = 'ins'
-            this.InsTabValue = focusOnly ? 'focus' : 'ins'
+            this.insTabValue = focusOnly ? 'focus' : 'ins'
         },
         showVariantTooltip({variant, product, selectionInput}) {
             this.tooltipVariant = variant

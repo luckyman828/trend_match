@@ -2,7 +2,7 @@
     <label class="checkbox-input input-wrapper" :class="{'read-only': disabled}"
     :tabindex="disabled ? -1 : 0">
         <BaseCheckbox ref="input" class="checkbox" :disabled="disabled"
-        :value="value" :modelValue="true" @change="$emit('input', $event)"/>
+        :value="value" :modelValue="true" @change="onChange"/>
         <span><slot/></span>
     </label>
 </template>
@@ -14,6 +14,12 @@ export default {
         'value',
         'disabled'
     ],
+    methods: {
+        onChange(value) {
+            this.$emit('input', value)
+            this.$emit('check', value)
+        }
+    }
 }
 </script>
 
