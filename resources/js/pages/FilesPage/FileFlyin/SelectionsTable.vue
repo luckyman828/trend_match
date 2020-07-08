@@ -35,7 +35,7 @@
                     <template v-if="getSelectionsTree.length > 0">
                         <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in getSelectionsTree" :key="selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                        :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
+                        :selectionToEdit="selectionToEdit"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                         @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"
@@ -80,8 +80,7 @@
         :hotkeys="['KeyG', 'KeyR', 'KeyM', 'KeyC', 'KeyS', 'KeyD']"
         @keybind-g="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})"
         @keybind-r="selectionToEdit = {selection: contextSelection, field: 'name'}"
-        @keybind-m="$emit('showSelectionUsersFlyin', contextSelection)"
-        @keybind-c="onNewSelection(contextSelection)"
+        @keybind-e="contextSelection && contextSelection.type == 'Master' && onNewSelection(contextSelection, 'Master')"
         @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
         @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
             <div class="item-group" v-if="!!contextSelection">
@@ -93,19 +92,61 @@
                     <span><u>G</u>o to selection </span>
                 </BaseContextMenuItem>
             </div>
-            <div class="item-group">
+            <div class="item-group" v-if="!!contextSelection">
                 <div class="item" @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
                     <div class="icon-wrapper"><i class="far fa-pen"></i></div>
                     <u>R</u>ename
                 </div>
-                <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
+                <!-- <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
                     <u>M</u>embers and Access
-                </div>
-                <div class="item" @click="onNewSelection(contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-plus"></i></div>
-                    <u>C</u>reate sub-selection
-                </div>
+                </div> -->
+                <BaseContextMenuItem class="item"
+                @click="$emit('showSelectionUsersFlyin', contextSelection)"
+                hotkey="KeyM" iconClass="far fa-user-cog">
+                    <u>M</u>embers and Access
+                </BaseContextMenuItem>
+
+                <!-- <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move folders'"
+                @click="onMoveFiles()">
+                    <span><u>M</u>ove to</span>
+                </BaseContextMenuItem> -->
+
+
+                <!-- <BaseContextMenuItem :hasSubMenu="true">
+
+                </BaseContextMenuItem> -->
+                <BaseContextMenuItem class="item has-submenu"
+                hotkey="KeyC" iconClass="far fa-plus">
+                    <template>
+                        <span><u>C</u>reate sub-selection</span>    
+                    </template>
+                    
+
+                    <template v-slot:submenu>
+                        <div class="item-group">
+                            <BaseContextMenuItem class="item" iconClass="far fa-poll"
+                            hotkey="KeyN"
+                            @click="onNewSelection(contextSelection, 'Normal')">
+                                <span><u>N</u>ormal</span>
+                            </BaseContextMenuItem>
+
+                            <BaseContextMenuItem iconClass="far fa-crown"
+                            hotkey="KeyM"
+                            :disabled="contextSelection.type != 'Master'"
+                            disabledTooltip="Can only create Master sub-selections on another Master selection"
+                            @click="onNewSelection(contextSelection, 'Master')">
+                                <span><u>M</u>aster</span>
+                            </BaseContextMenuItem>
+                            <!-- <div class="item"
+                            @click.stop="onNewSelection(contextSelection, 'Master')">
+                                <div class="icon-wrapper"><i class="far fa-crown"></i></div>
+                                <span>Master</span>
+                            </div> -->
+                        </div>
+                    </template>
+                </BaseContextMenuItem>
                 <!-- <div class="item" v-if="contextSelection && !contextSelection.master"
                 @click="onMoveSelection(contextSelection, contextSelectionParent)">
                     <div class="icon-wrapper"><i class="far fa-file"><i class="fas fa-long-arrow-alt-right"></i></i></div>
@@ -867,7 +908,7 @@ export default {
             // Position the contextual menu
             moveContext.show(e)
         },
-        async onNewSelection(parent) {
+        async onNewSelection(parent, type) {
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
@@ -875,7 +916,7 @@ export default {
                 id: null,
                 file_id: this.currentFile.id,
                 name: '',
-                type: 'Master',
+                type,
                 currency: null,
                 user_count: 0,
                 team_count: 0,
@@ -893,7 +934,6 @@ export default {
                 // If we are creating a sbu selection
                 newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
-                newSelection.type = 'Normal'
                 newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
                 if (!parent.children) {

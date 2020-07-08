@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible || inline" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth" :class="{inline: inline}">
+    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth">
         <div class="item-group header" v-if="hasHeader">
             <strong>
                 <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
@@ -24,7 +24,6 @@ export default {
     name: 'contextMenu',
     props: {
         columns: {},
-        inline: {},
         hotkeys: {
             default: () => []
         }
@@ -140,7 +139,7 @@ export default {
                 // Check if we hit a hotkey
                 if (this.hotkeys.includes(key) || key == 'Escape') {
                     this.$emit('keybind-'+event.key,event)
-                    this.hide()
+                    // this.hide()
                     // Get the key name and emit it
                 }
             }
@@ -153,8 +152,10 @@ export default {
                 // Check if we have clicked an item
                 if (el.classList.contains('item') 
                 && !el.classList.contains('no-close') 
+                && !el.classList.contains('has-submenu') 
                 // && !item.classList.contains('context-menu-item')
                 && el.closest('.context-menu')) {
+                    console.log('hide context menu 1')
                     this.hide()
                     return
                 } 
@@ -163,8 +164,10 @@ export default {
                     // find the item parent
                     const item = el.closest('.item')
                     if (item && !item.classList.contains('no-close') 
+                    && !item.classList.contains('has-submenu') 
                     // && !item.classList.contains('context-menu-item')
                     && item.closest('.context-menu')) {
+                        console.log('hide context menu 2')
                         this.hide()
                         return
                     }
@@ -186,14 +189,14 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .context-menu, .context-menu:focus {
+    .context-menu, .context-menu:focus, .context-menu .sub-menu {
         background: white;
         border-radius: $borderRadiusModule;
         border: $borderModule;
         box-shadow: $shadowModuleHard;
         z-index: 1;
         position: fixed;
-        overflow: hidden;
+        // overflow: hidden;
         display: flex;
         flex-direction: column;
         &.inline {
@@ -237,6 +240,7 @@ export default {
             color: $dark05;
             display: flex;
             align-items: center;
+            position: relative;
             &:not(.item-wrapper):not(.context-menu-item) {
                 cursor: pointer;
                 &:hover {
@@ -253,6 +257,28 @@ export default {
                         font-size: 9px;
                     }
                 }
+            }
+            &.has-submenu {
+                position: relative;
+                &::after {
+                    content: "\f054";
+                    font-family: "Font Awesome 5 Pro";
+                    font-weight: 900;
+                    right: 16px;
+                    font-size: 12px;
+                    position: absolute;
+                }
+            }
+            &:hover {
+                .sub-menu {
+                    display: block;
+                }
+            }
+            .sub-menu {
+                display: none;
+                position: absolute;
+                left: 100%;
+                width: 100%
             }
             // &.disabled {
             //     // pointer-events: none;
