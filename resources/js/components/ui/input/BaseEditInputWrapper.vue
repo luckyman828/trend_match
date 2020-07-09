@@ -44,7 +44,8 @@ export default {
         'pattern',
         'activateOnMount',
         'disabled',
-        'error'
+        'error',
+        'submitOnBlur',
     ],
     data: function () { return {
         editActive: false,
@@ -66,7 +67,6 @@ export default {
             // this.$emit('input', this.$refs.input.value)
         },
         submit() {
-            console.log('on submit', this.editActive)
             this.emit()
             this.$emit('submit', this.localValue)
             // this.$emit('submit', this.$refs.input.value)
@@ -74,8 +74,14 @@ export default {
             document.activeElement.blur()
         },
         onBlur() {
-            if (this.value != this.oldValue && !this.error) this.submit()
-            else this.cancel()
+            if (this.submitOnBlur) {
+                if (this.localValue != this.oldValue && !this.error) {
+                    this.submit()
+                }
+                else {
+                    this.cancel()
+                }
+            }
         },
         setActive() {
             if (this.disabled) return
