@@ -56,10 +56,14 @@
                 <i class="lg far fa-arrow-right"></i>
                 <i class="lg dark far fa-building"></i>
             </div>
-            <h3>Success! {{ignoredUsers.length}} users ignored</h3>
-            <p>The following users already existed.<br>We have not updated their name or password:</p>
+            <h3>Success!</h3>
+            <p v-if="usersExistingInForm.length > 0">The form contained <strong>{{usersExistingInForm.length}} duplicates</strong> that have been ignored.</p>
+            <p v-if="usersExistingOnWorkspace.length > 0">
+                <strong>{{usersExistingOnWorkspace.length}} users</strong> already exist on the worksapce.
+                <br>We have not updated their name or password:
+            </p>
             <div class="ignored-users-list">
-                <li v-for="(user, index) in ignoredUsers" :key="index">{{user.name}} ({{user.email}})</li>
+                <li v-for="(user, index) in usersExistingOnWorkspace" :key="index">{{user.name}} ({{user.email}})</li>
             </div>
         </BaseDialog>
     </BaseModal>
@@ -79,10 +83,14 @@ export default {
             role: 'Member',
             status: null,
             emailErr: null,
-            passwordErr: null
+            passwordErr: null,
+            existsOnWorkspace: false,
+            existsInForm: false,
         },
         submitDisabled: false,
-        ignoredUsers: []
+        ignoredUsers: [],
+        usersExistingOnWorkspace: [],
+        usersExistingInForm: [],
     }},
     props: [
         'users',
@@ -159,8 +167,9 @@ export default {
             }
             // Submit form
             await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore')).then(async () => {
-                this.ignoredUsers = this.usersToAdd.filter(x => x.status == 'ignore')
-                if (this.ignoredUsers.length > 0) {
+                this.usersExistingOnWorkspace = this.usersToAdd.filter(x => x.existsOnWorkspace)
+                this.usersExistingInForm = this.usersToAdd.filter(x => x.existsInForm)
+                if (this.usersExistingOnWorkspace.length + this.usersExistingInForm.length > 0) {
                     await this.$refs.ignoredUsersUsersDialog.show()
                 }
                 this.reset()
@@ -178,19 +187,22 @@ export default {
                 return false
             }
 
-            // Check if the user already exists on the dashboard
-            const emailExists = !!this.users.find(x => x.email == email)
-            if (emailExists) {
-                user.emailErr = 'A user with this email already exists on the workspace'
-                user.status = 'ignore'
-                return true
-            }
-
             // Check if there is a user earlier in this form with the same email
             const usersBefore = this.usersToAdd.slice(0, index)
             const emailExistsInForm = !!usersBefore.find(x => x.email == email)
             if (emailExistsInForm) {
+
                 user.emailErr = 'Duplicate: A user with this email already exists in this form'
+                user.status = 'ignore'
+                user.existsInForm = true
+                return true
+            }
+
+            // Check if the user already exists on the dashboard
+            const emailExists = !!this.users.find(x => x.email == email)
+            if (emailExists) {
+                user.emailErr = 'A user with this email already exists on the workspace'
+                user.existsOnWorkspace = true
                 user.status = 'ignore'
                 return true
             }
@@ -231,6 +243,7 @@ export default {
         reset() {
             // this.submitDisabled = true
             this.usersToAdd = [JSON.parse(JSON.stringify(this.userDefaultObject))]
+            this.ignoredUsers = []
         }
     },
     created() {
