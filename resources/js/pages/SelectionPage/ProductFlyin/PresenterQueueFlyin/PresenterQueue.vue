@@ -34,6 +34,12 @@
             </div>
         </div>
 
+        <button class="red clear-queue" @click="SET_PRESENTER_QUEUE([])"
+        v-if="presenterQueue.length > 0">
+            <i class="far fa-trash-alt"></i>
+            <span>Clear queue</span>
+        </button>
+
     </div>
 </template>
 
@@ -88,7 +94,7 @@ export default {
     align-items: center;
     right: calc(-16px - 242px + 32px);
     background: white;
-    overflow: hidden;
+    // overflow: hidden;
     border-radius: $borderRadiusModule;
     border: $borderModule;
     box-shadow: $shadowModule;
@@ -160,6 +166,10 @@ export default {
                 font-weight: 700;
             }
         }
+    }
+    .clear-queue {
+        position: absolute;
+        bottom: -48px;
     }
 }
 
