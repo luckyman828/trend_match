@@ -26,6 +26,10 @@ export default {
                 description:
                     'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
             },
+            {
+                role: 'Approver',
+                description: 'Replies to requests',
+            },
         ],
         availableSelectionJobs: [
             {
