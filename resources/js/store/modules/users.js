@@ -104,18 +104,19 @@ export default {
                     data: dataToPost,
                 })
                     .then(response => {
-                        commit('ADD_USERS', response.data)
+                        const newUsers = response.data.new_users
+                        commit('ADD_USERS', newUsers)
                         // Display message
                         commit(
                             'alerts/SHOW_SNACKBAR',
                             {
-                                msg: `${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''} added`,
+                                msg: `${newUsers.length} user${newUsers.length > 1 ? 's' : ''} added`,
                                 iconClass: 'fa-check',
                                 type: 'success',
                             },
                             { root: true }
                         )
-                        resolve()
+                        resolve(response)
                     })
                     .catch(err => {
                         // Display message

@@ -59,11 +59,14 @@
             <h3>Success!</h3>
             <p v-if="usersExistingInForm.length > 0">The form contained <strong>{{usersExistingInForm.length}} duplicates</strong> that have been ignored.</p>
             <p v-if="usersExistingOnWorkspace.length > 0">
-                <strong>{{usersExistingOnWorkspace.length}} users</strong> already exist on the worksapce.
-                <br>We have not updated their name or password:
+                <strong>{{usersExistingOnWorkspace.length}} users</strong> already exist on this workspace.
             </p>
+            <p v-if="usersExistingOnAnotherWorkspace.length > 0">
+                <strong>{{usersExistingOnAnotherWorkspace.length}} users</strong> already exist on another workspace.
+            </p>
+            <p v-if="usersExistingOnAnotherWorkspace.length > 0 || usersExistingOnWorkspace.length > 0">We have not updated their name or password:</p>
             <div class="ignored-users-list">
-                <li v-for="(user, index) in usersExistingOnWorkspace" :key="index">{{user.name}} ({{user.email}})</li>
+                <li v-for="(user, index) in usersExistingOnWorkspace.concat(usersExistingOnAnotherWorkspace)" :key="index">{{user.name}} ({{user.email}})</li>
             </div>
         </BaseDialog>
     </BaseModal>
@@ -91,6 +94,7 @@ export default {
         ignoredUsers: [],
         usersExistingOnWorkspace: [],
         usersExistingInForm: [],
+        usersExistingOnAnotherWorkspace: [],
     }},
     props: [
         'users',
@@ -166,7 +170,11 @@ export default {
                 return
             }
             // Submit form
-            await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore')).then(async () => {
+            await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore')).then(async response => {
+                console.log('then')
+                if (response) {
+                    this.usersExistingOnAnotherWorkspace = response.data.existed_users
+                }
                 this.usersExistingOnWorkspace = this.usersToAdd.filter(x => x.existsOnWorkspace)
                 this.usersExistingInForm = this.usersToAdd.filter(x => x.existsInForm)
                 if (this.usersExistingOnWorkspace.length + this.usersExistingInForm.length > 0) {
@@ -174,7 +182,9 @@ export default {
                 }
                 this.reset()
                 this.$emit('close')
-            }).catch(err => {})
+            }).catch(err => {
+                console.log('error when adding users to worksapce', err)
+            })
         },
         validateEmail(user, index) {
             const email = user.email
