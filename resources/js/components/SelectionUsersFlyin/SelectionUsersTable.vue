@@ -98,52 +98,46 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user"
-        :hotkeys="['KeyC', 'KeyR', 'KeyE']"
-        @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
-        @keybind-r="onRemoveUsers(contextUser)"
-        @keybind-e="onRemoveUsers(contextUser)">
+        <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- Manually added users  -->
             <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
-                    <div class="item" @click.stop="showRoleContext(contextMouseEvent, contextUser)">
-                        <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
+                    <BaseContextMenuItem iconClass="far fa-user-shield"
+                    hotkey="KeyC"
+                    @click="showRoleContext(contextMouseEvent, contextUser)">
                         <span><u>C</u>hange role{{selected.length > 0 ? 's' : ''}}</span>
-                    </div>
+                    </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <div class="item" @click="onRemoveUsers(contextUser)">
-                        <div class="icon-wrapper" v-if="contextUser.inherit_from_teams || selected.length > 1">
-                            <i class="far fa-user-times"></i>
-                        </div>
-                        <div class="icon-wrapper" v-else>
-                            <i class="far fa-trash-alt"></i>
-                        </div>
+                    <BaseContextMenuItem
+                    :hotkey="['KeyR', 'KeyE']"
+                    :iconClass="contextUser.inherit_from_teams || selected.length > 1 ? 'far fa-user-times' : 'far fa-trash-alt'"
+                    @click="onRemoveUsers(contextUser)">
                         <span>
                             <span v-if="selected.length > 1"><u>R</u>emove / <u>E</u>xclude </span>
                             <span v-else-if="contextUser.inherit_from_teams"><u>E</u>xclude </span>
                             <span v-else><u>R</u>emove </span>
-                            User{{selected.length > 1 ? 's' : ''}}</span>
-                    </div>
+                            User{{selected.length > 1 ? 's' : ''}}
+                        </span>
+                    </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuExcludedUser" class="context-user"
-        :hotkeys="['KeyR']"
-        @keybind-r="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
+        <BaseContextMenu ref="contextMenuExcludedUser" class="context-user">
             <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
-                    <div class="item" @click="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
-                        <div class="icon-wrapper"><i class="far fa-user-plus"></i></div>
+                    <BaseContextMenuItem iconClass="far fa-user-plus"
+                    hotkey="KeyR"
+                    @click="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
                         <span><u>R</u>e-add User{{selected.length > 0 ? 's' : ''}}</span>
-                    </div>
+                    </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>

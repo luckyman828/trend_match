@@ -104,60 +104,55 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenu" v-slot="slotProps"
-        :hotkeys="['KeyV', 'KeyE', 'KeyA', 'KeyD', 'KeyC']"
-        @keybind-c="selectedProducts = []"
-        @keybind-v="onViewSingle(contextItem)"
-        @keybind-e="onViewSingle(contextItem)"
-        @keybind-a="onNewProduct()"
-        @keybind-d="onDeleteProducts([contextItem])"
-        >
+        <BaseContextMenu ref="contextMenu">
             <div class="item-group" v-if="selectedProducts.length > 0">
-                <div class="item" @click="selectedProducts = []; slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                <BaseContextMenuItem iconClass="far fa-times"
+                hokey="KeyC"
+                @click="selectedProducts = []">
                     <span><u>C</u>lear Selection</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onViewSingle(contextItem)">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                hotkey="KeyV"
+                @click="onViewSingle(contextItem)">
                     <span><u>V</u>iew / Edit</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click.stop="onNewProduct()">
-                    <div class="icon-wrapper"><i class="far fa-plus"></i></div>
+                <BaseContextMenuItem iconClass="far fa-plus" 
+                hotkey="KeyA"
+                @click.stop="onNewProduct()">
                     <span><u>A</u>dd New Product</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteProducts([contextItem])">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                hotkey="KeyD"
+                @click="onDeleteProducts([contextItem])">
                     <span><u>D</u>elete Product</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelected"
-        :hotkeys="['KeyD', 'KeyC']"
-        @keybind-d="onDeleteProduct(selectedProducts)"
-        @keybind-c="selectedProducts = []"
-        >
+        <BaseContextMenu ref="contextMenuSelected">
             <template v-slot:header>
                 <span>Choose action for {{selectedProducts.length}} products</span>
             </template>
 
             <div class="item-group">
-                <div class="item" @click="selectedProducts = []">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                <BaseContextMenuItem iconClass="far fa-times" 
+                hotkey="KeyC"
+                @click="selectedProducts = []">
                     <span><u>C</u>lear Selection</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteProducts(selectedProducts)">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                hotkey="KeyD"
+                @click="onDeleteProducts(selectedProducts)">
                     <span><u>D</u>elete Products</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
     </div>

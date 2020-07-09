@@ -41,6 +41,8 @@ export default {
     }},
     computed: {
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
+        ...mapGetters('contextMenu', {
+            contextMenuVisible: 'getContextMenuIsVisible'}),
         isVisible () {
             return (this.show) ? this.show : this.visible
         },
@@ -67,6 +69,7 @@ export default {
                 if (!this.getLightboxIsVisible 
                     && event.target.type != 'textarea' 
                     && event.target.tagName.toUpperCase() != 'INPUT'
+                    && !this.contextMenuVisible
                 ) {
                     if (key == 'Escape')
                         this.close()

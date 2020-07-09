@@ -1,6 +1,7 @@
 <template>
-    <div class="item context-menu-item" ref="contextMenuItem" :id="id"
-    :class="disabled && 'disabled no-close'" tabindex="0"
+    <div class="item context-menu-item"
+    :class="[disabled && 'disabled no-close', {'has-submenu': hasSubmenu}]" tabindex="0"
+    ref="contextMenuItem" :id="id"
     v-tooltip="{content: disabled && disabledTooltip, container: `#${id}`}"
     @click="onClick"
     @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
@@ -53,7 +54,9 @@ export default {
             this.closeContextMenu()
         },
         closeContextMenu() {
-            const contextMenu = this.contextMenuParent.hide()
+            if (this.contextMenuParent) {
+                this.contextMenuParent.hide()
+            }
         },
         showSubmenu() {
             this.submenuVisible = true
@@ -73,7 +76,7 @@ export default {
             this.onFireAction()
         },
         hotkeyHandler(e) {
-            if (e.code == this.hotkey) {
+            if (e.code == this.hotkey || Array.isArray(this.hotkey) && this.hotkey.includes(e.code)) {
                 if (this.hasSubmenu) {
                     if (!this.submenuVisible) {
                         this.showSubmenu()
@@ -100,11 +103,11 @@ export default {
         },
     },
     created() {
-        document.addEventListener('keyup', this.hotkeyHandler)
+        if (this.hotkey) document.addEventListener('keyup', this.hotkeyHandler)
         this.findParentContextMenu(this)
     },
     destroyed() {
-        document.removeEventListener('keyup', this.hotkeyHandler)
+        if (this.hotkey) document.removeEventListener('keyup', this.hotkeyHandler)
     }
 }
 </script>

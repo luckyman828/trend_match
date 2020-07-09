@@ -200,21 +200,15 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenu"
-            :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyV']"
-            @keybind-v="onViewSingle(contextSelectionInput)"
-            @keybind-i="userWriteAccess.actions.hasAccess && onUpdateAction('In', contextSelectionInput)"
-            @keybind-o="userWriteAccess.actions.hasAccess && onUpdateAction('Out', contextSelectionInput)"
-            @keybind-f="userWriteAccess.actions.hasAccess && onUpdateAction('Focus', contextSelectionInput)"
-            @keybind-u="userWriteAccess.actions.hasAccess && onUpdateAction('Focus', contextSelectionInput)"
-        >
+        <BaseContextMenu ref="contextMenu">
             <template v-if="contextSelectionInput">
                 <div class="item-group">
   
                     <BaseContextMenuItem 
                     :iconClass="contextSelectionInput[currentAction] == 'In' ? 'fas green fa-heart' : 'far fa-heart'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    hotkey="KeyI"
                     @click="onUpdateAction('In', contextSelectionInput)">
                         <span><u>I</u>n</span>
                     </BaseContextMenuItem>
@@ -222,7 +216,8 @@
                     <BaseContextMenuItem 
                     :iconClass="contextSelectionInput[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    hotkey="KeyO"
                     @click="onUpdateAction('Out', contextSelectionInput)">
                         <span><u>O</u>ut</span>
                     </BaseContextMenuItem>
@@ -230,63 +225,58 @@
                     <BaseContextMenuItem 
                     :iconClass="contextSelectionInput[currentAction] == 'Focus' ? 'fas primary fa-star' : 'far fa-star'"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    :hotkey="['KeyF', 'KeyU']"
                     @click="onUpdateAction('Focus', contextSelectionInput)">
                         <span><u>F</u>oc<u>u</u>s</span>
                     </BaseContextMenuItem>
 
                 </div>
                 <div class="item-group">
-                    <div class="item" @click="onViewSingle(contextProduct)" v-close-popover>
-                        <div class="icon-wrapper">
-                            <i class="far fa-eye"></i>
-                        </div>
+                    <BaseContextMenuItem iconClass="far fa-eye"
+                    hotkey="KeyV"
+                    @click="onViewSingle(contextProduct)" v-close-popover>
                         <u>V</u>iew
-                    </div>
+                    </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelection"
-            :hotkeys="['KeyF', 'KeyI', 'KeyU', 'KeyO', 'KeyC']"
-            @keybind-c="selectedProducts = []"
-            @keybind-i="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'In')"
-            @keybind-o="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'Out')"
-            @keybind-f="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'Focus')"
-            @keybind-u="userWriteAccess.actions.hasAccess && onUpdateMultipleActions(selectedProducts, 'Focus')"
-        >
+        <BaseContextMenu ref="contextMenuSelection">
             <template v-slot:header>
                 <span>Choose action for {{selectedProducts.length}} product{{selectedProducts.length > 1 ? 's' : ''}}</span>
             </template>
 
             <div class="item-group">
-                <div class="item" @click="selectedProducts = []">
-                    <div class="icon-wrapper">
-                        <i class="far fa-times"></i>
-                    </div>
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyC"
+                @click="selectedProducts = []">
                     <span><u>C</u>lear selection</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
 
             <template v-if="selectedProducts.length > 1">
                 <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-heart"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    hotkey="KeyI"
                     @click="onUpdateMultipleActions(selectedProducts, 'In')">
                         <span><u>I</u>n</span>
                     </BaseContextMenuItem>
 
                     <BaseContextMenuItem iconClass="far fa-times"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    hotkey="KeyO"
                     @click="onUpdateMultipleActions(selectedProducts, 'Out')">
                         <span><u>O</u>ut</span>
                     </BaseContextMenuItem>
 
                     <BaseContextMenuItem iconClass="far fa-star"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    :hotkey="['KeyF', 'KeyU']"
                     @click="onUpdateMultipleActions(selectedProducts, 'Focus')">
                         <span><u>F</u>oc<u>u</u>s</span>
                     </BaseContextMenuItem>
@@ -295,7 +285,8 @@
                 <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-times"
                     :disabled="!userWriteAccess.actions.hasAccess" 
-                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    hotkey="KeyC"
                     @click="onUpdateMultipleActions(selectedProducts, 'None')">
                         <span>Clear actions</span>
                     </BaseContextMenuItem>
@@ -304,7 +295,7 @@
         </BaseContextMenu>
 
         <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip"
-        @show="showDistributionTooltip">
+            @show="showDistributionTooltip">
             <ActionDistributionTooltip :selectionInput="tooltipSelectionInput" :type="distributionTooltipType"
             :actionDistributionTooltipTab="actionDistributionTooltipTab"
             @changeTab="tab => actionDistributionTooltipTab = tab"/>

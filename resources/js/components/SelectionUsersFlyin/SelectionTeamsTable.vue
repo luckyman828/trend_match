@@ -55,17 +55,16 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team"
-        :hotkeys="['KeyR']"
-        @keybind-r="onRemoveTeams(contextTeam)">
+        <BaseContextMenu ref="contextMenuTeam" class="context-team">
             <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} teams</span>
             </template>
             <div class="item-group">
-                <div class="item" @click="onRemoveTeams(contextTeam)">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyR"
+                @click="onRemoveTeams(contextTeam)">
                     <u>R</u>emove Team{{selected.length > 1 ? 's' : ''}}
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 

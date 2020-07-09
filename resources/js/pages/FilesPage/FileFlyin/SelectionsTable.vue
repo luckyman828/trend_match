@@ -76,34 +76,29 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuSelection" class="context-selection"
-        :hotkeys="['KeyG', 'KeyR', 'KeyM', 'KeyC', 'KeyS', 'KeyD']"
-        @keybind-g="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})"
-        @keybind-r="selectionToEdit = {selection: contextSelection, field: 'name'}"
-        @keybind-e="contextSelection && contextSelection.type == 'Master' && onNewSelection(contextSelection, 'Master')"
-        @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
-        @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
+        <BaseContextMenu ref="contextMenuSelection" class="context-selection">
             <div class="item-group" v-if="!!contextSelection">
                 <BaseContextMenuItem iconClass="far fa-users"
                 :disabled="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master'))"
-                v-tooltip="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')) 
-                && 'Selection is in presentation mode. To join the presentation login to the Kollekt mobile app'"
+                disabledTooltip="Selection is in presentation mode. To join the presentation login to the Kollekt mobile app"
+                hotkey="KeyG"
                 @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
                     <span><u>G</u>o to selection </span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group" v-if="!!contextSelection">
-                <div class="item" @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                hotkey="KeyR"
+                @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
                     <u>R</u>ename
-                </div>
+                </BaseContextMenuItem>
                 <!-- <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
                     <u>M</u>embers and Access
                 </div> -->
-                <BaseContextMenuItem class="item"
-                @click="$emit('showSelectionUsersFlyin', contextSelection)"
-                hotkey="KeyM" iconClass="far fa-user-cog">
+                <BaseContextMenuItem iconClass="far fa-user-cog"
+                hotkey="KeyM"
+                @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <u>M</u>embers and Access
                 </BaseContextMenuItem>
 
@@ -117,8 +112,8 @@
                 <!-- <BaseContextMenuItem :hasSubMenu="true">
 
                 </BaseContextMenuItem> -->
-                <BaseContextMenuItem class="item has-submenu"
-                hotkey="KeyC" iconClass="far fa-plus">
+                <BaseContextMenuItem iconClass="far fa-plus"
+                hotkey="KeyC">
                     <template>
                         <span><u>C</u>reate sub-selection</span>    
                     </template>
@@ -126,7 +121,7 @@
 
                     <template v-slot:submenu>
                         <div class="item-group">
-                            <BaseContextMenuItem class="item" iconClass="far fa-poll"
+                            <BaseContextMenuItem iconClass="far fa-poll"
                             hotkey="KeyN"
                             @click="onNewSelection(contextSelection, 'Normal')">
                                 <span><u>N</u>ormal</span>
@@ -154,42 +149,41 @@
                 </div> -->
             </div>
             <div class="item-group">
-                <div class="item" @click.stop="showSettingsContext(contextMouseEvent, contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-cog"></i></div>
+                <BaseContextMenuItem iconClass="far fa-cog"
+                hotkey="KeyS"
+                @click="showSettingsContext(contextMouseEvent, contextSelection)">
                     <u>S</u>ettings
-                </div>
+                </BaseContextMenuItem>
             </div>
-            <div class="item-group" @click="onDeleteSelection(contextSelection, contextSelectionParent)">
-                <div class="item">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyD"
+                @click="onDeleteSelection(contextSelection, contextSelectionParent)">
                     <u>D</u>elete selection
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuMove" class="context-move">
-            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)"
-            @click="endMoveSelection(contextSelection, contextSelectionComponent)">
-                <div class="item">
-                    <div class="icon-wrapper">
-                        <i class="far fa-arrow-left"></i>
-                    </div>
+            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)">
+                <BaseContextMenuItem iconClass="far fa-arrow-left"
+                hotkey="KeyM"
+                @click="endMoveSelection(contextSelection, contextSelectionComponent)">
                     <u>M</u>ove here
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group" v-else-if="contextSelectionComponent && selectionToMove">
-                <div class="item disabled">
-                    <div class="icon-wrapper">
-                        <i class="far fa-exclamation-circle"></i>
-                    </div>
-                    Cannot place inside self
-                </div>
+                <BaseContextMenuItem iconClass="far fa-exclamation-circle"
+                :disabled="true">
+                    <span>Cannot place inside self</span>
+                </BaseContextMenuItem>
             </div>
-            <div class="item-group" @click="clearMoveSelection">
-                <div class="item">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyC"
+                @click="clearMoveSelection">
                     <u>C</u>ancel
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 

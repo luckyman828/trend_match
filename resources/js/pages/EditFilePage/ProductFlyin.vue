@@ -253,50 +253,40 @@
                 </div>
             </BaseFlyinColumn>
 
-            <BaseContextMenu ref="contextVariant" class="context-variant"
-            @keybind-d="removeVariant(contextVariantIndex)" 
-            @keybind-c="$refs['fileInput-'+contextVariantIndex][0].click()"
-            @keybind-u="editURL(contextVariantIndex)"
-            @keybind-a="onAddVariant()"
-            @keybind-r="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
+            <BaseContextMenu ref="contextVariant" class="context-variant">
                 <template v-slot>
                     <div class="item-group">
-                        <div class="item" @click="onAddVariant">
-                            <div class="icon-wrapper">
-                                <i class="far fa-plus"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-plus"
+                        hotkey="KeyA" 
+                        @click="onAddVariant">
                             <u>A</u>dd variant
-                        </div>
+                        </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <div class="item" @click="$refs['fileInput-'+contextVariantIndex][0].click()">
-                            <div class="icon-wrapper">
-                                <i class="far fa-file"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-file"
+                        hotkey="KeyC"
+                        @click="$refs['fileInput-'+contextVariantIndex][0].click()">
                             <u>C</u>hoose image from file
-                        </div>
-                        <div class="item" @click="editURL(contextVariantIndex)">
-                            <div class="icon-wrapper">
-                                <i class="far fa-link"></i>
-                            </div>
-                            Enter image <u>U</u>RL
-                        </div>
+                        </BaseContextMenuItem>
+                        <BaseContextMenuItem iconClass="far fa-link"
+                        hotkey="KeyU"
+                        @click="editURL(contextVariantIndex)">
+                            <span>Enter image <u>U</u>RL</span>
+                        </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <div class="item" @click="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
-                            <div class="icon-wrapper">
-                                <i class="far fa-pen"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-pen" 
+                        hotkey="KeyR"
+                        @click="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
                             <u>R</u>ename
-                        </div>
+                        </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <div class="item" @click="removeVariant(contextVariantIndex)">
-                            <div class="icon-wrapper">
-                                <i class="far fa-trash-alt"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                        hotkey="KeyD"
+                        @click="removeVariant(contextVariantIndex)">
                             <u>D</u>elete
-                        </div>
+                        </BaseContextMenuItem>
                     </div>
                 </template>
             </BaseContextMenu>
