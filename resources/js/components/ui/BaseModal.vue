@@ -1,8 +1,8 @@
 <template>
     <portal to="modals">
         <div class="modal-wrapper" :class="[{visible: show},classes]" ref="modalWrapper">
-            <div class="inner" v-if="show">
-                <div class="overlay" @click="close"></div>
+            <div class="overlay" v-if="show" @click="close"></div>
+            <div class="inner" v-if="show" @click.self="close">
 
                 <div class="modal" ref="modal">
                     <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header">
@@ -76,10 +76,12 @@ export default {
             left: 0;
             top: 0;
             overflow: auto;
+            scroll-behavior: smooth;
+            z-index: 1;
         }
     }
     .overlay {
-        z-index: 11;
+        z-index: 0;
         position: fixed;
         top: 0;
         left: 0;

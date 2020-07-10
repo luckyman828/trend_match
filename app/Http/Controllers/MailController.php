@@ -30,7 +30,7 @@ class MailController extends Controller
                 $userTeam->team_id = $request->team['id'];
                 // Add the user to the team
                 $userTeam->save();
-                return "Succes: Saved new user";
+                return "success: Saved new user";
             }
 
             
@@ -53,7 +53,7 @@ class MailController extends Controller
                 $teamInvite->team_id = $request->team['id'];
                 // Add the invite to the table
                 $teamInvite->save();
-                return "Succes: Send invite and created a new team_invite entry";
+                return "success: Send invite and created a new team_invite entry";
             }
 
         }
@@ -118,13 +118,13 @@ class MailController extends Controller
         UserTeam::insert($usersToAdd);
         TeamInvite::insert($usersToInvite);
 
-        return 'succes';
+        return 'success';
     }
 
     public function resendInvite(Request $request)
     {
         Mail::to($request->user['email'])->send(new InviteUser($request));
         return $request;
-        // return "Succes: Resent invite!";
+        // return "success: Resent invite!";
     }
 }

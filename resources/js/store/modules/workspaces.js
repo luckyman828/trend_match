@@ -38,13 +38,13 @@ export default {
             const apiUrl = `/workspaces`
 
             let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
+            let success = false
+            while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     commit('setWorkspaces', response.data)
                     commit('setLoading', false)
-                    succes = true
+                    success = true
                 } catch (err) {
                     console.log('API error in workspaces.js :')
                     console.log(err)
