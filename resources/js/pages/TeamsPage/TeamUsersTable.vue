@@ -26,7 +26,9 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <TeamUsersTableRow :ref="'userRow-'+user.id" v-for="(user, index) in usersFilteredBySearch" :key="user.id" :user="user" :index="index"
+                <TeamUsersTableRow :ref="'userRow-'+user.id" 
+                v-for="(user, index) in usersSorted" 
+                :key="user.id" :user="user" :index="index"
                 :contextUser="contextUser"
                 :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)" v-model="selectedUsers" :selectedUsers="selectedUsers"
                 @editCurrency="onEditUserCurrency($event, user)"/>
@@ -176,6 +178,7 @@ export default {
         ...mapGetters('teams', ['currentTeamStatus', 'availableTeamRoles', 'getCurrentTeam', 'nextTeam', 'prevTeam']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('users', ['users']),
+        ...mapGetters('auth', ['authUser']),
         readyStatus() {
             return this.currentTeamStatus
         },
@@ -186,11 +189,16 @@ export default {
             if (!this.team.users) return []
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
-            return allUsers.filter(workspaceUser => !this.team.users.find(teamUser => teamUser.id == workspaceUser.id))
+            return allUsers.filter(workspaceUser => !this.team.users.find(teamUser => teamUser.id == workspaceUser.id)).sort((a,b) => {
+                if (a.id == this.authUser.id) return -1
+            })
         },
         workspaceUsers() {
             return this.users
         },
+        usersSorted() {
+            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
+        }
     },
     watch: {
         team(newVal, oldVal) {

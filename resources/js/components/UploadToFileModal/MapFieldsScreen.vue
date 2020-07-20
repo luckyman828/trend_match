@@ -328,7 +328,6 @@ export default {
             // Loop through the currencies and look check their names
             if (!this.singleCurrencyFile) {
                 this.currenciesToMatch.forEach(currency => {
-                    console.log('valdiate currency', currency)
                     if(currency.fileIndex != null && !this.validateCurrency(currency)) {
                         valid = false
                     }

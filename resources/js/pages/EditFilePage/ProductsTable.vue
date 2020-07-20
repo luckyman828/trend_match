@@ -87,7 +87,7 @@
                 <RecycleScroller
                     class="products-scroller"
                     :items="productsFilteredBySearch"
-                    :item-size="140"
+                    :item-size="139"
                     page-mode
                     key-field="id"
                     v-slot="{ item, index }"
@@ -223,12 +223,12 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct', 'deleteProducts']),
+        ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH']),
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
-            this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
+            this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products
             this.setSingleVisisble(true)
             document.activeElement.blur()
         },

@@ -6,6 +6,8 @@ window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 window.axios.defaults.baseURL = process.env.MIX_API_BASE_URL
 
+window.focusVisible = require('focus-visible')
+
 import store from './store/index'
 import router from './router'
 
@@ -97,6 +99,18 @@ Vue.filter('truncate', function(value, limit) {
 })
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+})
+Vue.filter('thousandSeparated', function(value) {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+})
+
+// Define global mixins
+Vue.mixin({
+    methods: {
+        separateThousands(value) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        },
+    },
 })
 
 const app = new Vue({

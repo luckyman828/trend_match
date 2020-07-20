@@ -78,7 +78,7 @@ export default {
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
-            {name: 'variants', displayName: 'Variants', enabled: false},
+            {name: 'variants', displayName: 'Variants & images', enabled: false},
             {name: 'eans', displayName: 'Product EANs', enabled: false},
             {name: 'buying_group', displayName: 'Buyer Group', enabled: false},
         ],
@@ -208,7 +208,6 @@ export default {
             })
             // Loop through the currencies and look check their names
             this.currenciesToMatch.forEach(currency => {
-                console.log('valdiate currency', currency)
                 if(currency.fileIndex != null && !this.validateCurrency(currency)) {
                     valid = false
                 }
@@ -217,7 +216,8 @@ export default {
         }
     },
     methods: {
-        ...mapActions('products', ['updateProduct', 'uploadImage']),
+        ...mapActions('files', ['syncExternalImages']),
+        ...mapActions('products', ['uploadImage', 'updateManyProducts']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async getImageFromURL(url) {
             // Send a request to get the image
@@ -704,17 +704,29 @@ export default {
 
             // Upload images if we are replacing variants
             if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
-                this.submitStatus = 'Uploading images'
-                await Promise.all(newProducts.map(async product => {
-                    await Promise.all(product.variants.map(async variant => {
-                        if (variant.image) {
-                            const imageFile = await this.getImageFromURL(variant.image)
-                            if (imageFile) {
-                                await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
-                            }
-                        }
-                    }))
-                }))
+                this.submitStatus = 'Uploading images. This may take a while'
+                await this.syncExternalImages({file: this.currentFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
+                    console.log('uploadImages error', err)
+                    imageUploadSuccess = false
+                    this.SHOW_SNACKBAR({ 
+                        msg: `<p><strong>Hey you!</strong><br></p>
+                        <p>We will display your images from your provided URLs.</p>
+                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
+                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
+                        type: 'info', 
+                        iconClass: 'fa-exclamation-circle', 
+                    })
+                })
+                // await Promise.all(newProducts.map(async product => {
+                //     await Promise.all(product.variants.map(async variant => {
+                //         if (variant.image) {
+                //             const imageFile = await this.getImageFromURL(variant.image)
+                //             if (imageFile) {
+                //                 await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                //             }
+                //         }
+                //     }))
+                // }))
             }
 
 
@@ -727,9 +739,7 @@ export default {
 
             // Send an update request to the API
             this.submitStatus = 'Saving to database'
-            await Promise.all(this.products.map(async product => {
-                await this.updateProduct(product)
-            }))
+            await this.updateManyProducts({ file: this.currentFile, products: this.products })
             .then(() => {
                 this.$emit('close')
                 this.reset()
@@ -739,6 +749,10 @@ export default {
             })
             this.submitStatus = null
             this.isSubmitting = false
+        },
+        uploadImagesProgressCalback(progress) {
+            this.submitStatus = `Uploading images. This may take a while.<br>
+            <strong>${progress}%</strong> done.`
         },
         reset() {
             this.availableFiles = []

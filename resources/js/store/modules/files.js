@@ -183,7 +183,6 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, file) {
-            console.log('insert or update file', JSON.parse(JSON.stringify(file)))
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -280,7 +279,6 @@ export default {
             )
 
             const sendRequest = async () => {
-                console.log('send request!')
                 await axios
                     .delete(apiUrl)
                     .then(response => {
@@ -322,7 +320,6 @@ export default {
             }
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
-            console.log('delete multiple files', files)
             commit('DELETE_MULTIPLE_FILES', files)
 
             // Start timer for deletion
@@ -415,29 +412,121 @@ export default {
             commit('removeApproverFromFile', { file, user })
             // Send request to API
         },
-        moveFiles({ commit, dispatch }, { destinationFolder, filesToMove }) {
+        moveFiles({ state, rootGetters, commit, dispatch }, { destinationFolderId, filesToMove, undo }) {
+            console.log('move files', destinationFolderId, filesToMove)
+
+            let apiUrl = `/files/${destinationFolderId}/paste`
+            if (destinationFolderId == 0) apiUrl = `/files/${rootGetters['workspaces/currentWorkspace'].id}/paste`
             // Send request to API
-            const apiUrl = `/files/${destinationFolder.id}/paste`
+            const oldFolderId = filesToMove[0].parent_id
             axios
                 .post(apiUrl, {
                     file_ids: filesToMove.map(x => x.id),
                 })
                 .then(response => {
                     // Commit mutation to state
-                    filesToMove.map(x => {
-                        commit('deleteFile', x.id)
-                    })
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${filesToMove.length} files/folders moved`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
+                    if (!undo) {
+                        filesToMove.map(x => {
+                            commit('deleteFile', x.id)
+                        })
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${filesToMove.length} files/folders moved`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                                callback: () => {
+                                    dispatch('moveFiles', { destinationFolderId: oldFolderId, filesToMove, undo: true })
+                                    state.files = state.files.concat(filesToMove)
+                                },
+                                callbackLabel: 'Undo',
+                            },
+                            { root: true }
+                        )
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Move undone`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(() => {})
+        },
+        async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
+            return new Promise(async (resolve, reject) => {
+                // Get owners for file
+                const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
+
+                const imageMaps = []
+                products.map(product => {
+                    product.variants.map(variant => {
+                        if (!variant.image) return
+                        imageMaps.push({
+                            mapping_id: variant.id,
+                            datasource_id: product.datasource_id,
+                            url: variant.image,
+                        })
+                    })
+                })
+
+                const productsToUpdate = []
+
+                // Chunk the images
+                const array_chunks = (array, chunk_size) =>
+                    Array(Math.ceil(array.length / chunk_size))
+                        .fill()
+                        .map((_, index) => index * chunk_size)
+                        .map(begin => array.slice(begin, begin + chunk_size))
+                const imageMapChunks = array_chunks(imageMaps, 8)
+
+                // Upload a chunk at a time
+                let chunkIndex = 1
+                for await (const imageMaps of imageMapChunks) {
+                    await axios
+                        .post(apiUrl, {
+                            max_height: 2016,
+                            max_width: 1512,
+                            images: imageMaps,
+                        })
+                        .then(async response => {
+                            if (progressCallback) {
+                                const progressPercentage = ((chunkIndex / imageMapChunks.length) * 100).toFixed(0)
+                                progressCallback(progressPercentage)
+                            }
+                            const uploadedImages = response.data.media_url_maps
+                            uploadedImages.forEach(image => {
+                                const product = products.find(product =>
+                                    product.variants.find(variant => variant.id == image.mapping_id)
+                                )
+                                if (!product) return
+                                const variant = product.variants.find(variant => variant.id == image.mapping_id)
+
+                                if (!variant) return
+                                variant.image = image.cdn_url
+                                productsToUpdate.push(product)
+                            })
+                        })
+                        .catch(err => {
+                            reject(err)
+                        })
+                    chunkIndex++
+                }
+
+                // Update the products when we are done uploading
+                await dispatch(
+                    'products/updateManyProducts',
+                    { file, products: productsToUpdate },
+                    { root: true }
+                ).catch(err => {
+                    reject(err)
+                })
+                resolve()
+            })
         },
     },
 

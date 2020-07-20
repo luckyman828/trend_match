@@ -1,10 +1,10 @@
 export default {
     methods: {
-        variantImage(variant) {
-            if (!variant || (!variant.blob_id && !variant.image)) return `/images/placeholder.JPG`
-            if (variant.blob_id)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
+        variantImage(variant, size) {
+            if (!variant || !variant.image) return `/images/placeholder.JPG`
+            if (size == 'sm') return `${variant.image}-300x300`
+            if (size == 'lg') return `${variant.image}-1024x1024`
+            return variant.image
         },
     },
 }

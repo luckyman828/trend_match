@@ -2,7 +2,7 @@
     <div class="action-distribution-list">
 
         <div class="header">
-            <div class="segment-toggle">
+            <!-- <div class="segment-toggle">
                 <BaseButton targetAreaPadding="16px 4px 16px 16px"
                 :buttonClass="currentTab == 'alignment' ? 'white xs full-width' : 'invisible ghost-hover xs full-width'"
                 @click="setCurrentTab('alignment')">
@@ -13,17 +13,28 @@
                 @click="setCurrentTab('feedback')">
                     <span>Feedback</span>
                 </BaseButton>
-            </div>
+            </div> -->
+            <BaseTabHeaderList>
+                <BaseTabHeader :active="currentTab == 'Alignment'" 
+                @click.native="setCurrentTab('Alignment')">
+                    <span>Alignment {{alignmentActions.length}}</span>
+                </BaseTabHeader>
+                <BaseTabHeader :active="currentTab == 'Feedback'" 
+                @click.native="setCurrentTab('Feedback')">
+                    <span>Feedback {{feedbackActions.length}}</span>
+                </BaseTabHeader>
+            </BaseTabHeaderList>
         </div>
 
         <!-- Alignment List -->
-        <table class="action-list" v-if="currentTab == 'alignment'">
+        <table class="action-list" v-if="currentTab == 'Alignment'">
             <tr class="action" v-for="(action, index) in alignmentActions" :key="index">
                 <td>{{action.action}}</td>
                 <td>
                     <span class="main">{{action.selection ? action.selection.name : 'Unknown'}}</span>
                     <span class="sub" v-if="action.action != 'None'">{{action.user ? action.user.name : 'Anonymous'}}</span>
                 </td>
+                <td v-if="displayQty" style="text-align: right;">{{action.quantity}}</td>
             </tr>
 
             <tr v-if="alignmentActions.length <= 0">
@@ -32,7 +43,7 @@
         </table>
 
         <!-- Feedback List -->
-        <table class="action-list" v-if="currentTab == 'feedback'">
+        <table class="action-list" v-if="currentTab == 'Feedback'">
             <tr class="action" v-for="(action, index) in feedbackActions" :key="index">
                 <td>{{action.action}}</td>
                 <td>
@@ -56,9 +67,10 @@ export default {
         'alignmentActions',
         'feedbackActions',
         'defaultTab',
+        'displayQty',
     ],
     data: function() { return {
-        currentTab: 'feedback'
+        currentTab: 'Feedback'
     }},
     methods: {
         setCurrentTab(tab) {

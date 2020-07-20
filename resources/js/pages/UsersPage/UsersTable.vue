@@ -34,7 +34,7 @@
             </template>
             <template v-slot:body>
                 <RecycleScroller
-                    :items="usersFilteredBySearch"
+                    :items="usersSorted"
                     :item-size="50"
                     page-mode
                     key-field="id"
@@ -302,6 +302,9 @@ export default {
                 return users.filter(x => x.id == this.authUser.id)
             }
             return users
+        },
+        usersSorted() {
+            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
         }
     },
     watch: {

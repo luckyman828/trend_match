@@ -50,6 +50,13 @@ export default {
         getCurrentPDPSelection: state => state.currentPDPSelection,
         getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
+        getQuantityModeActive: (state, getters) => {
+            return (
+                getters.currentSelection &&
+                getters.currentSelection.budget > 0 &&
+                getters.currentSelectionMode == 'Alignment'
+            )
+        },
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {
@@ -147,6 +154,47 @@ export default {
                     msg: !selection.is_open && 'Selection is locked',
                 },
             }
+        },
+        getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
+            const products = rootGetters['products/getProducts']
+            const activeSelections = getters.getCurrentSelections
+            const availableSelections = []
+            products.forEach(product => {
+                // Find the selection input available
+                const selectionInputListFiltered = product.selectionInputList.filter(
+                    selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
+                )
+
+                selectionInputListFiltered.forEach(selectionInput => {
+                    // Loop through the products feedback
+                    selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == feedback.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(feedback.selection)
+                    })
+                    // Loop through the products alignment
+                    selectionInput.rawSelectionInput.actions.forEach(action => {
+                        const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
+                        if (!existsInArray) availableSelections.push(action.selection)
+                    })
+                    // Loop through the products comments
+                    selectionInput.rawSelectionInput.comments.forEach(comment => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == comment.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(comment.selection)
+                    })
+                    // Loop through the products requests
+                    selectionInput.rawSelectionInput.requests.forEach(request => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == request.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(request.selection)
+                    })
+                })
+            })
+            return availableSelections
         },
     },
 
@@ -335,6 +383,42 @@ export default {
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
                             callback: () => dispatch('updateSelection', selection),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+        },
+        async updateSelectionBudget({ commit, dispatch }, selection) {
+            commit('UPDATE_SELECTION', selection)
+            const apiUrl = `/selections/${selection.id}/extra-properties`
+            if (!selection.budget) selection.budget = 0
+
+            await axios
+                .put(apiUrl, {
+                    budget: selection.budget,
+                })
+                .then(async response => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Selection updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Something went wrong trying to update the selection. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelectionBudget', selection),
                             callbackLabel: 'Retry',
                             duration: 0,
                         },
@@ -890,6 +974,9 @@ export default {
             state.currentSelection = selection
         },
         SET_CURRENT_SELECTIONS(state, selections) {
+            // selections.map(selection => {
+            //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
+            // })
             state.currentSelections = selections
         },
         SET_CURRENT_PDP_SELECTION(state, selection) {
@@ -899,6 +986,9 @@ export default {
             state.usersFlyInVisible = bool
         },
         insertSelections(state, { selections, method }) {
+            // selections.map(selection => {
+            //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
+            // })
             // Check if we have already instantiated selections
             if (method == 'set') {
                 state.selections = selections

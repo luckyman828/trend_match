@@ -202,7 +202,7 @@ export default {
         .columns {
             display: flex;
             border-top: solid 1px $divider;
-            max-height: calc(100vh - 160px);
+            max-height: calc(100vh - 180px);
             overflow: auto;
             > * {
                 width: 240px;

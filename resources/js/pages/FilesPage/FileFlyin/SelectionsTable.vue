@@ -16,6 +16,8 @@
                 <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
+                <BaseTableHeader class="budget">Budget</BaseTableHeader>
+                <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
@@ -233,8 +235,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_feedback')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_feedback')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -313,8 +315,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_action')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_action')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -393,8 +395,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_comment')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_comment')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -473,8 +475,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_request')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -482,8 +484,8 @@
                     </div>
                     
                 </div>
-                <div class="item-group footer">
-                    <div class="item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                <div class="item-group footer item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                    <!-- <div class="item-wrapper" > -->
                         <div>
                             <button class="ghost primary"
                             @click="onCloneSettings">
@@ -494,7 +496,7 @@
                             <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                             <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                         </div>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <BaseContextMenu ref="contextParentLevel" v-slot="slotProps">
@@ -515,6 +517,13 @@
                     <BaseSelectButtons type="radio" :submitOnChange="true"
                     v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
                     :options="displayLevelOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
+
+                <BaseContextMenu ref="contextAuthorLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
+                    :options="displayAuthorOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
 
@@ -655,6 +664,16 @@ export default {
                 value: 'Owner',
                 label: 'Owners'
             },
+        ],
+        displayAuthorOptions: [
+            {
+                value: 'Member',
+                label: 'Everyone'
+            },
+            {
+                value: 'Owner',
+                label: 'Owners'
+            },
             {
                 value: 'None',
                 label: 'No one'
@@ -724,12 +743,14 @@ export default {
             this.contextSelectionOption = option
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextParentLevel.show(e)
         },
         showChildLevelContext(e, option) {
             this.contextSelectionOption = option
             this.$refs.contextParentLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextChildLevel.show(e)
         },
         showDisplayLevelContext(e, settings, key) {
@@ -737,7 +758,16 @@ export default {
             this.contextSelectionSettingsKey = key
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextDisplayLevel.show(e)
+        },
+        showDisplayAuthorContext(e, settings, key) {
+            this.contextSelectionSettings = settings
+            this.contextSelectionSettingsKey = key
+            this.$refs.contextParentLevel.hide()
+            this.$refs.contextChildLevel.hide()
+            this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.show(e)
         },
         onCloneSettings(e) {
             this.$refs.contextCloneSettings.show(e)
@@ -864,6 +894,7 @@ export default {
                 newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
                 newSelection.type = 'Normal'
+                newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
                 if (!parent.children) {
                     this.$set(parent, 'children', [])
@@ -1001,18 +1032,30 @@ export default {
                     &.teams {
                         margin-left: auto;
                     }
-                    &.currency {
+                    &.budget {
                         min-width: 100px;
                         max-width: 100px;
                         margin-left: auto;
+                        text-align: right;
+                    }
+                    &.budget-spend {
+                        min-width: 64px;
+                        max-width: 64px;
+                        text-align: right;
+                        padding-right: 8px;
+                    }
+                    &.currency {
+                        min-width: 100px;
+                        max-width: 100px;
+                        // margin-left: auto;
                     }
                     &.teams, &.users {
                         min-width: 76px;
                         max-width: 76px;
                     }
                     &.status { // Status
-                        min-width: 180px;
-                        max-width: 180px;
+                        min-width: 156px;
+                        max-width: 156px;
                         margin-left: auto;
                         // display: flex;
                         // align-items: center;
@@ -1035,6 +1078,11 @@ export default {
                         margin-left: auto;
                     }
                 }
+                // > td {
+                //     &.budget {
+                //         text-align: right;
+                //     }
+                // }
             }
         }
     }

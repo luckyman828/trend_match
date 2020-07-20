@@ -4,36 +4,50 @@
         <div class="header">
             <h4 class="primary">{{variant.name || 'Unnamed'}}</h4>
         </div>
-        <div class="action-list">
+        <div :class="{'col-2': showQty && selectionMode != 'Approval'}">
+            <div class="action-list">
 
-            <div class="action-list-item">
-                <BaseButton :buttonClass="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
-                :disabled="!userWriteAccess.actions.hasAccess" 
-                :disabledTooltip="userWriteAccess.actions.msg"
-                @click="updateVariantAction('Focus')">
-                    <i class="far fa-star"></i>
-                </BaseButton>
-                <span class="count">{{variant.allFocus}}</span>
+                <div class="action-list-item">
+                    <BaseButton :buttonClass="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    @click="updateVariantAction('Focus')">
+                        <i class="far fa-star"></i>
+                    </BaseButton>
+                    <span class="count">{{actionDistributionTooltipTab == 'Alignment' ? variant.alignmentFocus.length : variant.focus.length}}</span>
+                </div>
+
+                <div class="action-list-item">
+                    <BaseButton :buttonClass="variant[currentAction] == 'In' ? 'green' : 'ghost'"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    @click="updateVariantAction('In')">
+                        <i class="far fa-heart"></i>
+                    </BaseButton>
+                    <span class="count">{{actionDistributionTooltipTab == 'Alignment' ? variant.alignmentIns.length : variant.ins.length}}</span>
+                </div>
+
+                <div class="action-list-item">
+                    <BaseButton :buttonClass="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
+                    :disabled="!userWriteAccess.actions.hasAccess" 
+                    :disabledTooltip="userWriteAccess.actions.msg"
+                    @click="updateVariantAction('Out')">
+                        <i class="far fa-times"></i>
+                    </BaseButton>
+                    <span class="count">{{actionDistributionTooltipTab == 'Alignment' ? variant.alignmentOuts.length : variant.outs.length}}</span>
+                </div>
             </div>
 
-            <div class="action-list-item">
-                <BaseButton :buttonClass="variant[currentAction] == 'In' ? 'green' : 'ghost'"
-                :disabled="!userWriteAccess.actions.hasAccess" 
-                :disabledTooltip="userWriteAccess.actions.msg"
-                @click="updateVariantAction('In')">
-                    <i class="far fa-heart"></i>
-                </BaseButton>
-                <span class="count">{{variant.allIns}}</span>
-            </div>
-
-            <div class="action-list-item">
-                <BaseButton :buttonClass="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
-                :disabled="!userWriteAccess.actions.hasAccess" 
-                :disabledTooltip="userWriteAccess.actions.msg"
-                @click="updateVariantAction('Out')">
-                    <i class="far fa-times"></i>
-                </BaseButton>
-                <span class="count">{{variant.allOuts}}</span>
+            <div class="quantity-input" v-if="showQty && selectionMode != 'Approval'">
+                <p>Hello</p>
+                <BaseInputField ref="qtyInput" inputClass="small" v-model.number="newQuantity"
+                :selectOnFocus="true" type="number"
+                :disabled="!userWriteAccess.actions.hasAccess" :readOnly="!userWriteAccess.actions.hasAccess"
+                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                @keyup.enter.native="onSubmitQuantity"/>
+                <div class="total" v-tooltip.right="'total quantity input / variant minimum'">
+                    <span>{{variant.totalQuantity}} / {{product.min_variant_order}}</span>
+                </div>
             </div>
         </div>
 
@@ -41,6 +55,7 @@
         :feedbackActions="variant.feedbacks" 
         :alignmentActions="variant.actions"
         :defaultTab="actionDistributionTooltipTab"
+        :displayQty="showQty"
         @changeTab="event => $emit('changeTab', event)"/>
     </div>
 </template>
@@ -57,15 +72,28 @@ export default {
     props: [
         'variant',
         'product',
+        'selectionInput',
         'selection',
         'actionDistributionTooltipTab',
     ],
+    data() { return {
+        newQuantity: this.variant.quantity,
+    }},
+    watch: {
+        variant(newVariant) {
+            this.newQuantity = newVariant.quantity
+            this.$nextTick(() => {
+                this.focusQtyInput()
+            })
+        }
+    },
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
             selectionMode: 'currentSelectionMode',
             currentAction: 'currentSelectionModeAction',
             getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
+            showQty: 'getQuantityModeActive'
         }),
         userWriteAccess () {
             return this.getUserWriteAccess(this.selection)
@@ -73,14 +101,20 @@ export default {
     },
     
     methods: {
-        ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
+        ...mapActions('actions', ['updateFeedbacks', 'updateActions']),
+        focusQtyInput() {
+            if (this.showQty) {
+                this.$refs.qtyInput.focus()
+            }
+        },
         updateVariantAction(newAction) {
             // If the new action to set is the same as the one already set, return
-            if (this.variant[this.currentAction] == newAction) return
+            // if (this.variant[this.currentAction] == newAction) return
 
             // Loop through all the variants. If their action is None, then give them a default action
             this.product.variants.forEach(variant => {
                 if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
+                    console.log('set variant action')
                     if (newAction == 'Out') variant[this.currentAction] = 'Out'
                     else variant[this.currentAction] = 'In'
                 }
@@ -88,40 +122,61 @@ export default {
 
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
+            if (newAction == 'Out') {
+                this.variant.quantity = 0
+                this.newQuantity = 0
+            }
             let currentAction
-            console.log('update variant action', this.product)
+            let newProductAction
             
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None
-                currentAction = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
+                currentAction = this.selectionInput.yourSelectionFeedback
             }
             if (this.selectionMode == 'Alignment') {
                 // Find the users feedback action for the product and make sure it is not None
-                currentAction = this.product.actions.find(x => x.selection_id == this.selection.id)
+                currentAction = this.selectionInput.selectionAction
             }
 
             // If the product has no action, set it's action to the variants new action
             if (currentAction.action == 'None') {
-                currentAction.action = newAction
+                // currentAction.action = newAction
+                newProductAction = newAction
             }
             // If all variants are marked OUT, mark the product OUT
-            else if (!this.product.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
-                currentAction.action = 'Out'
+            else if (!this.selectionInput.variants.find(variant => ['Focus', 'In', 'None'].includes(variant[this.currentAction]))) {
+                // currentAction.action = 'Out'
+                newProductAction = 'Out'
             }
             // If at least ONE varaint in IN or FOCUS mark the product as IN
-            else if (this.product.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
-                currentAction.action = 'In'
+            else if (this.selectionInput.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))) {
+                if (this.selectionInput[this.currentAction] != 'Focus') {
+                    // currentAction.action = 'In'
+                    newProductAction = 'In'
+                }
             }
-            
 
-            this.insertOrUpdateProductActionPairs({
-                productActionPairs: [{
-                    product: this.product, 
-                    action: currentAction
-                }], 
-                selection: this.selection
-            })
+            if (this.selectionMode == 'Feedback') {
+                this.updateFeedbacks({actions: [currentAction], newAction: newProductAction})
+            }
+            if (this.selectionMode == 'Alignment') {
+                this.updateActions({actions: [currentAction], newAction: newProductAction})
+            }
+
+        },
+        onSubmitQuantity() {
+            let actionToSet = this.variant.action
+            const newQty = this.newQuantity ? this.newQuantity : 0
+            if (newQty <= 0) actionToSet = 'Out'
+            else if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
+                actionToSet = 'In'
+            }
+            this.updateVariantAction(actionToSet)
+            this.variant.quantity = newQty
         }
+    },
+    mounted() {
+        this.focusQtyInput()
     }
 }
 </script>
@@ -143,6 +198,13 @@ div.header {
         margin: 0;
         max-width: 148px;
         word-break: break-all;
+    }
+}
+.quantity-input {
+    padding: 8px 16px 12px 0;
+    .total {
+        margin-left: 12px;
+        font-size: 12px;
     }
 }
 

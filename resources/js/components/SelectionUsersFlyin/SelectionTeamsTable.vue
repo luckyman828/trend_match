@@ -1,5 +1,6 @@
 <template>
     <div class="selection-teams-table">
+        <h3>Selection Teams</h3>
         <BaseFlexTable :stickyHeader="false"
         :contentStatus="readyStatus"
         loadingMsg="loading teams"
@@ -8,24 +9,25 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <h3>Selection Teams</h3>
+                        <!-- <h3>Selection Teams</h3> -->
+                        <BaseSearchField :searchKey="['title']" :arrayToSearch="selection.teams" v-model="teamsFilteredBySearch"/>
                     </template>
                     <template v-slot:right>
-                        <span>{{selection.teams ? selection.teams.length : 0}} records</span>
+                        <span>showing {{teamsFilteredBySearch.length}} of {{selection.teams ? selection.teams.length : 0}} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="select">
                     <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selected = selection.teams : selected = []"/>
+                    @change="(checked) => checked ? selected = teamsFilteredBySearch : selected = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Users</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive(team)}"
+                <tr v-for="(team, index) in teamsFilteredBySearch" :key="team.id" class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive(team)}"
                 @click.ctrl="$refs.selectBox[index].check()"
                 @contextmenu="showTeamContext($event, team)">
                     <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
@@ -113,6 +115,7 @@ export default {
         teamsToAdd: [],
         contextTeam: null,
         authUserIsOwner: false,
+        teamsFilteredBySearch: [],
     }},
     computed: {
         ...mapGetters('teams', ['teams', 'getTeamsStatus']),

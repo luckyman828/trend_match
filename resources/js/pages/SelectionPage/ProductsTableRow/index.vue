@@ -1,5 +1,5 @@
 <template>
-    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="['action-'+product[currentAction], {'multi-selection': currentSelections.length > 1}]"
+    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="['action-'+selectionInput[currentAction], {'multi-selection': multiSelectionMode}]"
     @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)"
     @click.ctrl="$refs.selectCheckbox.check()">
 
@@ -13,7 +13,7 @@
             </td>
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
-                    <img :key="product.id" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex])">
+                    <img :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex], 'sm')">
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
@@ -25,12 +25,12 @@
                     <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
                     </div> -->
-                    <VariantListItem v-for="(variant, index) in product.variants.slice(0,5)" :key="index" 
-                    :variant="variant" :product="product" :selection="selection"
-                    v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product}, disabled: multiSelectionMode}"
+                    <VariantListItem v-for="(variant, index) in selectionInput.variants.slice(0,5)" :key="index" 
+                    :variant="variant" :selectionInput="selectionInput" :selection="selection" :product="product"
+                    v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product, selectionInput}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
-                    <div class="variant-list-item pill ghost xs" v-if="product.variants.length > 5">
-                        <span>+ {{product.variants.length - 5}} more</span>
+                    <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
+                        <span>+ {{selectionInput.variants.length - 5}} more</span>
                     </div>
                 </div>
             </span></td>
@@ -53,15 +53,15 @@
             <td class="mark-up hide-screen-xs">
                 <span>{{product.yourPrice.mark_up}}</span>
             </td>
-            <td class="currency hide-screen-xs"><span>{{product.yourPrice.currency}}</span></td>
+            <td class="currency hide-screen-xs"><span v-if="product.yourPrice.currency != 'Not set'">{{product.yourPrice.currency}}</span></td>
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs">
+                <div class="square ghost xs" v-tooltip="`
+                    ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
+                `">
                     <span>
-                        <template v-if="product.min_variant_order">
-                        <span>{{product.min_variant_order}}/</span>
-                        </template>
+                        <span v-if="showQty">{{selectionInput.quantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
                     <i class="far fa-box"></i>
@@ -69,72 +69,81 @@
             </td>
             
             <!-- Start Distribution -->
-            <td class="focus">
-                <div tabindex="-1" class="square ghost xs tooltip-target" 
-                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Focus'}}">
-                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
-                    <i class="far fa-star"></i>
-                </div>
-            </td>
+            <template v-if="currentSelections.length == 1">
+                <td class="focus">
+                    <div tabindex="-1" class="square ghost xs tooltip-target" 
+                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Focus'}}">
+                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentFocus.length : selectionInput.focus.length}}</span>
+                        <i class="far fa-star"></i>
+                    </div>
+                </td>
 
-            <td class="ins">
-                <div class="tooltip-target square ghost xs"
-                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'In'}}">
-                    <span>{{product.allIns}}</span>
-                    <i class="far fa-heart"></i>
-                </div>
-            </td>
+                <td class="ins">
+                    <div class="tooltip-target square ghost xs"
+                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'In'}}">
+                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentIns.length : selectionInput.ins.length}}</span>
+                        <i class="far fa-heart"></i>
+                    </div>
+                </td>
 
-            <td class="outs">
-                <div class="square ghost xs tooltip-target"
-                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'Out'}}">
-                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
-                    <i class="far fa-times-circle"></i>
-                </div>
-            </td>
+                <td class="outs">
+                    <div class="square ghost xs tooltip-target"
+                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Out'}}">
+                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentOuts.length : selectionInput.outs.length}}</span>
+                        <i class="far fa-times-circle"></i>
+                    </div>
+                </td>
 
-            <td class="nds">
-                <div class="tooltip-target square ghost xs"
-                v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {product, type: 'None'}}">
-                    <span>{{product.alignmentNds.length+ product.nds.length}}</span>
-                </div>
-            </td>
-            <!-- End Distribution -->
+                <td class="nds">
+                    <div class="tooltip-target square ghost xs"
+                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'None'}}">
+                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentNds.length : selectionInput.nds.length}}</span>
+                    </div>
+                </td>
+                <!-- End Distribution -->
 
-            <td class="requests">
-                <button class="ghost xs" @click="onViewSingle">
-                    <span>{{product.comments.length}}</span><i class="far fa-comment"></i>
-                </button>
-                <button class="requests-button ghost xs" @click="onViewSingle">
-                    <span>{{product.requests.length}}</span><i class="far fa-clipboard-check"></i>
-                    <i v-if="product.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
-                </button>
-            </td>
+                <td class="requests">
+                    <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests'">
+                        <span>{{selectionInput.requests.length}}</span><i class="far fa-clipboard-check"></i>
+                        <i v-if="selectionInput.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
+                    </button>
+                    <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
+                        <span>{{selectionInput.comments.length}}</span><i class="far fa-comment"></i>
+                    </button>
+                </td>
+            </template>
             
             <td class="action">
+
                 <!-- Single Selection Input only -->
-                <template v-if="currentSelections.length <= 1">
+                <template v-if="!multiSelectionMode">
+                    <div class="your-product-qty" v-if="selectionInput.your_quantity">
+                        <div class="pill xs ghost">
+                            <i class="fas fa-box primary"></i>
+                            <span>{{selectionInput.your_quantity}}</span>
+                        </div>
+                    </div>
                     <div class="fly-over-wrapper">
                         <div class="fly-over">
                             <div class="gradient"></div>
                             <div class="inner">
-                                <BaseButton class="" :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                                <BaseButton class="" :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
                                 :disabled="!userWriteAccess.actions.hasAccess" 
                                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                                @click="onUpdateAction(product, 'Focus', selection)">
+                                @click="onUpdateAction('Focus', selectionInput)">
                                     <i class="far fa-star"></i>
                                 </BaseButton>
-                                <BaseButton class=""  :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                                <BaseButton class=""  :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'" 
                                 :disabled="!userWriteAccess.actions.hasAccess" 
                                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                                @click="onUpdateAction(product, 'In', selection)">
+                                @click="onUpdateAction('In', selectionInput)">
                                     <i class="far fa-heart"></i>
                                     <span>In</span>
                                 </BaseButton>
-                                <BaseButton class=""  :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                                <BaseButton class=""  :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'" 
                                 :disabled="!userWriteAccess.actions.hasAccess" 
                                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                                @click="onUpdateAction(product, 'Out', selection)">
+                                @click="onUpdateAction('Out', selectionInput)">
                                     <i class="far fa-times-circle"></i>
                                     <span>out</span>
                                 </BaseButton>
@@ -153,8 +162,9 @@
             </td>
         </div>
 
-        <MultiSelectionInputRow v-if="currentSelections.length > 1"
+        <MultiSelectionInputRow v-if="multiSelectionMode"
         :product="product" :focusGroupIndex="focusGroupIndex" :currentAction="currentAction"
+        :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
         @updateAction="onUpdateAction"/>
 
     </tr>
@@ -177,6 +187,7 @@ export default {
         'index',
         'distributionTooltipComp',
         'variantTooltipComp',
+        'distributionScope',
     ],
     components: {
         MultiSelectionInputRow,
@@ -201,10 +212,14 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
-        ...mapGetters('products', ['currentFocusRowIndex']),
+        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
         }),
+        selectionInput() {
+            return this.getActiveSelectionInput(this.product)
+        },
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection)
         },
@@ -220,10 +235,17 @@ export default {
         },
         hasUnreadComment() {
             if (this.currentSelectionMode == 'Approval') {
+<<<<<<< HEAD
                 return this.product.hasUnreadAlignerComment
             }
             if (this.currentSelectionMode == 'Alignment') {
                 return this.product.hasUnreadApproverComment
+=======
+                return this.selectionInput.hasUnreadAlignerComment
+            }
+            if (this.currentSelectionMode == 'Alignment') {
+                return this.selectionInput.hasUnreadApproverComment
+>>>>>>> master
             }
         }
     },
@@ -263,14 +285,17 @@ export default {
                 e.target.removeEventListener('mouseleave', this.onMouseleaveVariant)
             }
         },
-        onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
+        onUpdateAction(action, selectionInput) {
+            this.$emit('updateAction', action, selectionInput)
         },
         onViewSingle() {
             this.showSelectionProductPDP({product: this.product, selection: this.selection})
         },
         onRowFocus() {
             this.focusGroupIndex = null
+            if (this.currentFocusRowIndex != this.index) {
+                this.setCurrentFocusRowIndex(this.index)
+            }
         },
         focusNext(event) {
             if (this.currentSelections.length <= 1) {
@@ -317,9 +342,11 @@ export default {
             this.setCurrentFocusRowIndex(this.index+1)
         },
         focusPrevRow(event) {
-            // Get the previous row
-            event.preventDefault()
-            this.setCurrentFocusRowIndex(this.index-1)
+            if (this.index > 0) {
+                // Get the previous row
+                event.preventDefault()
+                this.setCurrentFocusRowIndex(this.index-1)
+            }
         },
         hotkeyHandler(event) {
             const key = event.code
@@ -351,11 +378,11 @@ export default {
             && this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {
                 if (key == 'KeyI')
-                    this.onUpdateAction(this.product, 'In', this.selection)
+                    this.onUpdateAction('In', this.selectionInput)
                 if (key == 'KeyO')
-                    this.onUpdateAction(this.product, 'Out', this.selection)
+                    this.onUpdateAction('Out', this.selectionInput)
                 if (key == 'KeyF' || key == 'KeyU')
-                    this.onUpdateAction(this.product, 'Focus', this.selection)
+                    this.onUpdateAction('Focus', this.selectionInput)
             }
         }
     },
@@ -370,13 +397,16 @@ export default {
         .unread-indicator {
             position: absolute;
             left: -20px;
+<<<<<<< HEAD
+=======
+            @media screen and (max-width: $screenSm) {
+                left: -16px;
+            }
+>>>>>>> master
         }
         &:focus {
             outline: solid 2px $primary;
             outline-offset: -2px;
-        }
-        .circle.tiny {
-            margin-left: 8px;
         }
         .img-wrapper {
             border: $borderElSoft;
@@ -409,7 +439,7 @@ export default {
     .variant-list {
         position: absolute;
         left: 0;
-        bottom: -12px;
+        bottom: -20px;
         display: flex;
     }
     .product-details {
@@ -437,6 +467,16 @@ export default {
     // Flyover actions
     .gradient {
         display: none;
+    }
+    td.action {
+        position: relative;
+        height: 100%;
+        .your-product-qty {
+            position: absolute;
+            top: 0;
+            right: 12px;
+            z-index: 2;
+        }
     }
     @media screen and (max-width: $screenMd) {
         td.action {

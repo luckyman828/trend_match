@@ -53,7 +53,7 @@
                                         <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
-                                <img v-if="variant.image || variant.blob_id" 
+                                <img v-if="variant.image || variant.blob_id"  :key="`image-${variant.id ? variant.id : index}`"
                                 :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
@@ -165,9 +165,14 @@
                         <label>Mark up</label>
                     </div>
                     <div class="col-5 form-element" v-for="(price, index) in product.prices" :key="index">
-                        <BaseEditInputWrapper ref="currencyName" :id="'currencyName'" :type="'text'" 
+                        <!-- <BaseEditInputWrapper ref="currencyName" :id="'currencyName'" :type="'text'" 
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].currency : null" 
-                        v-model="price.currency"/>
+                        v-model="price.currency"/> -->
+                        <BaseInputField disabled=true 
+                        :value="price.currency" type="select" 
+                        @click="showCurrencyContext($event, price)">
+                            <i class="fas fa-caret-down"></i>
+                        </BaseInputField>
 
                         <BaseEditInputWrapper :id="'wholesale'" :type="'number'" 
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].wholesale_price : null" 
@@ -305,6 +310,11 @@
                 </div>
                 <h3>Are you sure you want to delete this product?</h3>
             </BaseDialog>
+
+            <BaseSelectButtonsContextMenu v-if="contextPrice" ref="contextCurrency" 
+            header="Choose Currency" :submitOnChange="true"
+            v-model="contextPrice.currency" unsetOption="Clear" :unsetValue="null"
+            type="radio" :options="availableCurrencies" :search="true"/>
         </template>
     </BaseFlyin>
 </template>
@@ -343,7 +353,8 @@ export default {
             box_ean: null,
         },
         contextVariantIndex: null,
-        idError: null
+        idError: null,
+        contextPrice: null,
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -353,6 +364,7 @@ export default {
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
         ...mapGetters('files', ['currentFile']),
+        ...mapGetters('persist', ['availableCurrencies']),
         product () {
             return this.productToEdit
         },
@@ -399,9 +411,16 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts']),
+        ...mapActions('files', ['syncExternalImages']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts', 'initProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        showCurrencyContext(e, price) {
+            this.contextPrice = price
+            this.$nextTick(() => {
+                this.$refs.contextCurrency.show(e)
+            })
+        },
         async onDeleteProduct() {
             if (await this.$refs.confirmDeleteProduct.confirm()) {
                 this.deleteProducts({file: this.currentFile, products: [this.product]})
@@ -420,6 +439,7 @@ export default {
         initProduct() {
             // Make a copy of the product, so we can check for changes compared to the original
             this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+            this.initProducts([this.productToEdit])
 
             // Check if the product has any currencies, else add a default currency
             // if (this.productToEdit.prices.length < 1) {
@@ -529,10 +549,7 @@ export default {
                         product: productToEdit,
                         variant: editVariant,
                         image: variant.imageToUpload.file, 
-                        callback: progress => {
-                            editVariant.imageToUpload.progress = progress
-                        }
-                    }).then(response => {
+                    }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
                         // Remove the image to upload
                         delete variant.imageToUpload
                     }).catch(err => {
@@ -707,10 +724,12 @@ export default {
         },
         async setVariantImageURL(variant, imageURL) {
             variant.image = imageURL
-            const image = await this.getImageFromURL(imageURL)
-            if (image) {
-                this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
-            }
+            await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
+            // const image = await this.getImageFromURL(imageURL)
+            // if (image) {
+            //     this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
+            // }
+            
         },
     },
     created() {
@@ -778,6 +797,9 @@ export default {
             .drop-area {
                 border: none;
             }
+            .img-wrapper {
+                border: $borderElHard;
+            }
         }
         .progress-wrapper {
             position: absolute;
@@ -808,8 +830,7 @@ export default {
             position: relative;
             overflow: hidden;
             display: inline-block;
-            border-radius: 2px;
-            border: solid 1px $light2;
+            border-radius: $borderRadiusEl;
             overflow: hidden;
             img {
                 width: 100%;

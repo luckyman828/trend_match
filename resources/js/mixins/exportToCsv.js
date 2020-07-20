@@ -1,7 +1,7 @@
 export default {
     methods: {
         exportToCsv(filename, rows) {
-            console.log(rows)
+            // console.log(rows)
             var processRow = function(row) {
                 var finalVal = ''
                 for (var j = 0; j < row.length; j++) {

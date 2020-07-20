@@ -15,8 +15,8 @@
               </router-link>
             </div>
 
-            <div class="sidebar-item">
-              <router-link v-if="authUserWorkspaceRole == 'Admin'" to="/teams" class="inner"
+            <div class="sidebar-item" v-if="authUserWorkspaceRole == 'Admin'">
+              <router-link to="/teams" class="inner"
               v-tooltip.right="displayTooltips && 'Teams'">
                 <i class="fas fa-users"></i><span>Teams</span>
               </router-link>
@@ -50,7 +50,8 @@
         </div>
         <div class="bottom-drawer" :class="{collapsed: !drawerExpanded}">
           <div class="sidebar-item">
-            <a class="inner" @click="logout">
+            <a class="inner" @click="logout" 
+            v-tooltip.right="displayTooltips && 'Log out'">
                 <i class="far fa-sign-out fa-flip-horizontal"></i>
                 <span>Sign out</span>
             </a>
@@ -116,7 +117,8 @@ export default {
       color: $fontSoftOnDark;
       text-align: center;
       width: 60px;
-      height: 60px;
+      min-height: 60px;
+      padding: 8px 0;
       border-radius: 4px;
       cursor: pointer;
       &.router-link-active {
@@ -172,6 +174,9 @@ export default {
     &.collapsed {
         height: 0;
     }
+}
+.v-popover .trigger:hover i {
+  color: $iconSoftOnDark;
 }
 
 </style>

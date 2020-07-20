@@ -253,6 +253,19 @@ textarea {
     color: white;
 }
 
+// LINKS
+.text-link {
+    font-weight: 700;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    &:hover {
+        color: $primary;
+        cursor: pointer;
+    }
+}
+
 // SHAPES: BUTTONS, SQUARES, PILLS, CIRCLES
 .hotkey-wrapper {
     display: inline-flex;
@@ -272,7 +285,7 @@ textarea {
         }
     }
 }
-button,
+button:not(.text-link),
 .button,
 .square,
 .pill,
@@ -385,8 +398,9 @@ input[type='submit'] {
         border-color: $grey400;
     }
     &:active {
-        background: $grey400;
-        border-color: $grey500;
+        // background: $grey400;
+        // border-color: $grey500;
+        transform: $transformElActive;
     }
     @each $color in $brand-colors {
         &.#{nth($color,1)},
@@ -433,12 +447,12 @@ input[type='submit'] {
         }
         &.#{nth($color,1)}:active,
         &.#{nth($color,1)}-hover:active {
-            background: nth($color, 5);
+            // background: nth($color, 5);
+            transform: $transformElActive;
         }
     }
 
-    &.ghost,
-    &.ghost-hover:hover {
+    &.ghost {
         background: transparent;
         color: $font;
         border: solid 1px $grey700;
@@ -446,11 +460,12 @@ input[type='submit'] {
             color: $font;
         }
     }
-    &.ghost {
+    &.ghost,
+    &.ghost-hover {
         &:hover {
             padding: 0;
             border: solid 2px $primary;
-            i {
+            i:not(.fa-times):not(.fa-ellipsis-h) {
                 font-weight: 900;
             }
         }
@@ -480,7 +495,7 @@ input[type='submit'] {
     }
     &:focus {
         outline: none;
-        box-shadow: 0 0 1px 1px $primary;
+        box-shadow: 0 0 0 1px $primary inset;
     }
 }
 button,
@@ -492,7 +507,7 @@ input[type='submit'] {
         width: 100%;
     }
 }
-button,
+button:not(.text-link),
 .button,
 input[type='submit'] {
     font-weight: 700;
@@ -840,6 +855,16 @@ i {
 .popover {
     min-width: 200px;
 }
+.v-popover {
+    .trigger {
+        &:hover {
+            i {
+                font-weight: 900;
+                color: $font;
+            }
+        }
+    }
+}
 
 // V-TOOLTIP
 i.has-tooltip {
@@ -906,7 +931,8 @@ i.has-tooltip {
         border-radius: 4px;
         border: 1px solid $divider;
         background-color: white;
-        box-shadow: 0 10px 10px rgba($dark, 20%);
+        // box-shadow: 0 10px 10px rgba($dark, 20%);
+        box-shadow: $shadowModuleHard;
         max-height: 70vh;
         overflow-y: auto;
     }

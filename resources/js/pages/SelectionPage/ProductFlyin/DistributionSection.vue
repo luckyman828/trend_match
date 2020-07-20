@@ -2,37 +2,39 @@
     <BaseFlyinColumn class="distribution">
         <template v-slot:header>
             <div class="tab-headers">
-                <span :class="{active: currentTab == 'all'}" class="tab" 
+                <div :class="{active: currentTab == 'all'}" class="tab" 
                 @click="currentTab = 'all'"> ALL
                     <span class="count">{{totalInputCount}}</span>
-                </span>
-                <span :class="{active: currentTab == 'ins'}" class="tab" 
+                </div>
+                <div :class="{active: currentTab == 'ins'}" class="tab" 
                 @click="currentTab = 'ins'"> IN
-                    <span class="count">{{product.ins.length + product.focus.length + product.alignmentIns.length + product.alignmentFocus.length}}</span>
-                </span>
-                <span :class="{active: currentTab == 'outs'}" class="tab" 
+                    <span class="count">{{selectionInput.ins.length + selectionInput.focus.length + selectionInput.alignmentIns.length + selectionInput.alignmentFocus.length}}</span>
+                </div>
+                <div :class="{active: currentTab == 'outs'}" class="tab" 
                 @click="currentTab = 'outs'"> OUT
-                    <span class="count">{{product.outs.length + product.alignmentOuts.length}}</span>
-                </span>
-                <span :class="{active: currentTab == 'nds'}" class="tab" 
+                    <span class="count">{{selectionInput.outs.length + selectionInput.alignmentOuts.length}}</span>
+                </div>
+                <div :class="{active: currentTab == 'nds'}" class="tab" 
                 @click="currentTab = 'nds'"> ND
-                    <span class="count">{{product.nds.length + product.alignmentNds.length}}</span>
-                </span>
+                    <span class="count">{{selectionInput.nds.length + selectionInput.alignmentNds.length}}</span>
+                </div>
             </div>
         </template>
         <template v-slot>
             <div class="tab-body">
-                <!-- Totals -->
-                <template v-if="totalFeedbackInputCount > 0 && totalActionInputCount > 0">
+
+                <!-- Quantity / Minimum -->
+                 <template v-if="showQty">
                     <div class="list-item list-header">
-                        <h4>Total</h4>
+                        <h4>Minimum</h4>
                     </div>
-                    <div class="distribution-bar list-item">
+                    <div class="distribution-bar list-item" v-tooltip="`
+                        <strong>Quantity: </strong> ${selectionInput.quantity}
+                        <br><strong>Minimum: </strong> ${product.min_order}
+                    `">
                         <svg>
                             <rect class="bg" height="8px" width="100%"/>
-                            <rect class="focus" height="8px" :style="totalFocusStyle"/>
-                            <rect class="in" height="8px" :style="totalInStyle"/>
-                            <rect class="out" height="8px" :style="totalOutStyle"/>
+                            <rect :class="minimumPercentage >= 100 ? 'in' : 'progress'" height="8px" :style="{width: `${minimumPercentage}%`}"/>
                         </svg>
                     </div>
                 </template>
@@ -52,44 +54,47 @@
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in product.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div class="focus inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
                                 </div>
+                                <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in product.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div class="in inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 </div>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="list-item" v-for="action in product.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
                             <div class="out inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
                                     <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
                                     <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
                                 </div>
                             </div>
                         </div>
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="list-item" v-for="action in product.alignmentNds" :key="`alignment-${action.selection_id}`">
+                        <div class="list-item" v-for="action in selectionInput.alignmentNds" :key="`alignment-${action.selection_id}`">
                             <div class="nd inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
@@ -114,7 +119,7 @@
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in product.focus" :key="`${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.focus" :key="`${action.selection_id}-${action.user_id}`">
                             <div class="focus inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
@@ -127,7 +132,7 @@
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in product.ins" :key="`${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.ins" :key="`${action.selection_id}-${action.user_id}`">
                             <div class="in inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
@@ -139,7 +144,7 @@
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="list-item" v-for="action in product.outs" :key="`${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.outs" :key="`${action.selection_id}-${action.user_id}`">
                             <div class="out inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
@@ -151,7 +156,7 @@
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="list-item" v-for="action in product.nds" :key="`${action.selection_id}-${action.user_id}`">
+                        <div class="list-item" v-for="action in selectionInput.nds" :key="`${action.selection_id}-${action.user_id}`">
                             <div class="nd inner">
                                 <div>
                                     <span class="selection">{{action.selection.name}}</span>
@@ -172,6 +177,7 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'distibutionSection',
     props: [
+        'selectionInput',
         'product'
     ],
     data: function () { return {
@@ -183,17 +189,21 @@ export default {
     }},
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', {
+            showQty: 'getQuantityModeActive'
+        }),
         totalFeedbackInputCount() {
-            return this.product.feedbacks.length
+            return this.selectionInput.feedbacks.length
         },
         totalActionInputCount() {
-            return this.product.actions.length
+            return this.selectionInput.actions.length
         },
         totalInputCount() {
             return this.totalFeedbackInputCount + this.totalActionInputCount
         },
         focusStyle() {
-            const width = this.totalFeedbackInputCount ? this.product.focus.length / this.totalFeedbackInputCount : 0
+            const width = this.totalFeedbackInputCount ? this.selectionInput.focus.length / this.totalFeedbackInputCount : 0
             return {
                 calcX: 0,
                 calcWidth: width,
@@ -203,7 +213,7 @@ export default {
         },
         inStyle() {
             const x = this.focusStyle.calcX + this.focusStyle.calcWidth
-            const width = this.totalFeedbackInputCount ? this.product.ins.length / this.totalFeedbackInputCount : 0
+            const width = this.totalFeedbackInputCount ? this.selectionInput.ins.length / this.totalFeedbackInputCount : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -213,7 +223,7 @@ export default {
         },
         outStyle() {
             const x = this.inStyle.calcX + this.inStyle.calcWidth
-            const width = this.totalFeedbackInputCount ? this.product.outs.length / this.totalFeedbackInputCount : 0
+            const width = this.totalFeedbackInputCount ? this.selectionInput.outs.length / this.totalFeedbackInputCount : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -222,7 +232,7 @@ export default {
             }
         },
         alignmentFocusStyle() {
-            const width = this.totalActionInputCount ? this.product.alignmentFocus.length / this.totalActionInputCount : 0
+            const width = this.totalActionInputCount ? this.selectionInput.alignmentFocus.length / this.totalActionInputCount : 0
             return {
                 calcX: 0,
                 calcWidth: width,
@@ -232,7 +242,7 @@ export default {
         },
         alignmentInStyle() {
             const x = this.alignmentFocusStyle.calcX + this.alignmentFocusStyle.calcWidth
-            const width = this.totalActionInputCount ? this.product.alignmentIns.length / this.totalActionInputCount : 0
+            const width = this.totalActionInputCount ? this.selectionInput.alignmentIns.length / this.totalActionInputCount : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -242,7 +252,7 @@ export default {
         },
         alignmentOutStyle() {
             const x = this.alignmentInStyle.calcX + this.alignmentInStyle.calcWidth
-            const width = this.totalActionInputCount ? this.product.alignmentOuts.length / this.totalActionInputCount : 0
+            const width = this.totalActionInputCount ? this.selectionInput.alignmentOuts.length / this.totalActionInputCount : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -250,34 +260,9 @@ export default {
                 width: `${width * 100}%`,
             }
         },
-        totalFocusStyle() {
-            const width = this.totalInputCount ? (this.product.alignmentFocus.length + this.product.focus.length) / this.totalInputCount : 0
-            return {
-                calcX: 0,
-                calcWidth: width,
-                x: 0,
-                width: `${width * 100}%`,
-            }
-        },
-        totalInStyle() {
-            const x = this.totalFocusStyle.calcX + this.totalFocusStyle.calcWidth
-            const width = this.totalInputCount ? (this.product.alignmentIns.length + this.product.ins.length) / this.totalInputCount : 0
-            return {
-                calcX: x,
-                calcWidth: width,
-                x: `${x * 100}%`,
-                width: `${width * 100}%`,
-            }
-        },
-        totalOutStyle() {
-            const x = this.totalInStyle.calcX + this.totalInStyle.calcWidth
-            const width = this.totalInputCount ? (this.product.alignmentOuts.length + this.product.outs.length) / this.totalInputCount : 0
-            return {
-                calcX: x,
-                calcWidth: width,
-                x: `${x * 100}%`,
-                width: `${width * 100}%`,
-            }
+        minimumPercentage() {
+            return this.product.min_order ? Math.min((this.selectionInput.quantity / this.product.min_order * 100), 100).toFixed(0) : 100
+
         }
     },
     methods: {
@@ -293,6 +278,8 @@ export default {
     .tab-headers {
         display: flex;
         height: 100%;
+        border-radius: $borderRadiusEl;
+        border: $borderElSoft;
     }
     .tab {
         display: flex;
@@ -305,13 +292,26 @@ export default {
         font-weight: 700;
         color: $fontSoft;
         cursor: pointer;
-        border-radius: 4px 4px 0 0;
-        border: $borderElSoft;
+        padding: 2px 1px 2px 2px;
+        user-select: none;
+        &:first-child {
+            border-radius: $borderRadiusEl 0 0 $borderRadiusEl;
+        }
+        &:last-child {
+            border-radius: 0 $borderRadiusEl $borderRadiusEl 0;
+            padding: 2px;
+        }
         &:not(:last-child) {
-            margin-right: 4px;
+            border-right: $borderEl;
         }
         &:hover {
+            padding: 0;
             color: $primary;
+            border: $borderElHover;
+            box-shadow: $shadowEl;
+        }
+        &:active {
+            transform: $transformElActive;
         }
         .count {
             color: $font;
@@ -331,6 +331,7 @@ export default {
             border: $borderEl;
             box-shadow: $shadowEl;
             border-radius: $borderRadiusEl;
+            position: relative;
             &.list-header {
                 padding: 8px 12px 4px;
                 &:not(:first-child) {
@@ -348,6 +349,16 @@ export default {
             }
             span {
                 display: block;
+            }
+            .quantity {
+                position: absolute;
+                right: 14px;
+                top: 4px;
+                font-size: 12px;
+                i {
+                    margin-right: 2px;
+                    font-size: 11px;
+                }
             }
             > .focus {
                 box-shadow: -8px 0 inset $primary;
@@ -391,6 +402,9 @@ export default {
                     }
                     .out {
                         fill: $red;
+                    }
+                    .progress {
+                        fill: $bluegrey800;
                     }
                 }
             }

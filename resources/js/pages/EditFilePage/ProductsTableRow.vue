@@ -1,9 +1,7 @@
 <template>
-    <tr class="products-table-row" :class="'action-'+product.currentAction"
+    <tr class="products-table-row"
     @contextmenu.prevent="$emit('showContextMenu', $event, product)"
     @click.ctrl="$refs.selectCheckbox.check()">
-
-        <span v-if="product.newComment" class="circle tiny primary"></span>
         
         <td class="select" 
         @click.self="$refs.selectCheckbox.check()">
@@ -11,7 +9,7 @@
         </td>
         <td class="image clickable" @click="onViewSingle">
             <div class="img-wrapper">
-                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                <BaseVariantImg :key="product.id" v-if="product.variants[0] != null" :variant="product.variants[0]" size="sm"/>
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
