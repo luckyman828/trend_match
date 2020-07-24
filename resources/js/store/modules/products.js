@@ -1041,6 +1041,24 @@ export default {
                     },
                 })
 
+                Object.defineProperty(product, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        return (
+                            (product.requests.length > 0 && product.comments.length <= 0) ||
+                            (product.comments.length > 0 &&
+                                product.comments[product.comments.length - 1].role != 'Approver')
+                        )
+                    },
+                })
+                Object.defineProperty(product, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            product.comments.length > 0 &&
+                            product.comments[product.comments.length - 1].role == 'Approver'
+                        )
+                    },
+                })
+
                 // Set the current action for the user
                 Object.defineProperty(selectionInput, 'your_feedback', {
                     get: function() {

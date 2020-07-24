@@ -118,10 +118,10 @@
 
                 <!-- Single Selection Input only -->
                 <template v-if="!multiSelectionMode">
-                    <div class="your-product-qty" v-if="selectionInput.your_quantity">
+                    <div class="your-product-qty" v-if="selectionInput.quantity">
                         <div class="pill xs ghost">
                             <i class="fas fa-box primary"></i>
-                            <span>{{selectionInput.your_quantity}}</span>
+                            <span>{{selectionInput.quantity}}</span>
                         </div>
                     </div>
                     <div class="fly-over-wrapper">
