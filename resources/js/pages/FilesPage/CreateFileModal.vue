@@ -342,11 +342,10 @@ export default {
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
         defalultNewFile: {
+            id: null,
             name: 'New file',
             type: 'File',
             files: [],
-            owner_count: 0,
-            children_count: 0,
         },
         filesToChooseFrom: [],
         newFile: null,
@@ -1019,6 +1018,7 @@ export default {
 
             // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
             this.submitStatus = 'Creating file'
+            console.log('create file', newFile)
             await this.insertOrUpdateFile(newFile)
 
             // Then we will instantiate the products and attempt to upload them

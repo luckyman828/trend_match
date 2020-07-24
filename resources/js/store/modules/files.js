@@ -225,6 +225,7 @@ export default {
                     )
                     // Set the files ID if not already set
                     if (!file.id) file.id = response.data.id
+                    console.log('done creating file', file)
                 })
                 .catch(err => {
                     // Display message
