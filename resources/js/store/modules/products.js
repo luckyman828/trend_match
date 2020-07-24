@@ -216,13 +216,6 @@ export default {
             // Filer by unread
             if (unreadOnly) {
                 if (selectionMode == 'Approval') {
-<<<<<<< HEAD
-                    productsToReturn = productsToReturn.filter(product => product.hasUnreadAlignerComment)
-                }
-                if (selectionMode == 'Alignment') {
-                    productsToReturn = productsToReturn.filter(product => product.hasUnreadApproverComment)
-                }
-=======
                     productsToReturn = productsToReturn.filter(
                         product => getSelectionInput(product).hasUnreadAlignerComment
                     )
@@ -304,7 +297,6 @@ export default {
                     })
                     return include
                 })
->>>>>>> master
             }
 
             // Filter by actions

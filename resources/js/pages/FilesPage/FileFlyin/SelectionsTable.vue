@@ -33,7 +33,7 @@
                 <div class="body">
                     <!-- Show Selections -->
                     <template v-if="getSelectionsTree.length > 0">
-                        <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in getSelectionsTree" :key="selection.id"
+                        <SelectionsTableRow v-for="selection in getSelectionsTree" :key="selection.id" :ref="'selection-row-'+selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
                         :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
@@ -566,7 +566,10 @@
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <button class="primary" @click="onClone(fileToClone)"><span>Clone</span></button>
+                        <button class="primary" 
+                        @click="onClone(fileToClone); slotProps.hide()">
+                            <span>Clone</span>
+                        </button>
                         <button class="invisible ghost-hover" style="margin-left: 8px;"
                         @click="slotProps.hide()">
                             <span>Cancel</span>
@@ -942,7 +945,6 @@ export default {
             contextMenu.show(e)
         },
         async onClone(file) {
-            // console.log(file)
             // Clone selections and their users to the new file
             // Fetch file selections
             const selections = await this.fetchSelections({fileId: file.id, addToState: false})
@@ -950,10 +952,17 @@ export default {
             // This means we have to insert one level of selections at a time
             // Transform the selections into a tree structure 
             const selectionTree = await this.createSelectionTree(selections)
+            
             // Loop through all selections and upload them
-            selectionTree.forEach(rootSelection => {
-                this.cloneSelectionTree(rootSelection)
-            })
+            for (const rootSelection of selectionTree) {
+                await this.cloneSelectionTree(rootSelection)
+            }
+            // Update the settings of all the newly created selection to sync relationsships
+            const newSelectionTree = this.getSelectionsTree
+            console.log('end for. New selections:', newSelectionTree)
+            for (const rootSelection of newSelectionTree) {
+                this.syncSelectionTreeSettings(rootSelection)
+            }
         },
         async cloneSelectionTree(selection) {
             // Recursive function that calls itself for all children of a selection until there are no more children
@@ -986,11 +995,18 @@ export default {
                 this.addTeamsToSelection({selection: newSelection, teams: selectionWithTeamsAndUsers.teams})
 
             // Loop through the selections children and repeat
-            selection.children.forEach(childSelection => {
+            for (const childSelection of selection.children) {
                 // Set the parent id
                 childSelection.parent_id = newSelection.id
-                this.cloneSelectionTree(childSelection)
-            })
+                await this.cloneSelectionTree(childSelection)
+            }
+        },
+        syncSelectionTreeSettings(selection) {
+            // Update the selections settings and loop through its tree and do the same
+            this.updateSelectionSettings(selection)
+            for (const childSelection of selection.children) {
+                this.syncSelectionTreeSettings(childSelection)
+            }
         }
     },
     created() {

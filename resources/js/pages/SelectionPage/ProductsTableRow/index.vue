@@ -235,17 +235,10 @@ export default {
         },
         hasUnreadComment() {
             if (this.currentSelectionMode == 'Approval') {
-<<<<<<< HEAD
-                return this.product.hasUnreadAlignerComment
-            }
-            if (this.currentSelectionMode == 'Alignment') {
-                return this.product.hasUnreadApproverComment
-=======
                 return this.selectionInput.hasUnreadAlignerComment
             }
             if (this.currentSelectionMode == 'Alignment') {
                 return this.selectionInput.hasUnreadApproverComment
->>>>>>> master
             }
         }
     },
@@ -397,12 +390,9 @@ export default {
         .unread-indicator {
             position: absolute;
             left: -20px;
-<<<<<<< HEAD
-=======
             @media screen and (max-width: $screenSm) {
                 left: -16px;
             }
->>>>>>> master
         }
         &:focus {
             outline: solid 2px $primary;

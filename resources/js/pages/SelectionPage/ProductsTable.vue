@@ -31,11 +31,6 @@
                         ref="searchField"
                         v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 
-<<<<<<< HEAD
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Category </span>
-=======
                         <v-popover trigger="click" :autoHide="false">
                             <!-- <button class="ghost">
                                 <span>Advanced Filters</span>
@@ -45,7 +40,6 @@
                                 <div v-if="getHasAdvancedFilter" class="circle primary xs">
                                     <span>{{getAdvancedFilter.length}}</span>
                                 </div>
->>>>>>> master
                                 <i class="far fa-chevron-down"></i>
                             </BaseButton>
                             <template slot="popover">
@@ -125,11 +119,7 @@
                         </v-popover>
 
                         <!-- Temp. disabled until the functionality gets hooked up -->
-<<<<<<< HEAD
-                        <BaseCheckboxInputField class="small" v-model="unreadOnly">
-=======
                         <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master'">
->>>>>>> master
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
@@ -370,17 +360,10 @@ export default {
         showAdvancedFilters: false,
     }},
     computed: {
-<<<<<<< HEAD
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
-            'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
-            'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
-=======
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
             'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput', 'getHasAdvancedFilter', 'getAdvancedFilter']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
             'currentSelectionMode', 'getAuthUserSelectionWriteAccess', 'getSelectionsAvailableForInputFiltering']),
->>>>>>> master
         ...mapState('products', {stateProducts: 'products'}),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess () {
@@ -462,15 +445,8 @@ export default {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-<<<<<<< HEAD
-        'SET_PRODUCTS_FILTERED_BY_SEARCH']),
-        ...mapActions('actions', ['setAction', 'destroyAction', 'setManyActions', 'setManyTaskActions', 'insertOrUpdateActions']),
-        ...mapActions('comments', ['setComment', 'destroyComment']),
-        ...mapActions('products', ['showSelectionProductPDP']),
-=======
         'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
->>>>>>> master
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
@@ -492,13 +468,6 @@ export default {
             this.distributionTooltipType = type
         },
         onViewSingle(product) {
-<<<<<<< HEAD
-            // this.SET_CURRENT_PDP_SELECTION(this.selection)
-            // this.setCurrentProduct(product)
-            // this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
-            // this.setSingleVisisble(true)
-=======
->>>>>>> master
             document.activeElement.blur()
             this.showSelectionProductPDP({product, selection: this.selection})
         },
@@ -522,10 +491,6 @@ export default {
         onUpdateAction(action, selectionInput) {
             this.$emit('updateAction', action, selectionInput)
         },
-<<<<<<< HEAD
-        onUpdateMultipleActions(products, action) {
-            this.insertOrUpdateActions({products, action, selection: this.selection, user: this.authUser})
-=======
         onUpdateMultipleActions(products, newAction) {
             if (this.currentSelectionMode == 'Feedback') {
                 const actions = products.map(product => {
@@ -541,24 +506,12 @@ export default {
                 })
                 this.updateActions({actions, newAction})
             }
->>>>>>> master
         },
         onViewSearchProduct() {
             if (this.productsFilteredBySearch.length > 0) {
                 this.onViewSingle(this.productsFilteredBySearch[0])
             }
         },
-<<<<<<< HEAD
-        hotkeyHandler(e) {
-            const key = event.code
-            if (event.target.type == 'textarea' 
-                || event.target.tagName.toUpperCase() == 'INPUT') return // Don't mess with user input
-
-            if (key == 'KeyS' && !this.singleVisible) {
-                this.$refs.searchField.setFocus()
-                e.preventDefault() // Avoid entering an "s" in the search field
-            }
-=======
         onBlur(e) {
             if (!this.$refs.table.contains(e.relatedTarget)) {
                 this.setCurrentFocusRowIndex(null)
@@ -580,16 +533,10 @@ export default {
                     this.setCurrentFocusRowIndex(0)
                 }
             }
->>>>>>> master
         }
     },
     created() {
         document.addEventListener('keydown', this.hotkeyHandler)
-<<<<<<< HEAD
-    },
-    destroyed() {
-        document.removeEventListener('keydown', this.hotkeyHandler)
-=======
         // Preset distribution scope
         this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
         this.actionDistributionTooltipTab = this.distributionScope
@@ -598,7 +545,6 @@ export default {
         document.removeEventListener('keydown', this.hotkeyHandler)
         // Reset all filters
         this.resetFilters()
->>>>>>> master
     }
 }
 </script>
