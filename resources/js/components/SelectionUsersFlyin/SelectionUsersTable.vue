@@ -331,6 +331,15 @@ export default {
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
                 this.selection.your_role = authUser.role
+                // Update the users job
+                if (authUser.role == 'Member')
+                    this.selection.your_job = 'Feedback'
+                else if (authUser.role == 'Owner')
+                    this.selection.your_job = 'Alignment'
+                else if (authUser.role == 'Approver')
+                    this.selection.your_job = 'Approval'
+                else this.selection.your_job = null
+
                 this.UPDATE_SELECTION(this.selection)
             }
         },
