@@ -575,6 +575,7 @@ export default {
         async onDeleteFile(file) {
             if (await this.$refs.deleteFileDialog.confirm()) {
                 this.deleteFile(file)
+                console.log('delete file')
                 // Remove the item from our selection
                 this.selected = this.selected.filter(x => x.id != file.id)
             }
@@ -632,7 +633,7 @@ export default {
         async onDeleteMultipleFiles(files) {
             if (await this.$refs.deleteMultipleDialog.confirm()) {
                 this.deleteMultipleFiles(JSON.parse(JSON.stringify(files)))
-                this.localSelected = []
+                this.selected = []
             }
         }
     },
