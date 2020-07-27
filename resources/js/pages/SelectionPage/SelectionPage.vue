@@ -196,21 +196,30 @@ export default{
             //
         },
         async selectionPresentationChangedHandler(eventName, selectionIds) {
-            const selectionDetail = selectionIds.detail.find(detail => detail.selection_id == this.currentSelection.id)
-            // If a presentation has started for this selection and the user is not an owner, kick them
+
             if (eventName == 'Begin' 
                 && this.currentSelection.your_role != 'Owner'
-                && !!selectionDetail
+                && selectionIds.selection_ids.includes(this.currentSelection.id)
             ) {
                 await this.$refs.presentationModeDialog.show()
                 this.$router.push({name: 'files'})
             }
 
-            // If an ancestor selection started a presentation
-            if (eventName == 'Begin' && !!selectionDetail && selectionDetail.inherit_from != 0) {
-                await this.$refs.parentPresentationStartedDialog.show()
-                this.$router.push({name: 'files'})
-            }
+            // const selectionDetail = selectionIds.detail.find(detail => detail.selection_id == this.currentSelection.id)
+            // // If a presentation has started for this selection and the user is not an owner, kick them
+            // if (eventName == 'Begin' 
+            //     && this.currentSelection.your_role != 'Owner'
+            //     && !!selectionDetail
+            // ) {
+            //     await this.$refs.presentationModeDialog.show()
+            //     this.$router.push({name: 'files'})
+            // }
+
+            // // If an ancestor selection started a presentation
+            // if (eventName == 'Begin' && !!selectionDetail && selectionDetail.inherit_from != 0) {
+            //     await this.$refs.parentPresentationStartedDialog.show()
+            //     this.$router.push({name: 'files'})
+            // }
         },
         commentArrivedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {

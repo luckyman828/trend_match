@@ -153,20 +153,24 @@ export default {
             state.submitting = bool
         },
         INSERT_OR_UPDATE_COMMENT(state, { selectionInput, comment }) {
+            // console.log('insert or update comment', selectionInput, comment)
             // First see if the comment already exists
-            const existingCommentIndex = selectionInput.comments.findIndex(x => x.id == comment.id)
+            const existingCommentIndex = selectionInput.rawSelectionInput.comments.findIndex(x => x.id == comment.id)
             if (existingCommentIndex >= 0) {
-                const updatedComment = Object.assign(selectionInput.comments[existingCommentIndex], comment)
-                Vue.set(selectionInput.comments, existingCommentIndex, updatedComment)
+                const updatedComment = Object.assign(
+                    selectionInput.rawSelectionInput.comments[existingCommentIndex],
+                    comment
+                )
+                Vue.set(selectionInput.rawSelectionInput.comments, existingCommentIndex, updatedComment)
             }
             // Else insert the comment
             else {
-                selectionInput.comments.push(comment)
+                selectionInput.rawSelectionInput.comments.push(comment)
             }
         },
         DELETE_COMMENT(state, { selectionInput, commentId }) {
-            const commentIndex = selectionInput.comments.findIndex(x => x.id == commentId)
-            selectionInput.comments.splice(commentIndex, 1)
+            const commentIndex = selectionInput.rawSelectionInput.comments.findIndex(x => x.id == commentId)
+            selectionInput.rawSelectionInput.comments.splice(commentIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

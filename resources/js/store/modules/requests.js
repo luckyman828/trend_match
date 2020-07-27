@@ -108,19 +108,22 @@ export default {
         },
         INSERT_OR_UPDATE_REQUEST(state, { selectionInput, request }) {
             // First see if the request already exists
-            const existingRequestIndex = selectionInput.requests.findIndex(x => x.id == request.id)
+            const existingRequestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
-                const updatedRequest = Object.assign(selectionInput.requests[existingRequestIndex], request)
-                Vue.set(selectionInput.requests, existingRequestIndex, updatedRequest)
+                const updatedRequest = Object.assign(
+                    selectionInput.rawSelectionInput.requests[existingRequestIndex],
+                    request
+                )
+                Vue.set(selectionInput.rawSelectionInput.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
             else {
-                selectionInput.requests.push(request)
+                selectionInput.rawSelectionInput.requests.push(request)
             }
         },
         deleteRequest(state, { selectionInput, request }) {
-            const requestIndex = selectionInput.requests.findIndex(x => x.id == request.id)
-            selectionInput.requests.splice(requestIndex, 1)
+            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
+            selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')
