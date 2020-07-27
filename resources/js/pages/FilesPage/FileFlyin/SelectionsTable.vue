@@ -52,7 +52,7 @@
                                     <span>Copy Setup From Existing File</span>
                                 </button>
                                 <button class="primary ghost lg"
-                                @click="onNewSelection()">
+                                @click="onNewSelection({type: 'Master'})">
                                     <i class="fas fa-plus"></i>
                                     <span>Manually add new Master Selection</span>
                                 </button>
@@ -69,7 +69,7 @@
                 <td>
                     <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
-                    @click="onNewSelection()">
+                    @click="onNewSelection({type: 'Master'})">
                         <i class="far fa-plus"></i><span>Add new: Master Selection</span>
                     </BaseButton>
                 </td>
@@ -123,7 +123,7 @@
                         <div class="item-group">
                             <BaseContextMenuItem iconClass="far fa-poll"
                             hotkey="KeyN"
-                            @click="onNewSelection(contextSelection, 'Normal')">
+                            @click="onNewSelection({parent: contextSelection, type: 'Normal'})">
                                 <span><u>N</u>ormal</span>
                             </BaseContextMenuItem>
 
@@ -131,7 +131,7 @@
                             hotkey="KeyM"
                             :disabled="contextSelection.type != 'Master'"
                             disabledTooltip="Can only create Master sub-selections on another Master selection"
-                            @click="onNewSelection(contextSelection, 'Master')">
+                            @click="onNewSelection({parent: contextSelection, type: 'Master'})">
                                 <span><u>M</u>aster</span>
                             </BaseContextMenuItem>
                             <!-- <div class="item"
@@ -902,7 +902,7 @@ export default {
             // Position the contextual menu
             moveContext.show(e)
         },
-        async onNewSelection(parent, type) {
+        async onNewSelection({parent, type}) {
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
