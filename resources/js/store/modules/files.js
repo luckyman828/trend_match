@@ -475,6 +475,12 @@ export default {
                     })
                 })
 
+                // Return if we have no images to sync
+                if (imageMaps.length <= 0) {
+                    resolve()
+                    return
+                }
+
                 const productsToUpdate = []
 
                 // Chunk the images

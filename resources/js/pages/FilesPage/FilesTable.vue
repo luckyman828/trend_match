@@ -45,7 +45,7 @@
                     <Draggable v-else :forceFallback="true" fallbackClass="sortable-drag" :fallbackTolerance="10"
                     :group="{ name: 'folders', pull: 'clone', put: false }"
                     @start="onDragStart(folder)" @end="onDragEnd">
-                        <td class="title clickable" @click="drag != true && setCurrentFolder(folder)">
+                        <td class="title clickable" @click.exact="drag != true && setCurrentFolder(folder)">
                             <i v-if="!folder.id" class="far fa-folder"></i>
                             <i v-else class="fas" 
                             :class="drag == true && dragHoverId == folder.id && filesToMove[0].id != folder.id ? 'fa-folder-open' : 'fa-folder'"></i>
@@ -84,7 +84,7 @@
                     <Draggable v-else :forceFallback="true" fallbackClass="sortable-drag" :fallbackTolerance="10"
                     :group="{ name: 'files', pull: 'clone', put: false }"
                     @start="onDragStart(file)" @end="onDragEnd">
-                        <td class="title clickable" @click="!drag && showSingleFile(file)">
+                        <td class="title clickable" @click.exact="!drag && showSingleFile(file)">
                             <i v-if="!file.id" class="far fa-file"></i>
                             <i v-else class="fas fa-file"></i>
                             <span>{{file.name}}</span>
