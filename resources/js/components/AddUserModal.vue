@@ -171,7 +171,6 @@ export default {
             }
             // Submit form
             await this.addUsersToWorkspace(this.usersToAdd.filter(x => x.status != 'ignore')).then(async response => {
-                console.log('then')
                 if (response) {
                     this.usersExistingOnAnotherWorkspace = response.data.existed_users
                 }

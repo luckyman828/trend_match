@@ -104,7 +104,7 @@ export default {
                     data: dataToPost,
                 })
                     .then(response => {
-                        const newUsers = response.data.new_users
+                        const newUsers = response.data.new_users.concat(response.data.existed_users)
                         commit('ADD_USERS', newUsers)
                         // Display message
                         commit(
