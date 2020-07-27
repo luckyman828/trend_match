@@ -863,6 +863,23 @@ export default {
                         ).requests
                     },
                 })
+                Object.defineProperty(product, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        return (
+                            (product.requests.length > 0 && product.comments.length <= 0) ||
+                            (product.comments.length > 0 &&
+                                product.comments[product.comments.length - 1].role != 'Approver')
+                        )
+                    },
+                })
+                Object.defineProperty(product, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            product.comments.length > 0 &&
+                            product.comments[product.comments.length - 1].role == 'Approver'
+                        )
+                    },
+                })
             })
         },
     },
@@ -1037,24 +1054,6 @@ export default {
                         return (
                             selectionInput.comments.length > 0 &&
                             selectionInput.comments[selectionInput.comments.length - 1].role == 'Approver'
-                        )
-                    },
-                })
-
-                Object.defineProperty(product, 'hasUnreadAlignerComment', {
-                    get: function() {
-                        return (
-                            (product.requests.length > 0 && product.comments.length <= 0) ||
-                            (product.comments.length > 0 &&
-                                product.comments[product.comments.length - 1].role != 'Approver')
-                        )
-                    },
-                })
-                Object.defineProperty(product, 'hasUnreadApproverComment', {
-                    get: function() {
-                        return (
-                            product.comments.length > 0 &&
-                            product.comments[product.comments.length - 1].role == 'Approver'
                         )
                     },
                 })
