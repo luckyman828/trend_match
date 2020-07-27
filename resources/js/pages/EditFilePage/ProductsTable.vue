@@ -62,7 +62,7 @@
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
-                @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
+                @change="(checked) => checked ? selectedProducts = productsFilteredBySearch : selectedProducts = []"/>
                 </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
