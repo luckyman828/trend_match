@@ -69,10 +69,7 @@
                     <!-- Alignment -->
                     <div class="alignment-wrapper" style="margin-bottom: 20px; border-bottom: solid 1px #E4E4E4;">
                         <strong style="font-size: 11px; margin-bottom: 4px; display: block;">Alignment & Requests</strong>
-                        <div class="row" v-for="(action, index) 
-                        in selectionInput.actions.filter(
-                            x => includeNotDecided ? true : (x.action != 'None' 
-                            || selectionInput.requests.find(request => request.selection_id == x.selection_id)))" 
+                        <div class="row" v-for="(action, index) in alignmentListUsers" 
                         :key="'alignment-'+index"
                         style="display: -webkit-box; flex-direction: row; width: 100%; align-items: center; border-top: solid 1px #E4E4E4;">
                             <div style="overflow: hidden; white-space: nowrap; max-width: 80px; min-width: 80px;">
@@ -82,18 +79,18 @@
                             </div>  
                             <div v-if="includeDistribution" 
                             style="font-size: 10px; max-width: 28px; min-width: 28px; margin-left: 16px;" 
-                            :style="{textAlign: selectionInput.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? 'right' : 'left'}">
+                            :style="{textAlign: action.action == 'Out' ? 'right' : 'left'}">
                                 <span style="font-size: 12px; margin-bottom: -3px; display: block; margin-top: -2px; font-weight: 900;">
-                                    {{selectionInput.actions.find(x => x.selection_id == action.selection_id).action == 'Out' ? '⨯' 
-                                    : selectionInput.actions.find(x => x.selection_id == action.selection_id).action == 'Focus' ? '★' 
-                                    : selectionInput.actions.find(x => x.selection_id == action.selection_id).action == 'In' ? '♥' : ''}}
+                                    {{action.action == 'Out' ? '⨯' 
+                                    : action.action == 'Focus' ? '★' 
+                                    : action.action == 'In' ? '♥' : ''}}
                                 </span>
                             </div>
                             <!-- Requests -->
                             <div v-if="exportComments" 
                             style="font-size: 10px; -webkit-box-flex: 1; margin-left: 16px; padding: 1px;">
                                 <span style="font-size: 10px; display: block; margin-bottom: 4px;" 
-                                v-for="(request, index) in selectionInput.requests.filter(x => x.selection_id == action.selection_id)" 
+                                v-for="(request, index) in action.requests" 
                                 :key="'request-'+index">
                                     {{request.content}}
                                 </span>
@@ -199,6 +196,43 @@ export default {
                             selection_id: comment.selection_id,
                             action: 'None',
                             comments: [comment]
+                        })
+                    }
+                })
+            }
+            return usersToReturn
+        },
+        alignmentListUsers() {
+            const usersToReturn = []
+            // Find the users to add from the feedbacks array
+            this.selectionInput.actions.map(action => {
+                // Don't include undecided users if the setting is set
+                if (!this.includeNotDecided && action.action == 'None') return
+                // Add the users
+                usersToReturn.push({
+                    user: action.user,
+                    user_id: action.user_id,
+                    selection: action.selection,
+                    selection_id: action.selection_id,
+                    action: action.action,
+                    requests: []
+                })
+            })
+            // Find users from comments
+            if (this.exportComments) {
+                this.selectionInput.requests.map(request => {
+                    const existingUser = usersToReturn.find(x => x.selection_id == request.selection_id)
+                    if (existingUser) {
+                        existingUser.requests.push(request)
+                    }
+                    else {
+                        usersToReturn.push({
+                            user: request.user,
+                            user_id: request.user_id,
+                            selection: request.selection,
+                            selection_id: request.selection_id,
+                            action: 'None',
+                            requests: [request]
                         })
                     }
                 })
