@@ -597,7 +597,7 @@ export default {
                     })
             })
         },
-        async uploadImage({ commit, dispatch }, { file, product, variant, image, callback }) {
+        async uploadImage({ commit, dispatch }, { file, product, picture, image, callback }) {
             return new Promise(async (resolve, reject) => {
                 // First generate presigned URL we can put the image to from the API
                 const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
@@ -648,13 +648,13 @@ export default {
                     xhr.send(blob)
                 })
                     .then(response => {
-                        // On success, set the image on the variant
+                        // On success, set the image on the picture
                         let newUrl = presignedUrl.url
                         // Change the URL from https to https
                         if (newUrl.indexOf('https') < 0) {
                             newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
                         }
-                        variant.image = newUrl
+                        picture.url = newUrl
                         resolve(response)
                     })
                     .catch(err => {
@@ -883,7 +883,9 @@ export default {
 
                 // VARIANTS
                 product.variants.forEach(variant => {
-                    Vue.set(variant, 'imageIndex', 0)
+                    if (variant.imageIndex == null) {
+                        Vue.set(variant, 'imageIndex', 0)
+                    }
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
 
                     Object.defineProperty(variant, 'currentImg', {

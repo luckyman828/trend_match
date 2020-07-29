@@ -85,17 +85,20 @@
                                 <div class="square white trigger">
                                     <i class="far fa-images"></i>
                                 </div>
-                                <div class="drawer">
-                                    <div class="image-wrapper" v-for="(image, index) in variant.pictures" :key="index"
-                                    :class="{'active': variant.imageIndex == index}">
-                                        <BaseVariantImg :variant="variant" size="sm" :index="index"
-                                        @click.native="variant.imageIndex = index"/>
-                                    </div>
-                                    <button class="md"
-                                    @click="onAddImageToVariant(variant)">
-                                        <i class="far fa-plus"></i>
-                                    </button>
-                                </div>
+                                <!-- <div class="drawer"> -->
+                                    <Draggable v-model="variant.pictures" class="drawer"
+                                    @end="onVariantPictureDragEnd($event, variant)">
+                                        <div class="image-wrapper" v-for="(image, index) in variant.pictures" :key="index"
+                                        :class="{'active': variant.imageIndex == index}">
+                                            <BaseVariantImg :variant="variant" size="sm" :index="index"
+                                            @click.native="variant.imageIndex = index"/>
+                                        </div>
+                                        <button class="md"
+                                        @click="onAddImageToVariant(variant)">
+                                            <i class="far fa-plus"></i>
+                                        </button>
+                                    </Draggable>
+                                <!-- </div> -->
                             </div>
                         </div>
                         <!-- Variant Name -->
@@ -489,7 +492,8 @@ export default {
         },
         initProduct() {
             // Make a copy of the product, so we can check for changes compared to the original
-            this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+            const productClone = JSON.parse(JSON.stringify(this.currentProduct))
+            this.productToEdit = productClone
             this.initProducts([this.productToEdit])
 
             // Check if the product has any currencies, else add a default currency
@@ -568,7 +572,9 @@ export default {
             }
         },
         onSubmitField() {
-            console.log('on submit field')
+            // Don't update the product if it hasn't been assigned a datasource id yet
+            if (!this.productToEdit.datasource_id) return
+            
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
@@ -616,7 +622,7 @@ export default {
                     await this.uploadImage({
                         file: this.currentFile, 
                         product: productToEdit,
-                        variant: editVariant,
+                        picture: editVariant.currentImg,
                         image: variant.imageToUpload.file, 
                     }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
                         // Remove the image to upload
@@ -682,6 +688,9 @@ export default {
             }
         },
         dragActive(e, index) {
+            // console.log('drag active', e, e.relatedTarget.closest('.drawer'))
+            // If we are dragging an image from the drawer, don't trigger dragging
+            if (e.relatedTarget.closest('.drawer')) return
             // e.target.querySelector('.drop-area').classList.add('drag')
             this.dragActiveIndex = index
             this.dragCounter++
@@ -698,6 +707,7 @@ export default {
             this.dragCounter = 0
         },
         async filesChange(e, index, variant) {
+            console.log('files change')
             const vm = this
             const file = e.target.files[0]
             // Check that the file is an image
@@ -718,11 +728,10 @@ export default {
                 fileReader.onload = (e) => {
 
                     // Show the new image on the variant
+
                     const newImage = e.target.result
                     variant.image = newImage
-                    // Set the blob_id to null, to we know to show the new image instead.
-                    // The blob_id will be set again if we upload the image
-                    variant.blob_id = null
+                    variant.currentImg.url = newImage
                 }
             } else {
                 // Throw error
@@ -806,6 +815,13 @@ export default {
         onAddImageToVariant(variant) {
             variant.pictures.push({url: null, name: 'New image'})
             variant.imageIndex = variant.pictures.length -1
+        },
+        onVariantPictureDragEnd(e, variant) {
+            // If the dragged picture was the currently active picture set the active picture index to the pictures new index
+            // I.e. keep the same picure as the active one even after dragging
+            if (e.oldIndex == variant.imageIndex) {
+                variant.imageIndex = e.newIndex
+            }
         }
     },
     created() {
