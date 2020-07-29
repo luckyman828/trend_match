@@ -15,7 +15,7 @@
                 <div class="quantity-progress" v-if="selection.budget > 0" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
             </div>
             <div class="color-wrapper">
-                <div class="circle-img"><img :src="variantImage(variant, 'sm')"></div>
+                <div class="circle-img"><img :src="variantImage(variant, {size: 'sm'})"></div>
                 <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
             </div>
         </div>

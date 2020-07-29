@@ -1,10 +1,19 @@
 export default {
     methods: {
-        variantImage(variant, size) {
-            if (!variant || !variant.image) return `/images/placeholder.JPG`
-            if (size == 'sm') return `${variant.image}-300x300`
-            if (size == 'lg') return `${variant.image}-1024x1024`
-            return variant.image
+        variantImage(variant, { size, index } = {}) {
+            let urlToReturn = `/images/placeholder.JPG`
+            if (!variant || !variant.image) return urlToReturn
+
+            if (variant.pictures && variant.pictures.length > 0) {
+                if (index) urlToReturn = variant.pictures[index].url
+                else urlToReturn = variant.pictures[0].url
+            }
+
+            if (size) {
+                if (size == 'sm') urlToReturn = `${urlToReturn}-300x300`
+                if (size == 'lg') urlToReturn = `${urlToReturn}-1024x1024`
+            }
+            return urlToReturn
         },
     },
 }

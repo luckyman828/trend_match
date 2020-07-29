@@ -880,6 +880,18 @@ export default {
                         )
                     },
                 })
+
+                // VARIANTS
+                product.variants.forEach(variant => {
+                    Vue.set(variant, 'imageIndex', 0)
+                    if (!variant.pictures) Vue.set(variant, 'pictures', [])
+
+                    Object.defineProperty(variant, 'currentImg', {
+                        get: function() {
+                            return variant.pictures[variant.imageIndex]
+                        },
+                    })
+                })
             })
         },
     },
@@ -1190,6 +1202,16 @@ export default {
 
                 // PROCESS VARIANTS
                 selectionInput.variants.forEach(variant => {
+                    // VARIANTS
+                    Vue.set(variant, 'imageIndex', 0)
+                    if (!variant.pictures) Vue.set(variant, 'pictures', [])
+
+                    Object.defineProperty(variant, 'currentImg', {
+                        get: function() {
+                            return variant.pictures[variant.imageIndex]
+                        },
+                    })
+
                     Object.defineProperty(variant, 'feedbacks', {
                         get: function() {
                             const feedbacks = []

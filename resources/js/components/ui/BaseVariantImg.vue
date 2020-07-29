@@ -1,5 +1,5 @@
 <template>
-    <img :src="variantImage(variant, theSize)" @error="onError">
+    <img :src="variantImage(variant, {size: theSize, index})" @error="onError">
 </template>
 
 <script>
@@ -9,7 +9,8 @@ export default {
     name: 'baseVariantImg',
     props: [
         'variant',
-        'size'
+        'size',
+        'index',
     ],
     mixins: [
         variantImage,

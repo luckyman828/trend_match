@@ -960,9 +960,11 @@ export default {
             // Update the settings of all the newly created selection to sync relationsships
             const newSelectionTree = this.getSelectionsTree
             console.log('end for. New selections:', newSelectionTree)
-            for (const rootSelection of newSelectionTree) {
-                this.syncSelectionTreeSettings(rootSelection)
-            }
+            setTimeout(() => {
+                for (const rootSelection of newSelectionTree) {
+                    this.syncSelectionTreeSettings(rootSelection)
+                }
+            }, 500)
         },
         async cloneSelectionTree(selection) {
             // Recursive function that calls itself for all children of a selection until there are no more children
@@ -977,7 +979,7 @@ export default {
             await this.fetchSelectionSettings(selection)
             // Save selection settings to the new selection
             newSelection.settings = selection.settings
-            this.updateSelectionSettings(newSelection)
+            // this.updateSelectionSettings(newSelection)
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0) 
                 this.addUsersToSelection({selection: newSelection, users: selectionWithTeamsAndUsers.users, ignoreRole: false})

@@ -466,14 +466,20 @@ export default {
                 const imageMaps = []
                 products.map(product => {
                     product.variants.map(variant => {
-                        if (!variant.image) return
-                        imageMaps.push({
-                            mapping_id: variant.id,
-                            datasource_id: product.datasource_id,
-                            url: variant.image,
+                        console.log('variant to map', variant)
+                        variant.pictures.map((picture, index) => {
+                            if (!picture.url) return
+                            imageMaps.push({
+                                mapping_id: variant.id,
+                                datasource_id: product.datasource_id,
+                                url: picture.url,
+                                pictureIndex: index,
+                            })
                         })
                     })
                 })
+
+                console.log('sync image maps', imageMaps)
 
                 // Return if we have no images to sync
                 if (imageMaps.length <= 0) {
@@ -505,16 +511,30 @@ export default {
                                 const progressPercentage = ((chunkIndex / imageMapChunks.length) * 100).toFixed(0)
                                 progressCallback(progressPercentage)
                             }
-                            const uploadedImages = response.data.media_url_maps
-                            uploadedImages.forEach(image => {
+                            const urlMaps = response.data.media_url_maps
+                            console.log('here are the uploaded images maps', urlMaps)
+
+                            let pictureIndex = 0
+                            let currentVariantId = null
+
+                            urlMaps.forEach((urlMap, index) => {
                                 const product = products.find(product =>
-                                    product.variants.find(variant => variant.id == image.mapping_id)
+                                    product.variants.find(variant => variant.id == urlMap.mapping_id)
                                 )
                                 if (!product) return
-                                const variant = product.variants.find(variant => variant.id == image.mapping_id)
+                                const variant = product.variants.find(variant => variant.id == urlMap.mapping_id)
 
                                 if (!variant) return
-                                variant.image = image.cdn_url
+
+                                if (currentVariantId == variant.id) {
+                                    pictureIndex++
+                                } else {
+                                    pictureIndex = 0
+                                    currentVariantId = variant.id
+                                }
+
+                                variant.pictures[pictureIndex].url = urlMap.cdn_url
+
                                 productsToUpdate.push(product)
                             })
                         })
@@ -525,6 +545,7 @@ export default {
                 }
 
                 // Update the products when we are done uploading
+                console.log('we are done syncing. Update the products', productsToUpdate)
                 await dispatch(
                     'products/updateManyProducts',
                     { file, products: productsToUpdate },

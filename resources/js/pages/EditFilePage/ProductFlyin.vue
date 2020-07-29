@@ -53,8 +53,10 @@
                                         <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
-                                <img v-if="variant.image || variant.blob_id"  :key="`image-${variant.id ? variant.id : index}`"
-                                :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
+                                <img v-if="variant.currentImg.url != null"  
+                                :key="`image-${variant.id ? variant.id : index}`"
+                                :src="variantImage(variant, {index: variant.imageIndex})" 
+                                :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
                                         <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -78,6 +80,22 @@
                                 <button @click="showVariantContext($event, index)">
                                     <i class="fas fa-ellipsis-h"></i>
                                 </button>
+                            </div>
+                            <div class="image-drawer">
+                                <div class="square white trigger">
+                                    <i class="far fa-images"></i>
+                                </div>
+                                <div class="drawer">
+                                    <div class="image-wrapper" v-for="(image, index) in variant.pictures" :key="index"
+                                    :class="{'active': variant.imageIndex == index}">
+                                        <BaseVariantImg :variant="variant" size="sm" :index="index"
+                                        @click.native="variant.imageIndex = index"/>
+                                    </div>
+                                    <button class="md"
+                                    @click="onAddImageToVariant(variant)">
+                                        <i class="far fa-plus"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <!-- Variant Name -->
@@ -352,11 +370,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 import axios from 'axios'
+import variantImage from '../../mixins/variantImage'
 
 export default {
     name: 'editProductFlyin',
     props: [
         'show',
+    ],
+    mixins: [
+        variantImage
     ],
     components: {
         Draggable
@@ -480,15 +502,15 @@ export default {
             if (variants.length <= 0) {
                 this.onAddVariant()
             }
+            variants.map(variant => {
+                if (variant.pictures.length <= 0) {
+                    this.onAddImageToVariant(variant)
+                }
+            })
         },
         showVariantContext(e, index) {
             this.contextVariantIndex = index
             this.$refs.contextVariant.show(e)
-        },
-        variantImg (variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
         },
         addCurrency() {  
             this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
@@ -513,13 +535,27 @@ export default {
             this.$emit('closeSingle')
         },
         onAddVariant() {
-            this.product.variants.push({
+            const newVariant = {
                 id: this.$uuid.v4(),
                 name: null,
                 image: null,
                 blob_id: null,
                 sizes: null,
+                images: [],
+                pictures: [{
+                    url: null,
+                    name: 'New image'
+                }],
+                imageIndex: 0,
+            }
+
+            Object.defineProperty(newVariant, 'currentImg', {
+                get: function() {
+                    return newVariant.pictures[newVariant.imageIndex]
+                },
             })
+
+            this.product.variants.push(newVariant)
         },
         removeVariant(index) {
             // Remove the variant from the product
@@ -680,6 +716,7 @@ export default {
                 const fileReader = new FileReader()
                 fileReader.readAsDataURL(file)
                 fileReader.onload = (e) => {
+
                     // Show the new image on the variant
                     const newImage = e.target.result
                     variant.image = newImage
@@ -756,7 +793,9 @@ export default {
             return image
         },
         async setVariantImageURL(variant, imageURL) {
+            console.log('set variant iamge URL')
             variant.image = imageURL
+            variant.currentImg.url = imageURL
             await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
             // const image = await this.getImageFromURL(imageURL)
             // if (image) {
@@ -764,6 +803,10 @@ export default {
             // }
             
         },
+        onAddImageToVariant(variant) {
+            variant.pictures.push({url: null, name: 'New image'})
+            variant.imageIndex = variant.pictures.length -1
+        }
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)
@@ -964,7 +1007,7 @@ export default {
             > .controls {
                 position: absolute;
                 z-index: 1;
-                right: 4px;
+                left: 4px;
                 top: 4px;
                 opacity: 0;
                 transition: .3s;
@@ -1011,6 +1054,62 @@ export default {
     .form-element {
         &:not(:last-child) {
             margin-bottom: 16px;
+        }
+    }
+
+    .image-drawer {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        padding: 4px;
+        border: $borderElSoft;
+        border-radius: $borderRadiusEl;
+        border-color: transparent;
+        &:hover {
+            background: white;
+            border-color: $borderColorEl;
+            box-shadow: $shadowEl;
+            .drawer {
+                display: block;
+            }
+            .trigger {
+                display: none;
+            }
+        }
+        .trigger {
+            border: $borderElSoft;
+            margin-right: -4px;
+            margin-top: -4px;
+        }
+        .drawer {
+            display: none;
+            overflow-y: auto;
+            max-height: 200px;
+            >:not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        >:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        .image-wrapper {
+            width: 36px;
+            height: 36px;
+            border: $borderElSoft;
+            border-radius: $borderRadiusEl;
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+            }
+            &.active {
+                border: solid 2px $primary;
+                cursor: default;
+            }
         }
     }
 </style>
