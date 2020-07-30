@@ -50,11 +50,29 @@
                 
                 <div class="main-img" @click="cycleImage(true)">
                     <!-- <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + currentImgIndex" v-if="product.variants.length > 0" :variant="product.variants[currentImgIndex]" size="sm"/>
+                    <BaseVariantImg :key="product.id + '-' + currentImgIndex" v-if="selectionInput.variants.length > 0" 
+                    :variant="currentVariant" size="sm" :index="currentVariant.imageIndex"/>
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
                     </button>
+
+                    <div class="image-drawer">
+                        <div class="square white trigger">
+                            <i class="far fa-images"></i>
+                            <div class="count circle xxs dark" v-if="currentVariant.pictures.length > 0">
+                                <span>{{currentVariant.pictures.length}}</span>
+                            </div>
+                        </div>
+                        <div class="drawer">
+                            <div class="image-wrapper" v-for="(image, index) in currentVariant.pictures" :key="index"
+                            :class="{'active': currentVariant.imageIndex == index}">
+                                <BaseVariantImg :variant="currentVariant" size="sm" :index="index"
+                                @click.native.stop="currentVariant.imageIndex = index"/>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="product-variants" v-dragscroll>
@@ -251,6 +269,9 @@ export default {
         product () {
             return this.currentProduct
         },
+        currentVariant() {
+            return this.selectionInput.variants[this.currentImgIndex]
+        },
         broadcastActive () {return this.selection.is_presenting},
         selection () { return this.getCurrentPDPSelection },
         currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
@@ -279,8 +300,22 @@ export default {
             this.$emit('updateAction', action, this.selectionInput)
         },
         onShowLightbox() {
-            this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
-            this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
+            const lightboxImages = this.product.variants.reduce((arr, variant) => 
+                arr.concat(variant.pictures.map((picture, index) => 
+                    this.variantImage(variant, {index}))), [])
+            // this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
+            let lightboxImageIndex = 0
+            for (let i = 0; i <= this.currentImgIndex; i++) {
+                if (i < this.currentImgIndex) {
+                    lightboxImageIndex += this.selectionInput.variants[i].pictures.length
+                }
+                if (i == this.currentImgIndex) {
+                    lightboxImageIndex += this.selectionInput.variants[i].imageIndex
+                }
+            }
+            this.SET_LIGHTBOX_IMAGES(lightboxImages)
+            // this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
+            this.SET_LIGHTBOX_IMAGE_INDEX(lightboxImageIndex)
             this.SET_LIGHTBOX_VISIBLE(true)
         },
         async onCloseSingle() {
@@ -436,7 +471,7 @@ export default {
                 }
                 .controls {
                     position: absolute;
-                    right: 4px;
+                    left: 4px;
                     top: 4px;
                     opacity: 0;
                 }
@@ -452,6 +487,71 @@ export default {
                 overflow-x: auto;
                 margin-bottom: 8px;
                 display: flex;
+            }
+        }
+    }
+    .image-drawer {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        padding: 4px;
+        border: $borderElSoft;
+        border-radius: $borderRadiusEl;
+        border-color: transparent;
+        z-index: 1;
+        &:hover, &.hover {
+            background: white;
+            border-color: $borderColorEl;
+            box-shadow: $shadowEl;
+            .drawer {
+                display: block;
+            }
+            .trigger {
+                display: none;
+            }
+        }
+        .trigger {
+            border: $borderElSoft;
+            margin-right: -4px;
+            margin-top: -4px;
+            position: relative;
+            .count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                height: 16px;
+                width: 16px;
+                font-size: 10px;
+            }
+        }
+        .drawer {
+            display: none;
+            overflow-y: auto;
+            max-height: 200px;
+            >:not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        >:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        .image-wrapper {
+            width: 36px;
+            height: 36px;
+            border: $borderElSoft;
+            border-radius: $borderRadiusEl;
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+            }
+            &.active {
+                border: solid 2px $primary;
+                cursor: default;
             }
         }
     }
