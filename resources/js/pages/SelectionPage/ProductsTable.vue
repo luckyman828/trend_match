@@ -578,6 +578,7 @@ export default {
         document.removeEventListener('keydown', this.hotkeyHandler)
         // Reset all filters
         this.resetFilters()
+        this.setCurrentProductFilter('overview')
     }
 }
 </script>
