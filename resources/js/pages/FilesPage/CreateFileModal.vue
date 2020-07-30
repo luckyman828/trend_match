@@ -448,9 +448,9 @@ export default {
             headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
         ],
         variantImageDefaultObject: {
-                name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-                headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']
-            },
+            name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']
+        },
         currencyDefaultObject: {
             currencyName: '',
             nameError: null,
@@ -656,7 +656,7 @@ export default {
                     }
                 } else {
                     // Throw error
-                    console.log('invalid file extension')
+                    // console.log('invalid file extension')
                 }
             }
         },
@@ -1007,16 +1007,6 @@ export default {
                                             url: fieldValue
                                         })
                                     }
-                                    // if (Array.isArray(variant[fieldName])) {
-                                    //     // Only push the value if it does not already exists
-                                    //     let arrayValueExists = variant[fieldName].includes(fieldValue)
-                                    //     if (!arrayValueExists) {
-                                    //         variant[fieldName].push(fieldValue)
-                                    //     }
-                                    // }
-                                    // else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
-                                    //     variant[fieldName] = fieldValue
-                                    // }
                                 }
                             }
                         })
@@ -1116,7 +1106,7 @@ export default {
 
             // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
             this.submitStatus = 'Creating file'
-            console.log('create file', newFile)
+            // console.log('create file', newFile)
             await this.insertOrUpdateFile(newFile)
 
             // Then we will instantiate the products and attempt to upload them
@@ -1147,7 +1137,7 @@ export default {
                         iconClass: 'fa-exclamation-circle', 
                     })
                 })
-                console.log('Done syncing images')
+                // console.log('Done syncing images')
             }
 
             if (uploadSuccess) {
@@ -1166,8 +1156,9 @@ export default {
             this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
             this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
+            this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
             // Reset fields to match
-            this.fieldsToMatch.forEach(field => {
+            this.fieldsToMatch.concat(this.variantFieldsToMatch).forEach(field => {
                 field.enabled = true
                 field.error = false
                 field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}

@@ -2,7 +2,7 @@ export default {
     methods: {
         variantImage(variant, { size, index } = {}) {
             let urlToReturn = `/images/placeholder.JPG`
-            if (!variant || !variant.image) return urlToReturn
+            if (!variant || !variant.pictures || variant.pictures.length <= 0) return urlToReturn
 
             if (variant.pictures && variant.pictures.length > 0) {
                 if (index) urlToReturn = variant.pictures[index].url

@@ -225,7 +225,7 @@ export default {
                     )
                     // Set the files ID if not already set
                     if (!file.id) file.id = response.data.id
-                    console.log('done creating file', file)
+                    // console.log('done creating file', file)
                 })
                 .catch(err => {
                     // Display message
@@ -414,7 +414,7 @@ export default {
             // Send request to API
         },
         moveFiles({ state, rootGetters, commit, dispatch }, { destinationFolderId, filesToMove, undo }) {
-            console.log('move files', destinationFolderId, filesToMove)
+            // console.log('move files', destinationFolderId, filesToMove)
 
             let apiUrl = `/files/${destinationFolderId}/paste`
             if (destinationFolderId == 0) apiUrl = `/files/${rootGetters['workspaces/currentWorkspace'].id}/paste`
@@ -466,7 +466,7 @@ export default {
                 const imageMaps = []
                 products.map(product => {
                     product.variants.map(variant => {
-                        console.log('variant to map', variant)
+                        // console.log('variant to map', variant)
                         variant.pictures.map((picture, index) => {
                             if (!picture.url) return
                             imageMaps.push({
@@ -479,7 +479,7 @@ export default {
                     })
                 })
 
-                console.log('sync image maps', imageMaps)
+                // console.log('sync image maps', imageMaps)
 
                 // Return if we have no images to sync
                 if (imageMaps.length <= 0) {
@@ -512,7 +512,7 @@ export default {
                                 progressCallback(progressPercentage)
                             }
                             const urlMaps = response.data.media_url_maps
-                            console.log('here are the uploaded images maps', urlMaps)
+                            // console.log('here are the uploaded images maps', urlMaps)
 
                             let pictureIndex = 0
                             let currentVariantId = null
@@ -545,7 +545,7 @@ export default {
                 }
 
                 // Update the products when we are done uploading
-                console.log('we are done syncing. Update the products', productsToUpdate)
+                // console.log('we are done syncing. Update the products', productsToUpdate)
                 await dispatch(
                     'products/updateManyProducts',
                     { file, products: productsToUpdate },
