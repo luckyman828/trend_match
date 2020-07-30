@@ -6,7 +6,7 @@
                 <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
                 v-model="currentProductFilter"
                 modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length" 
+                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
                 v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                 v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                 :modelValue="insTabValue"/>
@@ -146,10 +146,10 @@
                             <span class="hide-screen-md">{{selectedProducts.length}} selected</span>
                             <span class="show-screen-md">({{selectedProducts.length}})</span>
                         </template>
-                        <span v-if="productsFilteredBySearch.length != stateProducts.length">
-                            {{productsFilteredBySearch.length}}/{{stateProducts.length}}<span class="hide-screen-md"> showing</span>
+                        <span v-if="productsFilteredBySearch.length != totalProductCount">
+                            {{productsFilteredBySearch.length}}/{{totalProductCount}}<span class="hide-screen-md"> showing</span>
                         </span>
-                        <span v-else>{{stateProducts.length}}<span class="hide-screen-md"> records</span></span>
+                        <span v-else>{{totalProductCount}}<span class="hide-screen-md"> records</span></span>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -456,6 +456,18 @@ export default {
                 this.setUnreadOnly(value)
             }
         },
+        totalProductCount() {
+            if (['ins', 'focus'].includes(this.currentProductFilter)) {
+                return this.stateProducts.filter(product => ['In', 'Focus'].includes(this.getActiveSelectionInput(product)[this.currentAction])).length
+            }
+            if (this.currentProductFilter == 'outs') {
+                return this.stateProducts.filter(product => this.getActiveSelectionInput(product)[this.currentAction] == 'Out').length
+            }
+            if (this.currentProductFilter == 'nds') {
+                return this.stateProducts.filter(product => this.getActiveSelectionInput(product)[this.currentAction] == 'None').length
+            }
+            return this.stateProducts.length
+        }
     },
     methods: {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
