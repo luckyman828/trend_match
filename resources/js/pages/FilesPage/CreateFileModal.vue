@@ -118,6 +118,65 @@
                             </table>
                         </div>
 
+                         <!-- START Map Variants -->
+                        <div class="table-wrapper map-assortments">
+                            <h3>Map Variants</h3>
+
+                            <table class="map-fields-table">
+                                <tr class="header">
+                                    <th></th>
+                                    <th><label>Database</label></th>
+                                    <th></th>
+                                    <th><label>Matched Datasource</label></th>
+                                    <th><label>Example</label></th>
+                                </tr>
+                                <tr v-for="(field, index) in variantFieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                                    <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                                    <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                    <td><i class="fas fa-equals"></i></td>
+                                    <td>
+                                        <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                            <i class="fas fa-caret-down"></i>
+                                        </BaseInputField>
+                                    </td>
+                                    <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                                        :value="previewExampleValue(field.newValue, field.name)"/>
+                                    </td>
+                                </tr>
+                                <tr v-for="(field, index) in variantImagesToMap" :key="'variant-image-'+index" :class="{disabled: !field.enabled}"
+                                class="variant-image-row">
+                                    <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                                    <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                    <td><i class="fas fa-equals"></i></td>
+                                    <td>
+                                        <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                            <i class="fas fa-caret-down"></i>
+                                        </BaseInputField>
+                                    </td>
+                                    <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                                        :value="previewExampleValue(field.newValue, field.name)"/>
+                                    </td>
+
+                                    <td>
+                                        <button class="dark ghost remove-variant-image"
+                                        @click="variantImagesToMap.splice(index, 1)">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <button class="dark" style="margin-top: 12px"
+                            @click="variantImagesToMap.push(JSON.parse(JSON.stringify(variantImageDefaultObject)))">
+                                <i class="fas fa-plus"></i><span>Add variant image map</span>
+                            </button>
+                        </div>
+                        <!-- END Map Variants -->
+
                         <div class="table-wrapper map-currencies">
                             <h3>Map currencies</h3>
                             <table class="single-currency-file-table">
@@ -373,17 +432,25 @@ export default {
             headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
-            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
-            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
-            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['eans','ean','variant ean','style ean', 'ean_no']},
             {name: 'buying_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['buyer group','buyer','pricelist', 'buying group']},
         ],
+       variantFieldsToMatch: [
+            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
+            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['sizes','variant sizes','size','variant size']},
+        ],
+        variantImagesToMap: [
+            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
+        ],
+        variantImageDefaultObject: {
+                name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+                headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']
+            },
         currencyDefaultObject: {
             currencyName: '',
             nameError: null,
@@ -650,7 +717,7 @@ export default {
         },
         autoMapHeaders(file, fileIndex) {
             // Loop through the fields we still need to match to a header
-            this.fieldsToMatch.forEach(field => {
+            this.fieldsToMatch.concat(this.variantFieldsToMatch).concat(this.variantImagesToMap).forEach(field => {
                 if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
                     // Test if the current header has a file that matches
                     const autoMatchIndex = file.headers.findIndex(header => {
@@ -785,7 +852,7 @@ export default {
 
                         // VARIANTS
                         // Find / Instantiate this lines variant
-                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
+                        let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'variant_name')
                         let variant = null
                         // Check that the variant key is from this file
                         if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
@@ -800,6 +867,8 @@ export default {
                                     id: this.$uuid.v4(),
                                     name: variantKeyValue,
                                     image: null,
+                                    images: [],
+                                    pictures: [],
                                     sizes: []
                                 }
                                 product.variants.push(variant)
@@ -899,11 +968,8 @@ export default {
                                 }
                             })
                         })
-                             
-                        // FIELDS
-                        // Loop thorugh our fields to match, and check if they are matched to the current file
-                        this.fieldsToMatch.forEach(field => {
-                            // Check that the field has not been disabled
+
+                        this.variantFieldsToMatch.forEach(field => {
                             if (field.enabled && field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
                                 const fieldName = field.name
@@ -927,20 +993,52 @@ export default {
                                         }
                                     }
                                 }
+                            }
+                        })
 
-                                // If we don't have a special case, simply write the key value pair to the product
-                                else {
-                                    // Check if the field is an array, because then it should be added to the array
-                                    if (Array.isArray(product[fieldName])) {
-                                        // Check that the value does not already exist in the array
-                                        let arrayValueExists = product[fieldName].includes(fieldValue)
-                                        if (!arrayValueExists) {
-                                            product[fieldName].push(fieldValue)
-                                        }
-                                    } else {
-                                        // Else simply write the key value pair to the product
-                                        product[fieldName] = line[field.newValue.fieldIndex]
+                        this.variantImagesToMap.forEach(field => {
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+                                if (variant) {
+                                    if (fieldValue && !variant.pictures.find(x => x.url == fieldValue)) {
+                                        variant.pictures.push({
+                                            name: null,
+                                            url: fieldValue
+                                        })
                                     }
+                                    // if (Array.isArray(variant[fieldName])) {
+                                    //     // Only push the value if it does not already exists
+                                    //     let arrayValueExists = variant[fieldName].includes(fieldValue)
+                                    //     if (!arrayValueExists) {
+                                    //         variant[fieldName].push(fieldValue)
+                                    //     }
+                                    // }
+                                    // else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
+                                    //     variant[fieldName] = fieldValue
+                                    // }
+                                }
+                            }
+                        })
+                             
+                        // FIELDS
+                        // Loop thorugh our fields to match, and check if they are matched to the current file
+                        this.fieldsToMatch.forEach(field => {
+                            // Check that the field has not been disabled
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+
+                                // Check if the field is an array, because then it should be added to the array
+                                if (Array.isArray(product[fieldName])) {
+                                    // Check that the value does not already exist in the array
+                                    let arrayValueExists = product[fieldName].includes(fieldValue)
+                                    if (!arrayValueExists) {
+                                        product[fieldName].push(fieldValue)
+                                    }
+                                } else {
+                                    // Else simply write the key value pair to the product
+                                    product[fieldName] = line[field.newValue.fieldIndex]
                                 }
                             }
                         })
@@ -1255,5 +1353,8 @@ export default {
             font-size: 12px;
         }
     }
+}
+.remove-variant-image {
+    margin-right: -32px;
 }
 </style>
