@@ -77,16 +77,21 @@
                                 </div>
                             </div>
                             <div class="controls">
-                                <button @click="showVariantContext($event, index)">
+                                <button class="white"
+                                @click="showVariantContext($event, index)">
                                     <i class="fas fa-ellipsis-h"></i>
                                 </button>
                             </div>
                             <div class="image-drawer">
                                 <div class="square white trigger">
                                     <i class="far fa-images"></i>
+                                    <div class="count circle xxs dark" v-if="variant.pictures.length > 0">
+                                        <span>{{variant.pictures.length}}</span>
+                                    </div>
                                 </div>
                                 <!-- <div class="drawer"> -->
                                     <Draggable v-model="variant.pictures" class="drawer"
+                                    @start="onVariantPictureDragStart"
                                     @end="onVariantPictureDragEnd($event, variant)">
                                         <div class="image-wrapper" v-for="(image, index) in variant.pictures" :key="index"
                                         :class="{'active': variant.imageIndex == index}">
@@ -345,7 +350,13 @@
                             <div class="icon-wrapper">
                                 <i class="far fa-trash-alt"></i>
                             </div>
-                            <u>D</u>elete
+                            <u>D</u>elete variant 
+                        </div>
+                        <div class="item" @click="removePicture(contextVariantIndex)">
+                            <div class="icon-wrapper">
+                                <i class="far fa-trash-alt"></i>
+                            </div>
+                            <span>Delete <u>p</u>icture</span>
                         </div>
                     </div>
                 </template>
@@ -409,6 +420,7 @@ export default {
         contextVariantIndex: null,
         idError: null,
         contextPrice: null,
+        draggingVariantPicture: false,
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -690,12 +702,16 @@ export default {
         dragActive(e, index) {
             // console.log('drag active', e, e.relatedTarget.closest('.drawer'))
             // If we are dragging an image from the drawer, don't trigger dragging
-            if (e.relatedTarget.closest('.drawer')) return
+            if (this.draggingVariantPicture) return
+            if (e.target.classList.contains('.image-drawer') || e.relatedTarget && e.relatedTarget.closest('.drawer')) {
+                return
+            }
             // e.target.querySelector('.drop-area').classList.add('drag')
             this.dragActiveIndex = index
             this.dragCounter++
         },
         dragLeave(e) {
+            if (this.draggingVariantPicture) return
             this.dragCounter--
             if (this.dragCounter == 0) {
                 this.dragActiveIndex = null
@@ -703,11 +719,11 @@ export default {
             // e.target.querySelector('.drop-area').classList.remove('drag')
         },
         dragDrop() {
+            if (this.draggingVariantPicture) return
             this.dragActiveIndex = null
             this.dragCounter = 0
         },
         async filesChange(e, index, variant) {
-            console.log('files change')
             const vm = this
             const file = e.target.files[0]
             // Check that the file is an image
@@ -802,7 +818,6 @@ export default {
             return image
         },
         async setVariantImageURL(variant, imageURL) {
-            console.log('set variant iamge URL')
             variant.image = imageURL
             variant.currentImg.url = imageURL
             await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
@@ -816,11 +831,29 @@ export default {
             variant.pictures.push({url: null, name: 'New image'})
             variant.imageIndex = variant.pictures.length -1
         },
+        onVariantPictureDragStart(e, variant) {
+            this.draggingVariantPicture = true
+        },
         onVariantPictureDragEnd(e, variant) {
+            this.draggingVariantPicture = false
             // If the dragged picture was the currently active picture set the active picture index to the pictures new index
             // I.e. keep the same picure as the active one even after dragging
             if (e.oldIndex == variant.imageIndex) {
                 variant.imageIndex = e.newIndex
+                return
+            }
+            // Keep the same position when the active picture gets "bumped"
+            if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
+            if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
+        },
+        removePicture(index) {
+            const variant = this.product.variants[index]
+            if (variant.imageIndex > 0 && variant.imageIndex == variant.pictures.length -1) {
+                variant.imageIndex--
+            }
+            variant.pictures.splice(variant.imageIndex, 1)
+            if (variant.pictures.length <= 0) {
+                this.onAddImageToVariant(variant)
             }
         }
     },
@@ -1027,6 +1060,7 @@ export default {
                 top: 4px;
                 opacity: 0;
                 transition: .3s;
+                border: $borderElSoft;
             }
             &:hover .controls {
                 opacity: 1;
@@ -1081,7 +1115,8 @@ export default {
         border: $borderElSoft;
         border-radius: $borderRadiusEl;
         border-color: transparent;
-        &:hover {
+        z-index: 1;
+        &:hover, &.hover {
             background: white;
             border-color: $borderColorEl;
             box-shadow: $shadowEl;
@@ -1096,6 +1131,15 @@ export default {
             border: $borderElSoft;
             margin-right: -4px;
             margin-top: -4px;
+            position: relative;
+            .count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                height: 16px;
+                width: 16px;
+                font-size: 10px;
+            }
         }
         .drawer {
             display: none;
