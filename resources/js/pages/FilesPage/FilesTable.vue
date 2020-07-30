@@ -192,24 +192,19 @@
             </template>
         </BaseModal>
 
-        <BaseContextMenu ref="contextMenuFolder" class="context-folder" v-slot
-        :hotkeys="['KeyO', 'KeyR', 'KeyA', 'KeyM', 'KeyD']"
-        @keybind-o="setCurrentFolder(contextMenuItem)"
-        @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'folder', 'title')"
-        @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
-        @keybind-m="onMoveFiles()"
-        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFolder(contextMenuItem)">
+        <BaseContextMenu ref="contextMenuFolder" class="context-folder">
             <div class="item-group">
-                <div class="item" @click="setCurrentFolder(contextMenuItem)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-folder-open"></i>
-                    </div>
+                <BaseContextMenuItem iconClass="far fa-folder-open"
+                hotkey="KeyO"
+                @click="setCurrentFolder(contextMenuItem)">
                     <u>O</u>pen folder
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename folders'"
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can rename folders"
+                hotkey="KeyR"
                 @click="onEditField(contextMenuItem, 'folder', 'title')">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
@@ -219,8 +214,10 @@
                     </div>
                     <u>A</u>dd owner(s)
                 </div> -->
-                <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move folders'"
+                <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can move folders"
+                hotkey="KeyM"
                 @click="onMoveFiles()">
                     <span><u>M</u>ove to</span>
                 </BaseContextMenuItem>
@@ -232,38 +229,36 @@
                 </div> -->
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete folders'"
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can delete folders"
+                hotkey="KeyD"
                 @click="onDeleteFolder(contextMenuItem)">
                     <span><u>D</u>elete folder</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuFile" class="context-file" v-slot
-        :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyA', 'KeyM', 'KeyD']"
-        @keybind-v="showSingleFile(contextMenuItem)"
-        @keybind-e="authUserWorkspaceRole == 'Admin' && onGoToEditFile(contextMenuItem.id)"
-        @keybind-r="authUserWorkspaceRole == 'Admin' && onEditField(contextMenuItem, 'file', 'title')"
-        @keybind-a="false && showFileOwnersFlyin(contextMenuItem)"
-        @keybind-m="onMoveFiles()"
-        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteFile(contextMenuItem)">
+        <BaseContextMenu ref="contextMenuFile" class="context-file">
             <div class="item-group">
-                <div class="item" @click="showSingleFile(contextMenuItem)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-file"></i>
-                    </div>
+                <BaseContextMenuItem iconClass="far fa-file" 
+                hotkey="KeyV"
+                @click="showSingleFile(contextMenuItem)">
                     <u>V</u>iew file
-                </div>
-                <BaseContextMenuItem iconClass="far fa-file-edit" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can edit files'"
+                </BaseContextMenuItem>
+                <BaseContextMenuItem iconClass="far fa-file-edit" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can edit files"
+                hotkey="KeyE"
                 @click="onGoToEditFile(contextMenuItem.id)">
                     <span>View / <u>e</u>dit products</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename files'"
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can rename files"
+                hotkey="KeyR"
                 @click="onEditField(contextMenuItem, 'file', 'title')">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
@@ -274,45 +269,49 @@
                     </div>
                     <u>A</u>dd owner(s)
                 </div> -->
-                <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move files'"
+                <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can move files"
+                hotkey="KeyM"
                 @click="onMoveFiles()">
                     <span><u>M</u>ove to</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete files'"
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can delete files"
+                hotkey="KeyD"
                 @click="onDeleteFile(contextMenuItem)">
                     <span><u>D</u>elete file</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuMultipleItems" class="context-file"
-        :hotkeys="['KeyD', 'KeyC', 'KeyM']"
-        @keybind-d="authUserWorkspaceRole == 'Admin' && onDeleteMultipleFiles(selected)"
-        @keybind-c="selected = []"
-        @keybind-m="onMoveFiles()"
-        >
+        <BaseContextMenu ref="contextMenuMultipleItems" class="context-file">
             <template slot="header">
                 <span>Choose action for {{selected.length}} items</span>
             </template>
             <template slot>
                 <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-times"
+                    hotkey="KeyC"
                     @click="selected = []">
                         <span><u>C</u>lear selection</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move files'"
+                    <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" 
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    disabledTooltip="Only admins can move files"
+                    hotkey="KeyM"
                     @click="onMoveFiles()">
                         <span><u>M</u>ove to</span>
                     </BaseContextMenuItem>
-                    <BaseContextMenuItem iconClass="far fa-trash-alt" :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete files'"
+                    <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    disabledTooltip="Only admins can delete file"
+                    hotkey="KeyD"
                     @click="onDeleteMultipleFiles(selected)">
                         <span><u>D</u>elete items</span>
                     </BaseContextMenuItem>

@@ -140,7 +140,6 @@ export default {
         'moveSelectionActive',
         'path',
         'file',
-        'isMaster'
     ],
     data: function() { return {
         childrenExpanded: true,
@@ -148,6 +147,9 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        isMaster() {
+            return this.selection.type == 'Master'
+        },
         indent() {
             const baseIndent = 48
             const indentAmount = 24

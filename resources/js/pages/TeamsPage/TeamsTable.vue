@@ -50,32 +50,27 @@
 
         <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"/>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps"
-        :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyC', 'KeyD']"
-        @keybind-v="showSingleTeam(contextTeam)"
-        @keybind-e="showSingleTeam(contextTeam)"
-        @keybind-r="$refs['teamRow-'+contextTeam.id][0].editTitle = true"
-        @keybind-c="onEditTeamCurrency(contextMouseEvent, contextTeam)"
-        @keybind-d="onDeleteTeam(contextTeam)"
-        >
+        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="showSingleTeam(contextTeam)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-users"></i>
-                    </div>
+                <BaseContextMenuItem iconClass="far fa-users"
+                :hotkey="['KeyV', 'KeyE']"
+                @click="showSingleTeam(contextTeam)">
                     <span><u>V</u>iew / <u>E</u>dit team</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <BaseContextMenuItem :iconClass="'far fa-pen'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename teams'"
+                disabledTooltip="Only admins can rename teams"
+                hotkey="KeyR"
                 @click="$refs['teamRow-'+contextTeam.id][0].editTitle = true">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
+
                 <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
+                disabledTooltip="Only admins can change team currency"
+                hotkey="KeyC"
                 @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
                     <span><u>C</u>hange currency</span>
                 </BaseContextMenuItem>
@@ -83,38 +78,39 @@
             <div class="item-group">
                 <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
+                disabledTooltip="Only admins can delete teams"
+                hotkey="KeyD"
                 @click="onDeleteTeam(contextTeam)">
                     <span><u>D</u>elete team</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelectedTeams"
-        :hotkeys="['KeyC', 'KeyD']"
-        @keybind-c="onEditTeamCurrency(contextMouseEvent, selectedTeams[0])"
-        @keybind-d="onDeleteTeams">
+        <BaseContextMenu ref="contextMenuSelectedTeams">
             <template v-slot:header>
                 <span>Choose action for {{selectedTeams.length}} teams</span>
             </template>
             <template v-slot="slotProps">
 
-                <BaseContextMenuItem :iconClass="'far fa-times'"
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyL"
                 @click="selectedTeams = []">
-                    <span>Clear selection</span>
+                    <span>C<u>l</u>ear selection</span>
                 </BaseContextMenuItem>
                 <div class="item-group">
-                    <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
+                    <BaseContextMenuItem iconClass="far fa-usd-circle"
                     :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
-                    @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                    disabledTooltip="Only admins can change team currency"
+                    hotkey="KeyC"
+                    @click="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
                         <span><u>C</u>hange currency</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
                     <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
                     :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
+                    disabledTooltip="Only admins can delete teams"
+                    hotkey="KeyD"
                     @click="onDeleteTeams">
                         <span><u>D</u>elete teams</span>
                     </BaseContextMenuItem>

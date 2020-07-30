@@ -45,10 +45,7 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
-        :hotkeys="['KeyT', 'KeyD']"
-        @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onRemoveUserFromTeam(contextUser)">
+        <BaseContextMenu ref="contextMenuUser" class="context-user">
         <!-- <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
         @keybind-r="$refs['userRow-'+contextUser.id][0].editName = true"
         @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
@@ -65,39 +62,41 @@
                     <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
                     <span><u>C</u>hange User Currency</span>
                 </div> -->
-                <div class="item" @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem iconClass="far fa-user-shield"
+                hotkey="KeyR"
+                @click="onEditUserRole(contextMouseEvent, contextUser)">
                     <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
-                    <span>Change <u>T</u>eam Role</span>
-                </div>
+                    <span>Change Team <u>R</u>ole</span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onRemoveUserFromTeam(contextUser)">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyD"
+                @click="onRemoveUserFromTeam(contextUser)">
                     <span><u>D</u>elete User from Team</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelectedUsers"
-        :hotkeys="['KeyT', 'KeyD']"
-        @keybind-c="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onRemoveUsersFromTeam(contextUser)"
-        @keybind-r="onRemoveUsersFromTeam(contextUser)">
+        <BaseContextMenu ref="contextMenuSelectedUsers">
         <template v-slot:header>
             <span>Choose action for {{selectedUsers.length}} users</span>
         </template>
         <template v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click.stop="onEditUserRole(slotProps.mouseEvent, selectedUsers[0])">
+                <BaseContextMenuItem iconClass="far fa-key" 
+                hotkey="KeyR"
+                @click="onEditUserRole(slotProps.mouseEvent, selectedUsers[0])">
                     <div class="icon-wrapper"><i class="far fa-key"></i></div>
-                    <span>Change <u>T</u>eam Roles</span>
-                </div>
+                    <span>Change Team <u>R</u>oles</span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onRemoveUsersFromTeam">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                hotkey="KeyD"
+                @click="onRemoveUsersFromTeam">
                     <span><u>D</u>elete Users from Team</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </template>
         </BaseContextMenu>

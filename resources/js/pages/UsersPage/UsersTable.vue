@@ -58,13 +58,7 @@
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
-        :hotkeys="['KeyC', 'KeyR', 'KeyP', 'KeyD']"
-        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
-        @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-p="contextUser.id == authUser.id && onSetUserPassword(contextMouseEvent, contextUser)"
-        @keybind-d="onDeleteUser(contextUser)"
-        >
+        <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- <div class="item-group"> -->
 
                 <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
@@ -81,25 +75,28 @@
                     <span><u>E</u>dit User Email</span>
                 </BaseContextMenuItem> -->
             <!-- </div> -->
-            <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin'" 
-                v-tooltip="authUserWorkspaceRole != 'Admin'
-                && 'Only admins can change currency of others.'"
-                @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
+            <div class="item-group" v-if="contextUser">
+                <BaseContextMenuItem iconClass="far fa-usd-circle" 
+                :disabled="authUserWorkspaceRole != 'Admin'" 
+                disabledTooltip="Only admins can change currency of others."
+                hotkey="KeyC"
+                @click="onEditUserCurrency(contextMouseEvent, contextUser)">
                     <span><u>C</u>hange <u>C</u>urrency</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
-                v-tooltip="authUserWorkspaceRole != 'Admin'
-                && 'Only admins can change workspace role'"
-                @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem iconClass="far fa-key" 
+                :disabled="authUserWorkspaceRole != 'Admin'" 
+                disabledTooltip="Only admins can change workspace role"
+                hotkey="KeyR"
+                @click="onEditUserRole(contextMouseEvent, contextUser)">
                     <span>Change Workspace <u>R</u>ole</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-lock" :disabled="contextUser.id != authUser.id" 
-                v-tooltip="contextUser.id != authUser.id 
-                && 'Can only set password of self'"
-                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem iconClass="far fa-lock" 
+                :disabled="contextUser.id != authUser.id" 
+                disabledTooltip="Can only set password of self"
+                hotkey="KeyP"
+                @click="onSetUserPassword(contextMouseEvent, contextUser)">
                     <span>Change <u>P</u>assword</span>
                 </BaseContextMenuItem>
                 <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
@@ -110,41 +107,42 @@
                 </BaseContextMenuItem> -->
             </div>
             <div class="item-group">
-                <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can remove users"
+                hotkey="KeyD"
                 @click="onDeleteUser(contextUser)">
                     <span><u>D</u>elete User from Workspace</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelectedUsers"
-        :hotkeys="['KeyC', 'KeyR', 'KeyD']"
-        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
-        @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onDeleteUsers">
+        <BaseContextMenu ref="contextMenuSelectedUsers">
             <template v-slot:header>
                 <span>Choose action for {{selectedUsers.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-times" 
+                    hotkey="KeyL"
                     @click="selectedUsers = []">
-                        <span>Clear Selection</span>
+                        <span>C<u>l</u>ear Selection</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
-                    && 'Can only set own currency. Only admins can change currency of others.'"
-                    @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
+                    <BaseContextMenuItem iconClass="far fa-usd-circle" 
+                    :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                    disabledTooltip="Can only set own currency. Only admins can change currency of others."
+                    hotkey="KeyC"
+                    @click="onEditUserCurrency(contextMouseEvent, contextUser)">
                         <span><u>C</u>hange <u>C</u>urrency</span>
                     </BaseContextMenuItem>
 
-                    <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
-                    v-tooltip="authUserWorkspaceRole != 'Admin'
-                    && 'Only admins can change workspace role'"
-                    @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                    <BaseContextMenuItem iconClass="far fa-key" 
+                    :disabled="authUserWorkspaceRole != 'Admin'" 
+                    disabledTooltip="Only admins can change workspace role"
+                    hotkey="KeyR"
+                    @click="onEditUserRole(contextMouseEvent, contextUser)">
                         <span>Change Workspace <u>R</u>ole</span>
                     </BaseContextMenuItem>
                 </div>

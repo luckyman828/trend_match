@@ -35,7 +35,7 @@
                     <template v-if="getSelectionsTree.length > 0">
                         <SelectionsTableRow v-for="selection in getSelectionsTree" :key="selection.id" :ref="'selection-row-'+selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                        :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
+                        :selectionToEdit="selectionToEdit"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                         @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"
@@ -52,7 +52,7 @@
                                     <span>Copy Setup From Existing File</span>
                                 </button>
                                 <button class="primary ghost lg"
-                                @click="onNewSelection()">
+                                @click="onNewSelection({type: 'Master'})">
                                     <i class="fas fa-plus"></i>
                                     <span>Manually add new Master Selection</span>
                                 </button>
@@ -69,43 +69,79 @@
                 <td>
                     <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
-                    @click="onNewSelection()">
+                    @click="onNewSelection({type: 'Master'})">
                         <i class="far fa-plus"></i><span>Add new: Master Selection</span>
                     </BaseButton>
                 </td>
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuSelection" class="context-selection"
-        :hotkeys="['KeyG', 'KeyR', 'KeyM', 'KeyC', 'KeyS', 'KeyD']"
-        @keybind-g="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})"
-        @keybind-r="selectionToEdit = {selection: contextSelection, field: 'name'}"
-        @keybind-m="$emit('showSelectionUsersFlyin', contextSelection)"
-        @keybind-c="onNewSelection(contextSelection)"
-        @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
-        @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
+        <BaseContextMenu ref="contextMenuSelection" class="context-selection">
             <div class="item-group" v-if="!!contextSelection">
                 <BaseContextMenuItem iconClass="far fa-users"
                 :disabled="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master'))"
-                v-tooltip="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')) 
-                && 'Selection is in presentation mode. To join the presentation login to the Kollekt mobile app'"
+                disabledTooltip="Selection is in presentation mode. To join the presentation login to the Kollekt mobile app"
+                hotkey="KeyG"
                 @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
                     <span><u>G</u>o to selection </span>
                 </BaseContextMenuItem>
             </div>
-            <div class="item-group">
-                <div class="item" @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+            <div class="item-group" v-if="!!contextSelection">
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                hotkey="KeyR"
+                @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
                     <u>R</u>ename
-                </div>
-                <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
+                </BaseContextMenuItem>
+                <!-- <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
                     <u>M</u>embers and Access
-                </div>
-                <div class="item" @click="onNewSelection(contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-plus"></i></div>
-                    <u>C</u>reate sub-selection
-                </div>
+                </div> -->
+                <BaseContextMenuItem iconClass="far fa-user-cog"
+                hotkey="KeyM"
+                @click="$emit('showSelectionUsersFlyin', contextSelection)">
+                    <u>M</u>embers and Access
+                </BaseContextMenuItem>
+
+                <!-- <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move folders'"
+                @click="onMoveFiles()">
+                    <span><u>M</u>ove to</span>
+                </BaseContextMenuItem> -->
+
+
+                <!-- <BaseContextMenuItem :hasSubMenu="true">
+
+                </BaseContextMenuItem> -->
+                <BaseContextMenuItem iconClass="far fa-plus"
+                hotkey="KeyC">
+                    <template>
+                        <span><u>C</u>reate sub-selection</span>    
+                    </template>
+                    
+
+                    <template v-slot:submenu>
+                        <div class="item-group">
+                            <BaseContextMenuItem iconClass="far fa-poll"
+                            hotkey="KeyN"
+                            @click="onNewSelection({parent: contextSelection, type: 'Normal'})">
+                                <span><u>N</u>ormal</span>
+                            </BaseContextMenuItem>
+
+                            <BaseContextMenuItem iconClass="far fa-crown"
+                            hotkey="KeyM"
+                            :disabled="contextSelection.type != 'Master'"
+                            disabledTooltip="Can only create Master sub-selections on another Master selection"
+                            @click="onNewSelection({parent: contextSelection, type: 'Master'})">
+                                <span><u>M</u>aster</span>
+                            </BaseContextMenuItem>
+                            <!-- <div class="item"
+                            @click.stop="onNewSelection(contextSelection, 'Master')">
+                                <div class="icon-wrapper"><i class="far fa-crown"></i></div>
+                                <span>Master</span>
+                            </div> -->
+                        </div>
+                    </template>
+                </BaseContextMenuItem>
                 <!-- <div class="item" v-if="contextSelection && !contextSelection.master"
                 @click="onMoveSelection(contextSelection, contextSelectionParent)">
                     <div class="icon-wrapper"><i class="far fa-file"><i class="fas fa-long-arrow-alt-right"></i></i></div>
@@ -113,42 +149,41 @@
                 </div> -->
             </div>
             <div class="item-group">
-                <div class="item" @click.stop="showSettingsContext(contextMouseEvent, contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-cog"></i></div>
+                <BaseContextMenuItem iconClass="far fa-cog"
+                hotkey="KeyS"
+                @click="showSettingsContext(contextMouseEvent, contextSelection)">
                     <u>S</u>ettings
-                </div>
+                </BaseContextMenuItem>
             </div>
-            <div class="item-group" @click="onDeleteSelection(contextSelection, contextSelectionParent)">
-                <div class="item">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyD"
+                @click="onDeleteSelection(contextSelection, contextSelectionParent)">
                     <u>D</u>elete selection
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuMove" class="context-move">
-            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)"
-            @click="endMoveSelection(contextSelection, contextSelectionComponent)">
-                <div class="item">
-                    <div class="icon-wrapper">
-                        <i class="far fa-arrow-left"></i>
-                    </div>
+            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)">
+                <BaseContextMenuItem iconClass="far fa-arrow-left"
+                hotkey="KeyM"
+                @click="endMoveSelection(contextSelection, contextSelectionComponent)">
                     <u>M</u>ove here
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group" v-else-if="contextSelectionComponent && selectionToMove">
-                <div class="item disabled">
-                    <div class="icon-wrapper">
-                        <i class="far fa-exclamation-circle"></i>
-                    </div>
-                    Cannot place inside self
-                </div>
+                <BaseContextMenuItem iconClass="far fa-exclamation-circle"
+                :disabled="true">
+                    <span>Cannot place inside self</span>
+                </BaseContextMenuItem>
             </div>
-            <div class="item-group" @click="clearMoveSelection">
-                <div class="item">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyC"
+                @click="clearMoveSelection">
                     <u>C</u>ancel
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
@@ -870,7 +905,7 @@ export default {
             // Position the contextual menu
             moveContext.show(e)
         },
-        async onNewSelection(parent) {
+        async onNewSelection({parent, type}) {
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
@@ -878,7 +913,7 @@ export default {
                 id: null,
                 file_id: this.currentFile.id,
                 name: '',
-                type: 'Master',
+                type,
                 currency: null,
                 user_count: 0,
                 team_count: 0,
@@ -896,7 +931,6 @@ export default {
                 // If we are creating a sbu selection
                 newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
-                newSelection.type = 'Normal'
                 newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
                 if (!parent.children) {
