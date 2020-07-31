@@ -43,6 +43,14 @@
     </div>
     <div class="bottom-nav">
         <div class="sidebar-item">
+              <div class="inner"
+              @click="SHOW_CHANGELOG(true)"
+              v-tooltip.right="displayTooltips && `What's new`">
+                    <i class="fas fa-gift"></i>
+                    <span>What's new</span>
+              </div>
+         </div>
+        <div class="sidebar-item">
           <a class="inner" @click="drawerExpanded = !drawerExpanded" v-tooltip.right="'Click for more options'">
               <i class="fas primary" :class="authUserWorkspaceRole == 'Admin' ? 'fa-crown' : 'fa-user'"></i>
               <span class="user">{{authUser.name}}</span>
@@ -86,6 +94,7 @@ export default {
   methods: {
      ...mapActions('auth', ['logout']),
     ...mapActions('workspaces', ['setCurrentWorkspaceIndex']),
+    ...mapMutations('changelog', ['SHOW_CHANGELOG']),
   }
 };
 </script>

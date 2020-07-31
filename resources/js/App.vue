@@ -14,6 +14,7 @@
         </div>
         <TheImageLightbox v-if="getLightboxIsVisible"/>
         <TheSnackbarSpawner/>
+        <TheChangelogModal v-if="getShowChangelog"/>
     </div>
     <div class="error-wrapper" v-else-if="error">
         <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo">
@@ -35,6 +36,7 @@ import TheNavbar from './components/layout/TheNavbar'
 // import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import TheImageLightbox from './components/layout/TheImageLightbox'
 import TheSnackbarSpawner from './components/layout/TheSnackbarSpawner'
+import TheChangelogModal from './components/layout/TheChangelogModal'
 import LoginPage from './pages/LoginPage/'
 
 export default{
@@ -45,6 +47,7 @@ export default{
         LoginPage,
         TheImageLightbox,
         TheSnackbarSpawner,
+        TheChangelogModal,
     },
     data: function() { return {
         error: false,
@@ -59,6 +62,7 @@ export default{
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
         ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
+        ...mapGetters('changelog', ['getShowChangelog']),
     },
     watch : {
         // Watch for changes to the authStatus
