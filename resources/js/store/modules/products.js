@@ -1130,6 +1130,16 @@ export default {
                         return totalQty
                     },
                 })
+                // Get the user's quantity
+                Object.defineProperty(selectionInput, 'your_quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            totalQty += variant.your_quantity
+                        })
+                        return totalQty
+                    },
+                })
                 // Get total
                 Object.defineProperty(selectionInput, 'totalQuantity', {
                     get: function() {
@@ -1199,6 +1209,7 @@ export default {
                                     feedbacks.push({
                                         id: variantFeedback.id,
                                         action: variantFeedback.feedback,
+                                        quantity: variantFeedback.quantity,
                                         user_id: feedback.user_id,
                                         user: feedback.user,
                                         selection_id: feedback.selection_id,
@@ -1212,7 +1223,9 @@ export default {
                     // Get the user's feedback
                     Object.defineProperty(variant, 'your_feedback', {
                         get: function() {
-                            const userFeedback = variant.feedbacks.find(x => x.user_id == authUser.id)
+                            const userFeedback = variant.feedbacks.find(
+                                x => x.user_id == authUser.id && x.selection_id == selectionInput.selection_id
+                            )
                             return userFeedback ? userFeedback.action : 'None'
                         },
                         set: function(newAction) {
@@ -1228,11 +1241,13 @@ export default {
                                 userFeedback.variants.splice(userVariantFeedbackIndex, 1, {
                                     feedback: newAction,
                                     id: variant.id,
+                                    quantity: variant.your_quantity,
                                 })
                             } else {
                                 userFeedback.variants.push({
                                     feedback: newAction,
                                     id: variant.id,
+                                    quantity: variant.your_quantity,
                                 })
                             }
                         },
@@ -1313,6 +1328,38 @@ export default {
                                 currentAction.variants.push({
                                     id: variant.id,
                                     feedback: variant.action,
+                                    quantity: newQuantity,
+                                })
+                            }
+                        },
+                    })
+                    // Get the user's feedback quantity
+                    Object.defineProperty(variant, 'your_quantity', {
+                        get: function() {
+                            const userFeedback = variant.feedbacks.find(
+                                x => x.user_id == authUser.id && x.selection_id == selectionInput.selection_id
+                            )
+                            return userFeedback ? userFeedback.quantity : 0
+                        },
+                        set: function(newQuantity) {
+                            // Find the current action for the variant input for this action action
+                            const userFeedback = selectionInput.feedbacks.find(
+                                feedback =>
+                                    feedback.user_id == authUser.id &&
+                                    feedback.selection_id == selectionInput.selection_id
+                            )
+                            // If the user has already made variant input, update the action
+                            const currentVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantFeedbackIndex >= 0) {
+                                userFeedback.variants.splice(currentVariantFeedbackIndex, 1, {
+                                    id: variant.id,
+                                    feedback: variant.your_feedback,
+                                    quantity: newQuantity,
+                                })
+                            } else {
+                                userFeedback.variants.push({
+                                    id: variant.id,
+                                    feedback: variant.your_feedback,
                                     quantity: newQuantity,
                                 })
                             }
@@ -1400,7 +1447,6 @@ export default {
                             if (variant.action == 'None') {
                                 variant.action = newAction
                             }
-                            // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction
                                 variant.quantity = 0
@@ -1451,6 +1497,7 @@ export default {
                             // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
+                                variant.your_quantity = 0
                             }
                         })
                     }

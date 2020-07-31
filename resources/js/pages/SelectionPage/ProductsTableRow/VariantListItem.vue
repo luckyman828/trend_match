@@ -15,7 +15,7 @@
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="showQty">{{variant.quantity}}</span>
+                        <span v-if="showQty">{{variant[currentQty]}}</span>
                     </div>
                 </div>
             </div>
@@ -89,6 +89,7 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
+            currentQty: 'getCurrentSelectionModeQty',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
         }),

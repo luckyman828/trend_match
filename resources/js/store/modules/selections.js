@@ -68,7 +68,7 @@ export default {
             return (
                 getters.currentSelection &&
                 getters.currentSelection.budget > 0 &&
-                getters.currentSelectionMode == 'Alignment'
+                getters.currentSelectionMode != 'Approval'
             )
         },
         currentSelectionMode: (state, getters) => {
@@ -94,6 +94,8 @@ export default {
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
+        getCurrentSelectionModeQty: (state, getters) =>
+            getters.currentSelectionMode == 'Feedback' ? 'your_quantity' : 'quantity',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
         getSelectionById: state => id => state.selections.find(x => x.id == id),
         getCurrentSelectionById: state => id => state.currentSelections.find(x => x.id == id),
