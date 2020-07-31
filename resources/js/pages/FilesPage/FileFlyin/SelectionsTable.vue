@@ -2,7 +2,7 @@
     <div class="selections-table">
         <BaseFlexTable class="flex-table-root"
         :contentStatus="readyStatus"
-        loadingMsg="loading selections"
+        :loadingMsg="loadingMsg"
         errorMsg="error loading selections"
         :errorCallback="() => initData()">
             <template v-slot:topBar>
@@ -716,7 +716,8 @@ export default {
                 value: 'None',
                 label: 'No one'
             },
-        ]
+        ],
+        cloningSetup: false,
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
@@ -728,8 +729,12 @@ export default {
         },
         readyStatus() {
             if (this.getSelectionsStatus == 'error') return 'error'
-            if (this.getSelectionsStatus == 'loading') return 'loading'
+            if (this.getSelectionsStatus == 'loading' || this.cloningSetup) return 'loading'
             return 'success'
+        },
+        loadingMsg() {
+            if (this.cloningSetup) return 'Cloning selections'
+            return 'Loading selections'
         }
     },
     watch: {
@@ -742,7 +747,7 @@ export default {
         'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
         'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
-        ...mapActions('files', ['fetchAllFiles']),
+        ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
         initData(forceRefresh) {
             if (forceRefresh || this.getCurrentFileChanged || (this.getSelectionsStatus != 'success' && this.getSelectionsStatus != 'loading')) {
@@ -979,24 +984,29 @@ export default {
             contextMenu.show(e)
         },
         async onClone(file) {
+            this.cloningSetup = true
+            await this.cloneFileSelections({destination: this.currentFile, from: file})
+            this.cloningSetup = false
+            // Force refresh the data, to fetch the cloned selections
+            this.initData(true)
             // Clone selections and their users to the new file
             // Fetch file selections
-            const selections = await this.fetchSelections({fileId: file.id, addToState: false})
-            // We have to copy the selection structure as well
-            // This means we have to insert one level of selections at a time
-            // Transform the selections into a tree structure 
-            const selectionTree = await this.createSelectionTree(selections)
+            // const selections = await this.fetchSelections({fileId: file.id, addToState: false})
+            // // We have to copy the selection structure as well
+            // // This means we have to insert one level of selections at a time
+            // // Transform the selections into a tree structure 
+            // const selectionTree = await this.createSelectionTree(selections)
             
-            // Loop through all selections and upload them
-            for (const rootSelection of selectionTree) {
-                await this.cloneSelectionTree(rootSelection)
-            }
-            // Update the settings of all the newly created selection to sync relationsships
-            const newSelectionTree = this.getSelectionsTree
-            console.log('end for. New selections:', newSelectionTree)
-            for (const rootSelection of newSelectionTree) {
-                this.syncSelectionTreeSettings(rootSelection)
-            }
+            // // Loop through all selections and upload them
+            // for (const rootSelection of selectionTree) {
+            //     await this.cloneSelectionTree(rootSelection)
+            // }
+            // // Update the settings of all the newly created selection to sync relationsships
+            // const newSelectionTree = this.getSelectionsTree
+            // console.log('end for. New selections:', newSelectionTree)
+            // for (const rootSelection of newSelectionTree) {
+            //     this.syncSelectionTreeSettings(rootSelection)
+            // }
         },
         async cloneSelectionTree(selection) {
             // Recursive function that calls itself for all children of a selection until there are no more children
