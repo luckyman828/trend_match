@@ -535,6 +535,17 @@ export default {
                 resolve()
             })
         },
+        async cloneFileSelections({ commit }, { destination, from }) {
+            const apiUrl = `/files/clone-selections`
+            await axios
+                .post(apiUrl, {
+                    from_file_id: from.id,
+                    to_file_id: destination.id,
+                })
+                .then(response => {
+                    console.log('file selections cloned', response)
+                })
+        },
     },
 
     mutations: {
