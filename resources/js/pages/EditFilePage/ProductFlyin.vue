@@ -522,7 +522,7 @@ export default {
             }
         },
         onSubmitField() {
-            console.log('on submit field')
+            if (!this.product.datasource_id)return
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
