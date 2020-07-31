@@ -284,6 +284,7 @@ export default {
             // Add a header for each selection to export
             const rows = []
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
 
                 let productPrice = {}
                 if (product.prices && product.prices.length > 0) {
@@ -294,10 +295,10 @@ export default {
                     }
                 }
 
-                product.variants.forEach(variant => {
+                selectionInput.variants.forEach(variant => {
                     const rowToPush = this.getDefaultProductRowData(product).concat([
-                        product.quantity,
-                        product.quantity * productPrice.wholesale_price,
+                        selectionInput.quantity,
+                        selectionInput.quantity * productPrice.wholesale_price,
                         variant.totalQuantity,
                         variant.totalQuantity * productPrice.wholesale_price,
                         variant.quantity,
@@ -433,6 +434,7 @@ export default {
             const rows = []
 
             this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
 
                 let productPrice = {}
                 if (product.prices && product.prices.length > 0) {
@@ -443,11 +445,11 @@ export default {
                     }
                 }
 
-                product.variants.forEach(variant => {
+                selectionInput.variants.forEach(variant => {
                     const rowToPush = this.getDefaultProductRowData(product).concat([
                         variant.name,
-                        product.quantity,
-                        product.quantity * productPrice.wholesale_price,
+                        selectionInput.quantity,
+                        selectionInput.quantity * productPrice.wholesale_price,
                         variant.totalQuantity,
                         variant.totalQuantity * productPrice.wholesale_price
                     ])
