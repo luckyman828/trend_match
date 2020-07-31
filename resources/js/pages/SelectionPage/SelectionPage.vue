@@ -156,7 +156,7 @@ export default{
                     this.updateFeedbacks({actions: this.productsNoOutNoComment.map(product => this.getActiveSelectionInput(product).yourSelectionFeedback), newAction: 'In'})
                 }
                 if (this.currentSelectionMode == 'Alignment') {
-                    this.updateActions({actions: this.productsNoOutNoComment.map(product => this.getActiveSelectionInput(product).yourSelectionFeedback), newAction: 'In'})
+                    this.updateActions({actions: this.productsNoOutNoComment.map(product => this.getActiveSelectionInput(product).selectionAction), newAction: 'In'})
                 }
             }
         },
@@ -166,7 +166,7 @@ export default{
                     this.updateFeedbacks({actions: this.productsNoIn.map(product => this.getActiveSelectionInput(product).yourSelectionFeedback), newAction: 'Out'})
                 }
                 if (this.currentSelectionMode == 'Alignment') {
-                    this.updateActions({actions: this.productsNoIn.map(product => this.getActiveSelectionInput(product).yourSelectionFeedback), newAction: 'Out'})
+                    this.updateActions({actions: this.productsNoIn.map(product => this.getActiveSelectionInput(product).selectionAction), newAction: 'Out'})
                 }
             }
         },

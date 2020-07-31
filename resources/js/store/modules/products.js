@@ -1378,6 +1378,7 @@ export default {
             state.lastSort = { method, key }
         },
         UPDATE_ACTIONS(state, { actions, newAction, user }) {
+            console.log('UPDATE_ACTIONS', actions)
             // DESC: Sets all actions to the value of new action
             actions.forEach(action => {
                 // Find the actions product
