@@ -2,7 +2,11 @@
     <tr class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive}"
     @contextmenu.prevent="$emit('showContextMenu', $event, team)"
     @click.ctrl="$refs.selectBox.check()">
-        <td class="select"><BaseCheckbox ref="selectBox" :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"/></td>
+        <td class="select">
+            <BaseCheckbox ref="selectBox" :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"
+            @checkRange="$emit('selectRange')"
+            />
+        </td>
         <td v-if="editTitle" class="title">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"

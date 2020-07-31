@@ -181,7 +181,7 @@ export default {
                 .catch(err => {
                     success = false
                     // Re-add the team
-                    commit('INSERT_TEAM', team)
+                    commit('INSERT_OR_UPDATE_TEAM', team)
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',

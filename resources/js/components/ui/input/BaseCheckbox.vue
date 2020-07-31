@@ -2,6 +2,7 @@
     <div class="checkbox" :class="{'disabled': disabled}">
         <input ref="checkbox" type="checkbox" tabindex="-1" :value="value" 
         :checked="shouldBeChecked" :disabled="disabled"
+        @click.shift="shiftClicked = true"
         @change="updateInput">
         <span class="checkmark solid"><i class="fas fa-check"></i></span>
     </div>
@@ -19,6 +20,9 @@ export default {
         'modelValue',
         'disabled'
     ],
+    data: function() { return {
+        shiftClicked: false,
+    }},
     computed: {
         shouldBeChecked() {
             if (this.value != null || this.modelValue) {
@@ -35,6 +39,13 @@ export default {
             this.$refs.checkbox.click()
         },
         updateInput(e) {
+            console.log('do selecting stuff', this.shiftClicked)
+            if (this.shiftClicked) {
+                console.log('no dont actually')
+                this.$emit('checkRange')
+                this.shiftClicked = false
+                return
+            }
             const isChecked = e.target.checked
 
             if (Array.isArray(this.modelValue)) {
@@ -51,7 +62,6 @@ export default {
             else {
                 this.$emit('change', isChecked)
             }
-
         }
     }
 }

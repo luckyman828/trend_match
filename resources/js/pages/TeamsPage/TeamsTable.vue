@@ -32,9 +32,10 @@
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
-                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="team in teamsFilteredBySearch" :key="team.id" :team="team" :contextTeam="contextTeam"
+                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teamsFilteredBySearch" :key="team.id" :team="team" :contextTeam="contextTeam"
                 @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
-                @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"/>
+                @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"
+                @selectRange="selectRange(index, teams, selectedTeams)"/>
             </template>
             <template v-slot:footer>
                 <td>
@@ -153,6 +154,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TeamsTableRow from './TeamsTableRow'
 import TeamFlyin from './TeamFlyin'
 import sortArray from '../../mixins/sortArray'
+import selectRange from '../../mixins/selectRange'
 
 export default {
     name: 'teamsTable',
@@ -160,7 +162,8 @@ export default {
         'authUser',
     ],
     mixins: [
-        sortArray
+        sortArray,
+        selectRange,
     ],
     components: {
         TeamsTableRow,
@@ -306,10 +309,13 @@ export default {
         },
         async onDeleteTeams() {
             if (await this.$refs.confirmDeleteMultipleTeams.confirm()) {
-                this.selectedTeams.forEach(team => {
+                for (let i = this.selectedTeams.length -1; i >= 0; i--) {
+                    const team = this.selectedTeams[i]
+                    console.log('delete this team', team.name)
                     this.deleteTeam(team)
-                    this.selectedTeams = []
-                })
+                }
+                console.log('reset selected teams')
+                this.selectedTeams = []
             }
         },
         onUpdateTeamsCurrency() {
