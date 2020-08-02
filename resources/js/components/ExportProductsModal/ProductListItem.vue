@@ -30,7 +30,7 @@
                         <div class="img-wrapper" style="position: relative; padding-top: 133.3333%;
                         border: solid 2px; height: 0; width: 100%; margin-bottom: 8px;
                         background-size: contain; background-position: center; background-repeat: no-repeat;"
-                        :style="{backgroundImage: `url(${variantImage(product.variants[0], 'sm')})`}">
+                        :style="{backgroundImage: `url(${variantImage(product.variants[0], {size: 'sm'})})`}">
                         </div>
                     </div>
                     <table class="prices">

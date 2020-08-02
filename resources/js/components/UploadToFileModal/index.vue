@@ -21,9 +21,12 @@
             :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
             :assortmentsToMatch="assortmentsToMatch" :replaceAssortments="replaceAssortments"
             :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
+            :variantFieldsToMatch="variantFieldsToMatch"
+            :variantImagesToMap="variantImagesToMap"
             @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
             @addCurrency="addCurrency" @removeCurrency="removeCurrency"
-            @addAssortment="addAssortment" @removeAssortment="removeAssortment"/>
+            @addAssortment="addAssortment" @removeAssortment="removeAssortment"
+            @addVariantImage="addVariantImage" @removeVariantImage="removeVariantImage"/>
         </template>
 
     </BaseModal>
@@ -101,17 +104,25 @@ export default {
             headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
-            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
-            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
-            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['eans','ean','variant ean','style ean', 'ean_no']},
             {name: 'buying_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['buyer group','buyer','pricelist', 'buying group']},
         ],
+        variantFieldsToMatch: [
+            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
+            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['sizes','variant sizes','size','variant size']},
+        ],
+        variantImagesToMap: [
+            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
+        ],
+        variantImageDefaultObject: {
+            name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']
+        },
         currencyDefaultObject: {
             currencyName: '',
             nameError: null,
@@ -330,6 +341,12 @@ export default {
         removeCurrency(index) {
             this.currenciesToMatch.splice(index, 1)
         },
+        addVariantImage() {
+            this.variantImagesToMap.push(JSON.parse(JSON.stringify(this.variantImageDefaultObject)))
+        },
+        removeVariantImage(index) {
+            this.variantImagesToMap.splice(index, 1)
+        },
         addAssortment() {
             this.assortmentsToMatch.push(JSON.parse(JSON.stringify(this.assortmentDefaultObject)))
         },
@@ -463,7 +480,7 @@ export default {
                         let variant = null
                         if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
                             // Find / Instantiate this lines variant
-                            let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
+                            let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'variant_name')
                             // Check that the variant key is from this file
                             if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
                                 // Find the variant keys index
@@ -477,6 +494,8 @@ export default {
                                         id: this.$uuid.v4(),
                                         name: variantKeyValue,
                                         image: null,
+                                        images: [],
+                                        pictures: [],
                                         sizes: []
                                     }
                                     product.variants.push(variant)
@@ -584,9 +603,8 @@ export default {
                              
                         // FIELDS
                         // Loop thorugh our fields to match, and check if they are matched to the current file
-                        this.fieldsToMatch.forEach(field => {
-                            // Check that the field has not been disabled
-                            if (field.newValue.fileIndex == fileIndex) {
+                        this.variantFieldsToMatch.forEach(field => {
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
                                 const fieldName = field.name
 
@@ -603,13 +621,57 @@ export default {
                                             if (!arrayValueExists) {
                                                 variant[fieldName].push(fieldValue)
                                             }
-                                        } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
+                                        }
+                                        else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
                                             variant[fieldName] = fieldValue
                                         }
                                     }
                                 }
+                            }
+                        })
+
+                        this.variantImagesToMap.forEach(field => {
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+                                if (variant) {
+                                    if (fieldValue && !variant.pictures.find(x => x.url == fieldValue)) {
+                                        variant.pictures.push({
+                                            name: null,
+                                            url: fieldValue
+                                        })
+                                    }
+                                }
+                            }
+                        })
+
+                        // // Variants
+                        //         if (['variant_name','image','sizes'].includes(fieldName)) {
+                        //             // Check if we have matched a variant for this line
+                        //             if (variant) {
+                        //                 // If the variant exists, add the field value to it
+                        //                 // Check if the field is an array, because then it should be added to the sizes array
+                        //                 if (Array.isArray(variant[fieldName])) {
+                        //                     // Only push the value if it does not already exists
+                        //                     let arrayValueExists = variant[fieldName].includes(fieldValue)
+                        //                     if (!arrayValueExists) {
+                        //                         variant[fieldName].push(fieldValue)
+                        //                     }
+                        //                 } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
+                        //                     variant[fieldName] = fieldValue
+                        //                 }
+                        //             }
+                        //         }
+
+                        this.fieldsToMatch.forEach(field => {
+                            // Check that the field has not been disabled
+                            if (field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+
+                                // Check for special case fields that need to be added to objects in json fields
                                 // Assortments
-                                else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
+                                if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
                                     // Check if we have matched an assortment for this line
                                     if (assortment) {
                                         // If the assortment exists, add the field value to it
@@ -706,7 +768,7 @@ export default {
             if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
                 this.submitStatus = 'Uploading images. This may take a while'
                 await this.syncExternalImages({file: this.currentFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
-                    console.log('uploadImages error', err)
+                    // console.log('uploadImages error', err)
                     imageUploadSuccess = false
                     this.SHOW_SNACKBAR({ 
                         msg: `<p><strong>Hey you!</strong><br></p>
@@ -755,13 +817,15 @@ export default {
             <strong>${progress}%</strong> done.`
         },
         reset() {
+            // this.$router.go()
             this.availableFiles = []
             this.filesToUpload = []
             this.singleCurrencyFile = false
             this.currentScreenIndex = 0
             this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
             // Reset fields to match
-            this.allFields.forEach(field => {
+            this.allFields.concat(this.variantFieldsToMatch).forEach(field => {
                 field.enabled = true
                 field.error = false
                 field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}

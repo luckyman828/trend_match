@@ -3,7 +3,7 @@
         <div class="variant">
             <div class="img-wrapper">
                 <!-- <img :src="variantImage(variant,'sm')"> -->
-                <BaseVariantImg :variant="variant" size="sm"/>
+                <BaseVariantImg :variant="variant" size="sm" :index="variant.imageIndex"/>
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="pill ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
@@ -15,7 +15,7 @@
                 <div class="quantity-progress" v-if="showQty" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
             </div>
             <div class="color-wrapper">
-                <div class="circle-img"><img :src="variantImage(variant, 'sm')"></div>
+                <div class="circle-img"><img :src="variantImage(variant, {size: 'sm'})"></div>
                 <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
             </div>
         </div>

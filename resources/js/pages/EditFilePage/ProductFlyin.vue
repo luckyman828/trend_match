@@ -53,8 +53,10 @@
                                         <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
-                                <img v-if="variant.image || variant.blob_id"  :key="`image-${variant.id ? variant.id : index}`"
-                                :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
+                                <img v-if="variant.currentImg.url != null"  
+                                :key="`image-${variant.id ? variant.id : index}`"
+                                :src="variantImage(variant, {index: variant.imageIndex})" 
+                                :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
                                         <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -75,9 +77,33 @@
                                 </div>
                             </div>
                             <div class="controls">
-                                <button @click="showVariantContext($event, index)">
+                                <button class="white"
+                                @click="showVariantContext($event, index)">
                                     <i class="fas fa-ellipsis-h"></i>
                                 </button>
+                            </div>
+                            <div class="image-drawer">
+                                <div class="square white trigger">
+                                    <i class="far fa-images"></i>
+                                    <div class="count circle xxs dark" v-if="variant.pictures.length > 1">
+                                        <span>{{variant.pictures.length}}</span>
+                                    </div>
+                                </div>
+                                <!-- <div class="drawer"> -->
+                                    <Draggable v-model="variant.pictures" class="drawer"
+                                    @start="onVariantPictureDragStart"
+                                    @end="onVariantPictureDragEnd($event, variant)">
+                                        <div class="image-wrapper" v-for="(image, index) in variant.pictures" :key="index"
+                                        :class="{'active': variant.imageIndex == index}">
+                                            <BaseVariantImg :variant="variant" size="sm" :index="index"
+                                            @click.native="variant.imageIndex = index"/>
+                                        </div>
+                                        <button class="md"
+                                        @click="onAddImageToVariant(variant)">
+                                            <i class="far fa-plus"></i>
+                                        </button>
+                                    </Draggable>
+                                <!-- </div> -->
                             </div>
                         </div>
                         <!-- Variant Name -->
@@ -311,10 +337,15 @@
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                        <BaseContextMenuItem iconClass="far fa-trash-alt"
                         hotkey="KeyD"
                         @click="removeVariant(contextVariantIndex)">
-                            <u>D</u>elete
+                            <u>D</u>elete variant 
+                        </BaseContextMenuItem>
+                        <BaseContextMenuItem iconClass="far fa-trash-alt"
+                        hotkey="KeyP"
+                        @click="removePicture(contextVariantIndex)">
+                            <span>Delete <u>p</u>icture</span>
                         </BaseContextMenuItem>
                     </div>
                 </template>
@@ -342,11 +373,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 import axios from 'axios'
+import variantImage from '../../mixins/variantImage'
 
 export default {
     name: 'editProductFlyin',
     props: [
         'show',
+    ],
+    mixins: [
+        variantImage
     ],
     components: {
         Draggable
@@ -374,6 +409,7 @@ export default {
         contextVariantIndex: null,
         idError: null,
         contextPrice: null,
+        draggingVariantPicture: false,
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -457,7 +493,8 @@ export default {
         },
         initProduct() {
             // Make a copy of the product, so we can check for changes compared to the original
-            this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+            const productClone = JSON.parse(JSON.stringify(this.currentProduct))
+            this.productToEdit = productClone
             this.initProducts([this.productToEdit])
 
             // Check if the product has any currencies, else add a default currency
@@ -470,15 +507,15 @@ export default {
             if (variants.length <= 0) {
                 this.onAddVariant()
             }
+            variants.map(variant => {
+                if (variant.pictures.length <= 0) {
+                    this.onAddImageToVariant(variant)
+                }
+            })
         },
         showVariantContext(e, index) {
             this.contextVariantIndex = index
             this.$refs.contextVariant.show(e)
-        },
-        variantImg (variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
         },
         addCurrency() {  
             this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
@@ -503,13 +540,27 @@ export default {
             this.$emit('closeSingle')
         },
         onAddVariant() {
-            this.product.variants.push({
+            const newVariant = {
                 id: this.$uuid.v4(),
                 name: null,
                 image: null,
                 blob_id: null,
                 sizes: null,
+                images: [],
+                pictures: [{
+                    url: null,
+                    name: 'New image'
+                }],
+                imageIndex: 0,
+            }
+
+            Object.defineProperty(newVariant, 'currentImg', {
+                get: function() {
+                    return newVariant.pictures[newVariant.imageIndex]
+                },
             })
+
+            this.product.variants.push(newVariant)
         },
         removeVariant(index) {
             // Remove the variant from the product
@@ -522,7 +573,9 @@ export default {
             }
         },
         onSubmitField() {
-            if (!this.product.datasource_id)return
+            // Don't update the product if it hasn't been assigned a datasource id yet
+            if (!this.productToEdit.datasource_id) return
+            
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
@@ -570,7 +623,7 @@ export default {
                     await this.uploadImage({
                         file: this.currentFile, 
                         product: productToEdit,
-                        variant: editVariant,
+                        picture: editVariant.currentImg,
                         image: variant.imageToUpload.file, 
                     }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
                         // Remove the image to upload
@@ -636,11 +689,18 @@ export default {
             }
         },
         dragActive(e, index) {
+            // console.log('drag active', e, e.relatedTarget.closest('.drawer'))
+            // If we are dragging an image from the drawer, don't trigger dragging
+            if (this.draggingVariantPicture) return
+            if (e.target.classList.contains('.image-drawer') || e.relatedTarget && e.relatedTarget.closest('.drawer')) {
+                return
+            }
             // e.target.querySelector('.drop-area').classList.add('drag')
             this.dragActiveIndex = index
             this.dragCounter++
         },
         dragLeave(e) {
+            if (this.draggingVariantPicture) return
             this.dragCounter--
             if (this.dragCounter == 0) {
                 this.dragActiveIndex = null
@@ -648,6 +708,7 @@ export default {
             // e.target.querySelector('.drop-area').classList.remove('drag')
         },
         dragDrop() {
+            if (this.draggingVariantPicture) return
             this.dragActiveIndex = null
             this.dragCounter = 0
         },
@@ -670,12 +731,12 @@ export default {
                 const fileReader = new FileReader()
                 fileReader.readAsDataURL(file)
                 fileReader.onload = (e) => {
+
                     // Show the new image on the variant
+
                     const newImage = e.target.result
                     variant.image = newImage
-                    // Set the blob_id to null, to we know to show the new image instead.
-                    // The blob_id will be set again if we upload the image
-                    variant.blob_id = null
+                    variant.currentImg.url = newImage
                 }
             } else {
                 // Throw error
@@ -747,6 +808,7 @@ export default {
         },
         async setVariantImageURL(variant, imageURL) {
             variant.image = imageURL
+            variant.currentImg.url = imageURL
             await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
             // const image = await this.getImageFromURL(imageURL)
             // if (image) {
@@ -754,6 +816,35 @@ export default {
             // }
             
         },
+        onAddImageToVariant(variant) {
+            variant.pictures.push({url: null, name: 'New image'})
+            variant.imageIndex = variant.pictures.length -1
+        },
+        onVariantPictureDragStart(e, variant) {
+            this.draggingVariantPicture = true
+        },
+        onVariantPictureDragEnd(e, variant) {
+            this.draggingVariantPicture = false
+            // If the dragged picture was the currently active picture set the active picture index to the pictures new index
+            // I.e. keep the same picure as the active one even after dragging
+            if (e.oldIndex == variant.imageIndex) {
+                variant.imageIndex = e.newIndex
+                return
+            }
+            // Keep the same position when the active picture gets "bumped"
+            if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
+            if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
+        },
+        removePicture(index) {
+            const variant = this.product.variants[index]
+            if (variant.imageIndex > 0 && variant.imageIndex == variant.pictures.length -1) {
+                variant.imageIndex--
+            }
+            variant.pictures.splice(variant.imageIndex, 1)
+            if (variant.pictures.length <= 0) {
+                this.onAddImageToVariant(variant)
+            }
+        }
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)
@@ -954,10 +1045,11 @@ export default {
             > .controls {
                 position: absolute;
                 z-index: 1;
-                right: 4px;
+                left: 4px;
                 top: 4px;
                 opacity: 0;
                 transition: .3s;
+                border: $borderElSoft;
             }
             &:hover .controls {
                 opacity: 1;
@@ -1001,6 +1093,72 @@ export default {
     .form-element {
         &:not(:last-child) {
             margin-bottom: 16px;
+        }
+    }
+
+    .image-drawer {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        padding: 4px;
+        border: $borderElSoft;
+        border-radius: $borderRadiusEl;
+        border-color: transparent;
+        z-index: 1;
+        &:hover, &.hover {
+            background: white;
+            border-color: $borderColorEl;
+            box-shadow: $shadowEl;
+            .drawer {
+                display: block;
+            }
+            .trigger {
+                display: none;
+            }
+        }
+        .trigger {
+            border: $borderElSoft;
+            margin-right: -4px;
+            margin-top: -4px;
+            position: relative;
+            .count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                height: 16px;
+                width: 16px;
+                font-size: 10px;
+            }
+        }
+        .drawer {
+            display: none;
+            overflow-y: auto;
+            max-height: 200px;
+            >:not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        >:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        .image-wrapper {
+            width: 36px;
+            height: 36px;
+            border: $borderElSoft;
+            border-radius: $borderRadiusEl;
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+            }
+            &.active {
+                border: solid 2px $primary;
+                cursor: default;
+            }
         }
     }
 </style>
