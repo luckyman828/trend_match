@@ -85,7 +85,7 @@
                             <div class="image-drawer">
                                 <div class="square white trigger">
                                     <i class="far fa-images"></i>
-                                    <div class="count circle xxs dark" v-if="variant.pictures.length > 0">
+                                    <div class="count circle xxs dark" v-if="variant.pictures.length > 1">
                                         <span>{{variant.pictures.length}}</span>
                                     </div>
                                 </div>
