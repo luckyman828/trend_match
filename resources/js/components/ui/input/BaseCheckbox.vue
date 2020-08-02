@@ -39,9 +39,7 @@ export default {
             this.$refs.checkbox.click()
         },
         updateInput(e) {
-            console.log('do selecting stuff', this.shiftClicked)
             if (this.shiftClicked) {
-                console.log('no dont actually')
                 this.$emit('checkRange')
                 this.shiftClicked = false
                 return

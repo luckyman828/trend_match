@@ -57,7 +57,7 @@
                         <i class="far fa-search-plus"></i>
                     </button>
 
-                    <div class="image-drawer" v-if="currentVariant.pictures.length > 1">
+                    <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
                         <div class="square white trigger">
                             <i class="far fa-images"></i>
                             <div class="count circle xxs dark">

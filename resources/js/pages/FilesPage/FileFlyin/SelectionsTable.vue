@@ -930,6 +930,8 @@ export default {
                 completed_at: null,
                 your_role: null,
                 is_presenting: null,
+                budget: 0,
+                budget_spend: 0,
             }
             // Push new selection to the parent
             if (parent) {
