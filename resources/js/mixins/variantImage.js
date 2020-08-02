@@ -5,8 +5,12 @@ export default {
             if (!variant || !variant.pictures || variant.pictures.length <= 0) return urlToReturn
 
             if (variant.pictures && variant.pictures.length > 0) {
-                if (index) urlToReturn = variant.pictures[index].url
-                else urlToReturn = variant.pictures[0].url
+                let pictureUrlToReturn = urlToReturn
+                if (index) pictureUrlToReturn = variant.pictures[index].url
+                else pictureUrlToReturn = variant.pictures[0].url
+
+                if (!pictureUrlToReturn) return urlToReturn
+                urlToReturn = pictureUrlToReturn
             }
 
             if (size) {
