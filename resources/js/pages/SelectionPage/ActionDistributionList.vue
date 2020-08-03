@@ -50,6 +50,7 @@
                     <span class="main">{{action.user ? action.user.name : 'Anonymous'}}</span>
                     <span class="sub">{{action.selection ? action.selection.name : 'Unknown'}}</span>
                 </td>
+                <td v-if="displayQty" style="text-align: right;">{{action.quantity}}</td>
             </tr>
 
             <tr v-if="feedbackActions.length <= 0">
