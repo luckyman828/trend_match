@@ -972,6 +972,18 @@ export default {
                 commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
             }
         },
+        async sendFileSelectionLink({ commit, dispatch }, { file }) {
+            // Do something
+            console.log('Send selection link for file!', file)
+        },
+        async sendSelectionLink({ commit, dispatch }, { selectionList }) {
+            // Do something
+            console.log('Send selection link!', selectionList)
+        },
+        async sendLinkToSelectionUsers({ commit, dispatch }, { selection, users }) {
+            // Do something
+            console.log('Send selection link to selection users!', selection, users)
+        },
     },
 
     mutations: {

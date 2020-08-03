@@ -15,24 +15,37 @@
                             <span>{{file.owner_count || 0}} File owners</span>
                         </button> -->
 
+                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
+                        v-tooltip="'Send a link to all selection members of this file'"
+                        @click="onSendMagicLinkToAll">
+                            <template v-if="!fileSelectionMagicLinkSent">
+                                <i class="far fa-paper-plane"></i>
+                                <span>Send link</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check"></i>
+                                <span>Link sent</span>
+                            </template>
+                        </BaseButton>
+
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can hide/unhide selections"
                         @click="onToggleAllSelectionsLocked">
                         <i class="far fa-lock"></i>
-                            <span>Lock/Undlock all selections</span>
+                            <span>Lock/Undlock all</span>
                         </BaseButton>
                         
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can lock/unlock selections"
                         @click="onToggleAllSelectionsVisibility">
                             <i class="far fa-eye"></i>
-                            <span>Hide/Show all selections</span>
+                            <span>Hide/Show all</span>
                         </BaseButton>
 
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can edit files"
                         @click="goToEditSingle">
-                            <span>View / Edit products</span>
+                            <span>Edit products</span>
                         </BaseButton>
                     </div>
                 </template>
@@ -64,7 +77,8 @@ export default {
         SelectionsTable,
         SelectionUsersFlyin,
     },
-    data: function(){ return {
+    data: function() { return {
+        fileSelectionMagicLinkSent: false
     }},
     watch: {
     },
@@ -82,7 +96,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['updateSelection']),
+        ...mapActions('selections', ['updateSelection', 'sendFileSelectionLink']),
         ...mapMutations('files', ['SET_CURRENT_FILE']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
         showSelectionUsersFlyin(selection) {
@@ -147,6 +161,10 @@ export default {
                 }
                 if (hasChange) this.updateSelection(selection)
             })
+        },
+        onSendMagicLinkToAll() {
+            this.fileSelectionMagicLinkSent = true
+            this.sendFileSelectionLink({file: this.currentFile})
         }
     },
 }

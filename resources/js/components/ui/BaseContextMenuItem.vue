@@ -2,7 +2,7 @@
     <div class="item context-menu-item"
     :class="[disabled && 'disabled no-close', {'has-submenu': hasSubmenu}]" tabindex="0"
     ref="contextMenuItem" :id="id"
-    v-tooltip="{content: disabled && disabledTooltip, container: `#${id}`}"
+    v-tooltip="{content: disabled && disabledTooltip || tooltip, container: `#${id}`}"
     @click="onClick"
     @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
 
@@ -26,6 +26,7 @@ export default {
         'iconClass',
         'disabled',
         'disabledTooltip',
+        'tooltip',
         'hotkey',
     ],
     data: function() { return {
