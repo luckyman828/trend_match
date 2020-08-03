@@ -44,10 +44,11 @@
     <div class="bottom-nav">
         <div class="sidebar-item">
               <div class="inner"
-              @click="SHOW_CHANGELOG(true)"
+              @click="SHOW_CHANGELOG(true); onReadChangelog()"
               v-tooltip.right="displayTooltips && `What's new`">
                     <i class="fas fa-gift"></i>
                     <span>What's new</span>
+                    <div class="unread-circle circle xxs red" v-if="changelogUnread"/>
               </div>
          </div>
         <div class="sidebar-item">
@@ -76,25 +77,39 @@ import TheNavbarLogo from './TheNavbarLogo'
 import SignoutButton from './SignoutButton'
 
 export default {
-  name: "sidebar",
-  components: {
-    SignoutButton,
-    TheNavbarLogo,
-  },
-  data: function () { return {
-    drawerExpanded: false,
-  }},
+    name: "sidebar",
+    components: {
+        SignoutButton,
+        TheNavbarLogo,
+    },
+    data: function () { return {
+        drawerExpanded: false,
+        changelogReadDate: null
+    }},
   computed: {
     ...mapGetters('auth', ['authUser']),
     ...mapGetters('workspaces', ['workspaces', 'authUserWorkspaceRole', 'currentWorkspace', 'currentWorkspaceIndex']),
+    ...mapGetters('changelog', ['getLatestChangelogUpdateDate']),
     displayTooltips () {
       return window.innerWidth <= 1400
+    },
+    changelogUnread() {
+        const changelogReadDate = this.changelogReadDate
+        const changelogUpdateDate = this.getLatestChangelogUpdateDate
+        return changelogReadDate < changelogUpdateDate
     }
   },
   methods: {
      ...mapActions('auth', ['logout']),
     ...mapActions('workspaces', ['setCurrentWorkspaceIndex']),
     ...mapMutations('changelog', ['SHOW_CHANGELOG']),
+    onReadChangelog() {
+        this.changelogReadDate = new Date
+        localStorage.setItem('changelogReadDate', new Date)
+    }
+  },
+  created() {
+      this.changelogReadDate = new Date(localStorage.getItem('changelogReadDate'))
   }
 };
 </script>
@@ -118,6 +133,7 @@ export default {
     justify-content: center;
     padding: 0 8px;
     .inner {
+        position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -152,6 +168,11 @@ export default {
         margin-bottom: 8px;
         color: $iconSoftOnDark;
     }
+    .unread-circle {
+        position: absolute;
+        top: 2px;
+        right: 16px;
+    }
     @media screen and (max-width: $screenSm) {
         flex-direction: row;
         justify-content: flex-start;
@@ -172,6 +193,11 @@ export default {
         }
         span {
             display: none;
+        }
+        .unread-circle {
+            position: absolute;
+            top: 12px;
+            right: 4px;
         }
     }
 }
