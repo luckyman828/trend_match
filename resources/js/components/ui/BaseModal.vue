@@ -33,7 +33,7 @@ export default {
         'header',
         'classes',
         'goBack',
-        'show'
+        'show',
     ],
     data: function () { return {
     }},
@@ -64,6 +64,11 @@ export default {
     .modal-wrapper {
         position: fixed;
         z-index: 99;
+        &.full-body {
+            .body {
+                max-width: none;
+            }
+        }
         &.visible {
             .overlay {
                 display: block;
