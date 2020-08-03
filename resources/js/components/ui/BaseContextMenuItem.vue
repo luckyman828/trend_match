@@ -13,7 +13,8 @@
         </div>
 
         <!-- Submenu -->
-        <div class="submenu" v-if="submenuVisible">
+        <div class="submenu" v-if="submenuVisible"
+        ref="submenu">
             <slot name="submenu"/>
         </div>
     </div>
@@ -63,6 +64,14 @@ export default {
             const el = this.$refs.contextMenuItem
             el.focus()
             el.closest('.context-menu').classList.add('submenu-open')
+            this.$nextTick(() => {
+                const submenu = this.$refs.submenu
+                const submenuOffsetRight = submenu.getBoundingClientRect().right
+                const windowWidth = window.innerWidth
+                const offset = 12
+                if (windowWidth - submenuOffsetRight < offset) submenu.classList.add('flip')
+                else submenu.classList.remove('flip')
+            })
         },
         hideSubmenu() {
             this.submenuVisible = false
@@ -158,6 +167,10 @@ export default {
         border: $borderModule;
         box-shadow: $shadowModuleHard;
         flex-direction: column;
+        &.flip {
+            left: auto;
+            right: 100%;
+        }
     }
 }
 </style>
