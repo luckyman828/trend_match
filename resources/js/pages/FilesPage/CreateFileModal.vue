@@ -698,22 +698,28 @@ export default {
             // Use Papa Parse 5 to parse the CSV.
             const allLines = this.$papa.parse(csv).data
 
+            // Check if the file already exists. If so, replace it instead of adding
+            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
+
+
             // Use the first line as headers (splice removes the first line)
             const allHeaders = allLines.splice(0,1)[0]
             const csvHeaders = allHeaders.map((header, index) => {
-                return {fileIndex: this.availableFiles.length, fieldName: header, fieldIndex: index}
+                return {
+                    fileIndex: existingFile ? existingFile.headers[0].fileIndex : this.availableFiles.length, 
+                    fieldName: header, 
+                    fieldIndex: index
+                }
             })
-
             const fileToPush = {fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: allLines, error: false}
-            // Check if the file already exists. If so, replace it instead of adding
-            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
             if (existingFile) {
                 // existingFile = fileToPush
                 Object.assign(existingFile, fileToPush)
             } else {
                 this.availableFiles.push(fileToPush)
             }
-            this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
+            const fileIndex = existingFile ? existingFile.headers[0].fileIndex : this.availableFiles.length -1
+            this.autoMapHeaders(existingFile ? existingFile : fileToPush, fileIndex)
         },
         autoMapHeaders(file, fileIndex) {
             // Loop through the fields we still need to match to a header
