@@ -87,7 +87,6 @@
                 <BaseContextMenuItem iconClass="far fa-key" 
                 hotkey="KeyR"
                 @click="onEditUserRole(slotProps.mouseEvent, selectedUsers[0])">
-                    <div class="icon-wrapper"><i class="far fa-key"></i></div>
                     <span>Change Team <u>R</u>oles</span>
                 </BaseContextMenuItem>
             </div>
