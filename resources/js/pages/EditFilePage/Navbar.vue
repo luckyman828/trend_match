@@ -27,7 +27,8 @@
 
         <!-- <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/>
         <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/> -->
-        <UploadToFileModal v-if="currentFile" :show="uploadToFileModalVisible" @close="uploadToFileModalVisible = false"/>
+        <UploadToFileModal v-if="currentFile" :show="uploadToFileModalVisible" @close="uploadToFileModalVisible = false"
+        :key="uploadToFileKey" @reset="uploadToFileKey++"/>
     </div>
 </template>
 
@@ -49,6 +50,7 @@ export default {
         exportModalVisible: false,
         exportCsvModalVisible: false,
         uploadToFileModalVisible: false,
+        uploadToFileKey: 0,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),

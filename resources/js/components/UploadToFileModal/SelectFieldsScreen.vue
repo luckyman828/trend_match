@@ -22,6 +22,13 @@
 
         <div class="form-element">
             <BaseCheckboxInputField class="replace-all" 
+            :value="replaceVariants" @input="$emit('update:replaceVariants', $event)">
+                <span>Replace variants & images</span>
+            </BaseCheckboxInputField>
+        </div>
+
+        <div class="form-element">
+            <BaseCheckboxInputField class="replace-all" 
             :value="replaceAssortments" @input="$emit('update:replaceAssortments', $event)">
                 <span>Replace assortments</span>
             </BaseCheckboxInputField>
@@ -51,6 +58,7 @@ export default {
         'fields',
         'replacePrices',
         'replaceAssortments',
+        'replaceVariants',
     ],
     data: function () { return {
     }},

@@ -13,6 +13,7 @@
             <SelectFieldsScreen v-if="currentScreenIndex == 1"
             :fields="fieldsToReplace" :replacePrices.sync="replacePrices"
             :replaceAssortments.sync="replaceAssortments"
+            :replaceVariants.sync="replaceVariants"
             @goToNextScreen="currentScreenIndex++;"
             @goToPrevScreen="currentScreenIndex--"/>
 
@@ -23,6 +24,7 @@
             :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
             :variantFieldsToMatch="variantFieldsToMatch"
             :variantImagesToMap="variantImagesToMap"
+            :replaceVariants="replaceVariants"
             @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
             @addCurrency="addCurrency" @removeCurrency="removeCurrency"
             @addAssortment="addAssortment" @removeAssortment="removeAssortment"
@@ -72,6 +74,7 @@ export default {
         singleCurrencyFile: false,
         replacePrices: false,
         replaceAssortments: false,
+        replaceVariants: false,
         fieldsToReplace: [
             {name: 'title', displayName: 'Name', enabled: false},
             {name: 'sale_description', displayName: 'Description', enabled: false},
@@ -81,7 +84,6 @@ export default {
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
-            {name: 'variants', displayName: 'Variants & images', enabled: false},
             {name: 'eans', displayName: 'Product EANs', enabled: false},
             {name: 'buying_group', displayName: 'Buyer Group', enabled: false},
         ],
@@ -468,6 +470,8 @@ export default {
                                 product.variants = []
                             if(this.replacePrices) 
                                 product.prices = []
+                            if(this.replaceVariants) 
+                                product.variants = []
                             if(this.replaceAssortments) 
                                 product.assortments = []
                             if(this.fieldsToReplace.find(x => x.name == 'eans' && x.enabled)) 
@@ -478,7 +482,7 @@ export default {
 
                         // VARIANTS
                         let variant = null
-                        if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+                        if (this.replaceVariants) {
                             // Find / Instantiate this lines variant
                             let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'variant_name')
                             // Check that the variant key is from this file
@@ -765,7 +769,7 @@ export default {
             const newProducts = this.instantiateProducts()
 
             // Upload images if we are replacing variants
-            if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+            if (this.replaceVariants) {
                 this.submitStatus = 'Uploading images. This may take a while'
                 await this.syncExternalImages({file: this.currentFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
                     // console.log('uploadImages error', err)
@@ -817,23 +821,23 @@ export default {
             <strong>${progress}%</strong> done.`
         },
         reset() {
-            // this.$router.go()
-            this.availableFiles = []
-            this.filesToUpload = []
-            this.singleCurrencyFile = false
-            this.currentScreenIndex = 0
-            this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
-            this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
-            // Reset fields to match
-            this.allFields.concat(this.variantFieldsToMatch).forEach(field => {
-                field.enabled = true
-                field.error = false
-                field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
-            })
-            this.replacePrices = false
-            this.fieldsToReplace.forEach(field => {
-                field.enabled = false
-            })
+            this.$emit('reset')
+            // this.availableFiles = []
+            // this.filesToUpload = []
+            // this.singleCurrencyFile = false
+            // this.currentScreenIndex = 0
+            // this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            // this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
+            // // Reset fields to match
+            // this.allFields.concat(this.variantFieldsToMatch).forEach(field => {
+            //     field.enabled = true
+            //     field.error = false
+            //     field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
+            // })
+            // this.replacePrices = false
+            // this.fieldsToReplace.forEach(field => {
+            //     field.enabled = false
+            // })
         }
     },
 }

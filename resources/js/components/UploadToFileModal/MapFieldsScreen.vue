@@ -56,7 +56,7 @@
             </div>
 
             <!-- START Map Variants -->
-            <div class="table-wrapper map-variants" style="margin-bottom: 32px;">
+            <div v-if="replaceVariants" class="table-wrapper map-variants" style="margin-bottom: 32px;">
                 <h3>Map Variants</h3>
 
                 <table class="map-fields-table">
@@ -343,6 +343,7 @@ export default {
         'replaceAssortments',
         'variantFieldsToMatch',
         'variantImagesToMap',
+        'replaceVariants',
     ],
     data: function () { return {
         filesToChooseFrom: []
