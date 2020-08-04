@@ -582,7 +582,6 @@ export default {
         },
         INSERT_FILE(state, file) {
             state.files.push(file)
-            state.allFiles.push(file)
         },
         INSERT_MULTIPLE_FILES(state, files) {
             state.files.push(...files)

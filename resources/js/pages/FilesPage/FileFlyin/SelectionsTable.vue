@@ -979,9 +979,9 @@ export default {
         },
         async onShowCloneSetupContext(e) {
             // Check if we alreday fetched all files -> else fetch them
-            if (this.allFiles.length <= 0) {
+            // if (this.allFiles.length <= 0) {
                 await this.fetchAllFiles()
-            }
+            // }
             const contextMenu = this.$refs.contextMenuCloneSetup
             contextMenu.show(e)
         },
