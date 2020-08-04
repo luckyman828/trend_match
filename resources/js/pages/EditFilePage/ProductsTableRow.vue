@@ -27,12 +27,7 @@
             </div>
         </span></td>
         <td class="delivery">
-            <span>{{
-                new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                    month: 'short',
-                    year: 'numeric',
-                })
-            }}</span>
+            <span>{{product.delivery_date}}</span>
         </td>
 
         <!-- Start Prices -->

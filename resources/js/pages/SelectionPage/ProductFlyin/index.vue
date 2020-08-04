@@ -126,7 +126,7 @@
                 </div>
 
                 <label>Delivery Date</label>
-                <BaseInputField readOnly=true :value="new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})"/>
+                <BaseInputField readOnly=true :value="product.delivery_date"/>
 
                 <div class="col-2 minimum">
                     <div>

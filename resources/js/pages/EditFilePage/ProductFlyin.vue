@@ -583,10 +583,6 @@ export default {
             const vm = this
             this.updatingProduct = true
 
-            // this.productToEdit.updated_at = new Date()
-            //     .toISOString()
-            //     .slice(0, 19)
-            //     .replace('T', ' ')
             const productToEdit = this.productToEdit
 
 

@@ -733,6 +733,15 @@ export default {
         },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
+                // Cast datasource_id to a number
+                product.datasource_id = parseInt(product.datasource_id)
+                // Format delivery_date
+                if (product.delivery_date) {
+                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
+                        month: 'long',
+                        year: 'numeric',
+                    })
+                }
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
 
@@ -912,18 +921,6 @@ export default {
             state.status = status
         },
         insertProducts(state, { products, method }) {
-            // Loop through the products and format their data as necessary
-            products.forEach(product => {
-                // Cast datasource_if to a number
-                product.datasource_id = parseInt(product.datasource_id)
-                // Format delivery_date
-                if (product.delivery_date) {
-                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        month: 'long',
-                        year: 'numeric',
-                    })
-                }
-            })
             if (method == 'add') {
                 // Add to existing products
                 state.products = state.products.concat(products)
