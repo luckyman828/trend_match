@@ -12,7 +12,8 @@
         </div>
 
         <CreateFileModal :show="createFileModalVisible" ref="createFileModal" 
-        @close="createFileModalVisible = false"/>
+        @close="createFileModalVisible = false" :key="createFileKey"
+        @reset="createFileKey++"/>
     </div>
 </template>
 
@@ -27,6 +28,7 @@ export default {
     },
     data: function () { return {
         createFileModalVisible: false,
+        createFileKey: 0,
     }},
     computed: {
         ...mapGetters('workspaces', ['authUserWorkspaceRole'])

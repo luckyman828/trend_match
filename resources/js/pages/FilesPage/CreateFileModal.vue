@@ -671,8 +671,8 @@ export default {
             newFile.workspace_id = this.currentWorkspace.id
             this.insertOrUpdateFile(newFile)
             // Reset modal
-            this.reset()
             this.$emit('close')
+            this.reset()
         },
         onGoToMapFields() {
             //Change the current screen
@@ -1137,12 +1137,11 @@ export default {
                         iconClass: 'fa-exclamation-circle', 
                     })
                 })
-                // console.log('Done syncing images')
             }
 
             if (uploadSuccess) {
-                this.reset()
                 this.$emit('close')
+                this.reset()
             }
             this.uploadingFile = false
         },
@@ -1151,18 +1150,19 @@ export default {
             <strong>${progress}%</strong> done.`
         },
         reset() {
-            this.availableFiles = []
-            this.singleCurrencyFile = false
-            this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
-            this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
-            this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
-            this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
-            // Reset fields to match
-            this.fieldsToMatch.concat(this.variantFieldsToMatch).forEach(field => {
-                field.enabled = true
-                field.error = false
-                field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
-            })
+            this.$emit('reset')
+            // this.availableFiles = []
+            // this.singleCurrencyFile = false
+            // this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
+            // this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            // this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
+            // this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
+            // // Reset fields to match
+            // this.fieldsToMatch.concat(this.variantFieldsToMatch).forEach(field => {
+            //     field.enabled = true
+            //     field.error = false
+            //     field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
+            // })
         }
     },
     created() {
