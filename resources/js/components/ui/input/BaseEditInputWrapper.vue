@@ -51,6 +51,7 @@ export default {
         editActive: false,
         localValue: this.value,
         savedValue: null,
+        blurFromSubmit: false,
     }},
     watch: {
         value: function(newVal) {
@@ -70,18 +71,22 @@ export default {
             this.emit()
             this.$emit('submit', this.localValue)
             // this.$emit('submit', this.$refs.input.value)
+            this.blurFromSubmit = true
             this.editActive = false
             document.activeElement.blur()
         },
         onBlur() {
             if (this.submitOnBlur) {
                 if (this.localValue != this.oldValue && !this.error) {
-                    this.submit()
+                    if (!this.blurFromSubmit) {
+                        this.submit()
+                    }
                 }
                 else {
                     this.cancel()
                 }
             }
+            this.blurFromSubmit = false
         },
         setActive() {
             if (this.disabled) return

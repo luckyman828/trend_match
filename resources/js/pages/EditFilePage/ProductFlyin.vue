@@ -485,7 +485,7 @@ export default {
         validateProductId(value) {
             // Check if the value already exists on a product
             const existingProduct = this.products.find(x => x.datasource_id == value)
-            if (existingProduct) {
+            if (existingProduct && existingProduct.id != this.productToEdit.id) {
                 this.idError = 'ID already taken'
             } else {
                 this.idError = null
@@ -573,12 +573,14 @@ export default {
             }
         },
         onSubmitField() {
+            console.log('on submit field')
             // Don't update the product if it hasn't been assigned a datasource id yet
             if (!this.productToEdit.datasource_id) return
             
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
+            console.log('on update product')
             // Prepare the file to fit the database schema
             const vm = this
             this.updatingProduct = true
