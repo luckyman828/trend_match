@@ -1,7 +1,7 @@
 <template>
     <div class="table-wrapper" ref="tableWrapper">
         <table class="base-table" ref="table" 
-        :class="[{'sticky': sticky}, {'has-tabs': $slots.tabs}]">
+        :class="[{'sticky': sticky}, {'has-tabs': $slots.tabs}, {'has-context-button': !hideContextButton}]">
             <div ref="stickyHeader" class="sticky-header">
                 <div ref="stickyBg" class="sticky-bg" :style="{width: tableWidth + 32+'px'}"></div>
                 <div ref="stickyInner" class="inner">
@@ -16,6 +16,7 @@
                                 @change="(checked) => checked ? $emit('update:selected', items) :  $emit('update:selected', [])"/>
                             </BaseTableHeader>
                             <slot name="header"/>
+                            <BaseTableHeader v-if="!hideContextButton" class="context-button">Action</BaseTableHeader>
                         </tr>
                     </div>
                 </div>
@@ -23,17 +24,43 @@
             <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
             <div class="body">
                 <!-- Content -->
+
                 <template v-if="isReady">
-                    <BaseTableRow v-for="(item, index) in items" 
+                    <!-- <BaseTableRow v-for="(item, index) in items" 
                         :key="itemKey ? item[itemKey] : index"
                         :item="item" :index="index"
                         :showSelect="showSelect"
                         :selected.sync="localSelected"
                         :items="items"
+                        :contextItem="contextItem"
+                        :itemKey="itemKey"
                         @select-range="selectRange(index, items, selected)"
+                        @show-contextmenu="onContextMenu($event, item)"
+                    >
+                        <slot name="row" :item="item" :index="index"/>
+                    </BaseTableRow> -->
+                    <RecycleScroller
+                    :items="items"
+                    :item-size="itemSize"
+                    page-mode
+                    :key-field="itemKey"
+                    v-slot="{ item, index }"
+                >
+                    <BaseTableRow
+                        :key="itemKey ? item[itemKey] : index"
+                        :item="item" :index="index"
+                        :showSelect="showSelect"
+                        :selected.sync="localSelected"
+                        :items="items"
+                        :contextItem="contextItem"
+                        :itemKey="itemKey"
+                        :showContextButton="!hideContextButton"
+                        @select-range="selectRange(index, items, selected)"
+                        @show-contextmenu="onContextMenu($event, item)"
                     >
                         <slot name="row" :item="item" :index="index"/>
                     </BaseTableRow>
+                </RecycleScroller>
                 </template>
                 <!-- End content -->
 
@@ -73,6 +100,9 @@ export default {
         'items',
         'selected',
         'itemKey',
+        'contextItem',
+        'itemSize',
+        'hideContextButton',
     ],
     data: function() { return {
         sticky: false,
@@ -113,6 +143,12 @@ export default {
         }
     },
     methods: {
+        onContextMenu(e, item) {
+            // If we have a selection set the context item to the first item in our selection
+            this.$emit('update:contextItem', this.selected && this.selected.length > 0 ? this.selected[0] : item)
+            this.$emit('update:contextMouseEvent', e)
+            this.$emit('show-contextmenu', e)
+        },
         getYPos(element) {
             var yPosition = 0;
 
@@ -229,6 +265,13 @@ export default {
     position: relative;
     &.has-tabs {
         margin-top: $heightTableTab;
+    }
+    &.has-context-button {
+        th, td {
+            &.action {
+                margin-right: -4px;
+            }
+        }
     }
     .tabs-wrapper {
         display: flex;
@@ -348,6 +391,15 @@ export default {
             >*:not(:last-child) {
                 margin-right: 4px;
             }
+        }
+        &.context-button {
+            flex: 1;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 40px;
+            max-width: 40px;
         }
         &.select {
             flex: 0 1 auto;

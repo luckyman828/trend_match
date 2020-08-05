@@ -37,7 +37,8 @@ export default {
         'errorTooltip',
         'label',
         'inputClass',
-        'selectOnFocus'
+        'selectOnFocus',
+        'focusOnMount'
     ],
     computed: {
         inputField() {
@@ -59,6 +60,9 @@ export default {
         onFocus() {
             if (this.selectOnFocus) this.select()
         }
+    },
+    mounted() {
+        if (this.focusOnMount) this.focus()
     }
 }
 </script>

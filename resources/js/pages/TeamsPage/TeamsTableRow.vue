@@ -2,10 +2,13 @@
     <BaseTableInnerRow>
         <td v-if="editTitle" class="title">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
-            <BaseEditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"
-                :value="teamToEdit.title" :oldValue="team.title" v-model="teamToEdit.title"
-                @submit="insertOrUpdateTeam(teamToEdit); editTitle = false" 
-                @cancel="$emit('cancelEditTitle'); editTitle = false;"/>
+            <BaseInputField inputClass="small" 
+            v-model="teamToEdit.title" 
+            :selectOnFocus="true"
+            :focusOnMount="true"
+            @keyup.enter.native="insertOrUpdateTeam(teamToEdit); editTitle = false"
+            @keydown.esc.native="$emit('cancelEditTitle'); editTitle = false;"
+            @blur="$emit('cancelEditTitle'); editTitle = false;"/>
         </td>
         <td v-else class="title clickable" @click="showSingle()">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
@@ -30,10 +33,6 @@
             <button class="invisible ghost-hover primary" 
             @click="showSingle()">
                 <span>View{{authUserWorkspaceRole == 'Admin' ? '/ Edit' : ''}}</span>
-            </button>
-            <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" 
-            @click.stop="$emit('showContextMenu', $event, team)">
-                <i class="far fa-ellipsis-h medium"></i>
             </button>
         </td>
     </BaseTableInnerRow>

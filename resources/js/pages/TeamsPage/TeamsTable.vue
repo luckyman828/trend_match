@@ -2,13 +2,18 @@
     <div class="teams-table">
 
         <BaseTable v-if="currentTab == 'Teams'" stickyHeader="true"
-        :contentStatus="readyStatus"
-        :items="teamsFilteredBySearch"
-        itemKey="id"
-        :selected.sync="selectedTeams"
-        loadingMsg="loading teams"
-        errorMsg="error loading teams"
-        :errorCallback="() => initData()">
+            :contentStatus="readyStatus"
+            :errorCallback="() => initData()"
+            loadingMsg="loading teams"
+            errorMsg="error loading teams"
+            :items="teamsFilteredBySearch"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selectedTeams"
+            :contextItem.sync="contextTeam"
+            :contextMouseEvent.sync="contextMouseEvent"
+            @show-contextmenu="showTeamContext"
+        >
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
@@ -32,10 +37,9 @@
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:row="rowProps">
-                <TeamsTableRow :team="rowProps.item"
+                <TeamsTableRow :team="rowProps.item" :ref="'teamRow-'+rowProps.item.id"
                 @showSingle="showSingleTeam" @edit-currency="onEditTeamCurrency"
                 @cancelEditTitle="removeUnsavedTeam"
                 />
@@ -67,7 +71,7 @@
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 disabledTooltip="Only admins can rename teams"
                 hotkey="KeyR"
-                @click="$refs['teamRow-'+contextTeam.id][0].editTitle = true">
+                @click="$refs['teamRow-'+contextTeam.id].editTitle = true">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
 
@@ -75,7 +79,7 @@
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 disabledTooltip="Only admins can change team currency"
                 hotkey="KeyC"
-                @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                @click="onEditTeamCurrency(contextMouseEvent, contextTeam)">
                     <span><u>C</u>hange currency</span>
                 </BaseContextMenuItem>
             </div>
@@ -106,7 +110,7 @@
                     :disabled="authUserWorkspaceRole != 'Admin'"
                     disabledTooltip="Only admins can change team currency"
                     hotkey="KeyC"
-                    @click="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                    @click="onEditTeamCurrency(contextMouseEvent, contextTeam)">
                         <span><u>C</u>hange currency</span>
                     </BaseContextMenuItem>
                 </div>
@@ -258,10 +262,10 @@ export default {
             if (existingNewTeam) {
                 // Focus the edit field
                 this.$nextTick(() => {
-                    if (this.$refs['teamRow-null'][0].editTitle = true) {
-                        this.$refs['teamRow-null'][0].$refs['editTitle'].setActive()
+                    if (this.$refs['teamRow-null'].editTitle == true) {
+                        this.$refs['teamRow-null'].$refs['editTitle'].setActive()
                     } else {
-                        this.$refs['teamRow-null'][0].editTitle = true
+                        this.$refs['teamRow-null'].editTitle = true
                     }
                 })
             }
@@ -280,7 +284,7 @@ export default {
                 // wait for the new team to be rendered
                 this.$nextTick(() => {
                     // Activate title edit of new folder
-                    this.$refs['teamRow-null'][0].editTitle = true
+                    this.$refs['teamRow-null'].editTitle = true
                 })
             }
             
@@ -290,7 +294,7 @@ export default {
             this.SET_CURRENT_TEAM(team)
             this.teamFlyInVisible = true
         },
-        showTeamContext(e, team) {
+        showTeamContext(e) {
             // If we have a selection, show context menu for that selection instead
             let contextMenu
             if (this.selectedTeams.length > 1) {
@@ -298,8 +302,6 @@ export default {
             } else {
                 contextMenu = this.$refs.contextMenuTeam
             }
-            this.contextTeam = this.selectedTeams.length > 0 ? this.selectedTeams[0] : team
-            this.contextMouseEvent = e
             contextMenu.show(e)
         },
         async onDeleteTeam(team) {
