@@ -1,12 +1,5 @@
 <template>
-    <tr class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive}"
-    @contextmenu.prevent="$emit('showContextMenu', $event, team)"
-    @click.ctrl="$refs.selectBox.check()">
-        <td class="select">
-            <BaseCheckbox ref="selectBox" :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"
-            @checkRange="$emit('selectRange')"
-            />
-        </td>
+    <BaseTableInnerRow>
         <td v-if="editTitle" class="title">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"
@@ -28,7 +21,7 @@
         </td> -->
         <td class="currency">
             <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" 
-            @click.stop="$emit('editCurrency', $event, team)">
+            @click.stop="$emit('edit-currency', $event, team)">
                 <span>{{team.currency ? team.currency : 'Set currency'}}</span>
             </button>
             <span v-else>{{team.currency ? team.currency : 'No currency set'}}</span>
@@ -43,7 +36,7 @@
                 <i class="far fa-ellipsis-h medium"></i>
             </button>
         </td>
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -53,8 +46,6 @@ export default {
     name: 'teamsTableRow',
     props: [
         'team',
-        'selectedTeams',
-        'contextTeam',
     ],
     data: function() { return {
         editTitle: false,
@@ -66,14 +57,6 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
-        localSelectedTeams: {
-            get() { return this.selectedTeams },
-            set(localSelectedTeams) {this.$emit('input', localSelectedTeams)}
-        },
-        contextMenuIsActive() {
-            return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == this.team.id && this.selectedTeams.length <= 1
-        }
     },
     methods: {
         ...mapActions('teams', ['insertOrUpdateTeam']),

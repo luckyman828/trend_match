@@ -1,8 +1,11 @@
 <template>
     <div class="teams-table">
 
-        <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true"
+        <BaseTable v-if="currentTab == 'Teams'" stickyHeader="true"
         :contentStatus="readyStatus"
+        :items="teamsFilteredBySearch"
+        itemKey="id"
+        :selected.sync="selectedTeams"
         loadingMsg="loading teams"
         errorMsg="error loading teams"
         :errorCallback="() => initData()">
@@ -20,10 +23,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
+                <!-- <BaseTableHeader class="select">
                     <BaseCheckbox :value="selectedTeams.length > 0" :modelValue="true" 
                     @change="(checked) => checked ? selectedTeams = teams : selectedTeams = []"/>
-                </BaseTableHeader>
+                </BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
@@ -31,11 +34,11 @@
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
-                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teamsFilteredBySearch" :key="team.id" :team="team" :contextTeam="contextTeam"
-                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
-                @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"
-                @selectRange="selectRange(index, teams, selectedTeams)"/>
+            <template v-slot:row="rowProps">
+                <TeamsTableRow :team="rowProps.item"
+                @showSingle="showSingleTeam" @edit-currency="onEditTeamCurrency"
+                @cancelEditTitle="removeUnsavedTeam"
+                />
             </template>
             <template v-slot:footer>
                 <td>
@@ -47,7 +50,7 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"/>
 
@@ -154,7 +157,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TeamsTableRow from './TeamsTableRow'
 import TeamFlyin from './TeamFlyin'
 import sortArray from '../../mixins/sortArray'
-import selectRange from '../../mixins/selectRange'
 
 export default {
     name: 'teamsTable',
@@ -163,7 +165,6 @@ export default {
     ],
     mixins: [
         sortArray,
-        selectRange,
     ],
     components: {
         TeamsTableRow,
