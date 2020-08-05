@@ -17,14 +17,14 @@
 
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can hide/unhide selections"
-                        @click="onToggleAllSelectionsLocked">
+                        @click="onToggleAllSelectionsLocked(getSelections)">
                         <i class="far fa-lock"></i>
                             <span>Lock/Undlock all selections</span>
                         </BaseButton>
                         
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can lock/unlock selections"
-                        @click="onToggleAllSelectionsVisibility">
+                        @click="onToggleAllSelectionsVisibility(getSelections)">
                             <i class="far fa-eye"></i>
                             <span>Hide/Show all selections</span>
                         </BaseButton>
@@ -40,7 +40,9 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"
+                @toggle-locked="onToggleAllSelectionsLocked"
+                @toggle-hidden="onToggleAllSelectionsVisibility"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
@@ -100,8 +102,7 @@ export default {
         goToEditSingle() {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
-        onToggleAllSelectionsLocked() {
-            const selections = this.getSelections
+        onToggleAllSelectionsLocked(selections) {
             let makeLocked = null
             selections.map(selection => {
                 if (selection.is_presenting) return
@@ -123,9 +124,8 @@ export default {
                 if (hasChange) this.updateSelection(selection)
             })
         },
-        onToggleAllSelectionsVisibility() {
+        onToggleAllSelectionsVisibility(selections) {
             // Use the first selection to determine if we are opening or closing all
-            const selections = this.getSelections
             let makeHidden = null
             selections.map(selection => {
                 if (selection.is_presenting) return
