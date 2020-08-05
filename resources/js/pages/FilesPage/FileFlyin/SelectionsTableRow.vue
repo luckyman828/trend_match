@@ -2,6 +2,9 @@
     <div class="selections-table-row">
         <tr class="selection" :class="{'is-hidden': isHidden}"
         @contextmenu="emitShowContext" @click="onClick">
+            <td class="select">
+                <BaseCheckbox ref="selectBox" :value="selection" :modelValue="localSelectedSelections" v-model="localSelectedSelections"/>
+            </td>
             <td class="locked"><i class="far fa-lock" v-if="!selection.is_open" v-tooltip="'Locked: Selection is read-only'"></i></td>
             <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="selection.children.length > 0">
@@ -114,6 +117,7 @@
         <template v-if="childrenExpanded">
             <selectionsTableRow v-for="selectionChild in selection.children" :parent="selection" :selection="selectionChild" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selectionChild.id" :depth="selectionDepth" :moveSelectionActive="moveSelectionActive"
+            :selectedSelections="selectedSelections" v-model="localSelectedSelections"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
             @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" @showSelectionCurrencyContext="$emit('showSelectionCurrencyContext', $event)" 
             @showSettingsContext="($event, selection) => {$emit('showSettingsContext', $event, selection)}"/>
@@ -140,6 +144,7 @@ export default {
         'moveSelectionActive',
         'path',
         'file',
+        'selectedSelections',
     ],
     data: function() { return {
         childrenExpanded: true,
@@ -147,6 +152,10 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        localSelectedSelections: {
+            get() { return this.selectedSelections },
+            set(localSelectedSelections) {this.$emit('input', localSelectedSelections)}
+        },
         isMaster() {
             return this.selection.type == 'Master'
         },

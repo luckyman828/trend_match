@@ -13,6 +13,10 @@
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selectedSelections.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selectedSelections = allSelections : selectedSelections = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
@@ -35,7 +39,8 @@
                     <template v-if="getSelectionsTree.length > 0">
                         <SelectionsTableRow v-for="selection in getSelectionsTree" :key="selection.id" :ref="'selection-row-'+selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                        :selectionToEdit="selectionToEdit"
+                        :selectionToEdit="selectionToEdit" :selectedSelections="selectedSelections"
+                        v-model="selectedSelections"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                         @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"
@@ -92,33 +97,19 @@
                 @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
                     <u>R</u>ename
                 </BaseContextMenuItem>
-                <!-- <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
-                    <u>M</u>embers and Access
-                </div> -->
+
                 <BaseContextMenuItem iconClass="far fa-user-cog"
                 hotkey="KeyM"
                 @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <u>M</u>embers and Access
                 </BaseContextMenuItem>
 
-                <!-- <BaseContextMenuItem iconClass="far fa-long-arrow-alt-right" :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can move folders'"
-                @click="onMoveFiles()">
-                    <span><u>M</u>ove to</span>
-                </BaseContextMenuItem> -->
-
-
-                <!-- <BaseContextMenuItem :hasSubMenu="true">
-
-                </BaseContextMenuItem> -->
                 <BaseContextMenuItem iconClass="far fa-plus"
                 hotkey="KeyC">
                     <template>
                         <span><u>C</u>reate sub-selection</span>    
                     </template>
                     
-
                     <template v-slot:submenu>
                         <div class="item-group">
                             <BaseContextMenuItem iconClass="far fa-poll"
@@ -134,19 +125,9 @@
                             @click="onNewSelection({parent: contextSelection, type: 'Master'})">
                                 <span><u>M</u>aster</span>
                             </BaseContextMenuItem>
-                            <!-- <div class="item"
-                            @click.stop="onNewSelection(contextSelection, 'Master')">
-                                <div class="icon-wrapper"><i class="far fa-crown"></i></div>
-                                <span>Master</span>
-                            </div> -->
                         </div>
                     </template>
                 </BaseContextMenuItem>
-                <!-- <div class="item" v-if="contextSelection && !contextSelection.master"
-                @click="onMoveSelection(contextSelection, contextSelectionParent)">
-                    <div class="icon-wrapper"><i class="far fa-file"><i class="fas fa-long-arrow-alt-right"></i></i></div>
-                    <u>M</u>ove selection
-                </div> -->
             </div>
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-cog"
@@ -160,6 +141,45 @@
                 hotkey="KeyD"
                 @click="onDeleteSelection(contextSelection, contextSelectionParent)">
                     <u>D</u>elete selection
+                </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuSelectedSelections" class="context-selection">
+            <template v-slot:header>
+                <span>Choose action for {{selectedSelections.length}} selections</span>
+            </template>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyC"
+                @click="selectedSelections = []">
+                    <span><u>C</u>lear Selected</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-cog"
+                hotkey="KeyS"
+                @click="showSettingsContext(contextMouseEvent, contextSelection)">
+                    <u>S</u>ettings
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-lock"
+                hotkey="KeyL"
+                @click="$emit('toggle-locked', selectedSelections)">
+                    <span><u>L</u>ock / Unlock</span>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-eye"
+                hotkey="KeyH"
+                @click="$emit('toggle-hidden', selectedSelections)">
+                    <span><u>H</u>ide / Unhide</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyD"
+                @click="onDeleteSelection(contextSelection, contextSelectionParent)">
+                    <u>D</u>elete selections
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
@@ -621,16 +641,17 @@
         @submit="updateSelection(contextSelection)"/>
 
         <BaseDialog ref="deleteSelectionDialog" type="confirm"
-        confirmText="Yes, delete it" cancelText="No, keep it"
+        :confirmText="selectedSelections.length > 1 ? 'Yes, delete them' : 'Yes, delete it'" 
+        :cancelText="selectedSelections.length > 1 ? 'No, keep them' : 'No, keep it'"
         confirmColor="red">
             <div class="icon-graphic">
                 <i class="far fa-poll primary lg"></i>
                 <i class="far fa-arrow-right lg"></i>
                 <i class="far fa-trash lg dark"></i>
             </div>
-            <h3>Really delete this selection?</h3>
-            <p>All input of the selection will be permanently deleted.</p>
-            <p><strong>Please beware:</strong>All sub-selections will be deleted as well.</p>
+            <h3>Really delete {{selectedSelections.length > 1 ? selectedSelections.length : 'this'}} selection{{selectedSelections.length > 1 ? 's' : ''}}?</h3>
+            <p>All input of the selection{{selectedSelections.length > 1 ? 's' : ''}} will be permanently deleted.</p>
+            <p><strong>Please beware:</strong> All sub-selections will be deleted as well.</p>
         </BaseDialog>
         
     </div>
@@ -650,6 +671,7 @@ export default {
         sortArray
     ],
     data: function() { return {
+        selectedSelections: [],
         sortKey: null,
         selectionToEdit: null,
         contextSelection: null,
@@ -823,13 +845,25 @@ export default {
         },
         onSaveSelectionSettings() {
             // Send API request to update the selections settings.
-            this.updateSelectionSettings(this.contextSelection)
+            if (this.selectedSelections.length > 1) {
+                this.selectedSelections.map(selection => {
+                    // Set the selection settings of this selection to a copy of the context selection's
+                    selection.settings = JSON.parse(JSON.stringify(this.contextSelection.settings))
+                    this.updateSelectionSettings(selection)
+                })
+            } else {
+                this.updateSelectionSettings(this.contextSelection)
+            }
         },
         showContextMenuSelection(e, selection, component, parent) {
             if (!this.getAuthUserHasSelectionEditAccess(selection)) return
             e.preventDefault()
             // Set the current context menu item
-            this.contextSelection = selection
+            if (this.selectedSelections.length > 0) {
+                this.contextSelection = this.selectedSelections[0]
+            } else {
+                this.contextSelection = selection
+            }
             this.contextSelectionComponent = component
             this.contextSelectionParent = parent
             // Save a reference to the clicked element
@@ -839,7 +873,10 @@ export default {
             if(this.moveSelectionActive) {
                 this.showContextMenuMove(e)
             } else {
-                const selectionContext = this.$refs.contextMenuSelection
+                let selectionContext = this.$refs.contextMenuSelection
+                if (this.selectedSelections.length > 1) {
+                    selectionContext = this.$refs.contextMenuSelectedSelections
+                }
                 // Position the contextual menu
                 selectionContext.show(e)
             }
@@ -964,7 +1001,19 @@ export default {
         async onDeleteSelection(selection) {
             // Send request to API
             if (await this.$refs.deleteSelectionDialog.confirm()) {
-                this.deleteSelection(selection)
+                // If we have a selection, delete all those selections
+                if (this.selectedSelections.length > 1) {
+                    for (let i = this.selectedSelections.length -1; i >= 0; i--) {
+                        const selectionToDelete = this.selectedSelections[i]
+                        this.deleteSelection(selectionToDelete)
+                    }
+                    // Reset the selected selections
+                    this.selectedSelections = []
+                }
+                // If we don't have a selection just delete the provided selection 
+                else {
+                    this.deleteSelection(selection)
+                }
             }
         },
         clearToEdit() {
