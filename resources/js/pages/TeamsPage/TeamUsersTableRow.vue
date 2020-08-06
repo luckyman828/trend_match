@@ -1,8 +1,5 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" :class="[{active: contextMenuIsActive}, {self: isSelf}]"
-    @contextmenu.prevent="$emit('showContextMenu', $event, user)" 
-    @click.ctrl="$refs.selectBox.check()">
-        <td class="select"><BaseCheckbox ref="selectBox" :value="user" :modelValue="localSelectedUsers" v-model="localSelectedUsers"/></td>
+    <BaseTableInnerRow class="user-row table-row" ref="userRow">
         <td v-if="editName" class="title">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
@@ -18,13 +15,7 @@
             <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
             <span v-else>{{user.role}}</span>
         </td>
-        <!-- <td class="currency">
-            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set user currency'}}</span></button>
-        </td> -->
-        <td class="action">
-            <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
-        </td>
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -35,9 +26,6 @@ export default {
     props: [
         'user',
         'team',
-        'index',
-        'selectedUsers',
-        'contextUser',
     ],
     data: function() { return {
         editName: false,
@@ -46,17 +34,6 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
-        localSelectedUsers: {
-            get() { return this.selectedUsers },
-            set(localSelectedUsers) {this.$emit('input', localSelectedUsers)}
-        },
-        contextMenuIsActive() {
-            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == this.user.id && this.selectedUsers.length <= 1
-        },
-        isSelf() {
-            return this.authUser.id == this.user.id
-        },
     },
     methods: {
         ...mapActions('users', ['updateUser']),

@@ -1,5 +1,5 @@
 <template>
-    <tr class="table-row" :class="{active: contextMenuIsActive}"
+    <tr class="table-row" :class="[{active: contextMenuIsActive}, {'self': isSelf}]"
     :key="itemKey ? item[itemKey] : index"
     @click.ctrl.exact.capture.stop.prevent="$refs.selectBox.check()"
     @click.ctrl.shift.capture.stop.prevent="onCtrlShiftClick"
@@ -33,8 +33,10 @@ export default {
         'itemKey',
         'index',
         'showContextButton',
+        'itemType',
     ],
     computed: {
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('contextMenu', {
             contextMenuVisible: 'getContextMenuIsVisible'
         }),
@@ -45,7 +47,10 @@ export default {
             } else {
                 return this.contextItem[this.itemKey] == this.item[this.itemKey]
             }
-        }
+        },
+        isSelf() {
+            return this.itemType == 'user' && this.authUser.id == this.item.id
+        },
     },
     methods: {
         onCtrlShiftClick() {
@@ -56,6 +61,18 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+@import '~@/_variables.scss';
+
+tr {
+    &.self {
+        .title {
+            font-weight: 500;
+            i {
+                color: $primary;
+            }
+        }
+    }
+}
 
 </style>

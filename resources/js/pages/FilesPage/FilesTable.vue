@@ -6,7 +6,7 @@
             errorMsg="error loading folder content"
             :errorCallback="() => initData()"
             :items="files"
-            :itemsFilteredBySearch.sync="filesFilteredBySearch"
+            :searchResult.sync="filesFilteredBySearch"
             :searchKey="['title','name']"
             itemKey="id"
             :itemSize="50"

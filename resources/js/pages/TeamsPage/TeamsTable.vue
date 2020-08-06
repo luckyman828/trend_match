@@ -6,26 +6,18 @@
             :errorCallback="() => initData()"
             loadingMsg="loading teams"
             errorMsg="error loading teams"
-            :items="teamsFilteredBySearch"
+            :items="teams"
             itemKey="id"
             :itemSize="50"
             :selected.sync="selectedTeams"
             :contextItem.sync="contextTeam"
             :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="'title'"
+            :searchResult.sync="teamsFilteredBySearch"
             @show-contextmenu="showTeamContext"
         >
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
-            </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['title']" :arrayToSearch="teams" v-model="teamsFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{teamsFilteredBySearch.length}}</strong> of <strong>{{teams.length}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
             </template>
             <template v-slot:header>
                 <!-- <BaseTableHeader class="select">

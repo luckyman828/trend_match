@@ -241,7 +241,6 @@ export default {
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
-            console.log('fetch selection')
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
             commit('SET_SELECTION_USERS_STATUS', 'loading')
             commit('SET_SELECTION_TEAMS_STATUS', 'loading')

@@ -1,5 +1,5 @@
 <template>
-    <BaseTableInnerRow :class="[{self: isSelf}]">
+    <BaseTableInnerRow>
         <td class="title" v-if="editName">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"

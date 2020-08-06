@@ -13,19 +13,21 @@
                         <BaseTableTopBar v-if="!hideTopBar">
 
                             <template v-slot:left>
-                                <BaseSearchField v-if="searchEnabled"
+                                <BaseSearchField v-if="searchEnabled && contentStatus == 'success'"
                                 :searchKey="searchKey"
                                 :arrayToSearch="items"
-                                @input="$emit('update:itemsFilteredBySearch', $event)"/>
+                                @input="$emit('update:searchResult', $event)"/>
                                 <slot name="topBar"/>
                                 <slot name="topBarLeft"/>
                             </template>
 
                             <template v-slot:right>
                                 <slot name="topBarRight"/>
-                                <span v-if="selected && selected.length > 0"><strong>{{selected.length}}</strong> selected</span>
-                                <span v-if="searchEnabled">showing <strong>{{itemsFilteredBySearch.length}}</strong> of 
-                                <strong>{{items.length}}</strong> records</span>
+                                <div class="records" v-if="contentStatus == 'success'">
+                                    <span v-if="selected && selected.length > 0"><strong>{{selected.length}}</strong> selected</span>
+                                    <span v-if="searchEnabled">showing <strong>{{searchResult.length}}</strong> of 
+                                    <strong>{{items.length}}</strong> records</span>
+                                </div>
                             </template>
 
                         </BaseTableTopBar>
@@ -60,7 +62,7 @@
                         <slot name="row" :item="item" :index="index"/>
                     </BaseTableRow> -->
                     <RecycleScroller
-                        :items="searchEnabled ? itemsFilteredBySearch : items"
+                        :items="itemsSorted"
                         :item-size="itemSize"
                         page-mode
                         :key-field="itemKey"
@@ -75,6 +77,7 @@
                             :contextItem="contextItem"
                             :itemKey="itemKey"
                             :showContextButton="!hideContextButton"
+                            :itemType="itemType"
                             @select-range="selectRange(index, items, selected)"
                             @show-contextmenu="onContextMenu($event, item)"
                         >
@@ -104,6 +107,7 @@
 
 <script>
 import selectRange from '../../mixins/selectRange'
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'baseTable',
@@ -123,9 +127,10 @@ export default {
         'contextItem',
         'itemSize',
         'hideContextButton',
-        'itemsFilteredBySearch',
+        'searchResult',
         'searchKey',
         'hideTopBar',
+        'itemType',
     ],
     data: function() { return {
         sticky: false,
@@ -157,6 +162,7 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('auth', ['authUser']),
         showSelect() {
             return !this.hideSelect && this.items != null && this.selected != null
         },
@@ -165,8 +171,15 @@ export default {
             set(localSelected) {this.$emit('update:selected', localSelected)}
         },
         searchEnabled() {
-            return this.searchKey && this.itemsFilteredBySearch
-        }
+            return this.searchKey && this.searchResult
+        },
+        itemsSorted() {
+            const items = this.searchEnabled ? this.searchResult : this.items
+            if (this.itemType != 'user') {
+                return items
+            }
+            return items.concat().sort((a,b) => a.id == this.authUser.id ? -1 : 0)
+        },
     },
     methods: {
         onContextMenu(e, item) {

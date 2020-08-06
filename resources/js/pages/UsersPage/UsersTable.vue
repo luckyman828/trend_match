@@ -6,28 +6,19 @@
             loadingMsg="loading users"
             errorMsg="error loading users"
             :errorCallback="() => initData()"
-            :items="usersFilteredBySearch"
+            :items="users"
             itemKey="id"
             :itemSize="50"
             :selected.sync="selectedUsers"
             :contextItem.sync="contextUser"
             :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="['name','email']"
+            :searchResult.sync="usersFilteredBySearch"
+            itemType="user"
             @show-contextmenu="showUserContext"
         >
-
-
             <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
-            </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users ? users.length : 0}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
