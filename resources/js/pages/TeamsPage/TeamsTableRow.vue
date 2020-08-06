@@ -6,8 +6,9 @@
             v-model="teamToEdit.title" 
             :selectOnFocus="true"
             :focusOnMount="true"
-            @keyup.enter.native="insertOrUpdateTeam(teamToEdit); editTitle = false"
-            @keydown.esc.native="$emit('cancelEditTitle'); editTitle = false;"
+            actionOnBlur="Cancel"
+            @submit="insertOrUpdateTeam(teamToEdit); editTitle = false"
+            @cancel="$emit('cancelEditTitle'); editTitle = false;"
             @blur="$emit('cancelEditTitle'); editTitle = false;"/>
         </td>
         <td v-else class="title clickable" @click="showSingle()">

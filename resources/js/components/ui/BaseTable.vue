@@ -371,9 +371,9 @@ export default {
     }
     th, td {
         padding: 0 4px;
-        &:first-child:not(.select) {
-            margin-left: 8px;
-        }
+        // &:first-child:not(.select) {
+        //     margin-left: 8px;
+        // }
         > i {
             &:last-child {
                 margin-left: 12px;

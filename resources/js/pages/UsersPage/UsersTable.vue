@@ -390,7 +390,6 @@ export default {
             this.$emit('onNewUser')
         },
         showUserContext(e, user) {
-            console.log('show user context', e, user)
             // If we have a selection, show context menu for that selection instead
             let contextMenu = this.$refs.contextMenuUser
             if (this.selectedUsers.length > 1) {
