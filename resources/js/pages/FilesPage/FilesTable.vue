@@ -6,6 +6,8 @@
             errorMsg="error loading folder content"
             :errorCallback="() => initData()"
             :items="files"
+            :itemsFilteredBySearch.sync="filesFilteredBySearch"
+            :searchKey="['title','name']"
             itemKey="id"
             :itemSize="50"
             :selected.sync="selected"
@@ -13,17 +15,6 @@
             :contextMouseEvent.sync="contextMouseEvent"
             @show-contextmenu="showContextMenu"
         >
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['title','name']"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{files.length}}</strong> of 
-                        <strong>{{files.length}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" @sort="onSort">Name</BaseTableHeader>
                 <BaseTableHeader class="action"/>
@@ -264,6 +255,7 @@ export default {
     ],
     data: function() {
         return {
+            filesFilteredBySearch: [],
             selected: [],
             contextMouseEvent: null,
             sortKey: null,

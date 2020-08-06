@@ -9,7 +9,27 @@
                         <slot name="tabs"/>
                     </div>
                     <div class="rounded-top">
-                        <slot name="topBar"/>
+
+                        <BaseTableTopBar v-if="!hideTopBar">
+
+                            <template v-slot:left>
+                                <BaseSearchField v-if="searchEnabled"
+                                :searchKey="searchKey"
+                                :arrayToSearch="items"
+                                @input="$emit('update:itemsFilteredBySearch', $event)"/>
+                                <slot name="topBar"/>
+                                <slot name="topBarLeft"/>
+                            </template>
+
+                            <template v-slot:right>
+                                <slot name="topBarRight"/>
+                                <span v-if="selected && selected.length > 0"><strong>{{selected.length}}</strong> selected</span>
+                                <span v-if="searchEnabled">showing <strong>{{itemsFilteredBySearch.length}}</strong> of 
+                                <strong>{{items.length}}</strong> records</span>
+                            </template>
+
+                        </BaseTableTopBar>
+
                         <tr class="header">
                             <BaseTableHeader class="select" v-if="showSelect">
                                 <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
@@ -40,27 +60,27 @@
                         <slot name="row" :item="item" :index="index"/>
                     </BaseTableRow> -->
                     <RecycleScroller
-                    :items="items"
-                    :item-size="itemSize"
-                    page-mode
-                    :key-field="itemKey"
-                    v-slot="{ item, index }"
-                >
-                    <BaseTableRow
-                        :key="itemKey ? item[itemKey] : index"
-                        :item="item" :index="index"
-                        :showSelect="showSelect"
-                        :selected.sync="localSelected"
-                        :items="items"
-                        :contextItem="contextItem"
-                        :itemKey="itemKey"
-                        :showContextButton="!hideContextButton"
-                        @select-range="selectRange(index, items, selected)"
-                        @show-contextmenu="onContextMenu($event, item)"
+                        :items="searchEnabled ? itemsFilteredBySearch : items"
+                        :item-size="itemSize"
+                        page-mode
+                        :key-field="itemKey"
+                        v-slot="{ item, index }"
                     >
-                        <slot name="row" :item="item" :index="index"/>
-                    </BaseTableRow>
-                </RecycleScroller>
+                        <BaseTableRow
+                            :key="itemKey ? item[itemKey] : index"
+                            :item="item" :index="index"
+                            :showSelect="showSelect"
+                            :selected.sync="localSelected"
+                            :items="items"
+                            :contextItem="contextItem"
+                            :itemKey="itemKey"
+                            :showContextButton="!hideContextButton"
+                            @select-range="selectRange(index, items, selected)"
+                            @show-contextmenu="onContextMenu($event, item)"
+                        >
+                            <slot name="row" :item="item" :index="index"/>
+                        </BaseTableRow>
+                    </RecycleScroller>
                 </template>
                 <!-- End content -->
 
@@ -103,6 +123,9 @@ export default {
         'contextItem',
         'itemSize',
         'hideContextButton',
+        'itemsFilteredBySearch',
+        'searchKey',
+        'hideTopBar',
     ],
     data: function() { return {
         sticky: false,
@@ -140,6 +163,9 @@ export default {
         localSelected: {
             get() { return this.selected },
             set(localSelected) {this.$emit('update:selected', localSelected)}
+        },
+        searchEnabled() {
+            return this.searchKey && this.itemsFilteredBySearch
         }
     },
     methods: {
