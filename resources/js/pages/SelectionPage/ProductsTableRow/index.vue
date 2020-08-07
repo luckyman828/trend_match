@@ -62,7 +62,7 @@
                     ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
                 `">
                     <span>
-                        <span v-if="showQty">{{selectionInput.quantity}} /</span>
+                        <span v-if="showQty">{{distributionScope == 'Alignment' ? selectionInput.quantity : selectionInput.totalFeedbackQuantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
                     <i class="far fa-box"></i>

@@ -1153,6 +1153,18 @@ export default {
                     },
                 })
 
+                Object.defineProperty(selectionInput, 'totalFeedbackQuantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            variant.feedbacks.map(action => {
+                                totalQty += action.quantity
+                            })
+                        })
+                        return totalQty
+                    },
+                })
+
                 // Dynamically Calculated Actions
                 // Feedback Actions
                 Object.defineProperty(selectionInput, 'ins', {
