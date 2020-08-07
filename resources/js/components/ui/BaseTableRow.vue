@@ -44,7 +44,7 @@ export default {
             if (!this.contextMenuVisible) return false
             if (this.selected && this.selected.length > 0) {
                 return this.selected.find(x => x[this.itemKey] == this.item[this.itemKey])
-            } else {
+            } else if (!!this.contextItem) {
                 return this.contextItem[this.itemKey] == this.item[this.itemKey]
             }
         },

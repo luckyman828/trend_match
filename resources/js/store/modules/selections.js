@@ -756,7 +756,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: `${teams.length} team ${teams.length > 1 ? 's' : ''} removed`,
+                            msg: `${teams.length} team${teams.length > 1 ? 's' : ''} removed`,
                             iconClass: 'fa-trash',
                             type: 'danger',
                             callback: () => dispatch('addTeamsToSelection', { selection, teams }),

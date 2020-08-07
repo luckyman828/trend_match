@@ -13,7 +13,7 @@
                         <BaseTableTopBar v-if="!hideTopBar">
 
                             <template v-slot:left>
-                                <BaseSearchField v-if="searchEnabled && contentStatus == 'success'"
+                                <BaseSearchField v-if="searchEnabled"
                                 :searchKey="searchKey"
                                 :arrayToSearch="items"
                                 @input="$emit('update:searchResult', $event)"/>
@@ -23,7 +23,7 @@
 
                             <template v-slot:right>
                                 <slot name="topBarRight"/>
-                                <div class="records" v-if="contentStatus == 'success'">
+                                <div class="records" v-if="!!items">
                                     <span v-if="selected && selected.length > 0"><strong>{{selected.length}}</strong> selected</span>
                                     <span v-if="searchEnabled">showing <strong>{{searchResult.length}}</strong> of 
                                     <strong>{{items.length}}</strong> records</span>
@@ -171,7 +171,7 @@ export default {
             set(localSelected) {this.$emit('update:selected', localSelected)}
         },
         searchEnabled() {
-            return this.searchKey && this.searchResult
+            return this.searchKey && this.searchResult && this.items
         },
         itemsSorted() {
             const items = this.searchEnabled ? this.searchResult : this.items
