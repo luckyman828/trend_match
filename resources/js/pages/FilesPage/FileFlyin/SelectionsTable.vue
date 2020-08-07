@@ -209,7 +209,11 @@
 
         <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4">
             <template v-slot:header v-if="contextSelection">
-                Settings: {{contextSelection.name}}
+                <span>Settings: {{contextSelection.name}}
+                    <template v-if="selectedSelections.length > 1"> + {{selectedSelections.length-1}} more</template>
+                    
+                </span>
+                
             </template>
             <template v-slot="slotProps">
                 <!-- If loading -->
