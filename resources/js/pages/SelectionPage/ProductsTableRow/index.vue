@@ -66,7 +66,7 @@
                         <span v-if="showQty">{{distributionScope == 'Alignment' ? selectionInput.quantity : selectionInput.totalFeedbackQuantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
-                    <i class="far fa-box"></i>
+                    <i class="fa-box" :class="productHasReachedMinimum ? 'fas primary' : 'far'"></i>
                 </div>
             </td>
             
@@ -243,6 +243,10 @@ export default {
             if (this.currentSelectionMode == 'Alignment') {
                 return this.selectionInput.hasUnreadApproverComment
             }
+        },
+        productHasReachedMinimum() {
+            const totalQty = this.distributionScope == 'Alignment' ? this.selectionInput.quantity : this.selectionInput.totalFeedbackQuantity
+            return totalQty >= this.product.min_order
         }
     },
     watch: {
