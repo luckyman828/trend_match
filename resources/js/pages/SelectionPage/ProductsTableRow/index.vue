@@ -1,16 +1,14 @@
 <template>
-    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="['action-'+selectionInput[currentAction], {'multi-selection': multiSelectionMode}]"
-    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)"
-    @click.ctrl="$refs.selectCheckbox.check()">
+    <BaseTableInnerRow class="products-table-row" tabindex="0" ref="row"
+    :class="['action-'+selectionInput[currentAction], {'multi-selection': multiSelectionMode}]"
+    @focus.native="onRowFocus" 
+    @keydown.native="hotkeyHandler($event)" 
+    @keyup.self.native="keypressHandler($event)">
 
         <div class="product-details">
             <div v-if="hasUnreadComment" class="unread-indicator circle xxs primary" 
             v-tooltip.right="'A message needs a reply'"/>
             
-            <td class="select" 
-            @click.self="$refs.selectCheckbox.check()">
-                <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
-            </td>
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <!-- <img :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex], 'sm')"> -->
@@ -168,7 +166,7 @@
         :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
         @updateAction="onUpdateAction"/>
 
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -247,7 +245,7 @@ export default {
         // Watch for changes to the current focus index 
         currentFocusRowIndex: function(newVal, oldVal) {
             if (newVal == this.index) {
-                this.$refs.row.focus()
+                this.$refs.row.$el.focus()
             }
         },
         // product(newVal, oldVal) {
@@ -324,7 +322,7 @@ export default {
             // If the current focus is the first group
             else if (this.focusGroupIndex == 0) {
                 // Focus the current row
-                this.$refs.row.focus()
+                this.$refs.row.$el.focus()
                 this.focusGroupIndex = null
             } else {
                 this.focusGroupIndex--
@@ -436,6 +434,7 @@ export default {
     .product-details {
         height: 138px;
         padding: 8px;
+        padding-left: 2px;
         display: flex;
         align-items: center;
     }

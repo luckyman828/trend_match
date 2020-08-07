@@ -110,7 +110,6 @@ export default {
             getSelectionTeamsStatus: 'getSelectionTeamsStatus'
         }),
         readyStatus() {
-            console.log('get team ready status', this.getSelectionTeamsStatus)
             if (this.getTeamsStatus == 'error' || this.getSelectionTeamsStatus == 'error') return 'error'
             if (this.getTeamsStatus == 'loading' || this.getSelectionTeamsStatus == 'loading') return 'loading'
             return 'success'

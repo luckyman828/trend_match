@@ -16,7 +16,8 @@
                                 <BaseSearchField v-if="searchEnabled"
                                 :searchKey="searchKey"
                                 :arrayToSearch="items"
-                                @input="$emit('update:searchResult', $event)"/>
+                                @input="$emit('update:searchResult', $event)"
+                                @keydown.enter.native="$emit('search-enter')"/>
                                 <slot name="topBar"/>
                                 <slot name="topBarLeft"/>
                             </template>
@@ -78,6 +79,7 @@
                             :itemKey="itemKey"
                             :showContextButton="!hideContextButton"
                             :itemType="itemType"
+                            :itemSize="itemSize"
                             @select-range="selectRange(index, items, selected)"
                             @show-contextmenu="onContextMenu($event, item)"
                         >
@@ -367,11 +369,6 @@ export default {
         align-items: center;
         padding: 8px;
         position: relative;
-        &.active {
-            outline: solid 1px $primary;
-            outline-offset: -1px;
-            background: $bgModuleActive;
-        }
         &:not(.table-top-bar) {
             border-bottom: $borderModule;
             // margin-bottom: 2px;
@@ -390,6 +387,14 @@ export default {
                         }
                     }
                 }
+            }
+        }
+        &.active {
+            // outline: solid 1px $primary;
+            // outline-offset: -1px;
+            background: #d3daff !important;
+            &:not(.table-top-bar) {
+                border-color: $primary300;
             }
         }
         &.header, &.footer {

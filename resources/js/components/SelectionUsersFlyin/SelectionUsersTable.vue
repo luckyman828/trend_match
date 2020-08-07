@@ -1,7 +1,7 @@
 <template>
     <div class="selection-users-table">
         <h3>Selection Members</h3>
-        <BaseTable
+        <BaseTable :stickyHeader="false"
             :contentStatus="readyStatus"
             loadingMsg="loading users"
             errorMsg="error loading users"

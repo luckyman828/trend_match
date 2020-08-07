@@ -1,7 +1,18 @@
 <template>
     <div class="products-table-wrapper" ref="table" @focusout="onBlur">
 
-        <BaseFlexTable class="products-table" :stickyHeader=true>
+        <BaseTable :stickyHeader="true"
+            :items="products"
+            itemKey="id"
+            :itemSize="currentSelections.length > 1 ? 247 : 139"
+            :selected.sync="selectedProducts"
+            :contextItem.sync="contextProduct"
+            :searchKey="['datasource_id','title','category']"
+            :searchResult.sync="productsFilteredBySearch"
+            :hideContextButton="true"
+            @show-contextmenu="onShowContextMenu"
+            @search-enter="onViewSingle(productsFilteredBySearch[0])"
+        >
             <template v-slot:tabs>
                 <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
                 v-model="currentProductFilter"
@@ -28,136 +39,115 @@
                 <!-- Selection Selector Ends -->
 
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar class="table-top-bar">
-                    <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        ref="searchField"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
-
-                        <v-popover trigger="click" :autoHide="false">
-                            <!-- <button class="ghost">
-                                <span>Advanced Filters</span>
-                            </button> -->
-                            <BaseButton buttonClass="ghost filter-button" @click="showAdvancedFilters = true">
-                                <span>Advanced Filters</span>
-                                <div v-if="getHasAdvancedFilter" class="circle primary xs">
-                                    <span>{{getAdvancedFilter.length}}</span>
-                                </div>
-                                <i class="far fa-chevron-down"></i>
-                            </BaseButton>
-                            <template slot="popover">
-                                <ConditionalFilters :distributionScope="distributionScope"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click" :disabled="availableCategories.length <= 0">
-                            <BaseButton buttonClass="ghost filter-button" :disabled="availableCategories.length <= 0"
-                            disabledTooltip="No categories available">
-                                <span>Category</span>
-                                <span v-if="selectedCategories.length > 0" class="circle primary xs">
-                                    <span>{{selectedCategories.length}}</span>
-                                </span>
-                                <i class="far fa-chevron-down"></i>
-                            </BaseButton>
-                            <template slot="popover">
-                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                                :options="availableCategories" v-model="selectedCategories"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0">
-                            <BaseButton buttonClass="ghost filter-button" :disabled="availableDeliveryDates.length <= 0"
-                            disabledTooltip="No delivery dates available">
-                                <span>Delivery</span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
-                                    <span>{{selectedDeliveryDates.length}}</span>
-                                </span>
-                            </BaseButton>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0">
-                            <BaseButton buttonClass="ghost filter-button" :disabled="availableBuyerGroups.length <= 0"
-                            disabledTooltip="No buyer groups available">
-                                <span>Buyer group</span>
-                                <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
-                                    <span>{{selectedBuyerGroups.length}}</span>
-                                </span>
-                                <i class="far fa-chevron-down"></i>
-                            </BaseButton>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click">
-                            <button class="ghost filter-button">
-                                <span>Selection Input</span>
-                                <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
-                                    <span>{{selectedSelectionIds.length}}</span>
-                                </span>
-                                <i class="far fa-chevron-down"></i>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="getSelectionsAvailableForInputFiltering" v-model="selectedSelectionIds"
-                                optionNameKey="name" optionValueKey="id"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click">
-                            <button class="ghost filter-button" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
-                                <span>Show input from: {{distributionScope}}</span>
-                                <i class="far fa-chevron-down"></i>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons type="radio" submitOnChange="true" 
-                                :options="['Alignment', 'Feedback']" v-model="distributionScope"/>
-                            </template>
-                        </v-popover>
-
-                        <!-- Temp. disabled until the functionality gets hooked up -->
-                        <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master'">
-                            <span>Unread only</span>
-                        </BaseCheckboxInputField>
-
-                        <BaseCheckboxInputField class="small" v-if="['ins', 'focus'].includes(currentProductFilter)"
-                        :value="insTabValue == 'focus'"
-                        @check="onToggleFocusOnly">
-                            <span>Focus only</span>
-                        </BaseCheckboxInputField>
-
-                        <button class="invisible primary" 
-                        v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
-                        || getHasAdvancedFilter"
-                        @click="resetFilters">
-                            <span>Clear filter</span>
-                        </button>
-
+            <template v-slot:topBarLeft>
+                <v-popover trigger="click" :autoHide="false">
+                    <!-- <button class="ghost">
+                        <span>Advanced Filters</span>
+                    </button> -->
+                    <BaseButton buttonClass="ghost filter-button" @click="showAdvancedFilters = true">
+                        <span>Advanced Filters</span>
+                        <div v-if="getHasAdvancedFilter" class="circle primary xs">
+                            <span>{{getAdvancedFilter.length}}</span>
+                        </div>
+                        <i class="far fa-chevron-down"></i>
+                    </BaseButton>
+                    <template slot="popover">
+                        <ConditionalFilters :distributionScope="distributionScope"/>
                     </template>
-                    <template v-slot:right>
-                        <template v-if="selectedProducts.length > 0">
-                            <span class="hide-screen-md">{{selectedProducts.length}} selected</span>
-                            <span class="show-screen-md">({{selectedProducts.length}})</span>
-                        </template>
-                        <span v-if="productsFilteredBySearch.length != totalProductCount">
-                            {{productsFilteredBySearch.length}}/{{totalProductCount}}<span class="hide-screen-md"> showing</span>
+                </v-popover>
+
+                <v-popover trigger="click" :disabled="availableCategories.length <= 0">
+                    <BaseButton buttonClass="ghost filter-button" :disabled="availableCategories.length <= 0"
+                    disabledTooltip="No categories available">
+                        <span>Category</span>
+                        <span v-if="selectedCategories.length > 0" class="circle primary xs">
+                            <span>{{selectedCategories.length}}</span>
                         </span>
-                        <span v-else>{{totalProductCount}}<span class="hide-screen-md"> records</span></span>
+                        <i class="far fa-chevron-down"></i>
+                    </BaseButton>
+                    <template slot="popover">
+                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
+                        :options="availableCategories" v-model="selectedCategories"/>
                     </template>
-                </BaseTableTopBar>
+                </v-popover>
+
+                <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0">
+                    <BaseButton buttonClass="ghost filter-button" :disabled="availableDeliveryDates.length <= 0"
+                    disabledTooltip="No delivery dates available">
+                        <span>Delivery</span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
+                            <span>{{selectedDeliveryDates.length}}</span>
+                        </span>
+                    </BaseButton>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
+                    </template>
+                </v-popover>
+
+                <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0">
+                    <BaseButton buttonClass="ghost filter-button" :disabled="availableBuyerGroups.length <= 0"
+                    disabledTooltip="No buyer groups available">
+                        <span>Buyer group</span>
+                        <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
+                            <span>{{selectedBuyerGroups.length}}</span>
+                        </span>
+                        <i class="far fa-chevron-down"></i>
+                    </BaseButton>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
+                    </template>
+                </v-popover>
+
+                <v-popover trigger="click">
+                    <button class="ghost filter-button">
+                        <span>Selection Input</span>
+                        <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
+                            <span>{{selectedSelectionIds.length}}</span>
+                        </span>
+                        <i class="far fa-chevron-down"></i>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="getSelectionsAvailableForInputFiltering" v-model="selectedSelectionIds"
+                        optionNameKey="name" optionValueKey="id"/>
+                    </template>
+                </v-popover>
+
+                <v-popover trigger="click">
+                    <button class="ghost filter-button" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
+                        <span>Show input from: {{distributionScope}}</span>
+                        <i class="far fa-chevron-down"></i>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons type="radio" submitOnChange="true" 
+                        :options="['Alignment', 'Feedback']" v-model="distributionScope"/>
+                    </template>
+                </v-popover>
+
+                <!-- Temp. disabled until the functionality gets hooked up -->
+                <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master'">
+                    <span>Unread only</span>
+                </BaseCheckboxInputField>
+
+                <BaseCheckboxInputField class="small" v-if="['ins', 'focus'].includes(currentProductFilter)"
+                :value="insTabValue == 'focus'"
+                @check="onToggleFocusOnly">
+                    <span>Focus only</span>
+                </BaseCheckboxInputField>
+
+                <button class="invisible primary" 
+                v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
+                || getHasAdvancedFilter"
+                @click="resetFilters">
+                    <span>Clear filter</span>
+                </button>
+
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
-                @change="(checked) => checked ? selectedProducts = productsFilteredBySearch : selectedProducts = []"/>
-                </BaseTableHeader>
-                <BaseTableHeader class="image"></BaseTableHeader>
+                <BaseTableHeader class="image"/>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
                 @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
@@ -170,13 +160,13 @@
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
                 <BaseTableHeader class="mark-up hide-screen-xs" :sortKey="'mark_up'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
-                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
+                <BaseTableHeader class="currency hide-screen-xs"/>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 v-tooltip="{content: 'Minimum per Variant / Minimum per Order', delay: {show: 300}}"
                 @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
                 <!-- Single Selection Only -->
                 <template v-if="getCurrentSelections.length == 1">
-                    <BaseTableHeader class="focus"></BaseTableHeader>
+                    <BaseTableHeader class="focus"/>
                     <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
                     @sort="onSort" :descDefault="true">In</BaseTableHeader>
                     <BaseTableHeader class="outs" :sortKey="distributionScope == 'Alignment' ? 'alignmentOuts' : 'outs'" :currentSortKey="sortKey"
@@ -188,32 +178,27 @@
                 </template>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
+            <template v-slot:row="rowProps">
 
-                <RecycleScroller
-                    class="products-scroller"
-                    :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 247 : 139"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item, index }"
-                >
-                    <ProductsTableRow class="product-row flex-table-row"
-                    @showContext="onShowContextMenu($event, item)"
-                    :selection="selection" :currentAction="currentAction"
-                    :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
-                    :distributionScope="distributionScope"
-                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
+                <ProductsTableRow v-if="productsFilteredBySearch.length > 0"
+                ref="row"
+                class="product-row flex-table-row"
+                :product="rowProps.item" :index="rowProps.index"
+                :selection="selection"
+                :currentAction="currentAction"
+                :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
+                :distributionScope="distributionScope"
+                @onViewSingle="onViewSingle" 
+                @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
-                </RecycleScroller>
-
-                <tr v-if="productsFilteredBySearch.length <= 0">
+                <tr v-else>
                     <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
-                        No products to show. Try changing your filters.</p>
+                        No products to show. Try changing your filters.
+                    </p>
                 </tr>
+
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenu">
             <template v-if="contextSelectionInput">
@@ -495,12 +480,8 @@ export default {
             document.activeElement.blur()
             this.showSelectionProductPDP({product, selection: this.selection})
         },
-        onShowContextMenu(mouseEvent, product) {
+        onShowContextMenu(mouseEvent) {
             let contextMenu = this.$refs.contextMenu
-            this.contextProduct = product
-            if (this.selectedProducts.length > 0) {
-                this.contextProduct = this.selectedProducts[0]
-            }
             if (this.selectedProducts.length > 1) {
                 contextMenu = this.$refs.contextMenuSelection
             }
@@ -509,7 +490,6 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            // console.log('on sort', this.stateProducts, sortAsc, sortKey)
             this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
@@ -591,6 +571,14 @@ export default {
         ::v-deep {
             tr:not(.table-top-bar) > * {
                 flex: 0 1 auto;
+            }
+            .table-row {
+                padding-top: 0;
+                padding-bottom: 0;
+                padding-right: 0;
+                &.focus {
+
+                }
             }
             tr {
                 th, td {

@@ -50,6 +50,16 @@ export default {
             return {gridTemplateColumns: `repeat(${this.columns}, ${100/this.columns}%)`}
         }
     },
+    watch: {
+        isVisible(newVal) {
+            console.log('baseflyin visibility changed', newVal)
+            if (newVal) {
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+            } else {
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+            }
+        }
+    },
     methods: {
         close () {
             this.visible = false
@@ -77,12 +87,6 @@ export default {
             }
         }
     },
-    created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
-    },
-    destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
-    }
 }
 </script>
 

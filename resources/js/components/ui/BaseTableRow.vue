@@ -1,6 +1,7 @@
 <template>
     <tr class="table-row" :class="[{active: contextMenuIsActive}, {'self': isSelf}]"
     :key="itemKey ? item[itemKey] : index"
+    :style="rowHeight"
     @click.ctrl.exact.capture.stop.prevent="$refs.selectBox.check()"
     @click.ctrl.shift.capture.stop.prevent="onCtrlShiftClick"
     @contextmenu.prevent="$emit('show-contextmenu', $event)">
@@ -34,6 +35,7 @@ export default {
         'index',
         'showContextButton',
         'itemType',
+        'itemSize',
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
@@ -51,6 +53,9 @@ export default {
         isSelf() {
             return this.itemType == 'user' && this.authUser.id == this.item.id
         },
+        rowHeight() {
+            return this.itemSize ? {height: `${this.itemSize}px`} : null
+        }
     },
     methods: {
         onCtrlShiftClick() {
