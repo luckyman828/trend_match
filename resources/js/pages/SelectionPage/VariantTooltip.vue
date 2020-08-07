@@ -45,7 +45,7 @@
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @keyup.enter.native="onSubmitQuantity"/>
                 <div class="total" v-tooltip.right="'total quantity input / variant minimum'">
-                    <span>{{variant.totalQuantity}} / {{product.min_variant_order}}</span>
+                    <span>{{actionDistributionTooltipTab == 'Alignment' ? variant.totalQuantity : variant.totalFeedbackQuantity}} / {{product.min_variant_order}}</span>
                 </div>
             </div>
         </div>

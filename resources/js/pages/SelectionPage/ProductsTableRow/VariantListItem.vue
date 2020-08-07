@@ -71,6 +71,7 @@ export default {
         'product',
         'selectionInput',
         'selection',
+        'distributionScope',
     ],
     components: {
         ActionDistributionList
@@ -94,7 +95,8 @@ export default {
             showQty: 'getQuantityModeActive',
         }),
         minimumPercentage() {
-            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            const totalQty = this.distributionScope == 'Alignment' ? this.variant.totalQty : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
         }
     },

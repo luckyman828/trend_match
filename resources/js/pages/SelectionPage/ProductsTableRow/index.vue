@@ -28,6 +28,7 @@
                     </div> -->
                     <VariantListItem v-for="(variant, index) in selectionInput.variants.slice(0,5)" :key="index" 
                     :variant="variant" :selectionInput="selectionInput" :selection="selection" :product="product"
+                    :distributionScope="distributionScope"
                     v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product, selectionInput}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
                     <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">

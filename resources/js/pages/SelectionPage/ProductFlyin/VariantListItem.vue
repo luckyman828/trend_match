@@ -9,10 +9,10 @@
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="selection.budget > 0" class="quantity">{{variant.quantity}}</span>
+                        <span v-if="showQty" class="quantity">{{variant.quantity}}</span>
                     </div>
                 </div>
-                <div class="quantity-progress" v-if="selection.budget > 0" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
+                <div class="quantity-progress" v-if="showQty" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
             </div>
             <div class="color-wrapper">
                 <div class="circle-img"><img :src="variantImage(variant, 'sm')"></div>
@@ -34,6 +34,7 @@ export default {
         'product',
         'selection',
         'selectionInput',
+        'distributionScope',
     ],
     data() { return {
         tooltipIsVisible: false
@@ -59,9 +60,12 @@ export default {
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
+            currentSelectionMode: 'currentSelectionMode'
         }),
         minimumPercentage() {
-            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQty : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
         }
     },

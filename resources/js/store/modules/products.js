@@ -1383,6 +1383,12 @@ export default {
                             return variant.actions.reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'totalFeedbackQuantity', {
+                        get: function() {
+                            return variant.feedbacks.reduce((total, x) => (total += x.quantity), 0)
+                        },
+                    })
 
                     // Feedback Actions
                     Object.defineProperty(variant, 'ins', {
