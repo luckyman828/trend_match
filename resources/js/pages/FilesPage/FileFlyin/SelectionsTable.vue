@@ -210,7 +210,7 @@
         <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4">
             <template v-slot:header v-if="contextSelection">
                 <span>Settings: {{contextSelection.name}}
-                    <template v-if="selectedSelections.length > 1"> + {{selectedSelections.length-1}} more</template>
+                    <template v-if="settingsSelections.length > 1"> + {{settingsSelections.length-1}} more</template>
                     
                 </span>
                 
@@ -744,6 +744,7 @@ export default {
             },
         ],
         cloningSetup: false,
+        settingsSelections: [],
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
@@ -792,13 +793,31 @@ export default {
             }
         },
         async showSettingsContext(e, selection) {
+            if (this.contextSelection) {
+                Vue.set(this.contextSelection, selection)
+            } else {
+                this.contextSelection = selection
+            }
+
             // Load the selections settings
             this.loadingSelectionSettings = true
             await this.fetchSelectionSettings(selection)
             this.loadingSelectionSettings = false
 
             const contextMenu = this.$refs.contextMenuOptions
-            this.contextSelection = selection
+
+            // If the parsed selection is part of the selected selection, edit settings for all of them
+            if (this.selectedSelections.find(x => x.id == selection.id)) {
+                this.settingsSelections = this.selectedSelections                
+            } 
+
+            // If the parsed selection is not part of the selected selections, only display settings for that one
+            else {
+                this.settingsSelections = [selection]
+            }
+            
+
+            // this.contextSelection = selection
             // Position the contextual menu
             contextMenu.show(e)
         },
@@ -849,8 +868,8 @@ export default {
         },
         onSaveSelectionSettings() {
             // Send API request to update the selections settings.
-            if (this.selectedSelections.length > 1) {
-                this.selectedSelections.map(selection => {
+            if (this.settingsSelections.length > 1) {
+                this.settingsSelections.map(selection => {
                     // Set the selection settings of this selection to a copy of the context selection's
                     selection.settings = JSON.parse(JSON.stringify(this.contextSelection.settings))
                     this.updateSelectionSettings(selection)
