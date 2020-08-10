@@ -15,7 +15,7 @@
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="showQty">{{variant.quantity}}</span>
+                        <span v-if="showQty">{{variant[currentQty]}}</span>
                     </div>
                 </div>
             </div>
@@ -71,6 +71,7 @@ export default {
         'product',
         'selectionInput',
         'selection',
+        'distributionScope',
     ],
     components: {
         ActionDistributionList
@@ -89,11 +90,13 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
+            currentQty: 'getCurrentSelectionModeQty',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
         }),
         minimumPercentage() {
-            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            const totalQty = this.distributionScope == 'Alignment' ? this.variant.totalQty : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
         }
     },

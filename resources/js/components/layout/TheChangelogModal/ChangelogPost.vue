@@ -20,7 +20,7 @@
             
             <h4>Advanced filters</h4>
             <p>
-                We have included the option to use operators (> greater than, < less than, = equal to, and != not equal to) on multiple parameters. 
+                We have included the option to use operators (> greater than, &lt; less than, = equal to, and != not equal to) on multiple parameters. 
                 This enables you to make custom PDF and .CSV reports and customize your view when going through your collection in Kollekt.
             </p>
 

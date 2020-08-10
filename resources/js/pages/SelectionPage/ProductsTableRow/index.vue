@@ -28,6 +28,7 @@
                     </div> -->
                     <VariantListItem v-for="(variant, index) in selectionInput.variants.slice(0,5)" :key="index" 
                     :variant="variant" :selectionInput="selectionInput" :selection="selection" :product="product"
+                    :distributionScope="distributionScope"
                     v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product, selectionInput}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
                     <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
@@ -57,10 +58,10 @@
                     ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
                 `">
                     <span>
-                        <span v-if="showQty">{{selectionInput.quantity}} /</span>
+                        <span v-if="showQty">{{distributionScope == 'Alignment' ? selectionInput.quantity : selectionInput.totalFeedbackQuantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
-                    <i class="far fa-box"></i>
+                    <i class="fa-box" :class="productHasReachedMinimum ? 'fas primary' : 'far'"></i>
                 </div>
             </td>
             
@@ -113,10 +114,10 @@
 
                 <!-- Single Selection Input only -->
                 <template v-if="!multiSelectionMode">
-                    <div class="your-product-qty" v-if="selectionInput.quantity">
+                    <div class="your-product-qty" v-if="selectionInput[currentQty]">
                         <div class="pill xs ghost">
                             <i class="fas fa-box primary"></i>
-                            <span>{{selectionInput.quantity}}</span>
+                            <span>{{selectionInput[currentQty]}}</span>
                         </div>
                     </div>
                     <div class="fly-over-wrapper">
@@ -212,6 +213,7 @@ export default {
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
+            currentQty: 'getCurrentSelectionModeQty',
         }),
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
@@ -236,6 +238,10 @@ export default {
             if (this.currentSelectionMode == 'Alignment') {
                 return this.selectionInput.hasUnreadApproverComment
             }
+        },
+        productHasReachedMinimum() {
+            const totalQty = this.distributionScope == 'Alignment' ? this.selectionInput.quantity : this.selectionInput.totalFeedbackQuantity
+            return totalQty >= this.product.min_order
         }
     },
     watch: {

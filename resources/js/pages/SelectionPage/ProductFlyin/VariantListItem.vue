@@ -34,6 +34,7 @@ export default {
         'product',
         'selection',
         'selectionInput',
+        'distributionScope',
     ],
     data() { return {
         tooltipIsVisible: false
@@ -60,9 +61,11 @@ export default {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
+            currentSelectionMode: 'currentSelectionMode'
         }),
         minimumPercentage() {
-            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQty : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
         }
     },
