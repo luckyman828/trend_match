@@ -10,8 +10,9 @@
         <div class="comment" :class="[{important: comment.important}, {failed: comment.error}]">
             <span v-if="!editActive" class="body">{{comment.content}}</span>
             <span v-else class="body">
-                <BaseInputTextArea ref="commentInputField" v-model="comment.content"
-                @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
+                <BaseInputTextArea ref="commentInputField" v-model="commentToEdit.content"
+                @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent
+                @keydown.esc.native="editActive = false"/>
             </span>
 
             <!-- Comment Controls -->
@@ -111,13 +112,16 @@ export default {
             this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
         },
         onUpdateComment() {
+            this.comment.content = this.commentToEdit.content
             this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
             this.editActive = false
         },
         onEditComment() {
             this.editActive = true
+            this.commentToEdit = JSON.parse(JSON.stringify(this.comment))
             this.$nextTick(() => {
                 this.$refs.commentInputField.focus()
+                this.$refs.commentInputField.select()
             })
         }
     }

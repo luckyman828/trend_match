@@ -42,6 +42,7 @@ export default {
             }
         },
         async insertOrUpdateRequest({ commit, dispatch }, { selectionInput, request }) {
+            console.log(selectionInput, request.content)
             // Update our state
             commit('INSERT_OR_UPDATE_REQUEST', { selectionInput, request })
             let requestMethod
@@ -67,7 +68,19 @@ export default {
             })
                 .then(response => {
                     // Set the given ID to the request if we were posting a new request
-                    if (!request.id) request.id = response.data.id
+                    if (!request.id) {
+                        request.id = response.data.id
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Request updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     // On error, set error on the request
@@ -90,11 +103,21 @@ export default {
         },
         async deleteRequest({ commit }, { selectionInput, request }) {
             // Delete the request from our state
-            commit('deleteRequest', { selectionInput, request })
+            commit('DELETE_REQUEST', { selectionInput, request })
 
             // Config API endpoint
             const apiUrl = `/requests/${request.id}`
-            await axios.delete(apiUrl)
+            await axios.delete(apiUrl).then(() => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Request deleted',
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                    },
+                    { root: true }
+                )
+            })
         },
     },
 
@@ -118,10 +141,12 @@ export default {
             }
             // Else insert the request
             else {
+                console.log('push new request', request.content)
                 selectionInput.rawSelectionInput.requests.push(request)
             }
         },
-        deleteRequest(state, { selectionInput, request }) {
+        DELETE_REQUEST(state, { selectionInput, request }) {
+            console.log('delete request', selectionInput, request)
             const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
         },
