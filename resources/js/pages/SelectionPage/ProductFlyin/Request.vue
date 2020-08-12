@@ -1,6 +1,6 @@
 <template>
     <div class="request-wrapper" :class="[{own: isOwn}, {master: isMaster}, 
-    {'has-traits': request.focus}, {'edit-active': editActive}]">
+    {'has-traits': request.focus}, {'edit-active': editActive}, {'no-controls': disableControls}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
@@ -16,8 +16,16 @@
                 @keydown.esc.native="onCancel"/>
             </span>
 
+            <div class="thread-controls" v-if="currentSelection.type == 'Master' && !disableControls">
+                <button class="invisible dark ghost-hover"
+                v-tooltip="'View request thread'"
+                @click="SET_CURRENT_REQUEST_THREAD(request)">
+                    <i class="far fa-comment"></i>
+                </button>
+            </div>
+
             <!-- Request Controls -->
-            <div class="controls" v-if="!editActive">
+            <div class="controls" v-if="!editActive && !disableControls">
 
                 <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
                 @click="onDeleteRequest">
@@ -57,13 +65,14 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 export default {
     name: 'request',
     props: [
         'request',
-        'selectionInput'
+        'selectionInput',
+        'disableControls',
     ],
     data: function() { return {
         requestToEdit: this.request,
@@ -81,6 +90,7 @@ export default {
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         async onDeleteRequest() {
             if (await this.$refs.confirmDeleteRequest.confirm()) {
                 this.deleteRequest({selectionInput: this.selectionInput, request: this.request})
@@ -137,6 +147,11 @@ export default {
                 }
             }
         }
+        &.no-controls {
+            .request {
+                padding-bottom: 20px;
+            }
+        }
     }
     .save-controls {
         position: absolute;
@@ -173,6 +188,7 @@ export default {
     }
     .request {
         padding: 12px;
+        padding-bottom: 40px;
         border-radius: 6px;
         display: flex;
         flex-direction: column;
@@ -182,6 +198,11 @@ export default {
             .controls {
                 display: block;
             }
+        }
+        .thread-controls {
+            position: absolute;
+            right: 4px;
+            bottom: 4px;
         }
         .sender {
             font-size: 12px;
@@ -203,12 +224,12 @@ export default {
         .content {
             white-space: pre-wrap;
             word-wrap: break-word;
-            margin: 12px 0;
+            margin-top: 12px;
         }
         .controls {
             transition: .3s;
             position: absolute;
-            right: 0;
+            left: 0;
             bottom: 0;
             padding: 4px;
             display: none;

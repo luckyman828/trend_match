@@ -18,6 +18,7 @@ import presenterQueue from './modules/presenterQueue'
 import lightbox from './modules/lightbox'
 import tables from './modules/tables'
 import changelog from './modules/changelog'
+import flyin from './modules/flyin'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -43,6 +44,7 @@ const store = new Vuex.Store({
         lightbox,
         tables,
         changelog,
+        flyin,
     },
 })
 

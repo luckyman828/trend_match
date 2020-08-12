@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'baseFlyin',
@@ -38,8 +38,10 @@ export default {
     ],
     data: function () { return {
         visible: false,
+        flyinIndex: null,
     }},
     computed: {
+        ...mapGetters('flyin', ['getVisibleFlyinCount']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
         ...mapGetters('contextMenu', {
             contextMenuVisible: 'getContextMenuIsVisible'}),
@@ -50,8 +52,19 @@ export default {
             return {gridTemplateColumns: `repeat(${this.columns}, ${100/this.columns}%)`}
         }
     },
+    watch: {
+        isVisible(newVal) {
+            if (newVal) {
+                // SHOW
+                this.INCREMENT_VISIBLE_AMOUNT()
+                this.flyinIndex = this.getVisibleFlyinCount
+            }
+        }
+    },
     methods: {
+        ...mapMutations('flyin', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
         close () {
+            this.DECREMENT_VISIBLE_AMOUNT()
             this.visible = false
             this.$emit('close')
         },
@@ -70,6 +83,7 @@ export default {
                     && event.target.type != 'textarea' 
                     && event.target.tagName.toUpperCase() != 'INPUT'
                     && !this.contextMenuVisible
+                    && this.getVisibleFlyinCount == this.flyinIndex
                 ) {
                     if (key == 'Escape')
                         this.close()

@@ -163,6 +163,8 @@
 
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
 
+            <RequestThreadFlyin/>
+
             <BaseDialog ref="confirmCloseInPresentation" type="confirm"
             confirmColor="dark" confirmText="Okay, close it">
                 <div class="icon-graphic">
@@ -200,6 +202,7 @@ import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import BudgetCounter from '../BudgetCounter'
+import RequestThreadFlyin from './RequestThreadFlyin'
 
 export default {
     name: 'productFlyin',
@@ -219,6 +222,7 @@ export default {
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
+        RequestThreadFlyin,
     },
     data: function () { return {
         currentImgIndex: 0,
@@ -263,6 +267,7 @@ export default {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
         }),
+        ...mapGetters('requests', ['getRequestThreadVisible']),
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
         },
@@ -358,6 +363,8 @@ export default {
             }
         },
         hotkeyEnterHandler(e) {
+            // If the request thread flyin is visible, do nothing
+            if (this.getRequestThreadVisible) return
             // If the current mode is Alignment, focus the request field. Else focus comment
             if (this.currentSelectionMode == 'Alignment') {
                 this.$refs.requestsSection.activateWrite()

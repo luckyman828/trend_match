@@ -7,6 +7,7 @@ export default {
     state: {
         loading: true,
         submitting: false,
+        currentRequestThread: null,
     },
 
     getters: {
@@ -16,6 +17,8 @@ export default {
         submittingRequest: state => {
             return state.submitting
         },
+        getCurrentRequestThread: state => state.currentRequestThread,
+        getRequestThreadVisible: state => !!state.currentRequestThread,
     },
 
     actions: {
@@ -119,6 +122,10 @@ export default {
                 )
             })
         },
+        insertOrUpdateRequestComment({ commit }, { request, comment }) {
+            console.log('insert or update request comment', request, comment)
+            commit('INSERT_REQUEST_COMMENT', { request, comment })
+        },
     },
 
     mutations: {
@@ -150,8 +157,13 @@ export default {
             const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
         },
-        alertError: state => {
-            window.alert('Network error. Please check your connection')
+        SET_CURRENT_REQUEST_THREAD(state, request) {
+            state.currentRequestThread = request
         },
+        INSERT_REQUEST_COMMENT(state, { request, comment }) {
+            if (!request.comments) Vue.set(request, 'comments', []) // TEMP CODE
+            request.comments.push(comment)
+        },
+        // UPDATE_REQUEST_COMMENT(state, {comment})
     },
 }
