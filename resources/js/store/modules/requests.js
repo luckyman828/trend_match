@@ -55,6 +55,14 @@ export default {
                 requestMethod = 'put'
                 apiUrl = `/requests/${request.id}`
             } else {
+                Vue.set(request, 'comments', [])
+
+                Object.defineProperty(request, 'is_resolved', {
+                    get: function() {
+                        return !!request.completed_at
+                    },
+                })
+
                 requestMethod = 'post'
                 // Add the new request to our product
                 apiUrl = `/selections/${selectionInput.selection_id}/products/${selectionInput.product_id}/requests`
@@ -123,8 +131,25 @@ export default {
             })
         },
         insertOrUpdateRequestComment({ commit }, { request, comment }) {
-            console.log('insert or update request comment', request, comment)
             commit('INSERT_REQUEST_COMMENT', { request, comment })
+        },
+        async resolveRequest({ commit, rootGetters }, request) {
+            commit('RESOLVE_REQUEST', { request, resolve: !request.is_resolved, user: rootGetters['auth/authUser'] })
+
+            const apiUrl = `/requests/${request.id}/complete`
+            await axios.put(apiUrl).then(() => {
+                if (request.is_resolved) {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Request resolved',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                }
+            })
         },
     },
 
@@ -163,6 +188,15 @@ export default {
         INSERT_REQUEST_COMMENT(state, { request, comment }) {
             if (!request.comments) Vue.set(request, 'comments', []) // TEMP CODE
             request.comments.push(comment)
+        },
+        RESOLVE_REQUEST(state, { request, resolve, user }) {
+            if (resolve) {
+                request.completed_at = new Date()
+                request.completed_by_user = user
+            } else {
+                request.completed_at = null
+                request.completed_by_user = null
+            }
         },
         // UPDATE_REQUEST_COMMENT(state, {comment})
     },

@@ -1,6 +1,6 @@
 <template>
     <div class="comment-wrapper" 
-    :class="[{'own': comment.user_id == authUser.id}, {'master': comment.selection.type == 'Master'}, 
+    :class="[{'own': comment.user_id == authUser.id}, {'master': comment.role == 'Owner'}, 
     {'has-traits': hasTraits}, {'edit-active': editActive}]">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
@@ -74,6 +74,7 @@ export default {
     name: 'requestComment',
     props: [
         'comment',
+        'displayAuthor',
     ],
     data: function() {
         return {

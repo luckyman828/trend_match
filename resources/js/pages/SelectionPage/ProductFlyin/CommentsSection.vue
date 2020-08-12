@@ -231,42 +231,11 @@ export default {
                 display: block;
                 margin-top: -2px;
             }
-            .edit-request {
-                position: absolute;
-                right: 12px;
-                font-size: 10px;
-                color: $dark;
-                font-weight: 500;
-                top: 50%;
-                transform: translateY(-50%);
-                cursor: pointer;
-                .circle {
-                    height: 24px;
-                    width: 24px;
-                    margin-left: 4px;
-                }
-            }
             .flex-wrapper {
                 display: flex;
                 justify-content: space-between;
                 margin-top: 8px;
                 // align-items: center;
-            }
-        }
-        .checkmark {
-            height: 32px;
-            width: 32px;
-            line-height: 32px;
-            text-align: center;
-            border-radius: 16px;
-            background: $light1;
-            color: $dark2;
-            position: absolute;
-            right: 16px;
-            top: 4px;
-            cursor: pointer;
-            &.active {
-                color: $primary;
             }
         }
         input[type=submit] {

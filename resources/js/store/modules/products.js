@@ -1199,6 +1199,17 @@ export default {
                     },
                 })
 
+                // PROCESS REQUESTS
+                selectionInput.requests.forEach(request => {
+                    Vue.set(request, 'comments', [])
+
+                    Object.defineProperty(request, 'is_resolved', {
+                        get: function() {
+                            return !!request.completed_at
+                        },
+                    })
+                })
+
                 // PROCESS VARIANTS
                 selectionInput.variants.forEach(variant => {
                     // VARIANTS
