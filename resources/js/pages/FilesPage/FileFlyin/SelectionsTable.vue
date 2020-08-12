@@ -794,6 +794,7 @@ export default {
         },
         async showSettingsContext(e, selection) {
             if (this.contextSelection) {
+                this.contextSelection = selection
                 Vue.set(this.contextSelection, selection)
             } else {
                 this.contextSelection = selection
