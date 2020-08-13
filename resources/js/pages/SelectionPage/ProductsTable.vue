@@ -3,25 +3,31 @@
 
         <BaseFlexTable class="products-table" :stickyHeader=true>
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
-                v-model="currentProductFilter"
-                modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                :modelValue="insTabValue"/>
-                <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
-                <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="outs"/>
-                <BaseTableTab :label="`Nds`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length" 
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="nds"/>
+                <div class="tabs-inner">
+                    <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
+                    v-model="currentProductFilter"
+                    modelValue="overview"/>
+                    <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    :modelValue="insTabValue"/>
+                    <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
+                    <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    modelValue="outs"/>
+                    <BaseTableTab :label="`Nds`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    modelValue="nds"/>
+                    <BaseTableTab :label="`Tickets`" :count="stateProducts.filter(x => x.hasOpenTicket).length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    modelValue="tickets"/>
+                </div>
 
                 <!-- Selection Selector -->
                 <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
@@ -584,144 +590,149 @@ export default {
 </style>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
+@import '~@/_variables.scss';
 
 
-    .products-table-wrapper {
-        ::v-deep {
-            tr:not(.table-top-bar) > * {
-                flex: 0 1 auto;
-            }
-            tr {
-                th, td {
-                    &.title {
-                        min-width: 220px;
-                        max-width: 220px;
-                        display: flex;
-                        align-items: center;
-                        margin-right: auto;
-                        @media screen and (max-width: $screenXs) {
-                            min-width: 160px;
-                            max-width: 160px;
-                        }
-                    }
-                    &.id {
-                        min-width: 80px;
-                        max-width: 80px;
-                        margin-left: 16px
-                    }
-                    &.image {
-                        min-width: 100px;
-                        max-width: 100px;
-                        height: 100%;
-                    }
-                    &.delivery {
-                        min-width: 80px;
-                        max-width: 80px;
-                        margin-right: auto;
-                    }
-                    &.wholesale-price, &.recommended-retail-price {
-                        min-width: 64px;
-                        max-width: 64px;
-                    }
-                    &.currency {
-                        min-width: 38px;
-                        max-width: 38px;
-                    }
-                    &.mark-up {
-                        min-width: 36px;
-                        max-width: 36px;
-                    }
-                    &.currency {
-                        margin-right: auto;
-                    }
-                    &.minimum {
-                        min-width: 104px;
-                        max-width: 104px;
-                        margin-right: auto;
-                    }
-                    &.focus, &.ins, &.outs, &.nds {
-                        min-width: 48px;
-                        max-width: 48px;
-                    }
-                    &.outs {
-                        min-width: 52px;
-                        max-width: 52px;
-                    }
-                    &.nds {
-                        margin-right: auto;
-                    }
-                    &.requests {
-                        // margin-left: 32px;
-                        .button {
-                            padding: 0 4px;
-                        }
-                    }
-                    &.action {
-                        flex: 0 1 auto;
-                        margin-left: auto;
-                        @media screen and (min-width: $screenMd+1) {
-                            min-width: 232px;
-                            max-width: 232px;
-                            
-                        }
-                        // min-width: 40px;
-                        // max-width: 40px;
-                        // margin-left: 32px;
+.products-table-wrapper {
+    ::v-deep {
+        tr:not(.table-top-bar) > * {
+            flex: 0 1 auto;
+        }
+        tr {
+            th, td {
+                &.title {
+                    min-width: 220px;
+                    max-width: 220px;
+                    display: flex;
+                    align-items: center;
+                    margin-right: auto;
+                    @media screen and (max-width: $screenXs) {
+                        min-width: 160px;
+                        max-width: 160px;
                     }
                 }
-                td {
-                    // &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up, &.minimum {
-                    //     padding-bottom: 20px;
-                    // }
-                    &:not(.image):not(.select):not(.action):not(.id) {
-                        padding-bottom: 28px;
+                &.id {
+                    min-width: 80px;
+                    max-width: 80px;
+                    margin-left: 16px
+                }
+                &.image {
+                    min-width: 100px;
+                    max-width: 100px;
+                    height: 100%;
+                }
+                &.delivery {
+                    min-width: 80px;
+                    max-width: 80px;
+                    margin-right: auto;
+                }
+                &.wholesale-price, &.recommended-retail-price {
+                    min-width: 64px;
+                    max-width: 64px;
+                }
+                &.currency {
+                    min-width: 38px;
+                    max-width: 38px;
+                }
+                &.mark-up {
+                    min-width: 36px;
+                    max-width: 36px;
+                }
+                &.currency {
+                    margin-right: auto;
+                }
+                &.minimum {
+                    min-width: 104px;
+                    max-width: 104px;
+                    margin-right: auto;
+                }
+                &.focus, &.ins, &.outs, &.nds {
+                    min-width: 48px;
+                    max-width: 48px;
+                }
+                &.outs {
+                    min-width: 52px;
+                    max-width: 52px;
+                }
+                &.nds {
+                    margin-right: auto;
+                }
+                &.requests {
+                    // margin-left: 32px;
+                    .button {
+                        padding: 0 4px;
                     }
                 }
-            }
-        }
-    }
-    .product-row {
-        &.action-2 {
-            box-shadow: 4px 0 $primary inset
-        }
-        &.action-1 {
-            box-shadow: 4px 0 $green inset
-        }
-        &.action-0 {
-            box-shadow: 4px 0 $red inset
-        }
-    }
-
-    .selection-selector {
-        display: flex;
-        margin-left: auto;
-        > *:not(:first-child) {
-            margin-left: 8px;
-        }
-    }
-
-    .table-top-bar {
-        button {
-            position: relative;
-            .circle {
-                position: absolute;
-                right: -8px;
-                top: -8px;
-            }
-        }
-    }
-    .filter-button {
-        @media screen and (max-width: $screenMd) {
-            span {
-                margin-right: 8px;
-                &:first-child {
-                    margin-left: 8px;
+                &.action {
+                    flex: 0 1 auto;
+                    margin-left: auto;
+                    @media screen and (min-width: $screenMd+1) {
+                        min-width: 232px;
+                        max-width: 232px;
+                        
+                    }
+                    // min-width: 40px;
+                    // max-width: 40px;
+                    // margin-left: 32px;
                 }
             }
-            .fa-chevron-down {
-                display: none;
+            td {
+                // &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up, &.minimum {
+                //     padding-bottom: 20px;
+                // }
+                &:not(.image):not(.select):not(.action):not(.id) {
+                    padding-bottom: 28px;
+                }
             }
         }
     }
+}
+.product-row {
+    &.action-2 {
+        box-shadow: 4px 0 $primary inset
+    }
+    &.action-1 {
+        box-shadow: 4px 0 $green inset
+    }
+    &.action-0 {
+        box-shadow: 4px 0 $red inset
+    }
+}
+
+.selection-selector {
+    display: flex;
+    margin-left: auto;
+    > *:not(:first-child) {
+        margin-left: 8px;
+    }
+}
+
+.tabs-inner {
+    width: calc(100% - 200px);
+    display: flex;
+}
+
+.table-top-bar {
+    button {
+        position: relative;
+        .circle {
+            position: absolute;
+            right: -8px;
+            top: -8px;
+        }
+    }
+}
+.filter-button {
+    @media screen and (max-width: $screenMd) {
+        > span {
+            margin-right: 8px;
+            &:first-child {
+                margin-left: 8px;
+            }
+        }
+        .fa-chevron-down {
+            display: none;
+        }
+    }
+}
 </style>

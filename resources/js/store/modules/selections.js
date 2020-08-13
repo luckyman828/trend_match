@@ -83,6 +83,7 @@ export default {
                     : 'No Access'
             }
         },
+        getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
             return selection.your_role == 'Member'
                 ? 'Feedback'

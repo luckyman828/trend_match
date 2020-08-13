@@ -13,31 +13,46 @@
             <div class="inner">
                 <div class="request">
                     <Request :request="request" :disableControls="true"/>
+
+                    <!-- <div class="divider">
+                        <span>Request comments</span>
+                    </div> -->
                 </div>
+
 
                 <div class="comment-section">
                     <RequestComment v-for="(comment, index) in request.comments" :key="comment.id"
                     :comment="comment"
                     :displayAuthor="!request.comments[index+1] || request.comments[index+1].role != request.comments[index].role"/>
+
+                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.comments.length <= 0)">
+                        <span>Awaiting reply from {{getCurrentSelectionMode == 'Alignment' ? 'Approver' : 'Aligner'}}</span>
+                    </div>
                 </div>
 
-                <div class="resolve-button">
-                    <button class="lg full-width" :class="[request.is_resolved ? 'green' : 'primary', {'is-resolved': request.is_resolved}]"
+
+                <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment'">
+                    <button class="lg full-width" :class="[request.isResolved ? 'green' : 'primary', {'is-resolved': request.isResolved}]"
                     @click="onResolve">
-                        <span v-if="!request.is_resolved">Mark as resolved</span>
+                        <span v-if="!request.isResolved">Mark as resolved</span>
                         <template v-else>
-                            <span>Resolved by {{request.completed_by_user.name}}</span>
+                            <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
                             <span class="hover">Re-open request</span>
                         </template>
                     </button>
                 </div>
+                <div class="resolved-banner" 
+                v-if="getCurrentSelectionMode == 'Approval' && request.isResolved">
+                    <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
+                </div>
 
-                <div class="form-wrapper" v-if="!request.is_resolved">
+                <div class="form-wrapper" v-if="!request.isResolved">
                     <strong class="form-header">Write comment</strong>
 
                     <form @submit="onSubmit" :class="[{active: writeActive}]">
                         <div class="input-parent comment">
                             <BaseInputTextArea ref="commentField"
+                            placeholder="Write your comment here..."
                             v-model="newComment.content" 
                             @click.native="activateWrite()" @keydown.native.enter.exact.prevent  
                             @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"/>
@@ -88,10 +103,13 @@ export default {
             show: 'getRequestThreadVisible',
             request: 'getCurrentRequestThread'
         }),
-        ...mapGetters('selections', ['getCurrentSelection']),
+        ...mapGetters('selections', ['getCurrentSelection', 'getCurrentSelectionMode']),
         submitDisabled () {
             return this.newComment.content.length < 1 || this.submitting
         },
+        hasNewComment() {
+            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || this.request.hasUnreadAlignerComment
+        }
     },
     methods: {
         ...mapMutations('requests', {
@@ -99,6 +117,7 @@ export default {
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'resolveRequest']),
         activateWrite() {
+            if (this.request.isResolved) return
             this.$refs.commentField.focus()
             this.$refs.commentField.select()
             this.writeActive = true
@@ -109,6 +128,8 @@ export default {
             document.activeElement.blur()
         },
         onResolve() {
+            // If we are un-resolving the request, remove the focus from the button so we can use ENTER to start writing a new comment
+            if (this.request.isResolved) document.activeElement.blur()
             this.resolveRequest(this.request)
         },
         async onSubmit() {
@@ -128,7 +149,7 @@ export default {
                 selection_id: this.request.selection_id,
                 selection: this.request.selection,
             }
-            console.log('comment to post', commentToPost.role)
+
             // dispatch action
             await this.insertOrUpdateRequestComment({request: this.request, comment: commentToPost})
             this.submitting = false
@@ -169,7 +190,7 @@ export default {
             min-width: 0;
         }
     }
-    .resolve-button {
+    .resolve-button, .resolved-banner {
         border-top: $borderEl;
         border-bottom: $borderEl;
         ::v-deep {
@@ -192,6 +213,18 @@ export default {
                 }
             }
         }
+    }
+    .resolved-banner {
+        height: 48px;
+        min-height: 48px;
+        background: $green;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+
     }
     .inner {
         height: 100%;
@@ -233,6 +266,27 @@ export default {
         }
         font-size: 10px;
         color: $dark2;
+    }
+}
+.divider {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    margin: auto;
+    // max-width: calc(100% - 16px * 2);
+    span {
+        margin: 0 20px;
+        white-space: nowrap;
+        font-size: 12px;
+        color: $fontSoft;
+    }
+    &::before, &::after {
+        content: "";
+        height: 1px;
+        background: $borderColorEl;
+        width: 100%;
     }
 }
 

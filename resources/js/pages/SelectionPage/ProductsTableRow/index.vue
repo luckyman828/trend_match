@@ -99,13 +99,16 @@
                 <!-- End Distribution -->
 
                 <td class="requests">
+
                     <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests'">
                         <span>{{selectionInput.requests.length}}</span><i class="far fa-clipboard-check"></i>
-                        <i v-if="selectionInput.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
+                        <div v-if="product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>
+
                     <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
                         <span>{{selectionInput.comments.length}}</span><i class="far fa-comment"></i>
                     </button>
+
                 </td>
             </template>
             
@@ -436,17 +439,18 @@ export default {
     }
     .requests-button {
         position: relative;
-        .own-request {
-            position: absolute;
-            right: -10px;
-            bottom: -8px;
-            color:  $primary;
-            border-radius: 20px;
-            font-size: 16px;
-            &::before {
-                background: white;
-                border-radius: 20px;
+        &:hover {
+            .new-comment-bullet {
+                top: -7px;
+                right: -5px;
             }
+        }
+        .new-comment-bullet {
+            position: absolute;
+            right: -4px;
+            top: -6px;
+            width: 10px;
+            height: 10px;
         }
     }
 

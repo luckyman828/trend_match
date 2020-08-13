@@ -57,7 +57,7 @@ export default {
             } else {
                 Vue.set(request, 'comments', [])
 
-                Object.defineProperty(request, 'is_resolved', {
+                Object.defineProperty(request, 'isResolved', {
                     get: function() {
                         return !!request.completed_at
                     },
@@ -134,11 +134,11 @@ export default {
             commit('INSERT_REQUEST_COMMENT', { request, comment })
         },
         async resolveRequest({ commit, rootGetters }, request) {
-            commit('RESOLVE_REQUEST', { request, resolve: !request.is_resolved, user: rootGetters['auth/authUser'] })
+            commit('RESOLVE_REQUEST', { request, resolve: !request.isResolved, user: rootGetters['auth/authUser'] })
 
             const apiUrl = `/requests/${request.id}/complete`
             await axios.put(apiUrl).then(() => {
-                if (request.is_resolved) {
+                if (request.isResolved) {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {

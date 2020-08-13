@@ -17,10 +17,16 @@
             </span>
 
             <div class="thread-controls" v-if="currentSelection.type == 'Master' && !disableControls">
-                <button class="invisible dark ghost-hover"
-                v-tooltip="'View request thread'"
+                <button class="view-thread-button invisible dark ghost-hover sm"
+                v-tooltip="request.isResolved ? 'Request resolved' : hasNewComment ? 'New comment' : 'View request thread'"
                 @click="SET_CURRENT_REQUEST_THREAD(request)">
+
+                    <i v-if="request.isResolved" class="far fa-check"></i>
+
+                    <span>{{request.comments.length}}</span>
                     <i class="far fa-comment"></i>
+
+                    <div v-if="hasNewComment" class="circle xxs primary new-comment-indicator"></div>
                 </button>
             </div>
 
@@ -80,12 +86,15 @@ export default {
     }},
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection']),
+        ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode']),
         isOwn() {
             return this.request.selection_id == this.currentSelection.id
         },
         isMaster() {
             return this.request.selection.type == 'Master'
+        },
+        hasNewComment() {
+            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || this.request.hasUnreadAlignerComment
         }
     },
     methods: {
@@ -118,141 +127,150 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-
-    .request-wrapper {
-        margin-bottom: 4px;
-        position: relative;
-        &.has-traits {
-            margin-top: 24px;
-        }
-        &.edit-active {
+.request-wrapper {
+    margin-bottom: 4px;
+    position: relative;
+    &.has-traits {
+        margin-top: 24px;
+    }
+    &.edit-active {
+        width: 100%;
+        max-width: none;
+        margin-bottom: 72px;
+        .request {
+            padding: 2px;
             width: 100%;
-            max-width: none;
-            margin-bottom: 72px;
-            .request {
-                padding: 2px;
-                width: 100%;
-                .sender {
-                    margin-left: 10px;
-                    margin-top: 10px;
-                }
-                .content {
-                    margin-bottom: 0;
-                }
-                ::v-deep {
-                    .input-wrapper {
-                        border: none;
-                        min-height: 160px;
-                    }
+            .sender {
+                margin-left: 10px;
+                margin-top: 10px;
+            }
+            .content {
+                margin-bottom: 0;
+            }
+            ::v-deep {
+                .input-wrapper {
+                    border: none;
+                    min-height: 160px;
                 }
             }
         }
-        &.no-controls {
-            .request {
-                padding-bottom: 20px;
-            }
+    }
+    &.no-controls {
+        .request {
+            padding-bottom: 20px;
         }
     }
-    .save-controls {
-        position: absolute;
-        bottom: -8px;
-        right: 0;
-        transform: translateY(100%);
-        display: flex;
-    }
-    .traits {
-        position: absolute;
-        top: -16px;
-        left: -10px;
-        z-index: 1;
-        white-space: nowrap;
-        > * {
-            box-shadow: 0 3px 6px rgba(0,0,0,.2);
-            &:not(:last-child) {
-                margin-right: 8px;
-            }
+}
+.save-controls {
+    position: absolute;
+    bottom: -8px;
+    right: 0;
+    transform: translateY(100%);
+    display: flex;
+}
+.traits {
+    position: absolute;
+    top: -16px;
+    left: -10px;
+    z-index: 1;
+    white-space: nowrap;
+    > * {
+        box-shadow: 0 3px 6px rgba(0,0,0,.2);
+        &:not(:last-child) {
+            margin-right: 8px;
         }
     }
-    .pill {
-        i {
-            font-size: 8px;
-            margin-right: 4px;
-        }
+}
+.pill {
+    i {
+        font-size: 8px;
+        margin-right: 4px;
     }
-    .save-controls {
-        position: absolute;
-        bottom: -8px;
-        right: 0;
-        transform: translateY(100%);
-        display: flex;
-    }
-    .request {
-        padding: 12px;
-        padding-bottom: 40px;
-        border-radius: 6px;
-        display: flex;
-        flex-direction: column;
-        background: white;
-        position: relative;
-        &:hover {
-            .controls {
-                display: block;
-            }
-        }
-        .thread-controls {
-            position: absolute;
-            right: 4px;
-            bottom: 4px;
-        }
-        .sender {
-            font-size: 12px;
-        }
-        .id {
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .own:not(.master) & {
-            background: $primary;
-            color: white;
-            strong {
-                color: white;
-            }
-        }
-        .master & {
-            background: $yellow;
-        }
-        .content {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            margin-top: 12px;
-        }
+}
+.save-controls {
+    position: absolute;
+    bottom: -8px;
+    right: 0;
+    transform: translateY(100%);
+    display: flex;
+}
+.request {
+    padding: 12px;
+    padding-bottom: 40px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    position: relative;
+    &:hover {
         .controls {
-            transition: .3s;
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            padding: 4px;
-            display: none;
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 3px 6px rgba(0,0,0,.2);
-            z-index: 1;
-            > *:not(:first-child) {
-                margin-left: 8px;
-                &::before {
-                    content: "";
-                    display: block;
-                    width: 1px;
-                    height: 28px;
-                    background: #cfcfcf;
-                    position: absolute;
-                    left: -6px;
-                }
-            }
-            .loader {
-                height: 24px;
-                flex-direction: row;
-            }
+            display: block;
         }
     }
+    .thread-controls {
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+    }
+    .sender {
+        font-size: 12px;
+    }
+    .id {
+        font-size: 12px;
+        font-weight: 500;
+    }
+    .own:not(.master) & {
+        background: $primary;
+        color: white;
+        strong {
+            color: white;
+        }
+    }
+    .master & {
+        background: $yellow;
+    }
+    .content {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        margin-top: 12px;
+    }
+    .controls {
+        transition: .3s;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        padding: 4px;
+        display: none;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 3px 6px rgba(0,0,0,.2);
+        z-index: 1;
+        > *:not(:first-child) {
+            margin-left: 8px;
+            &::before {
+                content: "";
+                display: block;
+                width: 1px;
+                height: 28px;
+                background: #cfcfcf;
+                position: absolute;
+                left: -6px;
+            }
+        }
+        .loader {
+            height: 24px;
+            flex-direction: row;
+        }
+    }
+}
+.view-thread-button {
+    position: relative;
+    .new-comment-indicator {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 10px;
+        width: 10px;
+    }
+}
 </style>
