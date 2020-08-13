@@ -8,12 +8,12 @@
 
             <h3>Notes</h3>
             <p>
-                We have made changes to multiple core areas of Kollekt. 
-                The filtering options have been vastly improved which enables you to create customized exports.
+                We have made changes to multiple core areas of Kollekt. <br>
+                The filtering options have been vastly improved which enables you to create customized exports.<br>
                 It's now finally possible to have multiple selections in individual presentations!
             </p>
             <p>
-                See the list below for the things we’ve been working on for the last month. 
+                See the list below for the things we’ve been working on for the last month.<br>
                 In addition to the things you see here, there are bug fixes and refactoring 
                 (a fancy word for developer housekeeping).
             </p>
@@ -26,7 +26,7 @@
 
             <h4>Selection input filter</h4>
             <p>
-                Choose relevant selections you want to view input from when making decisions. 
+                Choose relevant selections you want to view input from when making decisions.<br>
                 This is also powerful for your .CSV and PDF exports.
             </p>
 
@@ -57,9 +57,17 @@
 
             <h4>Allow any selection to be presenting</h4>
             <p>
-                All selections can now enter presentation mode individually. 
+                All selections can now enter presentation mode individually.<br>
                 Note that if a parent of a selection enters presentation mode, this will take priority, and broadcast for all children.
             </p>
+
+            <h4>Change settings for multiple selections at once</h4>
+            <p>
+                The selections table will now have select-boxes (checkboxes) next to the selection names.<br>
+                Any selected selection will have their settings updated, when you save new settings.
+            </p>
+
+            
 
         </div>
     </div>
