@@ -55,14 +55,6 @@ export default {
                 requestMethod = 'put'
                 apiUrl = `/requests/${request.id}`
             } else {
-                Vue.set(request, 'comments', [])
-
-                Object.defineProperty(request, 'isResolved', {
-                    get: function() {
-                        return !!request.completed_at
-                    },
-                })
-
                 requestMethod = 'post'
                 // Add the new request to our product
                 apiUrl = `/selections/${selectionInput.selection_id}/products/${selectionInput.product_id}/requests`
@@ -162,6 +154,7 @@ export default {
             state.submitting = bool
         },
         INSERT_OR_UPDATE_REQUEST(state, { selectionInput, request }) {
+            console.log('insert or update request', request)
             // First see if the request already exists
             const existingRequestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
@@ -175,12 +168,42 @@ export default {
             else {
                 console.log('push new request', request.content)
                 selectionInput.rawSelectionInput.requests.push(request)
+
+                Vue.set(request, 'comments', [])
+
+                Object.defineProperty(request, 'isResolved', {
+                    get: function() {
+                        return !!request.completed_at
+                    },
+                })
+                Object.defineProperty(request, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        return (
+                            !request.isResolved &&
+                            (request.comments.length <= 0 ||
+                                request.comments[request.comments.length - 1].role != 'Approver')
+                        )
+                    },
+                })
+                Object.defineProperty(request, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            !request.isResolved &&
+                            request.comments.length > 0 &&
+                            request.comments[request.comments.length - 1].role == 'Approver'
+                        )
+                    },
+                })
             }
         },
         DELETE_REQUEST(state, { selectionInput, request }) {
-            console.log('delete request', selectionInput, request)
-            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
+            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.request_id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
+            // Check if the request is the current request
+            if (state.currentRequestThread && state.currentRequestThread.id == request.request_id) {
+                state.currentRequestThread = null
+                console.log(state.currentRequestThread)
+            }
         },
         SET_CURRENT_REQUEST_THREAD(state, request) {
             state.currentRequestThread = request

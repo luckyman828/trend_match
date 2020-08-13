@@ -4,7 +4,7 @@
     @click.ctrl="$refs.selectCheckbox.check()">
 
         <div class="product-details">
-            <div v-if="hasUnreadComment" class="unread-indicator circle xxs primary" 
+            <div v-if="product.hasNewComment" class="unread-indicator circle xxs primary" 
             v-tooltip.right="'A message needs a reply'"/>
             
             <td class="select" 
@@ -232,14 +232,6 @@ export default {
         titleTruncateSize () {
             return window.innerWidth < 1260 ? 16 : 24
         },
-        hasUnreadComment() {
-            if (this.currentSelectionMode == 'Approval') {
-                return this.selectionInput.hasUnreadAlignerComment
-            }
-            if (this.currentSelectionMode == 'Alignment') {
-                return this.selectionInput.hasUnreadApproverComment
-            }
-        }
     },
     watch: {
         // Watch for changes to the current focus index 

@@ -148,7 +148,7 @@ export default{
     methods: {
         ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
-        ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
+        ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST', 'DELETE_REQUEST']),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
@@ -242,6 +242,13 @@ export default{
                 this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
             }
         },
+        requestDeletedHandler(selectionId, request) {
+            if (request.author_id != this.authUser.id) {
+                // console.log("OnRequestArrived", selectionId, request)
+                const product = this.products.find(x => x.id == request.product_id)
+                this.DELETE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
+            }
+        },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {
                 this.SET_FEEDBACKS(feedbacks)
@@ -282,6 +289,7 @@ export default{
 
             // Requests
             connection.on("OnRequestArrived", this.requestArrivedHandler)
+            connection.on("OnRequestDeleted", this.requestDeletedHandler)
 
             // Feedback
             connection.on("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)
@@ -304,6 +312,7 @@ export default{
 
             // Requests
             connection.off("OnRequestArrived", this.requestArrivedHandler)
+            connection.off("OnRequestArrived", this.requestDeletedHandler)
 
             // Feedback
             connection.off("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)

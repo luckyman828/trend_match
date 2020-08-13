@@ -886,9 +886,10 @@ export default {
                 Object.defineProperty(product, 'hasNewComment', {
                     get: function() {
                         return (
-                            (rootGetters['selection/getCurrentSelectionMode'] == 'Alignment' &&
+                            (rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
                                 product.hasUnreadApproverComment) ||
-                            product.hasUnreadAlignerComment
+                            (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
+                                product.hasUnreadAlignerComment)
                         )
                     },
                 })
