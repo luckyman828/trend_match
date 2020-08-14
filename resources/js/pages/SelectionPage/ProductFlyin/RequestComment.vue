@@ -16,7 +16,7 @@
             </span>
 
             <!-- Comment Controls -->
-            <div class="controls" v-if="!editActive">
+            <div class="controls" v-if="!editActive && comment.user_id == authUser.id">
 
                 <!-- comment error -->
                 <span v-if="comment.error" class="failed clickable" v-tooltip.top="!comment.id ? 'Retry submit' : 'Retry edit'" @click="retrySubmitComment">

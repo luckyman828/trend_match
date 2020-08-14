@@ -23,7 +23,7 @@
                     v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     modelValue="nds"/>
-                    <BaseTableTab :label="`Tickets`" :count="stateProducts.filter(x => x.hasOpenTicket).length" 
+                    <BaseTableTab v-if="selection.type == 'Master' && approvalEnabled" :label="`Tickets`" :count="stateProducts.filter(x => x.hasOpenTicket).length" 
                     v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     modelValue="tickets"/>
@@ -129,7 +129,8 @@
                         </v-popover>
 
                         <!-- Temp. disabled until the functionality gets hooked up -->
-                        <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master'">
+                        <BaseCheckboxInputField class="small" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master' && approvalEnabled"
+                        v-model="unreadOnly">
                             <span>Unread only</span>
                         </BaseCheckboxInputField>
 
@@ -373,6 +374,9 @@ export default {
         insTabValue: 'ins',
     }},
     computed: {
+        ...mapGetters('files', {
+            approvalEnabled: 'getApprovalEnabled'
+        }),
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
             'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput', 'getHasAdvancedFilter', 'getAdvancedFilter']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 

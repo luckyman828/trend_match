@@ -26,12 +26,12 @@
                     :displayAuthor="!request.comments[index+1] || request.comments[index+1].role != request.comments[index].role"/>
 
                     <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.comments.length <= 0)">
-                        <span>Awaiting reply from {{getCurrentSelectionMode == 'Alignment' ? 'Approver' : 'Aligner'}}</span>
+                        <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
                     </div>
                 </div>
 
 
-                <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment'">
+                <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
                     <button class="lg full-width" :class="[request.isResolved ? 'green' : 'primary', {'is-resolved': request.isResolved}]"
                     @click="onResolve">
                         <span v-if="!request.isResolved">Mark as resolved</span>
@@ -41,12 +41,13 @@
                         </template>
                     </button>
                 </div>
+
                 <div class="resolved-banner" 
-                v-if="getCurrentSelectionMode == 'Approval' && request.isResolved">
+                v-else-if="request.isResolved">
                     <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
                 </div>
 
-                <div class="form-wrapper" v-if="!request.isResolved">
+                <div class="form-wrapper" v-if="!request.isResolved && getCurrentPDPSelection.type == 'Master' && getCurrentSelectionMode != 'Feedback'">
                     <strong class="form-header">Write comment</strong>
 
                     <form @submit="onSubmit" :class="[{active: writeActive}]">
@@ -103,12 +104,13 @@ export default {
             show: 'getRequestThreadVisible',
             request: 'getCurrentRequestThread'
         }),
-        ...mapGetters('selections', ['getCurrentSelection', 'getCurrentSelectionMode']),
+        ...mapGetters('selections', ['getCurrentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         submitDisabled () {
             return this.newComment.content.length < 1 || this.submitting
         },
         hasNewComment() {
-            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || this.request.hasUnreadAlignerComment
+            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
+            this.getCurrentSelectionMode == 'Approvel' && this.request.hasUnreadAlignerComment
         }
     },
     methods: {

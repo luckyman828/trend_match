@@ -1056,11 +1056,6 @@ export default {
                         return selectionInput.requests.find(x => x.selection_id == selectionInput.selection_id)
                     },
                 })
-                Object.defineProperty(selectionInput, 'hasAuthUserRequest', {
-                    get: function() {
-                        return !!selectionInput.requests.find(x => x.user_id == authUser.id)
-                    },
-                })
 
                 Object.defineProperty(selectionInput, 'hasUnreadAlignerComment', {
                     get: function() {

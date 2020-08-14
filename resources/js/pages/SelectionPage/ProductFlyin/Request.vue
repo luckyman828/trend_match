@@ -1,6 +1,7 @@
 <template>
     <div class="request-wrapper" :class="[{own: isOwn}, {master: isMaster}, 
-    {'has-traits': request.focus}, {'edit-active': editActive}, {'no-controls': disableControls}]">
+    {'has-traits': request.focus}, {'edit-active': editActive}, {'no-controls': disableControls}, 
+    {'has-thread': approvalEnabled && isMaster}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
@@ -16,7 +17,7 @@
                 @keydown.esc.native="onCancel"/>
             </span>
 
-            <div class="thread-controls" v-if="currentSelection.type == 'Master' && !disableControls">
+            <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
                 <button class="view-thread-button invisible dark ghost-hover sm"
                 v-tooltip="request.isResolved ? 'Request resolved' : hasNewComment ? 'New comment' : 'View request thread'"
                 @click="SET_CURRENT_REQUEST_THREAD(request)">
@@ -31,7 +32,7 @@
             </div>
 
             <!-- Request Controls -->
-            <div class="controls" v-if="!editActive && !disableControls">
+            <div class="controls" v-if="!editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
 
                 <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
                 @click="onDeleteRequest">
@@ -86,16 +87,20 @@ export default {
     }},
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode']),
+        ...mapGetters('files', {
+            approvalEnabled: 'getApprovalEnabled'
+        }),
+        ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         isOwn() {
-            return this.request.selection_id == this.currentSelection.id
+            return this.request.selection_id == this.getCurrentPDPSelection.id
         },
         isMaster() {
             return this.request.selection.type == 'Master'
         },
         hasNewComment() {
-            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || this.request.hasUnreadAlignerComment
-        }
+            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
+            this.getCurrentSelectionMode == 'Approvel' && this.request.hasUnreadAlignerComment
+        },
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
@@ -155,6 +160,11 @@ export default {
             }
         }
     }
+    &.has-thread {
+        .request {
+            padding-bottom: 40px;
+        }
+    }
     &.no-controls {
         .request {
             padding-bottom: 20px;
@@ -196,7 +206,6 @@ export default {
 }
 .request {
     padding: 12px;
-    padding-bottom: 40px;
     border-radius: 6px;
     display: flex;
     flex-direction: column;

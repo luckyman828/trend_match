@@ -29,6 +29,8 @@ export default {
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
         getCurrentFolder: state => state.currentFolder,
+        // getApprovalEnabled: state => state.currentFile && state.currentFile.approval_enabled,
+        getApprovalEnabled: state => true, // TESTING ONLY
         files: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
