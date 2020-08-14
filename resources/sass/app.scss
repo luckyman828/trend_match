@@ -1379,9 +1379,9 @@ input::placeholder {
     &.controls-inside {
         .input-wrapper {
             padding-right: 40px;
-            .control-items-2 & {
-                padding-right: 80px;
-            }
+            // .control-items-2 & {
+            //     padding-right: 80px;
+            // }
         }
 
         &.controls-right {

@@ -231,7 +231,11 @@
                         @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, rrp: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
-                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span>
+                        <BaseEditInputWrapper :id="'markup'" :type="'number'" 
+                        :submitOnBlur="true"
+                        :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].mark_up : null" 
+                        v-model.number="price.mark_up"/>
+                        <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span> -->
 
                         <div style="display: flex; align-items: center;">
                             <button class="invisible ghost-hover" @click="removeCurrency(index)">
