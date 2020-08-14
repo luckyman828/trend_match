@@ -10,23 +10,12 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <!-- <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
-                            <i class="far fa-user-shield"></i>
-                            <span>{{file.owner_count || 0}} File owners</span>
-                        </button> -->
-
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can hide/unhide selections"
-                        @click="onToggleAllSelectionsLocked(getSelections)">
-                        <i class="far fa-lock"></i>
-                            <span>Lock/Undlock all selections</span>
-                        </BaseButton>
-                        
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can lock/unlock selections"
-                        @click="onToggleAllSelectionsVisibility(getSelections)">
-                            <i class="far fa-eye"></i>
-                            <span>Hide/Show all selections</span>
+                        <BaseButton buttonClass="ghost" 
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can manage file editors"
+                        @click="showEditorsFlyin">
+                            <i class="far fa-user-cog"></i>
+                            <span>Manage editors</span>
                         </BaseButton>
 
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
@@ -40,20 +29,24 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"
-                @toggle-locked="onToggleAllSelectionsLocked"
-                @toggle-hidden="onToggleAllSelectionsVisibility"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
             </div>
+
+            <FileEditorsFlyin v-if="show"
+            :show="showFileEditorsFlyin" @close="showFileEditorsFlyin = false"
+            :file="file"/>
+
         </template>
     </BaseFlyin>
 </template>
-f
+
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTable from './SelectionsTable'
+import FileEditorsFlyin from './FileEditorsFlyin'
 import SelectionUsersFlyin from '../../../components/SelectionUsersFlyin'
 
 export default {
@@ -65,8 +58,10 @@ export default {
     components: {
         SelectionsTable,
         SelectionUsersFlyin,
+        FileEditorsFlyin,
     },
     data: function(){ return {
+        showFileEditorsFlyin: false
     }},
     watch: {
     },
@@ -91,6 +86,9 @@ export default {
             this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
         },
+        showEditorsFlyin() {
+            this.showFileEditorsFlyin = true
+        },
         showNext() {
             if (this.nextFile)
                 this.SET_CURRENT_FILE(this.nextFile)
@@ -102,52 +100,6 @@ export default {
         goToEditSingle() {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
         },
-        onToggleAllSelectionsLocked(selections) {
-            let makeLocked = null
-            selections.map(selection => {
-                if (selection.is_presenting) return
-                let hasChange = false
-                if (makeLocked == null) makeLocked = selection.is_open
-                // Check if the selection is locked
-                if (makeLocked && !selection.is_open) return 
-                if (!makeLocked && selection.is_open) return 
-
-                if (makeLocked) {
-                    selection.open_from = new Date("9999")
-                    selection.open_to = null
-                    hasChange = true
-                } else {
-                    selection.open_from = null
-                    selection.open_to = null
-                    hasChange = true
-                }
-                if (hasChange) this.updateSelection(selection)
-            })
-        },
-        onToggleAllSelectionsVisibility(selections) {
-            // Use the first selection to determine if we are opening or closing all
-            let makeHidden = null
-            selections.map(selection => {
-                if (selection.is_presenting) return
-                if (makeHidden == null) makeHidden = selection.is_visible
-                let hasChange = false
-
-                if (makeHidden && !selection.is_visible) return
-                if (!makeHidden && selection.is_visible) return
-                // Check if the selection is visible
-                if (makeHidden) {
-                    // Set To to now
-                    selection.visible_from = new Date("9999")
-                    selection.visible_to = null
-                    hasChange = true
-                } else {
-                    selection.visible_from = null
-                    selection.visible_to = null
-                    hasChange = true
-                }
-                if (hasChange) this.updateSelection(selection)
-            })
-        }
     },
 }
 </script>
