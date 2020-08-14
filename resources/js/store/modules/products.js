@@ -598,6 +598,7 @@ export default {
             })
         },
         async uploadImage({ commit, dispatch }, { file, product, picture, image, callback }) {
+            console.log('upload image')
             return new Promise(async (resolve, reject) => {
                 // First generate presigned URL we can put the image to from the API
                 const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
@@ -605,9 +606,11 @@ export default {
                 await axios
                     .get(apiUrl)
                     .then(response => {
+                        console.log('got presigned url')
                         presignedUrl = response.data
                     })
                     .catch(err => {
+                        console.log('error uploading image', err, err.response)
                         reject(err)
                     })
 
@@ -619,6 +622,7 @@ export default {
                         checkOrientation: true,
                         maxHeight: 2016,
                         success(result) {
+                            console.log('compressed the image')
                             compressedImage = result
                             resolve()
                         },
