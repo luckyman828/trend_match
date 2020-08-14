@@ -606,11 +606,9 @@ export default {
                 await axios
                     .get(apiUrl)
                     .then(response => {
-                        console.log('got presigned url')
                         presignedUrl = response.data
                     })
                     .catch(err => {
-                        console.log('error uploading image', err, err.response)
                         reject(err)
                     })
 
@@ -622,7 +620,6 @@ export default {
                         checkOrientation: true,
                         maxHeight: 2016,
                         success(result) {
-                            console.log('compressed the image')
                             compressedImage = result
                             resolve()
                         },

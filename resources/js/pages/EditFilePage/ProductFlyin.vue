@@ -580,7 +580,6 @@ export default {
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
-            console.log('on update product')
             // Prepare the file to fit the database schema
             const vm = this
             this.updatingProduct = true
