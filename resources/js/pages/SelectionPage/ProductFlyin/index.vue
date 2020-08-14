@@ -156,14 +156,16 @@
             :selectionInput="selectionInput" :requests="selectionInput.requests"
             @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
-            <CommentsSection class="comments" ref="commentsSection"
+            <CommentsSection v-if="!showRequestThread" class="comments" ref="commentsSection"
             :selectionInput="selectionInput"
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
+            <RequestThreadSection v-else/>
+
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
 
-            <RequestThreadFlyin/>
+            <!-- <RequestThreadFlyin/> -->
 
             <BaseDialog ref="confirmCloseInPresentation" type="confirm"
             confirmColor="dark" confirmText="Okay, close it">
@@ -202,7 +204,8 @@ import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import BudgetCounter from '../BudgetCounter'
-import RequestThreadFlyin from './RequestThreadFlyin'
+// import RequestThreadFlyin from './RequestThreadFlyin'
+import RequestThreadSection from './RequestThreadSection'
 
 export default {
     name: 'productFlyin',
@@ -222,13 +225,14 @@ export default {
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
-        RequestThreadFlyin,
+        // RequestThreadFlyin,
+        RequestThreadSection,
     },
     data: function () { return {
         currentImgIndex: 0,
         lastBroadcastProductId: null,
         tooltipVariant: null,
-        actionDistributionTooltipTab: 'Feedback'
+        actionDistributionTooltipTab: 'Feedback',
     }},
     watch: {
         product(newVal, oldVal) {
@@ -258,6 +262,9 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('requests', {
+            showRequestThread: 'getRequestThreadVisible',
+        }),
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
             availableProducts: 'getAvailableProducts'

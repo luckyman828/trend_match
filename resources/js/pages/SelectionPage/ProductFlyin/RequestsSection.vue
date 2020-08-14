@@ -1,5 +1,5 @@
 <template>
-    <BaseFlyinColumn class="requests">
+    <BaseFlyinColumn class="requests" :class="{'thread-open': !!currentRequestThread}">
 
         <template v-slot:header class="random">
             <h3><span>Requests</span>
@@ -12,7 +12,8 @@
                 <div class="selection-request" 
                 v-for="request in requests.filter(x => x.selection_id == currentSelection.id)" 
                 :key="request.id">
-                    <request :request="request" :selectionInput="selectionInput"/>
+                    <request :request="request" :selectionInput="selectionInput"
+                    :class="{'thread-open': currentRequestThread && currentRequestThread.id == request.id}"/>
                 </div>
                 <div v-if="requests.find(x => x.selection_id != selectionInput.selection_id)" class="break-line">Showing requests from other selections(s)</div>
                 <request :request="request" :key="request.id" :selectionInput="selectionInput"
@@ -93,6 +94,9 @@ export default {
         },
     },
     computed: {
+        ...mapGetters('requests', {
+            currentRequestThread: 'getCurrentRequestThread'
+        }),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
         currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
@@ -232,6 +236,25 @@ export default {
     }
     .requests {
         background: $bg;
+        ::v-deep {
+            .request {
+                transition: .2s;
+            }
+        }
+        &.thread-open {
+            ::v-deep {
+                .request {
+                    opacity: .5;
+                }
+                .request-wrapper.thread-open {
+                    .request {
+                        opacity: 1;
+                        box-shadow: $shadowElHard;
+                        transform: translateY(2px);
+                    }
+                }
+            }
+        }
     }
     .requests-wrapper {
         height: 100%;
