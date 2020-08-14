@@ -580,7 +580,6 @@ export default {
             this.onUpdateProduct()
         },
         async onUpdateProduct() {
-            console.log('on update product')
             // Prepare the file to fit the database schema
             const vm = this
             this.updatingProduct = true
@@ -626,6 +625,7 @@ export default {
                     }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
                         // Remove the image to upload
                         delete variant.imageToUpload
+                        variant.image = variant.pictures[0].url
                     }).catch(err => {
                         variantError = true
                         variant.imageToUpload.uploading = false

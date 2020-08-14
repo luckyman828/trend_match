@@ -207,7 +207,8 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4">
+        <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4"
+        @hide="settingsSelections = []">
             <template v-slot:header v-if="contextSelection">
                 <span>Settings: {{contextSelection.name}}
                     <template v-if="settingsSelections.length > 1"> + {{settingsSelections.length-1}} more</template>
@@ -215,7 +216,7 @@
                 </span>
                 
             </template>
-            <template v-slot="slotProps">
+            <template v-slot="slotProps" v-if="settingsSelections.length > 0">
                 <!-- If loading -->
                 <div class="loading-wrapper" v-if="loadingSelectionSettings">
                     <BaseLoader/>
@@ -820,7 +821,9 @@ export default {
 
             // this.contextSelection = selection
             // Position the contextual menu
-            contextMenu.show(e)
+            this.$nextTick(() => {
+                contextMenu.show(e)
+            })
         },
         showSelectionCurrencyContext({selection, e}) {
             this.contextSelection = selection
@@ -872,7 +875,8 @@ export default {
             if (this.settingsSelections.length > 1) {
                 this.settingsSelections.map(selection => {
                     // Set the selection settings of this selection to a copy of the context selection's
-                    selection.settings = JSON.parse(JSON.stringify(this.contextSelection.settings))
+                    // Use Vue.set to instantiate 'settings' as a reactive property on the selection
+                    Vue.set(selection, 'settings', JSON.parse(JSON.stringify(this.contextSelection.settings)))
                     this.updateSelectionSettings(selection)
                 })
             } else {
