@@ -35,7 +35,8 @@
                         ref="searchField"
                         v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 
-                        <v-popover trigger="click" :autoHide="false">
+                        <v-popover trigger="click" :autoHide="false" popoverClass="advanced-filter" 
+                        :boundariesElement="tooltipBoundariesEl">
                             <!-- <button class="ghost">
                                 <span>Advanced Filters</span>
                             </button> -->
@@ -458,6 +459,9 @@ export default {
                 return this.stateProducts.filter(product => this.getActiveSelectionInput(product)[this.currentAction] == 'None').length
             }
             return this.stateProducts.length
+        },
+        tooltipBoundariesEl() {
+            return document.getElementById('main')
         }
     },
     methods: {
