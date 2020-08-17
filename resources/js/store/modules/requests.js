@@ -122,14 +122,80 @@ export default {
                 )
             })
         },
-        insertOrUpdateRequestComment({ commit }, { request, comment }) {
-            commit('INSERT_REQUEST_COMMENT', { request, comment })
+        async insertOrUpdateRequestComment({ commit }, { request, comment }) {
+            console.log('insert or update', request, comment)
+
+            let apiUrl = `/requests/${request.id}/discussions`
+            let requestMethod = 'post'
+            if (comment.id) {
+                apiUrl = `/discussions/${comment.id}`
+                request = 'put'
+            } else {
+                commit('INSERT_REQUEST_COMMENT', { request, comment })
+            }
+
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                // data: request,
+                data: {
+                    content: comment.content,
+                },
+            }).then(response => {
+                if (!comment.id) {
+                    comment.id = response.data.id
+                } else {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Comment updated',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                }
+            })
+        },
+        async deleteRequestComment({ commit, dispatch }, { request, comment }) {
+            const apiUrl = `/discussions/${comment.id}`
+            await axios
+                .delete(apiUrl)
+                .then(response => {
+                    commit('REMOVE_REQUEST_COMMENT', { request, comment })
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Comment deleted',
+                            iconClass: 'fa-trash',
+                            type: 'danger',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error trying to delete comment. Please try again',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('deleteRequestComment', { request, comment }),
+                            callbackLabel: 'Retry',
+                        },
+                        { root: true }
+                    )
+                })
         },
         async resolveRequest({ commit, rootGetters }, request) {
+            const requestMethod = request.isResolved ? 'delete' : 'put'
             commit('RESOLVE_REQUEST', { request, resolve: !request.isResolved, user: rootGetters['auth/authUser'] })
 
             const apiUrl = `/requests/${request.id}/complete`
-            await axios.put(apiUrl).then(() => {
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+            }).then(() => {
                 if (request.isResolved) {
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -166,10 +232,7 @@ export default {
             }
             // Else insert the request
             else {
-                console.log('push new request', request.content)
                 selectionInput.rawSelectionInput.requests.push(request)
-
-                Vue.set(request, 'comments', [])
 
                 Object.defineProperty(request, 'isResolved', {
                     get: function() {
@@ -180,8 +243,8 @@ export default {
                     get: function() {
                         return (
                             !request.isResolved &&
-                            (request.comments.length <= 0 ||
-                                request.comments[request.comments.length - 1].role != 'Approver')
+                            (request.discussions.length <= 0 ||
+                                request.discussions[request.discussions.length - 1].role != 'Approver')
                         )
                     },
                 })
@@ -189,8 +252,8 @@ export default {
                     get: function() {
                         return (
                             !request.isResolved &&
-                            request.comments.length > 0 &&
-                            request.comments[request.comments.length - 1].role == 'Approver'
+                            request.discussions.length > 0 &&
+                            request.discussions[request.discussions.length - 1].role == 'Approver'
                         )
                     },
                 })
@@ -209,8 +272,11 @@ export default {
             state.currentRequestThread = request
         },
         INSERT_REQUEST_COMMENT(state, { request, comment }) {
-            if (!request.comments) Vue.set(request, 'comments', []) // TEMP CODE
-            request.comments.push(comment)
+            request.discussions.push(comment)
+        },
+        REMOVE_REQUEST_COMMENT(state, { request, comment }) {
+            const index = request.discussions.findIndex(x => x.id == comment.id)
+            request.discussions.splice(index, 1)
         },
         RESOLVE_REQUEST(state, { request, resolve, user }) {
             if (resolve) {

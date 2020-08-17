@@ -256,8 +256,10 @@ export default {
                 document.body.addEventListener('keydown', this.keydownHandler)
 
             } else {
+                // On close
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
+                this.SET_CURRENT_REQUEST_THREAD(null)
             }
         }
     },
@@ -299,6 +301,7 @@ export default {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)

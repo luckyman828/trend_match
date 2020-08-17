@@ -1,7 +1,7 @@
 <template>
     <div class="comment-wrapper" 
-    :class="[{'own': comment.user_id == authUser.id}, {'master': comment.role == 'Owner'}, 
-    {'has-traits': hasTraits}, {'edit-active': editActive}]">
+    :class="[{'own': comment.author_id == authUser.id}, {'master': comment.role == 'Owner'}, 
+    {'edit-active': editActive}]">
         <div class="traits">
             <span v-if="comment.important" class="circle small yellow"><i class="fas fa-exclamation"></i></span>
             <span v-if="comment.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
@@ -16,7 +16,7 @@
             </span>
 
             <!-- Comment Controls -->
-            <div class="controls" v-if="!editActive && comment.user_id == authUser.id">
+            <div class="controls" v-if="!editActive && comment.author_id == authUser.id">
 
                 <!-- comment error -->
                 <span v-if="comment.error" class="failed clickable" v-tooltip.top="!comment.id ? 'Retry submit' : 'Retry edit'" @click="retrySubmitComment">
@@ -51,9 +51,9 @@
         </div>
 
         <div class="sender" v-if="displayAuthor && !editActive">
-            <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
-            {{(comment.user_id == authUser.id) ? 'You' 
-            : !commentIsAnonymized && comment.user ? comment.user.name : 'Anonymous'}}
+            <strong>{{comment.role == 'Approver' ? 'Approval' : request.selection.name}}</strong> | 
+            {{(comment.author_id == authUser.id) ? 'You' 
+            : comment.author ? comment.author.name : 'Anonymous'}}
         </div>
 
         <BaseDialog ref="confirmDeleteComment" type="confirm"
@@ -74,6 +74,7 @@ export default {
     name: 'requestComment',
     props: [
         'comment',
+        'request',
         'displayAuthor',
     ],
     data: function() {
@@ -86,33 +87,22 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         isOwn() {
-            return this.comment.user_id == this.authUser.id
+            return this.comment.author_id == this.authUser.id
         },
-        hasTraits() {
-            return this.comment.important 
-            // || this.comment.votes.length > 0 
-            || this.comment.focus
-        },
-        commentIsAnonymized() {
-            const yourRole = this.selectionInput.selection.your_role
-            const displayRole = this.selectionInput.selection.settings.anonymize_comment
-            if (this.authUserWorkspaceRole == 'Admin') return false
-            return displayRole == 'None' || displayRole == 'Owner' && yourRole != 'Owner'
-        }
     },
     methods: {
-        ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
+        ...mapActions('requests', ['insertOrUpdateRequestComment', 'deleteRequestComment']),
         async onDeleteComment() {
             if (await this.$refs.confirmDeleteComment.confirm()) {
-                this.deleteComment({selectionInput: this.selectionInput, comment: this.comment})
+                this.deleteRequestComment({request: this.request, comment: this.comment})
             }
         },
         retrySubmitComment() {
-            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
+            this.insertOrUpdateRequestComment({request: this.request, comment: this.comment})
         },
         onUpdateComment() {
             this.comment.content = this.commentToEdit.content
-            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
+            this.insertOrUpdateRequestComment({request: this.request, comment: this.comment})
             this.editActive = false
         },
         onEditComment() {
@@ -148,9 +138,6 @@ export default {
                     }
                 }
             }
-        }
-        &.has-traits {
-            margin-top: 16px;
         }
         &.own {
             margin-left: auto;
@@ -195,12 +182,12 @@ export default {
         .failed {
             color: $red;
         }
-        .own:not(.master) & {
-            background: $primary;
-            color: white;
-        }
         .master & {
             background: $yellow;
+        }
+        .own & {
+            background: $primary;
+            color: white;
         }
         .body {
             white-space: pre-wrap;

@@ -146,7 +146,8 @@ export default {
                 selection_id: this.selectionInput.selection_id,
                 content: this.newRequest.content,
                 author: this.authUser,
-                selection: this.selectionInput.selection
+                selection: this.selectionInput.selection,
+                discussions: [],
             }
             // dispatch action
             this.insertOrUpdateRequest({selectionInput: this.selectionInput, request: requestToPost})
@@ -237,8 +238,10 @@ export default {
     .requests {
         background: $bg;
         ::v-deep {
-            .request {
-                transition: .2s;
+            .request-wrapper:not(.edit-active) {
+                .request {
+                    transition: opacity .2s, box-shadow .2s, transform .2s;
+                }
             }
         }
         &.thread-open {

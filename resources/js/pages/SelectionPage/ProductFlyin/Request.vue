@@ -24,7 +24,7 @@
 
                     <i v-if="request.isResolved" class="far fa-check"></i>
 
-                    <span>{{request.comments.length}}</span>
+                    <span>{{request.discussions.length}}</span>
                     <i class="far fa-comment"></i>
 
                     <div v-if="hasNewComment" class="circle xxs primary new-comment-indicator"></div>
@@ -145,6 +145,7 @@ export default {
         .request {
             padding: 2px;
             width: 100%;
+            transition: none;
             .sender {
                 margin-left: 10px;
                 margin-top: 10px;

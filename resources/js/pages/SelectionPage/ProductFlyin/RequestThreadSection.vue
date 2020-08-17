@@ -22,11 +22,12 @@
 
 
                 <div class="comment-section">
-                    <RequestComment v-for="(comment, index) in request.comments" :key="comment.id"
+                    <RequestComment v-for="(comment, index) in request.discussions" :key="comment.id"
                     :comment="comment"
-                    :displayAuthor="!request.comments[index+1] || request.comments[index+1].role != request.comments[index].role"/>
+                    :request="request"
+                    :displayAuthor="!request.discussions[index+1] || request.discussions[index+1].role != request.discussions[index].role"/>
 
-                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.comments.length <= 0)">
+                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
                         <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
                     </div>
                 </div>
@@ -150,8 +151,8 @@ export default {
 
             // Instantiate the comment to post
             const commentToPost = {
-                user_id: this.authUser.id,
-                user: this.authUser,
+                author_id: this.authUser.id,
+                author: this.authUser,
                 request_id: this.request.id,
                 content: this.newComment.content,
                 role: this.getCurrentSelection.your_role,

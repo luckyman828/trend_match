@@ -21,11 +21,11 @@
 
 
                 <div class="comment-section">
-                    <RequestComment v-for="(comment, index) in request.comments" :key="comment.id"
+                    <RequestComment v-for="(comment, index) in request.discussions" :key="comment.id"
                     :comment="comment"
-                    :displayAuthor="!request.comments[index+1] || request.comments[index+1].role != request.comments[index].role"/>
+                    :displayAuthor="!request.discussions[index+1] || request.discussions[index+1].role != request.discussions[index].role"/>
 
-                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.comments.length <= 0)">
+                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
                         <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
                     </div>
                 </div>

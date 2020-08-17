@@ -1207,8 +1207,6 @@ export default {
 
                 // PROCESS REQUESTS
                 selectionInput.requests.forEach(request => {
-                    Vue.set(request, 'comments', [])
-
                     Object.defineProperty(request, 'isResolved', {
                         get: function() {
                             return !!request.completed_at
@@ -1218,8 +1216,8 @@ export default {
                         get: function() {
                             return (
                                 !request.isResolved &&
-                                (request.comments.length <= 0 ||
-                                    request.comments[request.comments.length - 1].role != 'Approver')
+                                (request.discussions.length <= 0 ||
+                                    request.discussions[request.discussions.length - 1].role != 'Approver')
                             )
                         },
                     })
@@ -1227,8 +1225,8 @@ export default {
                         get: function() {
                             return (
                                 !request.isResolved &&
-                                request.comments.length > 0 &&
-                                request.comments[request.comments.length - 1].role == 'Approver'
+                                request.discussions.length > 0 &&
+                                request.discussions[request.discussions.length - 1].role == 'Approver'
                             )
                         },
                     })
