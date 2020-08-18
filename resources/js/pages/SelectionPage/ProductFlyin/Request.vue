@@ -88,7 +88,7 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('files', {
-            approvalEnabled: 'getApprovalEnabled'
+            approvalEnabled: 'getApprovalEnabled',
         }),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         isOwn() {

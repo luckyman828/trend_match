@@ -129,9 +129,9 @@ export default {
             let requestMethod = 'post'
             if (comment.id) {
                 apiUrl = `/discussions/${comment.id}`
-                request = 'put'
+                requestMethod = 'put'
             } else {
-                commit('INSERT_REQUEST_COMMENT', { request, comment })
+                commit('INSERT_OR_UPDATE_REQUEST_COMMENT', { request, comment })
             }
 
             await axios({
@@ -162,7 +162,7 @@ export default {
             await axios
                 .delete(apiUrl)
                 .then(response => {
-                    commit('REMOVE_REQUEST_COMMENT', { request, comment })
+                    commit('DELETE_REQUEST_COMMENT', { request, comment })
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
@@ -220,7 +220,6 @@ export default {
             state.submitting = bool
         },
         INSERT_OR_UPDATE_REQUEST(state, { selectionInput, request }) {
-            console.log('insert or update request', request)
             // First see if the request already exists
             const existingRequestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
@@ -271,10 +270,16 @@ export default {
         SET_CURRENT_REQUEST_THREAD(state, request) {
             state.currentRequestThread = request
         },
-        INSERT_REQUEST_COMMENT(state, { request, comment }) {
-            request.discussions.push(comment)
+        INSERT_OR_UPDATE_REQUEST_COMMENT(state, { request, comment }) {
+            const existingIndex = request.discussions.findIndex(x => x.id == comment.id)
+            if (existingIndex >= 0) {
+                const updatedComment = Object.assign(request.discussions[i], comment)
+                Vue.set(request.discussions, existingIndex, updatedComment)
+            } else {
+                request.discussions.push(comment)
+            }
         },
-        REMOVE_REQUEST_COMMENT(state, { request, comment }) {
+        DELETE_REQUEST_COMMENT(state, { request, comment }) {
             const index = request.discussions.findIndex(x => x.id == comment.id)
             request.discussions.splice(index, 1)
         },

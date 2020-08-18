@@ -148,7 +148,7 @@ export default{
     methods: {
         ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
-        ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST', 'DELETE_REQUEST']),
+        ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST', 'DELETE_REQUEST', 'INSERT_OR_UPDATE_REQUEST_COMMENT', 'DELETE_REQUEST_COMMENT']),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
@@ -249,6 +249,22 @@ export default{
                 this.DELETE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
             }
         },
+        requestCommentArrivedHandler(selectionId, requestComment) {
+            if (requestComment.author_id != this.authUser.id) {
+                // console.log("OnRequestArrived", selectionId, request)
+                const requestProduct = this.products.find(product => !!product.requests.find(x => x.id == requestComment.request_id))
+                const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
+                this.INSERT_OR_UPDATE_REQUEST_COMMENT({request, comment: requestComment})
+            }
+        },
+        requestCommentDeletedHandler(selectionId, requestComment) {
+            if (requestComment.author_id != this.authUser.id) {
+                // console.log("OnRequestArrived", selectionId, request)
+                const requestProduct = this.products.find(product => !!product.requests.find(x => x.id == requestComment.request_id))
+                const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
+                this.DELETE_REQUEST_COMMENT({request, comment: requestComment})
+            }
+        },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {
                 this.SET_FEEDBACKS(feedbacks)
@@ -291,6 +307,9 @@ export default{
             connection.on("OnRequestArrived", this.requestArrivedHandler)
             connection.on("OnRequestDeleted", this.requestDeletedHandler)
 
+            connection.on("OnAddOrUpdateDiscussion", this.requestCommentArrivedHandler)
+            connection.on("OnDiscussionDeleted", this.requestCommentDeletedHandler)
+
             // Feedback
             connection.on("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)
             connection.on("OnFeedbackArrived", this.feedbackArrivedHandler)
@@ -313,6 +332,9 @@ export default{
             // Requests
             connection.off("OnRequestArrived", this.requestArrivedHandler)
             connection.off("OnRequestArrived", this.requestDeletedHandler)
+
+            connection.off("OnAddOrUpdateDiscussion", this.requestCommentArrivedHandler)
+            connection.off("OnDiscussionDeleted", this.requestCommentDeletedHandler)
 
             // Feedback
             connection.off("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)
