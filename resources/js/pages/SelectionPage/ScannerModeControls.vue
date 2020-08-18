@@ -58,6 +58,7 @@ export default {
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         scanHandler(e) {
             // Check if we get at least 12 concecutive inputs with very small interval
             // If that is the case, we have a scan
@@ -74,10 +75,16 @@ export default {
             }
         },
         onScan(scanCode) {
-            console.log('it was a scan!', scanCode)
             // Find the matched product
             const product = this.products.find(product => product.eans.includes(scanCode))
-            if (!product) return
+            if (!product) {
+                this.SHOW_SNACKBAR({ 
+                    msg: `Scan didn't match any products`,
+                    type: 'info', 
+                    iconClass: 'fa-exclamation-circle',
+                })
+                return
+            }
 
             if (this.scannerMode == 'product') {
                 this.showSelectionProductPDP({product, selection: this.getCurrentSelection})
@@ -85,7 +92,7 @@ export default {
 
             else {
                 const selectionInput = this.getActiveSelectionInput(product)
-                
+
                 if (this.currentSelectionMode == 'Feedback') {
                     const selectionFeedback = selectionInput.yourSelectionFeedback
                     this.updateFeedbacks({actions: [selectionFeedback], newAction: this.scannerMode})
