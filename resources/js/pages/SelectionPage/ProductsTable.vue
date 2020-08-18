@@ -31,7 +31,7 @@
             <template v-slot:topBar>
                 <BaseTableTopBar class="table-top-bar">
                     <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
+                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category', 'eans']"
                         ref="searchField"
                         v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
 

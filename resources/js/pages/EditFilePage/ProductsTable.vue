@@ -4,7 +4,7 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
+                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category', 'eans']"
                         v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
 
                         <v-popover trigger="click">

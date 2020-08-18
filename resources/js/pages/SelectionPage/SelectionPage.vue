@@ -92,6 +92,8 @@
             <p><strong>You will now be redirected to the files overview</strong></p>
         </BaseDialog>
 
+        <ScannerModeControls v-if="getScannerModeActive"/>
+
     </div>
 </template>
 
@@ -101,13 +103,15 @@ import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import ProductsTable from './ProductsTable'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 import ProductFlyin from './ProductFlyin'
+import ScannerModeControls from './ScannerModeControls'
 
 export default{
     name: 'selectionPage',
     components: {
         ProductsTable,
         ThePageHeader,
-        ProductFlyin
+        ProductFlyin,
+        ScannerModeControls,
     },
     data: function () { return {
         hideQuickOut: false,
@@ -118,6 +122,7 @@ export default{
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelections', 'currentSelectionMode', 'currentSelectionModeAction', 'selections']),
         ...mapGetters('auth', ['authUser', 'getAuthUserToken']),
+        ...mapGetters('scanner', ['getScannerModeActive']),
         selection() {
             return this.currentSelection
         },
