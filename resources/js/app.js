@@ -6,6 +6,8 @@ window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 window.axios.defaults.baseURL = process.env.MIX_API_BASE_URL
 
+window.XLSX = require('xlsx')
+
 window.focusVisible = require('focus-visible')
 
 import store from './store/index'

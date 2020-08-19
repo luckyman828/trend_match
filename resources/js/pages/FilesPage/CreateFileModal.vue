@@ -14,7 +14,9 @@
                     <input ref="fileNameInput" type="text" id="file-name-input" class="input-wrapper" placeholder="unnamed file" v-model="newFile.name">
                 </div>
                 <div class="form-element">
-                    <BaseDroparea multiple="true" accept=".csv, text/csv, .tsv" ref="droparea"
+                    <BaseDroparea multiple="true"
+                    accept="text/csv, .tsv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    ref="droparea"
                     @input="filesChange">
                         <template v-slot="slotProps">
                             <template v-if="newFile.files.length < 1">
@@ -392,9 +394,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import workbookUtils from '../../mixins/workbookUtils'
 
 export default {
     name: 'createFileModal',
+    mixins: [
+        workbookUtils
+    ],
     props: [
         'show'
     ],
@@ -647,17 +653,17 @@ export default {
             const files = fileList
             for (let i = 0; i < files.length; i++) {
                 const file = files[i]
-                const extension = file.name.split('.').pop();
+                // const extension = file.name.split('.').pop();
 
                 // Check that the file is a csv
-                if (extension == 'csv' || extension == 'tsv') {
+                // if (extension == 'csv' || extension == 'tsv') {
                     if (!this.newFile.files.find(x => x.name == file.name)) {
                         this.newFile.files.push(file)
                     }
-                } else {
-                    // Throw error
-                    // console.log('invalid file extension')
-                }
+                // } else {
+                //     // Throw error
+                //     // console.log('invalid file extension')
+                // }
             }
         },
         removeFile(index) {
@@ -680,23 +686,18 @@ export default {
             // Process the uploaded files
             this.newFile.files.forEach(file => {
                 const fileReader = new FileReader()
-                fileReader.readAsText(file, 'ISO-8859-4')
-                fileReader.onload = e => this.loadHandler(e, file.name)
+                // fileReader.readAsText(file, 'ISO-8859-4')
+                // fileReader.readAsText(file, 'ISO-8859-4')
+                fileReader.readAsArrayBuffer(file, 'ISO-8859-4')
+                fileReader.onload = e => this.processFile(e.target.result, file.name)
             })
         },
         onGoBack() {
             //Change the current screen
             this.currentScreen={name: 'chooseFiles', header: 'Create new file'}
         },
-        loadHandler(event, fileName) {
-            const csv = event.target.result
-
-            // First read the files and process them
-            this.processFile(csv, fileName)
-        },
-        processFile(csv, fileName) {
-            // Use Papa Parse 5 to parse the CSV.
-            const allLines = this.$papa.parse(csv).data
+        processFile(workbook, fileName) {
+            const allLines = this.parseWorkbookToRowsAndCells(workbook)
 
             // Check if the file already exists. If so, replace it instead of adding
             const existingFile = this.availableFiles.find(x => x.fileName == fileName)

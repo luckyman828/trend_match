@@ -7,7 +7,9 @@
             </div>
 
             <div class="form-element">
-                <BaseDroparea multiple="true" accept=".csv, text/csv, .tsv" ref="droparea"
+                <BaseDroparea multiple="true" 
+                accept="text/csv, .tsv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                ref="droparea"
                 @input="onFilesChange">
                     <template v-slot="slotProps">
                         <template v-if="filesToUpload.length < 1">
@@ -68,17 +70,17 @@ export default {
             // Loop trough the files
             for (let i = 0; i < files.length; i++) {
                 const file = files[i]
-                const extension = file.name.split('.').pop();
+                // const extension = file.name.split('.').pop();
 
-                // Check that the file is of an accepted type
-                if (extension == 'csv' || extension == 'tsv') {
+                // // Check that the file is of an accepted type
+                // if (extension == 'csv' || extension == 'tsv') {
                     if (!this.filesToUpload.find(x => x.name == file.name)) {
                         this.$emit('addFileToUpload', file)
                     }
-                } else {
-                    // Throw error
-                    alert('Invalid file type for file: '+ file.name)
-                }
+                // } else {
+                //     // Throw error
+                //     alert('Invalid file type for file: '+ file.name)
+                // }
             }
         },
         removeFile(index) {

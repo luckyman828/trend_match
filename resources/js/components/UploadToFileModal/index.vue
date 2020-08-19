@@ -39,9 +39,13 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UploadFilesScreen from './UploadFilesScreen'
 import SelectFieldsScreen from './SelectFieldsScreen'
 import MapFieldsScreen from './MapFieldsScreen'
+import workbookUtils from '../../mixins/workbookUtils'
 
 export default {
     name: 'uploadToFileModal',
+    mixins: [
+        workbookUtils
+    ],
     props: [
         'show'
     ],
@@ -266,13 +270,12 @@ export default {
             this.filesToUpload.forEach(file => {
                 // Read the file into memory
                 const fileReader = new FileReader()
-                fileReader.readAsText(file, 'ISO-8859-4') // The default UTF-8 encoding was failing at scandinavian characters. This works for some reason.
+                fileReader.readAsArrayBuffer(file, 'ISO-8859-4') // The default UTF-8 encoding was failing at scandinavian characters. This works for some reason.
                 fileReader.onload = e => this.processFile(e.target.result, file.name)
             })
         },
-        processFile(csv, fileName) {
-            // Use Papa Parse 5 to parse the CSV.
-            const allLines = this.$papa.parse(csv).data
+        processFile(workbook, fileName) {
+            const allLines = this.parseWorkbookToRowsAndCells(workbook)
 
             // Check if the file already exists. If so, replace it instead of adding
             const existingFile = this.availableFiles.find(x => x.fileName == fileName)
