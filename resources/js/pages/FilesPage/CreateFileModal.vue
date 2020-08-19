@@ -564,6 +564,7 @@ export default {
             if (files.length > 0 && newValue.fileIndex != null && newValue.fieldIndex != null) {
                 const csvFile = files[newValue.fileIndex]
                 const fieldValue = csvFile.lines[0][newValue.fieldIndex]
+                if (fieldValue instanceof Date) return fieldValue.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
                 return fieldValue
             }
             return 'Not matched'
@@ -1025,9 +1026,14 @@ export default {
                             if (field.enabled && field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
                                 const fieldName = field.name
+                                
+                                // Parse dates
+                                if (fieldValue instanceof Date) {
+                                    product[fieldName] = fieldValue.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+                                }
 
                                 // Check if the field is an array, because then it should be added to the array
-                                if (Array.isArray(product[fieldName])) {
+                                else if (Array.isArray(product[fieldName])) {
                                     // Check that the value does not already exist in the array
                                     let arrayValueExists = product[fieldName].includes(fieldValue)
                                     if (!arrayValueExists) {
@@ -1035,7 +1041,7 @@ export default {
                                     }
                                 } else {
                                     // Else simply write the key value pair to the product
-                                    product[fieldName] = line[field.newValue.fieldIndex]
+                                    product[fieldName] = fieldValue
                                 }
                             }
                         })

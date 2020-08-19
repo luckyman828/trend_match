@@ -649,8 +649,13 @@ export default {
 
                                 // If we don't have a special case, simply write the key value pair to the product
                                 else {
+                                    // Parse dates
+                                    if (fieldValue instanceof Date) {
+                                        product[fieldName] = fieldValue.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+                                    }
+
                                     // Check if the field is an array, because then it should be added to the array
-                                    if (Array.isArray(product[fieldName])) {
+                                    else if (Array.isArray(product[fieldName])) {
                                         // Check that the value does not already exist in the array
                                         let arrayValueExists = product[fieldName].includes(fieldValue)
                                         if (!arrayValueExists) {
@@ -658,7 +663,7 @@ export default {
                                         }
                                     } else {
                                         // Else simply write the key value pair to the product
-                                        product[fieldName] = line[field.newValue.fieldIndex]
+                                        product[fieldName] = fieldValue
                                     }
                                 }
                             }

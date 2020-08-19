@@ -405,6 +405,8 @@ export default {
             if (files.length > 0 && newValue.fileIndex != null && newValue.fieldIndex != null) {
                 const csvFile = files[newValue.fileIndex]
                 const fieldValue = csvFile.lines[0][newValue.fieldIndex]
+                console.log('preview example', fieldValue, fieldValue instanceof Date)
+                if (fieldValue instanceof Date) return fieldValue.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
                 return fieldValue
             }
             return 'Not matched'
