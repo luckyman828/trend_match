@@ -22,9 +22,6 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
-import VuePapaParse from 'vue-papa-parse'
-Vue.use(VuePapaParse)
-
 import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
 import clickOutsideDirective from './directives/clickOutsideDirective'
