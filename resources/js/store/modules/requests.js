@@ -280,7 +280,8 @@ export default {
             }
         },
         DELETE_REQUEST_COMMENT(state, { request, comment }) {
-            const index = request.discussions.findIndex(x => x.id == comment.id)
+            const commentId = comment.id ? comment.id : comment.discussion_id
+            const index = request.discussions.findIndex(x => x.id == commentId)
             request.discussions.splice(index, 1)
         },
         RESOLVE_REQUEST(state, { request, resolve, user }) {

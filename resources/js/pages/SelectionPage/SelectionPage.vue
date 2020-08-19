@@ -259,7 +259,6 @@ export default{
         },
         requestCommentDeletedHandler(selectionId, requestComment) {
             if (requestComment.author_id != this.authUser.id) {
-                // console.log("OnRequestArrived", selectionId, request)
                 const requestProduct = this.products.find(product => !!product.requests.find(x => x.id == requestComment.request_id))
                 const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
                 this.DELETE_REQUEST_COMMENT({request, comment: requestComment})
