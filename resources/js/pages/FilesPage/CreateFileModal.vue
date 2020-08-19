@@ -654,17 +654,22 @@ export default {
             const files = fileList
             for (let i = 0; i < files.length; i++) {
                 const file = files[i]
-                // const extension = file.name.split('.').pop();
+                const extension = file.name.split('.').pop();
 
                 // Check that the file is a csv
-                // if (extension == 'csv' || extension == 'tsv') {
+                if (['tsv', 'csv', 'xlsx', 'xml'].includes(extension)) {
                     if (!this.newFile.files.find(x => x.name == file.name)) {
                         this.newFile.files.push(file)
                     }
-                // } else {
-                //     // Throw error
-                //     // console.log('invalid file extension')
-                // }
+                } else {
+                    this.SHOW_SNACKBAR({
+                        msg: 'Invalid file type',
+                        type: 'warning', 
+                        iconClass: 'fa-exclamation-triangle',
+                    })
+                    // Throw error
+                    // console.log('invalid file extension')
+                }
             }
         },
         removeFile(index) {

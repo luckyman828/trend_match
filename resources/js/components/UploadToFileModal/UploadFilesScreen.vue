@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'uploadFilesScreen',
     props: [
@@ -64,23 +64,28 @@ export default {
     computed: {
     },
     methods: {
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onFilesChange(fileList) {
             // Function that runs when we add new files to the droparea
             const files = fileList
             // Loop trough the files
             for (let i = 0; i < files.length; i++) {
                 const file = files[i]
-                // const extension = file.name.split('.').pop();
+                const extension = file.name.split('.').pop();
 
-                // // Check that the file is of an accepted type
-                // if (extension == 'csv' || extension == 'tsv') {
+                if (['tsv', 'csv', 'xlsx', 'xml'].includes(extension)) {
                     if (!this.filesToUpload.find(x => x.name == file.name)) {
                         this.$emit('addFileToUpload', file)
                     }
-                // } else {
-                //     // Throw error
-                //     alert('Invalid file type for file: '+ file.name)
-                // }
+                } else {
+                    this.SHOW_SNACKBAR({
+                        msg: 'Invalid file type',
+                        type: 'warning', 
+                        iconClass: 'fa-exclamation-triangle',
+                    })
+                    // Throw error
+                    // console.log('invalid file extension')
+                }
             }
         },
         removeFile(index) {
