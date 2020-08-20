@@ -19,7 +19,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import CreateFileModal from './CreateFileModal'
+import CreateFileModal from './CreateFileModal/'
 
 export default {
     name: 'filesPageNavbar',

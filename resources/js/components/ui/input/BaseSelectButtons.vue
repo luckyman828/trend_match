@@ -30,8 +30,10 @@
                     : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
                         <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
-                            <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
-                            <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                            <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" 
+                                @change="change($event, optionGroup)"/>
+                            <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" 
+                                @change="change($event, optionGroup)"/>
 
                             <div class="label">
                                 <template v-if="optionNameKey">
@@ -109,6 +111,7 @@ export default {
     ],
     data: function () { return {
         selection: [],
+        optionGroup: null,
         searchString: '',
         optionsFilteredBySearch: this.options
     }},
@@ -137,10 +140,11 @@ export default {
     },
     methods: {
         submit() {
-            this.$emit('input', this.selection)
-            this.$emit('submit', this.selection)
+            this.$emit('input', this.selection, this.optionGroup)
+            this.$emit('submit', this.selection, this.optionGroup)
         },
-        change() {
+        change(option, optionGroup) {
+            if (optionGroup) this.optionGroup = optionGroup
             this.$emit('change', this.selection)
             if(this.emitOnChange) {
                 this.$emit('input', this.selection)
