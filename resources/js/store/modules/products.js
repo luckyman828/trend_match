@@ -244,7 +244,7 @@ export default {
                             )
                             if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
                                 include = false
-                            if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.actionType))
+                            if (operator == '!=' && !!userFeedback && userFeedback.action == filter.actionType)
                                 include = false
                         }
 
@@ -1546,6 +1546,7 @@ export default {
         },
         SET_FEEDBACKS(state, actions) {
             actions.forEach(action => {
+                if (!action.variants) action.variants = []
                 // Find the actions product
                 const product = state.products.find(product => product.id == action.product_id)
                 // Loop through the products selectionInput and update the action in all of them (sync)
