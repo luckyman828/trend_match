@@ -1,11 +1,11 @@
 <template>
-    <form class="map-fields-screen">
+    <form class="map-fields-screen" @submit.prevent>
         <div class="form-element" style="text-align: center;">
             <!-- <p>Map the fields from your files to Kollekt's data fields</p> -->
             <p><strong>Select Fields to keep, and match with headers from your file(s).</strong></p>
         </div>
 
-        <div class="map-fields" v-if="!uploadingFile">
+        <div class="map-fields" v-if="!uploadingFile && fieldsToMap.length > 0">
             <div class="tables">
 
                 <div class="table-wrapper link-ids">
@@ -14,7 +14,7 @@
                         <tr class="header">
                             <th><label>File</label></th>
                             <th></th>
-                            <th><label>Mapped key</label></th>
+                            <th><label>Key to map</label></th>
                             <th><label>Example</label></th>
                         </tr>
                         <MapKeysTableRow v-for="(file, index) in availableFields" :key="index"
@@ -32,16 +32,51 @@
                             <th></th>
                             <th><label>Kollekt product key</label></th>
                             <th></th>
-                            <th><label>Mapped key</label></th>
+                            <th><label>Key to map</label></th>
                             <th><label>Example</label></th>
                         </tr>
-                        <MapFieldsTableRow v-for="(field, index) in fieldsToMap.filter(x => !x.scope)" 
-                            :key="index"
+                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => !x.scope)" 
+                            :key="field.id"
                             :mappedFile="field.file"
                             :mappedField="field"
-                            @show-field-context="showSelectFieldContext($event, field, availableFields[fieldsToMap.fileIndex])"
+                            @show-field-context="showSelectFieldContext($event, field)"
                         />
                     </table>
+                </div>
+
+                <div class="table-wrapper map-main-fields">
+                    <h3>Map Variants</h3>
+                    <table class="map-fields-table">
+                        <tr class="header">
+                            <th></th>
+                            <th><label>Kollekt product key</label></th>
+                            <th></th>
+                            <th><label>Key to map</label></th>
+                            <th><label>Example</label></th>
+                        </tr>
+                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants')" 
+                            :key="field.id"
+                            :mappedFile="field.file"
+                            :mappedField="field"
+                            @show-field-context="showSelectFieldContext($event, field)"
+                        />
+                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'images')" 
+                            :key="field.id"
+                            :mappedFile="field.file"
+                            :mappedField="field"
+                            :removeEnabled="true"
+                            @show-field-context="showSelectFieldContext($event, field)"
+                            @remove="onRemoveVariantImageMap(field.id)"
+                        />
+                    </table>
+
+                    <button class="dark" 
+                        style="margin-top: 12px"
+                        type=button
+                        @click="onAddVariantImageMap"
+                    >
+                        <i class="fas fa-plus"></i><span>Add variant image map</span>
+                    </button>
                 </div>
 
                     <!-- START Map Variants -->
@@ -322,7 +357,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import MapFieldsTableRow from '../../../components/common/MapProductData/MapFieldsTableRow'
 import MapKeysTableRow from '../../../components/common/MapProductData/MapKeysTableRow'
 import SelectFieldToMapContextMenu from '../../../components/common/MapProductData/SelectFieldToMapContextMenu'
@@ -351,7 +386,6 @@ export default {
         submitStatus: null,
     }},
     computed: {
-        ...mapGetters('mapProductData', ['getProductFields']),
         submitValid() {
             //assume true
             let valid = true
@@ -382,8 +416,10 @@ export default {
         }
     },
     methods: {
-        instantiateFields() {
-            this.fieldsToMap = this.getProductFields.filter(x => x.scope != 'key')
+        ...mapActions('mapProductData', ['getProductFields']),
+        async instantiateFields() {
+            const fields = await this.getProductFields()
+            this.fieldsToMap = fields.filter(x => x.scope != 'key')
 
             // Attempt to autoMap the fields
             this.fieldsToMap.map(field => {
@@ -403,111 +439,124 @@ export default {
             const contextMenu = this.$refs.contextSelectField
             contextMenu.show(e)
         },
-        showSelectContext(e, field, context) {
-            const contextMenu = this.$refs.contextSelectField
-            this.filesToChooseFrom = this.availableFiles
-            if (context && context.fileIndex != null) {
-                this.filesToChooseFrom = [this.availableFiles[context.fileIndex]]
-            }
-            contextMenu.item = field
-            contextMenu.show(e)
+        async onAddVariantImageMap() {
+            const newFields = await this.getProductFields('images')
+            const newField = newFields[0]
+            this.fieldsToMap.push(newField)
+            // Attempt to automatch the field
+            // Provide the existing matches to avoid mapping the same field multiple times
+            const existingMatches = this.fieldsToMap.filter(x => x.scope == 'images').map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
+            this.autoMapField(newField, this.availableFields, existingMatches)
         },
-        showSelectKeyContext(e, file) {
-            const contextMenu = this.$refs.contextSelectFileKey
-            contextMenu.item = file
-            contextMenu.show(e)
+        onRemoveVariantImageMap(fieldId) {
+            const index = this.fieldsToMap.findIndex(x => x.id == fieldId)
+            this.fieldsToMap.splice(index, 1)
         },
-        showSelectCurrencyFileContext(e, currency) {
-            const contextMenu = this.$refs.contextSelectCurrencyFile
-            contextMenu.item = currency
-            contextMenu.show(e)
-        },
-        showSelectAssortmentFileContext(e, assortment) {
-            const contextMenu = this.$refs.contextSelectAssortmentFile
-            contextMenu.item = assortment
-            contextMenu.show(e)
-        },
-        validateCurrency(currency) {
-            if (currency.currencyName.length != 3) {
-                currency.nameError = 'Currency must be a <strong>3 letter</strong> currency code.'
-                return false
-            } else {
-                currency.nameError = null
-                return true
-            }
-        },
-        validateKey(file) {
-            // Assume no error
-            file.keyError = false   
-        },
-        validateField(field, limit=10) {
-            const fieldName = field.name
-            // Find the file the field is mapped to
-            const file = this.availableFiles[field.newValue.fileIndex]
+        // showSelectContext(e, field, context) {
+        //     const contextMenu = this.$refs.contextSelectField
+        //     this.filesToChooseFrom = this.availableFiles
+        //     if (context && context.fileIndex != null) {
+        //         this.filesToChooseFrom = [this.availableFiles[context.fileIndex]]
+        //     }
+        //     contextMenu.item = field
+        //     contextMenu.show(e)
+        // },
+        // showSelectKeyContext(e, file) {
+        //     const contextMenu = this.$refs.contextSelectFileKey
+        //     contextMenu.item = file
+        //     contextMenu.show(e)
+        // },
+        // showSelectCurrencyFileContext(e, currency) {
+        //     const contextMenu = this.$refs.contextSelectCurrencyFile
+        //     contextMenu.item = currency
+        //     contextMenu.show(e)
+        // },
+        // showSelectAssortmentFileContext(e, assortment) {
+        //     const contextMenu = this.$refs.contextSelectAssortmentFile
+        //     contextMenu.item = assortment
+        //     contextMenu.show(e)
+        // },
+        // validateCurrency(currency) {
+        //     if (currency.currencyName.length != 3) {
+        //         currency.nameError = 'Currency must be a <strong>3 letter</strong> currency code.'
+        //         return false
+        //     } else {
+        //         currency.nameError = null
+        //         return true
+        //     }
+        // },
+        // validateKey(file) {
+        //     // Assume no error
+        //     file.keyError = false   
+        // },
+        // validateField(field, limit=10) {
+        //     const fieldName = field.name
+        //     // Find the file the field is mapped to
+        //     const file = this.availableFiles[field.newValue.fileIndex]
 
-            // Assume no error
-            let valid = true
-            field.error = false
+        //     // Assume no error
+        //     let valid = true
+        //     field.error = false
 
-            // Set the limit to a maximum of the number of lines in the file
-            const linesToValidate = file.lines.length < limit ? file.lines.length : limit
+        //     // Set the limit to a maximum of the number of lines in the file
+        //     const linesToValidate = file.lines.length < limit ? file.lines.length : limit
 
-            // Test n values
-            for (let i = 0;i<linesToValidate;i++) {
-                // Find the field value
-                const fieldValue = file.lines[i][field.newValue.fieldIndex]
+        //     // Test n values
+        //     for (let i = 0;i<linesToValidate;i++) {
+        //         // Find the field value
+        //         const fieldValue = file.lines[i][field.newValue.fieldIndex]
 
-                // Test that the field actually has a value
-                if (fieldValue && valid) {
+        //         // Test that the field actually has a value
+        //         if (fieldValue && valid) {
 
-                    // Test for integers
-                    if (['min_order','min_variant_order','box_size','eans','mark_up','recommended_retail_price','wholesale_price'].includes(fieldName)) {
-                        if (isNaN(fieldValue)) {
-                            field.error = `Must be a <strong>number</strong>.
-                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
-                            valid = false
-                        }
-                    }
-                    // Test for correct date
-                    if (['delivery_date'].includes(fieldName)) {
-                        // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
-                        // Regex that looks for a work with exactly 3 characters between A-z.
-                        const reg = new RegExp('\\b[A-z]{3}\\b')
-                        let valueToTest = JSON.parse(JSON.stringify(fieldValue))
-                        if (reg.test(valueToTest)) {
-                            // If true then add a "1-" to the date to avoid ambiguity
-                            valueToTest= '1-' + valueToTest
-                        }
-                        const dateValue = new Date (valueToTest)
-                        if (!dateValue instanceof Date || isNaN(dateValue)) {
-                            field.error = `Invalid <strong>Date format</strong>.
-                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>
-                            <br>Make sure that values only contain <strong>English</strong> month names`
-                            valid = false
-                        }
-                    }
-                    // Test for correct url
-                    if (['image'].includes(fieldName)) {
-                        const urlReg = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/)
-                        if (!urlReg.test(fieldValue)) {
-                            field.error = `Must be a <strong>valid URL</strong>.
-                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
-                            valid = false
-                        }
-                    }
+        //             // Test for integers
+        //             if (['min_order','min_variant_order','box_size','eans','mark_up','recommended_retail_price','wholesale_price'].includes(fieldName)) {
+        //                 if (isNaN(fieldValue)) {
+        //                     field.error = `Must be a <strong>number</strong>.
+        //                     <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
+        //                     valid = false
+        //                 }
+        //             }
+        //             // Test for correct date
+        //             if (['delivery_date'].includes(fieldName)) {
+        //                 // Check for special cases where the date is of format mmm-yy ("jan-20") which will be parsed incorrectly by the new Date() function
+        //                 // Regex that looks for a work with exactly 3 characters between A-z.
+        //                 const reg = new RegExp('\\b[A-z]{3}\\b')
+        //                 let valueToTest = JSON.parse(JSON.stringify(fieldValue))
+        //                 if (reg.test(valueToTest)) {
+        //                     // If true then add a "1-" to the date to avoid ambiguity
+        //                     valueToTest= '1-' + valueToTest
+        //                 }
+        //                 const dateValue = new Date (valueToTest)
+        //                 if (!dateValue instanceof Date || isNaN(dateValue)) {
+        //                     field.error = `Invalid <strong>Date format</strong>.
+        //                     <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>
+        //                     <br>Make sure that values only contain <strong>English</strong> month names`
+        //                     valid = false
+        //                 }
+        //             }
+        //             // Test for correct url
+        //             if (['image'].includes(fieldName)) {
+        //                 const urlReg = new RegExp(/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/)
+        //                 if (!urlReg.test(fieldValue)) {
+        //                     field.error = `Must be a <strong>valid URL</strong>.
+        //                     <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
+        //                     valid = false
+        //                 }
+        //             }
 
-                    // Test for correct currency
-                    if (this.singleCurrencyFile && ['currency'].includes(fieldName)) {
-                        if (fieldValue.length != 3) {
-                            field.error = `Currency must be a <strong>3 letter</strong> currency code.
-                            <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
-                            valid = false
-                        }
-                    }
-                }
-            }
-            return valid
-        },
+        //             // Test for correct currency
+        //             if (this.singleCurrencyFile && ['currency'].includes(fieldName)) {
+        //                 if (fieldValue.length != 3) {
+        //                     field.error = `Currency must be a <strong>3 letter</strong> currency code.
+        //                     <br>Found value: <i>${fieldValue}</i> on <strong>line ${i+2}</strong>`
+        //                     valid = false
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return valid
+        // },
         async submitFiles() {
 
             // First validate all fields
@@ -755,8 +804,5 @@ export default {
             font-size: 12px;
         }
     }
-}
-.remove-variant-image {
-    margin-right: -32px;
 }
 </style>

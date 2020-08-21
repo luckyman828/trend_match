@@ -34,6 +34,14 @@
                 :value="previewValue"
             />
         </td>
+        <td v-if="removeEnabled">
+            <button class="dark ghost remove-button"
+                type=button
+                @click="$emit('remove')"
+            >
+                <i class="far fa-trash"></i>
+            </button>
+        </td>
     </tr>
 </template>
 
@@ -48,6 +56,7 @@ export default {
     props: [
         'mappedFile',
         'mappedField',
+        'removeEnabled',
     ],
     computed: {
         previewValue() {
@@ -77,5 +86,7 @@ export default {
         width: 240px;
     }
 }
-
+.remove-button {
+    margin-right: -32px;
+}
 </style>

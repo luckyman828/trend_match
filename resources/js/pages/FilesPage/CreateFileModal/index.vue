@@ -53,7 +53,6 @@ export default {
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFolder']),
-        ...mapGetters('mapProductData', ['getProductFields']),
         submitValid() {
             //assume true
             let valid = true
@@ -86,6 +85,7 @@ export default {
     methods: {
         ...mapActions('files', ['insertOrUpdateFile', 'syncExternalImages']),
         ...mapActions('products', ['insertProducts', 'uploadImage' ,'updateManyProducts']),
+        ...mapActions('mapProductData', ['getProductFields']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         filesChange(fileList) {
             const files = fileList
@@ -137,7 +137,7 @@ export default {
             //Change the current screen
             this.currentScreen={name: 'chooseFiles', header: 'Create new file'}
         },
-        processFile(workbook, fileName) {
+        async processFile(workbook, fileName) {
             const rows = this.parseWorkbookToRowsAndCells(workbook)
 
             // // Check if the file already exists. If so, replace it instead of adding
@@ -145,8 +145,9 @@ export default {
             if (existingFile) {
                 Object.assign(existingFile, rows)
             } else {
+                const mappedKey = await this.getProductFields('key')
                 this.availableFields.push({
-                    mappedKey: this.getProductFields[0],
+                    mappedKey: mappedKey[0],
                     headers: Object.keys(rows[0]),
                     fileName,
                     rows

@@ -2,6 +2,7 @@ export default {
     namespaced: true,
 
     state: {
+        fieldIndex: 0,
         productFields: [
             // KEY
             {
@@ -206,21 +207,27 @@ export default {
         ],
     },
 
-    getters: {
-        getProductFields: state => {
-            const fields = JSON.parse(JSON.stringify(state.productFields))
+    getters: {},
+
+    actions: {
+        getProductFields({ state }, scope) {
+            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x =>
+                !scope ? true : x.scope == scope
+            )
             return fields.map(x => {
                 x.file = null
                 x.fieldName = null
                 x.autoMatched = false
                 x.error = null
                 x.enabled = true
+                // Give each value an id based on its index
+                x.id = state.fieldIndex
+                state.fieldIndex++
+
                 return x
             })
         },
     },
-
-    actions: {},
 
     mutations: {},
 }

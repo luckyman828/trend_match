@@ -11,8 +11,16 @@ export default {
                 // header: 1,
                 blankrows: false,
                 dateNF: 'YYYY-MM-DD',
+                defval: null,
             })
 
+            // const headers = XLSX.utils.sheet_to_json(sheet, {
+            //     range: 'A1:A3',
+            //     raw: true,
+            //     header: 1,
+            // })
+
+            // console.log('headers', headers)
             // console.log('rows', rows)
 
             return rows
@@ -73,19 +81,42 @@ export default {
             }
             return isValid
         },
-        autoMapField(field, availableFields) {
+        autoMapField(field, availableFields, matchesToAvoid) {
             let foundMatch = false
             availableFields.forEach(fieldCollection => {
                 if (foundMatch) return
-                const match = fieldCollection.headers.find(header =>
-                    field.headersToMatch.includes(header.toLowerCase())
+
+                const altMatch = fieldCollection.headers.find(header => {
+                    return field.headersToMatch.find(headerMatch => {
+                        return headerMatch.search(header.toLowerCase()) >= 0
+                    })
+                })
+
+                const matches = fieldCollection.headers.filter(header =>
+                    field.headersToMatch.find(
+                        headerMatch =>
+                            headerMatch.search(header.toLowerCase()) >= 0 ||
+                            header.toLowerCase().search(headerMatch) >= 0
+                    )
                 )
-                if (match) {
-                    console.log('found match', match)
-                    foundMatch = true
-                    field.fieldName = match
-                    field.file = fieldCollection
-                    field.autoMatched = true
+
+                if (matches.length > 0) {
+                    let match = matches[0]
+                    if (matchesToAvoid) {
+                        // Find a match that is not included in the matched to avoid array
+                        match = matches.find(
+                            theMatch =>
+                                !matchesToAvoid.find(
+                                    x => x.fieldName == theMatch && x.fileName == fieldCollection.fileName
+                                )
+                        )
+                    }
+                    if (match) {
+                        foundMatch = true
+                        field.fieldName = match
+                        field.file = fieldCollection
+                        field.autoMatched = true
+                    }
                 }
             })
         },

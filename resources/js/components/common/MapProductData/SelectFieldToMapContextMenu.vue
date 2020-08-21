@@ -44,9 +44,9 @@ export default {
             const field = this.fieldToMap
             field.enabled = true,
             field.error = false
-            field.fileIndex = null
             field.fieldName = null
             field.autoMatched = false
+            field.file = null
         }
     }
 }
