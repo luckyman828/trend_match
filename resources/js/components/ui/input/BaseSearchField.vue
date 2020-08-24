@@ -185,7 +185,11 @@ export default {
                     return searchString.indexOf(a.datasource_id.toString()) - searchString.indexOf(b.datasource_id.toString())
                 })
             }
-            // return resultsToReturn unsorted
+            if (this.searchMultipleArrays) {
+                // Only return arrays with results
+                return resultsToReturn.filter(x => x[this.multipleArrayKey].length > 0)
+            }
+
             return resultsToReturn
         }
     },
