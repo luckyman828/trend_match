@@ -99,7 +99,7 @@ export default {
         },
         hasNewComment() {
             return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
-            this.getCurrentSelectionMode == 'Approvel' && this.request.hasUnreadAlignerComment
+            this.getCurrentSelectionMode == 'Approval' && this.request.hasUnreadAlignerComment
         },
     },
     methods: {

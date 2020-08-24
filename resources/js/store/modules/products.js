@@ -875,7 +875,7 @@ export default {
                 })
                 Object.defineProperty(product, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return !!product.requests.find(x => x.hasUnreadAlignerComment)
+                        return !!product.requests.find(x => x.hasUnreadAlignerComment && x.selection.type == 'Master')
                     },
                 })
                 Object.defineProperty(product, 'hasUnreadApproverComment', {
@@ -1059,7 +1059,9 @@ export default {
 
                 Object.defineProperty(selectionInput, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return !!selectionInput.requests.find(x => x.hasUnreadAlignerComment)
+                        return !!selectionInput.requests.find(
+                            x => x.hasUnreadAlignerComment && x.selection.type == 'Master'
+                        )
                     },
                 })
                 Object.defineProperty(selectionInput, 'hasUnreadApproverComment', {
