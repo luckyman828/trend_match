@@ -4,7 +4,7 @@ export default {
     state: {
         fieldIndex: 0,
         productFields: [
-            // KEY
+            // KEYS
             {
                 scope: 'key',
                 name: 'datasource_id',
@@ -21,6 +21,27 @@ export default {
                     'style_number',
                 ],
             },
+            {
+                scope: 'variantKey',
+                name: 'variant_key',
+                displayName: 'Variant key',
+                type: 'string',
+                headersToMatch: ['variant', 'variant name', 'variant id', 'color', 'colour'],
+            },
+            // {
+            //     scope: 'currencyKey',
+            //     name: 'assortment_key',
+            //     displayName: 'Assortment key',
+            //     type: 'string',
+            //     headersToMatch: ['assortment', 'box', 'box name', 'assortment name'],
+            // },
+            // {
+            //     scope: 'assortmentKey',
+            //     name: 'assortment_key',
+            //     displayName: 'Assortment key',
+            //     type: 'string',
+            //     headersToMatch: ['assortment', 'box', 'box name', 'assortment name'],
+            // },
             // DEFAULT
             {
                 scope: null,
@@ -210,7 +231,8 @@ export default {
     getters: {},
 
     actions: {
-        getProductFields({ state }, scope) {
+        getProductFields({ state }, { scope, groupId } = {}) {
+            console.log('getProductFields', scope, groupId, state.productFields)
             const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x =>
                 !scope ? true : x.scope == scope
             )
@@ -222,6 +244,7 @@ export default {
                 x.enabled = true
                 // Give each value an id based on its index
                 x.id = state.fieldIndex
+                x.groupId = groupId
                 state.fieldIndex++
 
                 return x

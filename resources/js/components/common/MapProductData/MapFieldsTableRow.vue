@@ -1,8 +1,8 @@
 <template>
     <tr class="map-fields-table-row"
     :class="{'disabled': !mappedField.enabled}">
-        <td>
-            <BaseCheckbox :value="mappedField.enabled" v-model="mappedField.enabled"/>
+        <td class="select">
+            <BaseCheckbox class="select-button" :value="mappedField.enabled" v-model="mappedField.enabled"/>
         </td>
         <td>
             <BaseInputField 
@@ -85,8 +85,14 @@ export default {
     .input-field {
         width: 240px;
     }
+    .select-button {
+        margin-left: -24px;
+    }
 }
 .remove-button {
     margin-right: -32px;
 }
+// .select {
+//     margin-left: -20px;
+// }
 </style>

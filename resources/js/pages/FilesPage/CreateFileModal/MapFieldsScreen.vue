@@ -8,273 +8,62 @@
         <div class="map-fields" v-if="!uploadingFile && fieldsToMap.length > 0">
             <div class="tables">
 
+                <!-- MAP KEYS -->
                 <div class="table-wrapper link-ids">
                     <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
-                    <table class="map-fields-table">
-                        <tr class="header">
-                            <th><label>File</label></th>
-                            <th></th>
-                            <th><label>Key to map</label></th>
-                            <th><label>Example</label></th>
-                        </tr>
+                    <BaseMapFieldsTable>
+                        <MapKeysTableHeader/>
                         <MapKeysTableRow v-for="(file, index) in availableFields" :key="index"
                             :mappedFile="file"
                             :mappedField="file.mappedKey"
                             @show-field-context="showSelectFieldContext($event, file.mappedKey, file)"
                         />
-                    </table>
+                    </BaseMapFieldsTable>
                 </div>
 
+                <!-- MAP MAIN FIELDS -->
                 <div class="table-wrapper map-main-fields">
                     <h3>Map fields</h3>
-                    <table class="map-fields-table">
-                        <tr class="header">
-                            <th></th>
-                            <th><label>Kollekt product key</label></th>
-                            <th></th>
-                            <th><label>Key to map</label></th>
-                            <th><label>Example</label></th>
-                        </tr>
+                    <BaseMapFieldsTable>
+                        <MapFieldsTableHeader/>
                         <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => !x.scope)" 
                             :key="field.id"
                             :mappedFile="field.file"
                             :mappedField="field"
                             @show-field-context="showSelectFieldContext($event, field)"
                         />
-                    </table>
+                    </BaseMapFieldsTable>
                 </div>
 
-                <div class="table-wrapper map-main-fields">
-                    <h3>Map Variants</h3>
-                    <table class="map-fields-table">
-                        <tr class="header">
-                            <th></th>
-                            <th><label>Kollekt product key</label></th>
-                            <th></th>
-                            <th><label>Key to map</label></th>
-                            <th><label>Example</label></th>
-                        </tr>
-                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants')" 
+                <!-- MAP VARIANTS -->
+                <MapVariantsForm
+                    :fieldsToMap="fieldsToMap"
+                    :availableFields="availableFields"
+                    @show-field-context="showSelectFieldContext"
+                />
+
+                <!-- MAP PRICES -->
+                <div class="table-wrapper map-price-fields">
+                    <h3>Map prices</h3>
+                    <BaseMapFieldsTable>
+                        <MapFieldsTableHeader/>
+                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'prices')" 
                             :key="field.id"
                             :mappedFile="field.file"
                             :mappedField="field"
                             @show-field-context="showSelectFieldContext($event, field)"
                         />
-                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'images')" 
-                            :key="field.id"
-                            :mappedFile="field.file"
-                            :mappedField="field"
-                            :removeEnabled="true"
-                            @show-field-context="showSelectFieldContext($event, field)"
-                            @remove="onRemoveVariantImageMap(field.id)"
-                        />
-                    </table>
+                    </BaseMapFieldsTable>
 
                     <button class="dark" 
                         style="margin-top: 12px"
                         type=button
-                        @click="onAddVariantImageMap"
+                        @click="true"
                     >
-                        <i class="fas fa-plus"></i><span>Add variant image map</span>
-                    </button>
-                </div>
-
-                    <!-- START Map Variants -->
-                <!-- <div class="table-wrapper map-assortments">
-                    <h3>Map Variants</h3>
-
-                    <table class="map-fields-table">
-                        <tr class="header">
-                            <th></th>
-                            <th><label>Database</label></th>
-                            <th></th>
-                            <th><label>Matched Datasource</label></th>
-                            <th><label>Example</label></th>
-                        </tr>
-                        <tr v-for="(field, index) in variantFieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
-                            <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
-                            <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                            <td><i class="fas fa-equals"></i></td>
-                            <td>
-                                <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
-                                class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </td>
-                            <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
-                                :value="previewExampleValue(field.newValue, field.name)"/>
-                            </td>
-                        </tr>
-                        <tr v-for="(field, index) in variantImagesToMap" :key="'variant-image-'+index" :class="{disabled: !field.enabled}"
-                        class="variant-image-row">
-                            <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
-                            <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                            <td><i class="fas fa-equals"></i></td>
-                            <td>
-                                <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
-                                class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </td>
-                            <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
-                                :value="previewExampleValue(field.newValue, field.name)"/>
-                            </td>
-
-                            <td>
-                                <button class="dark ghost remove-variant-image"
-                                @click="variantImagesToMap.splice(index, 1)">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <button class="dark" style="margin-top: 12px"
-                    @click="variantImagesToMap.push(JSON.parse(JSON.stringify(variantImageDefaultObject)))">
-                        <i class="fas fa-plus"></i><span>Add variant image map</span>
-                    </button>
-                </div> -->
-                <!-- END Map Variants -->
-
-                <!-- <div class="table-wrapper map-currencies">
-                    <h3>Map currencies</h3>
-                    <table class="single-currency-file-table">
-                        <tr>
-                            <td><BaseCheckbox :value="true" v-model="singleCurrencyFile"/></td>
-                            <td><p>One CSV contains all currencies in a single header <span class="small">(i.e. there is a header like "currency" in a csv)</span></p></td>
-                        </tr>
-                    </table>
-                    <div class="currency-wrapper" v-for="(currency, index) in currenciesToMatch" :key="index">
-                        <template v-if="!singleCurrencyFile || index < 1">
-                            <h4 v-if="!singleCurrencyFile">Currency {{index+1}}</h4>
-                            <div class="currency-header" v-if="!singleCurrencyFile">
-                                <div class="left">
-                                    <table class="map-fields-table">
-                                        <tr class="header">
-                                            <th></th>
-                                            <th><label :for="'currency-'+index+'-name'">Currency Name (ex. EUR)</label></th>
-                                            <th></th>
-                                            <th><label :for="'currency-'+index+'-file'">Linked File</label></th>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td><BaseInputField :id="'currency-'+index+'-name'" :errorTooltip="currency.nameError"
-                                            class="input-field" placeholder="Fx. EUR" v-model="currency.currencyName"
-                                            @blur="validateCurrency(currency)"
-                                            @input.native="currency.currencyName = currency.currencyName.toUpperCase()"/></td>
-                                            <td><i class="fas fa-equals"></i></td>
-                                            <td><BaseInputField :id="'currency-'+index+'-file'" 
-                                            class="input-field" disabled=true
-                                            :value="currency.fileIndex != null ? availableFiles[currency.fileIndex].fileName : null" 
-                                            type="select" @click="showSelectCurrencyFileContext($event, currency)">
-                                                <i class="fas fa-caret-down"></i>
-                                            </BaseInputField></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <button v-if="index > 0" class="dark" @click="currenciesToMatch.splice(index,1)">
-                                    <i class="fas fa-trash-alt"></i><span>Remove currency</span>
-                                </button>
-                            </div>
-                            <table class="map-fields-table">
-                                <tr class="header">
-                                    <th></th>
-                                    <th><label>Database</label></th>
-                                    <th></th>
-                                    <th><label>Matched Datasource</label></th>
-                                    <th><label>Example</label></th>
-                                </tr>
-                                <tr v-for="(field, index) in currency.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
-                                    <template v-if="field.name != 'currency' || singleCurrencyFile">
-                                        <td><BaseCheckbox v-if="field.name != 'currency' || singleCurrencyFile" :value="field.enabled" v-model="field.enabled"/></td>
-                                        <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                                        <td><i class="fas fa-equals"></i></td>
-                                        <td><BaseInputField :readOnly="currency.fileIndex == null"
-                                        v-tooltip="currency.fileIndex == null && 'You must select a file to map first'"
-                                        :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
-                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                        :value="field.newValue.fieldName" type="select" 
-                                        @click="currency.fileIndex != null && showSelectContext($event, field, currency)">
-                                            <i class="fas fa-caret-down"></i>
-                                        </BaseInputField></td>
-                                        <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
-                                            :value="previewExampleValue(field.newValue, field.name)"/>
-                                        </td>
-                                    </template>
-                                </tr>
-                            </table>
-                        </template>
-                    </div>
-                    <button v-if="!singleCurrencyFile" class="dark" 
-                    @click="currenciesToMatch.push(JSON.parse(JSON.stringify(currencyDefaultObject)))">
                         <i class="fas fa-plus"></i><span>Add currency</span>
                     </button>
-                </div> -->
-
-                <!-- START Map Assortments -->
-                <!-- <div class="table-wrapper map-assortments">
-                    <h3>Map Assortments</h3>
-                    <div class="assortment-wrapper" v-for="(assortment, index) in assortmentsToMatch" :key="index">
-                        <h4>Assortment {{index+1}}</h4>
-                        <div class="assortment-header">
-                            <div class="left">
-                                <table class="map-fields-table">
-                                    <tr class="header">
-                                        <th></th>
-                                        <th><label :for="'assortment-'+index+'-file'">Linked File</label></th>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td><BaseInputField :id="'assortment-'+index+'-file'" 
-                                        class="input-field" disabled=true
-                                        :value="assortment.fileIndex != null ? availableFiles[assortment.fileIndex].fileName : null" 
-                                        type="select" @click="showSelectAssortmentFileContext($event, assortment)">
-                                            <i class="fas fa-caret-down"></i>
-                                        </BaseInputField></td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <button v-if="index > 0" class="dark" @click="assortmentsToMatch.splice(index,1)">
-                                <i class="fas fa-trash-alt"></i><span>Remove assortment</span>
-                            </button>
-                        </div>
-                        <table class="map-fields-table">
-                            <tr class="header">
-                                <th></th>
-                                <th><label>Database</label></th>
-                                <th></th>
-                                <th><label>Matched Datasource</label></th>
-                                <th><label>Example</label></th>
-                            </tr>
-                            <tr v-for="(field, index) in assortment.fieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
-                                <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
-                                <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
-                                <td><i class="fas fa-equals"></i></td>
-                                <td><BaseInputField :readOnly="assortment.fileIndex == null"
-                                v-tooltip="assortment.fileIndex == null && 'You must select a file to map first'"
-                                :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
-                                class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
-                                :value="field.newValue.fieldName" type="select" 
-                                @click="assortment.fileIndex != null && showSelectContext($event, field, assortment)">
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField></td>
-                                <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
-                                    :value="previewExampleValue(field.newValue, field.name)"/>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <button class="dark" 
-                    @click="assortmentsToMatch.push(JSON.parse(JSON.stringify(assortmentDefaultObject)))">
-                        <i class="fas fa-plus"></i><span>Add assortment</span>
-                    </button>
-                </div> -->
-                <!-- END Map Assortments -->
-
+                </div>
             </div>
-
         </div>
 
         <BaseLoader v-else :msg="submitStatus"/>
@@ -288,68 +77,8 @@
         </div>
 
         <!-- START CONTEXT MENUS -->
-
-        <!-- <BaseContextMenu ref="contextSelectFileKey" class="context-select-key">
-            <template v-slot:header>
-                Select key to link
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" @unset="slotProps.item.newValue={fileIndex: null, fieldName: null, fieldIndex: null}"
-                    :options="slotProps.item.headers" :optionNameKey="'fieldName'"
-                    v-model="slotProps.item.key" :submitOnChange="true" :search="true" @submit="validateKey(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu> -->
-
         <SelectFieldToMapContextMenu ref="contextSelectField"
         :fieldToMap="contextField" :availableFields="filesToChooseFrom"/>
-
-        <!-- <BaseContextMenu ref="contextSelectField" class="context-select-field">
-            <template v-slot:header>
-                Select field to map
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
-                    @unset="onUnsetFieldMapping();slotProps.hide()"
-                    :options="filesToChooseFrom" multipleOptionArrays="true" optionGroupNameKey="fileName" optionGroupOptionsKey="headers"
-                    v-model="slotProps.item.newValue" :submitOnChange="true" :optionDescriptionKey="'fileName'"
-                    :optionNameKey="'fieldName'" :search="true" @submit="validateField(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu> -->
-
-        <!-- <BaseContextMenu ref="contextSelectCurrencyFile" class="context-select-file">
-            <template v-slot:header>
-                Select file to match
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
-                    @unset="slotProps.item.fileIndex = null;slotProps.hide()"
-                    :options="availableFiles"
-                    v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
-                    :optionNameKey="'fileName'" @submit="autoMapCurrency(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu>
-
-        <BaseContextMenu ref="contextSelectAssortmentFile" class="context-select-file">
-            <template v-slot:header>
-                Select file to match
-            </template>
-            <template v-slot="slotProps">
-                <div class="item-group">
-                    <BaseSelectButtons :type="'radio'" :unsetOption="'Remove mapping'" 
-                    @unset="slotProps.item.fileIndex = null;slotProps.hide()"
-                    :options="availableFiles"
-                    v-model="slotProps.item.fileIndex" :submitOnChange="true" :optionValueKey="'index'"
-                    :optionNameKey="'fileName'" @submit="autoMapAssortment(slotProps.item);slotProps.hide()"/>
-                </div>
-            </template>
-        </BaseContextMenu> -->
-
         <!-- END CONTEXT MENUS -->
 
 
@@ -361,6 +90,9 @@ import { mapGetters, mapActions } from 'vuex'
 import MapFieldsTableRow from '../../../components/common/MapProductData/MapFieldsTableRow'
 import MapKeysTableRow from '../../../components/common/MapProductData/MapKeysTableRow'
 import SelectFieldToMapContextMenu from '../../../components/common/MapProductData/SelectFieldToMapContextMenu'
+import MapVariantsForm from '../../../components/common/MapProductData/MapVariantsForm'
+import MapFieldsTableHeader from '../../../components/common/MapProductData/MapFieldsTableHeader'
+import MapKeysTableHeader from '../../../components/common/MapProductData/MapKeysTableHeader'
 import workbookUtils from '../../../mixins/workbookUtils'
 
 export default {
@@ -369,6 +101,9 @@ export default {
         MapFieldsTableRow,
         MapKeysTableRow,
         SelectFieldToMapContextMenu,
+        MapVariantsForm,
+        MapFieldsTableHeader,
+        MapKeysTableHeader,
     },
     mixins: [
         workbookUtils,
@@ -413,6 +148,74 @@ export default {
             //     })
             // }
             return valid
+        },
+        instantiatedProducts() {
+            const products = []
+            this.availableFields.map(file => {
+
+                const keyField = file.mappedKey.fieldName
+                if (!keyField) return
+
+                file.rows.map(row => {
+
+                    // Find the product corresponding to this row, or instantiate a new product if none exists
+                    const keyValue = row[keyField]
+
+                    const existingProduct = products.find(x => x.datasource_id == keyValue)
+                    const baseProduct = {
+                        datasource_id: keyValue,
+                        variants: [],
+                        prices:[],
+                        assortments: [],
+                        eans: [],
+                    }
+                    const product = existingProduct ? existingProduct : baseProduct
+
+                    console.log('made it 1')
+
+                    if (!existingProduct) {
+                        products.push(product)
+                    }
+
+                    console.log('made it 2')
+
+                    // // Instantiate variants 
+                    // const variantKeyField = this.fieldsToMap.find(field => field.name == 'variant_name')
+                    // if (!variantKeyField.fieldName)
+                    // const variantKeyValue = variantKeyField.fieldName
+                    // const existingVariant = product.variants
+                    // const baseVariant = {
+                    //     name: variantKeyField,
+                    //     sizes: [],
+                    //     pictures: []
+                    // }
+
+                    // Map variants
+                    this.fieldsToMap.filter(x => x.scope == 'variants').map(field => {
+                        // Check that the field is mapped to the current file
+                        if (!field.file || field.file.fileName != file.fileName) return
+
+                        // const variantKeyValue = field.
+
+                        console.log('made it 3')
+
+                        // product[field.name] = row[field.fieldName]
+                    })
+
+                    // Now that we know what product we are updating we can start looping through the mapped fields
+                    this.fieldsToMap.filter(x => !x.scope).map(field => {
+                        // Check that the field is mapped to the current file
+                        if (!field.file || field.file.fileName != file.fileName) return
+
+
+                        console.log('made it 3')
+
+                        product[field.name] = row[field.fieldName]
+                    })
+                })
+            })
+
+            return products
         }
     },
     methods: {
@@ -439,19 +242,19 @@ export default {
             const contextMenu = this.$refs.contextSelectField
             contextMenu.show(e)
         },
-        async onAddVariantImageMap() {
-            const newFields = await this.getProductFields('images')
-            const newField = newFields[0]
-            this.fieldsToMap.push(newField)
-            // Attempt to automatch the field
-            // Provide the existing matches to avoid mapping the same field multiple times
-            const existingMatches = this.fieldsToMap.filter(x => x.scope == 'images').map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
-            this.autoMapField(newField, this.availableFields, existingMatches)
-        },
-        onRemoveVariantImageMap(fieldId) {
-            const index = this.fieldsToMap.findIndex(x => x.id == fieldId)
-            this.fieldsToMap.splice(index, 1)
-        },
+        // async onAddVariantImageMap() {
+        //     const newFields = await this.getProductFields({scope: 'images'})
+        //     const newField = newFields[0]
+        //     this.fieldsToMap.push(newField)
+        //     // Attempt to automatch the field
+        //     // Provide the existing matches to avoid mapping the same field multiple times
+        //     const existingMatches = this.fieldsToMap.filter(x => x.scope == 'images').map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
+        //     this.autoMapField(newField, this.availableFields, existingMatches)
+        // },
+        // onRemoveVariantImageMap(fieldId) {
+        //     const index = this.fieldsToMap.findIndex(x => x.id == fieldId)
+        //     this.fieldsToMap.splice(index, 1)
+        // },
         // showSelectContext(e, field, context) {
         //     const contextMenu = this.$refs.contextSelectField
         //     this.filesToChooseFrom = this.availableFiles
@@ -695,7 +498,6 @@ export default {
     display: flex;
     justify-content: center;
     h3 {
-        padding-left: 24px;
         margin: 48px 0 12px;
         i {
             margin-left: 8px;
@@ -718,11 +520,6 @@ export default {
             }
         }
     }
-    .link-ids {
-        .map-fields-table {
-            padding-left: 24px;
-        }
-    }
     .map-currencies {
         .single-currency-file-table {
             margin-bottom: 32px;
@@ -733,7 +530,6 @@ export default {
         .currency-wrapper {
             margin-bottom: 32px;
             h4 {
-                padding-left: 28px;
                 margin-top: 0;
                 margin-bottom: 4px;
             }
@@ -742,9 +538,7 @@ export default {
                 justify-content: space-between;
                 margin-bottom: 8px;
                 align-items: flex-end;
-                padding-left: 20px;
                     p {
-                    padding-left: 24px;
                     .small {
                         font-size: 12px;
                     }
@@ -787,7 +581,6 @@ export default {
 .assortment-wrapper {
     margin-bottom: 32px;
     h4 {
-        padding-left: 28px;
         margin-top: 0;
         margin-bottom: 4px;
     }
@@ -797,7 +590,6 @@ export default {
     justify-content: space-between;
     margin-bottom: 8px;
     align-items: flex-end;
-    padding-left: 20px;
         p {
         padding-left: 24px;
         .small {

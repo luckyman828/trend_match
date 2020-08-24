@@ -577,7 +577,6 @@ export default {
             }
         },
         onSubmitField() {
-            console.log('on submit field')
             // Don't update the product if it hasn't been assigned a datasource id yet
             if (!this.productToEdit.datasource_id) return
             

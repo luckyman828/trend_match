@@ -145,9 +145,11 @@ export default {
             if (existingFile) {
                 Object.assign(existingFile, rows)
             } else {
-                const mappedKey = await this.getProductFields('key')
+                const mappedKey = await this.getProductFields({scope: 'key'})
+                const variantKey = await this.getProductFields({scope: 'variantKey'})
                 this.availableFields.push({
                     mappedKey: mappedKey[0],
+                    variantKey : variantKey[0],
                     headers: Object.keys(rows[0]),
                     fileName,
                     rows

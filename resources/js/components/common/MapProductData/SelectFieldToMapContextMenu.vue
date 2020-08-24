@@ -37,7 +37,6 @@ export default {
             this.$refs.contextMenu.show(e)
         },
         onSubmit(fieldName, file) {
-            console.log('on submit', fieldName, file)
             this.fieldToMap.file = file
         },
         onUnsetFieldMapping() {
