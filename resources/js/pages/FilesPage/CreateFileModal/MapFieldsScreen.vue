@@ -9,7 +9,7 @@
             <div class="tables">
 
                 <!-- MAP KEYS -->
-                <div class="table-wrapper link-ids">
+                <div class="form-section">
                     <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
                     <BaseMapFieldsTable>
                         <MapKeysTableHeader/>
@@ -22,7 +22,7 @@
                 </div>
 
                 <!-- MAP MAIN FIELDS -->
-                <div class="table-wrapper map-main-fields">
+                <div class="form-section">
                     <h3>Map fields</h3>
                     <BaseMapFieldsTable>
                         <MapFieldsTableHeader/>
@@ -36,33 +36,19 @@
                 </div>
 
                 <!-- MAP VARIANTS -->
-                <MapVariantsForm
+                <MapVariantsForm class="form-section"
+                    :fieldsToMap="fieldsToMap"
+                    :availableFields="availableFields"
+                    @show-field-context="showSelectFieldContext"
+                />
+                
+                <!-- MAP PRICES -->
+                <MapPricesForm class="form-section"
                     :fieldsToMap="fieldsToMap"
                     :availableFields="availableFields"
                     @show-field-context="showSelectFieldContext"
                 />
 
-                <!-- MAP PRICES -->
-                <div class="table-wrapper map-price-fields">
-                    <h3>Map prices</h3>
-                    <BaseMapFieldsTable>
-                        <MapFieldsTableHeader/>
-                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'prices')" 
-                            :key="field.id"
-                            :mappedFile="field.file"
-                            :mappedField="field"
-                            @show-field-context="showSelectFieldContext($event, field)"
-                        />
-                    </BaseMapFieldsTable>
-
-                    <button class="dark" 
-                        style="margin-top: 12px"
-                        type=button
-                        @click="true"
-                    >
-                        <i class="fas fa-plus"></i><span>Add currency</span>
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -91,6 +77,7 @@ import MapFieldsTableRow from '../../../components/common/MapProductData/MapFiel
 import MapKeysTableRow from '../../../components/common/MapProductData/MapKeysTableRow'
 import SelectFieldToMapContextMenu from '../../../components/common/MapProductData/SelectFieldToMapContextMenu'
 import MapVariantsForm from '../../../components/common/MapProductData/MapVariantsForm'
+import MapPricesForm from '../../../components/common/MapProductData/MapPricesForm'
 import MapFieldsTableHeader from '../../../components/common/MapProductData/MapFieldsTableHeader'
 import MapKeysTableHeader from '../../../components/common/MapProductData/MapKeysTableHeader'
 import workbookUtils from '../../../mixins/workbookUtils'
@@ -102,6 +89,7 @@ export default {
         MapKeysTableRow,
         SelectFieldToMapContextMenu,
         MapVariantsForm,
+        MapPricesForm,
         MapFieldsTableHeader,
         MapKeysTableHeader,
     },
@@ -494,6 +482,10 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+.table-wrapper {
+    margin-bottom: 40px;
+}
 
 .map-fields {
     display: flex;

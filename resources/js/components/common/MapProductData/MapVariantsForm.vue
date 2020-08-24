@@ -1,56 +1,53 @@
 <template>
-    <div class="table-wrapper map-variant-fields">
+    <div>
         <h3>Map variants</h3>
+        <div class="form-element">
 
-        <!-- MAP FIELDS -->
-        <BaseMapFieldsTable>
-            <MapFieldsTableHeader/>
-            <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants')" 
-                :key="field.id"
-                :mappedFile="field.file"
-                :mappedField="field"
-                @show-field-context="$emit('show-field-context', $event, field)"
-            />
-            <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'images')" 
-                :key="field.id"
-                :mappedFile="field.file"
-                :mappedField="field"
-                :removeEnabled="true"
-                @show-field-context="$emit('show-field-context', $event, field)"
-                @remove="onRemoveVariantImageMap(field.id)"
-            />
-        </BaseMapFieldsTable>
-
-        <!-- MAP KEYS -->
-        <template v-if="mappedFiles.length > 1">
-            <p>
-                <strong>Map variant keys</strong>
-                <i class="far fa-info-circle"
-                    v-tooltip="'You have mapped different files to the variant fields. Please provide the keys that we should map the variants together by (for instance; Name or Id'"
-                ></i>
-            </p>
-            <table class="map-fields-table">
-                <tr class="header">
-                    <th><label>File</label></th>
-                    <th></th>
-                    <th><label>Key to map</label></th>
-                    <th><label>Example</label></th>
-                </tr>
-                <MapKeysTableRow v-for="(file, index) in mappedFiles" :key="index"
-                    :mappedFile="file"
-                    :mappedField="file.variantKey"
-                    @show-field-context="showSelectFieldContext($event, file.variantKey, file)"
+            <!-- MAP FIELDS -->
+            <BaseMapFieldsTable>
+                <MapFieldsTableHeader/>
+                <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants')" 
+                    :key="field.id"
+                    :mappedFile="field.file"
+                    :mappedField="field"
+                    @show-field-context="$emit('show-field-context', $event, field)"
                 />
-            </table>
-        </template>
+                <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'images')" 
+                    :key="field.id"
+                    :mappedFile="field.file"
+                    :mappedField="field"
+                    :removeEnabled="true"
+                    @show-field-context="$emit('show-field-context', $event, field)"
+                    @remove="onRemoveVariantImageMap(field.id)"
+                />
+            </BaseMapFieldsTable>
 
+        </div>
         <button class="dark" 
-            style="margin-top: 12px"
             type=button
             @click="onAddVariantImageMap"
         >
             <i class="fas fa-plus"></i><span>Add variant image map</span>
         </button>
+
+        <!-- MAP KEYS -->
+        <div v-if="mappedFiles.length > 1" class="form-element">
+            <h4>
+                <strong>Map variant keys</strong>
+                <i class="far fa-info-circle"
+                    v-tooltip="'You have mapped different files to the variant fields. Please provide the keys that we should map the variants together by (for instance; Name or Id'"
+                ></i>
+            </h4>
+            <BaseMapFieldsTable class="map-fields-table">
+                <MapKeysTableHeader/>
+                <MapKeysTableRow v-for="(file, index) in mappedFiles" :key="index"
+                    :mappedFile="file"
+                    :mappedField="file.variantKey"
+                    @show-field-context="$emit('show-field-context', $event, file.variantKey, file)"
+                />
+            </BaseMapFieldsTable>
+        </div>
+
     </div>
 </template>
 
@@ -60,6 +57,7 @@ import workbookUtils from '../../../mixins/workbookUtils'
 import MapFieldsTableRow from './MapFieldsTableRow'
 import MapKeysTableRow from './MapKeysTableRow'
 import MapFieldsTableHeader from './MapFieldsTableHeader'
+import MapKeysTableHeader from './MapKeysTableHeader'
 
 export default {
     name: 'mapVariantsForm',
@@ -67,6 +65,7 @@ export default {
         MapFieldsTableRow,
         MapKeysTableRow,
         MapFieldsTableHeader,
+        MapKeysTableHeader,
     },
     mixins: [
         workbookUtils,
@@ -108,8 +107,5 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-h3 {
-    margin: 48px 0 12px;
-}
 
 </style>

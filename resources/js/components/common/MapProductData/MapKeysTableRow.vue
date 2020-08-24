@@ -12,6 +12,7 @@
         </td>
         <td>
             <BaseInputField
+                class="select-field-button"
                 :class="{'auto-match': mappedField.autoMatched}"
                 disabled=true 
                 :value="mappedField.fieldName" 
@@ -19,6 +20,10 @@
                 @click="$emit('show-field-context', $event)"
             >
                 <i class="fas fa-caret-down"></i>
+                <i v-if="mappedField.autoMatched" 
+                    class="fas fa-bolt primary automatch-icon"
+                    v-tooltip="'auto-matched'"
+                ></i>
             </BaseInputField>
         </td>
         <td>
@@ -65,6 +70,13 @@ export default {
 .map-keys-table-row {
     .input-field {
         width: 240px;
+    }
+    .select-field-button {
+        padding-right: 12px;
+        .automatch-icon {
+            position: absolute;
+            right: -14px;
+        }
     }
 }
 

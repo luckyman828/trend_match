@@ -238,7 +238,7 @@ export default {
     getters: {},
 
     actions: {
-        getProductFields({ state }, { scope, groupId } = {}) {
+        getProductFields({ state }, { scope, groupId = 0 } = {}) {
             // console.log('getProductFields', scope, groupId, state.productFields)
             const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x =>
                 !scope ? true : x.scope == scope

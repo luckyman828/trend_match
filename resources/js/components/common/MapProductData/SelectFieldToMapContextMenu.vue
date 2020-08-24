@@ -38,6 +38,7 @@ export default {
         },
         onSubmit(fieldName, file) {
             this.fieldToMap.file = file
+            this.fieldToMap.autoMatched = false
         },
         onUnsetFieldMapping() {
             const field = this.fieldToMap
