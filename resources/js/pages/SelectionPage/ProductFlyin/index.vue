@@ -156,12 +156,16 @@
             :selectionInput="selectionInput" :requests="selectionInput.requests"
             @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
-            <CommentsSection class="comments" ref="commentsSection"
+            <CommentsSection v-if="!showRequestThread" class="comments" ref="commentsSection"
             :selectionInput="selectionInput"
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
+            <RequestThreadSection v-else/>
+
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
+
+            <!-- <RequestThreadFlyin/> -->
 
             <BaseDialog ref="confirmCloseInPresentation" type="confirm"
             confirmColor="dark" confirmText="Okay, close it">
@@ -200,6 +204,8 @@ import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import BudgetCounter from '../BudgetCounter'
+// import RequestThreadFlyin from './RequestThreadFlyin'
+import RequestThreadSection from './RequestThreadSection'
 
 export default {
     name: 'productFlyin',
@@ -219,12 +225,14 @@ export default {
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
+        // RequestThreadFlyin,
+        RequestThreadSection,
     },
     data: function () { return {
         currentImgIndex: 0,
         lastBroadcastProductId: null,
         tooltipVariant: null,
-        actionDistributionTooltipTab: 'Feedback'
+        actionDistributionTooltipTab: 'Feedback',
     }},
     watch: {
         product(newVal, oldVal) {
@@ -248,12 +256,17 @@ export default {
                 document.body.addEventListener('keydown', this.keydownHandler)
 
             } else {
+                // On close
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
+                this.SET_CURRENT_REQUEST_THREAD(null)
             }
         }
     },
     computed: {
+        ...mapGetters('requests', {
+            showRequestThread: 'getRequestThreadVisible',
+        }),
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
             availableProducts: 'getAvailableProducts'
@@ -263,6 +276,7 @@ export default {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
         }),
+        ...mapGetters('requests', ['getRequestThreadVisible']),
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
         },
@@ -287,6 +301,7 @@ export default {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
@@ -358,6 +373,8 @@ export default {
             }
         },
         hotkeyEnterHandler(e) {
+            // If the request thread flyin is visible, do nothing
+            if (this.getRequestThreadVisible) return
             // If the current mode is Alignment, focus the request field. Else focus comment
             if (this.currentSelectionMode == 'Alignment') {
                 this.$refs.requestsSection.activateWrite()

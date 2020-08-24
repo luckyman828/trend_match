@@ -300,7 +300,7 @@ export default {
             }
 
             // Filter by actions
-            if (['ins', 'outs', 'nds', 'focus'].includes(actionFilter)) {
+            if (['ins', 'outs', 'nds', 'focus', 'tickets'].includes(actionFilter)) {
                 const filteredByAction = productsToReturn.filter(product => {
                     if (actionFilter == 'nds')
                         return (
@@ -314,6 +314,7 @@ export default {
                             getSelectionInput(product)[currentAction] == 'In' ||
                             getSelectionInput(product)[currentAction] == 'Focus'
                         )
+                    if (actionFilter == 'tickets') return product.hasOpenTicket
                 })
                 productsToReturn = filteredByAction
             }
@@ -875,18 +876,28 @@ export default {
                 })
                 Object.defineProperty(product, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return (
-                            (product.requests.length > 0 && product.comments.length <= 0) ||
-                            (product.comments.length > 0 &&
-                                product.comments[product.comments.length - 1].role != 'Approver')
-                        )
+                        return !!product.requests.find(x => x.hasUnreadAlignerComment && x.selection.type == 'Master')
                     },
                 })
                 Object.defineProperty(product, 'hasUnreadApproverComment', {
                     get: function() {
+                        return !!product.requests.find(x => x.hasUnreadApproverComment)
+                    },
+                })
+                Object.defineProperty(product, 'hasNewComment', {
+                    get: function() {
                         return (
-                            product.comments.length > 0 &&
-                            product.comments[product.comments.length - 1].role == 'Approver'
+                            (rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
+                                product.hasUnreadApproverComment) ||
+                            (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
+                                product.hasUnreadAlignerComment)
+                        )
+                    },
+                })
+                Object.defineProperty(product, 'hasOpenTicket', {
+                    get: function() {
+                        return !!product.requests.find(
+                            request => !request.isResolved && request.selection.type == 'Master'
                         )
                     },
                 })
@@ -1046,26 +1057,23 @@ export default {
                         return selectionInput.requests.find(x => x.selection_id == selectionInput.selection_id)
                     },
                 })
-                Object.defineProperty(selectionInput, 'hasAuthUserRequest', {
-                    get: function() {
-                        return !!selectionInput.requests.find(x => x.user_id == authUser.id)
-                    },
-                })
 
                 Object.defineProperty(selectionInput, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return (
-                            (selectionInput.requests.length > 0 && selectionInput.comments.length <= 0) ||
-                            (selectionInput.comments.length > 0 &&
-                                selectionInput.comments[selectionInput.comments.length - 1].role != 'Approver')
+                        return !!selectionInput.requests.find(
+                            x => x.hasUnreadAlignerComment && x.selection.type == 'Master'
                         )
                     },
                 })
                 Object.defineProperty(selectionInput, 'hasUnreadApproverComment', {
                     get: function() {
-                        return (
-                            selectionInput.comments.length > 0 &&
-                            selectionInput.comments[selectionInput.comments.length - 1].role == 'Approver'
+                        return !!selectionInput.requests.find(x => x.hasUnreadApproverComment)
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasOpenTicket', {
+                    get: function() {
+                        return selectionInput.requests.find(
+                            request => !request.isResolved && request.selection.type == 'Master'
                         )
                     },
                 })
@@ -1220,6 +1228,33 @@ export default {
                     get: function() {
                         return selectionInput.actions.filter(x => x.action == 'None')
                     },
+                })
+
+                // PROCESS REQUESTS
+                selectionInput.requests.forEach(request => {
+                    Object.defineProperty(request, 'isResolved', {
+                        get: function() {
+                            return !!request.completed_at
+                        },
+                    })
+                    Object.defineProperty(request, 'hasUnreadAlignerComment', {
+                        get: function() {
+                            return (
+                                !request.isResolved &&
+                                (request.discussions.length <= 0 ||
+                                    request.discussions[request.discussions.length - 1].role != 'Approver')
+                            )
+                        },
+                    })
+                    Object.defineProperty(request, 'hasUnreadApproverComment', {
+                        get: function() {
+                            return (
+                                !request.isResolved &&
+                                request.discussions.length > 0 &&
+                                request.discussions[request.discussions.length - 1].role == 'Approver'
+                            )
+                        },
+                    })
                 })
 
                 // PROCESS VARIANTS

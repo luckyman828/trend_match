@@ -4,7 +4,7 @@
     @click.ctrl="$refs.selectCheckbox.check()">
 
         <div class="product-details">
-            <div v-if="hasUnreadComment" class="unread-indicator circle xxs primary" 
+            <div v-if="product.hasNewComment" class="unread-indicator circle xxs primary" 
             v-tooltip.right="'A message needs a reply'"/>
             
             <td class="select" 
@@ -100,13 +100,20 @@
                 <!-- End Distribution -->
 
                 <td class="requests">
-                    <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests'">
-                        <span>{{selectionInput.requests.length}}</span><i class="far fa-clipboard-check"></i>
-                        <i v-if="selectionInput.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
+
+                    <button class="requests-button ghost xs" @click="onViewSingle" 
+                    v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'">
+                        <span>{{selectionInput.requests.length}}</span>
+                        <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
+                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span>
+                        <i class="far fa-clipboard-check"></i>
+                        <div v-if="product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>
+
                     <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
                         <span>{{selectionInput.comments.length}}</span><i class="far fa-comment"></i>
                     </button>
+
                 </td>
             </template>
             
@@ -210,6 +217,7 @@ export default {
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput']),
+        ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
@@ -442,17 +450,18 @@ export default {
     }
     .requests-button {
         position: relative;
-        .own-request {
-            position: absolute;
-            right: -10px;
-            bottom: -8px;
-            color:  $primary;
-            border-radius: 20px;
-            font-size: 16px;
-            &::before {
-                background: white;
-                border-radius: 20px;
+        &:hover {
+            .new-comment-bullet {
+                top: -7px;
+                right: -5px;
             }
+        }
+        .new-comment-bullet {
+            position: absolute;
+            right: -4px;
+            top: -6px;
+            width: 10px;
+            height: 10px;
         }
     }
 

@@ -7,6 +7,7 @@ export default {
     state: {
         loading: true,
         submitting: false,
+        currentRequestThread: null,
     },
 
     getters: {
@@ -16,6 +17,8 @@ export default {
         submittingRequest: state => {
             return state.submitting
         },
+        getCurrentRequestThread: state => state.currentRequestThread,
+        getRequestThreadVisible: state => !!state.currentRequestThread,
     },
 
     actions: {
@@ -42,6 +45,7 @@ export default {
             }
         },
         async insertOrUpdateRequest({ commit, dispatch }, { selectionInput, request }) {
+            console.log(selectionInput, request.content)
             // Update our state
             commit('INSERT_OR_UPDATE_REQUEST', { selectionInput, request })
             let requestMethod
@@ -67,7 +71,19 @@ export default {
             })
                 .then(response => {
                     // Set the given ID to the request if we were posting a new request
-                    if (!request.id) request.id = response.data.id
+                    if (!request.id) {
+                        request.id = response.data.id
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Request updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     // On error, set error on the request
@@ -90,11 +106,108 @@ export default {
         },
         async deleteRequest({ commit }, { selectionInput, request }) {
             // Delete the request from our state
-            commit('deleteRequest', { selectionInput, request })
+            commit('DELETE_REQUEST', { selectionInput, request })
 
             // Config API endpoint
             const apiUrl = `/requests/${request.id}`
-            await axios.delete(apiUrl)
+            await axios.delete(apiUrl).then(() => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Request deleted',
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                    },
+                    { root: true }
+                )
+            })
+        },
+        async insertOrUpdateRequestComment({ commit }, { request, comment }) {
+            console.log('insert or update', request, comment)
+
+            let apiUrl = `/requests/${request.id}/discussions`
+            let requestMethod = 'post'
+            if (comment.id) {
+                apiUrl = `/discussions/${comment.id}`
+                requestMethod = 'put'
+            } else {
+                commit('INSERT_OR_UPDATE_REQUEST_COMMENT', { request, comment })
+            }
+
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+                // data: request,
+                data: {
+                    content: comment.content,
+                },
+            }).then(response => {
+                if (!comment.id) {
+                    comment.id = response.data.id
+                } else {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Comment updated',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                }
+            })
+        },
+        async deleteRequestComment({ commit, dispatch }, { request, comment }) {
+            const apiUrl = `/discussions/${comment.id}`
+            await axios
+                .delete(apiUrl)
+                .then(response => {
+                    commit('DELETE_REQUEST_COMMENT', { request, comment })
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Comment deleted',
+                            iconClass: 'fa-trash',
+                            type: 'danger',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error trying to delete comment. Please try again',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('deleteRequestComment', { request, comment }),
+                            callbackLabel: 'Retry',
+                        },
+                        { root: true }
+                    )
+                })
+        },
+        async resolveRequest({ commit, rootGetters }, request) {
+            const requestMethod = request.isResolved ? 'delete' : 'put'
+            commit('RESOLVE_REQUEST', { request, resolve: !request.isResolved, user: rootGetters['auth/authUser'] })
+
+            const apiUrl = `/requests/${request.id}/complete`
+            await axios({
+                method: requestMethod,
+                url: apiUrl,
+            }).then(() => {
+                if (request.isResolved) {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Request resolved',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                }
+            })
         },
     },
 
@@ -119,14 +232,67 @@ export default {
             // Else insert the request
             else {
                 selectionInput.rawSelectionInput.requests.push(request)
+
+                Object.defineProperty(request, 'isResolved', {
+                    get: function() {
+                        return !!request.completed_at
+                    },
+                })
+                Object.defineProperty(request, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        return (
+                            !request.isResolved &&
+                            (request.discussions.length <= 0 ||
+                                request.discussions[request.discussions.length - 1].role != 'Approver')
+                        )
+                    },
+                })
+                Object.defineProperty(request, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            !request.isResolved &&
+                            request.discussions.length > 0 &&
+                            request.discussions[request.discussions.length - 1].role == 'Approver'
+                        )
+                    },
+                })
             }
         },
-        deleteRequest(state, { selectionInput, request }) {
-            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
+        DELETE_REQUEST(state, { selectionInput, request }) {
+            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.request_id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
+            // Check if the request is the current request
+            if (state.currentRequestThread && state.currentRequestThread.id == request.request_id) {
+                state.currentRequestThread = null
+                console.log(state.currentRequestThread)
+            }
         },
-        alertError: state => {
-            window.alert('Network error. Please check your connection')
+        SET_CURRENT_REQUEST_THREAD(state, request) {
+            state.currentRequestThread = request
         },
+        INSERT_OR_UPDATE_REQUEST_COMMENT(state, { request, comment }) {
+            const existingIndex = request.discussions.findIndex(x => x.id == comment.id)
+            if (existingIndex >= 0) {
+                const updatedComment = Object.assign(request.discussions[i], comment)
+                Vue.set(request.discussions, existingIndex, updatedComment)
+            } else {
+                request.discussions.push(comment)
+            }
+        },
+        DELETE_REQUEST_COMMENT(state, { request, comment }) {
+            const commentId = comment.id ? comment.id : comment.discussion_id
+            const index = request.discussions.findIndex(x => x.id == commentId)
+            request.discussions.splice(index, 1)
+        },
+        RESOLVE_REQUEST(state, { request, resolve, user }) {
+            if (resolve) {
+                request.completed_at = new Date()
+                request.completed_by_user = user
+            } else {
+                request.completed_at = null
+                request.completed_by_user = null
+            }
+        },
+        // UPDATE_REQUEST_COMMENT(state, {comment})
     },
 }
