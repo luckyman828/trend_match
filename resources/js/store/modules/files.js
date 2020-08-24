@@ -184,6 +184,7 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, file) {
+            console.log('insert or update', file)
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -210,6 +211,7 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
+                    console.log('success!')
                     // Display message
                     const wasCreated = !file.id
                     const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`
@@ -582,6 +584,7 @@ export default {
             state.status = status
         },
         INSERT_FILE(state, file) {
+            console.log('insert file')
             state.files.push(file)
         },
         INSERT_MULTIPLE_FILES(state, files) {
@@ -615,7 +618,7 @@ export default {
                 state.files.splice(index, 1)
             }
         },
-        removeUnsavedFiles(state) {
+        REMOVE_UNSAVED_FILES(state) {
             state.files = state.files.filter(x => x.id != null)
         },
         setAvailableFileIds(state, fileIds) {

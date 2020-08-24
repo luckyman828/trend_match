@@ -1,69 +1,68 @@
 <template>
     <div class="products-table-wrapper">
-        <BaseFlexTable class="products-table" stickyHeader="true">
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Category </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedCategories.length > 0" class="circle primary xs">
-                                    <span>{{selectedCategories.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                                :options="availableCategories" v-model="selectedCategories"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Delivery</span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
-                                    <span>{{selectedDeliveryDates.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Buyer group </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
-                                    <span>{{selectedBuyerGroups.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                            </template>
-                        </v-popover>
-
-                        <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
-
+        <BaseTable :stickyHeader="true"
+            contentStatus="success"
+            :items="products"
+            itemKey="id"
+            :itemSize="139"
+            :selected.sync="selectedProducts"
+            :contextItem.sync="contextItem"
+            :searchKey="['datasource_id','title','category']"
+            :searchResult.sync="productsFilteredBySearch"
+            @show-contextmenu="showContext"
+            @search-enter="onViewSingle(productsFilteredBySearch[0])"
+        >
+            <template v-slot:topBarLeft>
+                
+                <v-popover trigger="click">
+                    <button class="ghost">
+                        <span>Category </span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedCategories.length > 0" class="circle primary xs">
+                            <span>{{selectedCategories.length}}</span>
+                        </span>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
+                        :options="availableCategories" v-model="selectedCategories"/>
                     </template>
-                    <template v-slot:right>
-                        <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="productsFilteredBySearch.length != productTotals.all">{{productsFilteredBySearch.length}}/{{productTotals.all}} showing</span>
-                        <span v-else>{{productTotals.all}} records</span>
+                </v-popover>
+
+                <v-popover trigger="click">
+                    <button class="ghost">
+                        <span>Delivery</span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
+                            <span>{{selectedDeliveryDates.length}}</span>
+                        </span>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
                     </template>
-                </BaseTableTopBar>
+                </v-popover>
+
+                <v-popover trigger="click">
+                    <button class="ghost">
+                        <span>Buyer group </span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
+                            <span>{{selectedBuyerGroups.length}}</span>
+                        </span>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
+                    </template>
+                </v-popover>
+
+                <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
+                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
+
             </template>
+
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
-                @change="(checked) => checked ? selectedProducts = productsFilteredBySearch : selectedProducts = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
                 @sort="onSort">ID</BaseTableHeader>
@@ -80,29 +79,19 @@
                 <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
-            <template v-slot:body>
+            <template v-slot:row="rowProps">
+                    <ProductsTableRow v-if="productsFilteredBySearch.length > 0"
+                    :product="rowProps.item" :index="rowProps.index"
+                    @view-single-product="onViewSingle"/>
 
-                <RecycleScroller
-                    class="products-scroller"
-                    :items="productsFilteredBySearch"
-                    :item-size="139"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item, index }"
-                >
-                    <ProductsTableRow class="product-row flex-table-row"
-                    :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    @onViewSingle="onViewSingle" @showContextMenu="showContext"/>
-                </RecycleScroller>
-
-                <tr v-if="productsFilteredBySearch.length <= 0">
-                    <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
-                        No products to show. Try changing your filters.</p>
-                </tr>
+                    <tr v-else>
+                        <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
+                            No products to show. Try changing your filters.</p>
+                    </tr>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenu">
             <div class="item-group" v-if="selectedProducts.length > 0">
@@ -122,7 +111,7 @@
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-plus" 
                 hotkey="KeyA"
-                @click.stop="onNewProduct()">
+                @click="onNewProduct()">
                     <span><u>A</u>dd New Product</span>
                 </BaseContextMenuItem>
             </div>
@@ -227,12 +216,8 @@ export default {
             this.setSingleVisisble(true)
             document.activeElement.blur()
         },
-        showContext(mouseEvent, product) {
+        showContext(mouseEvent) {
             let contextMenu = this.$refs.contextMenu
-            this.contextItem = product;
-            if (this.selectedProducts.length > 0) {
-                this.contextItem = this.selectedProducts[0]
-            }
             if (this.selectedProducts.length > 1) {
                 contextMenu = this.$refs.contextMenuSelected
             }

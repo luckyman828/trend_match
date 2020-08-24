@@ -1,12 +1,6 @@
 <template>
-    <tr class="products-table-row"
-    @contextmenu.prevent="$emit('showContextMenu', $event, product)"
-    @click.ctrl="$refs.selectCheckbox.check()">
+    <BaseTableInnerRow class="products-table-row">
         
-        <td class="select" 
-        @click.self="$refs.selectCheckbox.check()">
-            <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
-        </td>
         <td class="image clickable" @click="onViewSingle">
             <div class="img-wrapper">
                 <BaseVariantImg :key="product.id" v-if="product.variants[0] != null" :variant="product.variants[0]" size="sm"/>
@@ -57,11 +51,10 @@
 
         <td class="action">
             <button class="invisible ghost-hover primary" 
-            @click="$emit('onViewSingle',product)"><span>View / Edit</span></button>
-            <button class="invisible ghost-hover" @click="$emit('showContextMenu', $event, product)"><i class="far fa-ellipsis-h"></i></button>
+            @click="onViewSingle"><span>View / Edit</span></button>
         </td>
 
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -104,7 +97,7 @@ export default {
             else return variant.image
         },
         onViewSingle() {
-            this.$emit('onViewSingle',this.product)
+            this.$emit('view-single-product',this.product)
         },
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -122,7 +115,6 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .products-table-row {
-        height: 138px;
         .img-wrapper {
             // border: $borderModule;
             border: $borderElSoft;

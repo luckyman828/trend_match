@@ -58,6 +58,9 @@ export default {
                 // SHOW
                 this.INCREMENT_VISIBLE_AMOUNT()
                 this.flyinIndex = this.getVisibleFlyinCount
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+            } else {
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
             }
         }
     },
@@ -91,12 +94,6 @@ export default {
             }
         }
     },
-    created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
-    },
-    destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
-    }
 }
 </script>
 

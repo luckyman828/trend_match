@@ -1,50 +1,36 @@
 <template>
     <div class="users-table">
 
-        <BaseFlexTable v-if="currentTab == 'Users'" stickyHeader="true"
-        :contentStatus="readyStatus"
-        loadingMsg="loading users"
-        errorMsg="error loading users"
-        :errorCallback="() => initData()">
-
-
+        <BaseTable v-if="currentTab == 'Users'" stickyHeader="true"
+            :contentStatus="readyStatus"
+            loadingMsg="loading users"
+            errorMsg="error loading users"
+            :errorCallback="() => initData()"
+            :items="users"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selectedUsers"
+            :contextItem.sync="contextUser"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="['name','email']"
+            :searchResult.sync="usersFilteredBySearch"
+            itemType="user"
+            @show-contextmenu="showUserContext"
+        >
             <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users ? users.length : 0}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selectedUsers = users : selectedUsers = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
-                <RecycleScroller
-                    :items="usersSorted"
-                    :item-size="50"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item }"
-                >
-                    <UsersTableRow :ref="'userRow-'+item.id" :user="item"
-                    :contextUser="contextUser"
-                    @showContextMenu="showUserContext($event, item)" @editCurrency="onEditUserCurrency($event, item)"
-                    @editRole="onEditUserRole($event, item)" :selectedUsers.sync="selectedUsers"/>
-                </RecycleScroller>
+            <template v-slot:row="rowProps">
+                <UsersTableRow :user="rowProps.item"
+                @editCurrency="onEditUserCurrency"
+                @editRole="onEditUserRole" :selectedUsers.sync="selectedUsers"
+                @show-contextmenu="showUserContext"/>
             </template>
             <template v-slot:footer>
                 <td>
@@ -56,7 +42,7 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- <div class="item-group"> -->
@@ -402,8 +388,9 @@ export default {
             } else {
                 contextMenu = this.$refs.contextMenuUser
             }
-            this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
-            this.contextMouseEvent = e
+            if (user) {
+                this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
+            }
             contextMenu.show(e)
         },
         async onDeleteUser(user) {
@@ -455,7 +442,7 @@ export default {
                     align-items: center;
                 }
             }
-            tr:not(.table-top-bar) > .email {
+            tr:not(.table-top-bar) th.email, td.email {
                 flex: 2;
             }
         }

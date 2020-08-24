@@ -1,7 +1,6 @@
 export default {
     methods: {
         selectRange(index, fullArr, selectedArr) {
-            console.log('select range', index, fullArr, selectedArr)
             // Find the lowest currently selected index
             let lowestIndex = index
             let highestIndex = index

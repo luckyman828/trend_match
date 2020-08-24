@@ -244,7 +244,6 @@ export default {
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
-            console.log('fetch selection')
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
             commit('SET_SELECTION_USERS_STATUS', 'loading')
             commit('SET_SELECTION_TEAMS_STATUS', 'loading')
@@ -760,7 +759,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: `${teams.length} team ${teams.length > 1 ? 's' : ''} removed`,
+                            msg: `${teams.length} team${teams.length > 1 ? 's' : ''} removed`,
                             iconClass: 'fa-trash',
                             type: 'danger',
                             callback: () => dispatch('addTeamsToSelection', { selection, teams }),
@@ -794,7 +793,6 @@ export default {
             }
         },
         async calculateSelectionUsers({ commit, dispatch }, selection) {
-            console.log('calculate selection users')
             // This functions finds all the users who have access to the selection and adds them to the users array on the selection
             const newSelection = await dispatch('fetchSelection', { selectionId: selection.id })
             commit('setSelectionUsers', { selection, users: newSelection.users })

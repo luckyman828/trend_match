@@ -1,50 +1,35 @@
 <template>
     <div class="selection-teams-table">
         <h3>Selection Teams</h3>
-        <BaseFlexTable :stickyHeader="false"
-        :contentStatus="readyStatus"
-        loadingMsg="loading teams"
-        errorMsg="error loading teams"
-        :errorCallback="() => initData()">
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <!-- <h3>Selection Teams</h3> -->
-                        <BaseSearchField :searchKey="['title']" :arrayToSearch="selection.teams" v-model="teamsFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing {{teamsFilteredBySearch.length}} of {{selection.teams ? selection.teams.length : 0}} records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
+        <BaseTable :stickyHeader="false"
+            :contentStatus="readyStatus"
+            loadingMsg="loading teams"
+            errorMsg="error loading teams"
+            :errorCallback="() => initData()"
+            :items="selection.teams"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selected"
+            :contextItem.sync="contextTeam"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="'title'"
+            :searchResult.sync="teamsFilteredBySearch"
+            @show-contextmenu="showTeamContext"
+        >
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selected = teamsFilteredBySearch : selected = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Users</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
-                <tr v-for="(team, index) in teamsFilteredBySearch" :key="team.id" class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive(team)}"
-                @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu="showTeamContext($event, team)">
-                    <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
+            <template v-slot:row="rowProps">
+                <BaseTableInnerRow>
                     <td class="title">
                         <i class="fas fa-users"></i>
-                        <span>{{team.title}}</span>
+                        <span>{{rowProps.item.title}}</span>
                     </td>
                     <td class="users">
-                        <span>{{team.user_count}}</span>
+                        <span>{{rowProps.item.user_count}}</span>
                     </td>
-                    <td class="action">
-                        <button class="invisible ghost-hover" v-if="userHasEditAccess" 
-                        @click="showTeamContext($event, team)">
-                            <i class="far fa-ellipsis-h medium"></i>
-                        </button>
-                    </td>
-                </tr>
+                </BaseTableInnerRow>
             </template>
             <template v-slot:footer>
                 <td><BaseButton buttonClass="primary invisible" :disabled="!userHasEditAccess"
@@ -53,7 +38,7 @@
                     <i class="far fa-plus"></i><span>Add Teams(s) to Selection</span>
                 </BaseButton></td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenuTeam" class="context-team">
             <template v-slot:header v-if="selected.length > 1">
@@ -113,6 +98,7 @@ export default {
         selected: [],
         teamsToAdd: [],
         contextTeam: null,
+        contextMouseEvent: null,
         authUserIsOwner: false,
         teamsFilteredBySearch: [],
     }},
@@ -123,10 +109,9 @@ export default {
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
             getSelectionTeamsStatus: 'getSelectionTeamsStatus'
         }),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         readyStatus() {
             if (this.getTeamsStatus == 'error' || this.getSelectionTeamsStatus == 'error') return 'error'
-            if (this.getTeamsStatus == 'loading' || this.getSelectionTeamsStatus == 'error') return 'loading'
+            if (this.getTeamsStatus == 'loading' || this.getSelectionTeamsStatus == 'loading') return 'loading'
             return 'success'
         },
         userHasEditAccess() {
@@ -155,14 +140,10 @@ export default {
             }
             this.authUserIsOwner = this.selection.your_role == 'Owner'
         },
-        contextMenuIsActive (team) {
-            return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == team.id && this.selected.length <= 1
-        },
-        showTeamContext(e, team) {
+        showTeamContext(e) {
             if (!this.userHasEditAccess) return
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuTeam
-            this.contextTeam = this.selected.length > 0 ? this.selected[0] : team
             contextMenu.show(e)
         },
         onAddTeam(e) {

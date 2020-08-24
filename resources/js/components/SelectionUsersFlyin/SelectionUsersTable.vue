@@ -1,11 +1,22 @@
 <template>
     <div class="selection-users-table">
         <h3>Selection Members</h3>
-        <BaseFlexTable :stickyHeader="false"
-        :contentStatus="readyStatus"
-        loadingMsg="loading users"
-        errorMsg="error loading users"
-        :errorCallback="() => initData()">
+        <BaseTable :stickyHeader="false"
+            :contentStatus="readyStatus"
+            loadingMsg="loading users"
+            errorMsg="error loading users"
+            :errorCallback="() => initData()"
+            :items="currentUsersTableTab == 'Members' ? selection.users : selection.denied_users"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selected"
+            :contextItem.sync="contextUser"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="['name', 'email']"
+            :searchResult.sync="usersFilteredBySearch"
+            itemType="user"
+            @show-contextmenu="showUserContext"
+        >
             <template v-slot:tabs>
                 <BaseTableTab label="Members" :count="selection.users ? selection.users.length : 0" 
                 modelValue="Members" v-model="currentUsersTableTab" 
@@ -14,86 +25,45 @@
                 modelValue="Excluded" v-model="currentUsersTableTab" 
                 @change="selected = []"/>
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <!-- <h3>Selection Members</h3> -->
-                        <BaseSearchField :searchKey="['name','email']" 
-                        :arrayToSearch="currentUsersTableTab == 'Members' ? selection.users : selection.denied_users" 
-                        v-model="usersFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing {{usersFilteredBySearch.length}} of {{selection.users ? selection.users.length : 0}} records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                    @change="(checked) => !!checked
-                    ? selected = usersFilteredBySearch
-                    : selected = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
-                <!-- <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'job'" :currentSortKey="sortKey" @sort="sortUsers">Job</BaseTableHeader> -->
-                <BaseTableHeader class="action">Action</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
-            <template v-slot:body>
+            <template v-slot:row="rowProps">
                 <!-- Selection Members -->
-                <template v-if="currentUsersTableTab == 'Members'">
-                    <tr v-for="(user, index) in usersSorted" :key="user.id" class="user-row table-row" ref="userRow" 
-                    :class="[{active: contextMenuIsActive(user)}, {self: user.id == authUser.id}]"
-                    @click.ctrl="$refs.selectBox[index].check()"
-                    @contextmenu="showUserContext($event, user)">
-                        <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
+                <BaseTableInnerRow v-if="currentUsersTableTab == 'Members'">
                         <td class="title">
                             <i class="fas fa-user"></i>
-                            <span>{{user.name}}</span>
+                            <span>{{rowProps.item.name}}</span>
                         </td>
-                        <td class="email">{{user.email}}</td>
+                        <td class="email">{{rowProps.item.email}}</td>
                         <td class="role">
                             <button v-if="userHasEditAccess" class="ghost editable sm" 
-                            @click="showRoleContext($event, user)">
-                                <span>{{user.role}}</span>
+                            @click="showRoleContext($event, rowProps.item)">
+                                <span>{{rowProps.item.role}}</span>
                             </button>
-                            <span v-else>{{user.role}}</span>
+                            <span v-else>{{rowProps.item.role}}</span>
                         </td>
-                        <!-- <td class="job">
-                            <button v-if="userHasEditAccess" class="ghost editable sm" 
-                            @click="showJobContext($event, user)">
-                                <span>{{user.job}}</span>
-                            </button>
-                            <span v-else>{{user.job}}</span>
-                        </td> -->
-                        <td class="action">
-                            <button v-if="userHasEditAccess" class="invisible ghost-hover" 
-                            @click="showUserContext($event, user)">
-                                <i class="far fa-ellipsis-h medium"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </template>
+                        <td class="action"></td>
+                </BaseTableInnerRow>
+
                 <!-- Excluded Users -->
-                <template v-if="currentUsersTableTab == 'Excluded'">
-                    <tr v-for="(user, index) in usersSorted" :key="user.id" class="user-row table-row" ref="userRow"
-                    @click.ctrl="$refs.selectBox[index].check()"
-                    @contextmenu="showExcludedUserContext($event, user)">
-                        <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
-                        <td class="title">
-                            <i class="fas fa-user"></i>
-                            <span>{{user.name}}</span>
-                        </td>
-                        <td class="email">{{user.email}}</td>
-                        <td class="action">
-                            <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
-                            @click="onReAddUsersToSelection(selected.length > 0 ? selected : [user])">
-                                <span>Add user</span>
-                            </button>
-                        </td>
-                    </tr>
-                </template>
+                <BaseTableInnerRow v-if="currentUsersTableTab == 'Excluded'">
+                    <td class="title">
+                        <i class="fas fa-user"></i>
+                        <span>{{rowProps.item.name}}</span>
+                    </td>
+                    <td class="email">{{rowProps.item.email}}</td>
+                    <td class="action">
+                        <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
+                        @click="onReAddUsersToSelection(selected.length > 0 ? selected : [rowProps.item])">
+                            <span>Add user</span>
+                        </button>
+                    </td>
+                </BaseTableInnerRow>
+
             </template>
             <template v-slot:footer>
                 <td v-if="currentUsersTableTab == 'Members'">
@@ -104,7 +74,7 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- Manually added users  -->
@@ -217,10 +187,9 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('users', {workspaceUsers: 'users', getUsersStatus: 'getUsersStatus'}),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         readyStatus() {
             if (this.getUsersStatus == 'error' || this.getSelectionUsersStatus == 'error') return 'error'
-            if (this.getUsersStatus == 'loading' || this.getSelectionUsersStatus == 'error') return 'loading'
+            if (this.getUsersStatus == 'loading' || this.getSelectionUsersStatus == 'loading') return 'loading'
             return 'success'
         },
         userHasEditAccess() {
@@ -239,9 +208,6 @@ export default {
                 if (a.id == this.authUser.id) return -1
             })
         },
-        usersSorted() {
-            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
-        }
     },
     methods: {
         ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection', 'fetchSelection']),
@@ -257,21 +223,18 @@ export default {
             }
             this.authUserIsOwner = this.selection.your_role == 'Owner'
         },
-        contextMenuIsActive (user) {
-            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == user.id && this.selected.length <= 1
-        },
-        showUserContext(e, user) {
+        showUserContext(e) {
+            if (this.currentUsersTableTab == 'Excluded') {
+                this.showExcludedUserContext(e)
+                return
+            }
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser
-            this.contextMouseEvent = e
-            this.contextUser = this.selected.length > 0 ? this.selected[0] : user
             contextMenu.show(e)
         },
-        showExcludedUserContext(e, user) {
+        showExcludedUserContext(e) {
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuExcludedUser
-            this.contextMouseEvent = e
-            this.contextUser = this.selected.length > 0 ? this.selected[0] : user
             contextMenu.show(e)
         },
         showRoleContext(e, user) {

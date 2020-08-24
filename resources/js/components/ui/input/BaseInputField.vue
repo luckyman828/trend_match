@@ -6,9 +6,11 @@
             :value="value" :disabled="disabled || readOnly"
             :class="[{'input-wrapper': type != 'select'}, inputClass]" 
             @input="$emit('input', $event.target.value)" 
-            @blur="$emit('blur', $event)" 
+            @blur="$emit('blur', $event); actionOnBlur == 'Submit' && onSubmit(); actionOnBlur == 'Cancel' && onCancel()" 
             @paste="$emit('paste', $event)"
-            @focus="onFocus">
+            @focus="onFocus"
+            @keydown.esc="onCancel"
+            @keydown.enter="onSubmit">
             <div class="icon-right">
                 <slot/>
             </div>
@@ -25,6 +27,7 @@ export default {
     name: 'inputField',
     data: function() {return {
         error: null,
+        initialValue: null
     }},
     props: [
         'type',
@@ -37,7 +40,9 @@ export default {
         'errorTooltip',
         'label',
         'inputClass',
-        'selectOnFocus'
+        'selectOnFocus',
+        'focusOnMount',
+        'actionOnBlur',
     ],
     computed: {
         inputField() {
@@ -58,7 +63,22 @@ export default {
         },
         onFocus() {
             if (this.selectOnFocus) this.select()
+        },
+        onCancel() {
+            this.$emit('input', this.initialValue)
+            this.$emit('cancel')
+        },
+        onSubmit() {
+            this.initialValue = this.value
+            this.$emit('input', this.initialValue)
+            this.$emit('submit', this.initialValue)
         }
+    },
+    mounted() {
+        if (this.focusOnMount) this.focus()
+    },
+    created() {
+        this.initialValue = this.value
     }
 }
 </script>

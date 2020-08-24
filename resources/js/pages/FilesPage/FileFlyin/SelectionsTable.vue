@@ -1,10 +1,11 @@
 <template>
     <div class="selections-table">
         <BaseFlexTable class="flex-table-root"
-        :contentStatus="readyStatus"
-        :loadingMsg="loadingMsg"
-        errorMsg="error loading selections"
-        :errorCallback="() => initData()">
+            :contentStatus="readyStatus"
+            :loadingMsg="loadingMsg"
+            errorMsg="error loading selections"
+            :errorCallback="() => initData()"
+        >
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
