@@ -100,8 +100,12 @@
 
                 <td class="requests">
 
-                    <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests'">
-                        <span>{{selectionInput.requests.length}}</span><i class="far fa-clipboard-check"></i>
+                    <button class="requests-button ghost xs" @click="onViewSingle" 
+                    v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'">
+                        <span>{{selectionInput.requests.length}}</span>
+                        <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
+                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span>
+                        <i class="far fa-clipboard-check"></i>
                         <div v-if="product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>
 
@@ -212,6 +216,7 @@ export default {
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput']),
+        ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
