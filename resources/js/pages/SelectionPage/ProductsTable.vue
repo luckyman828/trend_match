@@ -47,9 +47,6 @@
             </template>
             <template v-slot:topBarLeft>
                 <v-popover trigger="click" :autoHide="false">
-                    <!-- <button class="ghost">
-                        <span>Advanced Filters</span>
-                    </button> -->
                     <BaseButton buttonClass="ghost filter-button" @click="showAdvancedFilters = true">
                         <span>Advanced Filters</span>
                         <div v-if="getHasAdvancedFilter" class="circle primary xs">
@@ -452,6 +449,9 @@ export default {
                 return this.stateProducts.filter(product => this.getActiveSelectionInput(product)[this.currentAction] == 'None').length
             }
             return this.stateProducts.length
+        },
+        tooltipBoundariesEl() {
+            return document.getElementById('main')
         }
     },
     methods: {

@@ -232,20 +232,81 @@ export default {
                 productsToReturn = productsToReturn.filter(product => {
                     let include = true
                     getters.getAdvancedFilter.forEach((filter, index) => {
-                        // FILTER BY USER FEEDBACK
-                        if (filter.type == 'user') {
-                            if (!filter.user.user_id) return
+                        // FILTER BY USER / SELECTION INPUT
+                        if (filter.type == 'author') {
+                            if (!filter.filter.filterType) return
+
                             const operator = filter.operator
-                            const userId = filter.user.user_id
-                            const selectionId = filter.user.selection_id
+                            const type = filter.filter.filterType
                             const selectionInput = getSelectionInput(product)
-                            const userFeedback = selectionInput.feedbacks.find(
-                                feedback => feedback.user_id == userId && feedback.selection_id == selectionId
-                            )
-                            if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
-                                include = false
-                            if (operator == '!=' && !!userFeedback && userFeedback.action == filter.actionType)
-                                include = false
+
+                            if (type == 'user') {
+                                const userId = filer.filer.user_id
+
+                                if (filter.key == 'Comment') {
+                                    if (operator == '=' && !selectionInput.comments.find(x => x.user_id == userId))
+                                        include = false
+                                    if (operator == '!=' && !!selectionInput.comments.find(x => x.user_id == userId))
+                                        include = false
+                                } else if (filter.key == 'Request') {
+                                    if (operator == '=' && !selectionInput.requests.find(x => x.user_id == userId))
+                                        include = false
+                                    if (operator == '!=' && !!selectionInput.requests.find(x => x.user_id == userId))
+                                        include = false
+                                } else {
+                                    const actionArray = this.distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
+                                    const userFeedback = selectionInput[actionArray].find(
+                                        action => action.user_id == userId
+                                    )
+                                    if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
+                                        include = false
+                                    if (operator == '!=' && !!userFeedback && userFeedback.action == filter.actionType)
+                                        include = false
+                                }
+                            }
+
+                            if (type == 'selection') {
+                                const selectionId = filter.filter.id
+
+                                if (filter.key == 'Comment') {
+                                    if (
+                                        operator == '=' &&
+                                        !selectionInput.comments.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                    if (
+                                        operator == '!=' &&
+                                        !!selectionInput.comments.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                } else if (filter.key == 'Request') {
+                                    if (
+                                        operator == '=' &&
+                                        !selectionInput.requests.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                    if (
+                                        operator == '!=' &&
+                                        !!selectionInput.requests.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                } else {
+                                    const selectionAction = selectionInput.actions.find(
+                                        action => action.selection_id == selectionId
+                                    )
+                                    if (
+                                        operator == '=' &&
+                                        (!selectionAction || selectionAction.action != filter.actionType)
+                                    )
+                                        include = false
+                                    if (
+                                        operator == '!=' &&
+                                        !!selectionAction &&
+                                        selectionAction.action == filter.actionType
+                                    )
+                                        include = false
+                                }
+                            }
                         }
 
                         // FILTER BY KEY
@@ -272,28 +333,6 @@ export default {
                             if (operator == '<=' && keyValue > value) include = false
                             if (operator == '<' && keyValue >= value) include = false
                         }
-
-                        // let filterKey = filter.key.value
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'ins')
-                        //     filterKey = 'alignmentIns'
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'outs')
-                        //     filterKey = 'alignmentOuts'
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'focus')
-                        //     filterKey = 'alignmentFocus'
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'nds')
-                        //     filterKey = 'alignmentNds'
-                        // const keyValue = Array.isArray(product[filterKey])
-                        //     ? product[filterKey].length
-                        //     : product[filterKey]
-                        // const operator = filter.operator
-                        // const value = filter.value
-                        // if (index == 0) console.log('filter products', keyValue, operator, value)
-                        // if (operator == '>' && keyValue <= value) include = false
-                        // if (operator == '>=' && keyValue < value) include = false
-                        // if (operator == '=' && keyValue != value) include = false
-                        // if (operator == '!=' && keyValue == value) include = false
-                        // if (operator == '<=' && keyValue > value) include = false
-                        // if (operator == '<' && keyValue >= value) include = false
                     })
                     return include
                 })
