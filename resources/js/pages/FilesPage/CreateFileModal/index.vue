@@ -131,6 +131,17 @@ export default {
                 fileReader.readAsArrayBuffer(file, 'ISO-8859-4')
                 fileReader.onload = e => this.processFile(e.target.result, file.name)
             })
+            console.log('remove files that are no longer mapped')
+            for (let i = this.availableFields.length-1; i >= 0; i--) {
+                const file = this.availableFields[i]
+                // Check if the file exists in uploaded files
+                const shouldBeRemoved = !this.uploadedFiles.find(x => x.name == file.fileName)
+                if (shouldBeRemoved) {
+                    this.availableFields.splice(i, 1)
+                }
+            }
+            // Remove files from available files that are no longer mapped
+            this.ava
             this.currentScreen={name: 'mapFields', header: 'Map fields'}
         },
         onGoBack() {
