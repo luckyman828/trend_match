@@ -72,7 +72,7 @@ export default {
                             /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&\/\/=]*)/
                         )
                         if (!urlReg.test(fieldValue)) {
-                            field.error = `Must be a <strong>isValid URL</strong>.
+                            field.error = `Must be a <strong>valid URL</strong>.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i + 2}</strong>`
                             isValid = false
                         }

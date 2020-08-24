@@ -26,7 +26,14 @@ export default {
                 name: 'variant_key',
                 displayName: 'Variant key',
                 type: 'string',
-                headersToMatch: ['variant', 'variant name', 'variant id', 'color', 'colour'],
+                headersToMatch: ['variant name', 'variant id', 'color', 'colour'],
+            },
+            {
+                scope: 'assortmentKey',
+                name: 'assortment_key',
+                displayName: 'Assortment key',
+                type: 'string',
+                headersToMatch: ['assortment', 'assortment name', 'box name', 'box'],
             },
             // {
             //     scope: 'currencyKey',
@@ -232,7 +239,7 @@ export default {
 
     actions: {
         getProductFields({ state }, { scope, groupId } = {}) {
-            console.log('getProductFields', scope, groupId, state.productFields)
+            // console.log('getProductFields', scope, groupId, state.productFields)
             const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x =>
                 !scope ? true : x.scope == scope
             )

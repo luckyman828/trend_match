@@ -230,6 +230,7 @@ export default {
             })
             this.availableFields.map(file => {
                 this.autoMapField(file.mappedKey, [file])
+                this.autoMapField(file.variantKey, [file])
             })
         },
         showSelectFieldContext(e, field, file) {
@@ -498,7 +499,7 @@ export default {
     display: flex;
     justify-content: center;
     h3 {
-        margin: 48px 0 12px;
+        // margin: 48px 0 12px;
         i {
             margin-left: 8px;
         }

@@ -123,15 +123,19 @@ export default {
             this.$emit('close')
             this.reset()
         },
-        onGoToMapFields() {
-            //Change the current screen
-            // Process the uploaded files
-            this.uploadedFiles.forEach(file => {
-                const fileReader = new FileReader()
-                fileReader.readAsArrayBuffer(file, 'ISO-8859-4')
-                fileReader.onload = e => this.processFile(e.target.result, file.name)
-            })
-            console.log('remove files that are no longer mapped')
+        async onGoToMapFields() {
+            // Use promises to make sure we have processed all the uploaded files before we continue
+            await Promise.all(this.uploadedFiles.map(async file => {
+                await new Promise((resolve, reject) => {
+                    const fileReader = new FileReader()
+                    fileReader.readAsArrayBuffer(file, 'ISO-8859-4')
+                    fileReader.onload = async e => {
+                        await this.processFile(e.target.result, file.name)
+                        resolve()
+                    }
+                })
+            }))
+            // Remove files from available files that are no longer mapped
             for (let i = this.availableFields.length-1; i >= 0; i--) {
                 const file = this.availableFields[i]
                 // Check if the file exists in uploaded files
@@ -140,8 +144,7 @@ export default {
                     this.availableFields.splice(i, 1)
                 }
             }
-            // Remove files from available files that are no longer mapped
-            this.ava
+            //Change the current screen
             this.currentScreen={name: 'mapFields', header: 'Map fields'}
         },
         onGoBack() {
@@ -158,9 +161,11 @@ export default {
             } else {
                 const mappedKey = await this.getProductFields({scope: 'key'})
                 const variantKey = await this.getProductFields({scope: 'variantKey'})
+                const assortmentKey = await this.getProductFields({scope: 'assortmentKey'})
                 this.availableFields.push({
                     mappedKey: mappedKey[0],
                     variantKey : variantKey[0],
+                    assortmentKey : assortmentKey[0],
                     headers: Object.keys(rows[0]),
                     fileName,
                     rows

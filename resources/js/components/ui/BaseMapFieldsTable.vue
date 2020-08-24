@@ -15,6 +15,7 @@ export default {
 
 table {
     border-collapse: collapse;
+    margin-bottom: 32px;
     ::v-deep {
         tr {
             > * {
