@@ -213,10 +213,16 @@ export default {
             // ASSORTMENTS
             {
                 scope: 'assortments',
-                name: 'name',
+                name: 'assortment_name',
                 displayName: 'Assortment Name',
                 type: 'string',
-                headersToMatch: ['assortment name', 'box name', 'ass name', 'box(?!.?(size|ean)))'],
+                headersToMatch: [
+                    'assortment name',
+                    'box name',
+                    'ass name',
+                    'box(?!.*(size|ean))', // box not followed by 'size' or 'ean'
+                    'assortment(?!.*(size|ean))', // assortment not followed by 'size' or 'ean'
+                ],
             },
             {
                 scope: 'assortments',

@@ -85,26 +85,17 @@ export default {
             let foundMatch = false
             let allMatches = []
             availableFields.forEach(fieldCollection => {
+                const matches = fieldCollection.headers.filter(header =>
+                    field.headersToMatch.find(headerMatch => {
+                        return header.toLowerCase().search(headerMatch) >= 0
+                    })
+                )
                 allMatches.push({
                     file: fieldCollection,
                     matches,
                 })
 
                 if (foundMatch) return
-
-                const altMatch = fieldCollection.headers.find(header => {
-                    return field.headersToMatch.find(headerMatch => {
-                        return headerMatch.search(header.toLowerCase()) >= 0
-                    })
-                })
-
-                const matches = fieldCollection.headers.filter(header =>
-                    field.headersToMatch.find(
-                        headerMatch =>
-                            headerMatch.search(header.toLowerCase()) >= 0 ||
-                            header.toLowerCase().search(headerMatch) >= 0
-                    )
-                )
 
                 if (matches.length > 0) {
                     let match = matches[0]

@@ -82,9 +82,20 @@ export default {
             const currencyField = this.fieldsToMap.find(x => x.name == 'currency')
             const currencyMatches = this.autoMapField(currencyField, this.availableFields)
             // Instantiate one additional price map, for each additional currency field
-            for (let i = 1; i < currencyMatches.length; i++) {
-                this.onAddPriceMap()
-            }
+            // for (let i = 1; i < currencyMatches.length; i++) {
+            //     this.onAddPriceMap()
+            // }
+            let firstMatchIngored = false
+            currencyMatches.map(fileMatch => {
+                fileMatch.matches.map(match => {
+                    // ignore the first match
+                    if (!firstMatchIngored) {
+                        firstMatchIngored = true
+                    } else {
+                        this.onAddPriceMap()
+                    }
+                })
+            })
         },
         async onAddPriceMap() {
             this.currencyMapGroupId++
