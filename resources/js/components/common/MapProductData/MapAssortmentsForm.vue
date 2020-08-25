@@ -14,7 +14,7 @@
             </h4>
 
             <!-- Map File -->
-            <BaseMapFieldsTable class="form-element">
+            <BaseMapFieldsTable class="form-element" v-if="availableFields.length > 1">
                 <tr>
                     <th>File</th>
                 </tr>
@@ -192,6 +192,7 @@ export default {
                 field.fieldName = null
                 field.autoMatched = false
                 field.file = null
+                field.customEntry = false
             })
             // Automatch the fields to the new file
             this.automapAssortmentFields(assortmentGroupFields)

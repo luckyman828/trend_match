@@ -15,8 +15,10 @@
                     optionGroupOptionsKey="headers"
                     :submitOnChange="true" 
                     :search="true" 
+                    :allowManualEntry="true"
                     @unset="onUnsetFieldMapping();slotProps.hide()"
                     @submit="($event, file) => {onSubmit($event, file);slotProps.hide()}"
+                    @custom-entry="onCustomEntry"
                 />
             </div>
         </template>
@@ -39,6 +41,7 @@ export default {
         onSubmit(fieldName, file) {
             this.fieldToMap.file = file
             this.fieldToMap.autoMatched = false
+            this.fieldToMap.customEntry = false
         },
         onUnsetFieldMapping() {
             const field = this.fieldToMap
@@ -47,6 +50,10 @@ export default {
             field.fieldName = null
             field.autoMatched = false
             field.file = null
+            field.customEntry = false
+        },
+        onCustomEntry() {
+            this.fieldToMap.customEntry = true
         }
     }
 }

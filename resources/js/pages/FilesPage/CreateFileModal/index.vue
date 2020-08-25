@@ -566,6 +566,11 @@ export default {
                                 border-color: $primary
                             }
                         }
+                        &.custom-entry {
+                            .input-wrapper {
+                                border-color: $yellow
+                            }
+                        }
                     }
                 }
             }

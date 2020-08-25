@@ -17,7 +17,10 @@
         <td>
             <BaseInputField
                 class="select-field-button"
-                :class="{'auto-match': mappedField.autoMatched}"
+                :class="[
+                    {'auto-match': mappedField.autoMatched},
+                    {'custom-entry': mappedField.customEntry},
+                ]"
                 disabled=true 
                 :value="mappedField.fieldName" 
                 :label="mappedFile ? mappedFile.fileName : ''" 
@@ -28,6 +31,11 @@
                 <i v-if="mappedField.autoMatched" 
                     class="fas fa-bolt primary automatch-icon"
                     v-tooltip="'Field was auto-matched'"
+                ></i>
+                <i v-if="mappedField.customEntry"
+                    style="right: -18px"
+                    class="fas fa-pen yellow automatch-icon"
+                    v-tooltip="'Manual entry. Value will be set for all products'"
                 ></i>
             </BaseInputField>
         </td>

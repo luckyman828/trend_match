@@ -240,7 +240,7 @@ export default {
                 name: 'box_size',
                 displayName: 'Assortment Box Size',
                 type: 'number',
-                headersToMatch: ['box size', 'assortment box size', 'ass.', 'ass size', 'assortment size'],
+                headersToMatch: ['box size', 'assortment box size', 'ass size', 'assortment size'],
             },
         ],
     },
@@ -257,6 +257,7 @@ export default {
                 x.autoMatched = false
                 x.error = null
                 x.enabled = true
+                x.customEntry = false
                 // Give each value an id based on its index
                 x.id = state.fieldIndex
                 x.groupId = groupId

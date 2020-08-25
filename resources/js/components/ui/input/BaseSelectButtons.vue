@@ -21,6 +21,34 @@
                 </label>
             </div>
 
+            <div class="option manual-entry unset-option" v-if="allowManualEntry">
+                <label v-if="!manualEntryActive" tabindex="0" 
+                @keydown.enter="onActivateManualEntry"
+                @click="onActivateManualEntry">
+                    <i class="far fa-pen"></i>
+                    <div class="label">
+                        Enter custom value
+                    </div>
+                </label>
+                <label v-if="manualEntryActive">
+                    <div class="label">
+                        <BaseInputField 
+                            ref="manualEntryField"
+                            inputClass="small"
+                            placeholder="Enter custom value"
+                            :selectOnFocus="true"
+                            v-model="manualEntry"
+                            @keyup.enter.native="submit(manualEntry)"
+                        />
+                        <button class="primary full-width"
+                        style="margin-top: 8px;"
+                        @click="submit(manualEntry)">
+                            <span>Save custom value</span>
+                        </button>
+                    </div>
+                </label>
+            </div>
+
             <template v-if="multipleOptionArrays">
                 <div class="option-group" v-for="(optionGroup, index) in optionsFilteredBySearch" :key="index">
                     <h4>{{optionGroupNameKey != null ? optionGroup[optionGroupNameKey] : `group-${index+1}`}}</h4>
@@ -108,12 +136,15 @@ export default {
         'unsetValue',
         'value',
         'labelPrefix',
+        'allowManualEntry',
     ],
     data: function () { return {
         selection: [],
         optionGroup: null,
         searchString: '',
-        optionsFilteredBySearch: this.options
+        optionsFilteredBySearch: this.options,
+        manualEntryActive: false,
+        manualEntry: '',
     }},
     computed: {
         searchKey() {
@@ -139,9 +170,13 @@ export default {
         }
     },
     methods: {
-        submit() {
-            this.$emit('input', this.selection, this.optionGroup)
-            this.$emit('submit', this.selection, this.optionGroup)
+        submit(customValue) {
+            const valueToEmit = customValue ? customValue : this.selection
+            this.$emit('input', valueToEmit, this.optionGroup)
+            this.$emit('submit', valueToEmit, this.optionGroup)
+            if (customValue) {
+                this.$emit('custom-entry', true)
+            }
         },
         change(option, optionGroup) {
             if (optionGroup) this.optionGroup = optionGroup
@@ -172,6 +207,12 @@ export default {
         onEnter(index) {
             const selectbox = this.$refs.selectBox[index]
             selectbox.check()
+        },
+        onActivateManualEntry() {
+            this.manualEntryActive = true
+            this.$nextTick(() => {
+                this.$refs.manualEntryField.focus()
+            })
         }
     },
     mounted() {
