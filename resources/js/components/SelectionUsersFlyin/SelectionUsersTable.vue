@@ -185,8 +185,12 @@ export default {
             availableSelectionJobs: 'getAvailableSelectionJobs',
         }),
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('users', {workspaceUsers: 'users', getUsersStatus: 'getUsersStatus'}),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole', 'currentWorkspace']),
+        ...mapGetters('users', {
+            workspaceUsers: 'users', 
+            getUsersStatus: 'getUsersStatus',
+            usersWorkspaceId: 'getWorkspaceFetchedFromId',
+        }),
         readyStatus() {
             if (this.getUsersStatus == 'error' || this.getSelectionUsersStatus == 'error') return 'error'
             if (this.getUsersStatus == 'loading' || this.getSelectionUsersStatus == 'loading') return 'loading'
@@ -215,7 +219,8 @@ export default {
         ...mapMutations('selections', ['UPDATE_SELECTION']),
         initData(forceRefresh) {
             // Check if we have any workspace teams, else fetch them
-            if (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
+            if (!this.usersWorkspaceId != this.currentWorkspace.id 
+            ||this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
 
             // Fetch selection with users and teams
             if (forceRefresh || (this.getSelectionUsersStatus != 'loading' && !this.selection.users)) {

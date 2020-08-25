@@ -103,7 +103,12 @@ export default {
         teamsFilteredBySearch: [],
     }},
     computed: {
-        ...mapGetters('teams', ['teams', 'getTeamsStatus']),
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('teams', {
+            teams: 'teams', 
+            getTeamsStatus: 'getTeamsStatus',
+            teamsWorkspaceId: 'getWorkspaceFetchedFromId',
+        }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
@@ -132,7 +137,8 @@ export default {
         ...mapActions('teams', ['fetchTeamUsers', 'fetchTeams']),
         initData(forceRefresh) {
             // Check if we have any workspace teams, else fetch them
-            if (this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading') this.fetchTeams()
+            if (!this.teamsWorkspaceId != this.currentWorkspace.id 
+            || this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading') this.fetchTeams()
 
             // Fetch selection with users and teams
             if (forceRefresh || (this.getSelectionTeamsStatus != 'loading' && !this.selection.teams)) {

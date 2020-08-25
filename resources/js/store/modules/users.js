@@ -9,6 +9,7 @@ export default {
         users: null,
         addNewUserModalVisible: false,
         status: null,
+        workspaceFetchedFromId: null,
     },
 
     getters: {
@@ -17,6 +18,7 @@ export default {
         getUsers: state => state.users,
         getUsersStatus: state => state.status,
         addNewUserModalVisible: state => state.addNewUserModalVisible,
+        getWorkspaceFetchedFromId: state => state.workspaceFetchedFromId,
     },
 
     actions: {
@@ -25,6 +27,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
             commit('SET_USER_STATUS', 'loading')
+            commit('SET_WORKSPACE_FETCHED_FROM_ID', workspaceId)
 
             const apiUrl = `/workspaces/${workspaceId}/users`
             axios
@@ -312,6 +315,9 @@ export default {
                 const userIndex = state.users.findIndex(x => x.id == user.id)
                 state.users.splice(userIndex, 1)
             })
+        },
+        SET_WORKSPACE_FETCHED_FROM_ID(state, workspaceId) {
+            state.workspaceFetchedFromId = workspaceId
         },
     },
 }
