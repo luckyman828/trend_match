@@ -21,8 +21,9 @@
             </template>
             <template v-slot:row="rowProps">
                 <TeamUsersTableRow
-                :team="team" :user="rowProps.item" @editRole="onEditUserRole($event, user)"
-                @editCurrency="onEditUserCurrency($event, user)"/>
+                :team="team" :user="rowProps.item" 
+                @edit-role="onEditUserRole"
+                @editCurrency="onEditUserCurrency"/>
             </template>
             <template v-slot:footer>
                 <td>
@@ -263,6 +264,7 @@ export default {
             }
         },
         onEditUserRole(mouseEvent, user) {
+            console.log('on eidt user rle', mouseEvent, user)
             this.userToEdit = user;
             this.contextUser = user
             this.originalUser = JSON.parse(JSON.stringify(user));

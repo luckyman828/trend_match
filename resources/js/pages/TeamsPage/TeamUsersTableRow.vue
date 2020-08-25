@@ -12,7 +12,7 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="role">
-            <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
+            <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" @click.stop="$emit('edit-role', $event, user)"><span>{{user.role}}</span></button>
             <span v-else>{{user.role}}</span>
         </td>
     </BaseTableInnerRow>
