@@ -50,22 +50,28 @@ export default {
         },
         columnStyle () {
             return {gridTemplateColumns: `repeat(${this.columns}, ${100/this.columns}%)`}
-        }
+        },
     },
     watch: {
         isVisible(newVal) {
             if (newVal) {
                 // SHOW
-                this.INCREMENT_VISIBLE_AMOUNT()
-                this.flyinIndex = this.getVisibleFlyinCount
-                document.body.addEventListener('keydown', this.hotkeyHandler)
+                this.init()
             } else {
                 document.body.removeEventListener('keydown', this.hotkeyHandler)
             }
+        },
+        $route() {
+            console.log('route change')
         }
     },
     methods: {
         ...mapMutations('flyin', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
+        init() {
+            this.INCREMENT_VISIBLE_AMOUNT()
+            this.flyinIndex = this.getVisibleFlyinCount
+            document.body.addEventListener('keydown', this.hotkeyHandler)
+        },
         close () {
             this.DECREMENT_VISIBLE_AMOUNT()
             this.visible = false
@@ -94,6 +100,17 @@ export default {
             }
         }
     },
+    created() {
+        if (this.isVisible) {
+            this.init()
+        }
+    },
+    destroyed() {
+        if (this.isVisible) {
+            this.DECREMENT_VISIBLE_AMOUNT()
+            document.body.removeEventListener('keydown', this.hotkeyHandler)
+        }
+    }
 }
 </script>
 

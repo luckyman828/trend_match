@@ -8,7 +8,7 @@
         <!-- <div class="main" id="main" ref="main" @scroll.passive="scrollHandler"> -->
             <div class="container">
                 <transition name="fade">
-                    <router-view></router-view>
+                    <router-view :key="$route.path"></router-view>
                 </transition>
             </div>
         </div>
@@ -40,6 +40,9 @@ import TheChangelogModal from './components/layout/TheChangelogModal/index'
 import LoginPage from './pages/LoginPage/'
 
 export default{
+    beforeRouteEnter(to, from, next) {
+        'before route enter'
+    },
     name: 'app',
     components: {
         TheSidebar,
@@ -64,7 +67,7 @@ export default{
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
         ...mapGetters('changelog', ['getShowChangelog']),
     },
-    watch : {
+    watch: {
         // Watch for changes to the authStatus
         authStatus: function(newVal) {
             // When our auth status changes to success 
@@ -226,10 +229,16 @@ export default{
             // Get some snowflake IDs now we're at it
             // this.getUids()
         }
-        // this.$router.afterEach((to, from, next) => {
-        //     console.log('router')
-        // })
     },
+    // beforeRouteLeave(to, from, next) {
+    //     console.log('router about to route')
+    // },
+    // beforeRouteUpdate (to, from, next) {
+    //     console.log('router about to route')
+    // },
+    // beforeRouteEnter (to, from, next) {
+    //     console.log('router about to route')
+    // }
 }
 </script>
 
