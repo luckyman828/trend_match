@@ -208,7 +208,7 @@ export default {
                 name: 'mark_up',
                 displayName: 'Mark Up',
                 type: 'number',
-                headersToMatch: ['markup', 'mark up'],
+                headersToMatch: ['markup', 'mark up', 'mu'],
             },
             // ASSORTMENTS
             {
@@ -216,7 +216,7 @@ export default {
                 name: 'name',
                 displayName: 'Assortment Name',
                 type: 'string',
-                headersToMatch: ['assortment name', 'box name', 'ass name'],
+                headersToMatch: ['assortment name', 'box name', 'ass name', 'box(?!.?(size|ean)))'],
             },
             {
                 scope: 'assortments',
@@ -240,9 +240,7 @@ export default {
     actions: {
         getProductFields({ state }, { scope, groupId = 0 } = {}) {
             // console.log('getProductFields', scope, groupId, state.productFields)
-            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x =>
-                !scope ? true : x.scope == scope
-            )
+            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x => x.scope == scope)
             return fields.map(x => {
                 x.file = null
                 x.fieldName = null

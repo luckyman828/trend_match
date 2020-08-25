@@ -5,7 +5,7 @@
             <p><strong>Select Fields to keep, and match with headers from your file(s).</strong></p>
         </div>
 
-        <div class="map-fields" v-if="!uploadingFile && fieldsToMap.length > 0">
+        <div class="map-fields" v-if="!uploadingFile">
             <div class="tables">
 
                 <!-- MAP KEYS -->
@@ -22,18 +22,11 @@
                 </div>
 
                 <!-- MAP MAIN FIELDS -->
-                <div class="form-section">
-                    <h3>Map fields</h3>
-                    <BaseMapFieldsTable>
-                        <MapFieldsTableHeader/>
-                        <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => !x.scope)" 
-                            :key="field.id"
-                            :mappedFile="field.file"
-                            :mappedField="field"
-                            @show-field-context="showSelectFieldContext($event, field)"
-                        />
-                    </BaseMapFieldsTable>
-                </div>
+                <MapProductFieldsForm class="form-section"
+                    :fieldsToMap="fieldsToMap"
+                    :availableFields="availableFields"
+                    @show-field-context="showSelectFieldContext"
+                />
 
                 <!-- MAP VARIANTS -->
                 <MapVariantsForm class="form-section"
@@ -44,6 +37,13 @@
                 
                 <!-- MAP PRICES -->
                 <MapPricesForm class="form-section"
+                    :fieldsToMap="fieldsToMap"
+                    :availableFields="availableFields"
+                    @show-field-context="showSelectFieldContext"
+                />
+
+                <!-- MAP PRICES -->
+                <MapAssortmentsForm class="form-section"
                     :fieldsToMap="fieldsToMap"
                     :availableFields="availableFields"
                     @show-field-context="showSelectFieldContext"
@@ -76,8 +76,10 @@ import { mapGetters, mapActions } from 'vuex'
 import MapFieldsTableRow from '../../../components/common/MapProductData/MapFieldsTableRow'
 import MapKeysTableRow from '../../../components/common/MapProductData/MapKeysTableRow'
 import SelectFieldToMapContextMenu from '../../../components/common/MapProductData/SelectFieldToMapContextMenu'
+import MapProductFieldsForm from '../../../components/common/MapProductData/MapProductFieldsForm'
 import MapVariantsForm from '../../../components/common/MapProductData/MapVariantsForm'
 import MapPricesForm from '../../../components/common/MapProductData/MapPricesForm'
+import MapAssortmentsForm from '../../../components/common/MapProductData/MapAssortmentsForm'
 import MapFieldsTableHeader from '../../../components/common/MapProductData/MapFieldsTableHeader'
 import MapKeysTableHeader from '../../../components/common/MapProductData/MapKeysTableHeader'
 import workbookUtils from '../../../mixins/workbookUtils'
@@ -88,8 +90,10 @@ export default {
         MapFieldsTableRow,
         MapKeysTableRow,
         SelectFieldToMapContextMenu,
+        MapProductFieldsForm,
         MapVariantsForm,
         MapPricesForm,
+        MapAssortmentsForm,
         MapFieldsTableHeader,
         MapKeysTableHeader,
     },
@@ -209,8 +213,8 @@ export default {
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
         async instantiateFields() {
-            const fields = await this.getProductFields()
-            this.fieldsToMap = fields.filter(x => x.scope != 'key')
+            // const fields = await this.getProductFields()
+            // this.fieldsToMap = fields.filter(x => x.scope != 'key')
 
             // Attempt to autoMap the fields
             this.fieldsToMap.map(field => {

@@ -10,7 +10,7 @@
                 >
                     <i class="far fa-trash"></i>
                 </button>
-                <span>Currency {{index+1}}</span>
+                <span>Price map {{index+1}}</span>
             </h4>
             <BaseMapFieldsTable class="form-element">
                 <MapFieldsTableHeader/>
@@ -75,16 +75,34 @@ export default {
     },
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
+        async instantiatePricemaps() {
+            // Add one price map first 
+            await this.onAddPriceMap()
+            // Test the amount of matches returned for the currency field
+            const currencyField = this.fieldsToMap.find(x => x.name == 'currency')
+            const currencyMatches = this.autoMapField(currencyField, this.availableFields)
+            // Instantiate one additional price map, for each additional currency field
+            for (let i = 1; i < currencyMatches.length; i++) {
+                this.onAddPriceMap()
+            }
+        },
         async onAddPriceMap() {
             this.currencyMapGroupId++
             const newFields = await this.getProductFields({scope: 'prices', groupId: this.currencyMapGroupId})
 
             this.fieldsToMap.push(...newFields)
+
             // Attempt to automatch the new fields
+            // Force the fields to be mapped to the same file
+            let fileMatch = null
             newFields.map(field => {
                 // Provide the existing matches to avoid mapping the same field multiple times
                 const existingMatches = this.fieldsToMap.filter(x => x.name == field.name).map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
-                this.autoMapField(field, this.availableFields, existingMatches)
+                const availableFiles = fileMatch ? [fileMatch] : this.availableFields
+                this.autoMapField(field, availableFiles, existingMatches)
+                if (!fileMatch) {
+                    fileMatch = field.file
+                }
             })
         },
         onRemovePriceMap(groupId) {
@@ -95,6 +113,11 @@ export default {
                 }
             }
         },
+    },
+    created() {
+        this.instantiatePricemaps()
+        // this.onAddPriceMap()
+        // Instantiate fields based on all currency fields
     }
 }
 </script>

@@ -83,7 +83,13 @@ export default {
         },
         autoMapField(field, availableFields, matchesToAvoid) {
             let foundMatch = false
+            let allMatches = []
             availableFields.forEach(fieldCollection => {
+                allMatches.push({
+                    file: fieldCollection,
+                    matches,
+                })
+
                 if (foundMatch) return
 
                 const altMatch = fieldCollection.headers.find(header => {
@@ -102,6 +108,7 @@ export default {
 
                 if (matches.length > 0) {
                     let match = matches[0]
+
                     if (matchesToAvoid) {
                         // Find a match that is not included in the matched to avoid array
                         match = matches.find(
@@ -119,6 +126,7 @@ export default {
                     }
                 }
             })
+            return allMatches
         },
     },
 }

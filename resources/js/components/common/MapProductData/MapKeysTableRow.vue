@@ -22,7 +22,7 @@
                 <i class="fas fa-caret-down"></i>
                 <i v-if="mappedField.autoMatched" 
                     class="fas fa-bolt primary automatch-icon"
-                    v-tooltip="'auto-matched'"
+                    v-tooltip="'Field was auto-matched'"
                 ></i>
             </BaseInputField>
         </td>

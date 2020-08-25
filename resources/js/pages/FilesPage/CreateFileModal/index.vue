@@ -2,7 +2,10 @@
     <BaseModal :classes="['create-file-modal', currentScreen.name == 'mapFields' ? 'map-fields' : '']" :show="show" @close="$emit('close')"
     ref="modal" :header="currentScreen.header" :goBack="currentScreen.name == 'mapFields'" @goBack="onGoBack">
 
-            <UploadFilesScreen v-if="currentScreen.name == 'chooseFiles'"
+            <BaseLoader v-if="processingFiles"
+            :msg="processingFiles ? 'Reading files. This may take a few minutes' : ''"/>
+
+            <UploadFilesScreen v-else-if="currentScreen.name == 'chooseFiles'"
                 :fileList.sync="uploadedFiles"
                 :newFile="newFile"
                 @create-empty="createEmpty"
@@ -15,7 +18,6 @@
                 :newFile="newFile"
             />
 
-            <BaseLoader v-else/>
 
     </BaseModal>
 </template>
@@ -42,6 +44,7 @@ export default {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
         uploadedFiles: [],
         availableFields: [],
+        processingFiles: false,
         defalultNewFile: {
             id: null,
             name: 'New file',
@@ -125,6 +128,7 @@ export default {
         },
         async onGoToMapFields() {
             // Use promises to make sure we have processed all the uploaded files before we continue
+            this.processingFiles = true
             await Promise.all(this.uploadedFiles.map(async file => {
                 await new Promise((resolve, reject) => {
                     const fileReader = new FileReader()
@@ -145,6 +149,7 @@ export default {
                 }
             }
             //Change the current screen
+            this.processingFiles = false
             this.currentScreen={name: 'mapFields', header: 'Map fields'}
         },
         onGoBack() {

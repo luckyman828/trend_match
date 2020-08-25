@@ -88,6 +88,17 @@ export default {
     },
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
+        async initVariantMap() {
+            const newFields = await this.getProductFields({scope: 'variants'})
+            this.fieldsToMap.push(...newFields)
+
+            this.onAddVariantImageMap()
+
+            // Automap fields
+            newFields.map(field => {
+                this.autoMapField(field, this.availableFields)
+            })
+        },
         async onAddVariantImageMap() {
             const newFields = await this.getProductFields({scope: 'images'})
             const newField = newFields[0]
@@ -101,6 +112,9 @@ export default {
             const index = this.fieldsToMap.findIndex(x => x.id == fieldId)
             this.fieldsToMap.splice(index, 1)
         },
+    },
+    created() {
+        this.initVariantMap()
     }
 }
 </script>
