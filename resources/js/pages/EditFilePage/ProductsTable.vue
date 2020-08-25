@@ -312,7 +312,7 @@ export default {
                     }
                 }
                 td {
-                    &:not(.image):not(.select):not(.action):not(.id) {
+                    &:not(.image):not(.select):not(.action):not(.id):not(.context-button) {
                         padding-bottom: 24px;
                     }
                 }
