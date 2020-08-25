@@ -29,6 +29,7 @@
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
             <template v-slot:row="rowProps">
                 <TeamsTableRow :team="rowProps.item" :ref="'teamRow-'+rowProps.item.id"

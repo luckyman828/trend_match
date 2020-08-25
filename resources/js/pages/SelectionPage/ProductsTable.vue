@@ -586,6 +586,9 @@ export default {
         }
         tr {
             th, td {
+                &.action {
+                    flex: 1;
+                }
                 &.title {
                     min-width: 220px;
                     max-width: 220px;

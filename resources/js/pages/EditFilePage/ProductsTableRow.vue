@@ -21,7 +21,8 @@
             </div>
         </span></td>
         <td class="delivery">
-            <span>{{product.delivery_date}}</span>
+            <span v-if="!product.delivery_date || product.delivery_date.length < 8">{{product.delivery_date}}</span>
+            <span v-else>{{product.delivery_date.substr(0, 3)}} {{product.delivery_date.substr(product.delivery_date.length - 4)}}</span>
         </td>
 
         <!-- Start Prices -->
