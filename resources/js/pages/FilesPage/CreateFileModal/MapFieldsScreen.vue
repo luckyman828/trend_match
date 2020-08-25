@@ -47,6 +47,7 @@
                     :fieldsToMap="fieldsToMap"
                     :availableFields="availableFields"
                     @show-field-context="showSelectFieldContext"
+                    @show-file-context="showSelectFileContext"
                 />
 
             </div>
@@ -65,6 +66,9 @@
         <!-- START CONTEXT MENUS -->
         <SelectFieldToMapContextMenu ref="contextSelectField"
         :fieldToMap="contextField" :availableFields="filesToChooseFrom"/>
+
+        <SelectFileToMapContextMenu ref="contextSelectFile"
+        :fileToMap="contextFile" :availableFields="availableFields"/>
         <!-- END CONTEXT MENUS -->
 
 
@@ -76,6 +80,7 @@ import { mapGetters, mapActions } from 'vuex'
 import MapFieldsTableRow from '../../../components/common/MapProductData/MapFieldsTableRow'
 import MapKeysTableRow from '../../../components/common/MapProductData/MapKeysTableRow'
 import SelectFieldToMapContextMenu from '../../../components/common/MapProductData/SelectFieldToMapContextMenu'
+import SelectFileToMapContextMenu from '../../../components/common/MapProductData/SelectFileToMapContextMenu'
 import MapProductFieldsForm from '../../../components/common/MapProductData/MapProductFieldsForm'
 import MapVariantsForm from '../../../components/common/MapProductData/MapVariantsForm'
 import MapPricesForm from '../../../components/common/MapProductData/MapPricesForm'
@@ -90,6 +95,7 @@ export default {
         MapFieldsTableRow,
         MapKeysTableRow,
         SelectFieldToMapContextMenu,
+        SelectFileToMapContextMenu,
         MapProductFieldsForm,
         MapVariantsForm,
         MapPricesForm,
@@ -108,6 +114,7 @@ export default {
         fieldsToMap: [],
         filesToChooseFrom: this.availableFields,
         contextField: null,
+        contextFile: null,
         // STATUS
         uploadingFile: false,
         submitStatus: null,
@@ -223,6 +230,7 @@ export default {
             this.availableFields.map(file => {
                 this.autoMapField(file.mappedKey, [file])
                 this.autoMapField(file.variantKey, [file])
+                // this.autoMapField(file.assortmentKey, [file])
             })
         },
         showSelectFieldContext(e, field, file) {
@@ -233,6 +241,11 @@ export default {
                 this.filesToChooseFrom = this.availableFields
             }
             const contextMenu = this.$refs.contextSelectField
+            contextMenu.show(e)
+        },
+        showSelectFileContext(e, file) {
+            this.contextFile = file
+            const contextMenu = this.$refs.contextSelectFile
             contextMenu.show(e)
         },
         // async onAddVariantImageMap() {

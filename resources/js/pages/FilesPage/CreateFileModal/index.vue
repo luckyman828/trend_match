@@ -166,82 +166,18 @@ export default {
             } else {
                 const mappedKey = await this.getProductFields({scope: 'key'})
                 const variantKey = await this.getProductFields({scope: 'variantKey'})
-                const assortmentKey = await this.getProductFields({scope: 'assortmentKey'})
+                // const assortmentKey = await this.getProductFields({scope: 'assortmentKey'})
+                // const priceKey = await this.getProductFields({scope: 'priceKey'})
                 this.availableFields.push({
                     mappedKey: mappedKey[0],
                     variantKey : variantKey[0],
-                    assortmentKey : assortmentKey[0],
+                    // assortmentKey : assortmentKey[0],
+                    // priceKey : priceKey[0],
                     headers: Object.keys(rows[0]),
                     fileName,
                     rows
                 })
             }
-        },
-        autoMapHeaders(file, fileIndex) {
-            // Loop through the fields we still need to match to a header
-            this.fieldsToMatch.concat(this.variantFieldsToMatch).concat(this.variantImagesToMap).forEach(field => {
-                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
-                    // Test if the current header has a file that matches
-                    const autoMatchIndex = file.headers.findIndex(header => {
-                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
-                    })
-                    if (autoMatchIndex >= 0) {
-                        const newValueToPush = {fileIndex: fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
-                        field.newValue = newValueToPush
-                        // Validate the value of the new mapping
-                        this.validateField(field)
-                    }
-                }
-            })
-
-            // Step 2: Match Keys (ID)
-            // Check if the file already has a key
-            if (file.key.fieldIndex == null) {
-                const keysToMatch = ['id','style number','style no','style no.','product id','number', 'style_no', 'style_number']
-                let keyAutoMatchIndex = file.headers.findIndex(header => keysToMatch.includes(header.fieldName.toLowerCase()))
-                if (keyAutoMatchIndex >= 0) {
-                    const keyToPush = {fileIndex: fileIndex, fieldName: file.headers[keyAutoMatchIndex].fieldName, fieldIndex: keyAutoMatchIndex, autoMatch: true}
-                    file.key = keyToPush
-                    // Validate the value of the new mapping
-                    this.validateKey(file)
-                }
-            }
-        },
-        autoMapCurrency(currency) {
-            // Loop through the fields we still need to match to a header
-            const file = this.availableFiles[currency.fileIndex]
-            currency.fieldsToMatch.forEach(field => {
-                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
-                    // Test if the current header has a file that matches
-                    const autoMatchIndex = file.headers.findIndex(header => {
-                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
-                    })
-                    if (autoMatchIndex >= 0) {
-                        const newValueToPush = {fileIndex: currency.fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
-                        field.newValue = newValueToPush
-                        // Validate the value of the new mapping
-                        this.validateField(field)
-                    }
-                }
-            })
-        },
-        autoMapAssortment(assortment) {
-            // Loop through the fields we still need to match to a header
-            const file = this.availableFiles[assortment.fileIndex]
-            assortment.fieldsToMatch.forEach(field => {
-                if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
-                    // Test if the current header has a file that matches
-                    const autoMatchIndex = file.headers.findIndex(header => {
-                        return field.headersToMatch.includes(header.fieldName.toLowerCase()) 
-                    })
-                    if (autoMatchIndex >= 0) {
-                        const newValueToPush = {fileIndex: assortment.fileIndex, fieldName: file.headers[autoMatchIndex].fieldName, fieldIndex: autoMatchIndex, autoMatch: true}
-                        field.newValue = newValueToPush
-                        // Validate the value of the new mapping
-                        this.validateField(field)
-                    }
-                }
-            })
         },
         async getImageFromURL(url) {
             // Send a request to get the image

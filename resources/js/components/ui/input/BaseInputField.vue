@@ -1,5 +1,6 @@
 <template>
-    <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label}]">
+    <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label},
+    {'has-icon-right': !!$slots.default}]">
         <div v-tooltip.top="errorTooltip" :class="[{'input-wrapper': type == 'select'}, inputClass]" @click="onClick">
             <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
@@ -42,6 +43,11 @@ export default {
     computed: {
         inputField() {
             return this.$refs.inputField
+        }
+    },
+    watch: {
+        value(newVal) {
+            this.$emit('change', newVal)
         }
     },
     methods: {
@@ -102,13 +108,20 @@ export default {
                 display: flex;
             }
         }
+        &.has-icon-right {
+            .input-wrapper {
+                padding-right: 36px;
+            }
+        }
     }
     .input-wrapper {
         position: relative;
+        text-overflow: ellipsis;
         input {
             border: none;
             background: inherit;
             width: 100%;
+            text-overflow: ellipsis;
         }
         &.small {
             + .icon-left, + .icon-right {

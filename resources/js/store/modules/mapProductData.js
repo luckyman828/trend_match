@@ -28,26 +28,25 @@ export default {
                 type: 'string',
                 headersToMatch: ['variant name', 'variant id', 'color', 'colour'],
             },
-            {
-                scope: 'assortmentKey',
-                name: 'assortment_key',
-                displayName: 'Assortment key',
-                type: 'string',
-                headersToMatch: ['assortment', 'assortment name', 'box name', 'box'],
-            },
-            // {
-            //     scope: 'currencyKey',
-            //     name: 'assortment_key',
-            //     displayName: 'Assortment key',
-            //     type: 'string',
-            //     headersToMatch: ['assortment', 'box', 'box name', 'assortment name'],
-            // },
             // {
             //     scope: 'assortmentKey',
             //     name: 'assortment_key',
             //     displayName: 'Assortment key',
             //     type: 'string',
-            //     headersToMatch: ['assortment', 'box', 'box name', 'assortment name'],
+            //     headersToMatch: [
+            //         'assortment name',
+            //         'box name',
+            //         'ass name',
+            //         'box(?!.*(size|ean))', // box not followed by 'size' or 'ean'
+            //         'assortment(?!.*(size|ean))', // assortment not followed by 'size' or 'ean'
+            //     ],
+            // },
+            // {
+            //     scope: 'priceKey',
+            //     name: 'price_key',
+            //     displayName: 'Price key',
+            //     type: 'string',
+            //     headersToMatch: ['currency', 'currency name'],
             // },
             // DEFAULT
             {
@@ -171,7 +170,12 @@ export default {
                 name: 'sizes',
                 displayName: 'Variant Sizes',
                 type: 'string',
-                headersToMatch: ['sizes', 'variant sizes', 'size', 'variant size'],
+                headersToMatch: [
+                    'sizes',
+                    'variant sizes',
+                    '^(?!.*box).*size.*$', // 'size' but not 'box size'
+                    'variant size',
+                ],
             },
             // IMAGES
             {
