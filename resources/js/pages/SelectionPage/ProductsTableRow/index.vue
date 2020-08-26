@@ -404,8 +404,9 @@ export default {
             }
         }
         &:focus {
-            outline: solid 2px $primary;
-            outline-offset: -2px;
+            // outline: solid 2px $primary;
+            // outline-offset: -2px;
+            outline: none;
         }
         .img-wrapper {
             border: $borderElSoft;

@@ -69,7 +69,7 @@
                         :key-field="itemKey"
                         v-slot="{ item, index }"
                     >
-                        <BaseTableRow
+                        <BaseTableRow ref="tableRow"
                             :key="itemKey ? item[itemKey] : index"
                             :item="item" :index="index"
                             :showSelect="showSelect"
@@ -80,10 +80,11 @@
                             :showContextButton="!hideContextButton"
                             :itemType="itemType"
                             :itemSize="itemSize"
+                            :hasFocus="focusIndex == index"
                             @select-range="selectRange(index, items, selected)"
                             @show-contextmenu="onContextMenu($event, item)"
                         >
-                            <slot name="row" :item="item" :index="index"/>
+                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
                         </BaseTableRow>
                     </RecycleScroller>
                 </template>
@@ -133,6 +134,7 @@ export default {
         'searchKey',
         'hideTopBar',
         'itemType',
+        'focusIndex',
     ],
     data: function() { return {
         sticky: false,

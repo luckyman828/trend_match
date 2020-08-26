@@ -1,5 +1,10 @@
 <template>
-    <tr class="table-row" :class="[{active: contextMenuIsActive}, {'self': isSelf}]"
+    <tr class="table-row" 
+    :class="[
+        {active: contextMenuIsActive}, 
+        {'self': isSelf}, 
+        {'has-focus': hasFocus}
+    ]"
     :key="itemKey ? item[itemKey] : index"
     :style="rowHeight"
     @click.ctrl.exact.capture.stop.prevent="$refs.selectBox.check()"
@@ -36,6 +41,7 @@ export default {
         'showContextButton',
         'itemType',
         'itemSize',
+        'hasFocus'
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
@@ -61,7 +67,7 @@ export default {
         onCtrlShiftClick() {
             this.$emit('select-range')
             document.getSelection().empty()
-        }
+        },
     }
 }
 </script>
@@ -77,6 +83,10 @@ tr {
                 color: $primary;
             }
         }
+    }
+    &.has-focus {
+        outline: solid 2px #2a46ff;
+        outline-offset: -2px;
     }
 }
 

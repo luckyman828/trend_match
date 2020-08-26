@@ -10,6 +10,7 @@
             :searchKey="['datasource_id','title','category']"
             :searchResult.sync="productsFilteredBySearch"
             :hideContextButton="true"
+            :focusIndex="currentFocusRowIndex"
             @show-contextmenu="onShowContextMenu"
             @search-enter="onViewSingle(productsFilteredBySearch[0])"
         >
@@ -191,6 +192,7 @@
                 :currentAction="currentAction"
                 :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
                 :distributionScope="distributionScope"
+                :rowComponent="rowProps.rowComponent"
                 @onViewSingle="onViewSingle" 
                 @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
@@ -463,6 +465,9 @@ export default {
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        onTest(comp) {
+            console.log('on test', comp)
+        },
         resetFilters() {
             this.selectedCategories = []
             this.selectedDeliveryDates = []
