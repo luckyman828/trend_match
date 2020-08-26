@@ -45,18 +45,18 @@
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                 <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
                                 <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
-                                <div v-if="variant.imageToUpload && variant.imageToUpload.uploading" class="progress-wrapper">
-                                    <span v-if="variant.imageToUpload.progress > 0">{{variant.imageToUpload.progress}}%</span>
+                                <div v-if="variant.currentImg.imageToUpload && variant.currentImg.imageToUpload.uploading" class="progress-wrapper">
+                                    <span v-if="variant.currentImg.imageToUpload.progress > 0">{{variant.currentImg.imageToUpload.progress}}%</span>
                                     <span v-else>Preparing upload..</span>
                                     <svg height="4">
                                         <rect class="background" width="100%" height="4"/>
-                                        <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
+                                        <rect class="value" v-if="variant.currentImg.imageToUpload.progress > 0" :width="variant.currentImg.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
                                 <img v-if="variant.currentImg.url != null"  
                                 :key="`image-${variant.id ? variant.id : index}`"
                                 :src="variantImage(variant, {index: variant.imageIndex})" 
-                                :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
+                                :class="[(variant.currentImg.imageToUpload) ? 'rotation-'+variant.currentImg.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
                                         <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -462,9 +462,11 @@ export default {
             const variants = this.productToEdit.variants
             let imagesToUpload = []
             variants.forEach(variant => {
-                if (variant.imageToUpload) {
-                    imagesToUpload.push(variant.imageToUpload)
-                }
+                variant.pictures.forEach(picture => {
+                    if (picture.imageToUpload) {
+                        imagesToUpload.push(picture.imageToUpload)
+                    }
+                })
             })
             return imagesToUpload
         },
@@ -615,25 +617,30 @@ export default {
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
-                if (variant.imageToUpload) {
-                    // Set uploading to true
-                    variant.imageToUpload.uploading = true
-                    variant.imageToUpload.progress = 0
+                for (let i = 0; i < variant.pictures.length; i++) {
+                    const picture = variant.pictures[i]
+                    if (picture.imageToUpload) {
+                        // Set uploading to true
+                        picture.imageToUpload.uploading = true
+                        picture.imageToUpload.progress = 0
+                        variant.imageIndex = i
+    
+                        // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+                        await this.uploadImage({
+                            file: this.currentFile, 
+                            product: productToEdit,
+                            picture,
+                            image: picture.imageToUpload.file, 
+                        }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
+                            // Remove the image to upload
+                            delete picture.imageToUpload
+                            variant.image = variant.pictures[0].url
+                        }).catch(err => {
+                            variantError = true
+                            picture.imageToUpload.uploading = false
+                        })
+                    }
 
-                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
-                    await this.uploadImage({
-                        file: this.currentFile, 
-                        product: productToEdit,
-                        picture: editVariant.currentImg,
-                        image: variant.imageToUpload.file, 
-                    }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
-                        // Remove the image to upload
-                        delete variant.imageToUpload
-                        variant.image = variant.pictures[0].url
-                    }).catch(err => {
-                        variantError = true
-                        variant.imageToUpload.uploading = false
-                    })
                 }
             }
             if (variantError) {
@@ -723,8 +730,10 @@ export default {
                 // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
-                        // save the image to upload to the variant with its rotation data,
-                        vm.$set(variant, 'imageToUpload', {file: file, progress: 0, uploading: false})
+                        // save the image to upload to the variant picture with its rotation data,
+                        const picture = variant.currentImg
+
+                        vm.$set(picture, 'imageToUpload', {file: file, progress: 0, uploading: false})
                         // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
                 // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
