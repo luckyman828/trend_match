@@ -1,7 +1,7 @@
 <template>
     <div class="search">
         <input class="input-wrapper" :class="inputClasses" :placeholder="placeholderText || 'Search..'" type="search" v-model="searchString" ref="searchField"
-        @click.stop @input="$emit('input', result)" @keydown.esc="onEsc">
+        @click.stop @input="onInput" @keydown.esc="onEsc">
         <span v-if="searchString.length > 0" class="clear" @click.stop="clear();setFocus()">
             <i class="far fa-times-circle"></i>
         </span>
@@ -80,9 +80,6 @@ export default {
                                     searchString.forEach(str => {
                                         if (valueToMatch.search(str) >= 0) isMatch = true
                                     })
-                                    // if (valueToMatch.search(searchString) >= 0) {
-                                    //     isMatch = true
-                                    // }
                                 })
                                 return isMatch
                             }
@@ -96,7 +93,6 @@ export default {
                                     if (valueToMatch.search(str) >= 0) isMatch = true
                                 })
                                 return isMatch
-                                // return valueToMatch.search(searchString) >= 0
                             }
                         })
                         arrayToReturn.push(arrayObjectToReturn)
@@ -209,6 +205,9 @@ export default {
                 this.clear()
             }
             // Else do nothing
+        },
+        onInput() {
+            this.$emit('input', this.result, this.searchString)
         }
     },
     created() {
