@@ -717,48 +717,72 @@ export default {
         },
         async deleteProducts({ state, getters, commit, dispatch }, { file, products }) {
             return new Promise((resolve, reject) => {
-                const apiUrl = `/files/${file.id}/products`
-                axios
-                    .post(apiUrl, {
-                        method: 'Remove',
-                        products: products,
-                    })
-                    .then(response => {
-                        commit('DELETE_PRODUCTS', products)
-                        resolve(response)
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
-                                callback: () => restoreProducts(),
-                                callbackLabel: 'Restore products',
-                                iconClass: 'fa-trash',
-                                type: 'danger',
-                            },
-                            { root: true }
-                        )
-                    })
-                    .catch(err => {
-                        reject(err)
-                        // Re-add the products
-                        commit('insertProducts', { products, method: 'add' })
-                        // Show error message
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Something went wrong when deleting the product(s). Please try again.',
-                                iconClass: 'fa-exclamation-triangle',
-                                type: 'warning',
-                                callback: () => dispatch('deleteProducts', { file, products }),
-                                callbackLabel: 'Retry',
-                                duration: 0,
-                            },
-                            { root: true }
-                        )
-                    })
+                commit('DELETE_PRODUCTS', products)
+
+                // Start timer for deletion
+                let wasCancelled = false
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `Products will be deleted`,
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                        callback: () => {
+                            wasCancelled = true
+                            restoreProducts()
+                        },
+                        callbackLabel: 'Undo',
+                        timeoutCallback: () => {
+                            if (!wasCancelled) {
+                                sendRequest()
+                            }
+                        },
+                    },
+                    { root: true }
+                )
+
+                const sendRequest = async () => {
+                    const apiUrl = `/files/${file.id}/products`
+                    axios
+                        .post(apiUrl, {
+                            method: 'Remove',
+                            products: products,
+                        })
+                        .then(response => {
+                            resolve(response)
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
+                                    iconClass: 'fa-check',
+                                    type: 'check',
+                                },
+                                { root: true }
+                            )
+                        })
+                        .catch(err => {
+                            reject(err)
+                            // Re-add the products
+                            commit('insertProducts', { products, method: 'add' })
+                            // Show error message
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: 'Something went wrong when deleting the product(s). Please try again.',
+                                    iconClass: 'fa-exclamation-triangle',
+                                    type: 'warning',
+                                    callback: () => dispatch('deleteProducts', { file, products }),
+                                    callbackLabel: 'Retry',
+                                    duration: 0,
+                                },
+                                { root: true }
+                            )
+                        })
+                }
 
                 const restoreProducts = async () => {
-                    await dispatch('insertProducts', { file, products, addToState: true })
+                    // await dispatch('insertProducts', { file, products, addToState: true })
+                    commit('insertProducts', { products, method: 'add' })
                     commit('SORT_PRODUCTS')
                     commit(
                         'alerts/SHOW_SNACKBAR',
