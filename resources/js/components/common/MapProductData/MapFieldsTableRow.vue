@@ -34,7 +34,7 @@
                 ></i>
                 <i v-if="mappedField.customEntry"
                     style="right: -18px"
-                    class="fas fa-pen yellow automatch-icon"
+                    class="fas fa-pen orange automatch-icon"
                     v-tooltip="'Manual entry. Value will be set for all products'"
                 ></i>
             </BaseInputField>
@@ -73,6 +73,8 @@ export default {
     ],
     computed: {
         previewValue() {
+            // If custom enrtry, simply display the custom entry
+            if (this.mappedField.customEntry) return this.mappedField.fieldName
             if (!this.mappedFile || !this.mappedField.fieldName) return 'Not mapped'
 
             return this.mappedFile.rows[0][this.mappedField.fieldName]
@@ -80,8 +82,9 @@ export default {
     },
     watch: {
         previewValue(newVal) {
-            if (!this.mappedFile || !this.mappedField.fieldName) return
-            const valid = this.validateMappedField(this.mappedField, this.mappedFile.rows, 10)
+            if ((!this.mappedFile || !this.mappedField.fieldName) && !this.mappedField.customEntry) return
+            const rows = this.mappedField.customEntry ? [] : this.mappedFile.rows
+            const valid = this.validateMappedField(this.mappedField, rows, 10)
         }
     },
 }

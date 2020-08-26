@@ -31,12 +31,13 @@ export default {
             field.error = false
 
             // Set the limit to a maximum of the number of lines in the file
-            const numberOfRowsToValidate = rows.length < depth ? rows.length : depth
+            const numberOfRowsToValidate = field.customEntry ? 1 : rows.length < depth ? rows.length : depth
 
             // Test n values
             for (let i = 0; i <= numberOfRowsToValidate - 1; i++) {
                 // Find the field value
-                const fieldValue = rows[i][field.fieldName]
+                const fieldValue = field.customEntry ? field.fieldName : rows[i][field.fieldName]
+                // If we have set a custom value, then test that instead
 
                 // Test that the field actually has a value
                 if (fieldValue && isValid) {

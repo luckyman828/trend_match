@@ -568,7 +568,7 @@ export default {
                         }
                         &.custom-entry {
                             .input-wrapper {
-                                border-color: $yellow
+                                border-color: $orange
                             }
                         }
                     }
