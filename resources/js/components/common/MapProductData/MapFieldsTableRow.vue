@@ -55,6 +55,11 @@
                 <i class="far fa-trash"></i>
             </button>
         </td>
+        <td v-if="$scopedSlots.right">
+            <div class="right-slot">
+                <slot name="right"/>
+            </div>
+        </td>
     </tr>
 </template>
 
@@ -113,6 +118,9 @@ export default {
     }
 }
 .remove-button {
+    margin-right: -32px;
+}
+.right-slot {
     margin-right: -32px;
 }
 // .select {

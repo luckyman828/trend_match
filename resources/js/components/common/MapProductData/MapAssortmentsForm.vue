@@ -117,7 +117,7 @@ export default {
             // Add one assortment map first 
             await this.onAddAssortmentMap()
             // Test the amount of matches returned for the assortment name field
-            const assortmentNameField = this.fieldsToMap.find(x => x.name == 'assortment_name')
+            const assortmentNameField = this.fieldsToMap.find(x => x.name == 'name' && x.scope == 'assortments')
             const assortmentMatches = this.autoMapField(assortmentNameField, this.availableFields)
 
             let firstMatchIngored = false

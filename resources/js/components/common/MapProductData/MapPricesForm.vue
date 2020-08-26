@@ -19,7 +19,13 @@
                     :mappedFile="field.file"
                     :mappedField="field"
                     @show-field-context="$emit('show-field-context', $event, field)"
-                />
+                >
+                    <template v-slot:right v-if="field.name == 'currency' && !field.fieldName">
+                        <i class="far fa-info-circle md dark"
+                            v-tooltip="'No currency name is mapped'"
+                        ></i>
+                    </template>
+                </MapFieldsTableRow>
             </BaseMapFieldsTable>
         </div>
 

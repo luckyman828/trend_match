@@ -149,72 +149,7 @@ export default {
             return valid
         },
         instantiatedProducts() {
-            const products = []
-            this.availableFields.map(file => {
-
-                const keyField = file.mappedKey.fieldName
-                if (!keyField) return
-
-                file.rows.map(row => {
-
-                    // Find the product corresponding to this row, or instantiate a new product if none exists
-                    const keyValue = row[keyField]
-
-                    const existingProduct = products.find(x => x.datasource_id == keyValue)
-                    const baseProduct = {
-                        datasource_id: keyValue,
-                        variants: [],
-                        prices:[],
-                        assortments: [],
-                        eans: [],
-                    }
-                    const product = existingProduct ? existingProduct : baseProduct
-
-                    console.log('made it 1')
-
-                    if (!existingProduct) {
-                        products.push(product)
-                    }
-
-                    console.log('made it 2')
-
-                    // // Instantiate variants 
-                    // const variantKeyField = this.fieldsToMap.find(field => field.name == 'variant_name')
-                    // if (!variantKeyField.fieldName)
-                    // const variantKeyValue = variantKeyField.fieldName
-                    // const existingVariant = product.variants
-                    // const baseVariant = {
-                    //     name: variantKeyField,
-                    //     sizes: [],
-                    //     pictures: []
-                    // }
-
-                    // Map variants
-                    this.fieldsToMap.filter(x => x.scope == 'variants').map(field => {
-                        // Check that the field is mapped to the current file
-                        if (!field.file || field.file.fileName != file.fileName) return
-
-                        // const variantKeyValue = field.
-
-                        console.log('made it 3')
-
-                        // product[field.name] = row[field.fieldName]
-                    })
-
-                    // Now that we know what product we are updating we can start looping through the mapped fields
-                    this.fieldsToMap.filter(x => !x.scope).map(field => {
-                        // Check that the field is mapped to the current file
-                        if (!field.file || field.file.fileName != file.fileName) return
-
-
-                        console.log('made it 3')
-
-                        product[field.name] = row[field.fieldName]
-                    })
-                })
-            })
-
-            return products
+            return this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFields)   
         }
     },
     methods: {

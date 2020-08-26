@@ -3,7 +3,7 @@
     <div class="select-buttons" ref="selectButtons">
 
 
-        <div class="search-wrapper" v-if="search">
+        <div class="search-wrapper" v-if="search && !manualEntryActive">
             <!-- <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/> -->
             <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" 
                 :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"
@@ -252,12 +252,12 @@ export default {
         },
         onActivateManualEntry() {
             this.manualEntryActive = true
+            this.manualEntry = this.searchString
             this.$nextTick(() => {
                 this.$refs.manualEntryField.focus()
             })
         },
         onSearch(result, searchString) {
-            console.log('on search')
             this.searchString = searchString
         }
     },

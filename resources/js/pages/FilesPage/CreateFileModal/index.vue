@@ -226,7 +226,7 @@ export default {
 
                         // VARIANTS
                         // Find / Instantiate this lines variant
-                        let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'variant_name')
+                        let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'name' && x.scope == 'variants')
                         let variant = null
                         // Check that the variant key is from this file
                         if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {

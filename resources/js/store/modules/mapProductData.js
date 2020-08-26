@@ -151,7 +151,7 @@ export default {
             // VARIANTS
             {
                 scope: 'variants',
-                name: 'variant_name',
+                name: 'name',
                 displayName: 'Variant Name',
                 type: 'string',
                 headersToMatch: [
@@ -212,12 +212,13 @@ export default {
                 name: 'mark_up',
                 displayName: 'Mark Up',
                 type: 'number',
-                headersToMatch: ['markup', 'mark up', 'mu'],
+                // prettier-ignore
+                headersToMatch: ['markup', 'mark up', '(?:^| )mu(?:$| )']
             },
             // ASSORTMENTS
             {
                 scope: 'assortments',
-                name: 'assortment_name',
+                name: 'name',
                 displayName: 'Assortment Name',
                 type: 'string',
                 headersToMatch: [
