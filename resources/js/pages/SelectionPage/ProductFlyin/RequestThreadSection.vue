@@ -101,6 +101,8 @@ export default {
     }},
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('products', ['currentProduct']),
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('requests', {
             show: 'getRequestThreadVisible',
             request: 'getCurrentRequestThread'
@@ -115,11 +117,14 @@ export default {
         }
     },
     watch: {
-        request(newVal) {
+        request() {
             this.$nextTick(() => {
                 this.activateWrite()
             })
-        }  
+        },
+        currentProduct() {
+            this.close()
+        }
     },
     methods: {
         ...mapMutations('requests', {
