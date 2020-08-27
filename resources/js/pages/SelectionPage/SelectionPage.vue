@@ -243,10 +243,16 @@ export default{
                 this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
             }
         },
-        requestDeletedHandler(selectionId, request) {
-            if (request.author_id != this.authUser.id) {
+        requestDeletedHandler(selectionId, requestIdentifier) {
+            if (requestIdentifier.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
-                const product = this.products.find(x => x.id == request.product_id)
+                const product = this.products.find(x => x.id == requestIdentifier.product_id)
+                const request = {
+                    id: requestIdentifier.request_id,
+                    author_id: requestIdentifier.author_id,
+                    product_id: requestIdentifier.product_id,
+                    selection_id: requestIdentifier.selection_id,
+                }
                 this.DELETE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
             }
         },

@@ -259,12 +259,12 @@ export default {
             }
         },
         DELETE_REQUEST(state, { selectionInput, request }) {
-            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.request_id)
+            console.log('delete request', request)
+            const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
             // Check if the request is the current request
-            if (state.currentRequestThread && state.currentRequestThread.id == request.request_id) {
+            if (state.currentRequestThread && state.currentRequestThread.id == request.id) {
                 state.currentRequestThread = null
-                console.log(state.currentRequestThread)
             }
         },
         SET_CURRENT_REQUEST_THREAD(state, request) {
