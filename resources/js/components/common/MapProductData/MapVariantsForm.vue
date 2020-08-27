@@ -31,11 +31,11 @@
         </button>
 
         <!-- MAP KEYS -->
-        <div v-if="mappedFiles.length > 1" class="form-element">
+        <div class="form-element">
             <h4>
                 <strong>Map variant keys</strong>
                 <i class="far fa-info-circle"
-                    v-tooltip="'You have mapped different files to the variant fields. Please provide the keys that we should map the variants together by (for instance; Name or Id'"
+                    v-tooltip="'We use the key to know which rows represent the same variant (use for instance; Name or Id)'"
                 ></i>
             </h4>
             <BaseMapFieldsTable class="map-fields-table">
@@ -91,12 +91,28 @@ export default {
         async initVariantMap() {
             const newFields = await this.getProductFields({scope: 'variants'})
             this.fieldsToMap.push(...newFields)
-
-            this.onAddVariantImageMap()
+            await this.onAddVariantImageMap()
 
             // Automap fields
             newFields.map(field => {
                 this.autoMapField(field, this.availableFields)
+            })
+
+            // Attemp to determine how many image-maps we need
+            // Get our first variant image map
+            const imageField = this.fieldsToMap.find(x => x.scope == 'images')
+            const imageFieldMatches = this.autoMapField(imageField, this.availableFields)
+            
+            let firstMatchIngored = false
+            imageFieldMatches.map(fileMatch => {
+                fileMatch.matches.map(match => {
+                    // ignore the first match
+                    if (!firstMatchIngored) {
+                        firstMatchIngored = true
+                    } else {
+                        this.onAddVariantImageMap()
+                    }
+                })
             })
         },
         async onAddVariantImageMap() {

@@ -460,6 +460,7 @@ export default {
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
             return new Promise(async (resolve, reject) => {
+                console.log('sync external images', file, products)
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
 
@@ -486,6 +487,8 @@ export default {
                     resolve()
                     return
                 }
+
+                console.log('image maps', imageMaps)
 
                 const productsToUpdate = []
 
@@ -535,7 +538,10 @@ export default {
 
                                 variant.pictures[pictureIndex].url = urlMap.cdn_url
 
-                                productsToUpdate.push(product)
+                                const productAlreadyAdded = productsToUpdate.find(
+                                    x => x.datasource_id == product.datasource_id
+                                )
+                                if (!productAlreadyAdded) productsToUpdate.push(product)
                             })
                         })
                         .catch(err => {

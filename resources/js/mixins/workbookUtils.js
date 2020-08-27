@@ -19,9 +19,18 @@ export default {
             // Assume no error
             let isValid = true
             field.error = false
+            if (!field.enabled) return isValid
 
             // Set the limit to a maximum of the number of lines in the file
-            const numberOfRowsToValidate = field.customEntry ? 1 : rows.length < depth ? rows.length : depth
+            const numberOfRowsToValidate = field.customEntry
+                ? 1
+                : // If no depth has been provided
+                depth == null
+                ? rows.length
+                : // If we have a depth
+                rows.length < depth
+                ? rows.length
+                : depth
 
             // Test n values
             for (let i = 0; i <= numberOfRowsToValidate - 1; i++) {
@@ -135,13 +144,9 @@ export default {
                     }
                     const product = existingProduct ? existingProduct : baseProduct
 
-                    console.log('made it 1')
-
                     if (!existingProduct) {
                         products.push(product)
                     }
-
-                    console.log('made it 2')
 
                     mappedFields.map(field => {
                         if (
@@ -153,7 +158,6 @@ export default {
 
                         // START MAP VARIANTS
                         if (field.scope == 'variants' || field.scope == 'images') {
-                            console.log('made it variants')
                             // Find the variant key
                             const variantKeyField = file.variantKey.fieldName
                             const variantKeyValue = row[variantKeyField]
@@ -164,6 +168,7 @@ export default {
                             let variant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
                             if (!variant) {
                                 variant = {
+                                    id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
                                     name: null,
                                     sizes: [],
                                     pictures: [],
@@ -173,15 +178,12 @@ export default {
                                 product.variants.push(variant)
                             }
 
-                            console.log('found a variant')
-
                             // Now that we have our variant, it's just a question of setting the values
                             const variantField = variant[field.name]
 
                             if (field.name == 'image') {
-                                console.log('is image', variantField, fieldValue)
                                 const valueExistsInArray = variant.pictures.find(x => x.url == fieldValue)
-                                if (!valueExistsInArray)
+                                if (!valueExistsInArray && fieldValue)
                                     variant.pictures.push({
                                         name: null,
                                         url: fieldValue,
@@ -190,13 +192,11 @@ export default {
                             }
 
                             if (Array.isArray(variantField)) {
-                                console.log('is array')
                                 const valueExistsInArray = variantField.includes(fieldValue)
                                 if (!valueExistsInArray) variantField.push(fieldValue)
                                 return
                             }
 
-                            console.log('is not array')
                             variant[field.name] = fieldValue
                             return
                         }
@@ -204,7 +204,6 @@ export default {
 
                         // START MAP PRICES
                         if (field.scope == 'prices') {
-                            console.log('made it prices')
                             // Check if the price group already exists
                             let priceGroup = product.prices.find(x => x.mappingGroupId == field.groupId)
                             if (!priceGroup) {
@@ -226,7 +225,6 @@ export default {
 
                         // START MAP ASSORTMENTS
                         if (field.scope == 'assortments') {
-                            console.log('made it assortments')
                             let assortmentGroup = product.assortments.find(x => x.mappingGroupId == field.groupId)
                             if (!assortmentGroup) {
                                 assortmentGroup = {
@@ -241,20 +239,17 @@ export default {
                             assortmentGroup[field.name] = fieldValue
                             return
                         }
-                        console.log('made it past assortmetns')
                         // END MAP ASSORTMENTS
 
                         // NO SCOPE
                         const productField = product[field.name]
                         if (Array.isArray(productField)) {
-                            console.log('is array')
                             const valueExistsInArray = productField.includes(fieldValue)
                             if (!valueExistsInArray) productField.push(fieldValue)
                             return
                         }
                         product[field.name] = fieldValue
                     })
-                    console.log('made it past all')
                 })
             })
 
