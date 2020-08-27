@@ -284,8 +284,8 @@ export default {
                                 if (operator == '!=' && !!selectionInput.comments.find(x => x.user_id == userId)) include = false
                             }
                             else if (filter.key == 'Request') {
-                                if (operator == '=' && !selectionInput.requests.find(x => x.user_id == userId)) include = false
-                                if (operator == '!=' && !!selectionInput.requests.find(x => x.user_id == userId)) include = false
+                                if (operator == '=' && !selectionInput.requests.find(x => x.author_id == userId)) include = false
+                                if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId)) include = false
                             }
                             else {
                                 const actionArray = this.distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
