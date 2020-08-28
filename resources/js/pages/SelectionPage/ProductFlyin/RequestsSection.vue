@@ -17,6 +17,7 @@
                 </div>
                 <div v-if="requests.find(x => x.selection_id != selectionInput.selection_id)" class="break-line">Showing requests from other selections(s)</div>
                 <request :request="request" :key="request.id" :selectionInput="selectionInput"
+                :class="{'thread-open': currentRequestThread && currentRequestThread.id == request.id}"
                 v-for="request in requests
                 .filter(x => x.selection_id != selectionInput.selection_id)
                 .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)"/>

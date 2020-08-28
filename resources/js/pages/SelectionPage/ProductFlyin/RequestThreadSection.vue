@@ -132,7 +132,7 @@ export default {
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'resolveRequest']),
         activateWrite() {
-            if (this.request.isResolved) return
+            if (this.request.isResolved || this.getCurrentSelection.type != 'Master') return
             this.$refs.commentField.focus()
             this.$refs.commentField.select()
             this.writeActive = true
