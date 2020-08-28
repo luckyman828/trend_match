@@ -3,6 +3,7 @@
 
         <BaseTable :stickyHeader="true"
             :items="products"
+            :itemsTotalCount="stateProducts.length"
             itemKey="id"
             :itemSize="currentSelections.length > 1 ? 247 : 139"
             :selected.sync="selectedProducts"

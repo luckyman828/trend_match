@@ -4,6 +4,7 @@
         <BaseTable :stickyHeader="true"
             contentStatus="success"
             :items="products"
+            :itemsTotalCount="stateProducts.length"
             itemKey="id"
             :itemSize="139"
             :selected.sync="selectedProducts"

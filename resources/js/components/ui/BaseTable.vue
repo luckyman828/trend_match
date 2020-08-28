@@ -27,7 +27,7 @@
                                 <div class="records" v-if="!!items">
                                     <span v-if="selected && selected.length > 0"><strong>{{selected.length}}</strong> selected</span>
                                     <span v-if="searchEnabled">showing <strong>{{searchResult.length}}</strong> of 
-                                    <strong>{{items.length}}</strong> records</span>
+                                    <strong>{{itemsTotalCount != null ? itemsTotalCount : items.length}}</strong> records</span>
                                 </div>
                             </template>
 
@@ -135,6 +135,7 @@ export default {
         'hideTopBar',
         'itemType',
         'focusIndex',
+        'itemsTotalCount',
     ],
     data: function() { return {
         sticky: false,
