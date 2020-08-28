@@ -223,10 +223,11 @@ export default {
             // First see if the request already exists
             const existingRequestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             if (existingRequestIndex >= 0) {
-                const updatedRequest = Object.assign(
-                    selectionInput.rawSelectionInput.requests[existingRequestIndex],
-                    request
-                )
+                const existingRequest = selectionInput.rawSelectionInput.requests[existingRequestIndex]
+                const discussions = existingRequest.discussions
+                const updatedRequest = Object.assign(existingRequest, request)
+                // Dont touch the discussions
+                updatedRequest.discussions = discussions
                 Vue.set(selectionInput.rawSelectionInput.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
