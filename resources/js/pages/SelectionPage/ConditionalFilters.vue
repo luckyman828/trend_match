@@ -1,6 +1,6 @@
 <template>
-    <div class="conditional-filters">
-        <div class="overlay" v-close-popover></div>
+    <div class="conditional-filters" ref="filterWrapper" v-click-outside="onClose">
+        <!-- <div class="overlay"></div> -->
         <h3>Advanced filters</h3>
 
         <template></template>
@@ -8,7 +8,7 @@
 
             <v-popover trigger="click"
                 placement="left"
-                offset="0, -60px"
+                offset="0, -40px"
             >
                 <BaseInputField class="select-key" disabled=true 
                 :value="keyFilter.key.name" type="select" inputClass="small"/>
@@ -385,6 +385,9 @@ export default {
             // Remove unset filters
             const filtersToSet = this.keyFilters.filter(x => !(x.type == 'author' && !x.filter || x.type == 'key' && !x.key.value))
             this.SET_ADVANCED_FILTER(JSON.parse(JSON.stringify(filtersToSet)))
+        },
+        onClose() {
+            this.$emit('close')
         }
     },
     created() {

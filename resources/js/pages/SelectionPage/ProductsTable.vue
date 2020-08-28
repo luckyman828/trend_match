@@ -48,7 +48,10 @@
 
             </template>
             <template v-slot:topBarLeft>
-                <v-popover trigger="click" :autoHide="false">
+                <v-popover trigger="click" 
+                popoverInnerClass="tooltip-inner popover-inner"
+                :open="showAdvancedFilters"
+                :autoHide="false">
                     <BaseButton buttonClass="ghost filter-button" @click="showAdvancedFilters = true">
                         <span>Advanced Filters</span>
                         <div v-if="getHasAdvancedFilter" class="circle primary xs">
@@ -57,7 +60,9 @@
                         <i class="far fa-chevron-down"></i>
                     </BaseButton>
                     <template slot="popover">
-                        <ConditionalFilters :distributionScope="distributionScope"/>
+                        <ConditionalFilters :distributionScope="distributionScope"
+                        :key="advancedFilterKey"
+                        @close="showAdvancedFilters = false"/>
                     </template>
                 </v-popover>
 
@@ -356,6 +361,7 @@ export default {
         actionDistributionTooltipTab: 'Feedback',
         showAdvancedFilters: false,
         insTabValue: 'ins',
+        advancedFilterKey: 0,
     }},
     computed: {
         ...mapGetters('files', {
@@ -475,6 +481,7 @@ export default {
             this.selectedBuyerGroups = []
             this.selectedSelectionIds = []
             this.unreadOnly = false
+            this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
         },
         onToggleFocusOnly(focusOnly) {
