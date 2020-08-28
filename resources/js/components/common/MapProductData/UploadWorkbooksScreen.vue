@@ -26,10 +26,10 @@
 
 <script>
 import workbookUtils from '../../../mixins/workbookUtils'
-import UploadFilesDroparea from '../../../components/common/UploadFilesDroparea'
+import UploadFilesDroparea from '../UploadFilesDroparea'
 import { mapActions } from 'vuex'
 export default {
-    name: 'uploadFilesScreen',
+    name: 'uploadWorkbooksScreen',
     components: {
         UploadFilesDroparea
     },

@@ -4,8 +4,7 @@
         <div class="map-fields" v-if="!uploadInProgress">
             <div class="tables">
                 <div class="form-element" style="text-align: center;">
-                    <!-- <p>Map the fields from your files to Kollekt's data fields</p> -->
-                    <p><strong>Select Fields to keep, and match with headers from your file(s).</strong></p>
+                    <p><strong>Map the fields from your files to Kollekt's data fields</strong></p>
                 </div>
 
                 <!-- MAP KEYS -->
@@ -13,7 +12,7 @@
                     <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
                     <BaseMapFieldsTable>
                         <MapKeysTableHeader/>
-                        <MapKeysTableRow v-for="(file, index) in availableFields" :key="index"
+                        <MapKeysTableRow v-for="(file, index) in availableFiles" :key="index"
                             :mappedFile="file"
                             :mappedField="file.mappedKey"
                             @show-field-context="showSelectFieldContext($event, file.mappedKey, file)"
@@ -23,29 +22,33 @@
 
                 <!-- MAP MAIN FIELDS -->
                 <MapProductFieldsForm class="form-section"
+                    :uploadOptions="uploadOptions"
                     :fieldsToMap="fieldsToMap"
-                    :availableFields="availableFields"
+                    :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                 />
 
                 <!-- MAP VARIANTS -->
                 <MapVariantsForm class="form-section"
+                    v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'variants').enabled"
                     :fieldsToMap="fieldsToMap"
-                    :availableFields="availableFields"
+                    :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                 />
                 
                 <!-- MAP PRICES -->
                 <MapPricesForm class="form-section"
+                    v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'prices').enabled"
                     :fieldsToMap="fieldsToMap"
-                    :availableFields="availableFields"
+                    :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                 />
 
-                <!-- MAP PRICES -->
+                <!-- MAP ASSORTMENTS -->
                 <MapAssortmentsForm class="form-section"
+                    v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'assortments').enabled"
                     :fieldsToMap="fieldsToMap"
-                    :availableFields="availableFields"
+                    :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                     @show-file-context="showSelectFileContext"
                 />
@@ -56,20 +59,19 @@
         <BaseLoader v-else :msg="submitStatus"/>
 
         <div class="form-controls">
-            <BaseButton :disabled="!!submitDisabled" :type="'submit'" buttonClass="lg primary full-width"
-            :disabledTooltip="submitDisabled"
-            style="width: 100%"
-            @click="onSubmit">
-                <span>Create file</span>
-            </BaseButton>
+            <slot name="actions"
+                :submit="onSubmit"
+                :disabled="!!submitDisabled"
+                :disabledTooltip="submitDisabled"
+            />
         </div>
 
         <!-- START CONTEXT MENUS -->
         <SelectFieldToMapContextMenu ref="contextSelectField"
-        :fieldToMap="contextField" :availableFields="filesToChooseFrom"/>
+        :fieldToMap="contextField" :availableFiles="filesToChooseFrom"/>
 
         <SelectFileToMapContextMenu ref="contextSelectFile"
-        :fileToMap="contextFile" :availableFields="availableFields"/>
+        :fileToMap="contextFile" :availableFiles="availableFiles"/>
         <!-- END CONTEXT MENUS -->
 
 
@@ -108,12 +110,12 @@ export default {
         workbookUtils,
     ],
     props: [
-        'availableFields',
-        'newFile',
+        'availableFiles',
+        'uploadOptions',
     ],
     data: function() { return {
         fieldsToMap: [],
-        filesToChooseFrom: this.availableFields,
+        filesToChooseFrom: this.availableFiles,
         contextField: null,
         contextFile: null,
         // STATUS
@@ -128,8 +130,8 @@ export default {
 
             // Check that all files have keys mapped
             // Use a for function so we can break the submit valid check if we find an error
-            for (let i = 0; i < this.availableFields.length; i++) {
-                const file = this.availableFields[i]
+            for (let i = 0; i < this.availableFiles.length; i++) {
+                const file = this.availableFiles[i]
                 if (!file.mappedKey.fieldName) return 'A file  has no product key mapped'
                 if (!file.variantKey.fieldName) return 'A file has no variant key mapped'
             }
@@ -142,13 +144,11 @@ export default {
             return false
         },
         // theProducts() {
-        //     return this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFields)
+        //     return this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFiles)
         // }
     },
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
-        ...mapActions('files', ['insertOrUpdateFile', 'syncExternalImages']),
-        ...mapActions('products', ['insertProducts']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async instantiateFields() {
             // const fields = await this.getProductFields()
@@ -156,9 +156,9 @@ export default {
 
             // Attempt to autoMap the fields
             this.fieldsToMap.map(field => {
-                this.autoMapField(field, this.availableFields)
+                this.autoMapField(field, this.availableFiles)
             })
-            this.availableFields.map(file => {
+            this.availableFiles.map(file => {
                 this.autoMapField(file.mappedKey, [file])
                 this.autoMapField(file.variantKey, [file])
                 // this.autoMapField(file.assortmentKey, [file])
@@ -169,7 +169,7 @@ export default {
             if (file) {
                 this.filesToChooseFrom = [file]
             } else {
-                this.filesToChooseFrom = this.availableFields
+                this.filesToChooseFrom = this.availableFiles
             }
             const contextMenu = this.$refs.contextSelectField
             contextMenu.show(e)
@@ -206,59 +206,11 @@ export default {
                 })
                 return
             }
-            this.uploadInProgress = true
 
             // Instantiate products now, so we know that the method won't throw any errors after we have created a new file
-            this.submitStatus = 'Creating products'
-            const newProducts = this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFields) 
-
-            this.submitStatus = 'Creating file'
-            // Set new file data
-            const newFile = this.newFile
-            newFile.id = null
-            newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
-            newFile.workspace_id = this.currentWorkspace.id
-
-
-            // Assume upload success (we use this variabel to tell whether the upload was succesful or not)
-            let uploadSuccess = true
-
-            // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
-            await this.insertOrUpdateFile(newFile)
-
-            // Then we will instantiate the products and attempt to upload them
-            
-
-            this.submitStatus = 'Uploading new products'
-            await this.insertProducts({file: newFile, products: newProducts, addToState: false}).catch(err => {
-                window.alert('Something went wrong. Please try again')
-                this.submitStatus = 'Error'
-                uploadSuccess = false
-            })
-
-            if (uploadSuccess) {
-                this.submitStatus = 'Uploading images. This may take a while'
-                await this.syncExternalImages({file: newFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
-                    this.SHOW_SNACKBAR({ 
-                        msg: `<p><strong>Hey you!</strong><br></p>
-                        <p>We will display your images from your provided URLs.</p>
-                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
-                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
-                        type: 'info', 
-                        iconClass: 'fa-exclamation-circle', 
-                    })
-                })
-            }
-
-            if (uploadSuccess) {
-                this.$emit('close')
-                this.reset()
-            }
-            this.uploadInProgress = false
-        },
-        uploadImagesProgressCalback(progress) {
-            this.submitStatus = `Uploading images. This may take a while.<br>
-            <strong>${progress}%</strong> done.`
+            // Filter the fields to map by our uploadOptions
+            const newProducts = this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFiles, this.uploadOptions) 
+            this.$emit('submit', newProducts)
         },
         reset() {
             this.$emit('reset')

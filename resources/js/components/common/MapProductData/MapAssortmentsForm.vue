@@ -14,7 +14,7 @@
             </h4>
 
             <!-- Map File -->
-            <BaseMapFieldsTable class="form-element" v-if="availableFields.length > 1">
+            <BaseMapFieldsTable class="form-element" v-if="availableFiles.length > 1">
                 <tr>
                     <th>File</th>
                 </tr>
@@ -79,7 +79,7 @@ export default {
     ],
     props: [
         'fieldsToMap',
-        'availableFields',
+        'availableFiles',
     ],
     data: function() { return {
         assortmentsMapGroupId: 0,
@@ -118,7 +118,7 @@ export default {
             await this.onAddAssortmentMap()
             // Test the amount of matches returned for the assortment name field
             const assortmentNameField = this.fieldsToMap.find(x => x.name == 'name' && x.scope == 'assortments')
-            const assortmentMatches = this.autoMapField(assortmentNameField, this.availableFields)
+            const assortmentMatches = this.autoMapField(assortmentNameField, this.availableFiles)
 
             let firstMatchIngored = false
             assortmentMatches.map(fileMatch => {
@@ -175,7 +175,7 @@ export default {
                 if (field.name != 'box_size') {
                     existingMatches = this.fieldsToMap.filter(x => x.name == field.name).map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
                 }
-                const availableFiles = fileMatch ? [fileMatch] : this.availableFields
+                const availableFiles = fileMatch ? [fileMatch] : this.availableFiles
 
                 this.autoMapField(field, availableFiles, existingMatches)
                 if (!fileMatch) {

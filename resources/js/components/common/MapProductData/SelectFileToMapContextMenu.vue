@@ -5,10 +5,10 @@
         </template>
         <template v-slot="slotProps">
             <div class="item-group">
-                <BaseSelectButtons v-if="availableFields"
+                <BaseSelectButtons v-if="availableFiles"
                     v-model="fileToMap.file" 
                     :type="'radio'" 
-                    :options="availableFields"
+                    :options="availableFiles"
                     optionNameKey="fileName"
                     :submitOnChange="true" 
                     :search="true" 
@@ -24,7 +24,7 @@ export default {
     name: 'selectFileToMapContextMenu',
     props: [
         'fileToMap',
-        'availableFields',
+        'availableFiles',
     ],
     computed: {
     },

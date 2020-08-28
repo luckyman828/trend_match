@@ -72,7 +72,7 @@ export default {
     ],
     props: [
         'fieldsToMap',
-        'availableFields',
+        'availableFiles',
     ],
     computed: {
         mappedFiles() {
@@ -95,13 +95,13 @@ export default {
 
             // Automap fields
             newFields.map(field => {
-                this.autoMapField(field, this.availableFields)
+                this.autoMapField(field, this.availableFiles)
             })
 
             // Attemp to determine how many image-maps we need
             // Get our first variant image map
             const imageField = this.fieldsToMap.find(x => x.scope == 'images')
-            const imageFieldMatches = this.autoMapField(imageField, this.availableFields)
+            const imageFieldMatches = this.autoMapField(imageField, this.availableFiles)
             
             let firstMatchIngored = false
             imageFieldMatches.map(fileMatch => {
@@ -122,7 +122,7 @@ export default {
             // Attempt to automatch the field
             // Provide the existing matches to avoid mapping the same field multiple times
             const existingMatches = this.fieldsToMap.filter(x => x.scope == 'images').map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
-            this.autoMapField(newField, this.availableFields, existingMatches)
+            this.autoMapField(newField, this.availableFiles, existingMatches)
         },
         onRemoveVariantImageMap(fieldId) {
             const index = this.fieldsToMap.findIndex(x => x.id == fieldId)

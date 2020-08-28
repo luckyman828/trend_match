@@ -64,7 +64,7 @@ export default {
     ],
     props: [
         'fieldsToMap',
-        'availableFields',
+        'availableFiles',
     ],
     data: function() { return {
         currencyMapGroupId: 0,
@@ -86,7 +86,7 @@ export default {
             await this.onAddPriceMap()
             // Test the amount of matches returned for the currency field
             const currencyField = this.fieldsToMap.find(x => x.name == 'currency')
-            const currencyMatches = this.autoMapField(currencyField, this.availableFields)
+            const currencyMatches = this.autoMapField(currencyField, this.availableFiles)
             // Instantiate one additional price map, for each additional currency field
             // for (let i = 1; i < currencyMatches.length; i++) {
             //     this.onAddPriceMap()
@@ -115,7 +115,7 @@ export default {
             newFields.map(field => {
                 // Provide the existing matches to avoid mapping the same field multiple times
                 const existingMatches = this.fieldsToMap.filter(x => x.name == field.name).map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
-                const availableFiles = fileMatch ? [fileMatch] : this.availableFields
+                const availableFiles = fileMatch ? [fileMatch] : this.availableFiles
                 this.autoMapField(field, availableFiles, existingMatches)
                 if (!fileMatch) {
                     fileMatch = field.file

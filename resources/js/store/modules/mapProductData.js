@@ -155,9 +155,8 @@ export default {
                 displayName: 'Variant Name',
                 type: 'string',
                 headersToMatch: [
-                    'color',
-                    'colour',
-                    'variant',
+                    '^(?!.*(minimum|quantity|size|qty)).*(variant|color|colour).*$',
+                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
                     'variant name',
                     'color name',
                     'colour name',
@@ -266,6 +265,33 @@ export default {
 
                 return x
             })
+        },
+        getUploadOptions({ state }, enabledByDefault = true) {
+            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x => !x.scope)
+            const fieldsRefined = fields.map(x => {
+                x.enabled = enabledByDefault
+                return x
+            })
+            return {
+                fields: fieldsRefined,
+                scopes: [
+                    {
+                        name: 'variants',
+                        enabled: enabledByDefault,
+                        displayName: 'Variants & Images',
+                    },
+                    {
+                        name: 'prices',
+                        enabled: enabledByDefault,
+                        displayName: 'Prices',
+                    },
+                    {
+                        name: 'assortments',
+                        enabled: enabledByDefault,
+                        displayName: 'Assortments',
+                    },
+                ],
+            }
         },
     },
 

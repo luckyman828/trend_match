@@ -3,7 +3,7 @@
         <h3>Map fields</h3>
         <BaseMapFieldsTable>
             <MapFieldsTableHeader/>
-            <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => !x.scope)" 
+            <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => !x.scope && (!uploadOptions || getUploadOptionField(x).enabled))" 
                 :key="field.id"
                 :mappedFile="field.file"
                 :mappedField="field"
@@ -34,7 +34,8 @@ export default {
     ],
     props: [
         'fieldsToMap',
-        'availableFields',
+        'availableFiles',
+        'uploadOptions',
     ],
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
@@ -44,9 +45,13 @@ export default {
 
             // Automap fields
             newFields.map(field => {
-                this.autoMapField(field, this.availableFields)
+                this.autoMapField(field, this.availableFiles)
             })
         },
+        getUploadOptionField(field) {
+            if (!this.uploadOptions) return
+            return this.uploadOptions.fields.find(x => x.name == field.name)
+        }
     },
     created() {
         this.initProductFields()

@@ -86,10 +86,10 @@ export default {
             }
             return isValid
         },
-        autoMapField(field, availableFields, matchesToAvoid) {
+        autoMapField(field, availableFiles, matchesToAvoid) {
             let foundMatch = false
             let allMatches = []
-            availableFields.forEach(fieldCollection => {
+            availableFiles.forEach(fieldCollection => {
                 const matches = fieldCollection.headers.filter(header =>
                     field.headersToMatch.find(headerMatch => {
                         return header.toLowerCase().search(headerMatch) >= 0
@@ -124,7 +124,24 @@ export default {
             })
             return allMatches
         },
-        instantiateProductsFromMappedFields(mappedFields, files) {
+        instantiateProductsFromMappedFields(mappedFields, files, options) {
+            // Obey options if provided
+            const fieldsToInstantiateFrom = !options
+                ? mappedFields
+                : mappedFields.filter(field => {
+                      if (field.scope) {
+                          // Check for the special case of images
+                          if (
+                              field.scope == 'images' &&
+                              this.uploadOptions.scopes.find(x => x.name == 'variants').enabled
+                          )
+                              return true
+
+                          return this.uploadOptions.scopes.find(x => x.name == field.scope).enabled
+                      }
+                      return this.uploadOptions.fields.find(x => x.name == field.name).enabled
+                  })
+
             const products = []
             files.map(file => {
                 const keyField = file.mappedKey.fieldName
@@ -137,18 +154,22 @@ export default {
                     const existingProduct = products.find(x => x.datasource_id == keyValue)
                     const baseProduct = {
                         datasource_id: keyValue,
-                        variants: [],
-                        prices: [],
-                        assortments: [],
-                        eans: [],
                     }
+
+                    // Instantiate arrays based on options if any
+                    if (!options || options.scopes.find(x => x.name == 'variants').enabled) baseProduct.variants = []
+                    if (!options || options.scopes.find(x => x.name == 'prices').enabled) baseProduct.prices = []
+                    if (!options || options.scopes.find(x => x.name == 'assortments').enabled)
+                        baseProduct.assortments = []
+                    if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
+
                     const product = existingProduct ? existingProduct : baseProduct
 
                     if (!existingProduct) {
                         products.push(product)
                     }
 
-                    mappedFields.map(field => {
+                    fieldsToInstantiateFrom.map(field => {
                         if (
                             !field.enabled ||
                             (!field.customEntry && (!field.file || field.file.fileName != file.fileName))
@@ -157,7 +178,7 @@ export default {
                         const fieldValue = field.customEntry ? field.fieldName : row[field.fieldName]
 
                         // START MAP VARIANTS
-                        if (field.scope == 'variants' || field.scope == 'images') {
+                        if (product.variants && (field.scope == 'variants' || field.scope == 'images')) {
                             // Find the variant key
                             const variantKeyField = file.variantKey.fieldName
                             const variantKeyValue = row[variantKeyField]
@@ -172,6 +193,8 @@ export default {
                                     name: null,
                                     sizes: [],
                                     pictures: [],
+                                    image: null,
+                                    images: [],
                                     mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
                                     // This actually allows us to link variants by a key that is not included on the variant object itself
                                 }
@@ -203,7 +226,7 @@ export default {
                         // END MAP VARIANTS
 
                         // START MAP PRICES
-                        if (field.scope == 'prices') {
+                        if (product.prices && field.scope == 'prices') {
                             // Check if the price group already exists
                             let priceGroup = product.prices.find(x => x.mappingGroupId == field.groupId)
                             if (!priceGroup) {
@@ -224,7 +247,7 @@ export default {
                         // END MAP PRICES
 
                         // START MAP ASSORTMENTS
-                        if (field.scope == 'assortments') {
+                        if (product.assortments && field.scope == 'assortments') {
                             let assortmentGroup = product.assortments.find(x => x.mappingGroupId == field.groupId)
                             if (!assortmentGroup) {
                                 assortmentGroup = {
