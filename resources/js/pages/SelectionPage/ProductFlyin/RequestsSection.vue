@@ -149,6 +149,8 @@ export default {
                 author: this.authUser,
                 selection: this.selectionInput.selection,
                 discussions: [],
+                completed_at: null,
+                completed_by_user: null,
             }
             // dispatch action
             this.insertOrUpdateRequest({selectionInput: this.selectionInput, request: requestToPost})

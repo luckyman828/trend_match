@@ -86,7 +86,7 @@ import Request from './Request'
 import RequestComment from './RequestComment'
 
 export default {
-    name: 'requestThreadFlyin',
+    name: 'requestThreadSection',
     components: {
         Request,
         RequestComment,

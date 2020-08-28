@@ -232,8 +232,6 @@ export default {
             }
             // Else insert the request
             else {
-                selectionInput.rawSelectionInput.requests.push(request)
-
                 Object.defineProperty(request, 'isResolved', {
                     get: function() {
                         return !!request.completed_at
@@ -257,6 +255,8 @@ export default {
                         )
                     },
                 })
+
+                selectionInput.rawSelectionInput.requests.push(request)
             }
         },
         DELETE_REQUEST(state, { selectionInput, request }) {
