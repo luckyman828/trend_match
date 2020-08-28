@@ -1,6 +1,5 @@
 <template>
     <div class="conditional-filters" ref="filterWrapper" v-click-outside="onClose">
-        <!-- <div class="overlay"></div> -->
         <h3>Advanced filters</h3>
 
         <template></template>
