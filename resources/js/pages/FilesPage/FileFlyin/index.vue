@@ -10,10 +10,6 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <!-- <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
-                            <i class="far fa-user-shield"></i>
-                            <span>{{file.owner_count || 0}} File owners</span>
-                        </button> -->
 
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
                         v-tooltip="'Send a link to all selection members of this file'"
@@ -42,6 +38,14 @@
                             <span>Hide/Show all</span>
                         </BaseButton>
 
+                        <BaseButton buttonClass="ghost" 
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can manage file editors"
+                        @click="showEditorsFlyin">
+                            <i class="far fa-user-cog"></i>
+                            <span>Manage editors</span>
+                        </BaseButton>
+
                         <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can edit files"
                         @click="goToEditSingle">
@@ -53,20 +57,24 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"
-                @toggle-locked="onToggleAllSelectionsLocked"
-                @toggle-hidden="onToggleAllSelectionsVisibility"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
             </div>
+
+            <FileEditorsFlyin v-if="show"
+            :show="showFileEditorsFlyin" @close="showFileEditorsFlyin = false"
+            :file="file"/>
+
         </template>
     </BaseFlyin>
 </template>
-f
+
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTable from './SelectionsTable'
+import FileEditorsFlyin from './FileEditorsFlyin'
 import SelectionUsersFlyin from '../../../components/SelectionUsersFlyin'
 
 export default {
@@ -78,9 +86,11 @@ export default {
     components: {
         SelectionsTable,
         SelectionUsersFlyin,
+        FileEditorsFlyin,
     },
     data: function() { return {
-        fileSelectionMagicLinkSent: false
+        fileSelectionMagicLinkSent: false,
+        showFileEditorsFlyin: false,
     }},
     watch: {
     },
@@ -104,6 +114,9 @@ export default {
         showSelectionUsersFlyin(selection) {
             this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
+        },
+        showEditorsFlyin() {
+            this.showFileEditorsFlyin = true
         },
         showNext() {
             if (this.nextFile)

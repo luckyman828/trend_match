@@ -16,6 +16,7 @@ export default {
         currentFolderStatus: null,
         path: [],
         flyinVisible: false,
+        fileUsersStatus: null,
     },
 
     getters: {
@@ -49,6 +50,7 @@ export default {
                 return state.files[index - 1]
             }
         },
+        getFileUsersStatus: state => state.fileUsersStatus,
     },
 
     actions: {
@@ -575,6 +577,67 @@ export default {
                     console.log('file selections cloned', response)
                 })
         },
+        fetchFileUsers({ commit }, file) {
+            commit('SET_FILE_USERS_STATUS', 'loading')
+            const apiUrl = `/files/${file.id}/users`
+            axios
+                .get(apiUrl)
+                .then(response => {
+                    Vue.set(file, 'users', response.data)
+                    commit('SET_FILE_USERS_STATUS', 'success')
+                })
+                .catch(err => {
+                    commit('SET_FILE_USERS_STATUS', 'error')
+                })
+        },
+        async addUsersToFile({ commit }, { file, users }) {
+            commit('ADD_USERS_TO_FILE', { file, users })
+
+            await Promise.all(
+                users.map(async user => {
+                    const apiUrl = `/files/${file.id}/users/${user.id}`
+                    await axios.put(apiUrl)
+                })
+            )
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} users added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit('REMOVE_USERS_FROM_FILE', { file, users })
+                })
+        },
+        async removeUsersFromFile({ commit }, { file, users }) {
+            commit('REMOVE_USERS_FROM_FILE', { file, users })
+
+            await Promise.all(
+                users.map(async user => {
+                    const apiUrl = `/files/${file.id}/users/${user.id}`
+                    await axios.delete(apiUrl)
+                })
+            )
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} users removed`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit('ADD_USERS_TO_FILE', { file, users })
+                })
+        },
     },
 
     mutations: {
@@ -665,6 +728,19 @@ export default {
                 // Else add it to the path
                 else state.path.push(folder)
             }
+        },
+        ADD_USERS_TO_FILE(state, { file, users }) {
+            file.users.push(...users)
+        },
+        REMOVE_USERS_FROM_FILE(state, { file, users }) {
+            for (let i = users.length - 1; i >= 0; i--) {
+                const user = users[i]
+                const index = file.users.findIndex(x => x.id == user.id)
+                file.users.splice(index, 1)
+            }
+        },
+        SET_FILE_USERS_STATUS(state, status) {
+            state.fileUsersStatus = status
         },
     },
 }
