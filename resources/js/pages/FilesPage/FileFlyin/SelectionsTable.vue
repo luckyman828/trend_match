@@ -93,6 +93,15 @@
                 </BaseContextMenuItem>
             </div>
             <div class="item-group" v-if="!!contextSelection">
+                <BaseContextMenuItem :disabled="contextSelection.selectionLinkSent"
+                :iconClass="contextSelection.selectionLinkSent ? 'far fa-check' : 'far fa-paper-plane'"
+                hotkey="KeyL"
+                @click="onSendSelectionLink(contextSelection)">
+                    <span v-if="!contextSelection.selectionLinkSent">Send selection <u>L</u>ink</span>
+                    <span v-else>Link sent</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group" v-if="!!contextSelection">
                 <BaseContextMenuItem iconClass="far fa-pen" 
                 hotkey="KeyR"
                 @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
@@ -774,7 +783,7 @@ export default {
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
         'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
-        'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
+        'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection', 'sendSelectionLink']),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
@@ -1131,6 +1140,11 @@ export default {
             for (const childSelection of selection.children) {
                 this.syncSelectionTreeSettings(childSelection)
             }
+        },
+        onSendSelectionLink(selection) {
+            let selectionsToPost = [selection]
+            this.sendSelectionLink({selectionList: selectionsToPost})
+            Vue.set(selection, 'selectionLinkSent', true)
         }
     },
     created() {
