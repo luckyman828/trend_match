@@ -96,7 +96,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['updateSelection', 'sendFileSelectionLink']),
+        ...mapActions('selections', ['updateSelection', 'sendSelectionLink']),
         ...mapMutations('files', ['SET_CURRENT_FILE']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
         showSelectionUsersFlyin(selection) {
@@ -164,7 +164,7 @@ export default {
         },
         onSendMagicLinkToAll() {
             this.fileSelectionMagicLinkSent = true
-            this.sendFileSelectionLink({file: this.currentFile})
+            this.sendSelectionLink({selectionList: this.getSelections})
         }
     },
 }

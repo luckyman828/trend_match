@@ -68,11 +68,15 @@
                             <span v-else>{{user.job}}</span>
                         </td> -->
                         <td class="action">
-                            <button class="ghost editable sm" v-if="!user.selectionLinkSent"
-                            @click="onSendSelectionLink([user])">
+                            <BaseButton v-if="!user.selectionLinkSent"
+                                buttonClass="ghost editable sm" 
+                                :disabled="user.role != 'Member'"
+                                disabledTooltip="Only selection members can be sent a link"
+                                @click="onSendSelectionLink([user])"
+                            >
                                 <i class="far fa-paper-plane"></i>
                                 <span>Send link</span>
-                            </button>
+                            </BaseButton>
                             <div class="ghost sm" v-else>
                                 <i class="far fa-check"></i>
                                 <span>Link sent</span>

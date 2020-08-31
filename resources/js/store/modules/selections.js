@@ -972,17 +972,69 @@ export default {
                 commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
             }
         },
-        async sendFileSelectionLink({ commit, dispatch }, { file }) {
-            // Do something
-            console.log('Send selection link for file!', file)
-        },
         async sendSelectionLink({ commit, dispatch }, { selectionList }) {
             // Do something
             console.log('Send selection link!', selectionList)
+            await Promise.all(
+                selectionList.map(async selection => {
+                    const apiUrl = `/selections/${selection.id}/invite-members`
+                    await axios.get(apiUrl)
+                })
+            )
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Invite link sent for ${selectionList.length} selections!`,
+                            type: 'info',
+                            iconClass: 'fa-paper-plane',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to send an invite link. Please try again.',
+                            type: 'warning',
+                            iconClass: 'fa-exclamation-triangle',
+                        },
+                        { root: true }
+                    )
+                })
         },
         async sendLinkToSelectionUsers({ commit, dispatch }, { selection, users }) {
             // Do something
             console.log('Send selection link to selection users!', selection, users)
+            users.map(user => {
+                Vue.set(user, 'selectionLinkSent', true)
+            })
+            const apiUrl = `/selections/${selection.id}/invite-members`
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Invite link sent!',
+                            type: 'info',
+                            iconClass: 'fa-paper-plane',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to send an invite link. Please try again.',
+                            type: 'warning',
+                            iconClass: 'fa-exclamation-triangle',
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 
