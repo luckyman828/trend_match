@@ -3,17 +3,63 @@
     <div class="select-buttons" ref="selectButtons">
 
 
-        <div class="search-wrapper" v-if="search">
+        <div class="search-wrapper" v-if="search && !manualEntryActive">
             <!-- <SearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" v-model="optionsFilteredBySearch"/> -->
-            <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" @keydown.enter.exact.native="onSelectOption" 
-            @keydown.enter.ctrl.native="submit"
-            :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"/>
+            <BaseSearchField ref="searchField" :searchKey="searchKey" :arrayToSearch="options" 
+                :searchMultipleArrays="multipleOptionArrays" :multipleArrayKey="optionGroupOptionsKey" v-model="optionsFilteredBySearch"
+                @input="onSearch"
+                @keydown.enter.exact.native="onSearchEnterKeypress" 
+                @keydown.enter.ctrl.native="submit()"
+            />
         </div>
         <div class="wrapper">
             <span class="header" v-html="header" v-if="header"></span>
 
-            <div class="option unset-option" v-if="unsetOption && optionsFilteredBySearch.length == options.length" @click="onUnset">
-                <label tabindex="0" @keydown.enter.exact="onUnset" @keydown.enter.ctrl="submit">
+            <!-- Search in progress -->
+            <div class="option manual-entry unset-option" v-if="allowManualEntry">
+                <template v-if="submitSearchAsManualEntryAvailable">
+                    <label>
+                        <button class="primary full-width"
+                            style="margin-top: 8px;"
+                            @click="submit(searchString)"
+                        >
+                            <span>Use as custom value</span>
+                        </button>
+                    </label>
+                </template>
+                <!-- Not searching -->
+                <template v-else>
+                    <label v-if="!manualEntryActive" tabindex="0" 
+                    @keydown.enter="onActivateManualEntry"
+                    @click="onActivateManualEntry">
+                        <i class="far fa-pen"></i>
+                        <div class="label">
+                            Enter custom value
+                        </div>
+                    </label>
+                    <label v-if="manualEntryActive">
+                        <div class="label">
+                            <BaseInputField 
+                                ref="manualEntryField"
+                                inputClass="small"
+                                placeholder="Enter custom value"
+                                :selectOnFocus="true"
+                                v-model="manualEntry"
+                                @keyup.enter.native="submit(manualEntry)"
+                            />
+                            <button class="primary full-width"
+                            style="margin-top: 8px;"
+                            @click="submit(manualEntry)">
+                                <span>Save custom value</span>
+                            </button>
+                        </div>
+                    </label>
+                </template>
+            </div>
+
+            <div class="option unset-option" v-if="unsetOption && optionsFlat.length == optionsFilteredFlat.length" 
+            @click="onUnset">
+                <label tabindex="0" @keydown.enter.exact="onUnset" @keydown.enter.ctrl="submit()">
                     <i class="far fa-trash-alt"></i>
                     <div class="label">
                         {{unsetOption}}
@@ -30,8 +76,10 @@
                     : option[optionValueKey] ? selection.includes(option[optionValueKey]) : selection.includes(selection)}]">
 
                         <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
-                            <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
-                            <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" @change="change"/>
+                            <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" 
+                                @change="change($event, optionGroup)"/>
+                            <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" 
+                                @change="change($event, optionGroup)"/>
 
                             <div class="label">
                                 <template v-if="optionNameKey">
@@ -106,11 +154,15 @@ export default {
         'unsetValue',
         'value',
         'labelPrefix',
+        'allowManualEntry',
     ],
     data: function () { return {
         selection: [],
+        optionGroup: null,
         searchString: '',
-        optionsFilteredBySearch: this.options
+        optionsFilteredBySearch: this.options,
+        manualEntryActive: false,
+        manualEntry: '',
     }},
     computed: {
         searchKey() {
@@ -122,6 +174,25 @@ export default {
             else if (valueKey) {
                 return valueKey
             }
+        },
+        optionsFlat() {
+            if (!this.multipleOptionArrays || !this.optionGroupOptionsKey) return this.options
+            const options = []
+            this.options.map(optionGroup => {
+                options.push(...optionGroup[this.optionGroupOptionsKey])
+            })
+            return options
+        },
+        optionsFilteredFlat() {
+            if (!this.multipleOptionArrays || !this.optionGroupOptionsKey) return this.optionsFilteredBySearch
+            const options = []
+            this.optionsFilteredBySearch.map(optionGroup => {
+                options.push(...optionGroup[this.optionGroupOptionsKey])
+            })
+            return options
+        },
+        submitSearchAsManualEntryAvailable() {
+            return this.searchString && (this.searchString.length >= 3 || this.optionsFilteredFlat.length <= 0)
         }
     },
     watch: {
@@ -136,11 +207,16 @@ export default {
         }
     },
     methods: {
-        submit() {
-            this.$emit('input', this.selection)
-            this.$emit('submit', this.selection)
+        submit(customValue) {
+            const valueToEmit = customValue ? customValue : this.selection
+            this.$emit('input', valueToEmit, this.optionGroup)
+            this.$emit('submit', valueToEmit, this.optionGroup)
+            if (customValue) {
+                this.$emit('custom-entry', true)
+            }
         },
-        change() {
+        change(option, optionGroup) {
+            if (optionGroup) this.optionGroup = optionGroup
             this.$emit('change', this.selection)
             if(this.emitOnChange) {
                 this.$emit('input', this.selection)
@@ -162,12 +238,27 @@ export default {
             if (typeof this.unsetValue != 'undefined') this.selection = this.unsetValue
             this.$emit('unset')
         },
-        onSelectOption() {
-            this.$refs.selectBox[0].check()
+        onSearchEnterKeypress() {
+            if (this.submitSearchAsManualEntryAvailable) {
+                this.submit(this.searchString)
+            } else {
+                if (!this.$refs.selectBox[0]) return
+                this.$refs.selectBox[0].check()
+            }
         },
         onEnter(index) {
             const selectbox = this.$refs.selectBox[index]
             selectbox.check()
+        },
+        onActivateManualEntry() {
+            this.manualEntryActive = true
+            this.manualEntry = this.searchString
+            this.$nextTick(() => {
+                this.$refs.manualEntryField.focus()
+            })
+        },
+        onSearch(result, searchString) {
+            this.searchString = searchString
         }
     },
     mounted() {

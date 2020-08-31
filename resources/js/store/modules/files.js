@@ -471,7 +471,7 @@ export default {
                     product.variants.map(variant => {
                         // console.log('variant to map', variant)
                         variant.pictures.map((picture, index) => {
-                            if (!picture.url) return
+                            if (!picture.url || picture.url.search('kollektcdn.com') >= 0) return // Don't upload images that don't exists or are already on our cdn
                             imageMaps.push({
                                 mapping_id: variant.id,
                                 datasource_id: product.datasource_id,
@@ -489,6 +489,8 @@ export default {
                     resolve()
                     return
                 }
+
+                console.log('image maps', imageMaps)
 
                 const productsToUpdate = []
 
@@ -538,7 +540,10 @@ export default {
 
                                 variant.pictures[pictureIndex].url = urlMap.cdn_url
 
-                                productsToUpdate.push(product)
+                                const productAlreadyAdded = productsToUpdate.find(
+                                    x => x.datasource_id == product.datasource_id
+                                )
+                                if (!productAlreadyAdded) productsToUpdate.push(product)
                             })
                         })
                         .catch(err => {

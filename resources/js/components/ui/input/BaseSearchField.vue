@@ -1,7 +1,7 @@
 <template>
     <div class="search">
         <input class="input-wrapper" :class="inputClasses" :placeholder="placeholderText || 'Search..'" type="search" v-model="searchString" ref="searchField"
-        @click.stop @input="$emit('input', result)" @keydown.esc="onEsc">
+        @click.stop @input="onInput" @keydown.esc="onEsc">
         <span v-if="searchString.length > 0" class="clear" @click.stop="clear();setFocus()">
             <i class="far fa-times-circle"></i>
         </span>
@@ -65,7 +65,7 @@ export default {
 
                     array.forEach(arrayObject => {
                         // Make a copy of the array object that we can filter the options of
-                        const arrayObjectToReturn = JSON.parse(JSON.stringify(arrayObject))
+                        const arrayObjectToReturn = Object.assign({}, arrayObject)
                         arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
                             // If the search key is an array of keys, search for a result in each of them
                             if (Array.isArray(searchKey)) {
@@ -80,9 +80,6 @@ export default {
                                     searchString.forEach(str => {
                                         if (valueToMatch.search(str) >= 0) isMatch = true
                                     })
-                                    // if (valueToMatch.search(searchString) >= 0) {
-                                    //     isMatch = true
-                                    // }
                                 })
                                 return isMatch
                             }
@@ -96,7 +93,6 @@ export default {
                                     if (valueToMatch.search(str) >= 0) isMatch = true
                                 })
                                 return isMatch
-                                // return valueToMatch.search(searchString) >= 0
                             }
                         })
                         arrayToReturn.push(arrayObjectToReturn)
@@ -139,15 +135,45 @@ export default {
 
             }
             // Else search by the option itself
-            else resultsToReturn = array.filter(x => {
-                // Convert the value to match to a string so we can search it
-                const valueToMatch = x.toString().toLowerCase()
-                let isMatch = false
-                searchString.forEach(str => {
-                    if (valueToMatch.search(str) >= 0) isMatch = true
-                })
-                return isMatch
-            })
+            else {
+
+                // If we have multiple arrays to search through
+                if (this.searchMultipleArrays) {
+
+                    // Instantiate a copy of the multiple arrays object that we will use as the return object
+                    const arrayToReturn = []
+
+                    array.forEach(arrayObject => {
+                        // Make a copy of the array object that we can filter the options of
+                        const arrayObjectToReturn = Object.assign({}, arrayObject)
+                        arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
+                            // Convert the value to match to a string so we can search it
+                            const valueToMatch = x.toString().toLowerCase()
+                            let isMatch = false
+                            searchString.forEach(str => {
+                                if (valueToMatch.search(str) >= 0) isMatch = true
+                            })
+                            return isMatch
+                        })
+                        arrayToReturn.push(arrayObjectToReturn)
+                    })
+                    // Return the resulting arrays
+                    resultsToReturn = arrayToReturn
+                }
+
+                else {
+                    resultsToReturn = array.filter(x => {
+                        // Convert the value to match to a string so we can search it
+                        const valueToMatch = x.toString().toLowerCase()
+                        let isMatch = false
+                        searchString.forEach(str => {
+                            if (valueToMatch.search(str) >= 0) isMatch = true
+                        })
+                        return isMatch
+                    })
+                }
+
+            }
 
             // Sort the results by the search array
             if (searchString.length > 2) {
@@ -155,7 +181,11 @@ export default {
                     return searchString.indexOf(a.datasource_id.toString()) - searchString.indexOf(b.datasource_id.toString())
                 })
             }
-            // return resultsToReturn unsorted
+            if (this.searchMultipleArrays) {
+                // Only return arrays with results
+                return resultsToReturn.filter(x => x[this.multipleArrayKey].length > 0)
+            }
+
             return resultsToReturn
         }
     },
@@ -175,6 +205,9 @@ export default {
                 this.clear()
             }
             // Else do nothing
+        },
+        onInput() {
+            this.$emit('input', this.result, this.searchString)
         }
     },
     created() {
