@@ -61,6 +61,11 @@
                 <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
                 @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
 
+                <BaseButton buttonClass="primary"
+                @click="onSaveOrder">
+                    <span>Save current product order</span>
+                </BaseButton>
+
             </template>
 
             <template v-slot:header>
@@ -208,7 +213,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts']),
+        ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts', 'updateManyProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
         'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
         onViewSingle(product) {
@@ -236,6 +241,13 @@ export default {
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)
         },
+        onSaveOrder() {
+            const products = this.productsFilteredBySearch
+            products.map((product, index) => {
+                product.sequence = index+1
+            })
+            this.updateManyProducts({ file: this.file, products })
+        }
     },
 }
 </script>
