@@ -54,11 +54,15 @@
                             <span v-else>{{user.job}}</span>
                         </td> -->
                         <td class="action">
-                            <button class="ghost editable sm" v-if="!rowProps.item.selectionLinkSent"
-                            @click="onSendSelectionLink([rowProps.item])">
+                            <BaseButton v-if="!rowProps.item.selectionLinkSent"
+                                buttonClass="ghost editable sm" 
+                                :disabled="rowProps.item.role != 'Member'"
+                                disabledTooltip="Only selection members can be sent a link"
+                                @click="onSendSelectionLink([rowProps.item])"
+                            >
                                 <i class="far fa-paper-plane"></i>
                                 <span>Send link</span>
-                            </button>
+                            </BaseButton>
                             <div class="ghost sm" v-else>
                                 <i class="far fa-check"></i>
                                 <span>Link sent</span>
@@ -372,8 +376,7 @@ export default {
         },
         onSendSelectionLink(users) {
             // Filter out users whose role is not Member
-            const usersFiltered = users.filter(x => x.role == 'Member')
-            console.log('send selection link', usersFiltered)
+            const usersFiltered = users.filter(x => x.role == 'Member' && !x.selectionLinkSent)
             this.sendLinkToSelectionUsers({selection: this.selection, users: usersFiltered})
         }
     },
