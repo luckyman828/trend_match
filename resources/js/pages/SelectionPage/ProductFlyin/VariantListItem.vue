@@ -64,7 +64,7 @@ export default {
             currentSelectionMode: 'currentSelectionMode'
         }),
         minimumPercentage() {
-            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQty : this.variant.totalFeedbackQuantity
+            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
             const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
         }

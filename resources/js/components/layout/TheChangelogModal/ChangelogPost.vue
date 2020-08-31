@@ -4,71 +4,20 @@
             <img :src="featuredImgUrl" alt="featured-image">
         </div>
         <div class="body">
-            <h2 class="title">{{title}}</h2>
+            <h2 class="title" v-html="title"/>
+            <span class="date" v-html="date"/>
 
-            <h3>Notes</h3>
-            <p>
-                We have made changes to multiple core areas of Kollekt. <br>
-                The filtering options have been vastly improved which enables you to create customized exports.<br>
-                It's now finally possible to have multiple selections in individual presentations!
-            </p>
-            <p>
-                See the list below for the things we’ve been working on for the last month.<br>
-                In addition to the things you see here, there are bug fixes and refactoring 
-                (a fancy word for developer housekeeping).
-            </p>
-            
-            <h4>Advanced filters</h4>
-            <p>
-                We have included the option to use operators (> greater than, &lt; less than, = equal to, and != not equal to) on multiple parameters. 
-                This enables you to make custom PDF and .CSV reports and customize your view when going through your collection in Kollekt.
-            </p>
+            <div class="lead">
+                <slot name="lead"/>
+            </div>
+            <slot name="body"/>
 
-            <h4>Selection input filter</h4>
-            <p>
-                Choose relevant selections you want to view input from when making decisions.<br>
-                This is also powerful for your .CSV and PDF exports.
-            </p>
-
-            <h4>Box size on product detail page</h4>
-            <p>
-                Box size is now shown under assortment data.
-            </p>
-
-            <h4>Clear presentation queue button</h4>
-            <p>
-                One button to clear your entire presentation queue.
-            </p>
-
-            <h4>Improved "create users"</h4>
-            <p>
-                We have made it more obvious when a user already exists on a workspace and improved the error message, when the email is in the wrong format.
-            </p>
-
-            <h4>Export focus styles</h4>
-            <p>
-                It is now possible to only export styles marked with Focus due to the added “Advanced Filter” option.
-            </p>
-
-            <h4>Edit product save</h4>
-            <p>
-                Pressing save for each field will now also save changes to the product. This should make it easier to get your data saved.
-            </p>
-
-            <h4>Allow any selection to be presenting</h4>
-            <p>
-                All selections can now enter presentation mode individually.<br>
-                Note that if a parent of a selection enters presentation mode, this will take priority, and broadcast for all children.
-            </p>
-
-            <h4>Change settings for multiple selections at once</h4>
-            <p>
-                The selections table will now have select-boxes (checkboxes) next to the selection names.<br>
-                Any selected selection will have their settings updated, when you save new settings.
-            </p>
-
-            
-
+            <div v-if="$scopedSlots.signoff" class="signoff">
+                <p class="author">Kind regards:</p>
+                <div class="portrait-list">
+                    <slot name="signoff"/>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -79,6 +28,7 @@ export default {
     props: [
         'featuredImgUrl',
         'title',
+        'date',
     ]
 }
 </script>
@@ -109,14 +59,52 @@ export default {
         }
     }
     .body {
-        padding: 32px;
+        padding: 32px 68px 60px 40px;
         .title {
-            font-size: 40px;
+            font-size: 52px;
             font-weight: 500;
+        }
+        .date {
+            font-size: 20px;
+            font-weight: 400;
+            color: $fontSoft;
+            margin-top: -4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .lead {
+            font-weight: 500;
+            font-weight: 16px;
+        }
+        h3 {
+            font-size: 20px;
         }
         h4 {
             margin-bottom: 12px;
             margin-top: 32px;
+            font-size: 16px;
+        }
+        p:not(:last-child) {
+            margin-bottom: 20px;
+        }
+        ul {
+            padding-left: 24px;
+            li {
+                margin-bottom: 16px;
+            }
+        }
+    }
+    .signoff {
+        margin-top: 32px;
+        padding-top: 12px;
+        border-top: $borderModule;
+        .author {
+            margin: 0;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .portrait-list {
+            display: flex;
         }
     }
 }
