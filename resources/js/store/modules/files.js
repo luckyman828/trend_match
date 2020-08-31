@@ -460,7 +460,6 @@ export default {
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
             return new Promise(async (resolve, reject) => {
-                console.log('sync external images', file, products)
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
 
@@ -469,7 +468,7 @@ export default {
                     product.variants.map(variant => {
                         // console.log('variant to map', variant)
                         variant.pictures.map((picture, index) => {
-                            if (!picture.url) return
+                            if (!picture.url || picture.url.search('kollektcdn.com') >= 0) return // Don't upload images that don't exists or are already on our cdn
                             imageMaps.push({
                                 mapping_id: variant.id,
                                 datasource_id: product.datasource_id,

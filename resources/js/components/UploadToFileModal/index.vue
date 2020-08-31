@@ -118,7 +118,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['updateManyProducts', 'insertProducts', 'deleteProducts', 'syncExternalImages']),
+        ...mapActions('products', ['updateManyProducts', 'insertProducts', 'deleteProducts']),
+        ...mapActions('files', ['syncExternalImages']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onReset() {
             this.$emit('reset')
@@ -129,10 +130,9 @@ export default {
         async onSubmit(newProducts) {
             this.uploadInProgress = true
             this.submitStatus = 'Applying update strategy'
-            console.log('submit new products', newProducts)
 
             const productsToCreate = []
-            const productsToDelete = this.uploadStrategy.removeExtraProducts ? this.products : []
+            const productsToDelete = this.uploadStrategy.removeExtraProducts ? JSON.parse(JSON.stringify(this.products)) : []
             // Loop through the new products
             newProducts.map(newProduct => {
                 // Find the matching existing product
@@ -153,7 +153,6 @@ export default {
                 // Loop through the new products keys - The product will only contain the keys that we want to update
 
                 Object.keys(newProduct).map(key => {
-                    // console.log('Update', key)
                     if (key == 'datasource_id') return // Don't fiddle with the datasource_id
 
                     // STRATEGY: REPLACE
@@ -169,9 +168,8 @@ export default {
 
             // Delete products to delete
             if (productsToDelete.length > 0) {
-                console.log('delete these products', productsToDelete)
                 this.submitStatus = 'Deleting extra products'
-                await this.deleteProducts({file: this.currentFile, products: this.products})
+                await this.deleteProducts({file: this.currentFile, products: productsToDelete})
             }
             // Update all existing products
             this.submitStatus = 'Updating products'
@@ -180,14 +178,13 @@ export default {
             // Create products to create
             if (productsToCreate.length > 0) {
                 this.submitStatus = 'Creating missing products'
-                console.log('create these products', productsToCreate)
                 // REMEMBER TO UPLOAD IMAGES
-                this.insertProducts({ file: this.currentFile, products: this.products, addToState: true })
+                await this.insertProducts({ file: this.currentFile, products: productsToCreate, addToState: true })
             }
 
             // Upload images we need to upload
             this.submitStatus = 'Uploading images. This may take a while'
-            await this.syncExternalImages({file: newFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
+            await this.syncExternalImages({file: this.currentFile, products: this.products, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
                 this.SHOW_SNACKBAR({ 
                     msg: `<p><strong>Hey you!</strong><br></p>
                     <p>We will display your images from your provided URLs.</p>
@@ -196,9 +193,12 @@ export default {
                     type: 'info', 
                     iconClass: 'fa-exclamation-circle', 
                 })
+                this.uploadInProgress = false
             })
 
             this.uploadInProgress = false
+            this.onClose()
+            this.onReset()
         },
         setKeyValue(srcProduct, targetProduct, key, strategy) {
             if (srcProduct[key] != null) return // Don't do anything if we don't have a value
@@ -243,7 +243,6 @@ export default {
             if (typeof srcProduct[key] == 'object') {
                 const srcObject = srcProduct[key]
                 const targetObject = targetProduct[key]
-                console.log('its not an array, but an object', key, srcProduct, targetObject)
                 Object.keys(srcObject).map(itemKey => {
                     this.setKeyValue(srcObject, targetObject, itemKey, strategy)
                 })
@@ -257,7 +256,11 @@ export default {
             ) {
                 targetProduct[key] = srcProduct[key]
             }
-        }
+        },
+        uploadImagesProgressCalback(progress) {
+            this.submitStatus = `Uploading images. This may take a while.<br>
+            <strong>${progress}%</strong> done.`
+        },
     },
 }
 </script>

@@ -70,15 +70,16 @@ export default {
             return true
         },
         continueDisabled() {
-            for (let i = 0; i < this.uploadOptions.scopes.length; i++) {
-                const scope = this.uploadOptions.scopes[i]
-                if (scope.enabled) return false
-            }
-            for (let i = 0; i < this.uploadOptions.fields.length; i++) {
-                const field = this.uploadOptions.fields[i]
-                if (field.enabled) return false
-            }
-            return true
+            return false
+            // for (let i = 0; i < this.uploadOptions.scopes.length; i++) {
+            //     const scope = this.uploadOptions.scopes[i]
+            //     if (scope.enabled) return false
+            // }
+            // for (let i = 0; i < this.uploadOptions.fields.length; i++) {
+            //     const field = this.uploadOptions.fields[i]
+            //     if (field.enabled) return false
+            // }
+            // return true
         }
     },
     methods: {

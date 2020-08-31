@@ -244,7 +244,7 @@ export default {
                             )
                             if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
                                 include = false
-                            if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.actionType))
+                            if (operator == '!=' && !!userFeedback && userFeedback.action == filter.actionType)
                                 include = false
                         }
 
