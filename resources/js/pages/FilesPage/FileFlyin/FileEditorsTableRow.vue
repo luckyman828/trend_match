@@ -7,7 +7,7 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="action">
-            <button class="ghost sm"
+            <button class="primary invisible ghost-hover"
             @click="removeUsersFromFile({file, users: [user]})">
                 <i class="far fa-user-times"></i>
                 <span>Remove user</span>
