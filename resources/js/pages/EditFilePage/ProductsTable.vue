@@ -11,60 +11,88 @@
             :contextItem.sync="contextItem"
             :searchKey="['datasource_id','title','category']"
             :searchResult.sync="productsFilteredBySearch"
+            :isDraggable="editOrderModeActive"
+            :itemsReOrdered.sync="localProducts"
+            :hideContextButton="editOrderModeActive"
+            @change-order="true"
             @show-contextmenu="showContext"
             @search-enter="onViewSingle(productsFilteredBySearch[0])"
         >
             <template v-slot:topBarLeft>
                 
-                <v-popover trigger="click">
-                    <button class="ghost">
-                        <span>Category </span>
-                        <i class="far fa-chevron-down"></i>
-                        <span v-if="selectedCategories.length > 0" class="circle primary xs">
-                            <span>{{selectedCategories.length}}</span>
-                        </span>
-                    </button>
-                    <template slot="popover">
-                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                        :options="availableCategories" v-model="selectedCategories"/>
-                    </template>
-                </v-popover>
+                <template v-if="!editOrderModeActive">
+                    <v-popover trigger="click">
+                        <button class="ghost">
+                            <span>Category </span>
+                            <i class="far fa-chevron-down"></i>
+                            <span v-if="selectedCategories.length > 0" class="circle primary xs">
+                                <span>{{selectedCategories.length}}</span>
+                            </span>
+                        </button>
+                        <template slot="popover">
+                            <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
+                            :options="availableCategories" v-model="selectedCategories"/>
+                        </template>
+                    </v-popover>
 
-                <v-popover trigger="click">
-                    <button class="ghost">
-                        <span>Delivery</span>
-                        <i class="far fa-chevron-down"></i>
-                        <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
-                            <span>{{selectedDeliveryDates.length}}</span>
-                        </span>
-                    </button>
-                    <template slot="popover">
-                        <BaseSelectButtons submitOnChange="true" 
-                        :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                    </template>
-                </v-popover>
+                    <v-popover trigger="click">
+                        <button class="ghost">
+                            <span>Delivery</span>
+                            <i class="far fa-chevron-down"></i>
+                            <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
+                                <span>{{selectedDeliveryDates.length}}</span>
+                            </span>
+                        </button>
+                        <template slot="popover">
+                            <BaseSelectButtons submitOnChange="true" 
+                            :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
+                        </template>
+                    </v-popover>
 
-                <v-popover trigger="click">
-                    <button class="ghost">
-                        <span>Buyer group </span>
-                        <i class="far fa-chevron-down"></i>
-                        <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
-                            <span>{{selectedBuyerGroups.length}}</span>
-                        </span>
-                    </button>
-                    <template slot="popover">
-                        <BaseSelectButtons submitOnChange="true" 
-                        :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                    </template>
-                </v-popover>
+                    <v-popover trigger="click">
+                        <button class="ghost">
+                            <span>Buyer group </span>
+                            <i class="far fa-chevron-down"></i>
+                            <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
+                                <span>{{selectedBuyerGroups.length}}</span>
+                            </span>
+                        </button>
+                        <template slot="popover">
+                            <BaseSelectButtons submitOnChange="true" 
+                            :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
+                        </template>
+                    </v-popover>
 
-                <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
-                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
+                    <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
+                    @click="onClearFilters"><span>Clear filter</span></button>
 
-                <BaseButton buttonClass="primary"
-                @click="onSaveOrder">
-                    <span>Save current product order</span>
-                </BaseButton>
+                    <BaseButton buttonClass="primary"
+                    @click="onSaveOrder">
+                        <span>Save current product order</span>
+                    </BaseButton>
+
+                    <BaseButton buttonClass="primary ghost"
+                    @click="onEnterOrderMode(true)">
+                        <span>Manually edit product order</span>
+                    </BaseButton>
+
+                </template>
+
+                <!-- EDIT ORDER MODE ACTIVE -->
+                <template v-else>
+                    <BaseButton buttonClass="ghost primary"
+                    @click="onEnterOrderMode(false)">
+                        <span>Cancel changes</span>
+                    </BaseButton>
+
+                    <BaseButton buttonClass="primary"
+                    @click="onSaveOrder(); onEnterOrderMode(false)">
+                        <span>Done editing order</span>
+                    </BaseButton>
+
+                    <p>Editing may be slow in big files</p>
+                </template>
+
 
             </template>
 
@@ -95,14 +123,10 @@
                 <BaseTableHeader class="action"/>
             </template>
             <template v-slot:row="rowProps">
-                    <ProductsTableRow v-if="productsFilteredBySearch.length > 0"
-                    :product="rowProps.item" :index="rowProps.index"
-                    @view-single-product="onViewSingle"/>
-
-                    <tr v-else>
-                        <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
-                            No products to show. Try changing your filters.</p>
-                    </tr>
+                <ProductsTableRow
+                :product="rowProps.item" :index="rowProps.index"
+                :editOrderModeActive="editOrderModeActive"
+                @view-single-product="onViewSingle"/>
             </template>
         </BaseTable>
 
@@ -168,7 +192,7 @@ import sortArray from '../../mixins/sortArray'
 export default {
     name: 'editProductsTable',
     props: [
-        'products',
+        // 'products',
         'sortKey',
         'file',
     ],
@@ -182,9 +206,14 @@ export default {
         selectedProducts: [],
         // productsFilteredBySearch: this.products,
         contextItem: null,
+        editOrderModeActive: false,
+        localProducts: [],
     }},
     computed: {
         ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
+        ...mapGetters('products', {
+            products: 'productsFiltered',
+        }),
         ...mapState('products', {stateProducts: 'products'}),
         productsFilteredBySearch: {
             get() {
@@ -218,10 +247,16 @@ export default {
                 this.updateSelectedBuyerGroups(value)
             }
         },
+        // localProducts: {
+        //     get() {return this.products},
+        //     set(products) {
+        //         this.SET_PRODUCTS(products)
+        //     }
+        // }
     },
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts', 'updateManyProducts']),
-        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
+        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'SET_PRODUCTS',
         'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
@@ -248,13 +283,31 @@ export default {
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)
         },
+        onClearFilters() {
+            this.selectedCategories = []
+            this.selectedDeliveryDates = []
+            this.selectedBuyerGroups = []
+        },
+        onEnterOrderMode(shouldBeActive) {
+            this.editOrderModeActive = shouldBeActive 
+            if (shouldBeActive) {
+                this.onClearFilters()
+            } else {
+                this.onSort(true, 'sequence')
+            }
+        },
         onSaveOrder() {
-            const products = this.productsFilteredBySearch
-            products.map((product, index) => {
-                product.sequence = index+1
+            const products = this.products
+            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.products
+            productsReOrdered.map((reOrdered, index) => {
+                // Find the corresponding product
+                const product = this.products.find(x => x.id == reOrdered.id)
+                product.sequence =  index+1
             })
             this.updateManyProducts({ file: this.file, products })
-        }
+            // Resort
+            this.onSort(true, 'sequence')
+        },
     },
 }
 </script>

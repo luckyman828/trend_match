@@ -399,7 +399,7 @@ export default {
             // Else create a new folder
             else {
                 const newFolder = {
-                    id: 0,
+                    id: null,
                     name: 'New folder',
                     type: 'Folder',
                     parent_id: this.folder ? this.folder.id : 0,
