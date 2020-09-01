@@ -21,10 +21,12 @@ export default {
         'sortKey',
         'currentSortKey',
         'descDefault',
+        'defaultTo',
     ],
     data: function() { return {
         sortAsc: this.descDefault ? false : true,
         sortKeyIndex: 0,
+        consecutiveSortCount: 0
     }},
     computed: {
         active () {
@@ -46,16 +48,23 @@ export default {
     },
     methods: {
         sort() {
+            let sortKeyToEmit = this.sortKey
             // If this header is already active, flip the sort order
             if (this.active) {
                 this.sortAsc = !this.sortAsc
+                this.consecutiveSortCount++
+                if (this.defaultTo != null && this.consecutiveSortCount >= 2) {
+                    sortKeyToEmit = this.defaultTo
+                    this.sortAsc = true
+                }
             } else {
                 this.sortAsc =  this.descDefault ? false : true
+                this.consecutiveSortCount = 0
             }
             // if (Array.isArray(this.sortKey)) {
             //     this.$emit('sort', this.sortAsc, this.sortKey)
             // } else {
-                this.$emit('sort', this.sortAsc, this.sortKey)
+                this.$emit('sort', this.sortAsc, sortKeyToEmit)
             // }
         }
     },

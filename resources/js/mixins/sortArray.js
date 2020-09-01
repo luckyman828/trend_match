@@ -2,6 +2,7 @@ export default {
     methods: {
         sortArray(array, sortAsc, key) {
             const dataSorted = array.sort((a, b) => {
+                // console.log('sort array', sortAsc, key)
                 // Sort by multiple keys
                 if (Array.isArray(key)) {
                     let returnValue = 0
@@ -21,9 +22,18 @@ export default {
 
                             // If the keys are not arrays - sort by the key
                             else {
-                                const aKey = typeof a[theKey] == 'string' ? a[theKey].toLowerCase() : a[theKey]
-                                const bKey = typeof b[theKey] == 'string' ? b[theKey].toLowerCase() : b[theKey]
-                                if (aKey > bKey) returnValue = 1
+                                let aKey = a[theKey]
+                                let bKey = b[theKey]
+
+                                // Check if type is string
+                                if (typeof a[theKey] == 'string') aKey = a[theKey].toLowerCase()
+                                if (typeof b[theKey] == 'string') bKey = b[theKey].toLowerCase()
+
+                                // Check if type is date
+                                if (key == 'delivery_date') aKey = new Date(aKey)
+                                if (key == 'delivery_date') bKey = new Date(bKey)
+
+                                if (type) if (aKey > bKey) returnValue = 1
                                 if (aKey < bKey) returnValue = -1
                             }
                         }
@@ -59,8 +69,17 @@ export default {
 
                         // If the keys are not arrays - sort by the key
                         else {
-                            const aKey = typeof a[key] == 'string' ? a[key].toLowerCase() : a[key]
-                            const bKey = typeof b[key] == 'string' ? b[key].toLowerCase() : b[key]
+                            let aKey = a[key]
+                            let bKey = b[key]
+
+                            // Check if type is string
+                            if (typeof a[key] == 'string') aKey = a[key].toLowerCase()
+                            if (typeof b[key] == 'string') bKey = b[key].toLowerCase()
+
+                            // Check if type is date
+                            if (key == 'delivery_date') aKey = new Date(aKey)
+                            if (key == 'delivery_date') bKey = new Date(bKey)
+
                             if (sortAsc) return aKey > bKey ? 1 : -1
                             else return aKey < bKey ? 1 : -1
                         }

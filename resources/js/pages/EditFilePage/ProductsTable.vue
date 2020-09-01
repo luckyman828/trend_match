@@ -71,19 +71,26 @@
             <template v-slot:header>
                 <BaseTableHeader class="image"></BaseTableHeader>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">Delivery</BaseTableHeader>
                 <BaseTableHeader class="wholesale-price" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true" keyToDefaultTo="sequence">WHS</BaseTableHeader>
+                defaultTo="sequence"
+                @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
                 <BaseTableHeader class="recommended-retail-price" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
                 <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
                 <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
                 <BaseTableHeader class="action"/>
             </template>
