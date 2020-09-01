@@ -77,7 +77,7 @@
                 <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
                 @sort="onSort">Delivery</BaseTableHeader>
                 <BaseTableHeader class="wholesale-price" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
-                @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
+                @sort="onSort" :descDefault="true" keyToDefaultTo="sequence">WHS</BaseTableHeader>
                 <BaseTableHeader class="recommended-retail-price" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
                 <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
