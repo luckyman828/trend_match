@@ -322,7 +322,7 @@ export default {
             if (folderMenu) folderMenu.hide()
             // Save a reference to the contextual menu to show
             let contextMenu
-            if (this.contextMenuItem.type == 'folder') {
+            if (this.contextMenuItem.type == 'Folder') {
                 contextMenu = folderMenu
             } else {
                 contextMenu = fileMenu

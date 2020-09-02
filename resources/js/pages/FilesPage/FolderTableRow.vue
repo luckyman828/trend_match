@@ -5,7 +5,7 @@
             <i v-else class="far fa-folder"></i>
             <BaseInputField inputClass="small"
                 :focusOnMount="true" :selectOnFocus="true" :type="'text'"
-                actionOnBlur="Cancel"
+                :actionOnBlur="!folder.id ? 'Submit' : 'Cancel'"
                 v-model="fileToEdit.name"
                 @submit="onSubmitEdit"
                 @cancel="onCancelEdit"/>

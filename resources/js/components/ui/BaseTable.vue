@@ -190,8 +190,8 @@ export default {
         onContextMenu(e, item) {
             // If we have a selection set the context item to the first item in our selection
             this.$emit('update:contextItem', this.selected && this.selected.length > 0 ? this.selected[0] : item)
-            this.$emit('update:contextMouseEvent', e)
-            this.$emit('show-contextmenu', e)
+            this.$emit('update:contextMouseEvent', e, item)
+            this.$emit('show-contextmenu', e, item)
         },
         getYPos(element) {
             var yPosition = 0;
