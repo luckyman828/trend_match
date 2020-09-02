@@ -8,7 +8,7 @@
         <div class="drag-wrapper" :key="product.id">
             <div class="search-result drag-item">
                 <div class="image">
-                    <img :key="product.id" :src="variantImage(product.variants[0])">
+                    <img :key="product.id" :src="variantImage(product.variants[0], {size: 'sm'})">
                 </div>
                 <div class="details">
                     <span class="id">#{{product.datasource_id}}</span>

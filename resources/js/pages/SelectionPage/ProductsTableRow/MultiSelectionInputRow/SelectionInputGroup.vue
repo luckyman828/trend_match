@@ -1,82 +1,52 @@
 <template>
-    <div class="selection-input-group" v-if="product" tabindex="0" ref="selectionInputGroup"
+    <div class="selection-input-group" v-if="selectionInput" tabindex="0" ref="selectionInputGroup"
     @keyup="keypressHandler($event)">
-        <span class="name"
+        <span class="name" v-tooltip="selection.name.length > 18 ? selection.name : ''"
         @click="onViewSingle">
-            {{selection.name}}
+            {{selection.name | truncate(18)}}
         </span>
         <div class="selection-action-buttons">
 
             <div class="selection-action">
-                <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                <BaseButton :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                @click="onUpdateAction(product, 'Focus', selection)">
+                @click="onUpdateAction('Focus', selectionInput)">
                     <!-- <span>F</span> -->
                     <i class="far fa-star"></i>
                 </BaseButton>
 
-                <v-popover class="focus" :disabled="product.focus.length <= 0 && product.alignmentFocus.length <= 0">
-                    <span>{{product.alignmentFocus.length +product.focus.length}}</span>
-                    <template slot="popover">
-                        <BaseTooltipList header="Focus Alignment" v-if="product.alignmentFocus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentFocus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Focus Feedback" v-if="product.focus.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.focus" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Focus'}}">
+                    {{distributionScope == 'Alignment' ? selectionInput.alignmentFocus.length : selectionInput.focus.length}}
+                </div>
             </div>
 
             <div class="selection-action">
-                <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'" 
+                <BaseButton :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'" 
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                @click="onUpdateAction(product, 'In', selection)">
+                @click="onUpdateAction('In', selectionInput)">
                     <!-- <span>I</span> -->
                     <i class="far fa-heart"></i>
                 </BaseButton>
 
-                <v-popover class="ins" :disabled="product.ins.length <= 0 && product.alignmentIns.length <= 0">
-                    <span>{{product.alignmentIns.length + product.ins.length}}</span>
-                    <template slot="popover">
-                        <BaseTooltipList header="Ins Alignment" v-if="product.alignmentIns.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentIns" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Ins Feedback" v-if="product.ins.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.ins" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'In'}}">
+                    {{distributionScope == 'Alignment' ? selectionInput.alignmentIns.length : selectionInput.ins.length}}
+                </div>
             </div>
 
             <div class="selection-action">
-                <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'" 
+                <BaseButton :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'" 
                 :disabled="!userWriteAccess.actions.hasAccess" 
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                @click="onUpdateAction(product, 'Out', selection)">
+                @click="onUpdateAction('Out', selectionInput)">
                     <!-- <span>O</span> -->
                     <i class="far fa-times-circle"></i>
                 </BaseButton>
                 
-                <v-popover class="outs" :disabled="product.outs.length <= 0 && product.alignmentOuts.length <= 0">
-                    <span>{{product.alignmentOuts.length + product.outs.length}}</span>
-                    <template slot="popover">
-                        <BaseTooltipList header="Outs Alignment" v-if="product.alignmentOuts.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.alignmentOuts" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                        <BaseTooltipList header="Outs Feedback" v-if="product.outs.length > 0">
-                            <BaseTooltipListItem v-for="(action, index) in product.outs" :key="index"
-                            :label="action.selection.name" :value="action.user ? action.user.name : 'Anonymous'"/>
-                        </BaseTooltipList>
-                    </template>
-                </v-popover>
+                <div v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Out'}}">
+                    {{distributionScope == 'Alignment' ? selectionInput.alignmentOuts.length : selectionInput.outs.length}}
+                </div>
             </div>
 
         </div>
@@ -90,14 +60,18 @@ export default {
     props: [
         'index',
         'product',
+        'selectionInput',
         'selection',
         'currentAction',
         'focusGroupIndex',
+        'distributionTooltipComp',
+        'distributionScope',
     ],
     watch: {
         // Watch for changes to the current focus index 
         focusGroupIndex: function(newVal, oldVal) {
             if (newVal == this.index) {
+                console.log('focus this group godammit')
                 this.$refs.selectionInputGroup.focus()
             }
         }
@@ -110,11 +84,11 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
-        onViewSingle() {
+        async onViewSingle() {
             this.showSelectionProductPDP({product: this.product, selection: this.selection})
         },
-        onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
+        onUpdateAction(action, selectionInput) {
+            this.$emit('updateAction', action, selectionInput)
         },
         keypressHandler(event) {
             const key = event.code
@@ -122,11 +96,11 @@ export default {
                 this.onViewSingle()
             if (this.userWriteAccess.actions.hasAccess) {
                 if (key == 'KeyI')
-                    this.onUpdateAction(this.product, 'In', this.selection)
+                    this.onUpdateAction('In', this.selectionInput)
                 if (key == 'KeyO')
-                    this.onUpdateAction(this.product, 'Out', this.selection)
+                    this.onUpdateAction('Out', this.selectionInput)
                 if (key == 'KeyF' || key == 'KeyU')
-                    this.onUpdateAction(this.product, 'Focus', this.selection)
+                    this.onUpdateAction('Focus', this.selectionInput)
             }
         }
     }

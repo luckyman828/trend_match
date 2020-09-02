@@ -1,5 +1,6 @@
 <template>
-    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4>
+    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4
+    :class="{'has-budget': showQty}">
         <template v-slot:header>
             <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
             @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
@@ -14,29 +15,29 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <SelectionPresenterModeButton :selection="currentSelection" @toggle="onTogglePresenterMode"/>
+                        <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
                     </div>
                     <div class="item-group">
-                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !currentSelection.is_presenting"/>
+                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                     </div>
                     <div class="item-group">
-                        <BaseButton :buttonClass="product[currentAction] != 'Focus' ? 'ghost': 'primary'"
+                        <BaseButton :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
                         :disabled="!userWriteAccess.actions.hasAccess" 
                         v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction(product, 'Focus', currentSelection)">
+                        @click="onUpdateAction('Focus')">
                             <i class="far fa-star"></i>
                         </BaseButton>
-                        <BaseButton :buttonClass="product[currentAction] != 'In' ? 'ghost': 'green'"
+                        <BaseButton :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'"
                         :disabled="!userWriteAccess.actions.hasAccess" 
                         v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction(product, 'In', currentSelection)">
+                        @click="onUpdateAction('In')">
                             <i class="far fa-heart"></i>
                             <span>In</span>
                         </BaseButton>
-                        <BaseButton :buttonClass="product[currentAction] != 'Out' ? 'ghost': 'red'"
+                        <BaseButton :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'"
                         :disabled="!userWriteAccess.actions.hasAccess" 
                         v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction(product, 'Out', currentSelection)">
+                        @click="onUpdateAction('Out')">
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
                         </BaseButton>
@@ -48,16 +49,35 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <img v-if="product.variants[0] != null" :src="variantImage(product.variants[currentImgIndex])">
+                    <!-- <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')"> -->
+                    <BaseVariantImg :key="product.id + '-' + currentImgIndex" v-if="selectionInput.variants.length > 0" 
+                    :variant="currentVariant" size="sm" :index="currentVariant.imageIndex"/>
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
                     </button>
+
+                    <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
+                        <div class="square white trigger">
+                            <i class="far fa-images"></i>
+                            <div class="count circle xxs dark">
+                                <span>{{currentVariant.pictures.length}}</span>
+                            </div>
+                        </div>
+                        <div class="drawer">
+                            <div class="image-wrapper" v-for="(image, index) in currentVariant.pictures" :key="index"
+                            :class="{'active': currentVariant.imageIndex == index}">
+                                <BaseVariantImg :variant="currentVariant" size="sm" :index="index"
+                                @click.native.stop="currentVariant.imageIndex = index"/>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <VariantListItem v-for="(variant, index) in product.variants" :key="index"
-                    :variant="variant" :product="product" :selection="selection"
+                    <VariantListItem v-for="(variant, index) in selectionInput.variants" :key="index"
+                    :variant="variant" :product="product" :selection="selection" :selectionInput="selectionInput"
                     :class="{'active': currentImgIndex == index}"
                     v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant}"
                     @click.native="currentImgIndex = index"/>
@@ -106,42 +126,46 @@
                 </div>
 
                 <label>Delivery Date</label>
-                <BaseInputField readOnly=true :value="new Date(product.delivery_date).toLocaleDateString('en-GB', {month: 'long', year: 'numeric'})"/>
+                <BaseInputField readOnly=true :value="product.delivery_date"/>
 
                 <div class="col-2 minimum">
                     <div>
                         <label>Order min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.quantity"/>
+                        <BaseInputField readOnly=true :value="product.min_order"/>
                     </div>
                     <div>
                         <label>Variant min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.variant_min_quantity"/>
+                        <BaseInputField readOnly=true :value="product.min_variant_order"/>
                     </div>
                 </div>
 
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
                 <label>Description</label>
-                <BaseInputTextArea readOnly=true :value="product.description"/>
-                <label>Assortments</label>
-                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => x.name).join(',\n')"/>
+                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
+                <label>Assortments (Box size)</label>
+                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => `${x.name} ${x.box_size && `(${x.box_size})`}`).join(',\n')"/>
                 <label>Category</label>
                 <BaseInputField readOnly=true :value="product.category"/>
 
             </BaseFlyinColumn>
 
-            <DistributionSection :product="currentProduct"/>
+            <DistributionSection :selectionInput="selectionInput" :product="product"/>
 
             <RequestsSection class="comments" ref="requestsSection"
-            :product="product" :selection="currentSelection" :requests="product.requests"
+            :selectionInput="selectionInput" :requests="selectionInput.requests"
             @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
-            <CommentsSection class="comments" ref="commentsSection"
-            :product="product" :selection="currentSelection"
+            <CommentsSection v-if="!showRequestThread" class="comments" ref="commentsSection"
+            :selectionInput="selectionInput"
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
-            <PresenterQueueFlyin :product="product" v-if="currentSelection.is_presenting && show"/>
+            <RequestThreadSection v-else/>
+
+            <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
+
+            <!-- <RequestThreadFlyin/> -->
 
             <BaseDialog ref="confirmCloseInPresentation" type="confirm"
             confirmColor="dark" confirmText="Okay, close it">
@@ -157,10 +181,12 @@
 
             <BaseTooltip ref="variantTooltip"
             @show="variant => tooltipVariant = variant">
-                <VariantTooltip :variant="tooltipVariant" :selection="currentSelection" :product="product"
-                :actionDistributionTooltipTab="actionDistributionTooltipTab"
+                <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"
+                :actionDistributionTooltipTab="actionDistributionTooltipTab" :selectionInput="selectionInput"
                 @changeTab="tab => actionDistributionTooltipTab = tab"/>
             </BaseTooltip>
+
+            <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection"/>
 
         </template>
     </BaseFlyin>
@@ -177,12 +203,14 @@ import PresenterQueueFlyin from './PresenterQueueFlyin/'
 import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
+import BudgetCounter from '../BudgetCounter'
+// import RequestThreadFlyin from './RequestThreadFlyin'
+import RequestThreadSection from './RequestThreadSection'
 
 export default {
     name: 'productFlyin',
     props: [
         'show',
-        'selection',
     ],
     mixins: [
         variantImage
@@ -196,12 +224,15 @@ export default {
         PresenterQueueFlyin,
         VariantListItem,
         VariantTooltip,
+        BudgetCounter,
+        // RequestThreadFlyin,
+        RequestThreadSection,
     },
     data: function () { return {
         currentImgIndex: 0,
         lastBroadcastProductId: null,
         tooltipVariant: null,
-        actionDistributionTooltipTab: 'feedback'
+        actionDistributionTooltipTab: 'Feedback',
     }},
     watch: {
         product(newVal, oldVal) {
@@ -223,36 +254,54 @@ export default {
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
+
             } else {
+                // On close
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
+                this.SET_CURRENT_REQUEST_THREAD(null)
             }
         }
     },
     computed: {
-        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'availableProducts']),
+        ...mapGetters('requests', {
+            showRequestThread: 'getRequestThreadVisible',
+        }),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('products', {
+            availableProducts: 'getAvailableProducts'
+        }),
         ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
         }),
+        ...mapGetters('requests', ['getRequestThreadVisible']),
+        selectionInput() {
+            return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
+        },
         product () {
             return this.currentProduct
         },
-        broadcastActive () {return this.currentSelection.is_presenting},
-        currentSelection () { return this.getCurrentPDPSelection },
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.currentSelection) },
+        currentVariant() {
+            return this.selectionInput.variants[this.currentImgIndex]
+        },
+        broadcastActive () {return this.selection.is_presenting},
+        selection () { return this.getCurrentPDPSelection },
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
         currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
         currentAction () {
             return this.currentSelectionModeAction
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.currentSelection)
+            return this.getAuthUserSelectionWriteAccess(this.selection)
         },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
@@ -262,12 +311,26 @@ export default {
             this.lastBroadcastProductId = product.id
             this.broadcastProduct(product)
         },
-        onUpdateAction(product, action, selection) {
-            this.$emit('updateAction', product, action, selection)
+        onUpdateAction(action) {
+            this.$emit('updateAction', action, this.selectionInput)
         },
         onShowLightbox() {
-            this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
-            this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
+            const lightboxImages = this.product.variants.reduce((arr, variant) => 
+                arr.concat(variant.pictures.map((picture, index) => 
+                    this.variantImage(variant, {index}))), [])
+            // this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
+            let lightboxImageIndex = 0
+            for (let i = 0; i <= this.currentImgIndex; i++) {
+                if (i < this.currentImgIndex) {
+                    lightboxImageIndex += this.selectionInput.variants[i].pictures.length
+                }
+                if (i == this.currentImgIndex) {
+                    lightboxImageIndex += this.selectionInput.variants[i].imageIndex
+                }
+            }
+            this.SET_LIGHTBOX_IMAGES(lightboxImages)
+            // this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
+            this.SET_LIGHTBOX_IMAGE_INDEX(lightboxImageIndex)
             this.SET_LIGHTBOX_VISIBLE(true)
         },
         async onCloseSingle() {
@@ -301,15 +364,17 @@ export default {
 
                 if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')
-                        this.onUpdateAction(this.product, 'In', this.currentSelection)
+                        this.onUpdateAction('In')
                     if (key == 'KeyO')
-                        this.onUpdateAction(this.product, 'Out', this.currentSelection)
+                        this.onUpdateAction('Out')
                     if (key == 'KeyF' || key == 'KeyU')
-                        this.onUpdateAction(this.product, 'Focus', this.currentSelection)
+                        this.onUpdateAction('Focus')
                 }
             }
         },
         hotkeyEnterHandler(e) {
+            // If the request thread flyin is visible, do nothing
+            if (this.getRequestThreadVisible) return
             // If the current mode is Alignment, focus the request field. Else focus comment
             if (this.currentSelectionMode == 'Alignment') {
                 this.$refs.requestsSection.activateWrite()
@@ -350,11 +415,39 @@ export default {
             }
             .flyin-header {
                 > .left {
-                    max-width: 380px;
+                    // max-width: 380px;
+                    h3 {
+                        max-width: calc(36vw - 92px);
+                        overflow: hidden;
+                    }
+                }
+            }
+        }
+        &.has-budget {
+            > .flyin {
+                > .body {
+                    margin-top: 8px;
+                    border-top: $borderModule;
+                }
+            }
+            .the-budget-counter {
+                overflow: hidden;
+                .bar {
+                    margin-left: -4px;
+                    margin-right: -4px;
                 }
             }
         }
     }
+}
+
+.the-budget-counter {
+    position: absolute;
+    top: 60px;
+    margin: 0;
+    left: 0;
+    max-width: none;
+    width: 100%;
 }
 
 .product-title-wrapper {
@@ -384,8 +477,8 @@ export default {
                 width: 225px;
                 height: 300px;
                 overflow: hidden;
-                border-radius: 4px;
-                border: solid 2px $divider;
+                border: $borderElHard;
+                border-radius: $borderRadiusEl;
                 position: relative;
                 img {
                     width: 100%;
@@ -395,7 +488,7 @@ export default {
                 }
                 .controls {
                     position: absolute;
-                    right: 4px;
+                    left: 4px;
                     top: 4px;
                     opacity: 0;
                 }
@@ -411,6 +504,71 @@ export default {
                 overflow-x: auto;
                 margin-bottom: 8px;
                 display: flex;
+            }
+        }
+    }
+    .image-drawer {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        padding: 4px;
+        border: $borderElSoft;
+        border-radius: $borderRadiusEl;
+        border-color: transparent;
+        z-index: 1;
+        &:hover, &.hover {
+            background: white;
+            border-color: $borderColorEl;
+            box-shadow: $shadowEl;
+            .drawer {
+                display: block;
+            }
+            .trigger {
+                display: none;
+            }
+        }
+        .trigger {
+            border: $borderElSoft;
+            margin-right: -4px;
+            margin-top: -4px;
+            position: relative;
+            .count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                height: 16px;
+                width: 16px;
+                font-size: 10px;
+            }
+        }
+        .drawer {
+            display: none;
+            overflow-y: auto;
+            max-height: 200px;
+            >:not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        >:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        .image-wrapper {
+            width: 36px;
+            height: 36px;
+            border: $borderElSoft;
+            border-radius: $borderRadiusEl;
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+            }
+            &.active {
+                border: solid 2px $primary;
+                cursor: default;
             }
         }
     }

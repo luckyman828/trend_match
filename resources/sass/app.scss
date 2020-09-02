@@ -50,7 +50,7 @@ a {
     text-decoration: none;
     color: inherit;
 }
-// FONTS
+// ----------- FONTS
 body,
 html {
     margin: 0;
@@ -115,6 +115,9 @@ textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+
+// ---------- END FONTS
+
 .container {
     margin: auto;
     width: 100%;
@@ -169,7 +172,7 @@ textarea {
             h3 {
                 font-size: 16px;
                 text-align: center;
-                color: $dark2;
+                color: $grey700;
                 font-weight: 400;
                 margin-bottom: 60px;
             }
@@ -250,6 +253,19 @@ textarea {
     color: white;
 }
 
+// LINKS
+.text-link {
+    font-weight: 700;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    &:hover {
+        color: $primary;
+        cursor: pointer;
+    }
+}
+
 // SHAPES: BUTTONS, SQUARES, PILLS, CIRCLES
 .hotkey-wrapper {
     display: inline-flex;
@@ -258,18 +274,18 @@ textarea {
     justify-content: flex-start;
     .hotkey {
         font-size: 10px;
-        color: $dark2;
-        margin-top: 4px;
+        color: $grey700;
+        margin-top: 2px;
         .key {
             border-radius: 2px;
-            border: solid 1px $dark2;
+            border: solid 1px $grey700;
             padding: 1px 4px;
             text-transform: uppercase;
             font-size: 8px;
         }
     }
 }
-button,
+button:not(.text-link),
 .button,
 .square,
 .pill,
@@ -280,7 +296,6 @@ input[type='submit'] {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    color: $font;
     text-decoration: none;
     user-select: none;
     border: solid 1px transparent;
@@ -300,7 +315,7 @@ input[type='submit'] {
     > span:last-child {
         margin-right: 12px;
     }
-    &:not(.ghost):not(.invisible) i {
+    &:not(.ghost):not(.invisible) i:not(.fa-times) {
         &.fa,
         &.fas,
         &.far,
@@ -374,16 +389,18 @@ input[type='submit'] {
     }
 
     // COLORS
-    border-color: $grey;
-    background: $grey;
+    border-color: $grey500;
+    background: $grey500;
     color: $font;
+    // color: $dark05;
     &:hover {
-        background: $grey2;
-        border-color: $grey2;
+        background: $grey400;
+        border-color: $grey400;
     }
     &:active {
-        background: $grey2;
-        border-color: $grey;
+        // background: $grey400;
+        // border-color: $grey500;
+        transform: $transformElActive;
     }
     @each $color in $brand-colors {
         &.#{nth($color,1)},
@@ -430,24 +447,25 @@ input[type='submit'] {
         }
         &.#{nth($color,1)}:active,
         &.#{nth($color,1)}-hover:active {
-            background: nth($color, 5);
+            // background: nth($color, 5);
+            transform: $transformElActive;
         }
     }
 
-    &.ghost,
-    &.ghost-hover:hover {
+    &.ghost {
         background: transparent;
         color: $font;
-        border: solid 1px $dark2;
+        border: solid 1px $grey700;
         i {
             color: $font;
         }
     }
-    &.ghost {
+    &.ghost,
+    &.ghost-hover {
         &:hover {
             padding: 0;
             border: solid 2px $primary;
-            i {
+            i:not(.fa-times):not(.fa-ellipsis-h) {
                 font-weight: 900;
             }
         }
@@ -456,9 +474,9 @@ input[type='submit'] {
         font-weight: 500;
         background: none;
         border-color: transparent;
-        color: $dark2;
+        color: $fontButtonInvisible;
         i {
-            color: $dark2;
+            color: $iconButtonInvisible;
         }
         &:not(.ghost-hover):hover {
             background: $light1;
@@ -477,7 +495,7 @@ input[type='submit'] {
     }
     &:focus {
         outline: none;
-        box-shadow: 0 0 1px 1px $primary;
+        box-shadow: 0 0 0 1px $primary inset;
     }
 }
 button,
@@ -489,7 +507,7 @@ input[type='submit'] {
         width: 100%;
     }
 }
-button,
+button:not(.text-link),
 .button,
 input[type='submit'] {
     font-weight: 700;
@@ -544,10 +562,10 @@ i {
     &.fad,
     &.fab {
         position: relative;
-        color: $fontIcon;
+        color: $icon;
     }
     &.fad {
-        --fa-secondary-color: #3b86ff;
+        --fa-secondary-color: #2a46ff;
         --fa-secondary-opacity: 1;
     }
     &.xs {
@@ -649,7 +667,7 @@ i {
     border-radius: 4px;
     background: white;
     i {
-        color: $dark2;
+        color: $grey700;
         position: absolute;
         right: 12px;
     }
@@ -717,7 +735,7 @@ i {
         // border-bottom: solid 2px $light2;
         font-size: 14px;
         font-weight: 400;
-        color: $dark2;
+        color: $grey700;
         text-align: center;
         .close {
             position: absolute;
@@ -778,7 +796,7 @@ i {
             // border-bottom: 0;
         }
         .header {
-            color: $dark2;
+            color: $grey700;
         }
         .body {
             background: $darkAlt;
@@ -836,6 +854,16 @@ i {
 // POPOVER
 .popover {
     min-width: 200px;
+}
+.v-popover {
+    .trigger {
+        &:hover {
+            i {
+                font-weight: 900;
+                color: $font;
+            }
+        }
+    }
 }
 
 // V-TOOLTIP
@@ -903,9 +931,13 @@ i.has-tooltip {
         border-radius: 4px;
         border: 1px solid $divider;
         background-color: white;
-        box-shadow: 0 10px 10px rgba($dark, 20%);
+        // box-shadow: 0 10px 10px rgba($dark, 20%);
+        box-shadow: $shadowModuleHard;
         max-height: 70vh;
         overflow-y: auto;
+        &.allow-overflow {
+            overflow: visible;
+        }
     }
 
     &-inner:not(.popover-inner) {
@@ -931,7 +963,7 @@ i.has-tooltip {
     &[data-popper-placement^='top'] {
         padding-bottom: 8px;
 
-        .tooltip-arrow {
+        > .wrapper > .tooltip-arrow {
             border-bottom-width: 0;
             border-top-color: $divider;
             bottom: 3px;
@@ -950,7 +982,7 @@ i.has-tooltip {
     &[data-popper-placement^='bottom'] {
         padding-top: 8px;
 
-        .tooltip-arrow {
+        > .wrapper > .tooltip-arrow {
             border-top-width: 0;
             border-bottom-color: $divider;
             top: 3px;
@@ -969,7 +1001,7 @@ i.has-tooltip {
     &[data-popper-placement^='right'] {
         padding-left: 8px;
 
-        .tooltip-arrow {
+        > .wrapper > .tooltip-arrow {
             border-left-width: 0;
             border-right-color: $divider;
             top: 0;
@@ -988,7 +1020,7 @@ i.has-tooltip {
     &[data-popper-placement^='left'] {
         padding-right: 8px;
 
-        .tooltip-arrow {
+        > .wrapper > .tooltip-arrow {
             border-right-width: 0;
             border-left-color: $divider;
             top: 0;
@@ -1160,7 +1192,7 @@ i.has-tooltip {
 //         width: 152px;
 //         display: flex;
 //         align-items: center;
-//         color: $dark2;
+//         color: $grey700;
 //         background: $light2;
 //         border-radius: 8px 8px 0 0;
 //         cursor: pointer;
@@ -1254,10 +1286,13 @@ form {
         margin-bottom: 32px;
     }
 }
+input::placeholder {
+    color: $grey700;
+}
 .input-wrapper {
     display: block;
     min-height: 40px;
-    border: solid 1px $dark2;
+    border: solid 1px $grey700;
     color: $dark05;
     border-radius: 4px;
     padding: 8px 12px;
@@ -1301,7 +1336,7 @@ form {
         cursor: pointer;
     }
     &.disabled {
-        color: $dark2;
+        color: $grey700;
         cursor: auto;
     }
     &.read-only {
@@ -1347,9 +1382,9 @@ form {
     &.controls-inside {
         .input-wrapper {
             padding-right: 40px;
-            .control-items-2 & {
-                padding-right: 80px;
-            }
+            // .control-items-2 & {
+            //     padding-right: 80px;
+            // }
         }
 
         &.controls-right {
@@ -1536,19 +1571,19 @@ input[type='number']::-webkit-outer-spin-button {
 
 // SCROLLBARS
 ::-webkit-scrollbar {
-    width: 3px;
+    width: 5px;
     height: 7px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    background: $light2;
+    background: $grey450;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: $dark2;
-    border-radius: 2px;
+    background: $grey600;
+    border-radius: 4px;
     &:hover {
-        background: $dark25;
+        background: $grey700;
     }
 }
 

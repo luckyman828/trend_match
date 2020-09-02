@@ -1,10 +1,22 @@
 <template>
     <div class="selection-users-table">
-        <BaseFlexTable :stickyHeader="false"
-        :contentStatus="readyStatus"
-        loadingMsg="loading users"
-        errorMsg="error loading users"
-        :errorCallback="() => initData()">
+        <h3>Selection Members</h3>
+        <BaseTable :stickyHeader="false"
+            :contentStatus="readyStatus"
+            loadingMsg="loading users"
+            errorMsg="error loading users"
+            :errorCallback="() => initData()"
+            :items="currentUsersTableTab == 'Members' ? selection.users : selection.denied_users"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selected"
+            :contextItem.sync="contextUser"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="['name', 'email']"
+            :searchResult.sync="usersFilteredBySearch"
+            itemType="user"
+            @show-contextmenu="showUserContext"
+        >
             <template v-slot:tabs>
                 <BaseTableTab label="Members" :count="selection.users ? selection.users.length : 0" 
                 modelValue="Members" v-model="currentUsersTableTab" 
@@ -13,76 +25,45 @@
                 modelValue="Excluded" v-model="currentUsersTableTab" 
                 @change="selected = []"/>
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <h3>Selection Members</h3>
-                    </template>
-                    <template v-slot:right>
-                        <span>{{selection.users ? selection.users.length : 0}} records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                    @change="(checked) => !!checked
-                    ? currentUsersTableTab == 'Members'
-                    ? selected = users
-                    : selected = selection.denied_users
-                    : selected = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'name'" :currentSortKey="sortKey" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader v-if="currentUsersTableTab == 'Members'" :sortKey="'role'" :currentSortKey="sortKey" @sort="sortUsers">Role</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
-            <template v-slot:body>
+            <template v-slot:row="rowProps">
                 <!-- Selection Members -->
-                <template v-if="currentUsersTableTab == 'Members'">
-                    <tr v-for="(user, index) in selection.users" :key="user.id" class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive(user)}"
-                    @click.ctrl="$refs.selectBox[index].check()"
-                    @contextmenu="showUserContext($event, user)">
-                        <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
+                <BaseTableInnerRow v-if="currentUsersTableTab == 'Members'">
                         <td class="title">
                             <i class="fas fa-user"></i>
-                            <span>{{user.name}}</span>
+                            <span>{{rowProps.item.name}}</span>
                         </td>
-                        <td class="email">{{user.email}}</td>
+                        <td class="email">{{rowProps.item.email}}</td>
                         <td class="role">
                             <button v-if="userHasEditAccess" class="ghost editable sm" 
-                            @click="showRoleContext($event, user)">
-                                <span>{{user.role}}</span>
+                            @click="showRoleContext($event, rowProps.item)">
+                                <span>{{rowProps.item.role}}</span>
                             </button>
-                            <span v-else>{{user.role}}</span>
+                            <span v-else>{{rowProps.item.role}}</span>
                         </td>
-                        <td class="action">
-                            <button v-if="userHasEditAccess" class="invisible ghost-hover" 
-                            @click="showUserContext($event, user)">
-                                <i class="far fa-ellipsis-h medium"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </template>
+                        <td class="action"></td>
+                </BaseTableInnerRow>
+
                 <!-- Excluded Users -->
-                <template v-if="currentUsersTableTab == 'Excluded'">
-                    <tr v-for="(user, index) in selection.denied_users" :key="user.id" class="user-row table-row" ref="userRow"
-                    @click.ctrl="$refs.selectBox[index].check()"
-                    @contextmenu="showExcludedUserContext($event, user)">
-                        <td class="select"><BaseCheckbox ref="selectBox" :value="user" v-model="selected"/></td>
-                        <td class="title">
-                            <i class="fas fa-user"></i>
-                            <span>{{user.name}}</span>
-                        </td>
-                        <td class="email">{{user.email}}</td>
-                        <td class="action">
-                            <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
-                            @click="onReAddUsersToSelection(selected.length > 0 ? selected : [user])">
-                                <span>Add user</span>
-                            </button>
-                        </td>
-                    </tr>
-                </template>
+                <BaseTableInnerRow v-if="currentUsersTableTab == 'Excluded'">
+                    <td class="title">
+                        <i class="fas fa-user"></i>
+                        <span>{{rowProps.item.name}}</span>
+                    </td>
+                    <td class="email">{{rowProps.item.email}}</td>
+                    <td class="action">
+                        <button v-if="userHasEditAccess" class="primary ghost-hover invisible"
+                        @click="onReAddUsersToSelection(selected.length > 0 ? selected : [rowProps.item])">
+                            <span>Add user</span>
+                        </button>
+                    </td>
+                </BaseTableInnerRow>
+
             </template>
             <template v-slot:footer>
                 <td v-if="currentUsersTableTab == 'Members'">
@@ -93,54 +74,48 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user"
-        :hotkeys="['KeyC', 'KeyR', 'KeyE']"
-        @keybind-c="showRoleContext(contextMouseEvent, contextUser)"
-        @keybind-r="onRemoveUsers(contextUser)"
-        @keybind-e="onRemoveUsers(contextUser)">
+        <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- Manually added users  -->
             <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
-                    <div class="item" @click.stop="showRoleContext(contextMouseEvent, contextUser)">
-                        <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
+                    <BaseContextMenuItem iconClass="far fa-user-shield"
+                    hotkey="KeyC"
+                    @click="showRoleContext(contextMouseEvent, contextUser)">
                         <span><u>C</u>hange role{{selected.length > 0 ? 's' : ''}}</span>
-                    </div>
+                    </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <div class="item" @click="onRemoveUsers(contextUser)">
-                        <div class="icon-wrapper" v-if="contextUser.inherit_from_teams || selected.length > 1">
-                            <i class="far fa-user-times"></i>
-                        </div>
-                        <div class="icon-wrapper" v-else>
-                            <i class="far fa-trash-alt"></i>
-                        </div>
+                    <BaseContextMenuItem
+                    :hotkey="['KeyR', 'KeyE']"
+                    :iconClass="contextUser.inherit_from_teams || selected.length > 1 ? 'far fa-user-times' : 'far fa-trash-alt'"
+                    @click="onRemoveUsers(contextUser)">
                         <span>
                             <span v-if="selected.length > 1"><u>R</u>emove / <u>E</u>xclude </span>
                             <span v-else-if="contextUser.inherit_from_teams"><u>E</u>xclude </span>
                             <span v-else><u>R</u>emove </span>
-                            User{{selected.length > 1 ? 's' : ''}}</span>
-                    </div>
+                            User{{selected.length > 1 ? 's' : ''}}
+                        </span>
+                    </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuExcludedUser" class="context-user"
-        :hotkeys="['KeyR']"
-        @keybind-r="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
+        <BaseContextMenu ref="contextMenuExcludedUser" class="context-user">
             <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
-                    <div class="item" @click="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
-                        <div class="icon-wrapper"><i class="far fa-user-plus"></i></div>
+                    <BaseContextMenuItem iconClass="far fa-user-plus"
+                    hotkey="KeyR"
+                    @click="onReAddUsersToSelection(selected.length > 0 ? selected : [contextUser])">
                         <span><u>R</u>e-add User{{selected.length > 0 ? 's' : ''}}</span>
-                    </div>
+                    </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>
@@ -157,10 +132,24 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="filteredAvailableSelectionRoles"
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
                     :optionNameKey="'role'" :optionValueKey="'role'"
                     @submit="onUpdateSelectionUsersRole();slotProps.hide()"/>
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuJob" class="context-role">
+            <template v-slot:header>
+                Change Selection Job
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="filteredAvailableSelectionJobs"
+                    v-model="userToEdit.job" :submitOnChange="true" :optionDescriptionKey="'description'"
+                    :optionNameKey="'role'" :optionValueKey="'role'"
+                    @submit="onUpdateSelectionUsersJob();slotProps.hide()"/>
                 </div>
             </template>
         </BaseContextMenu>
@@ -185,6 +174,7 @@ export default {
         contextMouseEvent: null,
         currentUsersTableTab: 'Members',
         authUserIsOwner: false,
+        usersFilteredBySearch: [],
     }},
     computed: {
         ...mapGetters('selections', {
@@ -192,21 +182,25 @@ export default {
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
             getSelectionUsersStatus: 'getSelectionUsersStatus',
             availableSelectionRoles: 'availableSelectionRoles',
+            availableSelectionJobs: 'getAvailableSelectionJobs',
         }),
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('users', {workspaceUsers: 'users', getUsersStatus: 'getUsersStatus'}),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole', 'currentWorkspace']),
+        ...mapGetters('users', {
+            workspaceUsers: 'users', 
+            getUsersStatus: 'getUsersStatus',
+            usersWorkspaceId: 'getWorkspaceFetchedFromId',
+        }),
         readyStatus() {
             if (this.getUsersStatus == 'error' || this.getSelectionUsersStatus == 'error') return 'error'
-            if (this.getUsersStatus == 'loading' || this.getSelectionUsersStatus == 'error') return 'loading'
+            if (this.getUsersStatus == 'loading' || this.getSelectionUsersStatus == 'loading') return 'loading'
             return 'success'
         },
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection) || this.authUserIsOwner
         },
-        filteredAvailableSelectionRoles() {
-            return this.availableSelectionRoles.filter(x => {
+        filteredAvailableSelectionJobs() {
+            return this.availableSelectionJobs.filter(x => {
                 return this.selection.type != 'Master' ? x.role != 'Approver' : true
             })
         },
@@ -214,16 +208,19 @@ export default {
             if (!this.selection.users || !this.workspaceUsers) return []
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.workspaceUsers))
-            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id))
+            return allUsers.filter(user => !this.selection.users.find(x => x.id == user.id)).sort((a,b) => {
+                if (a.id == this.authUser.id) return -1
+            })
         },
     },
     methods: {
-        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection']),
+        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection', 'fetchSelection']),
         ...mapActions('users', ['fetchUsers']),
         ...mapMutations('selections', ['UPDATE_SELECTION']),
         initData(forceRefresh) {
             // Check if we have any workspace teams, else fetch them
-            if (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
+            if (!this.usersWorkspaceId != this.currentWorkspace.id 
+            ||this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
 
             // Fetch selection with users and teams
             if (forceRefresh || (this.getSelectionUsersStatus != 'loading' && !this.selection.users)) {
@@ -231,27 +228,32 @@ export default {
             }
             this.authUserIsOwner = this.selection.your_role == 'Owner'
         },
-        contextMenuIsActive (user) {
-            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == user.id && this.selected.length <= 1
-        },
-        showUserContext(e, user) {
+        showUserContext(e) {
+            if (this.currentUsersTableTab == 'Excluded') {
+                this.showExcludedUserContext(e)
+                return
+            }
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuUser
-            this.contextMouseEvent = e
-            this.contextUser = this.selected.length > 0 ? this.selected[0] : user
             contextMenu.show(e)
         },
-        showExcludedUserContext(e, user) {
+        showExcludedUserContext(e) {
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuExcludedUser
-            this.contextMouseEvent = e
-            this.contextUser = this.selected.length > 0 ? this.selected[0] : user
             contextMenu.show(e)
         },
         showRoleContext(e, user) {
             const contextMenu = this.$refs.contextMenuRole
             this.contextUser = user
-            this.userToEdit = JSON.parse(JSON.stringify(user))
+            // this.userToEdit = JSON.parse(JSON.stringify(user))
+            this.userToEdit = user
+            contextMenu.show(e)
+        },
+        showJobContext(e, user) {
+            const contextMenu = this.$refs.contextMenuJob
+            this.contextUser = user
+            // this.userToEdit = JSON.parse(JSON.stringify(user))
+            this.userToEdit = user
             contextMenu.show(e)
         },
         onAddUser(e) {
@@ -284,8 +286,34 @@ export default {
             // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
-                console.log('update selection ')
                 this.selection.your_role = authUser.role
+                if (authUser.role == 'Member') this.selection.your_job = 'Feedback'
+                else if (authUser.role == 'Owner') this.selection.your_job = 'Alignment'
+                else if (authUser.role == 'Approver') this.selection.your_job = 'Approval'
+                else this.selection.your_job == null
+                
+                this.UPDATE_SELECTION(this.selection)
+            }
+        },
+        onUpdateSelectionUsersJob() {
+            // Define the user to base the new role to set on
+            const baseUser = this.userToEdit
+            // Check if we have a selection of users
+            // If so, set the currency for all the selected users
+            let usersToPost
+            if (this.selected.length > 0) {
+                usersToPost = this.selected.map(user => {
+                    user.job = baseUser.job
+                    return user
+                })
+            } else usersToPost = [baseUser]
+            // Update users
+            this.updateSelectionUsers({selection: this.selection, users: usersToPost})
+            
+            // Loop thorugh the users to post and test if they include the authUser. If they do update our selection role
+            const authUser = usersToPost.find(x => x.id == this.authUser.id)
+            if (authUser) {
+                this.selection.your_job = authUser.job
                 this.UPDATE_SELECTION(this.selection)
             }
         },
@@ -293,7 +321,7 @@ export default {
             // If if we are already sorting by the given key, flip the sort order
             this.sortKey = key
 
-            this.sortArray(this.users, method, key)
+            this.sortArray(this.usersFilteredBySearch, method, key)
         },
         onRemoveUsers(user) {
             // If we have a selection, loop through the selection and remove those
@@ -315,4 +343,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '~@/_variables.scss';
+
+.user-row {
+    &.self {
+        .title {
+            i {
+                color: $primary;
+            }
+        }
+        font-weight: 500;
+    }
+}
+
 </style>

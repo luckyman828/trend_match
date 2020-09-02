@@ -118,6 +118,65 @@
                             </table>
                         </div>
 
+                         <!-- START Map Variants -->
+                        <div class="table-wrapper map-assortments">
+                            <h3>Map Variants</h3>
+
+                            <table class="map-fields-table">
+                                <tr class="header">
+                                    <th></th>
+                                    <th><label>Database</label></th>
+                                    <th></th>
+                                    <th><label>Matched Datasource</label></th>
+                                    <th><label>Example</label></th>
+                                </tr>
+                                <tr v-for="(field, index) in variantFieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                                    <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                                    <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                    <td><i class="fas fa-equals"></i></td>
+                                    <td>
+                                        <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                            <i class="fas fa-caret-down"></i>
+                                        </BaseInputField>
+                                    </td>
+                                    <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                                        :value="previewExampleValue(field.newValue, field.name)"/>
+                                    </td>
+                                </tr>
+                                <tr v-for="(field, index) in variantImagesToMap" :key="'variant-image-'+index" :class="{disabled: !field.enabled}"
+                                class="variant-image-row">
+                                    <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                                    <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                                    <td><i class="fas fa-equals"></i></td>
+                                    <td>
+                                        <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                                        class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                                        :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                            <i class="fas fa-caret-down"></i>
+                                        </BaseInputField>
+                                    </td>
+                                    <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                                        :value="previewExampleValue(field.newValue, field.name)"/>
+                                    </td>
+
+                                    <td>
+                                        <button class="dark ghost remove-variant-image"
+                                        @click="variantImagesToMap.splice(index, 1)">
+                                            <i class="far fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <button class="dark" style="margin-top: 12px"
+                            @click="variantImagesToMap.push(JSON.parse(JSON.stringify(variantImageDefaultObject)))">
+                                <i class="fas fa-plus"></i><span>Add variant image map</span>
+                            </button>
+                        </div>
+                        <!-- END Map Variants -->
+
                         <div class="table-wrapper map-currencies">
                             <h3>Map currencies</h3>
                             <table class="single-currency-file-table">
@@ -342,11 +401,10 @@ export default {
     data: function () { return {
         currentScreen: {name: 'chooseFiles', header: 'Create new file'},
         defalultNewFile: {
+            id: null,
             name: 'New file',
             type: 'File',
             files: [],
-            owner_count: 0,
-            children_count: 0,
         },
         filesToChooseFrom: [],
         newFile: null,
@@ -374,17 +432,25 @@ export default {
             headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
-            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
-            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
-            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['eans','ean','variant ean','style ean', 'ean_no']},
             {name: 'buying_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['buyer group','buyer','pricelist', 'buying group']},
         ],
+       variantFieldsToMatch: [
+            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
+            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['sizes','variant sizes','size','variant size']},
+        ],
+        variantImagesToMap: [
+            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
+        ],
+        variantImageDefaultObject: {
+            name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']
+        },
         currencyDefaultObject: {
             currencyName: '',
             nameError: null,
@@ -483,8 +549,8 @@ export default {
         }
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateFile']),
-        ...mapActions('products', ['insertProducts', 'uploadImage']),
+        ...mapActions('files', ['insertOrUpdateFile', 'syncExternalImages']),
+        ...mapActions('products', ['insertProducts', 'uploadImage' ,'updateManyProducts']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         previewExampleValue(newValue, fieldName) {
             const files = this.availableFiles
@@ -590,7 +656,7 @@ export default {
                     }
                 } else {
                     // Throw error
-                    console.log('invalid file extension')
+                    // console.log('invalid file extension')
                 }
             }
         },
@@ -605,8 +671,8 @@ export default {
             newFile.workspace_id = this.currentWorkspace.id
             this.insertOrUpdateFile(newFile)
             // Reset modal
-            this.reset()
             this.$emit('close')
+            this.reset()
         },
         onGoToMapFields() {
             //Change the current screen
@@ -632,26 +698,32 @@ export default {
             // Use Papa Parse 5 to parse the CSV.
             const allLines = this.$papa.parse(csv).data
 
+            // Check if the file already exists. If so, replace it instead of adding
+            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
+
+
             // Use the first line as headers (splice removes the first line)
             const allHeaders = allLines.splice(0,1)[0]
             const csvHeaders = allHeaders.map((header, index) => {
-                return {fileIndex: this.availableFiles.length, fieldName: header, fieldIndex: index}
+                return {
+                    fileIndex: existingFile ? existingFile.headers[0].fileIndex : this.availableFiles.length, 
+                    fieldName: header, 
+                    fieldIndex: index
+                }
             })
-
             const fileToPush = {fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: allLines, error: false}
-            // Check if the file already exists. If so, replace it instead of adding
-            const existingFile = this.availableFiles.find(x => x.fileName == fileName)
             if (existingFile) {
                 // existingFile = fileToPush
                 Object.assign(existingFile, fileToPush)
             } else {
                 this.availableFiles.push(fileToPush)
             }
-            this.autoMapHeaders(fileToPush, this.availableFiles.length-1)
+            const fileIndex = existingFile ? existingFile.headers[0].fileIndex : this.availableFiles.length -1
+            this.autoMapHeaders(existingFile ? existingFile : fileToPush, fileIndex)
         },
         autoMapHeaders(file, fileIndex) {
             // Loop through the fields we still need to match to a header
-            this.fieldsToMatch.forEach(field => {
+            this.fieldsToMatch.concat(this.variantFieldsToMatch).concat(this.variantImagesToMap).forEach(field => {
                 if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
                     // Test if the current header has a file that matches
                     const autoMatchIndex = file.headers.findIndex(header => {
@@ -786,7 +858,7 @@ export default {
 
                         // VARIANTS
                         // Find / Instantiate this lines variant
-                        let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
+                        let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'variant_name')
                         let variant = null
                         // Check that the variant key is from this file
                         if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
@@ -801,6 +873,8 @@ export default {
                                     id: this.$uuid.v4(),
                                     name: variantKeyValue,
                                     image: null,
+                                    images: [],
+                                    pictures: [],
                                     sizes: []
                                 }
                                 product.variants.push(variant)
@@ -900,11 +974,8 @@ export default {
                                 }
                             })
                         })
-                             
-                        // FIELDS
-                        // Loop thorugh our fields to match, and check if they are matched to the current file
-                        this.fieldsToMatch.forEach(field => {
-                            // Check that the field has not been disabled
+
+                        this.variantFieldsToMatch.forEach(field => {
                             if (field.enabled && field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
                                 const fieldName = field.name
@@ -928,20 +999,42 @@ export default {
                                         }
                                     }
                                 }
+                            }
+                        })
 
-                                // If we don't have a special case, simply write the key value pair to the product
-                                else {
-                                    // Check if the field is an array, because then it should be added to the array
-                                    if (Array.isArray(product[fieldName])) {
-                                        // Check that the value does not already exist in the array
-                                        let arrayValueExists = product[fieldName].includes(fieldValue)
-                                        if (!arrayValueExists) {
-                                            product[fieldName].push(fieldValue)
-                                        }
-                                    } else {
-                                        // Else simply write the key value pair to the product
-                                        product[fieldName] = line[field.newValue.fieldIndex]
+                        this.variantImagesToMap.forEach(field => {
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+                                if (variant) {
+                                    if (fieldValue && !variant.pictures.find(x => x.url == fieldValue)) {
+                                        variant.pictures.push({
+                                            name: null,
+                                            url: fieldValue
+                                        })
                                     }
+                                }
+                            }
+                        })
+                             
+                        // FIELDS
+                        // Loop thorugh our fields to match, and check if they are matched to the current file
+                        this.fieldsToMatch.forEach(field => {
+                            // Check that the field has not been disabled
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+
+                                // Check if the field is an array, because then it should be added to the array
+                                if (Array.isArray(product[fieldName])) {
+                                    // Check that the value does not already exist in the array
+                                    let arrayValueExists = product[fieldName].includes(fieldValue)
+                                    if (!arrayValueExists) {
+                                        product[fieldName].push(fieldValue)
+                                    }
+                                } else {
+                                    // Else simply write the key value pair to the product
+                                    product[fieldName] = line[field.newValue.fieldIndex]
                                 }
                             }
                         })
@@ -1015,51 +1108,67 @@ export default {
 
             this.uploadingFile = true
             this.submitStatus = 'Uploading'
+            let uploadSuccess = true
 
             // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
             this.submitStatus = 'Creating file'
+            // console.log('create file', newFile)
             await this.insertOrUpdateFile(newFile)
 
             // Then we will instantiate the products and attempt to upload them
             this.submitStatus = 'Creating products'
             const newProducts = this.instantiateProducts().filter(x => !!x.datasource_id)
 
-            this.submitStatus = 'Uploading images'
-            await Promise.all(newProducts.map(async product => {
-                await Promise.all(product.variants.map(async variant => {
-                    if (variant.image) {
-                        const imageFile = await this.getImageFromURL(variant.image)
-                        if (imageFile) {
-                            await this.uploadImage({ file: newFile, product, variant, image: imageFile })
-                        }
-                    }
-                }))
-            }))
-
             this.submitStatus = 'Saving new products'
             await this.insertProducts({file: newFile, products: newProducts, addToState: false})
             .then(() => {
-                this.$emit('close')
-                this.reset()
                 this.submitStatus = 'Success'
             }).catch(err => {
                 window.alert('Something went wrong. Please try again')
                 this.submitStatus = 'Error'
+                uploadSuccess = false
             })
+
+            let imageUploadSuccess = true
+            if (this.submitStatus != 'Error') {
+                this.submitStatus = 'Uploading images. This may take a while'
+                await this.syncExternalImages({file: newFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
+                    imageUploadSuccess = false
+                    this.SHOW_SNACKBAR({ 
+                        msg: `<p><strong>Hey you!</strong><br></p>
+                        <p>We will display your images from your provided URLs.</p>
+                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
+                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
+                        type: 'info', 
+                        iconClass: 'fa-exclamation-circle', 
+                    })
+                })
+            }
+
+            if (uploadSuccess) {
+                this.$emit('close')
+                this.reset()
+            }
             this.uploadingFile = false
         },
+        uploadImagesProgressCalback(progress) {
+            this.submitStatus = `Uploading images. This may take a while.<br>
+            <strong>${progress}%</strong> done.`
+        },
         reset() {
-            this.availableFiles = []
-            this.singleCurrencyFile = false
-            this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
-            this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
-            this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
-            // Reset fields to match
-            this.fieldsToMatch.forEach(field => {
-                field.enabled = true
-                field.error = false
-                field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
-            })
+            this.$emit('reset')
+            // this.availableFiles = []
+            // this.singleCurrencyFile = false
+            // this.currentScreen = {name: 'chooseFiles', header: 'Create new file'}
+            // this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            // this.newFile = JSON.parse(JSON.stringify(this.defalultNewFile))
+            // this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
+            // // Reset fields to match
+            // this.fieldsToMatch.concat(this.variantFieldsToMatch).forEach(field => {
+            //     field.enabled = true
+            //     field.error = false
+            //     field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
+            // })
         }
     },
     created() {
@@ -1117,7 +1226,7 @@ export default {
                 align-items: center;
                 height: 40px;
                 padding: 4px 4px 4px 8px;
-                border: solid 1px $divider;
+                border: solid $dividerWidth $dividerColor;
                 border-radius: 4px;
                 span {
                     color: $primary;
@@ -1241,5 +1350,8 @@ export default {
             font-size: 12px;
         }
     }
+}
+.remove-variant-image {
+    margin-right: -32px;
 }
 </style>

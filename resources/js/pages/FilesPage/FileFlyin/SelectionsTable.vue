@@ -1,21 +1,28 @@
 <template>
     <div class="selections-table">
         <BaseFlexTable class="flex-table-root"
-        :contentStatus="readyStatus"
-        loadingMsg="loading selections"
-        errorMsg="error loading selections"
-        :errorCallback="() => initData()">
+            :contentStatus="readyStatus"
+            :loadingMsg="loadingMsg"
+            errorMsg="error loading selections"
+            :errorCallback="() => initData()"
+        >
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
-                        <span>{{getSelectionsTree.length}} records</span>
+                        <span><strong>{{getSelectionsTree.length}}</strong> records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
+                <BaseTableHeader class="select">
+                    <BaseCheckbox :value="selectedSelections.length > 0" :modelValue="true" 
+                    @change="(checked) => checked ? selectedSelections = allSelections : selectedSelections = []"/>
+                </BaseTableHeader>
                 <BaseTableHeader class="locked"></BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
+                <BaseTableHeader class="budget">Budget</BaseTableHeader>
+                <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
                 <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
                 <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
@@ -31,9 +38,10 @@
                 <div class="body">
                     <!-- Show Selections -->
                     <template v-if="getSelectionsTree.length > 0">
-                        <SelectionsTableRow :ref="'selection-row-'+selection.id" v-for="selection in getSelectionsTree" :key="selection.id"
+                        <SelectionsTableRow v-for="selection in getSelectionsTree" :key="selection.id" :ref="'selection-row-'+selection.id"
                         :selection="selection" :depth="0" :path="[selection.id]" :moveSelectionActive="moveSelectionActive" :file="currentFile"
-                        :selectionToEdit="selectionToEdit" :isMaster="selection.type == 'Master'"
+                        :selectionToEdit="selectionToEdit" :selectedSelections="selectedSelections"
+                        v-model="selectedSelections"
                         @submitToEdit="clearToEdit" @cancelToEdit="clearUnsaved($event);clearToEdit()"
                         @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin',$event)" @showContext="showContextMenuSelection"
                         @endMoveSelection="endMoveSelection" @showSettingsContext="showSettingsContext" @onClick="rowClick"
@@ -50,7 +58,7 @@
                                     <span>Copy Setup From Existing File</span>
                                 </button>
                                 <button class="primary ghost lg"
-                                @click="onNewSelection()">
+                                @click="onNewSelection({type: 'Master'})">
                                     <i class="fas fa-plus"></i>
                                     <span>Manually add new Master Selection</span>
                                 </button>
@@ -67,94 +75,149 @@
                 <td>
                     <BaseButton buttonClass="primary invisible" :disabled="authUserWorkspaceRole != 'Admin'"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
-                    @click="onNewSelection()">
+                    @click="onNewSelection({type: 'Master'})">
                         <i class="far fa-plus"></i><span>Add new: Master Selection</span>
                     </BaseButton>
                 </td>
             </template>
         </BaseFlexTable>
 
-        <BaseContextMenu ref="contextMenuSelection" class="context-selection"
-        :hotkeys="['KeyG', 'KeyR', 'KeyM', 'KeyC', 'KeyS', 'KeyD']"
-        @keybind-g="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})"
-        @keybind-r="selectionToEdit = {selection: contextSelection, field: 'name'}"
-        @keybind-m="$emit('showSelectionUsersFlyin', contextSelection)"
-        @keybind-c="onNewSelection(contextSelection)"
-        @keybind-s="showSettingsContext(contextMouseEvent, contextSelection)"
-        @keybind-d="onDeleteSelection(contextSelection, contextSelectionParent)">
+        <BaseContextMenu ref="contextMenuSelection" class="context-selection">
             <div class="item-group" v-if="!!contextSelection">
                 <BaseContextMenuItem iconClass="far fa-users"
                 :disabled="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master'))"
-                v-tooltip="!(!contextSelection.is_presenting || (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')) 
-                && 'Selection is in presentation mode. To join the presentation login to the Kollekt mobile app'"
+                disabledTooltip="Selection is in presentation mode. To join the presentation login to the Kollekt mobile app"
+                hotkey="KeyG"
                 @click="$router.push({name: 'selection', params: {fileId: contextSelection.file_id, selectionId: contextSelection.id}})">
                     <span><u>G</u>o to selection </span>
                 </BaseContextMenuItem>
             </div>
-            <div class="item-group">
-                <div class="item" @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+            <div class="item-group" v-if="!!contextSelection">
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                hotkey="KeyR"
+                @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
                     <u>R</u>ename
-                </div>
-                <div class="item" @click="$emit('showSelectionUsersFlyin', contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-user-cog"></i></div>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-user-cog"
+                hotkey="KeyM"
+                @click="$emit('showSelectionUsersFlyin', contextSelection)">
                     <u>M</u>embers and Access
-                </div>
-                <div class="item" @click="onNewSelection(contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-plus"></i></div>
-                    <u>C</u>reate sub-selection
-                </div>
-                <!-- <div class="item" v-if="contextSelection && !contextSelection.master"
-                @click="onMoveSelection(contextSelection, contextSelectionParent)">
-                    <div class="icon-wrapper"><i class="far fa-file"><i class="fas fa-long-arrow-alt-right"></i></i></div>
-                    <u>M</u>ove selection
-                </div> -->
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-plus"
+                hotkey="KeyC">
+                    <template>
+                        <span><u>C</u>reate sub-selection</span>    
+                    </template>
+                    
+                    <template v-slot:submenu>
+                        <div class="item-group">
+                            <BaseContextMenuItem iconClass="far fa-poll"
+                            hotkey="KeyN"
+                            @click="onNewSelection({parent: contextSelection, type: 'Normal'})">
+                                <span><u>N</u>ormal</span>
+                            </BaseContextMenuItem>
+
+                            <BaseContextMenuItem iconClass="far fa-crown"
+                            hotkey="KeyM"
+                            :disabled="contextSelection.type != 'Master'"
+                            disabledTooltip="Can only create Master sub-selections on another Master selection"
+                            @click="onNewSelection({parent: contextSelection, type: 'Master'})">
+                                <span><u>M</u>aster</span>
+                            </BaseContextMenuItem>
+                        </div>
+                    </template>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click.stop="showSettingsContext(contextMouseEvent, contextSelection)">
-                    <div class="icon-wrapper"><i class="far fa-cog"></i></div>
+                <BaseContextMenuItem iconClass="far fa-cog"
+                hotkey="KeyS"
+                @click="showSettingsContext(contextMouseEvent, contextSelection)">
                     <u>S</u>ettings
-                </div>
+                </BaseContextMenuItem>
             </div>
-            <div class="item-group" @click="onDeleteSelection(contextSelection, contextSelectionParent)">
-                <div class="item">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyD"
+                @click="onDeleteSelection(contextSelection, contextSelectionParent)">
                     <u>D</u>elete selection
-                </div>
+                </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuSelectedSelections" class="context-selection">
+            <template v-slot:header>
+                <span>Choose action for {{selectedSelections.length}} selections</span>
+            </template>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyC"
+                @click="selectedSelections = []">
+                    <span><u>C</u>lear Selected</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-cog"
+                hotkey="KeyS"
+                @click="showSettingsContext(contextMouseEvent, contextSelection)">
+                    <u>S</u>ettings
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-lock"
+                hotkey="KeyL"
+                @click="$emit('toggle-locked', selectedSelections)">
+                    <span><u>L</u>ock / Unlock</span>
+                </BaseContextMenuItem>
+
+                <BaseContextMenuItem iconClass="far fa-eye"
+                hotkey="KeyH"
+                @click="$emit('toggle-hidden', selectedSelections)">
+                    <span><u>H</u>ide / Unhide</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyD"
+                @click="onDeleteSelection(contextSelection, contextSelectionParent)">
+                    <u>D</u>elete selections
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuMove" class="context-move">
-            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)"
-            @click="endMoveSelection(contextSelection, contextSelectionComponent)">
-                <div class="item">
-                    <div class="icon-wrapper">
-                        <i class="far fa-arrow-left"></i>
-                    </div>
+            <div class="item-group" v-if="contextSelectionComponent && selectionToMove && !contextSelectionComponent.path.includes(selectionToMove.id)">
+                <BaseContextMenuItem iconClass="far fa-arrow-left"
+                hotkey="KeyM"
+                @click="endMoveSelection(contextSelection, contextSelectionComponent)">
                     <u>M</u>ove here
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group" v-else-if="contextSelectionComponent && selectionToMove">
-                <div class="item disabled">
-                    <div class="icon-wrapper">
-                        <i class="far fa-exclamation-circle"></i>
-                    </div>
-                    Cannot place inside self
-                </div>
+                <BaseContextMenuItem iconClass="far fa-exclamation-circle"
+                :disabled="true">
+                    <span>Cannot place inside self</span>
+                </BaseContextMenuItem>
             </div>
-            <div class="item-group" @click="clearMoveSelection">
-                <div class="item">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyC"
+                @click="clearMoveSelection">
                     <u>C</u>ancel
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4">
+        <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4"
+        @hide="settingsSelections = []">
             <template v-slot:header v-if="contextSelection">
-                Settings: {{contextSelection.name}}
+                <span>Settings: {{contextSelection.name}}
+                    <template v-if="settingsSelections.length > 1"> + {{settingsSelections.length-1}} more</template>
+                    
+                </span>
+                
             </template>
-            <template v-slot="slotProps">
+            <template v-slot="slotProps" v-if="settingsSelections.length > 0">
                 <!-- If loading -->
                 <div class="loading-wrapper" v-if="loadingSelectionSettings">
                     <BaseLoader/>
@@ -233,8 +296,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_feedback')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_feedback).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_feedback')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -313,8 +376,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_action')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_action).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_action')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -393,8 +456,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_comment')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_comment).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_comment')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -473,8 +536,8 @@
                                     v-tooltip="'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'"></i>
                                 :</label>
                                 <BaseInputField disabled=true type="select" 
-                                :value="displayLevelOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
-                                @click="showDisplayLevelContext($event, contextSelection.settings, 'anonymize_request')">
+                                :value="displayAuthorOptions.find(x => x.value == contextSelection.settings.anonymize_request).label"
+                                @click="showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_request')">
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
@@ -482,8 +545,8 @@
                     </div>
                     
                 </div>
-                <div class="item-group footer">
-                    <div class="item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                <div class="item-group footer item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
+                    <!-- <div class="item-wrapper" > -->
                         <div>
                             <button class="ghost primary"
                             @click="onCloneSettings">
@@ -494,7 +557,7 @@
                             <button class="primary" @click="onSaveSelectionSettings(); slotProps.hide()"><span>Save</span></button>
                             <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                         </div>
-                    </div>
+                    <!-- </div> -->
                 </div>
 
                 <BaseContextMenu ref="contextParentLevel" v-slot="slotProps">
@@ -515,6 +578,13 @@
                     <BaseSelectButtons type="radio" :submitOnChange="true"
                     v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
                     :options="displayLevelOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
+
+                <BaseContextMenu ref="contextAuthorLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
+                    :options="displayAuthorOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
 
@@ -557,7 +627,10 @@
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <button class="primary" @click="onClone(fileToClone)"><span>Clone</span></button>
+                        <button class="primary" 
+                        @click="onClone(fileToClone); slotProps.hide()">
+                            <span>Clone</span>
+                        </button>
                         <button class="invisible ghost-hover" style="margin-left: 8px;"
                         @click="slotProps.hide()">
                             <span>Cancel</span>
@@ -574,16 +647,17 @@
         @submit="updateSelection(contextSelection)"/>
 
         <BaseDialog ref="deleteSelectionDialog" type="confirm"
-        confirmText="Yes, delete it" cancelText="No, keep it"
+        :confirmText="selectedSelections.length > 1 ? 'Yes, delete them' : 'Yes, delete it'" 
+        :cancelText="selectedSelections.length > 1 ? 'No, keep them' : 'No, keep it'"
         confirmColor="red">
             <div class="icon-graphic">
                 <i class="far fa-poll primary lg"></i>
                 <i class="far fa-arrow-right lg"></i>
                 <i class="far fa-trash lg dark"></i>
             </div>
-            <h3>Really delete this selection?</h3>
-            <p>All input of the selection will be permanently deleted.</p>
-            <p><strong>Please beware:</strong>All sub-selections will be deleted as well.</p>
+            <h3>Really delete {{selectedSelections.length > 1 ? selectedSelections.length : 'this'}} selection{{selectedSelections.length > 1 ? 's' : ''}}?</h3>
+            <p>All input of the selection{{selectedSelections.length > 1 ? 's' : ''}} will be permanently deleted.</p>
+            <p><strong>Please beware:</strong> All sub-selections will be deleted as well.</p>
         </BaseDialog>
         
     </div>
@@ -603,6 +677,7 @@ export default {
         sortArray
     ],
     data: function() { return {
+        selectedSelections: [],
         sortKey: null,
         selectionToEdit: null,
         contextSelection: null,
@@ -655,11 +730,23 @@ export default {
                 value: 'Owner',
                 label: 'Owners'
             },
+        ],
+        displayAuthorOptions: [
+            {
+                value: 'Member',
+                label: 'Everyone'
+            },
+            {
+                value: 'Owner',
+                label: 'Owners'
+            },
             {
                 value: 'None',
                 label: 'No one'
             },
-        ]
+        ],
+        cloningSetup: false,
+        settingsSelections: [],
     }},
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
@@ -671,8 +758,12 @@ export default {
         },
         readyStatus() {
             if (this.getSelectionsStatus == 'error') return 'error'
-            if (this.getSelectionsStatus == 'loading') return 'loading'
+            if (this.getSelectionsStatus == 'loading' || this.cloningSetup) return 'loading'
             return 'success'
+        },
+        loadingMsg() {
+            if (this.cloningSetup) return 'Cloning selections'
+            return 'Loading selections'
         }
     },
     watch: {
@@ -685,7 +776,7 @@ export default {
         'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
         'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
-        ...mapActions('files', ['fetchAllFiles']),
+        ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
         initData(forceRefresh) {
             if (forceRefresh || this.getCurrentFileChanged || (this.getSelectionsStatus != 'success' && this.getSelectionsStatus != 'loading')) {
@@ -704,15 +795,36 @@ export default {
             }
         },
         async showSettingsContext(e, selection) {
+            if (this.contextSelection) {
+                this.contextSelection = selection
+                Vue.set(this.contextSelection, selection)
+            } else {
+                this.contextSelection = selection
+            }
+
             // Load the selections settings
             this.loadingSelectionSettings = true
             await this.fetchSelectionSettings(selection)
             this.loadingSelectionSettings = false
 
             const contextMenu = this.$refs.contextMenuOptions
-            this.contextSelection = selection
+
+            // If the parsed selection is part of the selected selection, edit settings for all of them
+            if (this.selectedSelections.find(x => x.id == selection.id)) {
+                this.settingsSelections = this.selectedSelections                
+            } 
+
+            // If the parsed selection is not part of the selected selections, only display settings for that one
+            else {
+                this.settingsSelections = [selection]
+            }
+            
+
+            // this.contextSelection = selection
             // Position the contextual menu
-            contextMenu.show(e)
+            this.$nextTick(() => {
+                contextMenu.show(e)
+            })
         },
         showSelectionCurrencyContext({selection, e}) {
             this.contextSelection = selection
@@ -724,12 +836,14 @@ export default {
             this.contextSelectionOption = option
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextParentLevel.show(e)
         },
         showChildLevelContext(e, option) {
             this.contextSelectionOption = option
             this.$refs.contextParentLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextChildLevel.show(e)
         },
         showDisplayLevelContext(e, settings, key) {
@@ -737,7 +851,16 @@ export default {
             this.contextSelectionSettingsKey = key
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
             this.$refs.contextDisplayLevel.show(e)
+        },
+        showDisplayAuthorContext(e, settings, key) {
+            this.contextSelectionSettings = settings
+            this.contextSelectionSettingsKey = key
+            this.$refs.contextParentLevel.hide()
+            this.$refs.contextChildLevel.hide()
+            this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.show(e)
         },
         onCloneSettings(e) {
             this.$refs.contextCloneSettings.show(e)
@@ -750,13 +873,26 @@ export default {
         },
         onSaveSelectionSettings() {
             // Send API request to update the selections settings.
-            this.updateSelectionSettings(this.contextSelection)
+            if (this.settingsSelections.length > 1) {
+                this.settingsSelections.map(selection => {
+                    // Set the selection settings of this selection to a copy of the context selection's
+                    // Use Vue.set to instantiate 'settings' as a reactive property on the selection
+                    Vue.set(selection, 'settings', JSON.parse(JSON.stringify(this.contextSelection.settings)))
+                    this.updateSelectionSettings(selection)
+                })
+            } else {
+                this.updateSelectionSettings(this.contextSelection)
+            }
         },
         showContextMenuSelection(e, selection, component, parent) {
             if (!this.getAuthUserHasSelectionEditAccess(selection)) return
             e.preventDefault()
             // Set the current context menu item
-            this.contextSelection = selection
+            if (this.selectedSelections.length > 0) {
+                this.contextSelection = this.selectedSelections[0]
+            } else {
+                this.contextSelection = selection
+            }
             this.contextSelectionComponent = component
             this.contextSelectionParent = parent
             // Save a reference to the clicked element
@@ -766,7 +902,10 @@ export default {
             if(this.moveSelectionActive) {
                 this.showContextMenuMove(e)
             } else {
-                const selectionContext = this.$refs.contextMenuSelection
+                let selectionContext = this.$refs.contextMenuSelection
+                if (this.selectedSelections.length > 1) {
+                    selectionContext = this.$refs.contextMenuSelectedSelections
+                }
                 // Position the contextual menu
                 selectionContext.show(e)
             }
@@ -837,7 +976,7 @@ export default {
             // Position the contextual menu
             moveContext.show(e)
         },
-        async onNewSelection(parent) {
+        async onNewSelection({parent, type}) {
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
@@ -845,7 +984,7 @@ export default {
                 id: null,
                 file_id: this.currentFile.id,
                 name: '',
-                type: 'Master',
+                type,
                 currency: null,
                 user_count: 0,
                 team_count: 0,
@@ -855,13 +994,17 @@ export default {
                 open_from: null,
                 open_to: null,
                 completed_at: null,
+                your_role: null,
+                is_presenting: null,
+                budget: 0,
+                budget_spend: 0,
             }
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection
                 newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
-                newSelection.type = 'Normal'
+                newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
                 if (!parent.children) {
                     this.$set(parent, 'children', [])
@@ -887,7 +1030,19 @@ export default {
         async onDeleteSelection(selection) {
             // Send request to API
             if (await this.$refs.deleteSelectionDialog.confirm()) {
-                this.deleteSelection(selection)
+                // If we have a selection, delete all those selections
+                if (this.selectedSelections.length > 1) {
+                    for (let i = this.selectedSelections.length -1; i >= 0; i--) {
+                        const selectionToDelete = this.selectedSelections[i]
+                        this.deleteSelection(selectionToDelete)
+                    }
+                    // Reset the selected selections
+                    this.selectedSelections = []
+                }
+                // If we don't have a selection just delete the provided selection 
+                else {
+                    this.deleteSelection(selection)
+                }
             }
         },
         clearToEdit() {
@@ -902,25 +1057,36 @@ export default {
         },
         async onShowCloneSetupContext(e) {
             // Check if we alreday fetched all files -> else fetch them
-            if (this.allFiles.length <= 0) {
+            // if (this.allFiles.length <= 0) {
                 await this.fetchAllFiles()
-            }
+            // }
             const contextMenu = this.$refs.contextMenuCloneSetup
             contextMenu.show(e)
         },
         async onClone(file) {
-            // console.log(file)
+            this.cloningSetup = true
+            await this.cloneFileSelections({destination: this.currentFile, from: file})
+            this.cloningSetup = false
+            // Force refresh the data, to fetch the cloned selections
+            this.initData(true)
             // Clone selections and their users to the new file
             // Fetch file selections
-            const selections = await this.fetchSelections({fileId: file.id, addToState: false})
-            // We have to copy the selection structure as well
-            // This means we have to insert one level of selections at a time
-            // Transform the selections into a tree structure 
-            const selectionTree = await this.createSelectionTree(selections)
-            // Loop through all selections and upload them
-            selectionTree.forEach(rootSelection => {
-                this.cloneSelectionTree(rootSelection)
-            })
+            // const selections = await this.fetchSelections({fileId: file.id, addToState: false})
+            // // We have to copy the selection structure as well
+            // // This means we have to insert one level of selections at a time
+            // // Transform the selections into a tree structure 
+            // const selectionTree = await this.createSelectionTree(selections)
+            
+            // // Loop through all selections and upload them
+            // for (const rootSelection of selectionTree) {
+            //     await this.cloneSelectionTree(rootSelection)
+            // }
+            // // Update the settings of all the newly created selection to sync relationsships
+            // const newSelectionTree = this.getSelectionsTree
+            // console.log('end for. New selections:', newSelectionTree)
+            // for (const rootSelection of newSelectionTree) {
+            //     this.syncSelectionTreeSettings(rootSelection)
+            // }
         },
         async cloneSelectionTree(selection) {
             // Recursive function that calls itself for all children of a selection until there are no more children
@@ -935,7 +1101,7 @@ export default {
             await this.fetchSelectionSettings(selection)
             // Save selection settings to the new selection
             newSelection.settings = selection.settings
-            this.updateSelectionSettings(newSelection)
+            // this.updateSelectionSettings(newSelection)
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0) 
                 this.addUsersToSelection({selection: newSelection, users: selectionWithTeamsAndUsers.users, ignoreRole: false})
@@ -953,11 +1119,18 @@ export default {
                 this.addTeamsToSelection({selection: newSelection, teams: selectionWithTeamsAndUsers.teams})
 
             // Loop through the selections children and repeat
-            selection.children.forEach(childSelection => {
+            for (const childSelection of selection.children) {
                 // Set the parent id
                 childSelection.parent_id = newSelection.id
-                this.cloneSelectionTree(childSelection)
-            })
+                await this.cloneSelectionTree(childSelection)
+            }
+        },
+        syncSelectionTreeSettings(selection) {
+            // Update the selections settings and loop through its tree and do the same
+            this.updateSelectionSettings(selection)
+            for (const childSelection of selection.children) {
+                this.syncSelectionTreeSettings(childSelection)
+            }
         }
     },
     created() {
@@ -999,18 +1172,30 @@ export default {
                     &.teams {
                         margin-left: auto;
                     }
-                    &.currency {
+                    &.budget {
                         min-width: 100px;
                         max-width: 100px;
                         margin-left: auto;
+                        text-align: right;
+                    }
+                    &.budget-spend {
+                        min-width: 64px;
+                        max-width: 64px;
+                        text-align: right;
+                        padding-right: 8px;
+                    }
+                    &.currency {
+                        min-width: 100px;
+                        max-width: 100px;
+                        // margin-left: auto;
                     }
                     &.teams, &.users {
                         min-width: 76px;
                         max-width: 76px;
                     }
                     &.status { // Status
-                        min-width: 180px;
-                        max-width: 180px;
+                        min-width: 156px;
+                        max-width: 156px;
                         margin-left: auto;
                         // display: flex;
                         // align-items: center;
@@ -1033,6 +1218,11 @@ export default {
                         margin-left: auto;
                     }
                 }
+                // > td {
+                //     &.budget {
+                //         text-align: right;
+                //     }
+                // }
             }
         }
     }

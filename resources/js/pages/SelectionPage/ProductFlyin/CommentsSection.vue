@@ -3,16 +3,16 @@
 
         <template v-slot:header class="random">
             <h3><span>Comments</span>
-                <span class="pill primary sm"><span>{{product.comments.length}}</span></span>
+                <span class="pill primary sm"><span>{{selectionInput.comments.length}}</span></span>
             </h3>
         </template>
 
         <template v-slot>
             <div class="comments-wrapper">
                 <comment v-for="(comment, index) in commentsSorted" 
-                :key="index" :product="product" :comment="comment" :selection="selection"
-                :displayAuthor="product.comments[index+1] ? 
-                (product.comments[index+1].user_id != comment.user_id || product.comments[index+1].selection_id != comment.selection_id) 
+                :key="index" :comment="comment" :selectionInput="selectionInput"
+                :displayAuthor="selectionInput.comments[index+1] ? 
+                (selectionInput.comments[index+1].user_id != comment.user_id || selectionInput.comments[index+1].selection_id != comment.selection_id) 
                 : true"/>
             </div>
 
@@ -38,7 +38,7 @@
                         </div>
                         <div class="right">
                             <button type="button" class="invisible" @click="writeActive = false"><span>Cancel</span></button>
-                            <button type="button" class="green" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
+                            <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
                         </div>
                     </div>
                 </form>
@@ -55,8 +55,7 @@ import BaseTempAlert from '../../../components/ui/BaseTempAlert'
 export default {
     name: 'commentsSection',
     props: [
-        'product',
-        'selection',
+        'selectionInput',
     ],
     components: {
         Comment,
@@ -71,11 +70,7 @@ export default {
         submitting: false,
     }},
     watch: {
-        product: function(newVal, oldVal) {
-            if (newVal.id != oldVal.id)
-                this.update()
-        },
-        selection: function(newVal, oldVal) {
+        selectionInput: function(newVal, oldVal) {
             if (newVal.id != oldVal.id)
                 this.update()
         },
@@ -83,22 +78,21 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
+        currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
         submitDisabled () {
             return this.newComment.content.length < 1 || this.submitting
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection)
         },
         commentsSorted() {
-            return this.product.comments.sort((a,b) => {
+            return this.selectionInput.comments.sort((a,b) => {
                 return a.id - b.id
             })
         },
     },
     methods: {
         ...mapActions('comments', ['insertOrUpdateComment']),
-        ...mapActions('requests', ['insertOrUpdateRequest']),
         activateWrite() {
             this.$refs.commentField.focus()
             this.$refs.commentField.select()
@@ -122,15 +116,15 @@ export default {
             const commentToPost = {
                 id: this.newComment.id,
                 user_id: this.authUser.id,
-                product_id: this.product.id,
-                selection_id: this.selection.id,
+                product_id: this.selectionInput.product_id,
+                selection_id: this.selectionInput.selection_id,
                 content: this.newComment.content,
                 user: this.authUser,
-                selection: this.selection,
+                selection: this.selectionInput.selection,
                 votes: []
             }
             // dispatch action
-            this.insertOrUpdateComment({product: this.product, comment: commentToPost})
+            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: commentToPost})
             this.submitting = false
 
             // Reset comment
@@ -237,42 +231,11 @@ export default {
                 display: block;
                 margin-top: -2px;
             }
-            .edit-request {
-                position: absolute;
-                right: 12px;
-                font-size: 10px;
-                color: $dark;
-                font-weight: 500;
-                top: 50%;
-                transform: translateY(-50%);
-                cursor: pointer;
-                .circle {
-                    height: 24px;
-                    width: 24px;
-                    margin-left: 4px;
-                }
-            }
             .flex-wrapper {
                 display: flex;
                 justify-content: space-between;
                 margin-top: 8px;
                 // align-items: center;
-            }
-        }
-        .checkmark {
-            height: 32px;
-            width: 32px;
-            line-height: 32px;
-            text-align: center;
-            border-radius: 16px;
-            background: $light1;
-            color: $dark2;
-            position: absolute;
-            right: 16px;
-            top: 4px;
-            cursor: pointer;
-            &.active {
-                color: $primary;
             }
         }
         input[type=submit] {
@@ -332,7 +295,7 @@ export default {
         margin-top: 20px;
         margin-bottom: 12px;
     }
-    .request-succes {
+    .request-success {
         margin-right: 8px;
         font-weight: 500;
     }

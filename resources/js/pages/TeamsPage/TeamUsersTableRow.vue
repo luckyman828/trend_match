@@ -1,8 +1,5 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" :class="{active: contextMenuIsActive}"
-    @contextmenu.prevent="$emit('showContextMenu', $event, user)" 
-    @click.ctrl="$refs.selectBox.check()">
-        <td class="select"><BaseCheckbox ref="selectBox" :value="user" :modelValue="localSelectedUsers" v-model="localSelectedUsers"/></td>
+    <BaseTableInnerRow class="user-row table-row" ref="userRow">
         <td v-if="editName" class="title">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
@@ -15,16 +12,10 @@
         </td>
         <td class="email">{{user.email}}</td>
         <td class="role">
-            <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" @click.stop="$emit('editRole', $event, user)"><span>{{user.role}}</span></button>
+            <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" @click.stop="$emit('edit-role', $event, user)"><span>{{user.role}}</span></button>
             <span v-else>{{user.role}}</span>
         </td>
-        <!-- <td class="currency">
-            <button class="ghost editable sm" @click.stop="$emit('editCurrency', $event, user)"><span>{{user.currency ? user.currency : 'Set user currency'}}</span></button>
-        </td> -->
-        <td class="action">
-            <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
-        </td>
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -35,24 +26,14 @@ export default {
     props: [
         'user',
         'team',
-        'index',
-        'selectedUsers',
-        'contextUser',
     ],
     data: function() { return {
         editName: false,
         userToEdit: this.user,
     }},
     computed: {
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
-        localSelectedUsers: {
-            get() { return this.selectedUsers },
-            set(localSelectedUsers) {this.$emit('input', localSelectedUsers)}
-        },
-        contextMenuIsActive() {
-            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == this.user.id && this.selectedUsers.length <= 1
-        }
     },
     methods: {
         ...mapActions('users', ['updateUser']),
@@ -60,6 +41,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+.user-row {
+    &.self {
+        .title {
+            i {
+                color: $primary;
+            }
+        }
+        font-weight: 500;
+    }
+}
 
 </style>

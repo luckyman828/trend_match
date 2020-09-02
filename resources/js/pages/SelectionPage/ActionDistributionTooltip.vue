@@ -1,12 +1,12 @@
 <template>
     <div class="action-distribution-tooltip">
         <div class="header">
-            <h4>{{type}}</h4>
+            <h4>{{type == 'None' ? 'Not Decided' : type}}</h4>
         </div>
 
         <ActionDistributionList
-        :feedbackActions="product.feedbacks.filter(x => x.action == type)" 
-        :alignmentActions="product.actions.filter(x => x.action == type)"
+        :feedbackActions="selectionInput.feedbacks.filter(x => x.action == type)" 
+        :alignmentActions="selectionInput.actions.filter(x => x.action == type)"
         :defaultTab="actionDistributionTooltipTab"
         @changeTab="event => $emit('changeTab', event)"/>
     </div>
@@ -18,13 +18,13 @@ import ActionDistributionList from './ActionDistributionList'
 export default {
     name: 'actionDistributionTooltip',
     props: [
-        'product',
+        'selectionInput',
         'type',
         'actionDistributionTooltipTab'
     ],
     components: {
         ActionDistributionList
-    }
+    },
 }
 </script>
 

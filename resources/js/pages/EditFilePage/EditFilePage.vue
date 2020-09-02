@@ -115,7 +115,7 @@ export default{
 <style scoped lang="scss">
 @import '~@/_variables.scss';
     .quick-actions {
-        border-bottom: solid 2px $light2;
+        border-bottom: $borderDivider;
         padding-bottom: 16px;
         margin-bottom: 16px;
         p {

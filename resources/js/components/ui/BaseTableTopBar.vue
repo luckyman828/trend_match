@@ -27,18 +27,22 @@ export default {
         margin-bottom: 0;
         // font-weight: 700;
         width: 100%;
+        color: $fontSoft;
+        strong {
+            color: $grey800;
+        }
         .left, .right {
             display: flex;
             align-items: center;
         }
         .left {
             > * {
-                margin-right: 16px;
+                margin-right: 8px;
             }
         }
         .right {
             > * {
-                margin-left: 16px;
+                margin-left: 8px;
             }
         }
     }

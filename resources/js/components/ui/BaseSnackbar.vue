@@ -151,25 +151,25 @@ var Timer = function(callback, delay, resetCallback) {
         justify-content: center;
         border-radius: 4px 0 0 4px;
         &.success {
-            background: $green;
+            background: $success;
             i {
                 color: white;
             }
         }
         &.danger {
-            background: $red;
+            background: $danger;
             i {
                 color: white;
             }
         }
         &.warning {
-            background: $yellow;
+            background: $warning;
             i {
                 color: $font;
             }
         }
         &.info {
-            background: $primary;
+            background: $info;
             i {
                 color: white;
             }

@@ -1,6 +1,7 @@
 <template>
     <div class="tab" :class="[{'active': active}, {'has-count': count != null}, {'disabled': disabled}]" @click="!disabled && change($event)">
         <span>{{label}}</span>
+        <div class="toggle" v-if="toggle"><BaseCheckbox @change="$emit('toggle', $event)"/>{{toggle}}</div>
         <span v-if="count != null" class="count pill sm" :class="active ? 'primary' : 'white'">
             <span>{{count}}</span>
         </span>
@@ -16,6 +17,7 @@ export default {
         'label',
         'count',
         'disabled',
+        'toggle',
     ],
     computed: {
         active() {
@@ -33,7 +35,6 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    $borderRadius: 4px;
     .tab {
         height: 44px;
         width: 220px;
@@ -41,20 +42,35 @@ export default {
         justify-content: center;
         align-items: center;
         text-align: center;
-        border-radius: $borderRadius $borderRadius 0 0;
-        background: $light1;
         font-weight: 700;
         font-size: 14px;
         color: $dark15;
         cursor: pointer;
-        padding-bottom: $borderRadius;
-        &:hover:not(.disabled) {
-            background: $light2;
-            color: $dark05;
+        padding-bottom: $borderRadiusModule;
+        border: $borderModule;
+        border-radius: $borderRadiusModule $borderRadiusModule 0 0;
+        background: $bgTab;
+        color: $fontColorTab;
+        .toggle {
+            display: flex;
+            font-size: 12px;
+            .checkbox {
+                margin-right: 4px;
+            }
+        }
+        .pill.count {
+            color: $fontSoft;
+            &.primary {
+                color: white;
+            }
+        }
+        &:hover:not(.disabled):not(.active) {
+            background: $bgTabHover;
+            color: $fontColorTabHover;
         }
         &.active {
-            background: white;
-            color: $primary;
+            background: $bgTabActive;
+            color: $fontColorTabActive;
             cursor: auto;
         }
         &:not(:last-child) {
@@ -62,7 +78,7 @@ export default {
         }
         &.has-count {
             justify-content: space-between;
-            padding: 0 32px $borderRadius;
+            padding: 0 32px $borderRadiusModule;
         }
         &.disabled {
             cursor: default;

@@ -1,5 +1,3 @@
 # Trendmatch B2B Web App
 
-test readme
-test some more
-force deploy
+Our readme. Mostly used for forcing redeploys.

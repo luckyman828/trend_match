@@ -12,7 +12,7 @@
                     </div>
 
                     <div class="left">
-                        <img :src="variantImage(product.variants[0])">
+                        <img :src="variantImage(product.variants[0], {size: 'sm'})">
                         <strong class="name">{{product.title | truncate(20)}}</strong>
                         <span class="id">#{{product.datasource_id}}</span>
                     </div>

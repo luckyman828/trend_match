@@ -55,6 +55,65 @@
                 </table>
             </div>
 
+            <!-- START Map Variants -->
+            <div v-if="replaceVariants" class="table-wrapper map-variants" style="margin-bottom: 32px;">
+                <h3>Map Variants</h3>
+
+                <table class="map-fields-table">
+                    <tr class="header">
+                        <th></th>
+                        <th><label>Database</label></th>
+                        <th></th>
+                        <th><label>Matched Datasource</label></th>
+                        <th><label>Example</label></th>
+                    </tr>
+                    <tr v-for="(field, index) in variantFieldsToMatch" :key="index" :class="{disabled: !field.enabled}">
+                        <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                        <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                        <td><i class="fas fa-equals"></i></td>
+                        <td>
+                            <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                            class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                            :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                <i class="fas fa-caret-down"></i>
+                            </BaseInputField>
+                        </td>
+                        <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                            :value="previewExampleValue(field.newValue, field.name)"/>
+                        </td>
+                    </tr>
+                    <tr v-for="(field, index) in variantImagesToMap" :key="'variant-image-'+index" :class="{disabled: !field.enabled}"
+                    class="variant-image-row">
+                        <td><BaseCheckbox :value="field.enabled" v-model="field.enabled"/></td>
+                        <td><BaseInputField class="input-field" disabled=true :value="field.displayName" readOnly=true /></td>
+                        <td><i class="fas fa-equals"></i></td>
+                        <td>
+                            <BaseInputField :label="field.newValue.fileIndex != null && availableFiles[field.newValue.fileIndex].fileName" 
+                            class="input-field" :class="{'auto-match': field.newValue.autoMatch}" disabled=true 
+                            :value="field.newValue.fieldName" type="select" @click="showSelectContext($event, field)">
+                                <i class="fas fa-caret-down"></i>
+                            </BaseInputField>
+                        </td>
+                        <td><BaseInputField :errorTooltip="field.error" class="input-field" disabled=true readOnly=true
+                            :value="previewExampleValue(field.newValue, field.name)"/>
+                        </td>
+
+                        <td>
+                            <button class="dark ghost remove-variant-image"
+                            @click="$emit('removeVariantImage', index)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+
+                <button class="dark" style="margin-top: 12px"
+                @click="$emit('addVariantImage')">
+                    <i class="fas fa-plus"></i><span>Add variant image map</span>
+                </button>
+            </div>
+            <!-- END Map Variants -->
+
             <div class="form-section map-currencies" v-if="replacePrices">
                 <h3>Map currencies</h3>
                 <table class="single-currency-file-table">
@@ -282,6 +341,9 @@ export default {
         'singleCurrencyFile',
         'assortmentsToMatch',
         'replaceAssortments',
+        'variantFieldsToMatch',
+        'variantImagesToMap',
+        'replaceVariants',
     ],
     data: function () { return {
         filesToChooseFrom: []
@@ -328,7 +390,6 @@ export default {
             // Loop through the currencies and look check their names
             if (!this.singleCurrencyFile) {
                 this.currenciesToMatch.forEach(currency => {
-                    console.log('valdiate currency', currency)
                     if(currency.fileIndex != null && !this.validateCurrency(currency)) {
                         valid = false
                     }
@@ -430,7 +491,7 @@ export default {
         },
         autoMapHeaders(file, fileIndex) {
             // Loop through the fields we still need to match to a header
-            this.fields.forEach(field => {
+            this.fields.concat(this.variantFieldsToMatch).concat(this.variantImagesToMap).forEach(field => {
                 if (field.enabled && field.newValue.fileIndex == null && field.newValue.fieldIndex == null) {
                     // Test if the current header has a file that matches
                     const autoMatchIndex = file.headers.findIndex(header => {

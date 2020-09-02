@@ -1,4 +1,5 @@
 const mix = require('laravel-mix')
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -19,5 +20,6 @@ mix.js('resources/js/app.js', 'public/js')
                 '@': path.resolve('resources/sass'),
             },
         },
+        plugins: [new CaseSensitivePathsPlugin()],
     })
     .version()

@@ -30,6 +30,7 @@ export default {
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
         getCurrentFolder: state => state.currentFolder,
+        getApprovalEnabled: state => state.currentFile && state.currentFile.approval_enabled,
         files: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
@@ -65,10 +66,10 @@ export default {
             const apiUrl = `/workspaces/${workspaceId}/files`
 
             let tryCount = 3
-            let succes = false
+            let success = false
 
             let files
-            while (tryCount-- > 0 && !succes) {
+            while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`).catch(err => {
                         'error???'
@@ -80,7 +81,7 @@ export default {
                         commit('SET_CURRENT_FOLDER_STATUS', 'success')
                         commit('SET_FILES_STATUS', 'success')
                     }
-                    succes = true
+                    success = true
                 } catch (err) {
                     if (tryCount <= 0) {
                         if (addToState) {
@@ -184,7 +185,7 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, file) {
-            console.log('insert or update file', JSON.parse(JSON.stringify(file)))
+            console.log('insert or update', file)
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -211,6 +212,7 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
+                    console.log('success!')
                     // Display message
                     const wasCreated = !file.id
                     const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`
@@ -227,6 +229,7 @@ export default {
                     )
                     // Set the files ID if not already set
                     if (!file.id) file.id = response.data.id
+                    // console.log('done creating file', file)
                 })
                 .catch(err => {
                     // Display message
@@ -281,7 +284,6 @@ export default {
             )
 
             const sendRequest = async () => {
-                console.log('send request!')
                 await axios
                     .delete(apiUrl)
                     .then(response => {
@@ -323,7 +325,6 @@ export default {
             }
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
-            console.log('delete multiple files', files)
             commit('DELETE_MULTIPLE_FILES', files)
 
             // Start timer for deletion
@@ -416,29 +417,159 @@ export default {
             commit('removeApproverFromFile', { file, user })
             // Send request to API
         },
-        moveFiles({ commit, dispatch }, { destinationFolder, filesToMove }) {
+        moveFiles({ state, rootGetters, commit, dispatch }, { destinationFolderId, filesToMove, undo }) {
+            // console.log('move files', destinationFolderId, filesToMove)
+
+            let apiUrl = `/files/${destinationFolderId}/paste`
+            if (destinationFolderId == 0) apiUrl = `/files/${rootGetters['workspaces/currentWorkspace'].id}/paste`
             // Send request to API
-            const apiUrl = `/files/${destinationFolder.id}/paste`
+            const oldFolderId = filesToMove[0].parent_id
             axios
                 .post(apiUrl, {
                     file_ids: filesToMove.map(x => x.id),
                 })
                 .then(response => {
                     // Commit mutation to state
-                    filesToMove.map(x => {
-                        commit('deleteFile', x.id)
-                    })
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${filesToMove.length} files/folders moved`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
+                    if (!undo) {
+                        filesToMove.map(x => {
+                            commit('deleteFile', x.id)
+                        })
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${filesToMove.length} files/folders moved`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                                callback: () => {
+                                    dispatch('moveFiles', { destinationFolderId: oldFolderId, filesToMove, undo: true })
+                                    state.files = state.files.concat(filesToMove)
+                                },
+                                callbackLabel: 'Undo',
+                            },
+                            { root: true }
+                        )
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Move undone`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(() => {})
+        },
+        async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
+            return new Promise(async (resolve, reject) => {
+                // Get owners for file
+                const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
+
+                const imageMaps = []
+                products.map(product => {
+                    product.variants.map(variant => {
+                        // console.log('variant to map', variant)
+                        variant.pictures.map((picture, index) => {
+                            if (!picture.url) return
+                            imageMaps.push({
+                                mapping_id: variant.id,
+                                datasource_id: product.datasource_id,
+                                url: picture.url,
+                                pictureIndex: index,
+                            })
+                        })
+                    })
+                })
+
+                // console.log('sync image maps', imageMaps)
+
+                // Return if we have no images to sync
+                if (imageMaps.length <= 0) {
+                    resolve()
+                    return
+                }
+
+                const productsToUpdate = []
+
+                // Chunk the images
+                const array_chunks = (array, chunk_size) =>
+                    Array(Math.ceil(array.length / chunk_size))
+                        .fill()
+                        .map((_, index) => index * chunk_size)
+                        .map(begin => array.slice(begin, begin + chunk_size))
+                const imageMapChunks = array_chunks(imageMaps, 8)
+
+                // Upload a chunk at a time
+                let chunkIndex = 1
+                for await (const imageMaps of imageMapChunks) {
+                    await axios
+                        .post(apiUrl, {
+                            max_height: 2016,
+                            max_width: 1512,
+                            images: imageMaps,
+                        })
+                        .then(async response => {
+                            if (progressCallback) {
+                                const progressPercentage = ((chunkIndex / imageMapChunks.length) * 100).toFixed(0)
+                                progressCallback(progressPercentage)
+                            }
+                            const urlMaps = response.data.media_url_maps
+                            // console.log('here are the uploaded images maps', urlMaps)
+
+                            let pictureIndex = 0
+                            let currentVariantId = null
+
+                            urlMaps.forEach((urlMap, index) => {
+                                const product = products.find(product =>
+                                    product.variants.find(variant => variant.id == urlMap.mapping_id)
+                                )
+                                if (!product) return
+                                const variant = product.variants.find(variant => variant.id == urlMap.mapping_id)
+
+                                if (!variant) return
+
+                                if (currentVariantId == variant.id) {
+                                    pictureIndex++
+                                } else {
+                                    pictureIndex = 0
+                                    currentVariantId = variant.id
+                                }
+
+                                variant.pictures[pictureIndex].url = urlMap.cdn_url
+
+                                productsToUpdate.push(product)
+                            })
+                        })
+                        .catch(err => {
+                            reject(err)
+                        })
+                    chunkIndex++
+                }
+
+                // Update the products when we are done uploading
+                // console.log('we are done syncing. Update the products', productsToUpdate)
+                await dispatch(
+                    'products/updateManyProducts',
+                    { file, products: productsToUpdate },
+                    { root: true }
+                ).catch(err => {
+                    reject(err)
+                })
+                resolve()
+            })
+        },
+        async cloneFileSelections({ commit }, { destination, from }) {
+            const apiUrl = `/files/clone-selections`
+            await axios
+                .post(apiUrl, {
+                    from_file_id: from.id,
+                    to_file_id: destination.id,
+                })
+                .then(response => {
+                    console.log('file selections cloned', response)
+                })
         },
     },
 
@@ -454,6 +585,7 @@ export default {
             state.status = status
         },
         INSERT_FILE(state, file) {
+            console.log('insert file')
             state.files.push(file)
         },
         INSERT_MULTIPLE_FILES(state, files) {
@@ -487,7 +619,7 @@ export default {
                 state.files.splice(index, 1)
             }
         },
-        removeUnsavedFiles(state) {
+        REMOVE_UNSAVED_FILES(state) {
             state.files = state.files.filter(x => x.id != null)
         },
         setAvailableFileIds(state, fileIds) {

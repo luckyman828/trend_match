@@ -72,7 +72,7 @@ export default {
 
     th {
         font-size: 12px;
-        color: $tableHeader;
+        color: $fontTableHeader;
         .sort {
             &.active {
                 background: $light1;
@@ -87,9 +87,9 @@ export default {
         }
         button {
             margin-left: -8px;
-            &:focus {
-                box-shadow: none;
-            }
+            // &:focus {
+            //     box-shadow: none;
+            // }
         }
         button.invisible:not(.ghost-hover):hover {
             color: $primary;

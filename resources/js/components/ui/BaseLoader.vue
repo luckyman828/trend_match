@@ -63,6 +63,7 @@ svg {
 .message {
     font-size: 12px;
     font-weight: 700;
-    color: $dark2;
+    color: $fontSoft;
+    text-align: center;
 }
 </style>

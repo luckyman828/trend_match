@@ -10,8 +10,9 @@
         <div class="comment" :class="[{important: comment.important}, {failed: comment.error}]">
             <span v-if="!editActive" class="body">{{comment.content}}</span>
             <span v-else class="body">
-                <BaseInputTextArea ref="commentInputField" v-model="comment.content"
-                @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent/>
+                <BaseInputTextArea ref="commentInputField" v-model="commentToEdit.content"
+                @keyup.enter.exact.native="onUpdateComment" @keydown.enter.exact.native.prevent
+                @keydown.esc.native="editActive = false"/>
             </span>
 
             <!-- Comment Controls -->
@@ -39,14 +40,17 @@
             <!-- End Comment Controls -->
         </div>
         <div class="save-controls" v-if="editActive">
-            <BaseButton buttonClass="green" :hotkey="{key: 'ENTER', label: 'Save'}" style="margin-right: 8px"
+            <button class="invisible ghost-hover" style="margin-right: 8px"
+            @click="editActive = false">
+                <span>Cancel</span>
+            </button>
+            <BaseButton buttonClass="primary" :hotkey="{key: 'ENTER', label: 'Save', align: 'right'}" 
             @click="onUpdateComment">
                 <span>Save</span>
             </BaseButton>
-            <button class="invisible ghost-hover" @click="editActive = false"><span>Cancel</span></button>
         </div>
 
-        <div class="sender" v-if="displayAuthor">
+        <div class="sender" v-if="displayAuthor && !editActive">
             <strong>{{comment.role == 'Approver' ? 'Approval' : comment.selection.name}}</strong> | 
             {{(comment.user_id == authUser.id) ? 'You' 
             : !commentIsAnonymized && comment.user ? comment.user.name : 'Anonymous'}}
@@ -70,8 +74,7 @@ export default {
     name: 'comment',
     props: [
         'comment',
-        'product',
-        'selection',
+        'selectionInput',
         'displayAuthor',
     ],
     data: function() {
@@ -92,8 +95,8 @@ export default {
             || this.comment.focus
         },
         commentIsAnonymized() {
-            const yourRole = this.selection.your_role
-            const displayRole = this.selection.settings.anonymize_comment
+            const yourRole = this.selectionInput.selection.your_role
+            const displayRole = this.selectionInput.selection.settings.anonymize_comment
             if (this.authUserWorkspaceRole == 'Admin') return false
             return displayRole == 'None' || displayRole == 'Owner' && yourRole != 'Owner'
         }
@@ -102,20 +105,23 @@ export default {
         ...mapActions('comments', ['insertOrUpdateComment', 'deleteComment']),
         async onDeleteComment() {
             if (await this.$refs.confirmDeleteComment.confirm()) {
-                this.deleteComment({product: this.product, comment: this.comment})
+                this.deleteComment({selectionInput: this.selectionInput, comment: this.comment})
             }
         },
         retrySubmitComment() {
-            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
         },
         onUpdateComment() {
-            this.insertOrUpdateComment({product: this.product, comment: this.comment})
+            this.comment.content = this.commentToEdit.content
+            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: this.comment})
             this.editActive = false
         },
         onEditComment() {
             this.editActive = true
+            this.commentToEdit = JSON.parse(JSON.stringify(this.comment))
             this.$nextTick(() => {
                 this.$refs.commentInputField.focus()
+                this.$refs.commentInputField.select()
             })
         }
     }
@@ -132,9 +138,10 @@ export default {
         &.edit-active {
             width: 100%;
             max-width: none;
-            margin-bottom: 44px;
+            margin-bottom: 72px;
             .comment {
                 padding: 2px;
+                width: 100%;
                 ::v-deep {
                     .input-wrapper {
                         border: none;
@@ -161,7 +168,7 @@ export default {
     .save-controls {
         position: absolute;
         bottom: -8px;
-        left: 0;
+        right: 0;
         transform: translateY(100%);
         display: flex;
     }
@@ -184,7 +191,6 @@ export default {
         background: white;
         border-radius: 6px;
         display: inline-block;
-        z-index: 1;
         margin-bottom: 4px;
         text-align: left;
         .failed {
@@ -209,14 +215,14 @@ export default {
             background: $yellow;
             color: $dark;
         }
-        &:hover, &.failed {
+        .own &:hover, &.failed {
+            font-weight: 700;
             .controls {
-                opacity: 1;
+                display: inline-flex;
             }
         }
         .controls {
             transition: .3s;
-            opacity: 0;
             position: absolute;
             right: 0;
             bottom: -36px;
@@ -241,9 +247,6 @@ export default {
             .loader {
                 height: 24px;
                 flex-direction: row;
-            }
-            .own & {
-                display: inline-flex;
             }
         }
     }

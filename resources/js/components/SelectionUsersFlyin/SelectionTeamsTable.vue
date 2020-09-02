@@ -1,48 +1,35 @@
 <template>
     <div class="selection-teams-table">
-        <BaseFlexTable :stickyHeader="false"
-        :contentStatus="readyStatus"
-        loadingMsg="loading teams"
-        errorMsg="error loading teams"
-        :errorCallback="() => initData()">
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <h3>Selection Teams</h3>
-                    </template>
-                    <template v-slot:right>
-                        <span>{{selection.teams ? selection.teams.length : 0}} records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
+        <h3>Selection Teams</h3>
+        <BaseTable :stickyHeader="false"
+            :contentStatus="readyStatus"
+            loadingMsg="loading teams"
+            errorMsg="error loading teams"
+            :errorCallback="() => initData()"
+            :items="selection.teams"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selected"
+            :contextItem.sync="contextTeam"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="'title'"
+            :searchResult.sync="teamsFilteredBySearch"
+            @show-contextmenu="showTeamContext"
+        >
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selected = selection.teams : selected = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="name" :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Users</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
-                <tr v-for="(team, index) in selection.teams" :key="team.id" class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive(team)}"
-                @click.ctrl="$refs.selectBox[index].check()"
-                @contextmenu="showTeamContext($event, team)">
-                    <td class="select"><BaseCheckbox ref="selectBox" :value="team" v-model="selected"/></td>
+            <template v-slot:row="rowProps">
+                <BaseTableInnerRow>
                     <td class="title">
                         <i class="fas fa-users"></i>
-                        <span>{{team.title}}</span>
+                        <span>{{rowProps.item.title}}</span>
                     </td>
                     <td class="users">
-                        <span>{{team.user_count}}</span>
+                        <span>{{rowProps.item.user_count}}</span>
                     </td>
-                    <td class="action">
-                        <button class="invisible ghost-hover" v-if="userHasEditAccess" 
-                        @click="showTeamContext($event, team)">
-                            <i class="far fa-ellipsis-h medium"></i>
-                        </button>
-                    </td>
-                </tr>
+                </BaseTableInnerRow>
             </template>
             <template v-slot:footer>
                 <td><BaseButton buttonClass="primary invisible" :disabled="!userHasEditAccess"
@@ -51,19 +38,18 @@
                     <i class="far fa-plus"></i><span>Add Teams(s) to Selection</span>
                 </BaseButton></td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team"
-        :hotkeys="['KeyR']"
-        @keybind-r="onRemoveTeams(contextTeam)">
+        <BaseContextMenu ref="contextMenuTeam" class="context-team">
             <template v-slot:header v-if="selected.length > 1">
                 <span>Choose action for {{selected.length}} teams</span>
             </template>
             <div class="item-group">
-                <div class="item" @click="onRemoveTeams(contextTeam)">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                hotkey="KeyR"
+                @click="onRemoveTeams(contextTeam)">
                     <u>R</u>emove Team{{selected.length > 1 ? 's' : ''}}
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
@@ -112,19 +98,25 @@ export default {
         selected: [],
         teamsToAdd: [],
         contextTeam: null,
+        contextMouseEvent: null,
         authUserIsOwner: false,
+        teamsFilteredBySearch: [],
     }},
     computed: {
-        ...mapGetters('teams', ['teams', 'getTeamsStatus']),
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('teams', {
+            teams: 'teams', 
+            getTeamsStatus: 'getTeamsStatus',
+            teamsWorkspaceId: 'getWorkspaceFetchedFromId',
+        }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess',
             getSelectionTeamsStatus: 'getSelectionTeamsStatus'
         }),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         readyStatus() {
             if (this.getTeamsStatus == 'error' || this.getSelectionTeamsStatus == 'error') return 'error'
-            if (this.getTeamsStatus == 'loading' || this.getSelectionTeamsStatus == 'error') return 'loading'
+            if (this.getTeamsStatus == 'loading' || this.getSelectionTeamsStatus == 'loading') return 'loading'
             return 'success'
         },
         userHasEditAccess() {
@@ -145,7 +137,8 @@ export default {
         ...mapActions('teams', ['fetchTeamUsers', 'fetchTeams']),
         initData(forceRefresh) {
             // Check if we have any workspace teams, else fetch them
-            if (this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading') this.fetchTeams()
+            if (!this.teamsWorkspaceId != this.currentWorkspace.id 
+            || this.getTeamsStatus != 'success' && this.getTeamsStatus != 'loading') this.fetchTeams()
 
             // Fetch selection with users and teams
             if (forceRefresh || (this.getSelectionTeamsStatus != 'loading' && !this.selection.teams)) {
@@ -153,14 +146,10 @@ export default {
             }
             this.authUserIsOwner = this.selection.your_role == 'Owner'
         },
-        contextMenuIsActive (team) {
-            return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == team.id && this.selected.length <= 1
-        },
-        showTeamContext(e, team) {
+        showTeamContext(e) {
             if (!this.userHasEditAccess) return
             e.preventDefault()
             const contextMenu = this.$refs.contextMenuTeam
-            this.contextTeam = this.selected.length > 0 ? this.selected[0] : team
             contextMenu.show(e)
         },
         onAddTeam(e) {

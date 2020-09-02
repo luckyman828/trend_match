@@ -1,40 +1,41 @@
 <template>
     <div class="teams-table">
 
-        <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true"
-        :contentStatus="readyStatus"
-        loadingMsg="loading teams"
-        errorMsg="error loading teams"
-        :errorCallback="() => initData()">
+        <BaseTable v-if="currentTab == 'Teams'" stickyHeader="true"
+            :contentStatus="readyStatus"
+            :errorCallback="() => initData()"
+            loadingMsg="loading teams"
+            errorMsg="error loading teams"
+            :items="teams"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selectedTeams"
+            :contextItem.sync="contextTeam"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="'title'"
+            :searchResult.sync="teamsFilteredBySearch"
+            @show-contextmenu="showTeamContext"
+        >
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['title']" :arrayToSearch="teams" v-model="teamsFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{teamsFilteredBySearch.length}}</strong> of <strong>{{teams.length}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
+                <!-- <BaseTableHeader class="select">
                     <BaseCheckbox :value="selectedTeams.length > 0" :modelValue="true" 
                     @change="(checked) => checked ? selectedTeams = teams : selectedTeams = []"/>
-                </BaseTableHeader>
+                </BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
-            <template v-slot:body>
-                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="team in teamsFilteredBySearch" :key="team.id" :team="team" :contextTeam="contextTeam"
-                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
-                @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"/>
+            <template v-slot:row="rowProps">
+                <TeamsTableRow :team="rowProps.item" :ref="'teamRow-'+rowProps.item.id"
+                @showSingle="showSingleTeam" @edit-currency="onEditTeamCurrency"
+                @cancelEditTitle="removeUnsavedTeam"
+                />
             </template>
             <template v-slot:footer>
                 <td>
@@ -46,75 +47,71 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"/>
 
-        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps"
-        :hotkeys="['KeyV', 'KeyE', 'KeyR', 'KeyC', 'KeyD']"
-        @keybind-v="showSingleTeam(contextTeam)"
-        @keybind-e="showSingleTeam(contextTeam)"
-        @keybind-r="$refs['teamRow-'+contextTeam.id][0].editTitle = true"
-        @keybind-c="onEditTeamCurrency(contextMouseEvent, contextTeam)"
-        @keybind-d="onDeleteTeam(contextTeam)"
-        >
+        <BaseContextMenu ref="contextMenuTeam" class="context-team" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="showSingleTeam(contextTeam)">
-                    <div class="icon-wrapper">
-                        <i class="far fa-users"></i>
-                    </div>
+                <BaseContextMenuItem iconClass="far fa-users"
+                :hotkey="['KeyV', 'KeyE']"
+                @click="showSingleTeam(contextTeam)">
                     <span><u>V</u>iew / <u>E</u>dit team</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <BaseContextMenuItem :iconClass="'far fa-pen'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can rename teams'"
-                @click="$refs['teamRow-'+contextTeam.id][0].editTitle = true">
+                disabledTooltip="Only admins can rename teams"
+                hotkey="KeyR"
+                @click="$refs['teamRow-'+contextTeam.id].editTitle = true">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
+
                 <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
-                @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                disabledTooltip="Only admins can change team currency"
+                hotkey="KeyC"
+                @click="onEditTeamCurrency(contextMouseEvent, contextTeam)">
                     <span><u>C</u>hange currency</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
+                disabledTooltip="Only admins can delete teams"
+                hotkey="KeyD"
                 @click="onDeleteTeam(contextTeam)">
                     <span><u>D</u>elete team</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelectedTeams"
-        :hotkeys="['KeyC', 'KeyD']"
-        @keybind-c="onEditTeamCurrency(contextMouseEvent, selectedTeams[0])"
-        @keybind-d="onDeleteTeams">
+        <BaseContextMenu ref="contextMenuSelectedTeams">
             <template v-slot:header>
                 <span>Choose action for {{selectedTeams.length}} teams</span>
             </template>
             <template v-slot="slotProps">
 
-                <BaseContextMenuItem :iconClass="'far fa-times'"
+                <BaseContextMenuItem iconClass="far fa-times"
+                hotkey="KeyL"
                 @click="selectedTeams = []">
-                    <span>Clear selection</span>
+                    <span>C<u>l</u>ear selection</span>
                 </BaseContextMenuItem>
                 <div class="item-group">
-                    <BaseContextMenuItem :iconClass="'far fa-usd-circle'"
+                    <BaseContextMenuItem iconClass="far fa-usd-circle"
                     :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can change team currency'"
-                    @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                    disabledTooltip="Only admins can change team currency"
+                    hotkey="KeyC"
+                    @click="onEditTeamCurrency(contextMouseEvent, contextTeam)">
                         <span><u>C</u>hange currency</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
                     <BaseContextMenuItem :iconClass="'far fa-trash-alt'"
                     :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can delete teams'"
+                    disabledTooltip="Only admins can delete teams"
+                    hotkey="KeyD"
                     @click="onDeleteTeams">
                         <span><u>D</u>elete teams</span>
                     </BaseContextMenuItem>
@@ -164,7 +161,7 @@ export default {
         'authUser',
     ],
     mixins: [
-        sortArray
+        sortArray,
     ],
     components: {
         TeamsTableRow,
@@ -258,10 +255,10 @@ export default {
             if (existingNewTeam) {
                 // Focus the edit field
                 this.$nextTick(() => {
-                    if (this.$refs['teamRow-null'][0].editTitle = true) {
-                        this.$refs['teamRow-null'][0].$refs['editTitle'].setActive()
+                    if (this.$refs['teamRow-null'].editTitle == true) {
+                        this.$refs['teamRow-null'].$refs['editTitle'].setActive()
                     } else {
-                        this.$refs['teamRow-null'][0].editTitle = true
+                        this.$refs['teamRow-null'].editTitle = true
                     }
                 })
             }
@@ -280,7 +277,7 @@ export default {
                 // wait for the new team to be rendered
                 this.$nextTick(() => {
                     // Activate title edit of new folder
-                    this.$refs['teamRow-null'][0].editTitle = true
+                    this.$refs['teamRow-null'].editTitle = true
                 })
             }
             
@@ -290,7 +287,7 @@ export default {
             this.SET_CURRENT_TEAM(team)
             this.teamFlyInVisible = true
         },
-        showTeamContext(e, team) {
+        showTeamContext(e) {
             // If we have a selection, show context menu for that selection instead
             let contextMenu
             if (this.selectedTeams.length > 1) {
@@ -298,8 +295,6 @@ export default {
             } else {
                 contextMenu = this.$refs.contextMenuTeam
             }
-            this.contextTeam = this.selectedTeams.length > 0 ? this.selectedTeams[0] : team
-            this.contextMouseEvent = e
             contextMenu.show(e)
         },
         async onDeleteTeam(team) {
@@ -310,10 +305,13 @@ export default {
         },
         async onDeleteTeams() {
             if (await this.$refs.confirmDeleteMultipleTeams.confirm()) {
-                this.selectedTeams.forEach(team => {
+                for (let i = this.selectedTeams.length -1; i >= 0; i--) {
+                    const team = this.selectedTeams[i]
+                    console.log('delete this team', team.name)
                     this.deleteTeam(team)
-                    this.selectedTeams = []
-                })
+                }
+                console.log('reset selected teams')
+                this.selectedTeams = []
             }
         },
         onUpdateTeamsCurrency() {

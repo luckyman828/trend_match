@@ -25,6 +25,7 @@ export default {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('selections', ['currentSelectionStatus']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('files', ['filesStatus']),
         status () {
             if (this.productsStatus == 'error' || this.currentSelectionStatus == 'error' || this.filesStatus == 'error') return 'error'
@@ -34,7 +35,8 @@ export default {
     },
     methods: {
         ...mapActions('files', ['fetchFile']),
-        ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
+        ...mapMutations('products', ['SET_SELECTIONS_AVAILABLE_FOR_INPUT_FILTERING']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'filterSelectionsByAvailabilityForAlignment', 'fetchSelectionSettings']),
         ...mapActions('teams', ['fetchTeamUsers']),
         ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
@@ -55,14 +57,14 @@ export default {
             const selection = await this.fetchSelection({selectionId})
     
             // Fetch selection products
-            await this.fetchSelectionProducts({selections: [selection], addToState: true})
+            await this.fetchProducts({fileId})
+            await this.fetchSelectionProducts(selection)
 
             // Fetch selection settings
-            await this.fetchSelectionSettings(selection)
+            await this.fetchSelectionSettings(selection) // Used to know whether comments are anonyized or not
     
             // Fetch selections that are available for alignment for the auth user
             const selections = await this.fetchSelections({fileId})
-            await this.filterSelectionsByAvailabilityForAlignment(selections)
     
             this.loadingData = false
         }

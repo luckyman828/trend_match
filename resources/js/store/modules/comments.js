@@ -26,13 +26,13 @@ export default {
             const apiUrl = `/api/file/${file_id}/comments`
 
             let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
+            let success = false
+            while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     Comment.create({ data: response.data })
                     commit('setLoading', false)
-                    succes = true
+                    success = true
                 } catch (err) {
                     // console.log('API error in comments.js :')
                     // console.log(err.response)
@@ -41,9 +41,9 @@ export default {
                 }
             }
         },
-        async insertOrUpdateComment({ commit, dispatch }, { product, comment }) {
+        async insertOrUpdateComment({ commit, dispatch }, { selectionInput, comment }) {
             // Update our state
-            commit('INSERT_OR_UPDATE_COMMENT', { product, comment })
+            commit('INSERT_OR_UPDATE_COMMENT', { selectionInput, comment })
             let requestMethod
             let apiUrl
             // check if the provided comment should be posted or updates
@@ -53,7 +53,7 @@ export default {
             } else {
                 requestMethod = 'post'
                 // Add the new comment to our product
-                apiUrl = `/selections/${comment.selection_id}/products/${product.id}/comments`
+                apiUrl = `/selections/${comment.selection_id}/products/${selectionInput.product_id}/comments`
             }
 
             await axios({
@@ -83,7 +83,19 @@ export default {
 
                     // Set the given ID to the comment if we were posting a new comment
                     // if (!comment.id) comment.id = response.data.id
-                    if (!comment.id) Object.assign(comment, response.data)
+                    if (!comment.id) {
+                        Object.assign(comment, response.data)
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Comment updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     // On error, set error on the comment
@@ -96,7 +108,7 @@ export default {
                                 'Error on comment. Please try again. If the error persists, please contact Kollekt support',
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
-                            callback: () => dispatch('insertOrUpdateComment', { product, comment }),
+                            callback: () => dispatch('insertOrUpdateComment', { selectionInput, comment }),
                             callbackLabel: 'Retry',
                             duration: 0,
                         },
@@ -104,9 +116,9 @@ export default {
                     )
                 })
         },
-        async deleteComment({ commit, dispatch }, { product, comment }) {
+        async deleteComment({ commit, dispatch }, { selectionInput, comment }) {
             // Delete the comment from our state
-            commit('DELETE_COMMENT', { product, commentId: comment.id })
+            commit('DELETE_COMMENT', { selectionInput, commentId: comment.id })
 
             // Config API endpoint
             const apiUrl = `/comments/${comment.id}`
@@ -125,7 +137,7 @@ export default {
                 })
                 .catch(err => {
                     // Re-add the comment
-                    commit('INSERT_OR_UPDATE_COMMENT', { product, comment })
+                    commit('INSERT_OR_UPDATE_COMMENT', { selectionInput, comment })
                     // Alert the user
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -134,7 +146,7 @@ export default {
                                 'Error when trying to delete comment. Please try again. If the error persists, please contact Kollekt support',
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
-                            callback: () => dispatch('deleteComment', { product, comment }),
+                            callback: () => dispatch('deleteComment', { selectionInput, comment }),
                             callbackLabel: 'Retry',
                             duration: 0,
                         },
@@ -152,23 +164,25 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        INSERT_OR_UPDATE_COMMENT(state, { product, comment }) {
+        INSERT_OR_UPDATE_COMMENT(state, { selectionInput, comment }) {
+            // console.log('insert or update comment', selectionInput, comment)
             // First see if the comment already exists
-            console.log('insert comment')
-            console.log(product)
-            const existingCommentIndex = product.comments.findIndex(x => x.id == comment.id)
+            const existingCommentIndex = selectionInput.rawSelectionInput.comments.findIndex(x => x.id == comment.id)
             if (existingCommentIndex >= 0) {
-                const updatedComment = Object.assign(product.comments[existingCommentIndex], comment)
-                Vue.set(product.comments, existingCommentIndex, updatedComment)
+                const updatedComment = Object.assign(
+                    selectionInput.rawSelectionInput.comments[existingCommentIndex],
+                    comment
+                )
+                Vue.set(selectionInput.rawSelectionInput.comments, existingCommentIndex, updatedComment)
             }
             // Else insert the comment
             else {
-                product.comments.push(comment)
+                selectionInput.rawSelectionInput.comments.push(comment)
             }
         },
-        DELETE_COMMENT(state, { product, commentId }) {
-            const commentIndex = product.comments.findIndex(x => x.id == commentId)
-            product.comments.splice(commentIndex, 1)
+        DELETE_COMMENT(state, { selectionInput, commentId }) {
+            const commentIndex = selectionInput.rawSelectionInput.comments.findIndex(x => x.id == commentId)
+            selectionInput.rawSelectionInput.comments.splice(commentIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

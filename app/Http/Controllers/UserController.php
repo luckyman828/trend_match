@@ -155,7 +155,7 @@ class UserController extends Controller
             WorkspaceUser::insert($usersToInsert);
             
         });
-        // If succes
+        // If success
         return $usersToReturn;
     }
     

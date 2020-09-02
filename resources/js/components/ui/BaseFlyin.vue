@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'baseFlyin',
@@ -38,18 +38,42 @@ export default {
     ],
     data: function () { return {
         visible: false,
+        flyinIndex: null,
     }},
     computed: {
+        ...mapGetters('flyin', ['getVisibleFlyinCount']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
+        ...mapGetters('contextMenu', {
+            contextMenuVisible: 'getContextMenuIsVisible'}),
         isVisible () {
             return (this.show) ? this.show : this.visible
         },
         columnStyle () {
             return {gridTemplateColumns: `repeat(${this.columns}, ${100/this.columns}%)`}
+        },
+    },
+    watch: {
+        isVisible(newVal) {
+            if (newVal) {
+                // SHOW
+                this.init()
+            } else {
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+            }
+        },
+        $route() {
+            console.log('route change')
         }
     },
     methods: {
+        ...mapMutations('flyin', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
+        init() {
+            this.INCREMENT_VISIBLE_AMOUNT()
+            this.flyinIndex = this.getVisibleFlyinCount
+            document.body.addEventListener('keydown', this.hotkeyHandler)
+        },
         close () {
+            this.DECREMENT_VISIBLE_AMOUNT()
             this.visible = false
             this.$emit('close')
         },
@@ -67,6 +91,8 @@ export default {
                 if (!this.getLightboxIsVisible 
                     && event.target.type != 'textarea' 
                     && event.target.tagName.toUpperCase() != 'INPUT'
+                    && !this.contextMenuVisible
+                    && this.getVisibleFlyinCount == this.flyinIndex
                 ) {
                     if (key == 'Escape')
                         this.close()
@@ -75,10 +101,15 @@ export default {
         }
     },
     created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
+        if (this.isVisible) {
+            this.init()
+        }
     },
     destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        if (this.isVisible) {
+            this.DECREMENT_VISIBLE_AMOUNT()
+            document.body.removeEventListener('keydown', this.hotkeyHandler)
+        }
     }
 }
 </script>
@@ -92,6 +123,11 @@ export default {
             }
             > .flyin {
                 transform: none;
+            }
+        }
+        &.light {
+            > .flyin {
+                background: white;
             }
         }
     }

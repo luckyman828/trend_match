@@ -13,6 +13,7 @@
             <SelectFieldsScreen v-if="currentScreenIndex == 1"
             :fields="fieldsToReplace" :replacePrices.sync="replacePrices"
             :replaceAssortments.sync="replaceAssortments"
+            :replaceVariants.sync="replaceVariants"
             @goToNextScreen="currentScreenIndex++;"
             @goToPrevScreen="currentScreenIndex--"/>
 
@@ -21,9 +22,13 @@
             :fieldsToReplace="fieldsToReplace" :currenciesToMatch="currenciesToMatch"
             :assortmentsToMatch="assortmentsToMatch" :replaceAssortments="replaceAssortments"
             :replacePrices="replacePrices" :singleCurrencyFile.sync="singleCurrencyFile"
+            :variantFieldsToMatch="variantFieldsToMatch"
+            :variantImagesToMap="variantImagesToMap"
+            :replaceVariants="replaceVariants"
             @goToPrevScreen="currentScreenIndex--" @submit="onSubmit"
             @addCurrency="addCurrency" @removeCurrency="removeCurrency"
-            @addAssortment="addAssortment" @removeAssortment="removeAssortment"/>
+            @addAssortment="addAssortment" @removeAssortment="removeAssortment"
+            @addVariantImage="addVariantImage" @removeVariantImage="removeVariantImage"/>
         </template>
 
     </BaseModal>
@@ -69,6 +74,7 @@ export default {
         singleCurrencyFile: false,
         replacePrices: false,
         replaceAssortments: false,
+        replaceVariants: false,
         fieldsToReplace: [
             {name: 'title', displayName: 'Name', enabled: false},
             {name: 'sale_description', displayName: 'Description', enabled: false},
@@ -78,7 +84,6 @@ export default {
             {name: 'min_variant_order', displayName: 'Minimum Variant Quantity', enabled: false},
             {name: 'composition', displayName: 'Composition', enabled: false},
             {name: 'delivery_date', displayName: 'Delivery (date/month)', enabled: false},
-            {name: 'variants', displayName: 'Variants', enabled: false},
             {name: 'eans', displayName: 'Product EANs', enabled: false},
             {name: 'buying_group', displayName: 'Buyer Group', enabled: false},
         ],
@@ -101,17 +106,25 @@ export default {
             headersToMatch: ['delivery','delivery date','delivery month','del. date','del. month','del. period','delivery period']},
             {name: 'editors_choice', displayName: 'Editors Choice',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['editors choice','focus','focus style','focus product']},
-            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
-            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
-            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
-            headersToMatch: ['sizes','variant sizes','size','variant size']},
             {name: 'eans', displayName: 'EANs',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['eans','ean','variant ean','style ean', 'ean_no']},
             {name: 'buying_group', displayName: 'Buyer Group',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
             headersToMatch: ['buyer group','buyer','pricelist', 'buying group']},
         ],
+        variantFieldsToMatch: [
+            {name: 'variant_name', displayName: 'Variant Name',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['color','colour','variant','variant name','color name','colour name','main colour name', 'colour_name']},
+            {name: 'sizes', displayName: 'Variant Sizes',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['sizes','variant sizes','size','variant size']},
+        ],
+        variantImagesToMap: [
+            {name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']},
+        ],
+        variantImageDefaultObject: {
+            name: 'image', displayName: 'Variant Image URL',  newValue: {fileIndex: null, fieldName: null, fieldIndex: null}, enabled: true, error: false, 
+            headersToMatch: ['picture url','image url','img url','picture','image','img', 'variant image']
+        },
         currencyDefaultObject: {
             currencyName: '',
             nameError: null,
@@ -208,7 +221,6 @@ export default {
             })
             // Loop through the currencies and look check their names
             this.currenciesToMatch.forEach(currency => {
-                console.log('valdiate currency', currency)
                 if(currency.fileIndex != null && !this.validateCurrency(currency)) {
                     valid = false
                 }
@@ -217,7 +229,8 @@ export default {
         }
     },
     methods: {
-        ...mapActions('products', ['updateProduct', 'uploadImage']),
+        ...mapActions('files', ['syncExternalImages']),
+        ...mapActions('products', ['uploadImage', 'updateManyProducts']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async getImageFromURL(url) {
             // Send a request to get the image
@@ -258,67 +271,26 @@ export default {
             })
         },
         processFile(csv, fileName) {
-            // Split the csv into lines by line breaks
-            // NB: This regex is magic
-            // It matches strings seperated by linebreaks (CLRF (windows,max,linux shouldb be supported)) 
-            // not inside double quotation marks, while allowing for escaped " marks. 
-            const allTextLines = csv.match(/(?:"(?:\\.|[^"])*"|\\.|[^\r\n|\r|\n])+/g)
+            // Use Papa Parse 5 to parse the CSV.
+            const allLines = this.$papa.parse(csv).data
 
-            // Loop thorugh the lines
-            let lineIndex = 0
-            const csvLines = []
-            const csvHeaders = []
-
-            // Attempt to determine file delimiter
-            const csvDelimiters = [';', ',', '\t']
-            let delimiterIndex = 0
-            // Loop through our delimiters and try to split the first row by it. Apply the delimiter with the highest number of matches
-            // This should work because the first row should contain headers and therefore not include any other delimiters
-            let cellCount = 0
-            let testDelimiterIndex = 0
-            csvDelimiters.forEach(delimiter => {
-                // The split regex matches delimiters not in quotes
-                const splitRegex = new RegExp(`${delimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
-                const testCellCount = allTextLines[0].split(splitRegex).length
-                if (testCellCount >= cellCount) {
-                    cellCount = testCellCount
-                    delimiterIndex = testDelimiterIndex
-                }
-                testDelimiterIndex++
-            })
-            const csvDelimiter = csvDelimiters[delimiterIndex]
-
-            while (lineIndex < allTextLines.length) {
-                const line = allTextLines[lineIndex]
-                
-                // Split the line by our delimiter
-                // The split regex matches delimiters not in quotes
-                const splitRegex = new RegExp(`${csvDelimiter}(?=(?:[^"]*"[^"]*")*[^"]*$)`, 'g')
-                const cells = line.split(splitRegex)
-
-                // Read the first line as headers
-                if (lineIndex == 0) {
-                    // Loop through the headerCells and push an object
-                    let cellIndex = 0
-                    cells.forEach(cell => {
-                        // Push the cells to our headers array
-                        csvHeaders.push({fileIndex: this.availableFiles.length, fieldName: cell, fieldIndex: cellIndex})
-                        cellIndex++
-                    })
-                }
-                // Not the header row
-                else {
-                    // Push the cells to our lines array
-                    csvLines.push(cells)
-                }
-                // Increment the row index
-                lineIndex++
-            }
-
-            const fileToPush = {fileName: fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: csvLines, error: false}
             // Check if the file already exists. If so, replace it instead of adding
             const existingFile = this.availableFiles.find(x => x.fileName == fileName)
+
+
+            // Use the first line as headers (splice removes the first line)
+            const allHeaders = allLines.splice(0,1)[0]
+            const csvHeaders = allHeaders.map((header, index) => {
+                return {
+                    fileIndex: existingFile ? existingFile.headers[0].fileIndex : this.availableFiles.length, 
+                    fieldName: header, 
+                    fieldIndex: index
+                }
+            })
+
+            const fileToPush = {fileName, key: {fileIndex: null, fieldName: null, fieldIndex: null}, headers: csvHeaders, lines: allLines, error: false}
             if (existingFile) {
+                // existingFile = fileToPush
                 Object.assign(existingFile, fileToPush)
             } else {
                 this.availableFiles.push(fileToPush)
@@ -329,6 +301,12 @@ export default {
         },
         removeCurrency(index) {
             this.currenciesToMatch.splice(index, 1)
+        },
+        addVariantImage() {
+            this.variantImagesToMap.push(JSON.parse(JSON.stringify(this.variantImageDefaultObject)))
+        },
+        removeVariantImage(index) {
+            this.variantImagesToMap.splice(index, 1)
         },
         addAssortment() {
             this.assortmentsToMatch.push(JSON.parse(JSON.stringify(this.assortmentDefaultObject)))
@@ -451,6 +429,8 @@ export default {
                                 product.variants = []
                             if(this.replacePrices) 
                                 product.prices = []
+                            if(this.replaceVariants) 
+                                product.variants = []
                             if(this.replaceAssortments) 
                                 product.assortments = []
                             if(this.fieldsToReplace.find(x => x.name == 'eans' && x.enabled)) 
@@ -461,9 +441,9 @@ export default {
 
                         // VARIANTS
                         let variant = null
-                        if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
+                        if (this.replaceVariants) {
                             // Find / Instantiate this lines variant
-                            let variantKeyField = this.fieldsToMatch.find(x => x.name == 'variant_name')
+                            let variantKeyField = this.variantFieldsToMatch.find(x => x.name == 'variant_name')
                             // Check that the variant key is from this file
                             if (variantKeyField.newValue.fileIndex == fileIndex && variantKeyField.newValue.fieldIndex != null) {
                                 // Find the variant keys index
@@ -477,6 +457,8 @@ export default {
                                         id: this.$uuid.v4(),
                                         name: variantKeyValue,
                                         image: null,
+                                        images: [],
+                                        pictures: [],
                                         sizes: []
                                     }
                                     product.variants.push(variant)
@@ -584,9 +566,8 @@ export default {
                              
                         // FIELDS
                         // Loop thorugh our fields to match, and check if they are matched to the current file
-                        this.fieldsToMatch.forEach(field => {
-                            // Check that the field has not been disabled
-                            if (field.newValue.fileIndex == fileIndex) {
+                        this.variantFieldsToMatch.forEach(field => {
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
                                 const fieldValue = line[field.newValue.fieldIndex]
                                 const fieldName = field.name
 
@@ -603,13 +584,57 @@ export default {
                                             if (!arrayValueExists) {
                                                 variant[fieldName].push(fieldValue)
                                             }
-                                        } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
+                                        }
+                                        else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
                                             variant[fieldName] = fieldValue
                                         }
                                     }
                                 }
+                            }
+                        })
+
+                        this.variantImagesToMap.forEach(field => {
+                            if (field.enabled && field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+                                if (variant) {
+                                    if (fieldValue && !variant.pictures.find(x => x.url == fieldValue)) {
+                                        variant.pictures.push({
+                                            name: null,
+                                            url: fieldValue
+                                        })
+                                    }
+                                }
+                            }
+                        })
+
+                        // // Variants
+                        //         if (['variant_name','image','sizes'].includes(fieldName)) {
+                        //             // Check if we have matched a variant for this line
+                        //             if (variant) {
+                        //                 // If the variant exists, add the field value to it
+                        //                 // Check if the field is an array, because then it should be added to the sizes array
+                        //                 if (Array.isArray(variant[fieldName])) {
+                        //                     // Only push the value if it does not already exists
+                        //                     let arrayValueExists = variant[fieldName].includes(fieldValue)
+                        //                     if (!arrayValueExists) {
+                        //                         variant[fieldName].push(fieldValue)
+                        //                     }
+                        //                 } else if (fieldName != 'variant_name') { // Exclude variant_name to only write "name" to the variant
+                        //                     variant[fieldName] = fieldValue
+                        //                 }
+                        //             }
+                        //         }
+
+                        this.fieldsToMatch.forEach(field => {
+                            // Check that the field has not been disabled
+                            if (field.newValue.fileIndex == fileIndex) {
+                                const fieldValue = line[field.newValue.fieldIndex]
+                                const fieldName = field.name
+
+                                // Check for special case fields that need to be added to objects in json fields
                                 // Assortments
-                                else if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
+                                if (['assortment_name','box_ean','box_size'].includes(fieldName)) {
                                     // Check if we have matched an assortment for this line
                                     if (assortment) {
                                         // If the assortment exists, add the field value to it
@@ -695,6 +720,8 @@ export default {
                     type: 'info', 
                     iconClass: 'fa-exclamation-circle', 
                 })
+                this.submitStatus = null
+                this.isSubmitting = false
                 return
             }
 
@@ -703,18 +730,30 @@ export default {
             const newProducts = this.instantiateProducts()
 
             // Upload images if we are replacing variants
-            if (this.fieldsToReplace.find(x => x.name == 'variants' && x.enabled)) {
-                this.submitStatus = 'Uploading images'
-                await Promise.all(newProducts.map(async product => {
-                    await Promise.all(product.variants.map(async variant => {
-                        if (variant.image) {
-                            const imageFile = await this.getImageFromURL(variant.image)
-                            if (imageFile) {
-                                await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
-                            }
-                        }
-                    }))
-                }))
+            if (this.replaceVariants) {
+                this.submitStatus = 'Uploading images. This may take a while'
+                await this.syncExternalImages({file: this.currentFile, products: newProducts, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
+                    // console.log('uploadImages error', err)
+                    imageUploadSuccess = false
+                    this.SHOW_SNACKBAR({ 
+                        msg: `<p><strong>Hey you!</strong><br></p>
+                        <p>We will display your images from your provided URLs.</p>
+                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
+                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
+                        type: 'info', 
+                        iconClass: 'fa-exclamation-circle', 
+                    })
+                })
+                // await Promise.all(newProducts.map(async product => {
+                //     await Promise.all(product.variants.map(async variant => {
+                //         if (variant.image) {
+                //             const imageFile = await this.getImageFromURL(variant.image)
+                //             if (imageFile) {
+                //                 await this.uploadImage({ file: this.currentFile, product, variant, image: imageFile })
+                //             }
+                //         }
+                //     }))
+                // }))
             }
 
 
@@ -727,9 +766,7 @@ export default {
 
             // Send an update request to the API
             this.submitStatus = 'Saving to database'
-            await Promise.all(this.products.map(async product => {
-                await this.updateProduct(product)
-            }))
+            await this.updateManyProducts({ file: this.currentFile, products: this.products })
             .then(() => {
                 this.$emit('close')
                 this.reset()
@@ -740,22 +777,28 @@ export default {
             this.submitStatus = null
             this.isSubmitting = false
         },
+        uploadImagesProgressCalback(progress) {
+            this.submitStatus = `Uploading images. This may take a while.<br>
+            <strong>${progress}%</strong> done.`
+        },
         reset() {
-            this.availableFiles = []
-            this.filesToUpload = []
-            this.singleCurrencyFile = false
-            this.currentScreenIndex = 0
-            this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
-            // Reset fields to match
-            this.allFields.forEach(field => {
-                field.enabled = true
-                field.error = false
-                field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
-            })
-            this.replacePrices = false
-            this.fieldsToReplace.forEach(field => {
-                field.enabled = false
-            })
+            this.$emit('reset')
+            // this.availableFiles = []
+            // this.filesToUpload = []
+            // this.singleCurrencyFile = false
+            // this.currentScreenIndex = 0
+            // this.currenciesToMatch = [JSON.parse(JSON.stringify(this.currencyDefaultObject))]
+            // this.variantImagesToMap = JSON.parse(JSON.stringify(this.variantImageDefaultObject))
+            // // Reset fields to match
+            // this.allFields.concat(this.variantFieldsToMatch).forEach(field => {
+            //     field.enabled = true
+            //     field.error = false
+            //     field.newValue = {fileIndex: null, fieldName: null, fieldIndex: null}
+            // })
+            // this.replacePrices = false
+            // this.fieldsToReplace.forEach(field => {
+            //     field.enabled = false
+            // })
         }
     },
 }

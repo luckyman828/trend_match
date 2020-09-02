@@ -14,7 +14,7 @@ export default {
         availableTeamRoles: [
             {
                 role: 'Member',
-                description: 'Gives feedback on selections and can make commentsw',
+                description: 'Gives feedback on selections and can make comments',
             },
             {
                 role: 'Owner',
@@ -22,6 +22,7 @@ export default {
                     'The owner aligns selections and can make requests. Also manages the team and can add/remove users',
             },
         ],
+        workspaceFetchedFromId: null,
     },
 
     getters: {
@@ -56,6 +57,7 @@ export default {
                 }
             }
         },
+        getWorkspaceFetchedFromId: state => state.workspaceFetchedFromId,
     },
 
     actions: {
@@ -64,18 +66,19 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
             commit('SET_TEAMS_STATUS', 'loading')
+            commit('SET_WORKSPACE_FETCHED_FROM_ID', workspaceId)
 
             const apiUrl = `/workspaces/${workspaceId}/teams`
 
             let tryCount = 3
-            let succes = false
-            while (tryCount-- > 0 && !succes) {
+            let success = false
+            while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     Vue.set(state, 'teams', response.data)
                     commit('setLoading', false)
                     commit('SET_TEAMS_STATUS', 'success')
-                    succes = true
+                    success = true
                 } catch (err) {
                     console.log('API error in teams.js :')
                     console.log(err)
@@ -160,13 +163,13 @@ export default {
         async deleteTeam({ commit, dispatch }, team) {
             commit('DELETE_TEAM', team)
             const apiUrl = `/teams/${team.id}`
-            let succes
+            let success
             await axios({
                 method: 'delete',
                 url: apiUrl,
             })
                 .then(response => {
-                    succes = true
+                    success = true
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -179,9 +182,9 @@ export default {
                     )
                 })
                 .catch(err => {
-                    succes = false
+                    success = false
                     // Re-add the team
-                    commit('INSERT_TEAM', team)
+                    commit('INSERT_OR_UPDATE_TEAM', team)
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -196,7 +199,7 @@ export default {
                         { root: true }
                     )
                 })
-            return succes
+            return success
         },
         async addUsersToTeam({ commit, dispatch }, { team, users }) {
             // Make a copy of the users and set their role to 'Member' as default
@@ -210,7 +213,7 @@ export default {
                 return { id: user.id, role: 'Member' }
             })
 
-            let succes
+            let success
             const apiUrl = `/teams/${team.id}/users`
 
             // Update the state
@@ -224,7 +227,7 @@ export default {
                 },
             })
                 .then(async response => {
-                    succes = true
+                    success = true
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -238,7 +241,7 @@ export default {
                 })
                 .catch(err => {
                     console.log(err)
-                    succes = false
+                    success = false
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -253,7 +256,7 @@ export default {
                         { root: true }
                     )
                 })
-            return succes
+            return success
         },
         async updateTeamUsers({ commit, dispatch }, { team, users }) {
             const apiUrl = `/teams/${team.id}/users`
@@ -377,18 +380,15 @@ export default {
             team.user_count = team.users.length
         },
         REMOVE_USERS_FROM_TEAM(state, { team, users }) {
-            console.log(users)
-            // users.forEach(user => {
-            //     const index = team.users.findIndex(x => x.id == user.id)
-            //     team.users.splice(index, 1)
-            //     team.user_count = team.users.length
-            // })
             for (let i = users.length; i--; ) {
                 const user = users[i]
                 const index = team.users.findIndex(x => x.id == user.id)
                 team.users.splice(index, 1)
                 team.user_count = team.users.length
             }
+        },
+        SET_WORKSPACE_FETCHED_FROM_ID(state, workspaceId) {
+            state.workspaceFetchedFromId = workspaceId
         },
     },
 }

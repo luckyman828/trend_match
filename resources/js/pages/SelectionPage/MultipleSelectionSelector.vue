@@ -40,6 +40,8 @@ export default {
         selectedSelections: [],
     }},
     computed: {
+        ...mapGetters('products', ['products']),
+        ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
         currentSelections() {
             return this.getCurrentSelections
@@ -51,22 +53,21 @@ export default {
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelectionSettings']),
-        ...mapMutations('products', ['setCurrentProductFilter']),
+        ...mapMutations('products', ['setCurrentProductFilter', 'SORT_PRODUCTS']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
             const selections = this.selectedSelections
-            // Fetch data for all the selections
-            // Process all their data
             this.SET_CURRENT_SELECTIONS(selections)
-            await this.fetchSelectionProducts({selections, addToState: true})
+            // Find the newly added selections that we haven't already fethed input for
+            const newSelections = selections.filter(selection => !this.products[0].selectionInputList.find(x => x.selection_id == selection.id))
+            // Fetch data for all the selections
+            if (newSelections.length > 0) {
+                await Promise.all(newSelections.map(async selection => {
+                    await this.fetchSelectionProducts(selection)
+                    await this.fetchSelectionSettings(selection)
+                }))
+            }
 
-            // Fetch selection settings
-            await Promise.all(selections.map(async selection => {
-                await this.fetchSelectionSettings(selection)
-            }))
-
-            // Set them as current
-            this.selectedSelections = selections
             // Set the current tab to `Overview` if we are entering multi-selection mode
             if (selections.length > 1) {
                 this.setCurrentProductFilter('overview')
@@ -83,6 +84,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+button {
+    border: $borderEl;
+}
 
 </style>

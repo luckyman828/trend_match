@@ -45,16 +45,18 @@
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                 <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
                                 <input type="file" :ref="'fileInput-'+index" accept="image/*" @change="filesChange($event, index, variant)">
-                                <div v-if="variant.imageToUpload && variant.imageToUpload.uploading" class="progress-wrapper">
-                                    <span v-if="variant.imageToUpload.progress > 0">{{variant.imageToUpload.progress}}%</span>
+                                <div v-if="variant.currentImg.imageToUpload && variant.currentImg.imageToUpload.uploading" class="progress-wrapper">
+                                    <span v-if="variant.currentImg.imageToUpload.progress > 0">{{variant.currentImg.imageToUpload.progress}}%</span>
                                     <span v-else>Preparing upload..</span>
                                     <svg height="4">
                                         <rect class="background" width="100%" height="4"/>
-                                        <rect class="value" v-if="variant.imageToUpload.progress > 0" :width="variant.imageToUpload.progress + '%'" height="4"/>
+                                        <rect class="value" v-if="variant.currentImg.imageToUpload.progress > 0" :width="variant.currentImg.imageToUpload.progress + '%'" height="4"/>
                                     </svg>
                                 </div>
-                                <img v-if="variant.image || variant.blob_id" 
-                                :src="variantImg(variant)" :class="[(variant.imageToUpload) ? 'rotation-'+variant.imageToUpload.rotation : '']">
+                                <img v-if="variant.currentImg.url != null"  
+                                :key="`image-${variant.id ? variant.id : index}`"
+                                :src="variantImage(variant, {index: variant.imageIndex})" 
+                                :class="[(variant.currentImg.imageToUpload) ? 'rotation-'+variant.currentImg.imageToUpload.rotation : '']">
                                 <template v-else>
                                     <div class="controls">
                                         <span class="button light-2" @click="$refs['fileInput-'+index][0].click()">Choose from file</span>
@@ -66,7 +68,7 @@
                                     <input :id="'url-input-'+index" :ref="'url-input-'+index" type="url" class="input-wrapper" 
                                     @keyup.enter="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null" @keyup.esc="URLActiveIndex = null">
                                     <div class="buttons-wrapper">
-                                        <span class="button green" @click="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">Save</span>
+                                        <span class="button primary" @click="setVariantImageURL(variant, $refs['url-input-'+index][0].value); URLActiveIndex = null">Save</span>
                                         <span class="button ghost" @click="URLActiveIndex = null">Cancel</span>
                                     </div>
                                 </div>
@@ -75,9 +77,33 @@
                                 </div>
                             </div>
                             <div class="controls">
-                                <button @click="showVariantContext($event, index)">
+                                <button class="white"
+                                @click="showVariantContext($event, index)">
                                     <i class="fas fa-ellipsis-h"></i>
                                 </button>
+                            </div>
+                            <div class="image-drawer">
+                                <div class="square white trigger">
+                                    <i class="far fa-images"></i>
+                                    <div class="count circle xxs dark" v-if="variant.pictures.length > 1">
+                                        <span>{{variant.pictures.length}}</span>
+                                    </div>
+                                </div>
+                                <!-- <div class="drawer"> -->
+                                    <Draggable v-model="variant.pictures" class="drawer"
+                                    @start="onVariantPictureDragStart"
+                                    @end="onVariantPictureDragEnd($event, variant)">
+                                        <div class="image-wrapper" v-for="(image, index) in variant.pictures" :key="index"
+                                        :class="{'active': variant.imageIndex == index}">
+                                            <BaseVariantImg :variant="variant" size="sm" :index="index"
+                                            @click.native="variant.imageIndex = index"/>
+                                        </div>
+                                        <button class="md"
+                                        @click="onAddImageToVariant(variant)">
+                                            <i class="far fa-plus"></i>
+                                        </button>
+                                    </Draggable>
+                                <!-- </div> -->
                             </div>
                         </div>
                         <!-- Variant Name -->
@@ -87,45 +113,68 @@
                     </div>
                 </Draggable>
 
-                <h3>Details</h3>
-                <div class="form-element">
-                    <label for="product-name">Product name</label>
-                    <BaseEditInputWrapper id="product-name" :type="'text'"
-                    :value="product.title" :oldValue="originalProduct.title" v-model="product.title"/>
-                </div>
-                <div class="col-2">
+                <div class="form-section">
+
+                    <h3>Details</h3>
                     <div class="form-element">
-                        <label for="datasource-id">Product ID</label>
-                        <BaseEditInputWrapper id="datasource-id" :type="'text'" ref="idInput" :maxlength="9" 
-                        :pattern="/^\d+$/" :disabled="!!originalProduct.datasource_id" :value="product.datasource_id"
-                        :oldValue="originalProduct.datasource_id" v-model="product.datasource_id" :error="idError"
-                        @change="validateProductId"/>
+                        <label for="product-name">Product name</label>
+                        <BaseEditInputWrapper id="product-name" :type="'text'"
+                        :value="product.title" :oldValue="originalProduct.title" v-model="product.title"
+                        :submitOnBlur="true"
+                        @submit="onSubmitField"/>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-element">
+                            <label for="datasource-id">Product ID</label>
+                            <BaseEditInputWrapper id="datasource-id" :type="'text'" ref="idInput" :maxlength="9"
+                            :submitOnBlur="true"
+                            :pattern="/^\d+$/" :disabled="!!originalProduct.datasource_id" :value="product.datasource_id"
+                            :oldValue="originalProduct.datasource_id" v-model="product.datasource_id" :error="idError"
+                            @change="validateProductId" @submit="onSubmitField"/>
+                        </div>
+                        <div class="form-element">
+                            <label for="delivery">Delivery</label>
+                            <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
+                            :oldValue="originalProduct.delivery_date" v-model="product.delivery_date" 
+                            @submit="onSubmitField"/>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-element">
+                            <label for="category">Brand</label>
+                            <BaseEditInputWrapper id="brand" :type="'text'" 
+                            :submitOnBlur="true"
+                            :value="product.brand" :oldValue="originalProduct.brand" v-model="product.brand"
+                            @submit="onSubmitField"/>
+                        </div>
+                        <div class="form-element">
+                            <label for="category">Category</label>
+                            <BaseEditInputWrapper id="category" :type="'text'" 
+                            :submitOnBlur="true"
+                            :value="product.category" :oldValue="originalProduct.category" v-model="product.category"
+                            @submit="onSubmitField"/>
+                        </div>
                     </div>
                     <div class="form-element">
-                        <label for="delivery">Delivery</label>
-                        <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
-                        :oldValue="originalProduct.delivery_date" v-model="product.delivery_date"/>
+                        <label for="buying-group">Buyer Group</label>
+                        <BaseEditInputWrapper id="buying-group" :type="'text'" 
+                        :submitOnBlur="true"
+                        :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"
+                        @submit="onSubmitField"/>
                     </div>
-                </div>
-                <div class="form-element">
-                    <label for="category">Category</label>
-                    <BaseEditInputWrapper id="category" :type="'text'" 
-                    :value="product.category" :oldValue="originalProduct.category" v-model="product.category"/>
-                </div>
-                <div class="form-element">
-                    <label for="buying-group">Buyer Group</label>
-                    <BaseEditInputWrapper id="buying-group" :type="'text'" 
-                    :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"/>
-                </div>
-                <div class="form-element">
-                    <label for="composition">Composition</label>
-                    <BaseEditInputWrapper id="composition" :type="'text'" 
-                    :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"/>
-                </div>
-                <div class="form-element">
-                    <label for="description">Description</label>
-                    <BaseEditableTextarea id="description"
-                    :oldValue="originalProduct.sale_description" v-model="product.sale_description"/>
+                    <div class="form-element">
+                        <label for="composition">Composition</label>
+                        <BaseEditInputWrapper id="composition" :type="'text'" 
+                        :submitOnBlur="true"
+                        :value="product.composition" :oldValue="originalProduct.composition" v-model="product.composition"
+                        @submit="onSubmitField"/>
+                    </div>
+                    <div class="form-element">
+                        <label for="description">Description</label>
+                        <BaseEditableTextarea id="description"
+                        :oldValue="originalProduct.sale_description" v-model="product.sale_description"
+                        @submit="onSubmitField"/>
+                    </div>
                 </div>
             </BaseFlyinColumn>
 
@@ -136,12 +185,16 @@
                         <div>
                             <label for="min-order">Order minimum (pcs)</label>
                             <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                            :oldValue="originalProduct.min_order" v-model.number="product.min_order"/>
+                            :submitOnBlur="true"
+                            :oldValue="originalProduct.min_order" v-model.number="product.min_order"
+                            @submit="onSubmitField"/>
                         </div>
                         <div>
                             <label for="min-order">Variant minimum (pcs)</label>
                             <BaseEditInputWrapper :id="'min-order'" :type="'number'" 
-                            :oldValue="originalProduct.min_variant_order" v-model.number="product.min_variant_order"/>
+                            :submitOnBlur="true"
+                            :oldValue="originalProduct.min_variant_order" v-model.number="product.min_variant_order"
+                            @submit="onSubmitField"/>
                         </div>
                     </div>
                 </div>
@@ -155,21 +208,34 @@
                         <label>Mark up</label>
                     </div>
                     <div class="col-5 form-element" v-for="(price, index) in product.prices" :key="index">
-                        <BaseEditInputWrapper ref="currencyName" :id="'currencyName'" :type="'text'" 
+                        <!-- <BaseEditInputWrapper ref="currencyName" :id="'currencyName'" :type="'text'" 
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].currency : null" 
-                        v-model="price.currency"/>
+                        v-model="price.currency"/> -->
+                        <BaseInputField disabled=true 
+                        :value="price.currency" type="select" 
+                        @click="showCurrencyContext($event, price)">
+                            <i class="fas fa-caret-down"></i>
+                        </BaseInputField>
 
                         <BaseEditInputWrapper :id="'wholesale'" :type="'number'" 
+                        :submitOnBlur="true"
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].wholesale_price : null" 
-                        v-model.number="price.wholesale_price" @submit="calculateMarkup({price, whs: $event})" @activate="savedMarkup = price.mark_up"
+                        v-model.number="price.wholesale_price" @submit="calculateMarkup({price, whs: $event}); onSubmitField()" 
+                        @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, whs: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
                         <BaseEditInputWrapper :id="'recommended-retail'" :type="'number'" 
+                        :submitOnBlur="true"
                         :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].recommended_retail_price : null" 
-                        v-model.number="price.recommended_retail_price" @submit="calculateMarkup({price, rrp: $event})" @activate="savedMarkup = price.mark_up"
+                        v-model.number="price.recommended_retail_price" @submit="calculateMarkup({price, rrp: $event}); onSubmitField()" 
+                        @activate="savedMarkup = price.mark_up"
                         @change="calculateMarkup({price, rrp: $event})" @cancel="resetMarkup(price, index)" @revert="revertMarkup(price)"/>
 
-                        <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span>
+                        <BaseEditInputWrapper :id="'markup'" :type="'number'" 
+                        :submitOnBlur="true"
+                        :oldValue="originalProduct.prices[index] ? originalProduct.prices[index].mark_up : null" 
+                        v-model.number="price.mark_up"/>
+                        <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span> -->
 
                         <div style="display: flex; align-items: center;">
                             <button class="invisible ghost-hover" @click="removeCurrency(index)">
@@ -193,16 +259,22 @@
                     </div>
                     <div class="col-4 form-element" v-for="(assortment, index) in product.assortments" :key="index">
                         <BaseEditInputWrapper
+                        :submitOnBlur="true"
                         :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].name : null" 
-                        v-model="assortment.name"/>
+                        v-model="assortment.name"
+                        @submit="onSubmitField"/>
 
                         <BaseEditInputWrapper type="number"
+                        :submitOnBlur="true"
                         :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].box_size : null" 
-                        v-model.number="assortment.box_size"/>
+                        v-model.number="assortment.box_size"
+                        @submit="onSubmitField"/>
 
                         <BaseEditInputWrapper type="number"
+                        :submitOnBlur="true"
                         :oldValue="originalProduct.assortments[index] ? originalProduct.assortments[index].box_ean : null" 
-                        v-model.number="assortment.box_ean"/>
+                        v-model.number="assortment.box_ean"
+                        @submit="onSubmitField"/>
 
                         <div style="display: flex; align-items: center;">
                             <button class="invisible ghost-hover" @click="removeAssortment(index)">
@@ -221,8 +293,10 @@
                     <h3>EANs <i class="far fa-info-circle" v-tooltip="'EANs added here can be scanned with the Kollekt mobile App to find this product'"></i></h3>
                     <div class="col-2 form-element" v-for="(ean, index) in product.eans" :key="index">
                         <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
+                        :submitOnBlur="true"
                         :oldValue="originalProduct.eans[index]" 
-                        v-model="product.eans[index]" :value="ean"/>
+                        v-model="product.eans[index]" :value="ean"
+                        @submit="onSubmitField"/>
 
                         <div style="display: flex; align-items: center;">
                             <button class="invisible ghost-hover" @click="removeEAN(index)">
@@ -238,50 +312,45 @@
                 </div>
             </BaseFlyinColumn>
 
-            <BaseContextMenu ref="contextVariant" class="context-variant"
-            @keybind-d="removeVariant(contextVariantIndex)" 
-            @keybind-c="$refs['fileInput-'+contextVariantIndex][0].click()"
-            @keybind-u="editURL(contextVariantIndex)"
-            @keybind-a="onAddVariant()"
-            @keybind-r="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
+            <BaseContextMenu ref="contextVariant" class="context-variant">
                 <template v-slot>
                     <div class="item-group">
-                        <div class="item" @click="onAddVariant">
-                            <div class="icon-wrapper">
-                                <i class="far fa-plus"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-plus"
+                        hotkey="KeyA" 
+                        @click="onAddVariant">
                             <u>A</u>dd variant
-                        </div>
+                        </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <div class="item" @click="$refs['fileInput-'+contextVariantIndex][0].click()">
-                            <div class="icon-wrapper">
-                                <i class="far fa-file"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-file"
+                        hotkey="KeyC"
+                        @click="$refs['fileInput-'+contextVariantIndex][0].click()">
                             <u>C</u>hoose image from file
-                        </div>
-                        <div class="item" @click="editURL(contextVariantIndex)">
-                            <div class="icon-wrapper">
-                                <i class="far fa-link"></i>
-                            </div>
-                            Enter image <u>U</u>RL
-                        </div>
+                        </BaseContextMenuItem>
+                        <BaseContextMenuItem iconClass="far fa-link"
+                        hotkey="KeyU"
+                        @click="editURL(contextVariantIndex)">
+                            <span>Enter image <u>U</u>RL</span>
+                        </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <div class="item" @click="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
-                            <div class="icon-wrapper">
-                                <i class="far fa-pen"></i>
-                            </div>
+                        <BaseContextMenuItem iconClass="far fa-pen" 
+                        hotkey="KeyR"
+                        @click="$refs['nameInput-'+contextVariantIndex][0].$el.click()">
                             <u>R</u>ename
-                        </div>
+                        </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
-                        <div class="item" @click="removeVariant(contextVariantIndex)">
-                            <div class="icon-wrapper">
-                                <i class="far fa-trash-alt"></i>
-                            </div>
-                            <u>D</u>elete
-                        </div>
+                        <BaseContextMenuItem iconClass="far fa-trash-alt"
+                        hotkey="KeyD"
+                        @click="removeVariant(contextVariantIndex)">
+                            <u>D</u>elete variant 
+                        </BaseContextMenuItem>
+                        <BaseContextMenuItem iconClass="far fa-trash-alt"
+                        hotkey="KeyP"
+                        @click="removePicture(contextVariantIndex)">
+                            <span>Delete <u>p</u>icture</span>
+                        </BaseContextMenuItem>
                     </div>
                 </template>
             </BaseContextMenu>
@@ -295,6 +364,11 @@
                 </div>
                 <h3>Are you sure you want to delete this product?</h3>
             </BaseDialog>
+
+            <BaseSelectButtonsContextMenu v-if="contextPrice" ref="contextCurrency" 
+            header="Choose Currency" :submitOnChange="true"
+            v-model="contextPrice.currency" unsetOption="Clear" :unsetValue="null"
+            type="radio" :options="availableCurrencies" :search="true"/>
         </template>
     </BaseFlyin>
 </template>
@@ -303,11 +377,15 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 import axios from 'axios'
+import variantImage from '../../mixins/variantImage'
 
 export default {
     name: 'editProductFlyin',
     props: [
         'show',
+    ],
+    mixins: [
+        variantImage
     ],
     components: {
         Draggable
@@ -333,7 +411,9 @@ export default {
             box_ean: null,
         },
         contextVariantIndex: null,
-        idError: null
+        idError: null,
+        contextPrice: null,
+        draggingVariantPicture: false,
     }},
     watch: {
         currentProduct: {
@@ -344,6 +424,7 @@ export default {
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
         ...mapGetters('files', ['currentFile']),
+        ...mapGetters('persist', ['availableCurrencies']),
         product () {
             return this.productToEdit
         },
@@ -358,11 +439,53 @@ export default {
             const oldProduct = this.currentProduct
             return JSON.stringify(newProduct) != JSON.stringify(oldProduct)
         },
+<<<<<<< HEAD
+=======
+        filesToDelete() {
+            const newProduct = this.productToEdit
+            const oldProduct = this.currentProduct
+            let filesToDelete = []
+            // Loop through the variants on the old product
+            oldProduct.variants.forEach(variant => {
+                // First check if the current variant has a blob id
+                if (variant.blob_id != null) {
+                    // See if we can find the blob_id on the new product.
+                    const exists = newProduct.variants.find(x => x.blob_id == variant.blob_id)
+                    // If we cannot find the blob_ib on the new product, it must mean that the blob is no longer used.
+                    // We can therefore delete it
+                    if (!exists) {
+                        filesToDelete.push(variant.blob_id)
+                    }
+                }
+            })
+            return filesToDelete
+        },
+        imagesToUpload() {
+            // Check if we have any files (images) we need to upload
+            const variants = this.productToEdit.variants
+            let imagesToUpload = []
+            variants.forEach(variant => {
+                variant.pictures.forEach(picture => {
+                    if (picture.imageToUpload) {
+                        imagesToUpload.push(picture.imageToUpload)
+                    }
+                })
+            })
+            return imagesToUpload
+        },
+>>>>>>> master
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts']),
+        ...mapActions('files', ['syncExternalImages']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts', 'initProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        showCurrencyContext(e, price) {
+            this.contextPrice = price
+            this.$nextTick(() => {
+                this.$refs.contextCurrency.show(e)
+            })
+        },
         async onDeleteProduct() {
             if (await this.$refs.confirmDeleteProduct.confirm()) {
                 this.deleteProducts({file: this.currentFile, products: [this.product]})
@@ -372,7 +495,7 @@ export default {
         validateProductId(value) {
             // Check if the value already exists on a product
             const existingProduct = this.products.find(x => x.datasource_id == value)
-            if (existingProduct) {
+            if (existingProduct && existingProduct.id != this.productToEdit.id) {
                 this.idError = 'ID already taken'
             } else {
                 this.idError = null
@@ -380,7 +503,9 @@ export default {
         },
         initProduct() {
             // Make a copy of the product, so we can check for changes compared to the original
-            this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+            const productClone = JSON.parse(JSON.stringify(this.currentProduct))
+            this.productToEdit = productClone
+            this.initProducts([this.productToEdit])
 
             // Check if the product has any currencies, else add a default currency
             // if (this.productToEdit.prices.length < 1) {
@@ -392,15 +517,15 @@ export default {
             if (variants.length <= 0) {
                 this.onAddVariant()
             }
+            variants.map(variant => {
+                if (variant.pictures.length <= 0) {
+                    this.onAddImageToVariant(variant)
+                }
+            })
         },
         showVariantContext(e, index) {
             this.contextVariantIndex = index
             this.$refs.contextVariant.show(e)
-        },
-        variantImg (variant) {
-            if (variant.blob_id != null)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
         },
         addCurrency() {  
             this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
@@ -425,13 +550,27 @@ export default {
             this.$emit('closeSingle')
         },
         onAddVariant() {
-            this.product.variants.push({
+            const newVariant = {
                 id: this.$uuid.v4(),
                 name: 'Unnamed',
                 image: null,
                 blob_id: null,
                 sizes: null,
+                images: [],
+                pictures: [{
+                    url: null,
+                    name: 'New image'
+                }],
+                imageIndex: 0,
+            }
+
+            Object.defineProperty(newVariant, 'currentImg', {
+                get: function() {
+                    return newVariant.pictures[newVariant.imageIndex]
+                },
             })
+
+            this.product.variants.push(newVariant)
         },
         removeVariant(index) {
             // Remove the variant from the product
@@ -443,15 +582,18 @@ export default {
                 this.onAddVariant()
             }
         },
+        onSubmitField() {
+            console.log('on submit field')
+            // Don't update the product if it hasn't been assigned a datasource id yet
+            if (!this.productToEdit.datasource_id) return
+            
+            this.onUpdateProduct()
+        },
         async onUpdateProduct() {
             // Prepare the file to fit the database schema
             const vm = this
             this.updatingProduct = true
 
-            // this.productToEdit.updated_at = new Date()
-            //     .toISOString()
-            //     .slice(0, 19)
-            //     .replace('T', ' ')
             const productToEdit = this.productToEdit
 
 
@@ -479,27 +621,30 @@ export default {
             for (let i = 0; i < variants.length; i++) {
                 const variant = variants[i]
                 const editVariant = this.productToEdit.variants[i]
-                if (variant.imageToUpload) {
-                    // Set uploading to true
-                    variant.imageToUpload.uploading = true
-                    variant.imageToUpload.progress = 0
+                for (let i = 0; i < variant.pictures.length; i++) {
+                    const picture = variant.pictures[i]
+                    if (picture.imageToUpload) {
+                        // Set uploading to true
+                        picture.imageToUpload.uploading = true
+                        picture.imageToUpload.progress = 0
+                        variant.imageIndex = i
+    
+                        // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
+                        await this.uploadImage({
+                            file: this.currentFile, 
+                            product: productToEdit,
+                            picture,
+                            image: picture.imageToUpload.file, 
+                        }, {onUploadProgress: progressEvent => console.log('progressevent', progressEvent)}).then(response => {
+                            // Remove the image to upload
+                            delete picture.imageToUpload
+                            variant.image = variant.pictures[0].url
+                        }).catch(err => {
+                            variantError = true
+                            picture.imageToUpload.uploading = false
+                        })
+                    }
 
-                    // Use the edit variant instead of the copy to make sure we get the correct blob data and can update the UI while we upload
-                    await this.uploadImage({
-                        file: this.currentFile, 
-                        product: productToEdit,
-                        variant: editVariant,
-                        image: variant.imageToUpload.file, 
-                        callback: progress => {
-                            editVariant.imageToUpload.progress = progress
-                        }
-                    }).then(response => {
-                        // Remove the image to upload
-                        delete variant.imageToUpload
-                    }).catch(err => {
-                        variantError = true
-                        variant.imageToUpload.uploading = false
-                    })
                 }
             }
             if (variantError) {
@@ -557,11 +702,18 @@ export default {
             }
         },
         dragActive(e, index) {
+            // console.log('drag active', e, e.relatedTarget.closest('.drawer'))
+            // If we are dragging an image from the drawer, don't trigger dragging
+            if (this.draggingVariantPicture) return
+            if (e.target.classList.contains('.image-drawer') || e.relatedTarget && e.relatedTarget.closest('.drawer')) {
+                return
+            }
             // e.target.querySelector('.drop-area').classList.add('drag')
             this.dragActiveIndex = index
             this.dragCounter++
         },
         dragLeave(e) {
+            if (this.draggingVariantPicture) return
             this.dragCounter--
             if (this.dragCounter == 0) {
                 this.dragActiveIndex = null
@@ -569,6 +721,7 @@ export default {
             // e.target.querySelector('.drop-area').classList.remove('drag')
         },
         dragDrop() {
+            if (this.draggingVariantPicture) return
             this.dragActiveIndex = null
             this.dragCounter = 0
         },
@@ -581,8 +734,10 @@ export default {
                 // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
                 // Get the orientation of the image to correct for photos taken with an iPhone
                 await this.getOrientation(file, imgRotation => {
-                        // save the image to upload to the variant with its rotation data,
-                        vm.$set(variant, 'imageToUpload', {file: file, progress: 0, uploading: false})
+                        // save the image to upload to the variant picture with its rotation data,
+                        const picture = variant.currentImg
+
+                        vm.$set(picture, 'imageToUpload', {file: file, progress: 0, uploading: false})
                         // variant.imageToUpload = {file: file, id: newUUID, rotation: imgRotation}
                 })
                 // xxxxx GET ORIENTATION IS LEGACY CODE. IT HAS BEEN REPLACED BY COMPRESS JS xxxxxx
@@ -591,12 +746,12 @@ export default {
                 const fileReader = new FileReader()
                 fileReader.readAsDataURL(file)
                 fileReader.onload = (e) => {
+
                     // Show the new image on the variant
+
                     const newImage = e.target.result
                     variant.image = newImage
-                    // Set the blob_id to null, to we know to show the new image instead.
-                    // The blob_id will be set again if we upload the image
-                    variant.blob_id = null
+                    variant.currentImg.url = newImage
                 }
             } else {
                 // Throw error
@@ -668,11 +823,43 @@ export default {
         },
         async setVariantImageURL(variant, imageURL) {
             variant.image = imageURL
-            const image = await this.getImageFromURL(imageURL)
-            if (image) {
-                this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
-            }
+            variant.currentImg.url = imageURL
+            await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
+            // const image = await this.getImageFromURL(imageURL)
+            // if (image) {
+            //     this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
+            // }
+            
         },
+        onAddImageToVariant(variant) {
+            variant.pictures.push({url: null, name: 'New image'})
+            variant.imageIndex = variant.pictures.length -1
+        },
+        onVariantPictureDragStart(e, variant) {
+            this.draggingVariantPicture = true
+        },
+        onVariantPictureDragEnd(e, variant) {
+            this.draggingVariantPicture = false
+            // If the dragged picture was the currently active picture set the active picture index to the pictures new index
+            // I.e. keep the same picure as the active one even after dragging
+            if (e.oldIndex == variant.imageIndex) {
+                variant.imageIndex = e.newIndex
+                return
+            }
+            // Keep the same position when the active picture gets "bumped"
+            if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
+            if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
+        },
+        removePicture(index) {
+            const variant = this.product.variants[index]
+            if (variant.imageIndex > 0 && variant.imageIndex == variant.pictures.length -1) {
+                variant.imageIndex--
+            }
+            variant.pictures.splice(variant.imageIndex, 1)
+            if (variant.pictures.length <= 0) {
+                this.onAddImageToVariant(variant)
+            }
+        }
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)
@@ -719,9 +906,15 @@ export default {
         }
     }
     .form-section {
-        border-bottom: solid 2px $divider;
-        padding-bottom: 32px;
-        margin-bottom: 32px;
+        padding: 16px 16px 32px;
+        border: $borderModule;
+        box-shadow: $shadowModule;
+        border-radius: $borderRadiusModule;
+        // background: $bg;
+        background: white;
+        &:not(:last-child) {
+            margin-bottom: 32px;
+        }
     }
     .product-variant {
         width: 182px;
@@ -732,6 +925,9 @@ export default {
         &.has-img {
             .drop-area {
                 border: none;
+            }
+            .img-wrapper {
+                border: $borderElHard;
             }
         }
         .progress-wrapper {
@@ -763,8 +959,7 @@ export default {
             position: relative;
             overflow: hidden;
             display: inline-block;
-            border-radius: 2px;
-            border: solid 1px $light2;
+            border-radius: $borderRadiusEl;
             overflow: hidden;
             img {
                 width: 100%;
@@ -865,10 +1060,11 @@ export default {
             > .controls {
                 position: absolute;
                 z-index: 1;
-                right: 4px;
+                left: 4px;
                 top: 4px;
                 opacity: 0;
                 transition: .3s;
+                border: $borderElSoft;
             }
             &:hover .controls {
                 opacity: 1;
@@ -912,6 +1108,72 @@ export default {
     .form-element {
         &:not(:last-child) {
             margin-bottom: 16px;
+        }
+    }
+
+    .image-drawer {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        padding: 4px;
+        border: $borderElSoft;
+        border-radius: $borderRadiusEl;
+        border-color: transparent;
+        z-index: 1;
+        &:hover, &.hover {
+            background: white;
+            border-color: $borderColorEl;
+            box-shadow: $shadowEl;
+            .drawer {
+                display: block;
+            }
+            .trigger {
+                display: none;
+            }
+        }
+        .trigger {
+            border: $borderElSoft;
+            margin-right: -4px;
+            margin-top: -4px;
+            position: relative;
+            .count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                height: 16px;
+                width: 16px;
+                font-size: 10px;
+            }
+        }
+        .drawer {
+            display: none;
+            overflow-y: auto;
+            max-height: 200px;
+            >:not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        >:not(:last-child) {
+            margin-bottom: 4px;
+        }
+        .image-wrapper {
+            width: 36px;
+            height: 36px;
+            border: $borderElSoft;
+            border-radius: $borderRadiusEl;
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+            }
+            &.active {
+                border: solid 2px $primary;
+                cursor: default;
+            }
         }
     }
 </style>

@@ -34,10 +34,11 @@
 
         <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps">
             <div class="item-group">
-                <div class="item" @click="onRemoveUser(slotProps.item); slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem class="item" iconClass="far fa-trash-alt"
+                hotkey="KeyR"
+                @click="onRemoveUser(slotProps.item)">
                     <u>R</u>emove User
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 

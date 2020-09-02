@@ -1,17 +1,9 @@
 <template>
-    <tr class="products-table-row" :class="'action-'+product.currentAction"
-    @contextmenu.prevent="$emit('showContextMenu', $event, product)"
-    @click.ctrl="$refs.selectCheckbox.check()">
-
-        <span v-if="product.newComment" class="circle tiny primary"></span>
+    <BaseTableInnerRow class="products-table-row">
         
-        <td class="select" 
-        @click.self="$refs.selectCheckbox.check()">
-            <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
-        </td>
         <td class="image clickable" @click="onViewSingle">
             <div class="img-wrapper">
-                <img :key="product.id" v-if="product.variants[0] != null" :src="variantImage(product.variants[0])">
+                <BaseVariantImg :key="product.id" v-if="product.variants[0] != null" :variant="product.variants[0]" size="sm"/>
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
@@ -29,12 +21,8 @@
             </div>
         </span></td>
         <td class="delivery">
-            <span>{{
-                new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                    month: 'short',
-                    year: 'numeric',
-                })
-            }}</span>
+            <span v-if="!product.delivery_date || product.delivery_date.length < 8">{{product.delivery_date}}</span>
+            <span v-else>{{product.delivery_date.substr(0, 3)}} {{product.delivery_date.substr(product.delivery_date.length - 4)}}</span>
         </td>
 
         <!-- Start Prices -->
@@ -64,11 +52,10 @@
 
         <td class="action">
             <button class="invisible ghost-hover primary" 
-            @click="$emit('onViewSingle',product)"><span>View / Edit</span></button>
-            <button class="invisible ghost-hover" @click="$emit('showContextMenu', $event, product)"><i class="far fa-ellipsis-h"></i></button>
+            @click="onViewSingle"><span>View / Edit</span></button>
         </td>
 
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -111,7 +98,7 @@ export default {
             else return variant.image
         },
         onViewSingle() {
-            this.$emit('onViewSingle',this.product)
+            this.$emit('view-single-product',this.product)
         },
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -129,9 +116,9 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .products-table-row {
-        height: 138px;
         .img-wrapper {
-            border: solid 1px $light2;
+            // border: $borderModule;
+            border: $borderElSoft;
             height: 100%;
             width: 100%;
             // width: 48px;

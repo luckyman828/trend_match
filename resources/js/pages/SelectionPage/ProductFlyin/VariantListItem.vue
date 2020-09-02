@@ -2,20 +2,20 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <div class="variant">
             <div class="img-wrapper">
-                <img :src="variantImage(variant)">
+                <!-- <img :src="variantImage(variant,'sm')"> -->
+                <BaseVariantImg :variant="variant" size="sm" :index="variant.imageIndex"/>
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
-                    <div class="square xs" :class="
-                    variant[currentAction] == 'Focus' ? 'primary'
-                    : variant[currentAction] == 'In' ? 'green'
-                    : 'red'">
-                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star"></i>
-                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart"></i>
-                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times"></i>
+                    <div class="pill ghost xs">
+                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
+                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
+                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
+                        <span v-if="showQty" class="quantity">{{variant.quantity}}</span>
                     </div>
                 </div>
+                <div class="quantity-progress" v-if="showQty" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
             </div>
             <div class="color-wrapper">
-                <div class="circle-img"><img :src="variantImage(variant)"></div>
+                <div class="circle-img"><img :src="variantImage(variant, {size: 'sm'})"></div>
                 <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
             </div>
         </div>
@@ -33,6 +33,8 @@ export default {
         'variant',
         'product',
         'selection',
+        'selectionInput',
+        'distributionScope',
     ],
     data() { return {
         tooltipIsVisible: false
@@ -58,39 +60,15 @@ export default {
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
+            currentSelectionMode: 'currentSelectionMode'
         }),
-    },
-    methods: {
-        ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
-        updateVariantAction(newAction) {
-            // If the new action to set is the same as the one already set, return
-            if (this.variant[this.currentAction] == newAction) return
-
-            // Loop through all the variants. If their action is None, then give them a default action
-            this.product.variants.forEach(variant => {
-                if (variant[this.currentAction] == 'None') {
-                    variant[this.currentAction] = 'In'
-                }
-            })
-
-            // Set the variant feedback
-            this.variant[this.currentAction] = newAction
-            
-            // Find the users feedback action for the product and make sure it is not None
-            const authUserFeedback = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
-            if (authUserFeedback.action == 'None') {
-                authUserFeedback.action = newAction
-            }
-
-            this.insertOrUpdateProductActionPairs({
-                productActionPairs: [{
-                    product: this.product, 
-                    action: authUserFeedback
-                }], 
-                selection: this.selection
-            })
+        minimumPercentage() {
+            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
+            return percentage ? percentage.toFixed(0) : 0
         }
-    }
+    },
 }
 </script>
 
@@ -110,13 +88,30 @@ export default {
 }
 .variant .img-wrapper {
     position: relative;
+    overflow: hidden;
+    .quantity-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 8px;
+        background: $bluegrey800;
+        border-radius: 0 4px 4px 0;
+        &.full {
+            background: $green;
+        }
+    }
     .your-action {
         position: absolute;
         top: 4px;
-        right: 4px;
-        .square {
+        left: 4px;
+        .pill {
+            background: white;
             box-shadow: $shadowXs;
         }
+        // span {
+        //     margin-left: 4px;
+        //     margin-right: 7px
+        // }
     }
 }
 .variant-list-item {

@@ -2,14 +2,20 @@
     <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
         <!-- <v-popover :disabled="multiSelectionMode"> -->
             <div class="variant-item-wrapper">
-                <div class="variant-list-item pill ghost xs">
+                <BaseShape class="variant-list-item" shapeClass="pill ghost sm"
+                targetAreaPadding="8px 2px">
                     <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                </div>
+                    <div v-if="showQty" class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
+                </BaseShape>
+                <!-- <div class="variant-list-item pill ghost xs">
+                    <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
+                </div> -->
                 <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
-                    <div class="circle ghost xs">
+                    <div class="pill ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
+                        <span v-if="showQty">{{variant[currentQty]}}</span>
                     </div>
                 </div>
             </div>
@@ -63,7 +69,9 @@ export default {
     props: [
         'variant',
         'product',
+        'selectionInput',
         'selection',
+        'distributionScope',
     ],
     components: {
         ActionDistributionList
@@ -82,8 +90,15 @@ export default {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
+            currentQty: 'getCurrentSelectionModeQty',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            showQty: 'getQuantityModeActive',
         }),
+        minimumPercentage() {
+            const totalQty = this.distributionScope == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
+            return percentage ? percentage.toFixed(0) : 0
+        }
     },
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
@@ -101,7 +116,7 @@ export default {
             if (this.variant[this.currentAction] == newAction) return
 
             // Loop through all the variants. If their action is None, then give them a default action
-            this.product.variants.forEach(variant => {
+            this.selectionInput.variants.forEach(variant => {
                 if (variant[this.currentAction] == 'None') {
                     variant[this.currentAction] = 'In'
                 }
@@ -111,7 +126,7 @@ export default {
             this.variant[this.currentAction] = newAction
             
             // Find the users feedback action for the product and make sure it is not None
-            const authUserFeedback = this.product.feedbacks.find(x => x.user_id == this.authUser.id)
+            const authUserFeedback = this.selectionInput.feedbacks.find(x => x.user_id == this.authUser.id)
             if (authUserFeedback.action == 'None') {
                 authUserFeedback.action = newAction
             }
@@ -143,18 +158,39 @@ export default {
     position: relative;
     .your-action {
         position: absolute;
-        top: -12px;
-        right: -10px;
-        .circle {
-            box-shadow: $shadowXs;
+        top: -16px;
+        left: -8px;
+        .pill {
+            box-shadow: $shadowElSoft;
             background: white;
+            height: 18px;
         }
     }
 }
 .variant-list-item {
-    padding-right: 4px;
-    &:hover {
-        padding-right: 3px;
+    .bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: $bluegrey800;
+        &.full {
+            background: $green;
+        }
+    }
+    ::v-deep {
+        .base-shape {
+            padding-bottom: 2px;
+            position: relative;
+            overflow: hidden;
+            padding-right: 1px;
+            span {
+                margin-right: 8px !important;
+            }
+            &:hover {
+                padding-right: 0px;
+            }
+        }
     }
 }
 

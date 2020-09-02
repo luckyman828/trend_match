@@ -30,6 +30,7 @@ export default {
             },
             set (value) {
                 this.$emit('input', value)
+                this.$emit('submit', value)
             }
         },
     },

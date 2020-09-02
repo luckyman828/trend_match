@@ -34,6 +34,12 @@
             </div>
         </div>
 
+        <button class="red clear-queue" @click="SET_PRESENTER_QUEUE([])"
+        v-if="presenterQueue.length > 0">
+            <i class="far fa-trash-alt"></i>
+            <span>Clear queue</span>
+        </button>
+
     </div>
 </template>
 
@@ -82,13 +88,16 @@ export default {
     top: 74px;
     right: -16px;
     width: calc(242px - 32px);
-    height: calc(100% - 74px - 32px);
+    height: calc(100% - 74px - 32px - 68px);
     display: flex;
     flex-direction: column;
     align-items: center;
     right: calc(-16px - 242px + 32px);
     background: white;
-    border-radius: 4px;
+    // overflow: hidden;
+    border-radius: $borderRadiusModule;
+    border: $borderModule;
+    box-shadow: $shadowModule;
     &.drag-active {
         .draggable {
             flex: 1;
@@ -104,7 +113,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: solid 2px $divider;
+        border-bottom: solid $dividerWidth $dividerColor;
         padding: 8px 16px;
     }
     .body {
@@ -157,6 +166,10 @@ export default {
                 font-weight: 700;
             }
         }
+    }
+    .clear-queue {
+        position: absolute;
+        bottom: -48px;
     }
 }
 

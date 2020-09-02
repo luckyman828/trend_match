@@ -9,6 +9,7 @@ export default {
         users: null,
         addNewUserModalVisible: false,
         status: null,
+        workspaceFetchedFromId: null,
     },
 
     getters: {
@@ -17,6 +18,7 @@ export default {
         getUsers: state => state.users,
         getUsersStatus: state => state.status,
         addNewUserModalVisible: state => state.addNewUserModalVisible,
+        getWorkspaceFetchedFromId: state => state.workspaceFetchedFromId,
     },
 
     actions: {
@@ -25,6 +27,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
             commit('SET_USER_STATUS', 'loading')
+            commit('SET_WORKSPACE_FETCHED_FROM_ID', workspaceId)
 
             const apiUrl = `/workspaces/${workspaceId}/users`
             axios
@@ -42,7 +45,7 @@ export default {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             commit('updateUsers', usersToUpdate)
 
-            let succes
+            let success
             const apiUrl = `/workspaces/${workspaceId}/users`
 
             await axios({
@@ -54,7 +57,7 @@ export default {
                 },
             })
                 .then(response => {
-                    succes = true
+                    success = true
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -69,7 +72,7 @@ export default {
                     )
                 })
                 .catch(err => {
-                    succes = false
+                    success = false
                     // Display message
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -84,53 +87,57 @@ export default {
                         { root: true }
                     )
                 })
-            return succes
+            return success
         },
         async addUsersToWorkspace({ commit, rootGetters, dispatch }, usersToAdd) {
-            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
-            let succes
+            return new Promise((resolve, reject) => {
+                if (usersToAdd.length <= 0) {
+                    resolve()
+                    return
+                }
+                const workspaceId = rootGetters['workspaces/currentWorkspace'].id
 
-            const apiUrl = `/workspaces/${workspaceId}/users-email`
+                const apiUrl = `/workspaces/${workspaceId}/users-email`
 
-            // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
-            let dataToPost = { users: usersToAdd }
-            await axios({
-                method: 'post',
-                url: apiUrl,
-                data: dataToPost,
+                // Instantiate a new workspaceUser object, to strip away any added/calculated attributes
+                let dataToPost = { users: usersToAdd }
+                axios({
+                    method: 'post',
+                    url: apiUrl,
+                    data: dataToPost,
+                })
+                    .then(response => {
+                        const newUsers = response.data.new_users.concat(response.data.existed_users)
+                        commit('ADD_USERS', newUsers)
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${newUsers.length} user${newUsers.length > 1 ? 's' : ''} added`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                        resolve(response)
+                    })
+                    .catch(err => {
+                        // Display message
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Error when adding user. Please try again.`,
+                                iconClass: 'fa-exclamation-triangle',
+                                type: 'warning',
+                                callback: () => dispatch('addUsersToWorkspace', usersToAdd),
+                                callbackLabel: 'Retry',
+                                duration: 0,
+                            },
+                            { root: true }
+                        )
+                        reject(err)
+                    })
             })
-                .then(response => {
-                    console.log(response)
-                    succes = true
-                    commit('ADD_USERS', response.data)
-                    // Display message
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''} added`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                })
-                .catch(err => {
-                    succes = false
-                    // Display message
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `Error when adding user. Please try again.`,
-                            iconClass: 'fa-exclamation-triangle',
-                            type: 'warning',
-                            callback: () => dispatch('addUsersToWorkspace', usersToAdd),
-                            callbackLabel: 'Retry',
-                            duration: 0,
-                        },
-                        { root: true }
-                    )
-                })
-            return succes
         },
         async removeUsersFromWorkspace({ commit, dispatch }, { workspaceId, users }) {
             commit('removeUsers', users)
@@ -267,6 +274,19 @@ export default {
                     )
                 })
         },
+        async searchForUser({ commit }, query) {
+            const apiUrl = `/users?${query}`
+            let result
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    result = response.data
+                })
+                .catch(err => {
+                    console.log('error in search for users', err)
+                })
+            return result
+        },
     },
 
     mutations: {
@@ -295,6 +315,9 @@ export default {
                 const userIndex = state.users.findIndex(x => x.id == user.id)
                 state.users.splice(userIndex, 1)
             })
+        },
+        SET_WORKSPACE_FETCHED_FROM_ID(state, workspaceId) {
+            state.workspaceFetchedFromId = workspaceId
         },
     },
 }

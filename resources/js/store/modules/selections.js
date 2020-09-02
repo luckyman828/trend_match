@@ -16,18 +16,32 @@ export default {
         selections: [],
         usersFlyInVisible: false,
         currentSelections: [],
-        selectionsAvailableForAlignment: [],
         availableSelectionRoles: [
             {
                 role: 'Member',
-                description: 'Gives feedback and makes comments',
+                description: "No rights, other than the ones provided by the user's job",
             },
             {
                 role: 'Owner',
-                description: 'Aligns the selection',
+                description:
+                    'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
             },
             {
                 role: 'Approver',
+                description: 'Replies to requests',
+            },
+        ],
+        availableSelectionJobs: [
+            {
+                role: 'Feedback',
+                description: 'Gives feedback and makes comments',
+            },
+            {
+                role: 'Alignment',
+                description: 'Aligns the selection',
+            },
+            {
+                role: 'Approval',
                 description: 'Replies to requests',
             },
         ],
@@ -48,8 +62,15 @@ export default {
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selectionsAvailableForAlignment,
+        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
+        getQuantityModeActive: (state, getters) => {
+            return (
+                getters.currentSelection &&
+                getters.currentSelection.budget > 0 &&
+                getters.currentSelectionMode != 'Approval'
+            )
+        },
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {
@@ -62,6 +83,7 @@ export default {
                     : 'No Access'
             }
         },
+        getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
             return selection.your_role == 'Member'
                 ? 'Feedback'
@@ -73,6 +95,8 @@ export default {
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
+        getCurrentSelectionModeQty: (state, getters) =>
+            getters.currentSelectionMode == 'Feedback' ? 'your_quantity' : 'quantity',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
         getSelectionById: state => id => state.selections.find(x => x.id == id),
         getCurrentSelectionById: state => id => state.currentSelections.find(x => x.id == id),
@@ -121,6 +145,9 @@ export default {
         availableSelectionRoles: state => {
             return state.availableSelectionRoles
         },
+        getAvailableSelectionJobs: state => {
+            return state.availableSelectionJobs
+        },
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
         },
@@ -148,6 +175,47 @@ export default {
                 },
             }
         },
+        getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
+            const products = rootGetters['products/getProducts']
+            const activeSelections = getters.getCurrentSelections
+            const availableSelections = []
+            products.forEach(product => {
+                // Find the selection input available
+                const selectionInputListFiltered = product.selectionInputList.filter(
+                    selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
+                )
+
+                selectionInputListFiltered.forEach(selectionInput => {
+                    // Loop through the products feedback
+                    selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == feedback.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(feedback.selection)
+                    })
+                    // Loop through the products alignment
+                    selectionInput.rawSelectionInput.actions.forEach(action => {
+                        const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
+                        if (!existsInArray) availableSelections.push(action.selection)
+                    })
+                    // Loop through the products comments
+                    selectionInput.rawSelectionInput.comments.forEach(comment => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == comment.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(comment.selection)
+                    })
+                    // Loop through the products requests
+                    selectionInput.rawSelectionInput.requests.forEach(request => {
+                        const existsInArray = availableSelections.find(
+                            selection => selection.id == request.selection_id
+                        )
+                        if (!existsInArray) availableSelections.push(request.selection)
+                    })
+                })
+            })
+            return availableSelections
+        },
     },
 
     actions: {
@@ -173,29 +241,6 @@ export default {
                     })
                 commit('setLoading', false)
                 resolve(selections)
-            })
-        },
-        async filterSelectionsByAvailabilityForAlignment({ commit, getters, state, dispatch }, selections) {
-            const selectionsToReturn = []
-            await Promise.all(
-                selections.map(async selection => {
-                    const fetchedSelection = await dispatch('fetchSelection', {
-                        selectionId: selection.id,
-                        addToState: false,
-                    })
-                    selectionsToReturn.push(fetchedSelection)
-                })
-            )
-            const selectionsFiltered = selectionsToReturn.filter(selection => {
-                return (
-                    (getters.getAuthUserHasSelectionEditAccess(selection) || selection.is_visible) &&
-                    selection.your_role == 'Owner'
-                )
-            })
-            state.selectionsAvailableForAlignment = selectionsFiltered
-            return selectionsFiltered.sort((a, b) => {
-                if (a.type == 'Master') return -1
-                if (b.parent_id == a.id) return -1
             })
         },
         async fetchSelection({ commit }, { selectionId, addToState = true }) {
@@ -342,6 +387,42 @@ export default {
                     )
                 })
         },
+        async updateSelectionBudget({ commit, dispatch }, selection) {
+            commit('UPDATE_SELECTION', selection)
+            const apiUrl = `/selections/${selection.id}/extra-properties`
+            if (!selection.budget) selection.budget = 0
+
+            await axios
+                .put(apiUrl, {
+                    budget: selection.budget,
+                })
+                .then(async response => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Selection updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Something went wrong trying to update the selection. Please try again.`,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateSelectionBudget', selection),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+        },
         async addUsersToSelection({ commit, dispatch }, { selection, users, ignoreRole = true }) {
             // Commit mutation to state
             await commit('ADD_USERS_TO_SELECTION', {
@@ -360,6 +441,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
+                            // job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -496,7 +578,7 @@ export default {
                         { root: true }
                     )
                 })
-            dispatch('calculateSelectionUsers', selection)
+            // dispatch('calculateSelectionUsers', selection)
         },
         async removeUsersFromSelection({ commit, dispatch }, { selection, users }) {
             // Commit mutation to state
@@ -677,7 +759,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: `${teams.length} team ${teams.length > 1 ? 's' : ''} removed`,
+                            msg: `${teams.length} team${teams.length > 1 ? 's' : ''} removed`,
                             iconClass: 'fa-trash',
                             type: 'danger',
                             callback: () => dispatch('addTeamsToSelection', { selection, teams }),
@@ -811,11 +893,22 @@ export default {
                 dispatch('openAllSelectionDescendants', childSelection)
             })
         },
+        // Function that loops through all the children in the provided selection tree and sets their properties based on the provided properties array
+        async UPDATE_SELECTION_DESCENDANTS({ commit, dispatch }, { selectionTree, properties }) {
+            selectionTree.children.forEach(child => {
+                dispatch('UPDATE_SELECTION_DESCENDANTS', { selectionTree: child, properties })
+                properties.forEach(property => {
+                    Vue.set(child, property.name, property.value)
+                })
+            })
+        },
         async togglePresenterMode({ getters, dispatch, commit }, selection) {
             const apiUrl = `/selections/${selection.id}/presentation`
+            const selectionTree = getters.getSelectionTree(selection)
             // Assunme success
             let success = true
             if (!selection.is_presenting) {
+                // START PRESENTATION
                 await axios
                     .post(apiUrl)
                     .then(() => {
@@ -829,8 +922,11 @@ export default {
                             selection.open_to = null
                         }
                         dispatch('updateSelection', selection)
-                        const selectionTree = getters.getSelectionTree(selection)
                         dispatch('openAllSelectionDescendants', selectionTree)
+                        dispatch('UPDATE_SELECTION_DESCENDANTS', {
+                            selectionTree: selectionTree,
+                            properties: [{ name: 'presentation_inherit_from', value: selection.id }],
+                        })
                     })
                     .catch(err => {
                         console.log(err)
@@ -846,18 +942,27 @@ export default {
                         success = false
                     })
             } else {
-                await axios.delete(apiUrl).catch(err => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Something went wrong trying to stop presentation mode. Please try again.',
-                            type: 'warning',
-                            iconClass: 'fa-exclamation-triangle',
-                        },
-                        { root: true }
-                    )
-                    success = false
-                })
+                // END PRESENTATION
+                await axios
+                    .delete(apiUrl)
+                    .then(() => {
+                        dispatch('UPDATE_SELECTION_DESCENDANTS', {
+                            selectionTree: selectionTree,
+                            properties: [{ name: 'presentation_inherit_from', value: 0 }],
+                        })
+                    })
+                    .catch(err => {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Something went wrong trying to stop presentation mode. Please try again.',
+                                type: 'warning',
+                                iconClass: 'fa-exclamation-triangle',
+                            },
+                            { root: true }
+                        )
+                        success = false
+                    })
             }
             if (!success) return
 
@@ -890,6 +995,9 @@ export default {
             state.currentSelection = selection
         },
         SET_CURRENT_SELECTIONS(state, selections) {
+            // selections.map(selection => {
+            //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
+            // })
             state.currentSelections = selections
         },
         SET_CURRENT_PDP_SELECTION(state, selection) {
@@ -899,6 +1007,9 @@ export default {
             state.usersFlyInVisible = bool
         },
         insertSelections(state, { selections, method }) {
+            // selections.map(selection => {
+            //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
+            // })
             // Check if we have already instantiated selections
             if (method == 'set') {
                 state.selections = selections
@@ -1014,6 +1125,30 @@ export default {
                         return !!from && now > from
                     },
                 })
+
+                // Start process users
+                // if (selection.users) {
+                //     selection.users.map(user => {
+                //         Object.defineProperty(user, 'job', {
+                //             get: () => {
+                //                 return user.roles.filter(x => !['Owner', 'Member'].includes(x))[0]
+                //             },
+                //             set: function(value) {
+                //                 console.log('set user job', value)
+                //                 // Find the existing value
+                //                 const currentJobIndex = user.roles.findIndex(job => !['Owner', 'Member'].includes(job))
+                //                 if (currentJobIndex >= 0) {
+                //                     user.roles.splice(currentJobIndex, 1, value)
+                //                 } else {
+                //                     user.roles.push(value)
+                //                 }
+                //                 console.log(user.roles)
+                //             },
+                //         })
+                //     })
+                // }
+
+                // End process users
             })
         },
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {

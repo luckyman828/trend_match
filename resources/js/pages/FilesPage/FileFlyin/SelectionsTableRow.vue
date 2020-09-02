@@ -2,6 +2,9 @@
     <div class="selections-table-row">
         <tr class="selection" :class="{'is-hidden': isHidden}"
         @contextmenu="emitShowContext" @click="onClick">
+            <td class="select">
+                <BaseCheckbox ref="selectBox" :value="selection" :modelValue="localSelectedSelections" v-model="localSelectedSelections"/>
+            </td>
             <td class="locked"><i class="far fa-lock" v-if="!selection.is_open" v-tooltip="'Locked: Selection is read-only'"></i></td>
             <td class="expand" :class="{active: childrenExpanded}" @click.stop="toggleExpanded" :style="indent">
                 <span class="square invisible" v-if="selection.children.length > 0">
@@ -17,11 +20,31 @@
                 @submit="$emit('submitToEdit');onUpdateSelection(selection)" @cancel="$emit('cancelToEdit', {selection, parent})"/>
             </td>
             <!-- Viewing -->
-            <td v-else class="title" :class="{'clickable': !selection.is_presenting || (selection.your_role == 'Owner' && selection.type == 'Master')}"
-            @click="(!selection.is_presenting || (selection.your_role == 'Owner' && selection.type == 'Master')) && onGoToSelection()" :style="selectionWidth">
+            <td v-else class="title" :class="{'clickable': !selection.is_presenting || selection.is_presenting && selection.presentation_inherit_from == 0 && selection.your_job == 'Alignment'}"
+            @click="(!selection.is_presenting || selection.is_presenting && selection.presentation_inherit_from == 0 && selection.your_job == 'Alignment') && onGoToSelection()" :style="selectionWidth">
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"><i class="fas fa-crown"></i></i> 
                 <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i> 
                 <span :title="selection.name">{{selection.name}}</span>
+            </td>
+            <td class="budget">
+                <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
+                    <button v-if="userHasEditAccess" class="ghost editable sm">
+                        <span>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
+                    </button>
+                    <span v-else>{{selection.budget || 'Set budget' | thousandSeparated}}</span>
+                    <div slot="popover" class="budget-input-wrapper">
+                        <BaseInputField ref="budgetInput" v-model.number="newBudget" inputClass="small"
+                        :selectOnFocus="true"
+                        @keyup.enter.native="onUpdateBudget(selection); $refs.budgetInputPopover.hide()"/>
+                        <span class="currency">{{selection.currency}}</span>
+                    </div>
+                </v-popover>
+            </td>
+            <td class="budget-spend" :class="{over: budgetSpendPercentage > 100}">
+                <span v-if="selection.budget > 0" 
+                v-tooltip="`${separateThousands(selection.budget_spend.toFixed(0))} ${selection.currency}`">
+                    {{budgetSpendPercentage}}%
+                </span>
             </td>
             <!-- <td class="items">-</td>s
             <td class="in">-</td>
@@ -69,7 +92,9 @@
                 <span v-else>-</span>
             </td>
             <td class="presentation">
-                <SelectionPresenterModeButton v-if="isMaster" :selection="selection" :showLabel="false"/>
+                <SelectionPresenterModeButton 
+                v-if="selection.presentation_inherit_from == 0 && selection.your_job == 'Alignment'"
+                :selection="selection" :showLabel="false"/>
                 <div v-else-if="selection.is_presenting" class="pill primary sm"
                 v-tooltip="'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'">
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" 
@@ -92,6 +117,7 @@
         <template v-if="childrenExpanded">
             <selectionsTableRow v-for="selectionChild in selection.children" :parent="selection" :selection="selectionChild" :path="path.concat(selection.id)"
             :selectionToEdit="selectionToEdit" :key="selectionChild.id" :depth="selectionDepth" :moveSelectionActive="moveSelectionActive"
+            :selectedSelections="selectedSelections" v-model="localSelectedSelections"
             @submitToEdit="$emit('submitToEdit')" @cancelToEdit="$emit('cancelToEdit', $event)" @showContext="emitEmissionShowContext" @emitOnClick="emitOnClick"
             @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)" @showSelectionCurrencyContext="$emit('showSelectionCurrencyContext', $event)" 
             @showSettingsContext="($event, selection) => {$emit('showSettingsContext', $event, selection)}"/>
@@ -118,13 +144,21 @@ export default {
         'moveSelectionActive',
         'path',
         'file',
-        'isMaster'
+        'selectedSelections',
     ],
     data: function() { return {
         childrenExpanded: true,
+        newBudget: 0,
     }},
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        localSelectedSelections: {
+            get() { return this.selectedSelections },
+            set(localSelectedSelections) {this.$emit('input', localSelectedSelections)}
+        },
+        isMaster() {
+            return this.selection.type == 'Master'
+        },
         indent() {
             const baseIndent = 48
             const indentAmount = 24
@@ -145,12 +179,21 @@ export default {
         },
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection)
+        },
+        budgetSpendPercentage() {
+            return ((this.selection.budget_spend / this.selection.budget) * 100).toFixed(1)
         }
     },
     methods: {
-        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode']),
+        ...mapActions('selections', ['insertSelection', 'updateSelection', 'togglePresenterMode', 'updateSelectionBudget']),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
+        },
+        onShowBudgetInput() {
+            this.newBudget = this.selection.budget
+            setTimeout(() => { // For some reason this.$nextTick() doesn't work here
+                this.$refs.budgetInput.focus()
+            }, 100)
         },
         onGoToSelection() {
             if (!this.moveSelectionActive) {
@@ -208,8 +251,13 @@ export default {
             } else {
                 this.updateSelection(selection)
             }
+        },
+        onUpdateBudget(selection) {
+            selection.budget = this.newBudget
+            this.updateSelectionBudget(selection)
+            this.newBudget = 0
         }
-    }
+    },
 }
 </script>
 
@@ -229,7 +277,6 @@ export default {
             margin-right: 8px;
             width: 24px;
             font-size: 16px;
-            color: $dark2;
             &:first-child {
                 margin-right: 8px;
             }
@@ -237,10 +284,10 @@ export default {
                 position: relative;
                 i {
                     position: absolute;
-                    left: -2px;
+                    left: -3px;
                     bottom: 5px;
-                    font-size: 10px;
-                    color: #3b86ff;
+                    font-size: 11px;
+                    color: $primary;
                     margin: 0;
                     width: auto;
                  } 
@@ -273,6 +320,25 @@ export default {
             button {
                 min-width: 72px;
             }
+        }
+    }
+    .budget-input-wrapper {
+        position: relative;
+        .currency {
+            position: absolute;
+            right: 8px;
+            bottom: 5px;
+        }
+    }
+    .budget-spend {
+        font-size: 13px;
+        cursor: default;
+        &:hover {
+            font-weight: 700;
+        }
+        &.over {
+            font-weight: 700;
+            color: $red;
         }
     }
     

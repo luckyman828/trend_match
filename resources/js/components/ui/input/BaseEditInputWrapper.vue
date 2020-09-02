@@ -2,31 +2,31 @@
     <div class="edit-input-wrapper" :class="[{active: editActive}, {disabled: disabled}]">
         <div class="input-parent controls-right controls-inside control-items-2" @click="setActive">
 
-            <!-- <BaseInputField class="input" ref="input" :id="id" :type="type" :value="value" 
-            :placeholder="placeholder" 
-            step="any" :pattern="pattern"
-            @keyup.enter="submit" @keydown.esc.stop @keyup.esc="cancel" 
-            @keyup="change" @keydown="validateInput" :maxlength="maxlength"/> -->
             <input ref="input" :id="id" class="input-wrapper" :type="type" v-model="localValue" autocomplete="off"
             :placeholder="placeholder" :disabled="disabled" :class="{error: error}" v-tooltip="error"
             step="any" :pattern="pattern" :maxlength="maxlength"
+            @focus="setActive"
+            @blur="onBlur"
             @keyup.enter="!error && submit()" @keydown.esc.stop @keyup.esc="cancel" 
             @keyup="change($event); validateInput($event)" @keydown="validateAndSave">
 
             <div class="controls" v-if="!editActive && !disabled">
-                <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
-                <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>
+                <button v-tooltip.top="'Edit'" class="edit" tabindex="-1"><i class="far fa-pen"></i></button>
+                <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" tabindex="-1"
+                @click.stop="revert" class="square true-square yellow-green">
+                    <span>E</span>
+                </button>
             </div>
         </div>
         <div class="buttons">
             <div class="hotkey-wrapper" v-tooltip="error">
-                <button class="green" :disabled="error"
+                <button class="primary" :disabled="error" tabindex="-1"
                 @click="submit">
                     <span>Save</span>
                 </button>
                 <span class="hotkey"><span class="key">Enter</span> Enter</span>
             </div>
-            <button class="button ghost" @click="cancel"><span>Cancel</span></button>
+            <button class="button ghost" tabindex="-1" @click="cancel"><span>Cancel</span></button>
         </div>
     </div>
 </template>
@@ -44,12 +44,14 @@ export default {
         'pattern',
         'activateOnMount',
         'disabled',
-        'error'
+        'error',
+        'submitOnBlur',
     ],
     data: function () { return {
         editActive: false,
         localValue: this.value,
         savedValue: null,
+        blurFromSubmit: false,
     }},
     watch: {
         value: function(newVal) {
@@ -69,8 +71,22 @@ export default {
             this.emit()
             this.$emit('submit', this.localValue)
             // this.$emit('submit', this.$refs.input.value)
+            this.blurFromSubmit = true
             this.editActive = false
             document.activeElement.blur()
+        },
+        onBlur() {
+            if (this.submitOnBlur) {
+                if (this.localValue != this.oldValue && !this.error) {
+                    if (!this.blurFromSubmit) {
+                        this.submit()
+                    }
+                }
+                else {
+                    this.cancel()
+                }
+            }
+            this.blurFromSubmit = false
         },
         setActive() {
             if (this.disabled) return
@@ -163,7 +179,7 @@ export default {
             display: flex;
 
             > *:not(:last-child) {
-                margin-right: 16px;
+                margin-right: 8px;
             }
             button {
                 min-width: 80px;

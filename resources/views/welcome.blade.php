@@ -21,6 +21,29 @@
             (function(){d=document;s=d.createElement("script");
             s.src="https://client.crisp.chat/l.js";
             s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+            
+            window.CRISP_READY_TRIGGER = function() {
+                setTimeout(function(){
+                    const crispChatWrapper = document.querySelector('#crisp-chatbox')
+                    // const crispChat = document.querySelector('#crisp-chatbox > *:first-child > *:first-child')
+                    // const crispChatIcon = document.querySelector('#crisp-chatbox a[data-maximized]')
+                    // console.log('crisp chat init', crispChatIcon, document.querySelector('#crisp-chatbox'))
+                    if (crispChatWrapper) {
+                        crispChatWrapper.style.setProperty('z-index', '1', 'important')
+                        // console.log('crisp wrapper', crispChatWrapper)
+                    }
+                    // if (crispChat) {
+                    //     crispChat.style.setProperty( 'transition', 'right .2s, left .2s', 'important' )
+                    //     crispChat.id = 'crisp-chat'
+                    // }
+                    // if (crispChatIcon) {
+                    //     crispChatIcon.style.setProperty( 'transition', 'right .2s, left .2s', 'important' )
+                    //     crispChatIcon.style.setProperty( 'transition', 'right .2s, left .2s', 'important' )
+                    //     crispChatIcon.id = 'crisp-chat-icon'
+                    // }
+                    // crispChatIconAlt.classList.add = 'crisp-chat-icon'
+                }, 100)
+            };
         </script>
 
     </head>

@@ -1,73 +1,78 @@
 <template>
     <div class="products-table-wrapper">
-        <BaseFlexTable class="products-table" stickyHeader="true">
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Category </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedCategories.length > 0" class="circle primary xs">
-                                    <span>{{selectedCategories.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                                :options="availableCategories" v-model="selectedCategories"/>
-                            </template>
-                        </v-popover>
+        <BaseTable :stickyHeader="true"
+            contentStatus="success"
+            :items="products"
+            :itemsTotalCount="stateProducts.length"
+            itemKey="id"
+            :itemSize="139"
+            :selected.sync="selectedProducts"
+            :contextItem.sync="contextItem"
+            :searchKey="['datasource_id','title','category']"
+            :searchResult.sync="productsFilteredBySearch"
+            @show-contextmenu="showContext"
+            @search-enter="onViewSingle(productsFilteredBySearch[0])"
+        >
+            <template v-slot:topBarLeft>
+                
+                <v-popover trigger="click">
+                    <button class="ghost">
+                        <span>Category </span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedCategories.length > 0" class="circle primary xs">
+                            <span>{{selectedCategories.length}}</span>
+                        </span>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
+                        :options="availableCategories" v-model="selectedCategories"/>
+                    </template>
+                </v-popover>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Delivery</span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
-                                    <span>{{selectedDeliveryDates.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                            </template>
-                        </v-popover>
+                <v-popover trigger="click">
+                    <button class="ghost">
+                        <span>Delivery</span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
+                            <span>{{selectedDeliveryDates.length}}</span>
+                        </span>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
+                    </template>
+                </v-popover>
 
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Buyer group </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
-                                    <span>{{selectedBuyerGroups.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                            </template>
-                        </v-popover>
+                <v-popover trigger="click">
+                    <button class="ghost">
+                        <span>Buyer group </span>
+                        <i class="far fa-chevron-down"></i>
+                        <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
+                            <span>{{selectedBuyerGroups.length}}</span>
+                        </span>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
+                    </template>
+                </v-popover>
 
+<<<<<<< HEAD
                         <BaseCheckboxInputField class="small" v-model="noImagesOnly">
                             <span>No images only</span>
                         </BaseCheckboxInputField>
 
                         <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
                         @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
+=======
+                <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
+                @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
+>>>>>>> master
 
-                    </template>
-                    <template v-slot:right>
-                        <span>{{selectedProducts.length}} selected</span>
-                        <span v-if="productsFilteredBySearch.length != productTotals.all">{{productsFilteredBySearch.length}}/{{productTotals.all}} showing</span>
-                        <span v-else>{{productTotals.all}} records</span>
-                    </template>
-                </BaseTableTopBar>
             </template>
+
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
-                @change="(checked) => checked ? selectedProducts = products : selectedProducts = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="image"></BaseTableHeader>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
                 @sort="onSort">ID</BaseTableHeader>
@@ -84,84 +89,69 @@
                 <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
-            <template v-slot:body>
+            <template v-slot:row="rowProps">
+                    <ProductsTableRow v-if="productsFilteredBySearch.length > 0"
+                    :product="rowProps.item" :index="rowProps.index"
+                    @view-single-product="onViewSingle"/>
 
-                <RecycleScroller
-                    class="products-scroller"
-                    :items="productsFilteredBySearch"
-                    :item-size="140"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item, index }"
-                >
-                    <ProductsTableRow class="product-row flex-table-row"
-                    :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    @onViewSingle="onViewSingle" @showContextMenu="showContext"/>
-                </RecycleScroller>
-
-                <tr v-if="productsFilteredBySearch.length <= 0">
-                    <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
-                        No products to show. Try changing your filters.</p>
-                </tr>
+                    <tr v-else>
+                        <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
+                            No products to show. Try changing your filters.</p>
+                    </tr>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
-        <BaseContextMenu ref="contextMenu" v-slot="slotProps"
-        :hotkeys="['KeyV', 'KeyE', 'KeyA', 'KeyD', 'KeyC']"
-        @keybind-c="selectedProducts = []"
-        @keybind-v="onViewSingle(contextItem)"
-        @keybind-e="onViewSingle(contextItem)"
-        @keybind-a="onNewProduct()"
-        @keybind-d="onDeleteProducts([contextItem])"
-        >
+        <BaseContextMenu ref="contextMenu">
             <div class="item-group" v-if="selectedProducts.length > 0">
-                <div class="item" @click="selectedProducts = []; slotProps.hide()">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                <BaseContextMenuItem iconClass="far fa-times"
+                hokey="KeyC"
+                @click="selectedProducts = []">
                     <span><u>C</u>lear Selection</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onViewSingle(contextItem)">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
+                <BaseContextMenuItem iconClass="far fa-pen" 
+                hotkey="KeyV"
+                @click="onViewSingle(contextItem)">
                     <span><u>V</u>iew / Edit</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click.stop="onNewProduct()">
-                    <div class="icon-wrapper"><i class="far fa-plus"></i></div>
+                <BaseContextMenuItem iconClass="far fa-plus" 
+                hotkey="KeyA"
+                @click="onNewProduct()">
                     <span><u>A</u>dd New Product</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteProducts([contextItem])">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                hotkey="KeyD"
+                @click="onDeleteProducts([contextItem])">
                     <span><u>D</u>elete Product</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelected"
-        :hotkeys="['KeyD', 'KeyC']"
-        @keybind-d="onDeleteProduct(selectedProducts)"
-        @keybind-c="selectedProducts = []"
-        >
+        <BaseContextMenu ref="contextMenuSelected">
             <template v-slot:header>
                 <span>Choose action for {{selectedProducts.length}} products</span>
             </template>
 
             <div class="item-group">
-                <div class="item" @click="selectedProducts = []">
-                    <div class="icon-wrapper"><i class="far fa-times"></i></div>
+                <BaseContextMenuItem iconClass="far fa-times" 
+                hotkey="KeyC"
+                @click="selectedProducts = []">
                     <span><u>C</u>lear Selection</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <div class="item" @click="onDeleteProducts(selectedProducts)">
-                    <div class="icon-wrapper"><i class="far fa-trash-alt"></i></div>
+                <BaseContextMenuItem iconClass="far fa-trash-alt" 
+                hotkey="KeyD"
+                @click="onDeleteProducts(selectedProducts)">
                     <span><u>D</u>elete Products</span>
-                </div>
+                </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
     </div>
@@ -235,21 +225,21 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'setAvailableProducts', 'instantiateNewProduct', 'deleteProducts']),
+        ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
+<<<<<<< HEAD
         'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'setNoImagesOnly']),
+=======
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
+>>>>>>> master
         onViewSingle(product) {
             this.setCurrentProduct(product)
-            this.setAvailableProducts(this.productsFilteredBySearch) // Save array of available products
+            this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products
             this.setSingleVisisble(true)
             document.activeElement.blur()
         },
-        showContext(mouseEvent, product) {
+        showContext(mouseEvent) {
             let contextMenu = this.$refs.contextMenu
-            this.contextItem = product;
-            if (this.selectedProducts.length > 0) {
-                this.contextItem = this.selectedProducts[0]
-            }
             if (this.selectedProducts.length > 1) {
                 contextMenu = this.$refs.contextMenuSelected
             }
@@ -344,7 +334,7 @@ export default {
                     }
                 }
                 td {
-                    &:not(.image):not(.select):not(.action):not(.id) {
+                    &:not(.image):not(.select):not(.action):not(.id):not(.context-button) {
                         padding-bottom: 24px;
                     }
                 }

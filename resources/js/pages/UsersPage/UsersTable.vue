@@ -1,50 +1,36 @@
 <template>
     <div class="users-table">
 
-        <BaseFlexTable v-if="currentTab == 'Users'" stickyHeader="true"
-        :contentStatus="readyStatus"
-        loadingMsg="loading users"
-        errorMsg="error loading users"
-        :errorCallback="() => initData()">
-
-
+        <BaseTable v-if="currentTab == 'Users'" stickyHeader="true"
+            :contentStatus="readyStatus"
+            loadingMsg="loading users"
+            errorMsg="error loading users"
+            :errorCallback="() => initData()"
+            :items="users"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selectedUsers"
+            :contextItem.sync="contextUser"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="['name','email']"
+            :searchResult.sync="usersFilteredBySearch"
+            itemType="user"
+            @show-contextmenu="showUserContext"
+        >
             <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['name','email']" :arrayToSearch="users" v-model="usersFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{usersFilteredBySearch.length}}</strong> of <strong>{{users ? users.length : 0}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selectedUsers = users : selectedUsers = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
-                <RecycleScroller
-                    :items="usersFilteredBySearch"
-                    :item-size="50"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item }"
-                >
-                    <UsersTableRow :ref="'userRow-'+item.id" :user="item"
-                    :contextUser="contextUser"
-                    @showContextMenu="showUserContext($event, item)" @editCurrency="onEditUserCurrency($event, item)"
-                    @editRole="onEditUserRole($event, item)" :selectedUsers.sync="selectedUsers"/>
-                </RecycleScroller>
+            <template v-slot:row="rowProps">
+                <UsersTableRow :user="rowProps.item"
+                @editCurrency="onEditUserCurrency"
+                @editRole="onEditUserRole" :selectedUsers.sync="selectedUsers"
+                @show-contextmenu="showUserContext"/>
             </template>
             <template v-slot:footer>
                 <td>
@@ -56,15 +42,9 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
-        <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot
-        :hotkeys="['KeyC', 'KeyR', 'KeyP', 'KeyD']"
-        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
-        @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-p="contextUser.id == authUser.id && onSetUserPassword(contextMouseEvent, contextUser)"
-        @keybind-d="onDeleteUser(contextUser)"
-        >
+        <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- <div class="item-group"> -->
 
                 <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
@@ -81,25 +61,28 @@
                     <span><u>E</u>dit User Email</span>
                 </BaseContextMenuItem> -->
             <!-- </div> -->
-            <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin'" 
-                v-tooltip="authUserWorkspaceRole != 'Admin'
-                && 'Only admins can change currency of others.'"
-                @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
+            <div class="item-group" v-if="contextUser">
+                <BaseContextMenuItem iconClass="far fa-usd-circle" 
+                :disabled="authUserWorkspaceRole != 'Admin'" 
+                disabledTooltip="Only admins can change currency of others."
+                hotkey="KeyC"
+                @click="onEditUserCurrency(contextMouseEvent, contextUser)">
                     <span><u>C</u>hange <u>C</u>urrency</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
-                v-tooltip="authUserWorkspaceRole != 'Admin'
-                && 'Only admins can change workspace role'"
-                @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem iconClass="far fa-key" 
+                :disabled="authUserWorkspaceRole != 'Admin'" 
+                disabledTooltip="Only admins can change workspace role"
+                hotkey="KeyR"
+                @click="onEditUserRole(contextMouseEvent, contextUser)">
                     <span>Change Workspace <u>R</u>ole</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-lock" :disabled="contextUser.id != authUser.id" 
-                v-tooltip="contextUser.id != authUser.id 
-                && 'Can only set password of self'"
-                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem iconClass="far fa-lock" 
+                :disabled="contextUser.id != authUser.id" 
+                disabledTooltip="Can only set password of self"
+                hotkey="KeyP"
+                @click="onSetUserPassword(contextMouseEvent, contextUser)">
                     <span>Change <u>P</u>assword</span>
                 </BaseContextMenuItem>
                 <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
@@ -110,41 +93,42 @@
                 </BaseContextMenuItem> -->
             </div>
             <div class="item-group">
-                <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
+                <BaseContextMenuItem iconClass="far fa-trash-alt"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                disabledTooltip="Only admins can remove users"
+                hotkey="KeyD"
                 @click="onDeleteUser(contextUser)">
                     <span><u>D</u>elete User from Workspace</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuSelectedUsers"
-        :hotkeys="['KeyC', 'KeyR', 'KeyD']"
-        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
-        @keybind-r="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onDeleteUsers">
+        <BaseContextMenu ref="contextMenuSelectedUsers">
             <template v-slot:header>
                 <span>Choose action for {{selectedUsers.length}} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-times" 
+                    hotkey="KeyL"
                     @click="selectedUsers = []">
-                        <span>Clear Selection</span>
+                        <span>C<u>l</u>ear Selection</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <BaseContextMenuItem iconClass="far fa-usd-circle" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
-                    && 'Can only set own currency. Only admins can change currency of others.'"
-                    @click.stop="onEditUserCurrency(contextMouseEvent, contextUser)">
+                    <BaseContextMenuItem iconClass="far fa-usd-circle" 
+                    :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+                    disabledTooltip="Can only set own currency. Only admins can change currency of others."
+                    hotkey="KeyC"
+                    @click="onEditUserCurrency(contextMouseEvent, contextUser)">
                         <span><u>C</u>hange <u>C</u>urrency</span>
                     </BaseContextMenuItem>
 
-                    <BaseContextMenuItem iconClass="far fa-key" :disabled="authUserWorkspaceRole != 'Admin'" 
-                    v-tooltip="authUserWorkspaceRole != 'Admin'
-                    && 'Only admins can change workspace role'"
-                    @click.stop="onEditUserRole(contextMouseEvent, contextUser)">
+                    <BaseContextMenuItem iconClass="far fa-key" 
+                    :disabled="authUserWorkspaceRole != 'Admin'" 
+                    disabledTooltip="Only admins can change workspace role"
+                    hotkey="KeyR"
+                    @click="onEditUserRole(contextMouseEvent, contextUser)">
                         <span>Change Workspace <u>R</u>ole</span>
                     </BaseContextMenuItem>
                 </div>
@@ -302,6 +286,9 @@ export default {
                 return users.filter(x => x.id == this.authUser.id)
             }
             return users
+        },
+        usersSorted() {
+            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
         }
     },
     watch: {
@@ -401,8 +388,9 @@ export default {
             } else {
                 contextMenu = this.$refs.contextMenuUser
             }
-            this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
-            this.contextMouseEvent = e
+            if (user) {
+                this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
+            }
             contextMenu.show(e)
         },
         async onDeleteUser(user) {
@@ -454,7 +442,7 @@ export default {
                     align-items: center;
                 }
             }
-            tr:not(.table-top-bar) > .email {
+            tr:not(.table-top-bar) th.email, td.email {
                 flex: 2;
             }
         }
