@@ -358,36 +358,6 @@ export default {
             const oldProduct = this.currentProduct
             return JSON.stringify(newProduct) != JSON.stringify(oldProduct)
         },
-        filesToDelete() {
-            const newProduct = this.productToEdit
-            const oldProduct = this.currentProduct
-            let filesToDelete = []
-            // Loop through the variants on the old product
-            oldProduct.variants.forEach(variant => {
-                // First check if the current variant has a blob id
-                if (variant.blob_id != null) {
-                    // See if we can find the blob_id on the new product.
-                    const exists = newProduct.variants.find(x => x.blob_id == variant.blob_id)
-                    // If we cannot find the blob_ib on the new product, it must mean that the blob is no longer used.
-                    // We can therefore delete it
-                    if (!exists) {
-                        filesToDelete.push(variant.blob_id)
-                    }
-                }
-            })
-            return filesToDelete
-        },
-        imagesToUpload() {
-            // Check if we have any files (images) we need to upload
-            const variants = this.productToEdit.variants
-            let imagesToUpload = []
-            variants.forEach(variant => {
-                if (variant.imageToUpload) {
-                    imagesToUpload.push(variant.imageToUpload)
-                }
-            })
-            return imagesToUpload
-        },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts']),

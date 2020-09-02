@@ -4,7 +4,21 @@
         <!-- <ThePageHeader :title="`Editing: ${file.name}`"/> -->
         <h1>Editing: {{file.name}}</h1>
 
-        <BulkUploadComponent/>
+        <button class="primary md"
+            style="margin-bottom: 20px"
+            @click="showBulkUpload = !showBulkUpload"
+        >
+            <template v-if="!showBulkUpload">
+                <i class="far fa-upload"></i>
+                <span>Bulk upload images</span>
+            </template>
+            <template v-else>
+                <i class="far fa-check"></i>
+                <span>Finish bulk uploading</span>
+            </template>
+        </button>
+
+        <BulkUploadComponent v-if="showBulkUpload"/>
 
         <div class="quick-actions" v-if="productsEligibleForVariantImageShift.length > 0">
             <p>Recommended actions</p>
@@ -46,6 +60,7 @@ export default{
     ],
     data: function () { return {
         sortKey: 'datasource_id',
+        showBulkUpload: false,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),

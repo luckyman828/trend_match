@@ -1,8 +1,30 @@
 <template>
     <div class="bulk-upload-component">
         <h3>Bulk upload images</h3>
+
+        <div class="guide-lines" style="max-width: 600px; margin-bottom: 20px">
+            <p>
+                <strong class="primary">ATTENTION</strong><br>
+                <span>Images names must start with this pattern: <i>"<strong>{PRODUCT ID}</strong>_<strong>{VARIANT NAME}</strong>"</i></span>
+            </p>
+            <!-- <p>
+                <i>"<strong>{PRODUCT ID}</strong>_<strong>{VARIANT NAME}</strong>"</i>
+            </p> -->
+            <p style="margin: 16px auto;"><i><strong>Example:</strong> "12345678_Green - Pack Shot-Back-002"</i></p>
+            <p><strong>Explanation:</strong> {Product ID} followed by an underscore(_), followed by the {variant name}, followed by nothing, a dash(-), or underscore(_)</p>
+
+            <p>
+                If the image name contains the word "<i>front</i>" the image will be placed first on the variant.
+            </p>
+        </div>
+
         <BaseDroparea :multiple="true" accept="image/*"
-        @input="onFilesChange"/>
+        @input="onFilesChange">
+            <p>
+                <span>Drag images here or click to browse</span>
+            </p>
+            
+        </BaseDroparea>
         <div class="image-list">
             <p v-for="(image, index) in imagesToUpload.slice(0,displayLimit)" :key="index">
                 {{image.name}}
@@ -57,20 +79,25 @@ export default {
             const productsToUpdate = []
             let imageUploadError = false
             await Promise.all(this.imagesToUpload.map(async image => {
-                this.uploadingCount++
                 // Check that the image actually belongs to a variant of one of our products
                 const productId = image.name.slice(0,8)
+                if (!productId) return
 
                 // Find the variant name
-                const dashIndex = image.name.indexOf(' - ')
-                const variantName = image.name.slice(9, dashIndex >= 0 ? dashIndex : image.name.indexOf('_', 9))
+                const underscoreIndex = image.name.indexOf('_')
+                const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
+                const variantName = variantNameMatches.length > 1 ? variantNameMatches[1] : null
+
+                // Check if we should place the image first
+                const shouldBeFirst = image.name.toLowerCase().search('front') >= 0
+
+                console.log('product id', productId, ', variantName:', variantName, ', should be first', shouldBeFirst)
 
                 // Find the product the image belongs to
                 const product = this.products.find(x => x.datasource_id == productId)
-                if (!product) {
-                    this.uploadingCount--
-                    return
-                }
+                if (!product) return
+
+                this.uploadingCount++
                 productsToUpdate.push(product)
 
                 // Asume we are adding a new variant
@@ -78,56 +105,20 @@ export default {
                     id: this.$uuid.v4(),
                     name: variantName,
                     image: null,
+                    images: [],
+                    pictures: [],
                     sizes: [],
                     thumbnail: null
                 }
+
                 // Find the variant on our product
                 // Check if there is a variant that contains the image variant name
-                const existingVariant = product.variants.find(x => x.name.indexOf(variantName) >= 0)
-                const existingFront = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Front') >= 0)
-                const existingBack = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Back') >= 0)
-                const existingModel = product.variants.find(x => x.name.indexOf(variantName) >= 0 && x.name.indexOf('Model') >= 0)
-                const isFront = image.name.indexOf('Front') >= 0
-                const isBack = image.name.indexOf('Back') >= 0
-                const isModel = image.name.indexOf('Model') >= 0
-                let addImageTypeToName = false
+                const existingVariant = product.variants.find(x => x.name == variantName)
 
-                if (existingVariant && !(existingFront || existingBack || existingModel)) {
+                if (existingVariant) {
                     variantToUpdate = existingVariant
-                    addImageTypeToName = true
-                }
-
-                else {
-
-                    if (isFront) {
-                        if (existingFront) variantToUpdate = existingFront
-                        else {
-                            product.variants.push(variantToUpdate)
-                            addImageTypeToName = true
-                        }
-                    }
-                    if (isBack) {
-                        if (existingBack) variantToUpdate = existingBack
-                        else {
-                            product.variants.push(variantToUpdate)
-                            addImageTypeToName = true
-                        }
-                    }
-                    if (isModel) {
-                        if (existingModel) variantToUpdate = existingModel
-                        else {
-                            product.variants.push(variantToUpdate)
-                            addImageTypeToName = true
-                        }
-                    }
-                    
-                }
-
-                // Set the variant name to indicate if it's the front or the back, if the name doesn't already indicate it
-                if (addImageTypeToName) {
-                    if (isFront) variantToUpdate.name = variantName + ' - Front'
-                    if (isBack) variantToUpdate.name = variantName + ' - Back'
-                    if (isModel) variantToUpdate.name = variantName + ' - Model'
+                } else {
+                    product.variants.push(baseVariant)
                 }
 
                 // Upload the image
@@ -147,38 +138,6 @@ export default {
             // Update all products --> This cannot be done earlier since we cannot be sure if we are in the process of uploading some of the images on the product
             await Promise.all(productsToUpdate.map(async product => {
                 this.updatingCount++
-
-                // Sort the products variants
-                product.variants.sort((a,b) => {
-                    const aIsFront = a.name.indexOf('Front') >= 0
-                    const aIsBack = a.name.indexOf('Back') >= 0
-                    const aIsModel = a.name.indexOf('Model') >= 0
-                    const bIsFront = b.name.indexOf('Front') >= 0
-                    const bIsBack = b.name.indexOf('Back') >= 0
-                    const bIsModel = b.name.indexOf('Model') >= 0
-                    
-                    let aName
-                    if (aIsFront) aName = a.name.substr(0, a.name.indexOf('Front'))
-                    if (aIsBack) aName = a.name.substr(0, a.name.indexOf('Back'))
-                    if (aIsModel) aName = a.name.substr(0, a.name.indexOf('Model'))
-
-                    let bName
-                    if (bIsFront) bName = b.name.substr(0, b.name.indexOf('Front'))
-                    if (bIsBack) bName = b.name.substr(0, b.name.indexOf('Back'))
-                    if (bIsModel) bName = b.name.substr(0, b.name.indexOf('Model'))
-
-                    if (aName != bName) {
-                        if (aName > bName) return 1
-                        else return -1
-                    }
-                    
-                    // Same variant name
-                    if (aIsFront) return -1
-                    if (aIsModel) return 1
-                    if (aIsBack && bIsModel) return -1
-                    if (aIsBack && bIsFront) return 1
-                    
-                })
 
                 await this.updateProduct(product)
                 this.updatingCount--
