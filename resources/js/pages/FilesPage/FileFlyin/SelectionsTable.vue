@@ -10,6 +10,19 @@
                 <BaseTableTopBar>
                     <template v-slot:right>
 
+                        <BaseButton buttonClass="ghost sm" :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
+                        v-tooltip="'Send a link to all selection members of this file'"
+                        @click="onSendMagicLinkToAll">
+                            <template v-if="!fileSelectionMagicLinkSent">
+                                <i class="far fa-paper-plane"></i>
+                                <span>Send link</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check"></i>
+                                <span>Link sent</span>
+                            </template>
+                        </BaseButton>
+
                         <BaseButton buttonClass="ghost sm" :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can hide/unhide selections"
                         @click="onToggleAllSelectionsLocked(allSelections)">
@@ -701,6 +714,7 @@ export default {
         sortArray
     ],
     data: function() { return {
+        fileSelectionMagicLinkSent: false,
         selectedSelections: [],
         sortKey: null,
         selectionToEdit: null,
@@ -776,7 +790,7 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('files', ['currentFile', 'files', 'allFiles', 'getCurrentFileChanged']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'selections', 'getSelectionsTree', 'getSelectionsStatus']),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'selections', 'getSelectionsTree', 'getSelectionsStatus', 'getSelections']),
         allSelections () {
             return this.selections
         },
@@ -1206,6 +1220,10 @@ export default {
                 }
                 if (hasChange) this.updateSelection(selection)
             })
+        },
+        onSendMagicLinkToAll() {
+            this.fileSelectionMagicLinkSent = true
+            this.sendSelectionLink({selectionList: this.getSelections})
         }
     },
     created() {

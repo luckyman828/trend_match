@@ -974,11 +974,12 @@ export default {
             }
         },
         async sendSelectionLink({ commit, dispatch }, { selectionList }) {
+            console.log('selection list', selectionList)
             // Do something
             await Promise.all(
                 selectionList.map(async selection => {
                     const apiUrl = `/selections/${selection.id}/invite-members`
-                    await axios.get(apiUrl)
+                    await axios.post(apiUrl)
                 })
             )
                 .then(response => {
@@ -1012,7 +1013,9 @@ export default {
             })
             const apiUrl = `/selections/${selection.id}/invite-members`
             await axios
-                .get(apiUrl)
+                .post(apiUrl, {
+                    user_ids: users.map(user => user.id),
+                })
                 .then(response => {
                     commit(
                         'alerts/SHOW_SNACKBAR',

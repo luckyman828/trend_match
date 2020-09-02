@@ -11,33 +11,6 @@
                 <template v-slot:right>
                     <div class="item-group">
 
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
-                        v-tooltip="'Send a link to all selection members of this file'"
-                        @click="onSendMagicLinkToAll">
-                            <template v-if="!fileSelectionMagicLinkSent">
-                                <i class="far fa-paper-plane"></i>
-                                <span>Send link</span>
-                            </template>
-                            <template v-else>
-                                <i class="far fa-check"></i>
-                                <span>Link sent</span>
-                            </template>
-                        </BaseButton>
-
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can hide/unhide selections"
-                        @click="onToggleAllSelectionsLocked(getSelections)">
-                        <i class="far fa-lock"></i>
-                            <span>Lock/Undlock all</span>
-                        </BaseButton>
-                        
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can lock/unlock selections"
-                        @click="onToggleAllSelectionsVisibility(getSelections)">
-                            <i class="far fa-eye"></i>
-                            <span>Hide/Show all</span>
-                        </BaseButton>
-
                         <BaseButton buttonClass="ghost" 
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can manage file editors"
@@ -89,7 +62,6 @@ export default {
         FileEditorsFlyin,
     },
     data: function() { return {
-        fileSelectionMagicLinkSent: false,
         showFileEditorsFlyin: false,
     }},
     watch: {
@@ -108,7 +80,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('selections', ['updateSelection', 'sendSelectionLink']),
+        ...mapActions('selections', ['updateSelection']),
         ...mapMutations('files', ['SET_CURRENT_FILE']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
         showSelectionUsersFlyin(selection) {
@@ -175,10 +147,6 @@ export default {
                 if (hasChange) this.updateSelection(selection)
             })
         },
-        onSendMagicLinkToAll() {
-            this.fileSelectionMagicLinkSent = true
-            this.sendSelectionLink({selectionList: this.getSelections})
-        }
     },
 }
 </script>

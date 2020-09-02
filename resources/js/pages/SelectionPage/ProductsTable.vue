@@ -250,6 +250,7 @@
                         <u>V</u>iew
                     </BaseContextMenuItem>
                 </div>
+
             </template>
         </BaseContextMenu>
 
@@ -264,6 +265,9 @@
                 @click="selectedProducts = []">
                     <span><u>C</u>lear selection</span>
                 </BaseContextMenuItem>
+
+
+
             </div>
 
             <template v-if="selectedProducts.length > 1">
@@ -303,6 +307,32 @@
                     </BaseContextMenuItem>
                 </div>
             </template>
+
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-file-export"
+                    hotkey="KeyE"
+                >
+                    <template>
+                        <span><u>E</u>xport selected</span>
+                    </template>
+
+                    <template v-slot:submenu>
+                        <div class="item-group">
+                            <BaseContextMenuItem iconClass="far fa-file-pdf"
+                            hotkey="KeyP"
+                            @click="onExportToPdf">
+                                <span><u>P</u>DF</span>
+                            </BaseContextMenuItem>
+
+                            <BaseContextMenuItem iconClass="far fa-file-csv"
+                            hotkey="KeyC"
+                            @click="onExportToCsv">
+                                <span><u>C</u>SV</span>
+                            </BaseContextMenuItem>
+                        </div>
+                    </template>
+                </BaseContextMenuItem>
+            </div>
         </BaseContextMenu>
 
         <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip"
@@ -351,7 +381,6 @@ export default {
     },
     data: function() { return {
         sortKey: 'sequence',
-        selectedProducts: [],
         showContextMenu: false,
         contextProduct: null,
         tooltipSelectionInput: null,
@@ -382,6 +411,14 @@ export default {
         contextSelectionInput() {
             if (!this.contextProduct) return
             return this.getActiveSelectionInput(this.contextProduct)
+        },
+        selectedProducts: {
+            get() {
+                return this.$store.getters['products/getSelectedProducts']
+            },
+            set(products) {
+                this.SET_SELECTED_PRODUCTS(products)
+            }
         },
         productsFilteredBySearch: {
             get() {
@@ -467,13 +504,17 @@ export default {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE']),
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE',
+        'SET_SELECTED_PRODUCTS', 'SET_SHOW_PDF_MODAL', 'SET_SHOW_CSV_MODAL']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
-        onTest(comp) {
-            console.log('on test', comp)
+        onExportToCsv() {
+            this.SET_SHOW_CSV_MODAL(true)
+        },
+        onExportToPdf() {
+            this.SET_SHOW_PDF_MODAL(true)
         },
         resetFilters() {
             this.selectedCategories = []
@@ -603,11 +644,17 @@ export default {
                     flex: 1;
                 }
                 &.title {
-                    min-width: 220px;
-                    max-width: 220px;
+                    min-width: 200px;
+                    max-width: 200px;
                     display: flex;
                     align-items: center;
                     margin-right: auto;
+                    span {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        display: block;
+                        overflow: hidden
+                    }
                     @media screen and (max-width: $screenXs) {
                         min-width: 160px;
                         max-width: 160px;

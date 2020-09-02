@@ -13,6 +13,7 @@ export default {
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
+        selectedProducts: [],
         advancedFilter: null,
         unreadOnly: false,
         currentProductFilter: 'overview',
@@ -23,6 +24,8 @@ export default {
         currentFocusRowIndex: null,
         lastSort: null,
         distributionScope: 'Feedback',
+        showPDFModal: false,
+        showCSVModal: false,
     },
 
     getters: {
@@ -30,6 +33,8 @@ export default {
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
+        getPDFModalVisible: state => state.showPDFModal,
+        getCSVModalVisisble: state => state.showCSVModal,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
         getDistributionScope: state => state.distributionScope,
         getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
@@ -42,6 +47,7 @@ export default {
         getAvailableProducts: state => {
             return state.availableProducts
         },
+        getSelectedProducts: state => state.selectedProducts,
         nextProduct: (state, getters, rootState, rootGetters) => {
             // If we have a nextProduct in our presenterQueue, then use that instead
             const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
@@ -1663,6 +1669,15 @@ export default {
         },
         SET_DISTRIBUTION_SCOPE(state, newScope) {
             state.distributionScope = newScope
+        },
+        SET_SELECTED_PRODUCTS(state, products) {
+            state.selectedProducts = products
+        },
+        SET_SHOW_CSV_MODAL(state, makeVisible) {
+            state.showCSVModal = makeVisible
+        },
+        SET_SHOW_PDF_MODAL(state, makeVisible) {
+            state.showPDFModal = makeVisible
         },
     },
 }
