@@ -492,8 +492,6 @@ export default {
                     return
                 }
 
-                console.log('image maps', imageMaps)
-
                 const productsToUpdate = []
 
                 // Chunk the images

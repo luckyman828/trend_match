@@ -153,6 +153,7 @@ export default {
 
                     const existingProduct = products.find(x => x.datasource_id == keyValue)
                     const baseProduct = {
+                        id: null,
                         datasource_id: keyValue,
                     }
 

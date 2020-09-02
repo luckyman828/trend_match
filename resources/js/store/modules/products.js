@@ -434,11 +434,6 @@ export default {
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
-                if (addToState) {
-                    commit('insertProducts', { products, method: 'add' })
-                    dispatch('initProducts', products)
-                    commit('SORT_PRODUCTS')
-                }
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -459,10 +454,15 @@ export default {
                             { root: true }
                         )
 
-                        // Add the created ID to the product, if we only have 1 product
-                        if (products.length <= 1) {
-                            const product = products[0]
+                        // Add the created ID to the products
+                        products.map(product => {
                             product.id = response.data.added_product_id_map[product.datasource_id]
+                        })
+
+                        if (addToState) {
+                            commit('insertProducts', { products, method: 'add' })
+                            dispatch('initProducts', products)
+                            commit('SORT_PRODUCTS')
                         }
                         resolve(response)
                     })
@@ -724,7 +724,7 @@ export default {
                 commit(
                     'alerts/SHOW_SNACKBAR',
                     {
-                        msg: `Products will be deleted`,
+                        msg: `${products.length} Products will be deleted`,
                         iconClass: 'fa-trash',
                         type: 'danger',
                         callback: () => {
@@ -755,7 +755,7 @@ export default {
                                 {
                                     msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
                                     iconClass: 'fa-check',
-                                    type: 'check',
+                                    type: 'success',
                                 },
                                 { root: true }
                             )

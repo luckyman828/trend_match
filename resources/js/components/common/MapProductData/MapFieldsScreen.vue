@@ -185,7 +185,6 @@ export default {
         validateAllFields(depth) {
             for (let i = 0; i < this.fieldsToMap.length; i++) {
                 const field = this.fieldsToMap[i]
-                console.log('validate field', field)
 
                 // Only check enabled and mapped fields
                 if (field.enabled && !!field.fieldName) {
