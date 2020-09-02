@@ -350,7 +350,7 @@ export default {
         ConditionalFilters,
     },
     data: function() { return {
-        sortKey: 'datasource_id',
+        sortKey: 'sequence',
         selectedProducts: [],
         showContextMenu: false,
         contextProduct: null,

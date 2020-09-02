@@ -995,6 +995,9 @@ export default {
         SET_PRODUCTS_STATUS(state, status) {
             state.status = status
         },
+        SET_PRODUCTS(state, products) {
+            state.products = products
+        },
         insertProducts(state, { products, method }) {
             if (method == 'add') {
                 // Add to existing products

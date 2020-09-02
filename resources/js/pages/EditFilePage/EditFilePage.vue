@@ -40,7 +40,7 @@ export default{
         sortArray
     ],
     data: function () { return {
-        sortKey: 'datasource_id',
+        sortKey: 'sequence',
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),
