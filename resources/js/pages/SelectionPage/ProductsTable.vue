@@ -47,67 +47,6 @@
                 <!-- Selection Selector Ends -->
 
             </template>
-<<<<<<< HEAD
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category']"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSingle(productsFilteredBySearch[0])"/>
-
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Category </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedCategories.length > 0" class="circle primary xs">
-                                    <span>{{selectedCategories.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                                :options="availableCategories" v-model="selectedCategories"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Delivery</span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
-                                    <span>{{selectedDeliveryDates.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                            </template>
-                        </v-popover>
-
-                        <v-popover trigger="click">
-                            <button class="ghost">
-                                <span>Buyer group </span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
-                                    <span>{{selectedBuyerGroups.length}}</span>
-                                </span>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                            </template>
-                        </v-popover>
-
-                        <!-- Temp. disabled until the functionality gets hooked up -->
-                        <!-- <BaseCheckboxInputField class="small" v-model="unreadOnly">
-                            <span>Unread only</span>
-                        </BaseCheckboxInputField> -->
-                        <BaseCheckboxInputField class="small" v-model="noImagesOnly">
-                            <span>No images only</span>
-                        </BaseCheckboxInputField>
-
-                        <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || unreadOnly"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]; unreadOnly = false"><span>Clear filter</span></button>
-
-=======
             <template v-slot:topBarLeft>
                 <v-popover trigger="click" 
                 popoverInnerClass="tooltip-inner popover-inner"
@@ -169,7 +108,6 @@
                     <template slot="popover">
                         <BaseSelectButtons submitOnChange="true" 
                         :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
->>>>>>> master
                     </template>
                 </v-popover>
 

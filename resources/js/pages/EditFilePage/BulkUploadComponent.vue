@@ -91,7 +91,7 @@ export default {
                 // Check if we should place the image first
                 const shouldBeFirst = image.name.toLowerCase().search('front') >= 0
 
-                console.log('product id', productId, ', variantName:', variantName, ', should be first', shouldBeFirst)
+                // console.log('product id', productId, ', variantName:', variantName, ', should be first', shouldBeFirst)
 
                 // Find the product the image belongs to
                 const product = this.products.find(x => x.datasource_id == productId)
@@ -100,13 +100,18 @@ export default {
                 this.uploadingCount++
                 productsToUpdate.push(product)
 
+                const basePicture = {
+                    name: null,
+                    url: null,
+                }
+
                 // Asume we are adding a new variant
                 let variantToUpdate = {
                     id: this.$uuid.v4(),
                     name: variantName,
                     image: null,
                     images: [],
-                    pictures: [],
+                    pictures: [basePicture],
                     sizes: [],
                     thumbnail: null
                 }
@@ -117,22 +122,33 @@ export default {
 
                 if (existingVariant) {
                     variantToUpdate = existingVariant
+
+                    if (shouldBeFirst) {
+                        variantToUpdate.pictures.unshift(basePicture)
+                    } else {
+                        variantToUpdate.pictures.push(basePicture)
+                    }
                 } else {
-                    product.variants.push(baseVariant)
+                    product.variants.push(variantToUpdate)
                 }
 
                 // Upload the image
-                await this.uploadImage({ file: this.file, product, variant: variantToUpdate, image })
+                await this.uploadImage({
+                    file: this.file, 
+                    product,
+                    picture: basePicture,
+                    image, 
+                })
                 this.uploadingCount--
 
             })).catch(err => {
-                console.log('error in bulk image upload', err)
+                // console.log('error in bulk image upload', err)
                 this.imageUploadError = true
             })
 
             // Return early if uploading images failed
             if (imageUploadError) return
-            console.log('start updating products')
+            // console.log('start updating products')
             this.toalUpdateCount = productsToUpdate.length
 
             // Update all products --> This cannot be done earlier since we cannot be sure if we are in the process of uploading some of the images on the product
@@ -142,10 +158,10 @@ export default {
                 await this.updateProduct(product)
                 this.updatingCount--
             })).catch(err => {
-                console.log('error when updating products', err)
+                // console.log('error when updating products', err)
             }).then(response => {
                 // Reset the component
-                console.log('Success!')
+                // console.log('Success!')
                 this.imagesToUpload = []
             })
 

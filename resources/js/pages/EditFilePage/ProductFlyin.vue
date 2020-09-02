@@ -439,8 +439,6 @@ export default {
             const oldProduct = this.currentProduct
             return JSON.stringify(newProduct) != JSON.stringify(oldProduct)
         },
-<<<<<<< HEAD
-=======
         filesToDelete() {
             const newProduct = this.productToEdit
             const oldProduct = this.currentProduct
@@ -460,20 +458,6 @@ export default {
             })
             return filesToDelete
         },
-        imagesToUpload() {
-            // Check if we have any files (images) we need to upload
-            const variants = this.productToEdit.variants
-            let imagesToUpload = []
-            variants.forEach(variant => {
-                variant.pictures.forEach(picture => {
-                    if (picture.imageToUpload) {
-                        imagesToUpload.push(picture.imageToUpload)
-                    }
-                })
-            })
-            return imagesToUpload
-        },
->>>>>>> master
     },
     methods: {
         ...mapActions('files', ['syncExternalImages']),

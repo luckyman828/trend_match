@@ -58,17 +58,12 @@
                     </template>
                 </v-popover>
 
-<<<<<<< HEAD
-                        <BaseCheckboxInputField class="small" v-model="noImagesOnly">
-                            <span>No images only</span>
-                        </BaseCheckboxInputField>
+                <BaseCheckboxInputField class="small" v-model="noImagesOnly">
+                    <span>No images only</span>
+                </BaseCheckboxInputField>
 
-                        <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
-                        @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
-=======
                 <button class="invisible primary" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0"
                 @click="selectedCategories=[]; selectedDeliveryDates=[]; selectedBuyerGroups=[]"><span>Clear filter</span></button>
->>>>>>> master
 
             </template>
 
@@ -220,18 +215,14 @@ export default {
                 return this.$store.getters['products/noImagesOnly']
             },
             set (value) {
-                this.setNoImagesOnly(value)
+                this.SET_NO_IMAGES_ONLY(value)
             }
         },
     },
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 
-<<<<<<< HEAD
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'setNoImagesOnly']),
-=======
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
->>>>>>> master
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS', 'SET_NO_IMAGES_ONLY']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products

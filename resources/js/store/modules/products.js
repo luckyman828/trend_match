@@ -346,7 +346,7 @@ export default {
             // Filter by no images
             if (noImagesOnly) {
                 const filteredByNoImages = productsToReturn.filter(
-                    product => !product.variants.find(x => x.image != null)
+                    product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
                 )
                 productsToReturn = filteredByNoImages
             }
@@ -1674,6 +1674,9 @@ export default {
         },
         SET_DISTRIBUTION_SCOPE(state, newScope) {
             state.distributionScope = newScope
+        },
+        SET_NO_IMAGES_ONLY(state, boolean) {
+            state.noImagesOnly = boolean
         },
     },
 }
