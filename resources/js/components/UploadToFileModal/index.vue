@@ -46,8 +46,8 @@
                 <template v-slot:actions="slotProps">
                     <BaseButton :type="'submit'" 
                     buttonClass="lg primary full-width"
-                    :disabled="!!slotProps.submitDisabled"
-                    :disabledTooltip="slotProps.submitDisabled"
+                    :disabled="!!slotProps.disabled"
+                    :disabledTooltip="slotProps.disabledTooltip"
                     style="width: 100%"
                     @click="slotProps.submit()">
                         <span>Update data</span>
@@ -201,7 +201,7 @@ export default {
             this.onReset()
         },
         setKeyValue(srcProduct, targetProduct, key, strategy) {
-            if (srcProduct[key] != null) return // Don't do anything if we don't have a value
+            if (srcProduct[key] == null) return // Don't do anything if we don't have a value
 
             // Handle arrays first
             // If the product key value is an array (variants, prices, assortments, eans)
@@ -251,7 +251,7 @@ export default {
 
             // Ready to just set the object value
             if (
-                (strategy == 'add' && targetProduct[key] == null) || // If strategy is add, only add if the current value is null
+                (strategy == 'add' && !targetProduct[key]) || // If strategy is add, only add if the current value is null
                 (strategy == 'smart' && srcProduct[key] != null) // If the strategy is smart, replace/add unless we don't have a new value
             ) {
                 targetProduct[key] = srcProduct[key]

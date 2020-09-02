@@ -46,6 +46,13 @@ export default {
             // Automap fields
             newFields.map(field => {
                 this.autoMapField(field, this.availableFiles)
+                // And then validate the field
+                if (field.enabled && !!field.fieldName) {
+                    const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows, 10)
+                    if (!fieldIsValid) {
+                        return false
+                    }
+                }
             })
         },
         getUploadOptionField(field) {

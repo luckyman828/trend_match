@@ -22,6 +22,7 @@
 
                 <!-- MAP MAIN FIELDS -->
                 <MapProductFieldsForm class="form-section"
+                    v-if="!uploadOptions || uploadOptions.fields.find(x => !!x.enabled)"
                     :uploadOptions="uploadOptions"
                     :fieldsToMap="fieldsToMap"
                     :availableFiles="availableFiles"
@@ -161,8 +162,10 @@ export default {
             this.availableFiles.map(file => {
                 this.autoMapField(file.mappedKey, [file])
                 this.autoMapField(file.variantKey, [file])
-                // this.autoMapField(file.assortmentKey, [file])
             })
+
+            // When done automapping, validate all the fields
+            this.validateAllFields(10)
         },
         showSelectFieldContext(e, field, file) {
             this.contextField = field
@@ -179,14 +182,17 @@ export default {
             const contextMenu = this.$refs.contextSelectFile
             contextMenu.show(e)
         },
-        validateAllFields() {
+        validateAllFields(depth) {
             for (let i = 0; i < this.fieldsToMap.length; i++) {
                 const field = this.fieldsToMap[i]
+                console.log('validate field', field)
 
                 // Only check enabled and mapped fields
                 if (field.enabled && !!field.fieldName) {
-                    const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows)
-                    if (!fieldIsValid) return false
+                    const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows, depth)
+                    if (!fieldIsValid) {
+                        return false
+                    }
                 }
             }
             return true
