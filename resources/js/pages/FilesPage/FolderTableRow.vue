@@ -57,7 +57,7 @@ export default {
         },
         async onSubmitEdit() {
             this.REMOVE_UNSAVED_FILES()
-            this.insertOrUpdateFile(this.fileToEdit)
+            this.insertOrUpdateFile({file: this.fileToEdit, addToState: false})
             this.$emit('update:fileToEdit', {})
         }
     }

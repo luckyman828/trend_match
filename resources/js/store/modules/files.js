@@ -185,8 +185,8 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        async insertOrUpdateFile({ commit, dispatch }, file) {
-            console.log('insert or update', file)
+        async insertOrUpdateFile({ commit, dispatch }, { file, addToState = true }) {
+            console.log('insert or update', file, addToState)
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -194,7 +194,7 @@ export default {
             // Check if we are inserting or updating
             if (!file.id) {
                 // If we are inserting
-                commit('INSERT_FILE', file)
+                if (addToState) commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
@@ -229,7 +229,7 @@ export default {
                         { root: true }
                     )
                     // Set the files ID if not already set
-                    if (!file.id) file.id = response.data.id
+                    if (wasCreated) file.id = response.data.id
                     // console.log('done creating file', file)
                 })
                 .catch(err => {

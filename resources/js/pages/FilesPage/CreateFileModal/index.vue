@@ -102,10 +102,10 @@ export default {
         createEmpty() {
             // Create a copy of the new file object
             const newFile = JSON.parse(JSON.stringify(this.newFile))
-            newFile.id = null
+            newFile.id = 0
             newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
             newFile.workspace_id = this.currentWorkspace.id
-            this.insertOrUpdateFile(newFile)
+            this.insertOrUpdateFile({file: newFile})
             // Reset modal
             this.onClose()
             this.onReset()
@@ -131,7 +131,7 @@ export default {
             this.submitStatus = 'Creating file'
             // Set new file data
             const newFile = this.newFile
-            newFile.id = null
+            newFile.id = 0
             newFile.parent_id = this.currentFolder ? this.currentFolder.id : 0
             newFile.workspace_id = this.currentWorkspace.id
 
@@ -140,7 +140,7 @@ export default {
             let uploadSuccess = true
 
             // First we need to create a file for the products, since the API requires that products be uploaded to an existing file
-            await this.insertOrUpdateFile(newFile)
+            await this.insertOrUpdateFile({file: newFile})
 
             // Then we will instantiate the products and attempt to upload them
 

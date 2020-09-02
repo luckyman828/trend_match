@@ -7,7 +7,7 @@
                 :focusOnMount="true" :selectOnFocus="true" :type="'text'"
                 actionOnBlur="Cancel"
                 v-model="fileToEdit.name"
-                @submit="insertOrUpdateFile(fileToEdit)"
+                @submit="onSubmitEdit"
                 @cancel="onCancelEdit"/>
         </td>
         <Draggable v-else :forceFallback="true" fallbackClass="sortable-drag" :fallbackTolerance="10"
@@ -48,6 +48,9 @@ export default {
         },
         onShowSingleFile() {
             this.$emit('show-single-file', this.file)
+        },
+        onSubmitEdit() {
+            this.insertOrUpdateFile({file: fileToEdit, addToState: false})
         }
     }
 }
