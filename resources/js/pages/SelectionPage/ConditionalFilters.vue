@@ -293,7 +293,7 @@ export default {
                             else {
                                 const actionArray = this.distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
                                 const userFeedback = selectionInput[actionArray].find(action => action.user_id == userId)
-                                console.log('find action array match', actionArray, userFeedback, filter.key)
+                                // console.log('find action array match', actionArray, userFeedback, filter.key)
                                 if (operator == '=' && (!userFeedback || userFeedback.action != filter.key)) include = false
                                 if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.key)) include = false
                             }
