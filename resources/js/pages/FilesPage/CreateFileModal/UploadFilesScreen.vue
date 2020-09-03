@@ -85,7 +85,7 @@ export default {
                 // const priceKey = await this.getProductFields({scope: 'priceKey'})
                 this.availableFiles.push({
                     mappedKey: mappedKey[0],
-                    variantKey : variantKey[0],
+                    variantKeys : variantKey,
                     // assortmentKey : assortmentKey[0],
                     // priceKey : priceKey[0],
                     headers: Object.keys(rows[0]),

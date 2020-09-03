@@ -134,7 +134,10 @@ export default {
             for (let i = 0; i < this.availableFiles.length; i++) {
                 const file = this.availableFiles[i]
                 if (!file.mappedKey.fieldName) return 'A file  has no product key mapped'
-                if (!file.variantKey.fieldName) return 'A file has no variant key mapped'
+                for (let i = 0; i < file.variantKeyList.length; i++) {
+                    const variantKey = file.variantKeyList[i]
+                    if (!variantKey.fieldName) return 'A file has no variant key mapped'
+                }
             }
 
             // Check that no fields have an error
@@ -161,7 +164,9 @@ export default {
             })
             this.availableFiles.map(file => {
                 this.autoMapField(file.mappedKey, [file])
-                this.autoMapField(file.variantKey, [file])
+                file.variantKeyList.map(variantKey => {
+                    this.autoMapField(variantKey, [file])
+                })
             })
 
             // When done automapping, validate all the fields

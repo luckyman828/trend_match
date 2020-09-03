@@ -34,6 +34,11 @@
                 :value="previewValue"
             />
         </td>
+        <td v-if="$scopedSlots.right">
+            <div class="right-slot">
+                <slot name="right"/>
+            </div>
+        </td>
     </tr>
 </template>
 
@@ -78,6 +83,9 @@ export default {
             right: -14px;
         }
     }
+}
+.right-slot {
+    margin-right: -32px;
 }
 
 </style>

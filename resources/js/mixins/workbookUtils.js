@@ -87,6 +87,7 @@ export default {
             return isValid
         },
         autoMapField(field, availableFiles, matchesToAvoid) {
+            // console.log('automap', field)
             let foundMatch = false
             let allMatches = []
             availableFiles.forEach(fieldCollection => {
@@ -179,50 +180,62 @@ export default {
                         const fieldValue = field.customEntry ? field.fieldName : row[field.fieldName]
 
                         // START MAP VARIANTS
-                        if (product.variants && (field.scope == 'variants' || field.scope == 'images')) {
-                            // Find the variant key
-                            const variantKeyField = file.variantKey.fieldName
-                            const variantKeyValue = row[variantKeyField]
-                            // If we don't have any variant key, just give up
-                            if (!variantKeyValue) return
+                        // console.log('at least try try map variants?')
+                        if (product.variants) {
+                            // Loop through our variant keys
+                            file.variantKeyList.map(variantKey => {
+                                if (!variantKey.customEntry && !field.file && !field.fileName) return
+                                // console.log('instantiate variant')
 
-                            // Check if the variant already exists
-                            let variant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
-                            if (!variant) {
-                                variant = {
-                                    id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
-                                    name: null,
-                                    sizes: [],
-                                    pictures: [],
-                                    image: null,
-                                    images: [],
-                                    mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
-                                    // This actually allows us to link variants by a key that is not included on the variant object itself
+                                // Find the variant key
+                                const variantKeyField = variantKey.fieldName
+                                const variantKeyValue = variantKey.customEntry
+                                    ? variantKey.fieldName
+                                    : row[variantKeyField]
+                                // If we don't have any variant key, just give up
+                                if (!variantKeyValue) return
+                                // console.log('variantKeyValue', variantKeyValue)
+
+                                // Check if the variant already exists
+                                let variant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
+                                if (!variant) {
+                                    variant = {
+                                        id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
+                                        name: variantKeyValue,
+                                        sizes: [],
+                                        pictures: [],
+                                        image: null,
+                                        images: [],
+                                        mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
+                                        // This actually allows us to link variants by a key that is not included on the variant object itself
+                                    }
+                                    product.variants.push(variant)
                                 }
-                                product.variants.push(variant)
-                            }
 
-                            // Now that we have our variant, it's just a question of setting the values
-                            const variantField = variant[field.name]
+                                // console.log('product variants', product.variants)
+                                if (!(field.scope == 'variants' || field.scope == 'images')) return
 
-                            if (field.name == 'image') {
-                                const valueExistsInArray = variant.pictures.find(x => x.url == fieldValue)
-                                if (!valueExistsInArray && fieldValue)
-                                    variant.pictures.push({
-                                        name: null,
-                                        url: fieldValue,
-                                    })
-                                return
-                            }
+                                // Now that we have our variant, it's just a question of setting the values
+                                const variantField = variant[field.name]
 
-                            if (Array.isArray(variantField)) {
-                                const valueExistsInArray = variantField.includes(fieldValue)
-                                if (!valueExistsInArray) variantField.push(fieldValue)
-                                return
-                            }
+                                if (field.name == 'image') {
+                                    const valueExistsInArray = variant.pictures.find(x => x.url == fieldValue)
+                                    if (!valueExistsInArray && fieldValue)
+                                        variant.pictures.push({
+                                            name: null,
+                                            url: fieldValue,
+                                        })
+                                    return
+                                }
 
-                            variant[field.name] = fieldValue
-                            return
+                                if (Array.isArray(variantField)) {
+                                    const valueExistsInArray = variantField.includes(fieldValue)
+                                    if (!valueExistsInArray) variantField.push(fieldValue)
+                                    return
+                                }
+
+                                variant[field.name] = fieldValue
+                            })
                         }
                         // END MAP VARIANTS
 

@@ -26,7 +26,15 @@ export default {
                 name: 'variant_key',
                 displayName: 'Variant key',
                 type: 'string',
-                headersToMatch: ['variant name', 'variant id', 'color', 'colour'],
+                headersToMatch: [
+                    '^(?!.*(minimum|quantity|size|qty|ean|min)).*(variant|color|colour|box).*$',
+                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
+                    'variant name',
+                    'color name',
+                    'colour name',
+                    'main colour name',
+                    'colour_name',
+                ],
             },
             // {
             //     scope: 'assortmentKey',
@@ -149,21 +157,21 @@ export default {
                 headersToMatch: ['buyer group', 'buyer', 'pricelist', 'buying group'],
             },
             // VARIANTS
-            {
-                scope: 'variants',
-                name: 'name',
-                displayName: 'Variant Name',
-                type: 'string',
-                headersToMatch: [
-                    '^(?!.*(minimum|quantity|size|qty)).*(variant|color|colour).*$',
-                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
-                    'variant name',
-                    'color name',
-                    'colour name',
-                    'main colour name',
-                    'colour_name',
-                ],
-            },
+            // {
+            //     scope: 'variants',
+            //     name: 'name',
+            //     displayName: 'Variant Name',
+            //     type: 'string',
+            //     headersToMatch: [
+            //         '^(?!.*(minimum|quantity|size|qty)).*(variant|color|colour).*$',
+            //         // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
+            //         'variant name',
+            //         'color name',
+            //         'colour name',
+            //         'main colour name',
+            //         'colour_name',
+            //     ],
+            // },
             {
                 scope: 'variants',
                 name: 'sizes',

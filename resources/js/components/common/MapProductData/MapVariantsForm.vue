@@ -3,10 +3,45 @@
         <h3>Map variants</h3>
         <div class="form-element">
 
+            <!-- MAP KEYS -->
+        <div class="form-element">
+            <h4>
+                <strong>Map variant name fields</strong>
+                <i class="far fa-info-circle"
+                    v-tooltip="'We will create one variant on the products for each unique name found in the mapped name fields.'"
+                ></i>
+            </h4>
+            <BaseMapFieldsTable class="map-fields-table">
+                <MapKeysTableHeader/>
+                <template v-for="file in availableFiles">
+                    <MapKeysTableRow v-for="(variantKey, index) in file.variantKeyList" :key="file.name + '-' + index"
+                        :mappedFile="file"
+                        :mappedField="variantKey"
+                        @show-field-context="$emit('show-field-context', $event, variantKey, file)"
+                    >
+                        <template v-slot:right>
+                            <button class="ghost dark"
+                                v-tooltip="'Add additional variant key map for this. file.\nUseful if you have multiple variants in the same row.'"
+                                @click="onAddAdditionalVariantKeyMap(file)"
+                            >
+                                <i class="far fa-plus"></i>
+                            </button>
+                            <button class="ghost dark" v-if="file.variantKeyList.length > 1"
+                                v-tooltip="'Remove variant key map'"
+                                @click="onRemoveAdditionalVariantKeyMap(file, index)"
+                            >
+                                <i class="far fa-trash"></i>
+                            </button>
+                        </template>
+                    </MapKeysTableRow>
+                </template>
+            </BaseMapFieldsTable>
+        </div>
+
             <!-- MAP FIELDS -->
             <BaseMapFieldsTable>
                 <MapFieldsTableHeader/>
-                <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants')" 
+                <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants' && x.name != 'name')" 
                     :key="field.id"
                     :mappedFile="field.file"
                     :mappedField="field"
@@ -29,24 +64,7 @@
         >
             <i class="fas fa-plus"></i><span>Add variant image map</span>
         </button>
-
-        <!-- MAP KEYS -->
-        <div class="form-element">
-            <h4>
-                <strong>Map variant keys</strong>
-                <i class="far fa-info-circle"
-                    v-tooltip="'We use the key to know which rows represent the same variant (use for instance; Name or Id)'"
-                ></i>
-            </h4>
-            <BaseMapFieldsTable class="map-fields-table">
-                <MapKeysTableHeader/>
-                <MapKeysTableRow v-for="(file, index) in mappedFiles" :key="index"
-                    :mappedFile="file"
-                    :mappedField="file.variantKey"
-                    @show-field-context="$emit('show-field-context', $event, file.variantKey, file)"
-                />
-            </BaseMapFieldsTable>
-        </div>
+        
 
     </div>
 </template>
@@ -75,16 +93,16 @@ export default {
         'availableFiles',
     ],
     computed: {
-        mappedFiles() {
-            const fields = this.fieldsToMap.filter(x => ['images', 'variants'].includes(x.scope))
-            let files = []
-            fields.map(field => {
-                if (!field.file) return
-                const existingFile = files.find(file => file.fileName == field.file.fileName)
-                if (!existingFile) files.push(field.file)
-            })
-            return files
-        }
+        // mappedFiles() {
+        //     const fields = this.fieldsToMap.filter(x => ['images', 'variants'].includes(x.scope))
+        //     let files = []
+        //     fields.map(field => {
+        //         if (!field.file) return
+        //         const existingFile = files.find(file => file.fileName == field.file.fileName)
+        //         if (!existingFile) files.push(field.file)
+        //     })
+        //     return files
+        // }
     },
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
@@ -103,14 +121,31 @@ export default {
             const imageField = this.fieldsToMap.find(x => x.scope == 'images')
             const imageFieldMatches = this.autoMapField(imageField, this.availableFiles)
             
-            let firstMatchIngored = false
+            let firstImageMatchIgnored = false
             imageFieldMatches.map(fileMatch => {
                 fileMatch.matches.map(match => {
                     // ignore the first match
-                    if (!firstMatchIngored) {
-                        firstMatchIngored = true
+                    if (!firstImageMatchIgnored) {
+                        firstImageMatchIgnored = true
                     } else {
                         this.onAddVariantImageMap()
+                    }
+                })
+            })
+
+            // Attemp to determine how many variant keys we need
+            // Get our first variant image map
+            const variantKeyFields = await this.getProductFields({scope: 'variantKey'})
+            const variantKeyFiledMatches = this.autoMapField(variantKeyFields[0], this.availableFiles)
+            
+            let firstKeyMatchIgnored = false
+            variantKeyFiledMatches.map(fileMatch => {
+                fileMatch.matches.map(match => {
+                    // ignore the first match
+                    if (!firstKeyMatchIgnored) {
+                        firstKeyMatchIgnored = true
+                    } else {
+                        this.onAddAdditionalVariantKeyMap(fileMatch.file)
                     }
                 })
             })
@@ -128,6 +163,20 @@ export default {
             const index = this.fieldsToMap.findIndex(x => x.id == fieldId)
             this.fieldsToMap.splice(index, 1)
         },
+        async onAddAdditionalVariantKeyMap(file) {
+            const variantKey = await this.getProductFields({scope: 'variantKey'})
+            const newVariantKey = variantKey[0]
+            file.variantKeyList.push(newVariantKey)
+            // Attempt to automatch the field
+            // Provide the existing matches to avoid mapping the same field multiple times
+            const existingMatches = file.variantKeyList.map(variantKey => {
+                return {fieldName: variantKey.fieldName, fileName: file.fileName}
+            })
+            this.autoMapField(newVariantKey, [file], existingMatches)
+        },
+        onRemoveAdditionalVariantKeyMap(file, index) {
+            file.variantKeyList.splice(index, 1)
+        }
     },
     created() {
         this.initVariantMap()
