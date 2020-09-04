@@ -217,7 +217,6 @@ export default {
         availableUsers() {
             // Every product should include every feedback user, so we should be able to simple do this:
             const selectionInput = this.getActiveSelectionInput(this.products[0])
-            console.log('selection input', selectionInput)
             const usersToReturn = [{
                 name: 'You',
                 user_id: this.authUser.id,
