@@ -256,6 +256,7 @@ export default {
                     },
                 })
 
+                if (!request.discussions) Vue.set(request, 'discussions', [])
                 selectionInput.rawSelectionInput.requests.push(request)
             }
         },

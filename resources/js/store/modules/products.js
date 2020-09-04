@@ -260,13 +260,14 @@ export default {
                                     if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId))
                                         include = false
                                 } else {
-                                    const actionArray = this.distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
+                                    const actionArray =
+                                        getters.getDistributionScope == 'Alignment' ? 'actions' : 'feedbacks'
                                     const userFeedback = selectionInput[actionArray].find(
                                         action => action.user_id == userId
                                     )
-                                    if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
+                                    if (operator == '=' && (!userFeedback || userFeedback.action != filter.key))
                                         include = false
-                                    if (operator == '!=' && !!userFeedback && userFeedback.action == filter.actionType)
+                                    if (operator == '!=' && !!userFeedback && userFeedback.action == filter.key)
                                         include = false
                                 }
                             }

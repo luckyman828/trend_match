@@ -7,7 +7,7 @@
             :value="value" :disabled="disabled || readOnly"
             :class="[{'input-wrapper': type != 'select'}, inputClass]" 
             @input="$emit('input', $event.target.value)" 
-            @blur="$emit('blur', $event); actionOnBlur == 'Submit' && onSubmit(); actionOnBlur == 'Cancel' && onCancel()" 
+            @blur="onBlur" 
             @paste="$emit('paste', $event)"
             @focus="onFocus"
             @keydown.esc="onCancel"
@@ -28,7 +28,8 @@ export default {
     name: 'inputField',
     data: function() {return {
         error: null,
-        initialValue: null
+        initialValue: null,
+        actionFired: false,
     }},
     props: [
         'type',
@@ -70,11 +71,21 @@ export default {
         onFocus() {
             if (this.selectOnFocus) this.select()
         },
+        onBlur(e) {
+            this.$emit('blur', e)
+            if (!this.actionFired) {
+                if (this.actionOnBlur == 'Submit') this.onSubmit()
+                if (this.actionOnBlur == 'Cancel') this.onCancel()
+            }
+            this.actionFired = false
+        },
         onCancel() {
+            this.actionFired = true
             this.$emit('input', this.initialValue)
             this.$emit('cancel')
         },
         onSubmit() {
+            this.actionFired = true
             this.initialValue = this.value
             this.$emit('input', this.initialValue)
             this.$emit('submit', this.initialValue)

@@ -52,8 +52,8 @@ export default {
         ...mapActions('files', ['insertOrUpdateFile', 'removeUnsavedFiles', 'setCurrentFolder']),
         ...mapMutations('files', ['REMOVE_UNSAVED_FILES']),
         onCancelEdit() {
-            this.$emit('update:fileToEdit', {})
             this.REMOVE_UNSAVED_FILES()
+            this.$emit('update:fileToEdit', {})
         },
         async onSubmitEdit() {
             this.REMOVE_UNSAVED_FILES()

@@ -214,27 +214,31 @@ export default {
             getActiveSelectionInput: 'getActiveSelectionInput'
         }),
         ...mapGetters('auth', ['authUser']),
-        availableFeedbackUsers() {
+        availableUsers() {
             // Every product should include every feedback user, so we should be able to simple do this:
             const selectionInput = this.getActiveSelectionInput(this.products[0])
+            console.log('selection input', selectionInput)
             const usersToReturn = [{
                 name: 'You',
                 user_id: this.authUser.id,
             }]
-            usersToReturn.concat(selectionInput.actions.map(action => {
+            
+            selectionInput.actions.map(action => {
                 if (usersToReturn.find(x => x.user_id == action.user_id)) return
-                return {
+                usersToReturn.push( {
                     name: action.user ? action.user.name : 'Anonymous',
                     user_id: action.user_id,
-                }
-            }))
-            usersToReturn.concat(selectionInput.feedbacks.map(feedback => {
+                })
+            })
+            selectionInput.feedbacks.map(feedback => {
                 if (usersToReturn.find(x => x.user_id == feedback.user_id)) return
-                return {
+                usersToReturn.push({
                     name: feedback.user ? feedback.user.name : 'Anonymous',
                     user_id: feedback.user_id,
-                }
-            }))
+                })
+            })
+
+            // usersToReturn.push(...)
             return usersToReturn
         },
         availableSelections() {
@@ -255,7 +259,7 @@ export default {
                 },
                 {
                     name: 'User',
-                    options: this.availableFeedbackUsers.map(x => {
+                    options: this.availableUsers.map(x => {
                         x.filterType = 'user'
                         return x
                     })
@@ -289,8 +293,9 @@ export default {
                             else {
                                 const actionArray = this.distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
                                 const userFeedback = selectionInput[actionArray].find(action => action.user_id == userId)
-                                if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType)) include = false
-                                if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.actionType)) include = false
+                                // console.log('find action array match', actionArray, userFeedback, filter.key)
+                                if (operator == '=' && (!userFeedback || userFeedback.action != filter.key)) include = false
+                                if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.key)) include = false
                             }
                         }
 
