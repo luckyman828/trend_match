@@ -243,7 +243,7 @@ export default {
         },
         removeUnsavedTeam() {
             // Check that we have a new team
-            const existingNewTeam = this.teams.find(x => x.id == null)
+            const existingNewTeam = this.teams.find(x => !x.id)
             if (existingNewTeam) {
                 this.teams.pop()
             }
@@ -255,17 +255,17 @@ export default {
             if (existingNewTeam) {
                 // Focus the edit field
                 this.$nextTick(() => {
-                    if (this.$refs['teamRow-null'].editTitle == true) {
-                        this.$refs['teamRow-null'].$refs['editTitle'].setActive()
+                    if (this.$refs['teamRow-0'].editTitle == true) {
+                        this.$refs['teamRow-0'].$refs['editTitle'].setActive()
                     } else {
-                        this.$refs['teamRow-null'].editTitle = true
+                        this.$refs['teamRow-0'].editTitle = true
                     }
                 })
             }
             // Else create a new team
             else {
                 const newTeam = {
-                    id: null,
+                    id: 0,
                     title: 'New team',
                     owner: null,
                     user_count: 0,
@@ -277,7 +277,7 @@ export default {
                 // wait for the new team to be rendered
                 this.$nextTick(() => {
                     // Activate title edit of new folder
-                    this.$refs['teamRow-null'].editTitle = true
+                    this.$refs['teamRow-0'].editTitle = true
                 })
             }
             
