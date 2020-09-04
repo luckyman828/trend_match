@@ -192,7 +192,7 @@ export default {
             return options
         },
         submitSearchAsManualEntryAvailable() {
-            return this.searchString && (this.searchString.length >= 3 || this.optionsFilteredFlat.length <= 0)
+            return this.allowManualEntry && this.searchString && (this.searchString.length >= 3 || this.optionsFilteredFlat.length <= 0)
         }
     },
     watch: {
