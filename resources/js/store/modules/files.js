@@ -191,11 +191,11 @@ export default {
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
             let requestBody = file
-            commit('INSERT_FILE', file)
+            // commit('INSERT_FILE', file)
             // Check if we are inserting or updating
             if (!file.id) {
                 // If we are inserting
-                // if (addToState) commit('INSERT_FILE', file)
+                if (addToState) commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
