@@ -159,31 +159,42 @@
             <template v-slot:header>
                 <BaseTableHeader class="image"/>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">Delivery</BaseTableHeader>
                 <BaseTableHeader class="wholesale-price hide-screen-xs" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
                 <BaseTableHeader class="recommended-retail-price hide-screen-xs" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
                 <BaseTableHeader class="mark-up hide-screen-xs" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
                 <BaseTableHeader class="currency hide-screen-xs"/>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 v-tooltip="{content: 'Minimum per Variant / Minimum per Order', delay: {show: 300}}"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
                 <!-- Single Selection Only -->
                 <template v-if="getCurrentSelections.length == 1">
                     <BaseTableHeader class="focus"/>
                     <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">In</BaseTableHeader>
                     <BaseTableHeader class="outs" :sortKey="distributionScope == 'Alignment' ? 'alignmentOuts' : 'outs'" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">Out</BaseTableHeader>
                     <BaseTableHeader class="nds" :sortKey="distributionScope == 'Alignment' ? 'alignmentNds' : 'nds'" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">ND</BaseTableHeader>
                     <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
                 </template>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
@@ -607,6 +618,7 @@ export default {
         // Preset distribution scope
         this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
         this.actionDistributionTooltipTab = this.distributionScope
+        this.onSort(true, 'sequence')
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)

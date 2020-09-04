@@ -27,7 +27,7 @@ export default {
                 displayName: 'Variant key',
                 type: 'string',
                 headersToMatch: [
-                    '^(?!.*(minimum|quantity|size|qty|ean|min)).*(variant|color|colour|box).*$',
+                    '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant|color|colour|box).*$',
                     // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
                     'variant name',
                     'color name',
