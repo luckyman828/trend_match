@@ -68,13 +68,12 @@
                                 <span>Link sent</span>
                             </div>
 
-                            <button v-if="userHasEditAccess" class="invisible ghost-hover" 
+                            <!-- <button v-if="userHasEditAccess" class="invisible ghost-hover" 
                             @click="showUserContext($event, rowProps.item)">
                                 <i class="far fa-ellipsis-h medium"></i>
                             </button>
-                            <span v-else>{{rowProps.item.role}}</span>
+                            -->
                         </td>
-                        <td class="action"></td>
                 </BaseTableInnerRow>
 
                 <!-- Excluded Users -->

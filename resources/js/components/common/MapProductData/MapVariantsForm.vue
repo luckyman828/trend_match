@@ -133,22 +133,22 @@ export default {
                 })
             })
 
-            // Attemp to determine how many variant keys we need
-            // Get our first variant image map
-            const variantKeyFields = await this.getProductFields({scope: 'variantKey'})
-            const variantKeyFiledMatches = this.autoMapField(variantKeyFields[0], this.availableFiles)
+            // // Attemp to determine how many variant keys we need
+            // // Get our first variant image map
+            // const variantKeyFields = await this.getProductFields({scope: 'variantKey'})
+            // const variantKeyFiledMatches = this.autoMapField(variantKeyFields[0], this.availableFiles)
             
-            let firstKeyMatchIgnored = false
-            variantKeyFiledMatches.map(fileMatch => {
-                fileMatch.matches.map(match => {
-                    // ignore the first match
-                    if (!firstKeyMatchIgnored) {
-                        firstKeyMatchIgnored = true
-                    } else {
-                        this.onAddAdditionalVariantKeyMap(fileMatch.file)
-                    }
-                })
-            })
+            // let firstKeyMatchIgnored = false
+            // variantKeyFiledMatches.map(fileMatch => {
+            //     fileMatch.matches.map(match => {
+            //         // ignore the first match
+            //         if (!firstKeyMatchIgnored) {
+            //             firstKeyMatchIgnored = true
+            //         } else {
+            //             this.onAddAdditionalVariantKeyMap(fileMatch.file)
+            //         }
+            //     })
+            // })
         },
         async onAddVariantImageMap() {
             const newFields = await this.getProductFields({scope: 'images'})
