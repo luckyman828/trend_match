@@ -203,10 +203,12 @@ export default {
         },
 
         async onSubmit() {
+            console.log('on submit map fields screen')
             // First validate all fields
             // Loop through the fields and look for errors
             // assume no errors
             const valid = this.validateAllFields()
+            console.log('validate all fields', valid)
             
             if (!valid) {
                 this.SHOW_SNACKBAR({ 
@@ -214,8 +216,10 @@ export default {
                     type: 'info', 
                     iconClass: 'fa-exclamation-circle', 
                 })
+                console.log('not valid')
                 return
             }
+            console.log('instantiate products')
 
             // Instantiate products now, so we know that the method won't throw any errors after we have created a new file
             // Filter the fields to map by our uploadOptions

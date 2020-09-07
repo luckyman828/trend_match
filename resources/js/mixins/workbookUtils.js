@@ -42,7 +42,7 @@ export default {
                 if (fieldValue && isValid) {
                     // Test for integers
                     if (field.type == 'number') {
-                        if (isNaN(fieldValue)) {
+                        if (typeof fieldValue != 'number') {
                             field.error = `Must be a <strong>number</strong>.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i + 2}</strong>`
                             isValid = false
