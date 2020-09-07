@@ -979,7 +979,9 @@ export default {
             await Promise.all(
                 selectionList.map(async selection => {
                     const apiUrl = `/selections/${selection.id}/invite-members`
-                    await axios.post(apiUrl)
+                    await axios.post(apiUrl, {
+                        user_ids: [],
+                    })
                 })
             )
                 .then(response => {
