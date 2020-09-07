@@ -177,7 +177,11 @@ export default {
                             (!field.customEntry && (!field.file || field.file.fileName != file.fileName))
                         )
                             return
-                        const fieldValue = field.customEntry ? field.fieldName : row[field.fieldName]
+                        let fieldValue = field.customEntry ? field.fieldName : row[field.fieldName]
+
+                        // Limit decimals to 2 places
+                        if (typeof fieldValue == 'number')
+                            fieldValue = Math.round((fieldValue + Number.EPSILON) * 100) / 100
 
                         // START MAP VARIANTS
                         // console.log('at least try try map variants?')
