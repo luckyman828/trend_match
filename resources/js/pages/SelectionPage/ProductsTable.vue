@@ -547,7 +547,7 @@ export default {
         'SET_SELECTED_PRODUCTS', 'SET_SHOW_PDF_MODAL', 'SET_SHOW_CSV_MODAL']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
-        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'setProductsCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         onToggleProductsCompleted(products) {
             products.map(product => {
@@ -606,15 +606,18 @@ export default {
             this.$emit('updateAction', action, selectionInput)
         },
         onUpdateMultipleActions(products, newAction) {
+            // Filter out products that have already been completed
+            const productsToUpdate = products.filter(x => !x.is_completed)
+
             if (this.currentSelectionMode == 'Feedback') {
-                const actions = products.map(product => {
+                const actions = productsToUpdate.map(product => {
                     const selectionInput = this.getActiveSelectionInput(product)
                     return selectionInput.yourSelectionFeedback
                 })
                 this.updateFeedbacks({actions, newAction})
             }
             if (this.currentSelectionMode == 'Alignment') {
-                const actions = products.map(product => {
+                const actions = productsToUpdate.map(product => {
                     const selectionInput = this.getActiveSelectionInput(product)
                     return selectionInput.selectionAction
                 })
