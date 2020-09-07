@@ -223,12 +223,12 @@ export default {
             if (unreadOnly) {
                 if (selectionMode == 'Approval') {
                     productsToReturn = productsToReturn.filter(
-                        product => getSelectionInput(product).hasUnreadAlignerComment
+                        product => !product.is_completed && getSelectionInput(product).hasUnreadAlignerComment
                     )
                 }
                 if (selectionMode == 'Alignment') {
                     productsToReturn = productsToReturn.filter(
-                        product => getSelectionInput(product).hasUnreadApproverComment
+                        product => !product.is_completed && getSelectionInput(product).hasUnreadApproverComment
                     )
                 }
             }
@@ -804,6 +804,7 @@ export default {
             })
         },
         toggleProductCompleted({ commit }, { selection, product }) {
+            // console.log('toggle product completd', selection, product)
             const apiUrl = `selections/${selection.id}/products/${product.id}/complete`
             const shouldBeCompleted = product.is_completed ? false : true
 
@@ -824,6 +825,28 @@ export default {
                 //     { root: true }
                 // )
             })
+        },
+        setProductsCompleted({ commit }, { products, shouldBeCompleted }) {
+            const apiUrl = `selections/${selection.id}/products/complete`
+
+            commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
+
+            axios
+                .post(apiUrl, {
+                    completed: shouldBeCompleted,
+                    product_ids: products.map(x => x.id),
+                })
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${products.length} Products ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                            iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                            type: shouldBeCompleted ? 'success' : 'danger',
+                        },
+                        { root: true }
+                    )
+                })
         },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
@@ -988,10 +1011,11 @@ export default {
                 Object.defineProperty(product, 'hasNewComment', {
                     get: function() {
                         return (
-                            (rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
+                            !product.is_completed &&
+                            ((rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
                                 product.hasUnreadApproverComment) ||
-                            (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
-                                product.hasUnreadAlignerComment)
+                                (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
+                                    product.hasUnreadAlignerComment))
                         )
                     },
                 })

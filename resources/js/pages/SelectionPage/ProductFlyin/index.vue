@@ -14,10 +14,48 @@
                     </div>
                 </template>
                 <template v-slot:right>
-                    <div class="item-group">
-                        <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                    <div class="item-group" v-if="product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment')">
+                        <!-- Master actions -->
+                        <BaseButton buttonClass="pill xs ghost"
+                        targetAreaPadding="4px 4px"
+                        :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                        @click="onToggleCompleted">
+                            <template v-if="!product.is_completed">
+                                <i class="far fa-circle" style="font-weight: 400;"></i>
+                                <span>Complete</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check-circle primary"></i>
+                                <span>Completed</span>
+                            </template>
+                        </BaseButton>
+                        <!-- END Master actions -->
                     </div>
                     <div class="item-group">
+                        <v-popover>
+                            <button class="ghost">
+                                <i class="far fa-ellipsis-h"></i>
+                            </button>
+                            <div slot="popover">
+                                <BaseContextMenu :inline="true">
+                                    <!-- <template v-slot:header>
+                                        <span>More actions</span>
+                                    </template> -->
+                                    <template v-slot:default>
+                                        <div class="item-group">
+                                            <div class="item-wrapper">
+                                                <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </BaseContextMenu>
+                            </div>
+                        </v-popover>
+                    </div>
+                    <!-- <div class="item-group">
+                        <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                    </div> -->
+                    <div class="item-group" v-if="activeSelectionList.length > 1">
                         <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                     </div>
                     <div class="item-group">
@@ -275,6 +313,7 @@ export default {
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
+            activeSelectionList: 'getCurrentSelections',
         }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
         selectionInput() {
@@ -298,7 +337,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
@@ -306,6 +345,9 @@ export default {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
             }
+        },
+        onToggleCompleted() {
+            this.toggleProductCompleted({selection: this.selection, product: this.product})
         },
         onBroadcastProduct(product) {
             this.lastBroadcastProductId = product.id
@@ -361,6 +403,10 @@ export default {
             const key = event.code
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+
+                if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') {
+                    this.onToggleCompleted()
+                }
 
                 if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')

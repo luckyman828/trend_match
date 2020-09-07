@@ -256,6 +256,16 @@
 
                 </div>
                 <div class="item-group">
+                    <BaseContextMenuItem 
+                        :iconClass="!contextProduct.is_completed ? 'far fa-check-circle' : 'far fa-times-circle'"
+                        hotkey="KeyC"
+                        @click="onToggleProductsCompleted([contextProduct])" v-close-popover
+                    >
+                        <span v-if="!contextProduct.is_completed"><u>C</u>omplete</span>
+                        <span v-else>Undo <u>c</u>omplete</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-eye"
                     hotkey="KeyV"
                     @click="onViewSingle(contextProduct)" v-close-popover>
@@ -319,6 +329,23 @@
                     </BaseContextMenuItem>
                 </div>
             </template>
+
+            <div class="item-group">
+                <BaseContextMenuItem 
+                    iconClass="far fa-check-circle"
+                    hotkey="KeyC"
+                    @click="onSetProductsCompleted(selectedProducts, true)" v-close-popover
+                >
+                    <span><u>C</u>omplete products</span>
+                </BaseContextMenuItem>
+                <BaseContextMenuItem 
+                    iconClass="far fa-times-circle"
+                    hotkey="KeyN"
+                    @click="onSetProductsCompleted(selectedProducts, false)" v-close-popover
+                >
+                    <span>U<u>n</u>do complete products</span>
+                </BaseContextMenuItem>
+            </div>
 
             <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-file-export"
@@ -520,8 +547,16 @@ export default {
         'SET_SELECTED_PRODUCTS', 'SET_SHOW_PDF_MODAL', 'SET_SHOW_CSV_MODAL']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        onToggleProductsCompleted(products) {
+            products.map(product => {
+                this.toggleProductCompleted({selection: this.selection, product})
+            })
+        },
+        onSetProductsCompleted(products, shouldBeCompleted) {
+            this.setProductsCompleted({products, shouldBeCompleted})
+        },
         onExportToCsv() {
             this.SET_SHOW_CSV_MODAL(true)
         },

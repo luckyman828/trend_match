@@ -1,10 +1,11 @@
 <template>
-    <div v-if="visible" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth">
+    <div v-if="visible || inline" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth"
+    :class="{'inline': inline}">
         <div class="item-group header" v-if="hasHeader">
             <strong>
                 <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
             </strong>
-            <button class="circle close" @click="hide"><i class="far fa-times"></i></button>
+            <button v-if="!inline" class="circle close" @click="hide"><i class="far fa-times"></i></button>
         </div>
 
         <div class="body">
@@ -26,7 +27,8 @@ export default {
         columns: {},
         hotkeys: {
             default: () => []
-        }
+        },
+        inline: {default: false}
     },
     data: function() {
         return {

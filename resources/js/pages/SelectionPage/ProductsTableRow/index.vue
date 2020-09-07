@@ -399,6 +399,7 @@ export default {
                 // this.$emit('onViewSingle', this.product)
                 this.onViewSingle()
             }
+            if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') this.onToggleCompleted()
             if (this.currentSelections.length <= 1 // Check that we are not doing multi selection input
             && this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {
