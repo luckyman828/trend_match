@@ -83,7 +83,7 @@ export default {
             return this.newComment.content.length < 1 || this.submitting
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
         },
         commentsSorted() {
             return this.selectionInput.comments.sort((a,b) => {

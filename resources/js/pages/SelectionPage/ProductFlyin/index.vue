@@ -294,7 +294,7 @@ export default {
             return this.currentSelectionModeAction
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
     },
     methods: {
@@ -374,9 +374,9 @@ export default {
         },
         hotkeyEnterHandler(e) {
             // If the request thread flyin is visible, do nothing
-            if (this.getRequestThreadVisible) return
+            if (this.getRequestThreadVisible || !this.selection.is_open) return
             // If the current mode is Alignment, focus the request field. Else focus comment
-            if (this.currentSelectionMode == 'Alignment') {
+            if (this.currentSelectionMode == 'Alignment' && !this.product.is_completed) {
                 this.$refs.requestsSection.activateWrite()
             } else {
                 this.$refs.commentsSection.activateWrite()

@@ -96,7 +96,7 @@ export default {
             showQty: 'getQuantityModeActive'
         }),
         userWriteAccess () {
-            return this.getUserWriteAccess(this.selection)
+            return this.getUserWriteAccess(this.selection, this.product)
         },
     },
     

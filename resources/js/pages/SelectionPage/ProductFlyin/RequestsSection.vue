@@ -105,7 +105,7 @@ export default {
             return this.newRequest.content.length < 1 
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
         },
         selectionRequest () {
             return this.selectionInput.selectionRequest

@@ -360,7 +360,7 @@ export default {
                             getSelectionInput(product)[currentAction] == 'In' ||
                             getSelectionInput(product)[currentAction] == 'Focus'
                         )
-                    if (actionFilter == 'tickets') return product.hasOpenTicket
+                    if (actionFilter == 'tickets') return product.hasOpenTicket && !product.is_completed
                 })
                 productsToReturn = filteredByAction
             }

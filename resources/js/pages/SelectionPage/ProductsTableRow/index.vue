@@ -246,7 +246,7 @@ export default {
             return this.getActiveSelectionInput(this.product)
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
         localSelectedProducts: {
             get() { return this.selectedProducts },
