@@ -139,7 +139,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .action-list {
     display: flex;
     align-items: center;

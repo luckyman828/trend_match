@@ -385,6 +385,13 @@ input[type='submit'] {
                     margin-left: nth($size, 6);
                 }
             }
+            &.has-target-area {
+                &::after {
+                    content: '';
+                    display: block;
+                    width: nth($size, 4);
+                }
+            }
         }
     }
 

@@ -803,6 +803,28 @@ export default {
                 }
             })
         },
+        toggleProductCompleted({ commit }, { selection, product }) {
+            const apiUrl = `selections/${selection.id}/products/${product.id}/complete`
+            const shouldBeCompleted = product.is_completed ? false : true
+
+            commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
+
+            const apiMethod = shouldBeCompleted ? 'put' : 'delete'
+            axios({
+                method: apiMethod,
+                url: apiUrl,
+            }).then(response => {
+                // commit(
+                //     'alerts/SHOW_SNACKBAR',
+                //     {
+                //         msg: `Product ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                //         iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                //         type: shouldBeCompleted ? 'success' : 'danger',
+                //     },
+                //     { root: true }
+                // )
+            })
+        },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
                 // Cast datasource_id to a number
@@ -819,6 +841,15 @@ export default {
 
                 // Instantiate the selectionInputList on the product
                 Vue.set(product, 'selectionInputList', [])
+
+                Object.defineProperty(product, 'is_completed', {
+                    get: function() {
+                        return product.selectionInputList.length > 0 && product.selectionInputList[0].is_completed
+                    },
+                    set: function(value) {
+                        product.selectionInputList[0].is_completed = value
+                    },
+                })
 
                 // ---- START PRICES ----
                 // Currency
@@ -1078,6 +1109,15 @@ export default {
                 Vue.set(selectionInput, 'product_id', product.id)
                 Vue.set(selectionInput, 'product', product)
                 Vue.set(selectionInput, 'variants', rawSelectionInput.variants)
+
+                Object.defineProperty(selectionInput, 'is_completed', {
+                    get: function() {
+                        return rawSelectionInput.is_completed
+                    },
+                    set: function(value) {
+                        rawSelectionInput.is_completed = value
+                    },
+                })
 
                 Object.defineProperty(selectionInput, 'preferred_currency', {
                     get: function() {
@@ -1679,6 +1719,9 @@ export default {
         },
         SET_SHOW_PDF_MODAL(state, makeVisible) {
             state.showPDFModal = makeVisible
+        },
+        TOGGLE_PRODUCT_COMPLETED(state, { product, shouldBeCompleted }) {
+            product.is_completed = shouldBeCompleted
         },
     },
 }

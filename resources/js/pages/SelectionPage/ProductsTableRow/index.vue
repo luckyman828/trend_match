@@ -162,6 +162,26 @@
                     <button class="invisible ghost-hover primary" 
                     @click="onViewSingle"><span>View</span></button>
                 </template>
+
+                <!-- Master actions -->
+                    <div v-if="product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                        class="extra-actions"
+                    >
+                        <BaseButton buttonClass="pill xs ghost"
+                        targetAreaPadding="4px 4px"
+                        :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                        @click="onToggleCompleted">
+                            <template v-if="!product.is_completed">
+                                <i class="far fa-circle" style="font-weight: 400;"></i>
+                                <span>Complete</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check-circle primary"></i>
+                                <span>Completed</span>
+                            </template>
+                        </BaseButton>
+                    </div>
+                <!-- END Master actions -->
             </td>
         </div>
 
@@ -263,7 +283,7 @@ export default {
         // }
     },
     methods: {
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -350,6 +370,9 @@ export default {
                 this.setCurrentFocusRowIndex(this.index-1)
             }
         },
+        onToggleCompleted() {
+            this.toggleProductCompleted({selection: this.selection, product: this.product})
+        },
         hotkeyHandler(event) {
             const key = event.code
             if (key == 'Tab') {
@@ -392,138 +415,143 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
-    .products-table-row {
-        display: block;
-        padding: 0;
-        .unread-indicator {
-            position: absolute;
-            left: -20px;
-            @media screen and (max-width: $screenSm) {
-                left: -16px;
-            }
-        }
-        &:focus {
-            // outline: solid 2px $primary;
-            // outline-offset: -2px;
-            outline: none;
-        }
-        .img-wrapper {
-            border: $borderElSoft;
-            height: 100%;
-            width: 100%;
-            // width: 48px;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
-        }
-        @media screen and (max-width: $screenMd) {
-            &:not(.multi-selection) {
-                &.action-Focus {
-                    box-shadow: -8px 0 0px $primary inset;
-                }
-                &.action-In {
-                    box-shadow: -8px 0 0px $green inset;
-                }
-                &.action-Out {
-                    box-shadow: -8px 0 0px $red inset;
-                }
-            }
-        }
-    }
-    td.id, td.title {
-        position: relative;
-    }
-    .variant-list {
+@import '~@/_variables.scss';
+.products-table-row {
+    display: block;
+    padding: 0;
+    .unread-indicator {
         position: absolute;
-        left: 0;
-        bottom: -20px;
-        display: flex;
-    }
-    .product-details {
-        height: 138px;
-        padding: 8px;
-        padding-left: 2px;
-        display: flex;
-        align-items: center;
-    }
-    .requests-button {
-        position: relative;
-        &:hover {
-            .new-comment-bullet {
-                top: -7px;
-                right: -5px;
-            }
-        }
-        .new-comment-bullet {
-            position: absolute;
-            right: -4px;
-            top: -6px;
-            width: 10px;
-            height: 10px;
+        left: -20px;
+        @media screen and (max-width: $screenSm) {
+            left: -16px;
         }
     }
-
-    // Flyover actions
-    .gradient {
-        display: none;
+    &:focus {
+        // outline: solid 2px $primary;
+        // outline-offset: -2px;
+        outline: none;
     }
-    td.action {
-        position: relative;
+    .img-wrapper {
+        border: $borderElSoft;
         height: 100%;
-        .your-product-qty {
-            position: absolute;
-            top: 0;
-            right: 12px;
-            z-index: 2;
+        width: 100%;
+        // width: 48px;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
     }
     @media screen and (max-width: $screenMd) {
-        td.action {
-            position: relative;
-            height: 100%;
-            .fly-over-wrapper {
-                overflow: hidden;
-                width: 36px;
-                height: 100%;
-                position: relative;
-                &:hover {
-                    overflow: visible;
-                    .fly-over .inner {
-                        background: $bgModuleHover;
-                    }
-                    button.options {
-                        display: none;
-                    }
-                }
+        &:not(.multi-selection) {
+            &.action-Focus {
+                box-shadow: -8px 0 0px $primary inset;
             }
-            .fly-over {
-                height: 100%;
-                position: absolute;
-                right: 0;
-                padding-right: 4px;
-                .inner {
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    padding-left: 20px;
-                    >* {
-                        margin-left: 4px;
-                    }
-                }
-                .gradient {
-                    display: block;
-                    height: 100%;
-                    position: absolute;
-                    top: 0;
-                    left: -40px;
-                    width: 40px;
-                    background: linear-gradient(90deg, transparent, $bgModuleHover);
-                    pointer-events: none;
-                }
+            &.action-In {
+                box-shadow: -8px 0 0px $green inset;
+            }
+            &.action-Out {
+                box-shadow: -8px 0 0px $red inset;
             }
         }
     }
+}
+td.id, td.title {
+    position: relative;
+}
+.variant-list {
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+    display: flex;
+}
+.product-details {
+    height: 138px;
+    padding: 8px;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+}
+.requests-button {
+    position: relative;
+    &:hover {
+        .new-comment-bullet {
+            top: -7px;
+            right: -5px;
+        }
+    }
+    .new-comment-bullet {
+        position: absolute;
+        right: -4px;
+        top: -6px;
+        width: 10px;
+        height: 10px;
+    }
+}
+
+// Flyover actions
+.gradient {
+    display: none;
+}
+td.action {
+    position: relative;
+    height: 100%;
+    .your-product-qty {
+        position: absolute;
+        top: 0;
+        right: 12px;
+        z-index: 2;
+    }
+}
+@media screen and (max-width: $screenMd) {
+    td.action {
+        position: relative;
+        height: 100%;
+        .fly-over-wrapper {
+            overflow: hidden;
+            width: 36px;
+            height: 100%;
+            position: relative;
+            &:hover {
+                overflow: visible;
+                .fly-over .inner {
+                    background: $bgModuleHover;
+                }
+                button.options {
+                    display: none;
+                }
+            }
+        }
+        .fly-over {
+            height: 100%;
+            position: absolute;
+            right: 0;
+            padding-right: 4px;
+            .inner {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 20px;
+                >* {
+                    margin-left: 4px;
+                }
+            }
+            .gradient {
+                display: block;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: -40px;
+                width: 40px;
+                background: linear-gradient(90deg, transparent, $bgModuleHover);
+                pointer-events: none;
+            }
+        }
+    }
+}
+.extra-actions {
+    position: absolute;
+    right: 4px;
+    top: 0px;
+}
 </style>
