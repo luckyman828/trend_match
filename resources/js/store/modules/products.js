@@ -1369,7 +1369,7 @@ export default {
 
                 // PROCESS REQUESTS
                 selectionInput.requests.forEach(request => {
-                    Vue.set(request, 'lastReadAt', new Date(localStorage.getItem(`request-${request.id}-readAt`)))
+                    Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
                     // Object.defineProperty(request, 'lastReadAt', {
                     //     get: function() {
                     //         return localStorage.getItem(`request-${request.id}-readAt`)
@@ -1385,6 +1385,7 @@ export default {
                     })
                     Object.defineProperty(request, 'hasUnreadAlignerComment', {
                         get: function() {
+                            if (request.status != 'Open') return false
                             return (
                                 request.discussions.length <= 0 ||
                                 request.discussions[request.discussions.length - 1].role != 'Approver'
@@ -1395,7 +1396,9 @@ export default {
                         get: function() {
                             return (
                                 (request.status != 'Open' &&
-                                    new Date(request.lastReadAt) < new Date(request.status_updated_at)) ||
+                                    (!request.lastReadAt ||
+                                        DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
+                                            DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
                                 (request.status == 'Open' &&
                                     request.discussions.length > 0 &&
                                     request.discussions[request.discussions.length - 1].role == 'Approver')

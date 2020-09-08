@@ -145,15 +145,12 @@ export default {
             return this.request.selection.type == 'Master'
         },
         hasNewComment() {
-            console.log('get has new comment')
             const request = this.request
             if (this.selectionInput.is_completed) return false
             if (this.getCurrentSelectionMode == 'Approval') {
-                return request.status == 'Open' && request.hasUnreadAlignerComment
+                return request.hasUnreadAlignerComment
             }
             if (this.getCurrentSelectionMode == 'Alignment') {
-                console.log('alignment', request.hasUnreadApproverComment)
-                // return request.status != 'Open' || request.hasUnreadApproverComment
                 return request.hasUnreadApproverComment
             }
             // return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 

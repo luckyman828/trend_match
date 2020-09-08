@@ -10,6 +10,9 @@ window.XLSX = require('xlsx')
 
 window.focusVisible = require('focus-visible')
 
+import { DateTime } from 'luxon'
+window.DateTime = DateTime
+
 import store from './store/index'
 import router from './router'
 

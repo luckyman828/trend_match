@@ -281,8 +281,9 @@ export default {
         SET_CURRENT_REQUEST_THREAD(state, request) {
             if (request) {
                 // Save in our local storage the fact that we have read this request thread now
-                request.lastReadAt = new Date()
-                localStorage.setItem(`request-${request.id}-readAt`, new Date())
+                const newDate = new Date().toISOString()
+                request.lastReadAt = new Date().toISOString()
+                localStorage.setItem(`request-${request.id}-readAt`, new Date().toISOString())
             }
             state.currentRequestThread = request
         },
