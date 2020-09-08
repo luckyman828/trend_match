@@ -6,47 +6,66 @@
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request">
-            <strong class="sender">
-                {{request.selection.name}} | 
-                {{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</strong>
+            <div class="ribbon" v-if="request.selection && request.selection.type == 'Master'"
+                :class="request.status"
+                v-tooltip="statusTooltip"
+            />
+            <div class="inner">
+                <div class="label-list">
+                    <div class="square xs label selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'primary' : ''">
+                        <span>{{request.selection.name}}</span>
+                    </div>
+                    <div class="label sender ghost square xs" :class="request.author_id == authUser.id ? 'primary' : ''">
+                        <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
+                    </div>
+                    <!-- <div class="label sender" :class="request.author_id == authUser.id ? 'primary' : ''">
+                        <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
+                    </div> -->
+                    <!-- <strong class="sender">
+                        {{request.selection.name}} | 
+                        {{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}
+                    </strong> -->
 
-            <span v-if="!editActive" class="content">{{request.content}}</span>
-            <span v-else class="content">
-                <BaseInputTextArea ref="requestInputField" v-model="requestToEdit.content"
-                @keyup.enter.exact.native="onUpdateRequest" @keydown.enter.exact.native.prevent
-                @keydown.esc.native="onCancel"/>
-            </span>
+                </div>
 
-            <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
-                <button class="view-thread-button invisible dark ghost-hover sm"
-                v-tooltip="request.isResolved ? 'Request resolved' : hasNewComment ? 'New comment' : 'View request thread'"
-                @click="SET_CURRENT_REQUEST_THREAD(request)">
+                <span v-if="!editActive" class="content">{{request.content}}</span>
+                <span v-else class="content">
+                    <BaseInputTextArea ref="requestInputField" v-model="requestToEdit.content"
+                    @keyup.enter.exact.native="onUpdateRequest" @keydown.enter.exact.native.prevent
+                    @keydown.esc.native="onCancel"/>
+                </span>
 
-                    <i v-if="request.isResolved" class="far fa-check"></i>
+                <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
+                    <button class="view-thread-button invisible dark ghost-hover sm"
+                    v-tooltip="request.isResolved ? 'Request resolved' : hasNewComment ? 'New comment' : 'View request thread'"
+                    @click="SET_CURRENT_REQUEST_THREAD(request)">
 
-                    <span>{{request.discussions.length}}</span>
-                    <i class="far fa-comment"></i>
+                        <i v-if="request.isResolved" class="far fa-check"></i>
 
-                    <div v-if="hasNewComment" class="circle xxs primary new-comment-indicator"></div>
-                </button>
+                        <span>{{request.discussions.length}}</span>
+                        <i class="far fa-comment"></i>
+
+                        <div v-if="hasNewComment" class="circle xxs primary new-comment-indicator"></div>
+                    </button>
+                </div>
+
             </div>
-
-            <!-- Request Controls -->
-            <div class="controls" v-if="!editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
-
-                <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
-                @click="onDeleteRequest">
-                    <i class="far fa-trash-alt"></i>
-                </button>
-
-                <button v-tooltip.top="{content: 'Edit', delay: {show: 300}}" class="button invisible ghost-hover"
-                @click="onEditRequest">
-                    <i class="far fa-pen"></i>
-                </button>
-
-            </div>
-            <!-- End Comment Controls -->
         </div> 
+        <!-- Request Controls -->
+        <div class="controls" v-if="!editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
+
+            <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
+            @click="onDeleteRequest">
+                <i class="far fa-trash-alt"></i>
+            </button>
+
+            <button v-tooltip.top="{content: 'Edit', delay: {show: 300}}" class="button invisible ghost-hover"
+            @click="onEditRequest">
+                <i class="far fa-pen"></i>
+            </button>
+
+        </div>
+        <!-- End Comment Controls -->
         <div class="save-controls" v-if="editActive">
             <button class="invisible ghost-hover" style="margin-right: 8px"
             @click="onCancel">
@@ -98,9 +117,22 @@ export default {
             return this.request.selection.type == 'Master'
         },
         hasNewComment() {
-            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
-            this.getCurrentSelectionMode == 'Approval' && this.request.hasUnreadAlignerComment
+            const request = this.request
+            if (this.selectionInput.is_completed) return false
+            if (this.getCurrentSelectionMode == 'Approval') {
+                return request.status == 'Open' && request.hasUnreadAlignerComment
+            }
+            if (this.getCurrentSelectionMode == 'Alignment') {
+                return request.status != 'Open' || request.hasUnreadApproverComment
+            }
+            // return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
+            // this.getCurrentSelectionMode == 'Approval' && this.request.status == 'Open' && this.request.hasUnreadAlignerComment
         },
+        statusTooltip() {
+            if (this.request.status == 'Open') return 'Request awaiting decision'
+            if (this.request.status == 'Resolved') return `Request accepted by approver`
+            if (this.request.status == 'Rejected') return `Request rejected by approver`
+        }
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
@@ -162,13 +194,18 @@ export default {
         }
     }
     &.has-thread {
-        .request {
+        .request > .inner {
             padding-bottom: 40px;
         }
     }
     &.no-controls {
-        .request {
+        .request > .inner {
             padding-bottom: 20px;
+        }
+    }
+    &:hover {
+        .controls {
+            display: block;
         }
     }
 }
@@ -206,16 +243,36 @@ export default {
     display: flex;
 }
 .request {
-    padding: 12px;
     border-radius: 6px;
-    display: flex;
-    flex-direction: column;
     background: white;
     position: relative;
-    &:hover {
-        .controls {
-            display: block;
+    border: $borderElSoft;
+    box-shadow: $shadowEl;
+    display: flex;
+    overflow: hidden;
+    .ribbon {
+        width: 8px;
+        background: $yellow;
+        &.Rejected {
+            background: $red;
         }
+        &.Resolved {
+            background: $green;
+        }
+    }
+    // &.Open .inner {
+    //     border-left: solid 8px $yellow;
+    // }
+    // &.Rejected .inner {
+    //     border-left: solid 8px $red;
+    // }
+    // &.Resolved .inner {
+    //     border-left: solid 8px $green;
+    // }
+    .inner {
+        padding: 8px 8px 12px;
+        display: flex;
+        flex-direction: column;
     }
     .thread-controls {
         position: absolute;
@@ -229,48 +286,49 @@ export default {
         font-size: 12px;
         font-weight: 500;
     }
-    .own:not(.master) & {
-        background: $primary;
-        color: white;
-        strong {
-            color: white;
-        }
-    }
-    .master & {
-        background: $yellow;
-    }
+    // .own:not(.master) & {
+    //     background: $primary;
+    //     color: white;
+    //     strong {
+    //         color: white;
+    //     }
+    // }
+    // .master & {
+    //     background: $yellow;
+    // }
     .content {
         white-space: pre-wrap;
         word-wrap: break-word;
         margin-top: 12px;
+        margin-left: 4px;
     }
-    .controls {
-        transition: .3s;
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        padding: 4px;
-        display: none;
-        background: white;
-        border-radius: 4px;
-        box-shadow: 0 3px 6px rgba(0,0,0,.2);
-        z-index: 1;
-        > *:not(:first-child) {
-            margin-left: 8px;
-            &::before {
-                content: "";
-                display: block;
-                width: 1px;
-                height: 28px;
-                background: #cfcfcf;
-                position: absolute;
-                left: -6px;
-            }
+}
+.controls {
+    transition: .3s;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 4px;
+    display: none;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 3px 6px rgba(0,0,0,.2);
+    z-index: 1;
+    > *:not(:first-child) {
+        margin-left: 8px;
+        &::before {
+            content: "";
+            display: block;
+            width: 1px;
+            height: 28px;
+            background: #cfcfcf;
+            position: absolute;
+            left: -6px;
         }
-        .loader {
-            height: 24px;
-            flex-direction: row;
-        }
+    }
+    .loader {
+        height: 24px;
+        flex-direction: row;
     }
 }
 .view-thread-button {
@@ -281,6 +339,26 @@ export default {
         top: 0;
         height: 10px;
         width: 10px;
+    }
+}
+.label-list {
+    display: flex;
+    flex-wrap: wrap;
+    .label {
+        margin-bottom: 4px;
+        &:not(:last-child) {
+            margin-right: 4px;
+        }
+        // &.selection {
+        //     margin-right: 4px;
+        // }
+        // &.sender {
+        //     color: $fontSoft;
+        //     font-weight: 500;
+        //     &.primary {
+        //         color: $primary;
+        //     }
+        // }
     }
 }
 </style>

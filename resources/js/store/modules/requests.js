@@ -45,7 +45,6 @@ export default {
             }
         },
         async insertOrUpdateRequest({ commit, dispatch }, { selectionInput, request }) {
-            console.log(selectionInput, request.content)
             // Update our state
             commit('INSERT_OR_UPDATE_REQUEST', { selectionInput, request })
             let requestMethod
@@ -123,7 +122,6 @@ export default {
             })
         },
         async insertOrUpdateRequestComment({ commit }, { request, comment }) {
-            console.log('insert or update', request, comment)
 
             let apiUrl = `/requests/${request.id}/discussions`
             let requestMethod = 'post'
@@ -209,6 +207,15 @@ export default {
                 }
             })
         },
+        async updateRequestStatus({ commit }, { request, status }) {
+            const apiUrl = `/requests/${request.id}/status`
+            commit('SET_REQUEST_STATUS', { request, status })
+            axios
+                .put(apiUrl, {
+                    status,
+                })
+                .then(response => {})
+        },
     },
 
     mutations: {
@@ -225,9 +232,13 @@ export default {
             if (existingRequestIndex >= 0) {
                 const existingRequest = selectionInput.rawSelectionInput.requests[existingRequestIndex]
                 const discussions = existingRequest.discussions
+                const author = request.author ? request.author : existingRequest.author
+                const author_id = request.author ? request.author_id : existingRequest.author_id
                 const updatedRequest = Object.assign(existingRequest, request)
-                // Dont touch the discussions
+                // Dont touch the discussions or the author
                 updatedRequest.discussions = discussions
+                updatedRequest.author = author
+                updatedRequest.author_id = author_id
                 Vue.set(selectionInput.rawSelectionInput.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
@@ -261,7 +272,6 @@ export default {
             }
         },
         DELETE_REQUEST(state, { selectionInput, request }) {
-            console.log('delete request', request)
             const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
             // Check if the request is the current request
@@ -295,6 +305,8 @@ export default {
                 request.completed_by_user = null
             }
         },
-        // UPDATE_REQUEST_COMMENT(state, {comment})
+        SET_REQUEST_STATUS(state, { request, status }) {
+            request.status = status
+        },
     },
 }

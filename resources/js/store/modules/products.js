@@ -1022,7 +1022,7 @@ export default {
                 Object.defineProperty(product, 'hasOpenTicket', {
                     get: function() {
                         return !!product.requests.find(
-                            request => !request.isResolved && request.selection.type == 'Master'
+                            request => request.status == 'Open' && request.selection.type == 'Master'
                         )
                     },
                 })
@@ -1210,7 +1210,7 @@ export default {
                 Object.defineProperty(selectionInput, 'hasOpenTicket', {
                     get: function() {
                         return selectionInput.requests.find(
-                            request => !request.isResolved && request.selection.type == 'Master'
+                            request => request.status == 'Open' && request.selection.type == 'Master'
                         )
                     },
                 })

@@ -237,11 +237,11 @@ export default{
             }
         },
         requestArrivedHandler(selectionId, request) {
-            if (request.author_id != this.authUser.id) {
+            // if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
                 this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
-            }
+            // }
         },
         requestDeletedHandler(selectionId, requestIdentifier) {
             if (requestIdentifier.author_id != this.authUser.id) {

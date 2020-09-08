@@ -15,9 +15,30 @@
                 <div class="request">
                     <Request :request="request" :disableControls="true"/>
 
-                    <!-- <div class="divider">
+                    <div class="resolve-actions">
+                        <BaseButton
+                            :disabled="getCurrentSelectionMode != 'Approval'"
+                            disabledTooltip="Only approvers can accept a request"
+                            :buttonClass="request.status != 'Resolved' ? 'ghost primary' : 'primary'"
+                            @click="onSetStatus('Resolved')"
+                        >
+                            <i class="far fa-check-circle"></i>
+                            <span>Accept</span>
+                        </BaseButton>
+                        <BaseButton
+                            :disabled="getCurrentSelectionMode != 'Approval'"
+                            disabledTooltip="Only approvers can reject a request"
+                            :buttonClass="request.status != 'Rejected' ? 'ghost red' : 'red'"
+                            @click="onSetStatus('Rejected')"
+                        >
+                            <i class="far fa-times-circle"></i>
+                            <span>Reject</span>
+                        </BaseButton>
+                    </div>
+                    
+                    <div class="divider">
                         <span>Request comments</span>
-                    </div> -->
+                    </div>
                 </div>
 
 
@@ -32,8 +53,7 @@
                     </div>
                 </div>
 
-
-                <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
+                <!-- <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
                     <button class="lg full-width" :class="[request.isResolved ? 'green' : 'primary', {'is-resolved': request.isResolved}]"
                     @click="onResolve">
                         <span v-if="!request.isResolved">Mark as resolved</span>
@@ -42,12 +62,12 @@
                             <span class="hover">Re-open request</span>
                         </template>
                     </button>
-                </div>
+                </div> -->
 
-                <div class="resolved-banner" 
+                <!-- <div class="resolved-banner" 
                 v-else-if="request.isResolved">
                     <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
-                </div>
+                </div> -->
 
                 <div class="form-wrapper" v-if="!request.isResolved && getCurrentPDPSelection.type == 'Master' && getCurrentSelectionMode != 'Feedback'">
                     <strong class="form-header">Write comment</strong>
@@ -130,7 +150,7 @@ export default {
         ...mapMutations('requests', {
             close: 'SET_CURRENT_REQUEST_THREAD'
         }),
-        ...mapActions('requests', ['insertOrUpdateRequestComment', 'resolveRequest']),
+        ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
         activateWrite() {
             if (this.request.isResolved || this.getCurrentSelection.type != 'Master') return
             this.$refs.commentField.focus()
@@ -142,10 +162,9 @@ export default {
             this.writeActive = false
             document.activeElement.blur()
         },
-        onResolve() {
-            // If we are un-resolving the request, remove the focus from the button so we can use ENTER to start writing a new comment
-            if (this.request.isResolved) document.activeElement.blur()
-            this.resolveRequest(this.request)
+        onSetStatus(status) {
+            const statusToSet = this.request.status == status ? 'Open' : status
+            this.updateRequestStatus({request: this.request, status})
         },
         async onSubmit() {
 
@@ -266,7 +285,7 @@ export default {
     .comment-section {
         height: 100%;
         overflow-y: auto;
-        padding: 16px 16px 64px;
+        padding: 0 16px 64px;
     }
     .form-wrapper {
         padding: 20px 16px 28px;
@@ -319,6 +338,14 @@ export default {
         height: 1px;
         background: $borderColorEl;
         width: 100%;
+    }
+}
+.resolve-actions {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 20px;
+    > :not(:first-child) {
+        margin-left: 8px;
     }
 }
 
