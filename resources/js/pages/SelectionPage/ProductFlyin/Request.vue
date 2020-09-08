@@ -5,7 +5,8 @@
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
-        <div class="request">
+        <div class="request"
+        @click="isMaster && !disableControls && approvalEnabled && onToggleRequestThread($event)">
             <div class="ribbon" v-if="request.selection && request.selection.type == 'Master'"
                 :class="request.status"
                 v-tooltip="statusTooltip"
@@ -36,6 +37,30 @@
                 </span>
 
                 <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
+                    <div class="resolve-actions" v-if="getCurrentSelectionMode == 'Approval'">
+                        <BaseButton
+                            v-tooltip="'Accept'"
+                            :disabled="getCurrentSelectionMode != 'Approval'"
+                            disabledTooltip="Only approvers can accept a request"
+                            :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
+                            @click="onSetStatus('Resolved')"
+                        >
+                            <i class="far fa-check-circle"></i>
+                            <span>Accept</span>
+                        </BaseButton>
+                        <BaseButton
+                            v-tooltip="'Reject'"
+                            :disabled="getCurrentSelectionMode != 'Approval'"
+                            disabledTooltip="Only approvers can reject a request"
+                            :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
+                            @click="onSetStatus('Rejected')"
+                        >
+                            <i class="far fa-times-circle"></i>
+                            <span>Reject</span>
+                        </BaseButton>
+                    </div>
+
+
                     <button class="view-thread-button invisible dark ghost-hover sm"
                     v-tooltip="request.isResolved ? 'Request resolved' : hasNewComment ? 'New comment' : 'View request thread'"
                     @click="SET_CURRENT_REQUEST_THREAD(request)">
@@ -109,6 +134,7 @@ export default {
         ...mapGetters('files', {
             approvalEnabled: 'getApprovalEnabled',
         }),
+        ...mapGetters('requests', ['getCurrentRequestThread']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         isOwn() {
             return this.request.selection_id == this.getCurrentPDPSelection.id
@@ -135,7 +161,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
+        ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest', 'updateRequestStatus']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         async onDeleteRequest() {
             if (await this.$refs.confirmDeleteRequest.confirm()) {
@@ -157,6 +183,21 @@ export default {
                 this.$refs.requestInputField.focus()
                 this.$refs.requestInputField.select()
             })
+        },
+        onSetStatus(status) {
+            const statusToSet = this.request.status == status ? 'Open' : status
+            this.updateRequestStatus({request: this.request, status})
+        },
+        onToggleRequestThread(e) {
+            console.log('toggle request thread', e.target)
+            if (
+                e.target.tagName == 'button' || 
+                e.target.classList.contains('.square') || 
+                e.target.closest('button') || 
+                e.target.closest('.square')
+            ) return
+            const requestToSet = this.getCurrentRequestThread && this.getCurrentRequestThread.id == this.request.id ? null : this.request
+            this.SET_CURRENT_REQUEST_THREAD(requestToSet)
         }
     }
 }
@@ -194,8 +235,11 @@ export default {
         }
     }
     &.has-thread {
+        .request {
+            cursor: pointer;
+        }
         .request > .inner {
-            padding-bottom: 40px;
+            // padding-bottom: 40px;
         }
     }
     &.no-controls {
@@ -260,6 +304,11 @@ export default {
             background: $green;
         }
     }
+    &:hover {
+        .thread-controls .resolve-actions {
+            display: block;
+        }
+    }
     // &.Open .inner {
     //     border-left: solid 8px $yellow;
     // }
@@ -273,11 +322,20 @@ export default {
         padding: 8px 8px 12px;
         display: flex;
         flex-direction: column;
+        flex: 1;
     }
     .thread-controls {
-        position: absolute;
-        right: 6px;
-        bottom: 6px;
+        // position: absolute;
+        // right: 6px;
+        // bottom: 6px;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+        .resolve-actions {
+            flex: 1;
+            display: none;
+        }
     }
     .sender {
         font-size: 12px;

@@ -19,7 +19,7 @@
                         <BaseButton
                             :disabled="getCurrentSelectionMode != 'Approval'"
                             disabledTooltip="Only approvers can accept a request"
-                            :buttonClass="request.status != 'Resolved' ? 'ghost primary' : 'primary'"
+                            :buttonClass="request.status != 'Resolved' ? 'ghost green' : 'green'"
                             @click="onSetStatus('Resolved')"
                         >
                             <i class="far fa-check-circle"></i>
