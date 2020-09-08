@@ -122,7 +122,6 @@ export default {
             })
         },
         async insertOrUpdateRequestComment({ commit }, { request, comment }) {
-
             let apiUrl = `/requests/${request.id}/discussions`
             let requestMethod = 'post'
             if (comment.id) {
@@ -280,6 +279,11 @@ export default {
             }
         },
         SET_CURRENT_REQUEST_THREAD(state, request) {
+            if (request) {
+                // Save in our local storage the fact that we have read this request thread now
+                request.lastReadAt = new Date()
+                localStorage.setItem(`request-${request.id}-readAt`, new Date())
+            }
             state.currentRequestThread = request
         },
         INSERT_OR_UPDATE_REQUEST_COMMENT(state, { request, comment }) {

@@ -145,13 +145,16 @@ export default {
             return this.request.selection.type == 'Master'
         },
         hasNewComment() {
+            console.log('get has new comment')
             const request = this.request
             if (this.selectionInput.is_completed) return false
             if (this.getCurrentSelectionMode == 'Approval') {
                 return request.status == 'Open' && request.hasUnreadAlignerComment
             }
             if (this.getCurrentSelectionMode == 'Alignment') {
-                return request.status != 'Open' || request.hasUnreadApproverComment
+                console.log('alignment', request.hasUnreadApproverComment)
+                // return request.status != 'Open' || request.hasUnreadApproverComment
+                return request.hasUnreadApproverComment
             }
             // return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
             // this.getCurrentSelectionMode == 'Approval' && this.request.status == 'Open' && this.request.hasUnreadAlignerComment
@@ -191,7 +194,7 @@ export default {
             this.updateRequestStatus({request: this.request, status})
         },
         onToggleRequestThread(e) {
-            console.log('toggle request thread', e.target)
+            // Don't trigger when clicking buttons
             if (
                 e.target.tagName == 'button' || 
                 e.target.classList.contains('.square') || 

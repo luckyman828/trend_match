@@ -48,7 +48,7 @@
                     :request="request"
                     :displayAuthor="!request.discussions[index+1] || request.discussions[index+1].role != request.discussions[index].role"/>
 
-                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
+                    <div class="divider" v-if="request.status == 'Open' && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
                         <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
                     </div>
                 </div>

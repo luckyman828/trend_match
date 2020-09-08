@@ -1369,6 +1369,15 @@ export default {
 
                 // PROCESS REQUESTS
                 selectionInput.requests.forEach(request => {
+                    Vue.set(request, 'lastReadAt', new Date(localStorage.getItem(`request-${request.id}-readAt`)))
+                    // Object.defineProperty(request, 'lastReadAt', {
+                    //     get: function() {
+                    //         return localStorage.getItem(`request-${request.id}-readAt`)
+                    //     },
+                    //     set: function(value) {
+                    //         localStorage.setItem(`request-${request.id}-readAt`, value)
+                    //     },
+                    // })
                     Object.defineProperty(request, 'isResolved', {
                         get: function() {
                             return !!request.completed_at
@@ -1377,18 +1386,19 @@ export default {
                     Object.defineProperty(request, 'hasUnreadAlignerComment', {
                         get: function() {
                             return (
-                                !request.isResolved &&
-                                (request.discussions.length <= 0 ||
-                                    request.discussions[request.discussions.length - 1].role != 'Approver')
+                                request.discussions.length <= 0 ||
+                                request.discussions[request.discussions.length - 1].role != 'Approver'
                             )
                         },
                     })
                     Object.defineProperty(request, 'hasUnreadApproverComment', {
                         get: function() {
                             return (
-                                !request.isResolved &&
-                                request.discussions.length > 0 &&
-                                request.discussions[request.discussions.length - 1].role == 'Approver'
+                                (request.status != 'Open' &&
+                                    new Date(request.lastReadAt) < new Date(request.status_updated_at)) ||
+                                (request.status == 'Open' &&
+                                    request.discussions.length > 0 &&
+                                    request.discussions[request.discussions.length - 1].role == 'Approver')
                             )
                         },
                     })
