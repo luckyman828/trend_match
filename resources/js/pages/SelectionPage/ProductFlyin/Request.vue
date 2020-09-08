@@ -12,22 +12,24 @@
                 v-tooltip="statusTooltip"
             />
             <div class="inner">
-                <div class="label-list">
+                <!-- <div class="label-list">
                     <div class="square xs label selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'primary' : ''">
                         <span>{{request.selection.name}}</span>
                     </div>
                     <div class="label sender ghost square xs" :class="request.author_id == authUser.id ? 'primary' : ''">
                         <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
                     </div>
-                    <!-- <div class="label sender" :class="request.author_id == authUser.id ? 'primary' : ''">
-                        <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
-                    </div> -->
-                    <!-- <strong class="sender">
-                        {{request.selection.name}} | 
-                        {{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}
-                    </strong> -->
 
-                </div>
+                </div> -->
+                <strong class="sender">
+                    <!-- <span class="selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'square primary xs' : ''"> -->
+                        <span>{{request.selection.name}}</span>
+                    <!-- </span> -->
+                    <span> | </span>
+                    <span class="sender" :class="request.author_id == authUser.id ? 'square primary xs' : ''">
+                        <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
+                    </span>
+                </strong>
 
                 <span v-if="!editActive" class="content">{{request.content}}</span>
                 <span v-else class="content">
