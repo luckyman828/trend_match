@@ -15,10 +15,10 @@
                 <div class="request">
                     <Request :request="request" :disableControls="true"/>
 
-                    <div class="resolve-actions">
+                    <div class="resolve-actions" v-if="request.selection.type == 'Master'">
                         <BaseButton
-                            :disabled="getCurrentSelectionMode != 'Approval'"
-                            disabledTooltip="Only approvers can accept a request"
+                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            disabledTooltip="Only approvers and owners can accept a request"
                             :buttonClass="request.status != 'Resolved' ? 'ghost green' : 'green'"
                             @click="onSetStatus('Resolved')"
                         >
@@ -26,8 +26,8 @@
                             <span>Accept</span>
                         </BaseButton>
                         <BaseButton
-                            :disabled="getCurrentSelectionMode != 'Approval'"
-                            disabledTooltip="Only approvers can reject a request"
+                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            disabledTooltip="Only approvers and owners can reject a request"
                             :buttonClass="request.status != 'Rejected' ? 'ghost red' : 'red'"
                             @click="onSetStatus('Rejected')"
                         >
@@ -164,6 +164,7 @@ export default {
         },
         onSetStatus(status) {
             const statusToSet = this.request.status == status ? 'Open' : status
+            console.log('on set status', statusToSet)
             this.updateRequestStatus({request: this.request, status})
         },
         async onSubmit() {

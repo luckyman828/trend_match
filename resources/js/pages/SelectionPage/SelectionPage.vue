@@ -224,7 +224,7 @@ export default{
         },
 
         productCompletedStatusChangedHandler(selectionId, shouldBeCompleted, productIdList) {
-            console.log('productcompletd', selectionId, shouldBeCompleted, productIdList)
+            // console.log('productcompletd', selectionId, shouldBeCompleted, productIdList)
             const products = []
             productIdList.map(productId => {
                 const product = this.products.find(x => x.id == productId)

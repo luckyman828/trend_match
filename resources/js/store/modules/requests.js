@@ -184,30 +184,16 @@ export default {
                     )
                 })
         },
-        async resolveRequest({ commit, rootGetters }, request) {
-            const requestMethod = request.isResolved ? 'delete' : 'put'
-            commit('RESOLVE_REQUEST', { request, resolve: !request.isResolved, user: rootGetters['auth/authUser'] })
-
-            const apiUrl = `/requests/${request.id}/complete`
-            await axios({
-                method: requestMethod,
-                url: apiUrl,
-            }).then(() => {
-                if (request.isResolved) {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Request resolved',
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                }
-            })
-        },
         async updateRequestStatus({ commit }, { request, status }) {
             const apiUrl = `/requests/${request.id}/status`
+
+            // Save that we just read the request thread
+            const date = new Date()
+            date.setSeconds(date.getSeconds() + 10)
+            // const date = new Date()
+            request.lastReadAt = date.toISOString()
+            localStorage.setItem(`request-${request.id}-readAt`, date.toISOString())
+
             commit('SET_REQUEST_STATUS', { request, status })
             axios
                 .put(apiUrl, {
@@ -301,17 +287,9 @@ export default {
             const index = request.discussions.findIndex(x => x.id == commentId)
             request.discussions.splice(index, 1)
         },
-        RESOLVE_REQUEST(state, { request, resolve, user }) {
-            if (resolve) {
-                request.completed_at = new Date()
-                request.completed_by_user = user
-            } else {
-                request.completed_at = null
-                request.completed_by_user = null
-            }
-        },
         SET_REQUEST_STATUS(state, { request, status }) {
             request.status = status
+            request.status_updated_at = new Date().toISOString()
         },
     },
 }

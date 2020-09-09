@@ -39,11 +39,11 @@
                 </span>
 
                 <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
-                    <div class="resolve-actions" v-if="getCurrentSelectionMode == 'Approval'">
+                    <div class="resolve-actions" v-if="getCurrentSelectionMode != 'Feedback'">
                         <BaseButton
                             v-tooltip="'Accept'"
-                            :disabled="getCurrentSelectionMode != 'Approval'"
-                            disabledTooltip="Only approvers can accept a request"
+                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            disabledTooltip="Only approvers and owners can accept a request"
                             :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
                             @click="onSetStatus('Resolved')"
                         >
@@ -52,8 +52,8 @@
                         </BaseButton>
                         <BaseButton
                             v-tooltip="'Reject'"
-                            :disabled="getCurrentSelectionMode != 'Approval'"
-                            disabledTooltip="Only approvers can reject a request"
+                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            disabledTooltip="Only approvers and owners can reject a request"
                             :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
                             @click="onSetStatus('Rejected')"
                         >
@@ -367,8 +367,8 @@ export default {
 .controls {
     transition: .3s;
     position: absolute;
-    left: 0;
-    bottom: 0;
+    right: 0;
+    top: 0;
     padding: 4px;
     display: none;
     background: white;
