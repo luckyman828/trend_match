@@ -805,7 +805,7 @@ export default {
         },
         toggleProductCompleted({ commit }, { selection, product }) {
             // console.log('toggle product completd', selection, product)
-            const apiUrl = `selections/${selection.id}/products/${product.id}/complete`
+            const apiUrl = `selections/${selection.id}/products/complete`
             const shouldBeCompleted = product.is_completed ? false : true
 
             commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
@@ -814,6 +814,9 @@ export default {
             axios({
                 method: apiMethod,
                 url: apiUrl,
+                data: {
+                    products_ids: [product.id],
+                },
             }).then(response => {
                 // commit(
                 //     'alerts/SHOW_SNACKBAR',
@@ -826,27 +829,30 @@ export default {
                 // )
             })
         },
-        setProductsCompleted({ commit }, { products, shouldBeCompleted }) {
+        setProductsCompleted({ commit }, { selection, products, shouldBeCompleted }) {
+            console.log('set products completed', selection)
             const apiUrl = `selections/${selection.id}/products/complete`
 
-            commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
+            commit('SET_PRODUCTS_COMPLETED', { products, shouldBeCompleted })
 
-            axios
-                .post(apiUrl, {
-                    completed: shouldBeCompleted,
+            const apiMethod = shouldBeCompleted ? 'put' : 'delete'
+            axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
                     product_ids: products.map(x => x.id),
-                })
-                .then(response => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${products.length} Products ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
-                            iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
-                            type: shouldBeCompleted ? 'success' : 'danger',
-                        },
-                        { root: true }
-                    )
-                })
+                },
+            }).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `${products.length} Products ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                        iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                        type: shouldBeCompleted ? 'success' : 'danger',
+                    },
+                    { root: true }
+                )
+            })
         },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
@@ -1769,6 +1775,11 @@ export default {
         },
         TOGGLE_PRODUCT_COMPLETED(state, { product, shouldBeCompleted }) {
             product.is_completed = shouldBeCompleted
+        },
+        SET_PRODUCTS_COMPLETED(state, { products, shouldBeCompleted }) {
+            products.map(product => {
+                product.is_completed = shouldBeCompleted
+            })
         },
     },
 }

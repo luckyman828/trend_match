@@ -555,7 +555,7 @@ export default {
             })
         },
         onSetProductsCompleted(products, shouldBeCompleted) {
-            this.setProductsCompleted({products, shouldBeCompleted})
+            this.setProductsCompleted({selection: this.selection, products, shouldBeCompleted})
         },
         onExportToCsv() {
             this.SET_SHOW_CSV_MODAL(true)
