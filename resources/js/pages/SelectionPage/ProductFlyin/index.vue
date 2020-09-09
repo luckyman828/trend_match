@@ -347,7 +347,7 @@ export default {
             }
         },
         onToggleCompleted() {
-            this.toggleProductCompleted({selection: this.selection, product: this.product})
+            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
         },
         onBroadcastProduct(product) {
             this.lastBroadcastProductId = product.id

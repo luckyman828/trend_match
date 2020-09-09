@@ -551,11 +551,11 @@ export default {
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         onToggleProductsCompleted(products) {
             products.map(product => {
-                this.toggleProductCompleted({selection: this.selection, product})
+                this.toggleProductCompleted({selectionId: this.selection.id, product})
             })
         },
         onSetProductsCompleted(products, shouldBeCompleted) {
-            this.setProductsCompleted({selection: this.selection, products, shouldBeCompleted})
+            this.setProductsCompleted({selectionId: this.selection.id, products, shouldBeCompleted})
         },
         onExportToCsv() {
             this.SET_SHOW_CSV_MODAL(true)

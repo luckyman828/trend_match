@@ -803,9 +803,9 @@ export default {
                 }
             })
         },
-        toggleProductCompleted({ commit }, { selection, product }) {
+        toggleProductCompleted({ commit }, { selectionId, product }) {
             // console.log('toggle product completd', selection, product)
-            const apiUrl = `selections/${selection.id}/products/complete`
+            const apiUrl = `selections/${selectionId}/products/complete`
             const shouldBeCompleted = product.is_completed ? false : true
 
             commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
@@ -829,9 +829,8 @@ export default {
                 // )
             })
         },
-        setProductsCompleted({ commit }, { selection, products, shouldBeCompleted }) {
-            console.log('set products completed', selection)
-            const apiUrl = `selections/${selection.id}/products/complete`
+        setProductsCompleted({ commit }, { selectionId, products, shouldBeCompleted }) {
+            const apiUrl = `selections/${selectionId}/products/complete`
 
             commit('SET_PRODUCTS_COMPLETED', { products, shouldBeCompleted })
 

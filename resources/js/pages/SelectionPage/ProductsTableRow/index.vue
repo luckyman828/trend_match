@@ -374,7 +374,7 @@ export default {
             }
         },
         onToggleCompleted() {
-            this.toggleProductCompleted({selection: this.selection, product: this.product})
+            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
         },
         hotkeyHandler(event) {
             const key = event.code
