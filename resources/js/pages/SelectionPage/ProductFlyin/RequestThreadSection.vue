@@ -51,6 +51,16 @@
                     <div class="divider" v-if="request.status == 'Open' && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
                         <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
                     </div>
+
+                    <div class="divider" v-if="request.status != 'Open'">
+                        <span>
+                            Request 
+                            <span class="status" :class="request.status">
+                                {{request.status == 'Resolved' ? 'Accepted' : 'Rejected'}}
+                            </span>
+                            by {{request.status_updated_by_user ? request.status_updated_by_user.name : 'Anonymous'}}
+                        </span>
+                    </div>
                 </div>
 
                 <!-- <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
@@ -333,17 +343,26 @@ export default {
     align-items: center;
     margin: auto;
     // max-width: calc(100% - 16px * 2);
-    span {
-        margin: 0 12px;
-        white-space: nowrap;
+    > span {
+        margin: 0 8px;
         font-size: 12px;
         color: $fontSoft;
+        flex: 3;
+    }
+    .status {
+        font-weight: 700;
+        &.Resolved {
+            color: $green;
+        }
+        &.Rejected {
+            color: $red;
+        }
     }
     &::before, &::after {
         content: "";
         height: 1px;
         background: $borderColorEl;
-        width: 100%;
+        flex: 1;
     }
 }
 .resolve-actions {

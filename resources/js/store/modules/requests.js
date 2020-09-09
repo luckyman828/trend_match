@@ -184,8 +184,9 @@ export default {
                     )
                 })
         },
-        async updateRequestStatus({ commit }, { request, status }) {
+        async updateRequestStatus({ commit, rootGetters }, { request, status }) {
             const apiUrl = `/requests/${request.id}/status`
+            const authUser = rootGetters['auth/authUser']
 
             // Save that we just read the request thread
             const date = new Date()
@@ -194,7 +195,7 @@ export default {
             request.lastReadAt = date.toISOString()
             localStorage.setItem(`request-${request.id}-readAt`, date.toISOString())
 
-            commit('SET_REQUEST_STATUS', { request, status })
+            commit('SET_REQUEST_STATUS', { request, status, user: authUser })
             axios
                 .put(apiUrl, {
                     status,
@@ -287,9 +288,12 @@ export default {
             const index = request.discussions.findIndex(x => x.id == commentId)
             request.discussions.splice(index, 1)
         },
-        SET_REQUEST_STATUS(state, { request, status }) {
+        SET_REQUEST_STATUS(state, { request, status, user }) {
             request.status = status
             request.status_updated_at = new Date().toISOString()
+            if (user) {
+                request.status_updated_by_user = user
+            }
         },
     },
 }
