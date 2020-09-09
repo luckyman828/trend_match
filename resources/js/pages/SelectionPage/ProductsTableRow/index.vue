@@ -166,7 +166,7 @@
                 </template>
 
                 <!-- Master actions -->
-                    <div v-if="product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                    <div v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))"
                         class="extra-actions"
                     >
                         <BaseButton buttonClass="pill xs ghost"
