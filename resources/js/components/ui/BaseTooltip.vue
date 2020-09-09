@@ -1,9 +1,11 @@
 <template>
     <div class="tooltip popover">
-        <div class="tooltip-inner" v-if="visible">
-            <slot/>
+        <div class="wrapper">
+            <div class="tooltip-inner" v-if="visible">
+                <slot/>
+            </div>
+            <div class="tooltip-arrow popover-arrow" data-popper-arrow></div>
         </div>
-        <div class="tooltip-arrow popover-arrow" data-popper-arrow></div>
     </div>
 </template>
 
