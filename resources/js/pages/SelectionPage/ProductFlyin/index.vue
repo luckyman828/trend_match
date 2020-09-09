@@ -14,7 +14,7 @@
                     </div>
                 </template>
                 <template v-slot:right>
-                    <div class="item-group" v-if="product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment')">
+                    <div class="item-group" v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))">
                         <!-- Master actions -->
                         <BaseButton buttonClass="pill xs ghost"
                         targetAreaPadding="4px 4px"
