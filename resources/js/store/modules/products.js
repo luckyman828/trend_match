@@ -16,6 +16,7 @@ export default {
         selectedProducts: [],
         advancedFilter: null,
         unreadOnly: false,
+        hideCompleted: false,
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
@@ -96,9 +97,8 @@ export default {
         getAdvancedFilter: state => {
             return state.advancedFilter
         },
-        unreadOnly: state => {
-            return state.unreadOnly
-        },
+        unreadOnly: state => state.unreadOnly,
+        hideCompleted: state => state.hideCompleted,
         currentProductFilter: state => {
             return state.currentProductFilter
         },
@@ -193,6 +193,7 @@ export default {
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
+            const hideCompleted = getters.hideCompleted
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
             let productsToReturn = products
@@ -231,6 +232,9 @@ export default {
                         product => !product.is_completed && getSelectionInput(product).hasUnreadApproverComment
                     )
                 }
+            }
+            if (hideCompleted) {
+                productsToReturn = productsToReturn.filter(x => !x.is_completed)
             }
 
             // Filter by advanced filters
@@ -1113,6 +1117,9 @@ export default {
         },
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
+        },
+        SET_HIDE_COMPLETED(state, payload) {
+            state.hideCompleted = payload
         },
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload

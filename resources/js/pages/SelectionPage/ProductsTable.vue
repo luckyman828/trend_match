@@ -149,6 +149,11 @@
                     <span>Focus only</span>
                 </BaseCheckboxInputField>
 
+                <BaseCheckboxInputField class="small" v-if="currentProductFilter == 'tickets'"
+                v-model="hideCompleted">
+                    <span>Hide completed</span>
+                </BaseCheckboxInputField>
+
                 <button class="invisible primary" 
                 v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
                 || getHasAdvancedFilter"
@@ -523,6 +528,14 @@ export default {
                 this.setUnreadOnly(value)
             }
         },
+        hideCompleted: {
+            get () {
+                return this.$store.getters['products/hideCompleted']
+            },
+            set (value) {
+                this.SET_HIDE_COMPLETED(value)
+            }
+        },
         totalProductCount() {
             if (['ins', 'focus'].includes(this.currentProductFilter)) {
                 return this.stateProducts.filter(product => ['In', 'Focus'].includes(this.getActiveSelectionInput(product)[this.currentAction])).length
@@ -544,7 +557,7 @@ export default {
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
         'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE',
-        'SET_SELECTED_PRODUCTS', 'SET_SHOW_PDF_MODAL', 'SET_SHOW_CSV_MODAL']),
+        'SET_SELECTED_PRODUCTS', 'SET_SHOW_PDF_MODAL', 'SET_SHOW_CSV_MODAL', 'SET_HIDE_COMPLETED']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'setProductsCompleted']),

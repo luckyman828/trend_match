@@ -556,6 +556,6 @@ td.action {
 .extra-actions {
     position: absolute;
     right: 4px;
-    top: 0px;
+    bottom: 0px;
 }
 </style>
