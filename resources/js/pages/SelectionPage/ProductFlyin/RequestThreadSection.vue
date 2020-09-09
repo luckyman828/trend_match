@@ -164,8 +164,7 @@ export default {
         },
         onSetStatus(status) {
             const statusToSet = this.request.status == status ? 'Open' : status
-            console.log('on set status', statusToSet)
-            this.updateRequestStatus({request: this.request, status})
+            this.updateRequestStatus({request: this.request, status: statusToSet})
         },
         async onSubmit() {
 
@@ -199,6 +198,12 @@ export default {
             if (this.show && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Enter') {
                     this.activateWrite()
+                }
+                if (key == 'KeyR') {
+                    this.onSetStatus('Rejected')
+                }
+                if (key == 'KeyA') {
+                    this.onSetStatus('Resolved')
                 }
             }
         },

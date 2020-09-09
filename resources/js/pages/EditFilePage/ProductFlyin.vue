@@ -252,11 +252,37 @@
 
                 <div class="assortments form-section">
                     <h3>Assortments</h3>
+                    <div class="col-2 form-element">
+                        <label>Assortment size</label>
+                    </div>
+
+                    <div class="col-2 form-element" v-for="(size, index) in product.assortment_sizes" :key="'size-'+index">
+                        <BaseEditInputWrapper
+                        ref="assortmentSizeInput"
+                        :submitOnBlur="true"
+                        :oldValue="originalProduct.assortment_sizes[index]" 
+                        v-model="product.assortment_sizes[index]"
+                        @submit="onSubmitField"/>
+
+                        <div style="display: flex; align-items: center;">
+                            <button class="invisible ghost-hover" @click="onRemoveAssortmentSize(index)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-element">
+                        <button class="ghost" @click="onAddAssortmentSize">
+                            <i class="far fa-plus"></i><span>Add size</span>
+                        </button>
+                    </div>
+
                     <div class="col-4 form-element">
                         <label>Assortment name</label>
                         <label>Box size</label>
                         <label>EAN</label>
                     </div>
+
                     <div class="col-4 form-element" v-for="(assortment, index) in product.assortments" :key="index">
                         <BaseEditInputWrapper
                         :submitOnBlur="true"
@@ -854,6 +880,15 @@ export default {
             if (variant.pictures.length <= 0) {
                 this.onAddImageToVariant(variant)
             }
+        },
+        onAddAssortmentSize() {
+            this.product.assortment_sizes.push('unset')
+            this.$nextTick(() => {
+                this.$refs.assortmentSizeInput[this.product.assortment_sizes.length - 1].setActive()
+            })
+        },
+        onRemoveAssortmentSize(index) {
+            this.product.assortment_sizes.splice(index, 1)
         }
     },
     created() {
