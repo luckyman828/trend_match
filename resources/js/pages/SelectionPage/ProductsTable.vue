@@ -37,7 +37,7 @@
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     modelValue="nds"/>
                     <BaseTableTab v-if="selection.type == 'Master' && approvalEnabled" :label="`Tickets`" 
-                    :count="stateProducts.filter(x => x.hasOpenTicket && !x.is_completed).length" 
+                    :count="stateProducts.filter(x => x.hasTicket).length" 
                     v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     modelValue="tickets"/>

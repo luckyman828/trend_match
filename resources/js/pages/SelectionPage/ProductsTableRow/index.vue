@@ -6,7 +6,7 @@
     @keyup.self.native="keypressHandler($event)">
 
         <div class="product-details">
-            <div v-if="product.hasNewComment" class="unread-indicator circle xxs primary" 
+            <div v-if="displayUnreadBullets && product.hasNewComment" class="unread-indicator circle xxs primary" 
             v-tooltip.right="'A message needs a reply'"/>
             
             <td class="image clickable" @click="onViewSingle">
@@ -108,7 +108,7 @@
                         <!-- <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
                             > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span> -->
                         <i class="far fa-clipboard-check"></i>
-                        <div v-if="product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
+                        <div v-if="displayUnreadBullets && product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>
 
                     <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
@@ -243,6 +243,7 @@ export default {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
             currentQty: 'getCurrentSelectionModeQty',
+            displayUnreadBullets: 'getDisplayUnreadBullets',
         }),
         selectionInput() {
             return this.getActiveSelectionInput(this.product)

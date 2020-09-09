@@ -360,7 +360,7 @@ export default {
                             getSelectionInput(product)[currentAction] == 'In' ||
                             getSelectionInput(product)[currentAction] == 'Focus'
                         )
-                    if (actionFilter == 'tickets') return product.hasOpenTicket && !product.is_completed
+                    if (actionFilter == 'tickets') return product.hasTicket
                 })
                 productsToReturn = filteredByAction
             }
@@ -1026,6 +1026,11 @@ export default {
                         )
                     },
                 })
+                Object.defineProperty(product, 'hasTicket', {
+                    get: function() {
+                        return !!product.requests.find(request => request.selection.type == 'Master')
+                    },
+                })
 
                 // VARIANTS
                 product.variants.forEach(variant => {
@@ -1212,6 +1217,11 @@ export default {
                         return selectionInput.requests.find(
                             request => request.status == 'Open' && request.selection.type == 'Master'
                         )
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasTicket', {
+                    get: function() {
+                        return !!selectionInput.requests.find(request => request.selection.type == 'Master')
                     },
                 })
 

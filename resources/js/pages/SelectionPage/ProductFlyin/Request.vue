@@ -64,15 +64,13 @@
 
 
                     <button class="view-thread-button invisible dark ghost-hover sm"
-                    v-tooltip="request.isResolved ? 'Request resolved' : hasNewComment ? 'New comment' : 'View request thread'"
+                    v-tooltip="'View request thread'"
                     @click="SET_CURRENT_REQUEST_THREAD(request)">
-
-                        <i v-if="request.isResolved" class="far fa-check"></i>
 
                         <span>{{request.discussions.length}}</span>
                         <i class="far fa-comment"></i>
 
-                        <div v-if="hasNewComment" class="circle xxs primary new-comment-indicator"></div>
+                        <div v-if="displayUnreadBullets && hasNewComment" class="circle xxs primary new-comment-indicator"></div>
                     </button>
                 </div>
 
@@ -138,6 +136,9 @@ export default {
         }),
         ...mapGetters('requests', ['getCurrentRequestThread']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
+        ...mapGetters('selections', {
+            displayUnreadBullets: 'getDisplayUnreadBullets'
+        }),
         isOwn() {
             return this.request.selection_id == this.getCurrentPDPSelection.id
         },
