@@ -199,7 +199,8 @@
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
-            <RequestThreadSection v-else/>
+            <RequestThreadSection v-else
+            @onTab="onTabRequestThread"/>
 
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
 
@@ -304,6 +305,7 @@ export default {
     computed: {
         ...mapGetters('requests', {
             showRequestThread: 'getRequestThreadVisible',
+            currentRequestThread: 'getCurrentRequestThread'
         }),
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
@@ -316,6 +318,9 @@ export default {
             activeSelectionList: 'getCurrentSelections',
         }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
+        ...mapGetters('files', {
+            approvalEnabled: 'getApprovalEnabled',
+        }),
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
         },
@@ -398,6 +403,18 @@ export default {
                     this.currentImgIndex --
                 }
             }
+        },
+        onTabRequestThread(cycleForward) {
+            const requests = this.product.requests.filter(x => x.selection.type == 'Master')
+
+            // Find the index of our current request thread
+            const index = requests.findIndex(x => x.id == this.currentRequestThread.id)
+            if (cycleForward && index + 1 <= requests.length) {
+                this.SET_CURRENT_REQUEST_THREAD(requests[index+1])
+            } else if (!cycleForward && index > 0) {
+                this.SET_CURRENT_REQUEST_THREAD(requests[index-1])
+            }
+            
         },
         hotkeyHandler(event) {
             const key = event.code

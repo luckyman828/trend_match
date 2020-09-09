@@ -215,6 +215,13 @@ export default {
                 if (key == 'KeyA') {
                     this.onSetStatus('Resolved')
                 }
+                if (key == 'Tab') {
+                    if (e.shiftKey) {
+                        this.$emit('onTab', false)
+                    } else {
+                        this.$emit('onTab', true)
+                    }
+                }
             }
         },
     },
