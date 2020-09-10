@@ -252,7 +252,7 @@
 
                 <div class="assortments form-section">
                     <h3>Assortments</h3>
-                    <div class="col-2 form-element">
+                    <!-- <div class="col-2 form-element">
                         <label>Assortment size</label>
                     </div>
 
@@ -269,7 +269,7 @@
                                 <i class="far fa-trash-alt"></i>
                             </button>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="form-element">
                         <button class="ghost" @click="onAddAssortmentSize">
