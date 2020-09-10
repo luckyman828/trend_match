@@ -185,111 +185,112 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-    .context-menu, .context-menu:focus, .context-menu .sub-menu {
-        background: white;
-        border-radius: $borderRadiusModule;
-        border: $borderModule;
-        box-shadow: $shadowModuleHard;
-        z-index: 1;
-        position: fixed;
-        // overflow: hidden;
+.context-menu, .context-menu:focus, .context-menu .sub-menu {
+    background: white;
+    border-radius: $borderRadiusModule;
+    border: $borderModule;
+    box-shadow: $shadowModuleHard;
+    z-index: 1;
+    position: fixed;
+    // overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    &.inline {
+        position: relative;
+    }
+    .columns {
         display: flex;
-        flex-direction: column;
-        &.inline {
-            position: relative;
-        }
-        .columns {
-            display: flex;
-            border-top: solid 1px $divider;
-            max-height: calc(100vh - 180px);
-            overflow: auto;
-            > * {
-                width: 240px;
+        border-top: solid 1px $divider;
+        max-height: calc(100vh - 180px);
+        overflow: auto;
+        > * {
+            width: 240px;
+            border-top: none;
+            &.item-group:not(:first-child) {
                 border-top: none;
-                &.item-group:not(:first-child) {
-                    border-top: none;
-                }
-            }
-            > .item-group {
-                border-top: none;
-                border-left: solid 2px $divider;
-                &:first-child {
-                    border-left: none;
-                }
-                &:last-child {
-                    padding-bottom: 24px;
-                }
             }
         }
-        .item-group {
-            > .header {
-                padding: 8px 16px;
-                line-height: 1;
+        > .item-group {
+            border-top: none;
+            border-left: solid 2px $divider;
+            &:first-child {
+                border-left: none;
             }
-            padding: 8px 0;
-            &:not(:first-child) {
-                border-top: solid 1px $divider;
-            }
-        }
-        .item, .item-wrapper {
-            padding: 8px 16px;
-            color: $dark05;
-            display: flex;
-            align-items: center;
-            position: relative;
-            &:not(.item-wrapper):not(.context-menu-item) {
-                cursor: pointer;
-                &:hover {
-                    background: $light1;
-                }
-            }
-            .icon-wrapper {
-                width: 32px;
-                display: block;
-                color: $dark15;
-                i {
-                    font-size: 16px;
-                    i {
-                        font-size: 9px;
-                    }
-                }
-            }
-            &.has-submenu {
-                position: relative;
-                &::after {
-                    content: "\f054";
-                    font-family: "Font Awesome 5 Pro";
-                    font-weight: 900;
-                    right: 16px;
-                    font-size: 12px;
-                    position: absolute;
-                }
-            }
-            &:hover {
-                .sub-menu {
-                    display: block;
-                }
-            }
-            .sub-menu {
-                display: none;
-                position: absolute;
-                left: 100%;
-                width: 100%
-            }
-            // &.disabled {
-            //     // pointer-events: none;
-            //     opacity: .7;
-            // }
-        }
-        .header {
-            padding-left: 16px;
-            padding-right: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            > .strong {
-                margin-right: 8px;
+            &:last-child {
+                padding-bottom: 24px;
             }
         }
     }
+    .item-group {
+        > .header {
+            padding: 8px 16px;
+            line-height: 1;
+        }
+        padding: 8px 0;
+        &:not(:first-child) {
+            border-top: solid 1px $divider;
+        }
+    }
+    .item, .item-wrapper {
+        padding: 8px 16px;
+        color: $dark05;
+        display: flex;
+        align-items: center;
+        position: relative;
+        font-size: 14px;
+        &:not(.item-wrapper):not(.context-menu-item) {
+            cursor: pointer;
+            &:hover {
+                background: $light1;
+            }
+        }
+        .icon-wrapper {
+            width: 32px;
+            display: block;
+            color: $dark15;
+            i {
+                font-size: 16px;
+                i {
+                    font-size: 9px;
+                }
+            }
+        }
+        &.has-submenu {
+            position: relative;
+            &::after {
+                content: "\f054";
+                font-family: "Font Awesome 5 Pro";
+                font-weight: 900;
+                right: 16px;
+                font-size: 12px;
+                position: absolute;
+            }
+        }
+        &:hover {
+            .sub-menu {
+                display: block;
+            }
+        }
+        .sub-menu {
+            display: none;
+            position: absolute;
+            left: 100%;
+            width: 100%
+        }
+        // &.disabled {
+        //     // pointer-events: none;
+        //     opacity: .7;
+        // }
+    }
+    .header {
+        padding-left: 16px;
+        padding-right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        > .strong {
+            margin-right: 8px;
+        }
+    }
+}
 </style>

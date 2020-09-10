@@ -819,7 +819,7 @@ export default {
                 method: apiMethod,
                 url: apiUrl,
                 data: {
-                    products_ids: [product.id],
+                    product_ids: [product.id],
                 },
             }).then(response => {
                 // commit(
