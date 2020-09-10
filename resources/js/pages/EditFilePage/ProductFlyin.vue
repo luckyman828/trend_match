@@ -40,7 +40,7 @@
                 <Draggable v-model="product.variants" class="product-variants">
                     
                     <div class="product-variant" v-for="(variant, index) in product.variants" :key="index"
-                        :class="{'is-current': currentVariant.id == variant.id}"
+                        :class="{'is-current': currentVariant && currentVariant.id == variant.id}"
                         @contextmenu.prevent="showVariantContext($event, index)"
                         @click="currentVariant = variant"
                     >
@@ -240,7 +240,7 @@
                         v-model.number="price.mark_up"/>
                         <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span> -->
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="removeCurrency(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -267,7 +267,7 @@
                         v-model="product.assortment_sizes[index]"
                         @submit="onSubmitField"/>
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="onRemoveAssortmentSize(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -305,7 +305,7 @@
                         v-model.number="assortment.box_ean"
                         @submit="onSubmitField"/>
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="removeAssortment(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -318,27 +318,46 @@
                     </div>
                 </div>
 
-                <!-- <div class="EANs form-section">
+                <div class="EANs form-section">
                     <h3>Variant Sizes</h3>
-                    <div class="col-2 form-element" v-for="(size, index) in currentVariant.ean_sizes" :key="index">
-                        <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
-                        :submitOnBlur="true"
-                        :oldValue="originalProduct.eans[index]" 
-                        v-model="product.eans[index]" :value="ean"
-                        @submit="onSubmitField"/>
+                    <div v-if="!currentVariant">
+                        <p>Click a variant to manage it's sizes</p>
+                    </div>
 
-                        <div style="display: flex; align-items: center;">
-                            <button class="invisible ghost-hover" @click="removeEAN(index)">
-                                <i class="far fa-trash-alt"></i>
+                    <div v-else>
+                        <div class="col-3 form-element">
+                            <label>Size name</label>
+                            <label>Size EAN</label>
+                        </div>
+
+                        <div class="col-3 form-element" v-for="(size, index) in currentVariant.ean_sizes" :key="index">
+                            <BaseEditInputWrapper
+                            ref="variantSizeInput"
+                            :submitOnBlur="true"
+                            v-model="size.size"
+                            :oldValue="size.size"
+                            @submit="onSubmitField"/>
+
+                            <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
+                            :submitOnBlur="true"
+                            v-model="size.ean"
+                            :oldValue="size.ean"
+                            @submit="onSubmitField"/>
+
+                            <div style="display: flex; align-items: center; height: 40px;">
+                                <button class="invisible ghost-hover" @click="onRemoveSize(index)">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-element">
+                            <button class="ghost" @click="onAddSize">
+                                <i class="far fa-plus"></i><span>Add size</span>
                             </button>
                         </div>
                     </div>
-                    <div class="form-element">
-                        <button class="ghost" @click="addEAN">
-                            <i class="far fa-plus"></i><span>Add EAN</span>
-                        </button>
-                    </div>
-                </div> -->
+
+                </div>
 
                 <div class="EANs form-section">
                     <h3>EANs <i class="far fa-info-circle" v-tooltip="'EANs added here can be scanned with the Kollekt mobile App to find this product'"></i></h3>
@@ -349,7 +368,7 @@
                         v-model="product.eans[index]" :value="ean"
                         @submit="onSubmitField"/>
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="removeEAN(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -567,6 +586,7 @@ export default {
             const productClone = JSON.parse(JSON.stringify(this.currentProduct))
             this.productToEdit = productClone
             this.initProducts([this.productToEdit])
+            this.currentVariant = null
 
             // Check if the product has any currencies, else add a default currency
             // if (this.productToEdit.prices.length < 1) {
@@ -629,6 +649,8 @@ export default {
                     name: 'New image'
                 }],
                 imageIndex: 0,
+                ean: null,
+                ean_sizes: []
             }
 
             Object.defineProperty(newVariant, 'currentImg', {
@@ -638,6 +660,8 @@ export default {
             })
 
             this.product.variants.push(newVariant)
+
+            this.currentVariant = newVariant
         },
         removeVariant(index) {
             // Remove the variant from the product
@@ -926,6 +950,18 @@ export default {
         },
         onRemoveAssortmentSize(index) {
             this.product.assortment_sizes.splice(index, 1)
+        },
+        onAddSize() {
+            this.currentVariant.ean_sizes.push({
+                size: 'New size',
+                ean: null,
+            })
+            this.$nextTick(() => {
+                this.$refs.variantSizeInput[this.currentVariant.ean_sizes.length - 1].setActive()
+            })
+        },
+        onRemoveSize(index) {
+            this.currentVariant.ean_sizes.splice(index, 1)
         }
     },
     created() {
@@ -987,7 +1023,9 @@ export default {
         width: 182px;
         display: inline-block;
         &.is-current {
-            border-color: $primary;
+            .drop-area {
+                border: solid 2px $primary;
+            }
         }
         &:not(:last-child) {
             margin-right: 12px;
