@@ -161,15 +161,26 @@ export default {
             if (this.request.status == 'Open') return 'Request awaiting decision'
             if (this.request.status == 'Resolved') return `Request accepted by approver`
             if (this.request.status == 'Rejected') return `Request rejected by approver`
+        },
+        requestStatus() {
+            return this.request.status
+        }
+    },
+    watch: {
+        requestStatus(newVal) {
+            this.onReadRequest()
         }
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest', 'updateRequestStatus']),
-        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD', 'SET_REQUEST_READ']),
         async onDeleteRequest() {
             if (await this.$refs.confirmDeleteRequest.confirm()) {
                 this.deleteRequest({selectionInput: this.selectionInput, request: this.request})
             }
+        },
+        onReadRequest() {
+            this.SET_REQUEST_READ(this.request)
         },
         onCancel() {
             this.editActive = false
@@ -202,6 +213,9 @@ export default {
             const requestToSet = this.getCurrentRequestThread && this.getCurrentRequestThread.id == this.request.id ? null : this.request
             this.SET_CURRENT_REQUEST_THREAD(requestToSet)
         }
+    },
+    created() {
+        this.onReadRequest()
     }
 }
 </script>

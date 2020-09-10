@@ -191,9 +191,6 @@ export default {
             // Save that we just read the request thread
             const date = new Date()
             date.setSeconds(date.getSeconds() + 10)
-            // const date = new Date()
-            request.lastReadAt = date.toISOString()
-            localStorage.setItem(`request-${request.id}-readAt`, date.toISOString())
 
             commit('SET_REQUEST_STATUS', { request, status, user: authUser })
             axios
@@ -266,12 +263,6 @@ export default {
             }
         },
         SET_CURRENT_REQUEST_THREAD(state, request) {
-            if (request) {
-                // Save in our local storage the fact that we have read this request thread now
-                const newDate = new Date().toISOString()
-                request.lastReadAt = new Date().toISOString()
-                localStorage.setItem(`request-${request.id}-readAt`, new Date().toISOString())
-            }
             state.currentRequestThread = request
         },
         INSERT_OR_UPDATE_REQUEST_COMMENT(state, { request, comment }) {
@@ -294,6 +285,15 @@ export default {
             if (user) {
                 request.status_updated_by_user = user
             }
+        },
+        SET_REQUEST_READ(state, request) {
+            const date = new Date()
+            // Add a delay to avoid scenarios where the update time set by the API is later than the time set for our recent read
+            const delay = 3
+            date.setSeconds(date.getSeconds(date) + delay)
+
+            request.lastReadAt = date.toISOString()
+            localStorage.setItem(`request-${request.id}-readAt`, date.toISOString())
         },
     },
 }
