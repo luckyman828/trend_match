@@ -227,6 +227,12 @@
 
             <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection"/>
 
+            <!-- <HotkeyHandler
+                :hotkeys="[
+                    {key: 'KeyR', callback: onKeyR}
+                ]"
+            /> -->
+
         </template>
     </BaseFlyin>
 </template>
@@ -245,6 +251,7 @@ import SelectionPresenterModeButton from '../../../components/SelectionPresenter
 import BudgetCounter from '../BudgetCounter'
 // import RequestThreadFlyin from './RequestThreadFlyin'
 import RequestThreadSection from './RequestThreadSection'
+import HotkeyHandler from '../../../components/common/HotkeyHandler'
 
 export default {
     name: 'productFlyin',
@@ -266,6 +273,7 @@ export default {
         BudgetCounter,
         // RequestThreadFlyin,
         RequestThreadSection,
+        HotkeyHandler,
     },
     data: function () { return {
         currentImgIndex: 0,
@@ -351,6 +359,9 @@ export default {
                 this.onBroadcastProduct(this.product)
             }
         },
+        onKeyR() {
+            console.log('on key R')
+        },
         onToggleCompleted() {
             this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
         },
@@ -432,6 +443,27 @@ export default {
                         this.onUpdateAction('Out')
                     if (key == 'KeyF' || key == 'KeyU')
                         this.onUpdateAction('Focus')
+                }
+
+            }
+            // ALT+ Key handlers
+            if (event.altKey) {
+                // Focus request thread
+                if (key == 'KeyR') {
+
+                    // Find requests with threads
+                    const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
+                    if (requestsWithThreads.length <= 0) return
+
+                    // If we are already viewing a request thread, close it
+                    if (this.currentRequestThread != null) {
+                        this.SET_CURRENT_REQUEST_THREAD(null)
+                        return
+                    }
+
+                    // Else, show the first reqeust thread
+                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
+
                 }
             }
         },

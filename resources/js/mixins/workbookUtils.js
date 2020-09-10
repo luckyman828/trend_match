@@ -266,7 +266,6 @@ export default {
 
                         // START MAP ASSORTMENTS
                         if (product.assortments && field.scope == 'assortments') {
-                            console.log('match assortment', field.name, fieldValue)
                             let assortmentGroup = product.assortments.find(x => x.mappingGroupId == field.groupId)
                             if (!assortmentGroup) {
                                 assortmentGroup = {
