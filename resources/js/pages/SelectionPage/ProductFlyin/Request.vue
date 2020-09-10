@@ -200,7 +200,7 @@ export default {
         },
         onSetStatus(status) {
             const statusToSet = this.request.status == status ? 'Open' : status
-            this.updateRequestStatus({request: this.request, status})
+            this.updateRequestStatus({request: this.request, status: statusToSet})
         },
         onToggleRequestThread(e) {
             // Don't trigger when clicking buttons
