@@ -90,6 +90,10 @@ export default {
             if ((!this.mappedFile || !this.mappedField.fieldName) && !this.mappedField.customEntry) return
             const rows = this.mappedField.customEntry ? [] : this.mappedFile.rows
             const valid = this.validateMappedField(this.mappedField, rows, 10)
+            // Scroll into view if not valid
+            if (!valid) {
+                this.$el.scrollIntoView()
+            }
         }
     },
 }

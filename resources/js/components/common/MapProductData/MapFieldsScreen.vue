@@ -203,12 +203,12 @@ export default {
         },
 
         async onSubmit() {
-            console.log('on submit map fields screen')
+            // console.log('on submit map fields screen')
             // First validate all fields
             // Loop through the fields and look for errors
             // assume no errors
             const valid = this.validateAllFields()
-            console.log('validate all fields', valid)
+            // console.log('validate all fields', valid)
             
             if (!valid) {
                 this.SHOW_SNACKBAR({ 
@@ -246,8 +246,8 @@ export default {
 .map-fields {
     display: flex;
     justify-content: center;
-    max-height: 60vh;
-    overflow-y: auto;
+    // max-height: 60vh;
+    // overflow-y: auto;
     h3 {
         // margin: 48px 0 12px;
         i {

@@ -186,7 +186,7 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, { file, addToState = true }) {
-            console.log('insert or update', file, addToState)
+            // console.log('insert or update', file, addToState)
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -214,7 +214,7 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
-                    console.log('success!')
+                    // console.log('success!')
                     // Display message
                     const wasCreated = !file.id
                     const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`

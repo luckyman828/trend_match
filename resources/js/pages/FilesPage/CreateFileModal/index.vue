@@ -124,7 +124,7 @@ export default {
             this.$emit('close')
         },
         async onSubmit(newProducts) {
-            console.log('on submit create file')
+            // console.log('on submit create file')
             this.uploadInProgress= true
 
             this.submitStatus = 'Creating products'

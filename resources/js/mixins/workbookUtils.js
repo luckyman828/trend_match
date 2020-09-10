@@ -210,6 +210,8 @@ export default {
                                         pictures: [],
                                         image: null,
                                         images: [],
+                                        ean: null,
+                                        ean_sizes: [{ size: null, ean: null }],
                                         mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
                                         // This actually allows us to link variants by a key that is not included on the variant object itself
                                     }
@@ -230,6 +232,30 @@ export default {
                                             url: fieldValue,
                                         })
                                     return
+                                }
+
+                                // Variant Sizes with EANS
+                                // ATT!: This code assumes that every variant size/ean pair comes in a chronological order
+                                if (field.name == 'sizes') {
+                                    // Check if the value already exists
+                                    const existingSize = variant.ean_sizes.find(x => x.size == fieldValue)
+                                    if (!existingSize) {
+                                        // Check if we have an object with no size set
+                                        const noSizeSet = variant.ean_sizes.find(x => !x.size)
+                                        // If we have an object with no size set, set its size
+                                        if (noSizeSet) noSizeSet.size = fieldValue
+                                        else variant.ean_sizes.push({ size: fieldValue, ean: null })
+                                    }
+                                }
+                                if (field.name == 'ean') {
+                                    const existingEan = variant.ean_sizes.find(x => x.ean == fieldValue)
+                                    if (!existingEan) {
+                                        // Check if we have an object with no size set
+                                        const noEanSet = variant.ean_sizes.find(x => !x.ean)
+                                        // If we have an object with no size set, set its size
+                                        if (noEanSet) noEanSet.ean = fieldValue
+                                        else variant.ean_sizes.push({ size: null, ean: fieldValue })
+                                    }
                                 }
 
                                 if (Array.isArray(variantField)) {

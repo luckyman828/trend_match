@@ -174,6 +174,13 @@ export default {
             // },
             {
                 scope: 'variants',
+                name: 'ean',
+                displayName: 'Variant EAN',
+                type: 'string',
+                headersToMatch: ['variant ean', 'color ean', 'colour ean'],
+            },
+            {
+                scope: 'variants',
                 name: 'sizes',
                 displayName: 'Variant Sizes',
                 type: 'string',
