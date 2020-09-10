@@ -40,7 +40,10 @@
                 <Draggable v-model="product.variants" class="product-variants">
                     
                     <div class="product-variant" v-for="(variant, index) in product.variants" :key="index"
-                    @contextmenu.prevent="showVariantContext($event, index)" :class="{'has-img': !!variant.image}">
+                        :class="{'is-current': currentVariant.id == variant.id}"
+                        @contextmenu.prevent="showVariantContext($event, index)"
+                        @click="currentVariant = variant"
+                    >
                         <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                 <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
@@ -315,6 +318,28 @@
                     </div>
                 </div>
 
+                <!-- <div class="EANs form-section">
+                    <h3>Variant Sizes</h3>
+                    <div class="col-2 form-element" v-for="(size, index) in currentVariant.ean_sizes" :key="index">
+                        <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
+                        :submitOnBlur="true"
+                        :oldValue="originalProduct.eans[index]" 
+                        v-model="product.eans[index]" :value="ean"
+                        @submit="onSubmitField"/>
+
+                        <div style="display: flex; align-items: center;">
+                            <button class="invisible ghost-hover" @click="removeEAN(index)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-element">
+                        <button class="ghost" @click="addEAN">
+                            <i class="far fa-plus"></i><span>Add EAN</span>
+                        </button>
+                    </div>
+                </div> -->
+
                 <div class="EANs form-section">
                     <h3>EANs <i class="far fa-info-circle" v-tooltip="'EANs added here can be scanned with the Kollekt mobile App to find this product'"></i></h3>
                     <div class="col-2 form-element" v-for="(ean, index) in product.eans" :key="index">
@@ -453,6 +478,7 @@ export default {
         contextPrice: null,
         draggingVariantPicture: false,
         variantImageFromURLQueue: [],
+        currentVariant: null,
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -960,6 +986,9 @@ export default {
     .product-variant {
         width: 182px;
         display: inline-block;
+        &.is-current {
+            border-color: $primary;
+        }
         &:not(:last-child) {
             margin-right: 12px;
         }
