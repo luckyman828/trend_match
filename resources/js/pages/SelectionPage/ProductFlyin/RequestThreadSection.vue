@@ -206,6 +206,9 @@ export default {
         hotkeyHandler(e) {
             const key = e.code
             if (this.show && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (key == 'Escape') {
+                    this.close()
+                }
                 if (key == 'Enter') {
                     this.activateWrite()
                 }
@@ -232,7 +235,7 @@ export default {
         }, 10)
     },
     mounted() {
-        this.activateWrite()
+        // this.activateWrite()
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)
