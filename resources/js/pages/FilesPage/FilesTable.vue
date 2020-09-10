@@ -124,15 +124,15 @@
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuFile" class="context-file">
-            <div class="item-group">
+            <div class="item-group" v-if="contextMenuItem">
                 <BaseContextMenuItem iconClass="far fa-file" 
                 hotkey="KeyV"
                 @click="showSingleFile(contextMenuItem)">
                     <u>V</u>iew file
                 </BaseContextMenuItem>
                 <BaseContextMenuItem iconClass="far fa-file-edit" 
-                :disabled="authUserWorkspaceRole != 'Admin'"
-                disabledTooltip="Only admins can edit files"
+                :disabled="authUserWorkspaceRole != 'Admin' && !contextMenuItem.editable"
+                disabledTooltip="Only admins and editors can edit files"
                 hotkey="KeyE"
                 @click="onGoToEditFile(contextMenuItem.id)">
                     <span>View / <u>e</u>dit products</span>

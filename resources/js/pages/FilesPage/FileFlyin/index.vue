@@ -19,8 +19,8 @@
                             <span>Manage editors</span>
                         </BaseButton>
 
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can edit files"
+                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
+                        disabledTooltip="Only admins and editors can edit files"
                         @click="goToEditSingle">
                             <span>Edit products</span>
                         </BaseButton>

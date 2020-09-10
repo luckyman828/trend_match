@@ -10,6 +10,10 @@
         </template>
         <template v-slot>
             <FileEditorsTable :file="file"/>
+            <p style="margin-top: 12px">
+                <i class="fas fa-info-circle"></i>
+                <span style="margin-left: 4px;">Editor's can create/edit/delete products in the file.</span>
+            </p>
         </template>
     </BaseFlyin>
 </template>
