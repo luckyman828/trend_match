@@ -231,14 +231,14 @@ export default {
     created() {
         // Insert small delay before we add our event listener to stop the same event that showed this section, do things inside the component
         setTimeout(() => {
-            document.body.addEventListener('keydown', this.hotkeyHandler)
-        }, 50)
+            document.body.addEventListener('keyup', this.hotkeyHandler)
+        }, 10)
     },
     mounted() {
         // this.activateWrite()
     },
     destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        document.body.removeEventListener('keyup', this.hotkeyHandler)
     }
 }
 </script>

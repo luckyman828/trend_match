@@ -446,6 +446,17 @@ export default {
                 }
 
             }
+            if (key == 'Tab') {
+                event.preventDefault()
+                // Find requests with threads
+                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
+                if (requestsWithThreads.length <= 0) return
+
+                // // Else, show the first reqeust thread
+                if (!this.currentRequestThread) {
+                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
+                }
+            }
         },
         hotkeyEnterHandler(e) {
             // If the request thread flyin is visible, do nothing
@@ -469,14 +480,6 @@ export default {
             }
             if (key == 'Tab') {
                 e.preventDefault()
-                // Find requests with threads
-                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
-                if (requestsWithThreads.length <= 0) return
-
-                // // Else, show the first reqeust thread
-                if (!this.currentRequestThread) {
-                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
-                }
             }
         }
     },
