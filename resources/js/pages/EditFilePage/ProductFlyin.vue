@@ -255,30 +255,6 @@
 
                 <div class="assortments form-section">
                     <h3>Assortments</h3>
-                    <!-- <div class="col-2 form-element">
-                        <label>Assortment size</label>
-                    </div>
-
-                    <div class="col-2 form-element" v-for="(size, index) in product.assortment_sizes" :key="'size-'+index">
-                        <BaseEditInputWrapper
-                        ref="assortmentSizeInput"
-                        :submitOnBlur="true"
-                        :oldValue="originalProduct.assortment_sizes[index]" 
-                        v-model="product.assortment_sizes[index]"
-                        @submit="onSubmitField"/>
-
-                        <div style="display: flex; align-items: center; height: 40px;">
-                            <button class="invisible ghost-hover" @click="onRemoveAssortmentSize(index)">
-                                <i class="far fa-trash-alt"></i>
-                            </button>
-                        </div>
-                    </div> -->
-
-                    <div class="form-element">
-                        <button class="ghost" @click="onAddAssortmentSize">
-                            <i class="far fa-plus"></i><span>Add size</span>
-                        </button>
-                    </div>
 
                     <div class="col-4 form-element">
                         <label>Assortment name</label>
@@ -952,6 +928,7 @@ export default {
             this.product.assortment_sizes.splice(index, 1)
         },
         onAddSize() {
+            if (!this.currentVariant.ean_sizes) Vue.set(this.currentVariant, 'ean_sizes', [])
             this.currentVariant.ean_sizes.push({
                 size: 'New size',
                 ean: null,
