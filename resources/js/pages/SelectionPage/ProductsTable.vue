@@ -58,6 +58,9 @@
                     @click="toggleShowFilters">
                         <i class="far fa-filter"></i>
                         <span>Filters</span>
+                        <div class="circle primary xs" v-if="activeFiltersCount > 0">
+                            {{activeFiltersCount}}
+                        </div>
                     </button>
                     <BaseContextMenu slot="popover" :inline="true" 
                         v-click-outside="hideFilters"
@@ -610,6 +613,13 @@ export default {
         },
         tooltipBoundariesEl() {
             return document.getElementById('main')
+        },
+        activeFiltersCount() {
+            const advancedFilterCount = this.getAdvancedFilter ? this.getAdvancedFilter.length : 0
+            return this.selectedBuyerGroups.length 
+                + this.selectedCategories.length 
+                + this.selectedDeliveryDates.length
+                + advancedFilterCount
         }
     },
     methods: {
@@ -947,9 +957,9 @@ export default {
     button {
         position: relative;
         .circle {
-            position: absolute;
-            right: -8px;
-            top: -8px;
+            margin-top: -24px;
+            margin-right: -12px;
+            margin-left: 4px;
         }
     }
 }
