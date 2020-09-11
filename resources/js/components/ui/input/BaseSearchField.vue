@@ -23,16 +23,41 @@ export default {
     },
     data: function () { return {
         searchString: '',
+        theTimeOut: null
     }},
     watch: {
         // Watch for changes in the array to search
         arrayToSearch: function(newVal, oldVal) {
             // Emit the result when a change to the provided array occours
-            this.$emit('input', this.result)
+            this.$emit('input', this.getResult())
         }
     },
     computed: {
-        result() {
+    },
+    methods: {
+        setFocus() {
+            this.$refs.searchField.focus()
+            this.$refs.searchField.select()
+        },
+        clear() {
+            this.searchString = ''
+            this.$emit('input', this.getResult())
+        },
+        onEsc(e) {
+            // If we have a search string, clear that and prevent bubbling
+            if (this.searchString.length > 0) {
+                e.stopPropagation()
+                this.clear()
+            }
+            // Else do nothing
+        },
+        onInput() {
+            clearTimeout(this.theTimeOut)
+            this.theTimeOut = setTimeout(() => {
+                this.$emit('input', this.getResult(), this.searchString)
+            }, 100)
+        },
+        getResult() {
             const array = this.arrayToSearch
             // Get the lowercase value to avoid the search being case sensitive
             let searchString = this.searchString.toLowerCase()
@@ -189,30 +214,9 @@ export default {
             return resultsToReturn
         }
     },
-    methods: {
-        setFocus() {
-            this.$refs.searchField.focus()
-            this.$refs.searchField.select()
-        },
-        clear() {
-            this.searchString = ''
-            this.$emit('input', this.result)
-        },
-        onEsc(e) {
-            // If we have a search string, clear that and prevent bubbling
-            if (this.searchString.length > 0) {
-                e.stopPropagation()
-                this.clear()
-            }
-            // Else do nothing
-        },
-        onInput() {
-            this.$emit('input', this.result, this.searchString)
-        }
-    },
     created() {
         if (this.arrayToSearch) {
-            this.$emit('input', this.result)
+            this.$emit('input', this.getResult())
         }
     }
 }
