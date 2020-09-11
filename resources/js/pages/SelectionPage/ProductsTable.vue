@@ -1,7 +1,8 @@
 <template>
     <div class="products-table-wrapper" ref="table" @focusout="onBlur">
 
-        <BaseTable :stickyHeader="true"
+        <BaseTable ref="tableComp"
+            :stickyHeader="true"
             :items="products"
             :itemsTotalCount="stateProducts.length"
             itemKey="id"
@@ -730,7 +731,8 @@ export default {
                 || this.singleVisible) return // Don't mess with user input
 
             if (key == 'KeyS') {
-                this.$refs.searchField.setFocus()
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
                 e.preventDefault() // Avoid entering an "s" in the search field
             }
             if (key == 'Tab' && !e.shiftKey) {

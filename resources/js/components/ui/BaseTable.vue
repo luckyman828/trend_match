@@ -14,6 +14,7 @@
 
                             <template v-slot:left>
                                 <BaseSearchField v-if="searchEnabled && !isDraggable"
+                                ref="searchField"
                                 :searchKey="searchKey"
                                 :arrayToSearch="items"
                                 @input="$emit('update:searchResult', $event)"
@@ -229,6 +230,9 @@ export default {
             this.$emit('update:contextItem', this.selected && this.selected.length > 0 ? this.selected[0] : item)
             this.$emit('update:contextMouseEvent', e, item)
             this.$emit('show-contextmenu', e, item)
+        },
+        focusSearch() {
+            this.$refs.searchField.setFocus()
         },
         getYPos(element) {
             var yPosition = 0;
