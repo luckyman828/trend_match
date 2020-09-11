@@ -322,7 +322,9 @@ export default {
 
             // Remove assortments with no name
             products.map(product => {
-                product.assortments = product.assortments.filter(x => !!x.name)
+                if (product.assortments) {
+                    product.assortments = product.assortments.filter(x => !!x.name)
+                }
             })
 
             return products

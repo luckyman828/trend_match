@@ -75,10 +75,13 @@ export default {
             // Check if we already have the file fetched as current
             let file
             if (!this.currentFile || this.currentFile.id != routeFileId) {
+                console.log('fetch file')
                 file = await this.fetchFile(routeFileId)
             } else {
+                console.log('use our currentfile')
                 file = this.currentFile
             }
+            console.log('file from woute', file)
             // Show the file flyin
             this.showSingleFile(file)
         }

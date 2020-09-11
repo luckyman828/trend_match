@@ -14,7 +14,7 @@
             <BaseMapFieldsTable class="map-fields-table">
                 <MapKeysTableHeader/>
                 <template v-for="file in availableFiles">
-                    <MapKeysTableRow v-for="(variantKey, index) in file.variantKeyList" :key="file.name + '-' + index"
+                    <MapKeysTableRow v-for="(variantKey, index) in file.variantKeyList" :key="file.fileName + '-' + index"
                         :mappedFile="file"
                         :mappedField="variantKey"
                         @show-field-context="$emit('show-field-context', $event, variantKey, file)"

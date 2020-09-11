@@ -65,6 +65,9 @@ export default {
         showFileEditorsFlyin: false,
     }},
     watch: {
+        currentFile(newVal) {
+            console.log('new file', newVal)
+        }
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
