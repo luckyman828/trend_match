@@ -237,7 +237,7 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
-        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
         ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
@@ -377,8 +377,10 @@ export default {
             this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
         },
         hotkeyHandler(event) {
+            if (this.singleVisible) return
             const key = event.code
             if (key == 'Tab') {
+                console.log('hotkey tab table row')
                 if (event.shiftKey) {
                     this.focusPrev(event)
                 } else {
@@ -396,6 +398,7 @@ export default {
                 this.focusNextRow(event)
         },
         keypressHandler(event) {
+            if (this.singleVisible) return
             const key = event.code
             if (key == 'Enter') {
                 document.activeElement.blur()

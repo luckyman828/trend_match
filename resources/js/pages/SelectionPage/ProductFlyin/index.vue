@@ -446,42 +446,6 @@ export default {
                 }
 
             }
-            if (key == 'Tab') {
-                // Find requests with threads
-                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
-                if (requestsWithThreads.length <= 0) return
-
-                // // If we are already viewing a request thread, close it
-                // if (this.currentRequestThread != null) {
-                //     this.SET_CURRENT_REQUEST_THREAD(null)
-                //     return
-                // }   
-
-                // // Else, show the first reqeust thread
-                if (!this.currentRequestThread) {
-                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
-                }
-            }
-            // // ALT+ Key handlers
-            // if (event.altKey) {
-            //     // Focus request thread
-            //     if (key == 'KeyR') {
-
-            //         // Find requests with threads
-            //         const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
-            //         if (requestsWithThreads.length <= 0) return
-
-            //         // If we are already viewing a request thread, close it
-            //         if (this.currentRequestThread != null) {
-            //             this.SET_CURRENT_REQUEST_THREAD(null)
-            //             return
-            //         }
-
-            //         // Else, show the first reqeust thread
-            //         this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
-
-            //     }
-            // }
         },
         hotkeyEnterHandler(e) {
             // If the request thread flyin is visible, do nothing
@@ -502,6 +466,17 @@ export default {
                 if (key == 'ArrowDown')
                     e.preventDefault(),
                     this.cycleImage(false)
+            }
+            if (key == 'Tab') {
+                e.preventDefault()
+                // Find requests with threads
+                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
+                if (requestsWithThreads.length <= 0) return
+
+                // // Else, show the first reqeust thread
+                if (!this.currentRequestThread) {
+                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
+                }
             }
         }
     },
