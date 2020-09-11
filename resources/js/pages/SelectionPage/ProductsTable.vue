@@ -623,7 +623,6 @@ export default {
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'setProductsCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         toggleShowFilters() {
-            console.log('show fitlers', this.showFilters)
             this.showFilters = !this.showFilters
         },
         hideFilters() {
