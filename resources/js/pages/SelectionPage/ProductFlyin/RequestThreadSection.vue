@@ -147,11 +147,11 @@ export default {
         }
     },
     watch: {
-        request() {
-            this.$nextTick(() => {
-                this.activateWrite()
-            })
-        },
+        // request() {
+        //     this.$nextTick(() => {
+        //         // this.activateWrite()
+        //     })
+        // },
         currentProduct() {
             this.close()
         }
