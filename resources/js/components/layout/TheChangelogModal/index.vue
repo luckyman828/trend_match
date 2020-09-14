@@ -98,6 +98,9 @@
                     <li>Allow editing variant sizes on edit PDP.</li>
                 </ul>
 
+                <h3>Got questions or feedback?</h3>
+                <p>If you have any questions, or would like more explanations on how to use the features, please feel free to get in touch with Simon on simon@kollekt.dk</p>
+
             </template>
 
             <template v-slot:signoff>
@@ -105,6 +108,11 @@
                     imageUrl="/images/team/Michael-Laugesen-Trendmatch (Thumbnail).png"
                     name="Michael"
                     title="Co-founder & Design lead"
+                />
+                <SignoffPortrait
+                    imageUrl="/images/team/Simon-Kollekt-64x64.png"
+                    name="Simon"
+                    title="Co-founder & CEO"
                 />
                 <SignoffPortrait
                     imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
