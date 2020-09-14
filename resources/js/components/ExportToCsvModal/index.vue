@@ -1,9 +1,17 @@
 <template>
     <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.name + '</strong> to CSV(Excel)'"
-    @close="$emit('close')" :show="show">
+    @close="SET_SHOW_CSV_MODAL(false)" :show="show">
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported</h3>
             <form @submit.prevent>
+
+                <div class="form-element">
+                    <BaseCheckboxInputField v-model="exportSelected">
+                        Export selected products only
+                    </BaseCheckboxInputField>
+                </div>
+
+
                 <div class="form-element">
                     <label for="currency-selector">Choose Currency to export</label>
                     <BaseInputField id="currency-selector" type="select" :disabled="true"
@@ -98,7 +106,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import exportToCsv from '../../mixins/exportToCsv'
 
 
@@ -112,6 +120,7 @@ export default {
     ],
     data: function () { return {
         // selectionsToExport: [],
+        exportSelected: false,
         currencyToExport: null,
         exportOption: null,
         defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
@@ -119,10 +128,10 @@ export default {
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus', 'getSelections', 'getSelectionsAvailableForInputFiltering']),
-        ...mapGetters('products', ['productsFiltered', 'getActiveSelectionInput', 'getSelectedSelectionIds']),
+        ...mapGetters('products', ['productsFiltered', 'getActiveSelectionInput', 'getSelectedSelectionIds', 'getSelectedProducts']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
-            const products = this.productsFiltered
+            const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
             return products
         },
         selectionsToExport() {
@@ -145,6 +154,7 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['fetchSelections']),
+        ...mapMutations('products', ['SET_SHOW_CSV_MODAL']),
         async showSelectionsContext(e) {
             this.$refs.selectionsContext.show(e)
         },
@@ -571,7 +581,12 @@ export default {
     // created() {
     //     this.selectionsToExport = this.getSelectionsAvailableForInputFiltering
     // }
-};
+    created() {
+        if (this.getSelectedProducts.length > 0) {
+            this.exportSelected = true
+        }
+    }
+}
 </script>
 
 <style lang="scss" scoped>

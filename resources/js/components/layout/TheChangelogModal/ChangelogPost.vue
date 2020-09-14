@@ -76,6 +76,10 @@ export default {
             font-weight: 500;
             font-weight: 16px;
         }
+        h2 {
+            font-size: 32px;
+            margin-top: 64px;
+        }
         h3 {
             font-size: 20px;
         }

@@ -6,7 +6,7 @@
     @keyup.self.native="keypressHandler($event)">
 
         <div class="product-details">
-            <div v-if="product.hasNewComment" class="unread-indicator circle xxs primary" 
+            <div v-if="displayUnreadBullets && product.hasNewComment" class="unread-indicator circle xxs primary" 
             v-tooltip.right="'A message needs a reply'"/>
             
             <td class="image clickable" @click="onViewSingle">
@@ -103,10 +103,12 @@
                     <button class="requests-button ghost xs" @click="onViewSingle" 
                     v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'">
                         <span>{{selectionInput.requests.length}}</span>
-                        <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
+                        <span v-if="getApprovalEnabled && selectionInput.hasOpenTicket"
                             > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span>
+                        <!-- <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
+                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span> -->
                         <i class="far fa-clipboard-check"></i>
-                        <div v-if="product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
+                        <div v-if="displayUnreadBullets && product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>
 
                     <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
@@ -162,6 +164,26 @@
                     <button class="invisible ghost-hover primary" 
                     @click="onViewSingle"><span>View</span></button>
                 </template>
+
+                <!-- Master actions -->
+                    <div v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))"
+                        class="extra-actions"
+                    >
+                        <BaseButton buttonClass="pill xs ghost"
+                        targetAreaPadding="4px 4px"
+                        :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                        @click="onToggleCompleted">
+                            <template v-if="!product.is_completed">
+                                <i class="far fa-circle" style="font-weight: 400;"></i>
+                                <span>Complete</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check-circle primary"></i>
+                                <span>Completed</span>
+                            </template>
+                        </BaseButton>
+                    </div>
+                <!-- END Master actions -->
             </td>
         </div>
 
@@ -215,18 +237,19 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
-        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
         ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
             currentQty: 'getCurrentSelectionModeQty',
+            displayUnreadBullets: 'getDisplayUnreadBullets',
         }),
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
         localSelectedProducts: {
             get() { return this.selectedProducts },
@@ -263,7 +286,7 @@ export default {
         // }
     },
     methods: {
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -350,9 +373,14 @@ export default {
                 this.setCurrentFocusRowIndex(this.index-1)
             }
         },
+        onToggleCompleted() {
+            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
+        },
         hotkeyHandler(event) {
+            if (this.singleVisible) return
             const key = event.code
             if (key == 'Tab') {
+                console.log('hotkey tab table row')
                 if (event.shiftKey) {
                     this.focusPrev(event)
                 } else {
@@ -370,12 +398,14 @@ export default {
                 this.focusNextRow(event)
         },
         keypressHandler(event) {
+            if (this.singleVisible) return
             const key = event.code
             if (key == 'Enter') {
                 document.activeElement.blur()
                 // this.$emit('onViewSingle', this.product)
                 this.onViewSingle()
             }
+            if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') this.onToggleCompleted()
             if (this.currentSelections.length <= 1 // Check that we are not doing multi selection input
             && this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {
@@ -392,138 +422,143 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
-    .products-table-row {
-        display: block;
-        padding: 0;
-        .unread-indicator {
-            position: absolute;
-            left: -20px;
-            @media screen and (max-width: $screenSm) {
-                left: -16px;
-            }
-        }
-        &:focus {
-            // outline: solid 2px $primary;
-            // outline-offset: -2px;
-            outline: none;
-        }
-        .img-wrapper {
-            border: $borderElSoft;
-            height: 100%;
-            width: 100%;
-            // width: 48px;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
-        }
-        @media screen and (max-width: $screenMd) {
-            &:not(.multi-selection) {
-                &.action-Focus {
-                    box-shadow: -8px 0 0px $primary inset;
-                }
-                &.action-In {
-                    box-shadow: -8px 0 0px $green inset;
-                }
-                &.action-Out {
-                    box-shadow: -8px 0 0px $red inset;
-                }
-            }
-        }
-    }
-    td.id, td.title {
-        position: relative;
-    }
-    .variant-list {
+@import '~@/_variables.scss';
+.products-table-row {
+    display: block;
+    padding: 0;
+    .unread-indicator {
         position: absolute;
-        left: 0;
-        bottom: -20px;
-        display: flex;
-    }
-    .product-details {
-        height: 138px;
-        padding: 8px;
-        padding-left: 2px;
-        display: flex;
-        align-items: center;
-    }
-    .requests-button {
-        position: relative;
-        &:hover {
-            .new-comment-bullet {
-                top: -7px;
-                right: -5px;
-            }
-        }
-        .new-comment-bullet {
-            position: absolute;
-            right: -4px;
-            top: -6px;
-            width: 10px;
-            height: 10px;
+        left: -20px;
+        @media screen and (max-width: $screenSm) {
+            left: -16px;
         }
     }
-
-    // Flyover actions
-    .gradient {
-        display: none;
+    &:focus {
+        // outline: solid 2px $primary;
+        // outline-offset: -2px;
+        outline: none;
     }
-    td.action {
-        position: relative;
+    .img-wrapper {
+        border: $borderElSoft;
         height: 100%;
-        .your-product-qty {
-            position: absolute;
-            top: 0;
-            right: 12px;
-            z-index: 2;
+        width: 100%;
+        // width: 48px;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
     }
     @media screen and (max-width: $screenMd) {
-        td.action {
-            position: relative;
-            height: 100%;
-            .fly-over-wrapper {
-                overflow: hidden;
-                width: 36px;
-                height: 100%;
-                position: relative;
-                &:hover {
-                    overflow: visible;
-                    .fly-over .inner {
-                        background: $bgModuleHover;
-                    }
-                    button.options {
-                        display: none;
-                    }
-                }
+        &:not(.multi-selection) {
+            &.action-Focus {
+                box-shadow: -8px 0 0px $primary inset;
             }
-            .fly-over {
-                height: 100%;
-                position: absolute;
-                right: 0;
-                padding-right: 4px;
-                .inner {
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    padding-left: 20px;
-                    >* {
-                        margin-left: 4px;
-                    }
-                }
-                .gradient {
-                    display: block;
-                    height: 100%;
-                    position: absolute;
-                    top: 0;
-                    left: -40px;
-                    width: 40px;
-                    background: linear-gradient(90deg, transparent, $bgModuleHover);
-                    pointer-events: none;
-                }
+            &.action-In {
+                box-shadow: -8px 0 0px $green inset;
+            }
+            &.action-Out {
+                box-shadow: -8px 0 0px $red inset;
             }
         }
     }
+}
+td.id, td.title {
+    position: relative;
+}
+.variant-list {
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+    display: flex;
+}
+.product-details {
+    height: 138px;
+    padding: 8px;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+}
+.requests-button {
+    position: relative;
+    &:hover {
+        .new-comment-bullet {
+            top: -7px;
+            right: -5px;
+        }
+    }
+    .new-comment-bullet {
+        position: absolute;
+        right: -4px;
+        top: -6px;
+        width: 10px;
+        height: 10px;
+    }
+}
+
+// Flyover actions
+.gradient {
+    display: none;
+}
+td.action {
+    position: relative;
+    height: 100%;
+    .your-product-qty {
+        position: absolute;
+        top: 0;
+        right: 12px;
+        z-index: 2;
+    }
+}
+@media screen and (max-width: $screenMd) {
+    td.action {
+        position: relative;
+        height: 100%;
+        .fly-over-wrapper {
+            overflow: hidden;
+            width: 36px;
+            height: 100%;
+            position: relative;
+            &:hover {
+                overflow: visible;
+                .fly-over .inner {
+                    background: $bgModuleHover;
+                }
+                button.options {
+                    display: none;
+                }
+            }
+        }
+        .fly-over {
+            height: 100%;
+            position: absolute;
+            right: 0;
+            padding-right: 4px;
+            .inner {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 20px;
+                >* {
+                    margin-left: 4px;
+                }
+            }
+            .gradient {
+                display: block;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: -40px;
+                width: 40px;
+                background: linear-gradient(90deg, transparent, $bgModuleHover);
+                pointer-events: none;
+            }
+        }
+    }
+}
+.extra-actions {
+    position: absolute;
+    right: 4px;
+    bottom: 0px;
+}
 </style>

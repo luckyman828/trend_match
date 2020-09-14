@@ -51,8 +51,12 @@
         </td>
 
         <td class="action">
-            <button class="invisible ghost-hover primary" 
+            <button class="invisible ghost-hover primary" v-if="!editOrderModeActive"
             @click="onViewSingle"><span>View / Edit</span></button>
+
+            <div class="square primary drag-handle" v-else>
+                <i class="far fa-arrows-alt-v"></i>
+            </div>
         </td>
 
     </BaseTableInnerRow>
@@ -66,7 +70,8 @@ export default {
     name: 'productsRow',
     props: [
         'product',
-        'selectedProducts'
+        'selectedProducts',
+        'editOrderModeActive',
     ],
     mixins: [
         variantImage,
@@ -155,4 +160,11 @@ export default {
     .variant-list-item:not(:first-child) {
         margin-left: 4px;
     }
+
+.drag-handle {
+    cursor: grab;
+    i {
+        font-weight: 400 !important;
+    }
+}
 </style>

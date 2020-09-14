@@ -43,6 +43,7 @@ export default {
     computed: {
         ...mapGetters('flyin', ['getVisibleFlyinCount']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
+        ...mapGetters('requests', ['getRequestThreadVisible']),
         ...mapGetters('contextMenu', {
             contextMenuVisible: 'getContextMenuIsVisible'}),
         isVisible () {
@@ -93,6 +94,7 @@ export default {
                     && event.target.tagName.toUpperCase() != 'INPUT'
                     && !this.contextMenuVisible
                     && this.getVisibleFlyinCount == this.flyinIndex
+                    && !this.getRequestThreadVisible
                 ) {
                     if (key == 'Escape')
                         this.close()

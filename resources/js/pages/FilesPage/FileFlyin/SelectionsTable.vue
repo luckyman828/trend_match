@@ -9,6 +9,34 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
+
+                        <BaseButton buttonClass="ghost sm" :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
+                        v-tooltip="'Send a link to all selection members of this file'"
+                        @click="onSendMagicLinkToAll">
+                            <template v-if="!fileSelectionMagicLinkSent">
+                                <i class="far fa-paper-plane"></i>
+                                <span>Send link</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check"></i>
+                                <span>Link sent</span>
+                            </template>
+                        </BaseButton>
+
+                        <BaseButton buttonClass="ghost sm" :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can hide/unhide selections"
+                        @click="onToggleAllSelectionsLocked(allSelections)">
+                        <i class="far fa-lock"></i>
+                            <span>Lock/Undlock all</span>
+                        </BaseButton>
+                        
+                        <BaseButton buttonClass="ghost sm" :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can lock/unlock selections"
+                        @click="onToggleAllSelectionsVisibility(allSelections)">
+                            <i class="far fa-eye"></i>
+                            <span>Hide/Show all</span>
+                        </BaseButton>
+
                         <span><strong>{{getSelectionsTree.length}}</strong> records</span>
                     </template>
                 </BaseTableTopBar>
@@ -93,6 +121,15 @@
                 </BaseContextMenuItem>
             </div>
             <div class="item-group" v-if="!!contextSelection">
+                <BaseContextMenuItem :disabled="contextSelection.selectionLinkSent"
+                :iconClass="contextSelection.selectionLinkSent ? 'far fa-check' : 'far fa-paper-plane'"
+                hotkey="KeyL"
+                @click="onSendSelectionLink(contextSelection)">
+                    <span v-if="!contextSelection.selectionLinkSent">Send selection <u>L</u>ink</span>
+                    <span v-else>Link sent</span>
+                </BaseContextMenuItem>
+            </div>
+            <div class="item-group" v-if="!!contextSelection">
                 <BaseContextMenuItem iconClass="far fa-pen" 
                 hotkey="KeyR"
                 @click="selectionToEdit = {selection: contextSelection, field: 'name'}">
@@ -166,13 +203,13 @@
 
                 <BaseContextMenuItem iconClass="far fa-lock"
                 hotkey="KeyL"
-                @click="$emit('toggle-locked', selectedSelections)">
+                @click="onToggleAllSelectionsLocked(selectedSelections)">
                     <span><u>L</u>ock / Unlock</span>
                 </BaseContextMenuItem>
 
                 <BaseContextMenuItem iconClass="far fa-eye"
                 hotkey="KeyH"
-                @click="$emit('toggle-hidden', selectedSelections)">
+                @click="onToggleAllSelectionsVisibility(selectedSelections)">
                     <span><u>H</u>ide / Unhide</span>
                 </BaseContextMenuItem>
             </div>
@@ -677,6 +714,7 @@ export default {
         sortArray
     ],
     data: function() { return {
+        fileSelectionMagicLinkSent: false,
         selectedSelections: [],
         sortKey: null,
         selectionToEdit: null,
@@ -752,7 +790,7 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('files', ['currentFile', 'files', 'allFiles', 'getCurrentFileChanged']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'selections', 'getSelectionsTree', 'getSelectionsStatus']),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'selections', 'getSelectionsTree', 'getSelectionsStatus', 'getSelections']),
         allSelections () {
             return this.selections
         },
@@ -774,7 +812,7 @@ export default {
     methods: {
         ...mapActions('selections', ['fetchSelections', 'createSelectionTree', 'insertSelection',
         'updateSelection', 'addTeamsToSelection', 'addUsersToSelection', 'fetchSelection', 
-        'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection']),
+        'fetchSelectionSettings', 'updateSelectionSettings', 'deleteSelection', 'sendSelectionLink']),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
@@ -1131,6 +1169,61 @@ export default {
             for (const childSelection of selection.children) {
                 this.syncSelectionTreeSettings(childSelection)
             }
+        },
+        onSendSelectionLink(selection) {
+            let selectionsToPost = [selection]
+            this.sendSelectionLink({selectionList: selectionsToPost})
+            Vue.set(selection, 'selectionLinkSent', true)
+        },
+        onToggleAllSelectionsLocked(selections) {
+            let makeLocked = null
+            selections.map(selection => {
+                if (selection.is_presenting) return
+                let hasChange = false
+                if (makeLocked == null) makeLocked = selection.is_open
+                // Check if the selection is locked
+                if (makeLocked && !selection.is_open) return 
+                if (!makeLocked && selection.is_open) return 
+
+                if (makeLocked) {
+                    selection.open_from = new Date("9999")
+                    selection.open_to = null
+                    hasChange = true
+                } else {
+                    selection.open_from = null
+                    selection.open_to = null
+                    hasChange = true
+                }
+                if (hasChange) this.updateSelection(selection)
+            })
+        },
+        onToggleAllSelectionsVisibility(selections) {
+            // Use the first selection to determine if we are opening or closing all
+            let makeHidden = null
+            selections.map(selection => {
+                if (selection.is_presenting) return
+                if (makeHidden == null) makeHidden = selection.is_visible
+                let hasChange = false
+
+                if (makeHidden && !selection.is_visible) return
+                if (!makeHidden && selection.is_visible) return
+                // Check if the selection is visible
+                if (makeHidden) {
+                    // Set To to now
+                    selection.visible_from = new Date("9999")
+                    selection.visible_to = null
+                    hasChange = true
+                } else {
+                    selection.visible_from = null
+                    selection.visible_to = null
+                    hasChange = true
+                }
+                if (hasChange) this.updateSelection(selection)
+            })
+        },
+        onSendMagicLinkToAll() {
+            this.fileSelectionMagicLinkSent = true
+            this.sendSelectionLink({selectionList: this.getSelections})
         }
     },
     created() {

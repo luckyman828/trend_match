@@ -40,7 +40,10 @@
                 <Draggable v-model="product.variants" class="product-variants">
                     
                     <div class="product-variant" v-for="(variant, index) in product.variants" :key="index"
-                    @contextmenu.prevent="showVariantContext($event, index)" :class="{'has-img': !!variant.image}">
+                        :class="{'is-current': currentVariant && currentVariant.id == variant.id}"
+                        @contextmenu.prevent="showVariantContext($event, index)"
+                        @click="currentVariant = variant"
+                    >
                         <div class="img-wrapper" @dragenter="dragActive($event, index)" @dragleave="dragLeave" @drop="dragDrop">
                             <div class="drop-area" :class="{drag: dragActiveIndex == index}">
                                 <!-- <input v-if="variant.image || variant.blob_id" type="file" accept="image/*" @change="filesChange($event, index, variant)" @click.prevent> -->
@@ -237,7 +240,7 @@
                         v-model.number="price.mark_up"/>
                         <!-- <span v-tooltip.top="'Not editable'" class="input-wrapper read-only">{{price.mark_up}}</span> -->
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="removeCurrency(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -252,11 +255,13 @@
 
                 <div class="assortments form-section">
                     <h3>Assortments</h3>
+
                     <div class="col-4 form-element">
                         <label>Assortment name</label>
                         <label>Box size</label>
                         <label>EAN</label>
                     </div>
+
                     <div class="col-4 form-element" v-for="(assortment, index) in product.assortments" :key="index">
                         <BaseEditInputWrapper
                         :submitOnBlur="true"
@@ -276,7 +281,7 @@
                         v-model.number="assortment.box_ean"
                         @submit="onSubmitField"/>
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="removeAssortment(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -290,6 +295,47 @@
                 </div>
 
                 <div class="EANs form-section">
+                    <h3>Variant Sizes</h3>
+                    <div v-if="!currentVariant">
+                        <p>Click a variant to manage it's sizes</p>
+                    </div>
+
+                    <div v-else>
+                        <div class="col-3 form-element">
+                            <label>Size name</label>
+                            <label>Size EAN</label>
+                        </div>
+
+                        <div class="col-3 form-element" v-for="(size, index) in currentVariant.ean_sizes" :key="index">
+                            <BaseEditInputWrapper
+                            ref="variantSizeInput"
+                            :submitOnBlur="true"
+                            v-model="size.size"
+                            :oldValue="size.size"
+                            @submit="onSubmitField"/>
+
+                            <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
+                            :submitOnBlur="true"
+                            v-model="size.ean"
+                            :oldValue="size.ean"
+                            @submit="onSubmitField"/>
+
+                            <div style="display: flex; align-items: center; height: 40px;">
+                                <button class="invisible ghost-hover" @click="onRemoveSize(index)">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-element">
+                            <button class="ghost" @click="onAddSize">
+                                <i class="far fa-plus"></i><span>Add size</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="EANs form-section">
                     <h3>EANs <i class="far fa-info-circle" v-tooltip="'EANs added here can be scanned with the Kollekt mobile App to find this product'"></i></h3>
                     <div class="col-2 form-element" v-for="(ean, index) in product.eans" :key="index">
                         <BaseEditInputWrapper :type="'text'" :pattern="/^\d+$/" :maxlength="13"
@@ -298,7 +344,7 @@
                         v-model="product.eans[index]" :value="ean"
                         @submit="onSubmitField"/>
 
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center; height: 40px;">
                             <button class="invisible ghost-hover" @click="removeEAN(index)">
                                 <i class="far fa-trash-alt"></i>
                             </button>
@@ -369,6 +415,18 @@
             header="Choose Currency" :submitOnChange="true"
             v-model="contextPrice.currency" unsetOption="Clear" :unsetValue="null"
             type="radio" :options="availableCurrencies" :search="true"/>
+
+            <BaseDialog ref="confirmDiscardDialog" type="confirm"
+            confirmColor="red" confirmText="Yes, discard product" cancelText="No, wait">
+                <div class="icon-graphic">
+                    <i class="lg primary far fa-box"></i>
+                    <i class="lg far fa-arrow-right"></i>
+                    <i class="lg dark far fa-trash"></i>
+                </div>
+                <h3>Really discard this product?</h3>
+                <p>The product has no ID and will be discarded</p>
+            </BaseDialog>
+
         </template>
     </BaseFlyin>
 </template>
@@ -414,6 +472,8 @@ export default {
         idError: null,
         contextPrice: null,
         draggingVariantPicture: false,
+        variantImageFromURLQueue: [],
+        currentVariant: null,
     }},
     watch: {
         currentProduct(newVal, oldVal) {
@@ -502,6 +562,7 @@ export default {
             const productClone = JSON.parse(JSON.stringify(this.currentProduct))
             this.productToEdit = productClone
             this.initProducts([this.productToEdit])
+            this.currentVariant = null
 
             // Check if the product has any currencies, else add a default currency
             // if (this.productToEdit.prices.length < 1) {
@@ -541,9 +602,15 @@ export default {
         removeEAN(index) {  
             this.productToEdit.eans.splice(index, 1)
         },
-        onCloseSingle() {
-            // Emit event to parent
-            this.$emit('closeSingle')
+        async onCloseSingle() {
+            if (!this.product.id) {
+                if (await this.$refs.confirmDiscardDialog.confirm()) {
+                    this.$emit('closeSingle')
+                }
+            } else {
+                // Emit event to parent
+                this.$emit('closeSingle')
+            }
         },
         onAddVariant() {
             const newVariant = {
@@ -558,6 +625,8 @@ export default {
                     name: 'New image'
                 }],
                 imageIndex: 0,
+                ean: null,
+                ean_sizes: []
             }
 
             Object.defineProperty(newVariant, 'currentImg', {
@@ -567,6 +636,8 @@ export default {
             })
 
             this.product.variants.push(newVariant)
+
+            this.currentVariant = newVariant
         },
         removeVariant(index) {
             // Remove the variant from the product
@@ -579,7 +650,6 @@ export default {
             }
         },
         onSubmitField() {
-            console.log('on submit field')
             // Don't update the product if it hasn't been assigned a datasource id yet
             if (!this.productToEdit.datasource_id) return
             
@@ -609,6 +679,12 @@ export default {
             if (insertError) {
                 this.updatingProduct = false
                 return
+            }
+
+            if (this.variantImageFromURLQueue.length > 1) {
+                this.variantImageFromURLQueue.map(async queueItem => {
+                    await this.setVariantImageURL(queueItem.variant, queueItem.imageURL, queueItem.picture)
+                })
             }
 
             // Check if we have any files (images) we need to upload
@@ -796,35 +872,21 @@ export default {
                 this.$refs['url-input-'+index][0].focus()
             })
         },
-        async getImageFromURL(url) {
-            // Send a request to get the image
-            this.gettingImagesFromURL++
-            let image
-            await axios.get(url, {responseType: 'blob'}).then(response => {
-                image = response.data
-            }).catch(err => {
-                image = false
-                this.SHOW_SNACKBAR({ 
-                    msg: `
-                        <p><strong>Hey you!</strong><br></p>
-                        <p>We will display your image(s) from <u>${url.substr(0, url.indexOf('/', 10))}</u>.</p>
-                        <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
-                        <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
-                    type: 'info', 
-                    iconClass: 'fa-info-circle', 
-                })
-            })
-            this.gettingImagesFromURL--
-            return image
-        },
-        async setVariantImageURL(variant, imageURL) {
+        async setVariantImageURL(variant, imageURL, picture) {
+            if (!this.product.id) {
+                this.variantImageFromURLQueue.push({picture: variant.currentImg, variant, imageURL})
+                variant.image = imageURL
+                variant.currentImg.url = imageURL
+                return
+            }
+
             variant.image = imageURL
-            variant.currentImg.url = imageURL
+            if (picture) {
+                picture.url = imageURL
+            } else {
+                variant.currentImg.url = imageURL
+            }
             await this.syncExternalImages({file: this.currentFile, products: [this.productToEdit]})
-            // const image = await this.getImageFromURL(imageURL)
-            // if (image) {
-            //     this.$set(variant, 'imageToUpload', {file: image, progress: 0, uploading: false})
-            // }
             
         },
         onAddImageToVariant(variant) {
@@ -855,6 +917,28 @@ export default {
             if (variant.pictures.length <= 0) {
                 this.onAddImageToVariant(variant)
             }
+        },
+        onAddAssortmentSize() {
+            this.product.assortment_sizes.push('unset')
+            this.$nextTick(() => {
+                this.$refs.assortmentSizeInput[this.product.assortment_sizes.length - 1].setActive()
+            })
+        },
+        onRemoveAssortmentSize(index) {
+            this.product.assortment_sizes.splice(index, 1)
+        },
+        onAddSize() {
+            if (!this.currentVariant.ean_sizes) Vue.set(this.currentVariant, 'ean_sizes', [])
+            this.currentVariant.ean_sizes.push({
+                size: 'New size',
+                ean: null,
+            })
+            this.$nextTick(() => {
+                this.$refs.variantSizeInput[this.currentVariant.ean_sizes.length - 1].setActive()
+            })
+        },
+        onRemoveSize(index) {
+            this.currentVariant.ean_sizes.splice(index, 1)
         }
     },
     created() {
@@ -915,6 +999,11 @@ export default {
     .product-variant {
         width: 182px;
         display: inline-block;
+        &.is-current {
+            .drop-area {
+                border: solid 2px $primary;
+            }
+        }
         &:not(:last-child) {
             margin-right: 12px;
         }

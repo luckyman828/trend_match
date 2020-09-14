@@ -5,7 +5,7 @@
             <i v-else class="far fa-folder"></i>
             <BaseInputField inputClass="small"
                 :focusOnMount="true" :selectOnFocus="true" :type="'text'"
-                actionOnBlur="Cancel"
+                :actionOnBlur="!folder.id ? 'Submit' : 'Cancel'"
                 v-model="fileToEdit.name"
                 @submit="onSubmitEdit"
                 @cancel="onCancelEdit"/>
@@ -52,12 +52,12 @@ export default {
         ...mapActions('files', ['insertOrUpdateFile', 'removeUnsavedFiles', 'setCurrentFolder']),
         ...mapMutations('files', ['REMOVE_UNSAVED_FILES']),
         onCancelEdit() {
-            this.$emit('update:fileToEdit', {})
             this.REMOVE_UNSAVED_FILES()
+            this.$emit('update:fileToEdit', {})
         },
         async onSubmitEdit() {
             this.REMOVE_UNSAVED_FILES()
-            this.insertOrUpdateFile(this.fileToEdit)
+            this.insertOrUpdateFile({file: this.fileToEdit, addToState: !this.folder.id ? true : false})
             this.$emit('update:fileToEdit', {})
         }
     }

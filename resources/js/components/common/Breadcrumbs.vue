@@ -1,7 +1,7 @@
 <template>
     <div class="breadcrumbs">
         <button class="invisible ghost-hover sm"
-        @click="$router.push({name: 'files'}); setCurrentFolder(null)">
+        @click="onGoToHome">
             <i class="far fa-building"></i><span>{{currentWorkspace.title}}</span>
         </button>
         <div class="breadcrumb" v-for="(folder, index) in getCurrentFilePath" :key="folder.id">
@@ -33,6 +33,10 @@ export default {
     },
     methods: {
         ...mapActions('files', ['setCurrentFolder']),
+        onGoToHome() {
+            if (this.$route.name != 'files') this.$router.push({name: 'files'}); 
+            this.setCurrentFolder(null)
+        }
     }
 }
 </script>

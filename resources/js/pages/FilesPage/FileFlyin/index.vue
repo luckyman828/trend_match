@@ -10,29 +10,19 @@
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-                        <!-- <button class="ghost editable" @click="$emit('showFileOwnersFlyin', file)">
-                            <i class="far fa-user-shield"></i>
-                            <span>{{file.owner_count || 0}} File owners</span>
-                        </button> -->
 
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can hide/unhide selections"
-                        @click="onToggleAllSelectionsLocked(getSelections)">
-                        <i class="far fa-lock"></i>
-                            <span>Lock/Undlock all selections</span>
-                        </BaseButton>
-                        
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can lock/unlock selections"
-                        @click="onToggleAllSelectionsVisibility(getSelections)">
-                            <i class="far fa-eye"></i>
-                            <span>Hide/Show all selections</span>
+                        <BaseButton buttonClass="ghost" 
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can manage file editors"
+                        @click="showEditorsFlyin">
+                            <i class="far fa-user-cog"></i>
+                            <span>Manage editors</span>
                         </BaseButton>
 
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can edit files"
+                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
+                        disabledTooltip="Only admins and editors can edit files"
                         @click="goToEditSingle">
-                            <span>View / Edit products</span>
+                            <span>Edit products</span>
                         </BaseButton>
                     </div>
                 </template>
@@ -40,20 +30,24 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"
-                @toggle-locked="onToggleAllSelectionsLocked"
-                @toggle-hidden="onToggleAllSelectionsVisibility"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
 
                 <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
                 @close="SelectionUsersFlyinVisible = false"/>
             </div>
+
+            <FileEditorsFlyin v-if="show"
+            :show="showFileEditorsFlyin" @close="showFileEditorsFlyin = false"
+            :file="file"/>
+
         </template>
     </BaseFlyin>
 </template>
-f
+
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTable from './SelectionsTable'
+import FileEditorsFlyin from './FileEditorsFlyin'
 import SelectionUsersFlyin from '../../../components/SelectionUsersFlyin'
 
 export default {
@@ -65,10 +59,15 @@ export default {
     components: {
         SelectionsTable,
         SelectionUsersFlyin,
+        FileEditorsFlyin,
     },
-    data: function(){ return {
+    data: function() { return {
+        showFileEditorsFlyin: false,
     }},
     watch: {
+        currentFile(newVal) {
+            console.log('new file', newVal)
+        }
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
@@ -90,6 +89,9 @@ export default {
         showSelectionUsersFlyin(selection) {
             this.SET_CURRENT_SELECTIONS([selection])
             this.SelectionUsersFlyinVisible = true
+        },
+        showEditorsFlyin() {
+            this.showFileEditorsFlyin = true
         },
         showNext() {
             if (this.nextFile)
@@ -147,7 +149,7 @@ export default {
                 }
                 if (hasChange) this.updateSelection(selection)
             })
-        }
+        },
     },
 }
 </script>

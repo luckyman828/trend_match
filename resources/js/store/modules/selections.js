@@ -58,6 +58,9 @@ export default {
         currentSelection: state => state.currentSelections[0],
         getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
+        getDisplayUnreadBullets: (state, getters) => {
+            return getters.getCurrentSelection.type == 'Master' && getters.getCurrentSelectionMode != 'Feedback'
+        },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
@@ -155,25 +158,69 @@ export default {
             const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
             return authUserWorkspaceRole == 'Admin' || selection.your_role == 'Owner'
         },
-        getAuthUserSelectionWriteAccess: () => selection => {
+        getAuthUserSelectionWriteAccess: () => (selection, product) => {
+            let actionAccess = true
+            let commentAccess = true
+            let requestAccess = true
+            let actionMsg = ''
+            let commentMsg = ''
+            let requestMsg = ''
+
+            if (!selection.is_open) {
+                actionAccess = false
+                commentAccess = false
+                requestAccess = false
+                actionMsg = 'Selection is locked'
+                commentMsg = 'Selection is locked'
+                requestMsg = 'Selection is locked'
+            } else if (product && product.is_completed) {
+                actionAccess = false
+                requestAccess = false
+                actionMsg = 'Product has been marked as complete'
+                requestMsg = 'Product has been marked as complete'
+            } else {
+                if (selection.your_role != 'Owner') {
+                    requestAccess = false
+                    requestMsg = 'Only selection owners can make requests'
+                }
+                if (selection.your_role == 'Approver') {
+                    actionAccess = false
+                    actionMsg = 'Only selection owners can decide action'
+                }
+            }
             return {
                 actions: {
-                    hasAccess: selection.is_open && selection.your_role != 'Approver',
-                    msg: !selection.is_open
-                        ? 'Selection is locked'
-                        : selection.your_role == 'Approver'
-                        ? 'Only selection owners can decide action'
-                        : '',
-                },
-                requests: {
-                    hasAccess: selection.is_open && selection.your_role == 'Owner',
-                    msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can make requests',
+                    hasAccess: actionAccess,
+                    msg: actionMsg,
                 },
                 comments: {
-                    hasAccess: selection.is_open,
-                    msg: !selection.is_open && 'Selection is locked',
+                    hasAccess: commentAccess,
+                    msg: commentMsg,
+                },
+                requests: {
+                    hasAccess: requestAccess,
+                    msg: requestMsg,
                 },
             }
+
+            // return {
+            //     actions: {
+            //         hasAccess: selection.is_open && selection.your_role != 'Approver',
+            //         msg: !selection.is_open
+            //             ? 'Selection is locked'
+            //             : selection.your_role == 'Approver'
+            //             ? 'Only selection owners can decide action'
+            //             : '',
+            //     },
+            //     requests: {
+            //         hasAccess: selection.is_open && selection.your_role == 'Owner',
+            //         msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can make requests',
+            //     },
+            //     comments: {
+            //         hasAccess: selection.is_open,
+            //         msg: !selection.is_open && 'Selection is locked',
+            //     },
+            // }
         },
         getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
             const products = rootGetters['products/getProducts']
@@ -972,6 +1019,74 @@ export default {
             if (!selection.is_presenting) {
                 commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
             }
+        },
+        async sendSelectionLink({ commit, dispatch }, { selectionList }) {
+            console.log('selection list', selectionList)
+            // Do something
+            await Promise.all(
+                selectionList.map(async selection => {
+                    const apiUrl = `/selections/${selection.id}/invite-members`
+                    await axios.post(apiUrl, {
+                        user_ids: [],
+                    })
+                })
+            )
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Invite link sent for ${selectionList.length} selections!`,
+                            type: 'info',
+                            iconClass: 'fa-paper-plane',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to send an invite link. Please try again.',
+                            type: 'warning',
+                            iconClass: 'fa-exclamation-triangle',
+                        },
+                        { root: true }
+                    )
+                })
+        },
+        async sendLinkToSelectionUsers({ commit, dispatch }, { selection, users }) {
+            // Do something
+            // console.log('Send selection link to selection users!', selection, users)
+            users.map(user => {
+                Vue.set(user, 'selectionLinkSent', true)
+            })
+            const apiUrl = `/selections/${selection.id}/invite-members`
+            await axios
+                .post(apiUrl, {
+                    user_ids: users.map(user => user.id),
+                })
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Invite link sent!',
+                            type: 'info',
+                            iconClass: 'fa-paper-plane',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to send an invite link. Please try again.',
+                            type: 'warning',
+                            iconClass: 'fa-exclamation-triangle',
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 

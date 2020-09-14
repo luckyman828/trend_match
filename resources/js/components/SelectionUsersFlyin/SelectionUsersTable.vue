@@ -46,7 +46,34 @@
                             </button>
                             <span v-else>{{rowProps.item.role}}</span>
                         </td>
-                        <td class="action"></td>
+                        <!-- <td class="job">
+                            <button v-if="userHasEditAccess" class="ghost editable sm" 
+                            @click="showJobContext($event, user)">
+                                <span>{{user.job}}</span>
+                            </button>
+                            <span v-else>{{user.job}}</span>
+                        </td> -->
+                        <td class="action">
+                            <BaseButton v-if="!rowProps.item.selectionLinkSent"
+                                buttonClass="ghost editable sm" 
+                                :disabled="rowProps.item.role != 'Member'"
+                                disabledTooltip="Only selection members can be sent a link"
+                                @click="onSendSelectionLink([rowProps.item])"
+                            >
+                                <i class="far fa-paper-plane"></i>
+                                <span>Send link</span>
+                            </BaseButton>
+                            <div class="ghost sm" v-else>
+                                <i class="far fa-check"></i>
+                                <span>Link sent</span>
+                            </div>
+
+                            <!-- <button v-if="userHasEditAccess" class="invisible ghost-hover" 
+                            @click="showUserContext($event, rowProps.item)">
+                                <i class="far fa-ellipsis-h medium"></i>
+                            </button>
+                            -->
+                        </td>
                 </BaseTableInnerRow>
 
                 <!-- Excluded Users -->
@@ -87,6 +114,16 @@
                     hotkey="KeyC"
                     @click="showRoleContext(contextMouseEvent, contextUser)">
                         <span><u>C</u>hange role{{selected.length > 0 ? 's' : ''}}</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-user-shield"
+                    tooltip="Send the user(s) a link to join the selection on the iOS app."
+                    :disabled="selected.length > 0 ? !selected.find(x => x.role == 'Member') : contextUser.role != 'Member'"
+                    disabledTooltip="Only Selection Members can be invited to join the iOS app."
+                    :hotkey="['KeyL', 'KeyS']"
+                    @click="onSendSelectionLink(selected.length > 0 ? selected : [contextUser])">
+                        <span><u>S</u>end <u>l</u>ink</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
@@ -214,7 +251,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers','removeUsersFromSelection', 'reAddUsersToSelection', 'fetchSelection']),
+        ...mapActions('selections', ['addUsersToSelection','updateSelectionUsers',
+        'removeUsersFromSelection', 'reAddUsersToSelection', 'fetchSelection', 'sendLinkToSelectionUsers']),
         ...mapActions('users', ['fetchUsers']),
         ...mapMutations('selections', ['UPDATE_SELECTION']),
         initData(forceRefresh) {
@@ -335,6 +373,11 @@ export default {
             this.removeUsersFromSelection({selection: this.selection, users: usersToRemove})
             this.selected = []
         },
+        onSendSelectionLink(users) {
+            // Filter out users whose role is not Member
+            const usersFiltered = users.filter(x => x.role == 'Member' && !x.selectionLinkSent)
+            this.sendLinkToSelectionUsers({selection: this.selection, users: usersFiltered})
+        }
     },
     created() {
         this.initData()

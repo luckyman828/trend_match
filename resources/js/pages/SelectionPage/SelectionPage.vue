@@ -146,7 +146,7 @@ export default{
         },
     },
     methods: {
-        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
+        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS', 'SET_PRODUCTS_COMPLETED']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST', 'DELETE_REQUEST', 'INSERT_OR_UPDATE_REQUEST_COMMENT', 'DELETE_REQUEST_COMMENT']),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
@@ -222,6 +222,17 @@ export default{
                 this.$router.push({name: 'files'})
             }
         },
+
+        productCompletedStatusChangedHandler(selectionId, shouldBeCompleted, productIdList) {
+            // console.log('productcompletd', selectionId, shouldBeCompleted, productIdList)
+            const products = []
+            productIdList.map(productId => {
+                const product = this.products.find(x => x.id == productId)
+                if (product) products.push(product)
+            })
+            this.SET_PRODUCTS_COMPLETED({selectionId, shouldBeCompleted, products})
+        },
+
         commentArrivedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentArrived", selectionId, comment)
@@ -237,11 +248,11 @@ export default{
             }
         },
         requestArrivedHandler(selectionId, request) {
-            if (request.author_id != this.authUser.id) {
+            // if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
                 this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
-            }
+            // }
         },
         requestDeletedHandler(selectionId, requestIdentifier) {
             if (requestIdentifier.author_id != this.authUser.id) {
@@ -307,6 +318,8 @@ export default{
             connection.on('SubscribeSelectionsChanged', this.subscribeSelectionsChangedHandler)  
             connection.on('OnSelectionPresentationChanged',  this.selectionPresentationChangedHandler)
 
+            connection.on('OnProductCompletedStatusChanged',  this.productCompletedStatusChangedHandler)
+
             // Comments
             connection.on("OnCommentArrived", this.commentArrivedHandler)
             connection.on("OnCommentDeleted", this.commentDeletedHandler)
@@ -332,6 +345,8 @@ export default{
             this.$connection.invoke("UnSubscribeAll")
             connection.off('SubscribeSelectionsChanged', this.subscribeSelectionsChangedHandler)  
             connection.off('OnSelectionPresentationChanged',  this.selectionPresentationChangedHandler)
+
+            connection.off('OnProductCompletedStatusChanged',  this.productCompletedStatusChangedHandler)
 
             // Comments
             connection.off("OnCommentArrived", this.commentArrivedHandler)

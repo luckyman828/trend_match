@@ -385,6 +385,13 @@ input[type='submit'] {
                     margin-left: nth($size, 6);
                 }
             }
+            &.has-target-area {
+                &::after {
+                    content: '';
+                    display: block;
+                    width: nth($size, 4);
+                }
+            }
         }
     }
 
@@ -950,6 +957,7 @@ i.has-tooltip {
         width: 0;
         height: 0;
         border: 5px solid transparent;
+        z-index: 1;
 
         &::after {
             content: '';
@@ -963,7 +971,8 @@ i.has-tooltip {
     &[data-popper-placement^='top'] {
         padding-bottom: 8px;
 
-        > .wrapper > .tooltip-arrow {
+        > .wrapper > .tooltip-arrow,
+        > .tooltip-arrow {
             border-bottom-width: 0;
             border-top-color: $divider;
             bottom: 3px;
@@ -982,7 +991,8 @@ i.has-tooltip {
     &[data-popper-placement^='bottom'] {
         padding-top: 8px;
 
-        > .wrapper > .tooltip-arrow {
+        > .wrapper > .tooltip-arrow,
+        > .tooltip-arrow {
             border-top-width: 0;
             border-bottom-color: $divider;
             top: 3px;
@@ -991,7 +1001,7 @@ i.has-tooltip {
             &::after {
                 border-top-width: 0;
                 border-bottom-color: white;
-                top: 1px;
+                top: 2px;
                 left: -5px;
             }
         }
@@ -1001,7 +1011,8 @@ i.has-tooltip {
     &[data-popper-placement^='right'] {
         padding-left: 8px;
 
-        > .wrapper > .tooltip-arrow {
+        > .wrapper > .tooltip-arrow,
+        > .tooltip-arrow {
             border-left-width: 0;
             border-right-color: $divider;
             top: 0;
@@ -1020,7 +1031,8 @@ i.has-tooltip {
     &[data-popper-placement^='left'] {
         padding-right: 8px;
 
-        > .wrapper > .tooltip-arrow {
+        > .wrapper > .tooltip-arrow,
+        > .tooltip-arrow {
             border-right-width: 0;
             border-left-color: $divider;
             top: 0;
@@ -1281,7 +1293,7 @@ form {
         }
     }
     .form-section {
-        // border-bottom: solid 2px $divider;
+        border-bottom: solid 1px $divider;
         padding-bottom: 32px;
         margin-bottom: 32px;
     }

@@ -1,6 +1,6 @@
 <template>
     <div class="button-wrapper">
-        <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}]"
+        <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}, {'has-target-area': !!targetAreaPadding}]"
         v-tooltip="disabled && disabledTooltip"
         @click="!disabled && $emit('click', $event)">
             <slot/>

@@ -13,7 +13,8 @@
                         <BaseTableTopBar v-if="!hideTopBar">
 
                             <template v-slot:left>
-                                <BaseSearchField v-if="searchEnabled"
+                                <BaseSearchField v-if="searchEnabled && !isDraggable"
+                                ref="searchField"
                                 :searchKey="searchKey"
                                 :arrayToSearch="items"
                                 @input="$emit('update:searchResult', $event)"
@@ -49,27 +50,15 @@
                 <!-- Content -->
 
                 <template v-if="isReady">
-                    <!-- <BaseTableRow v-for="(item, index) in items" 
-                        :key="itemKey ? item[itemKey] : index"
-                        :item="item" :index="index"
-                        :showSelect="showSelect"
-                        :selected.sync="localSelected"
-                        :items="items"
-                        :contextItem="contextItem"
-                        :itemKey="itemKey"
-                        @select-range="selectRange(index, items, selected)"
-                        @show-contextmenu="onContextMenu($event, item)"
+
+                    <Draggable v-if="isDraggable"
+                        v-model="localItemsReOrdered"
+                        :forceFallback="true"
+                        fallbackClass="sortable-drag" 
+                        :fallbackTolerance="10"
                     >
-                        <slot name="row" :item="item" :index="index"/>
-                    </BaseTableRow> -->
-                    <RecycleScroller
-                        :items="itemsSorted"
-                        :item-size="itemSize"
-                        page-mode
-                        :key-field="itemKey"
-                        v-slot="{ item, index }"
-                    >
-                        <BaseTableRow ref="tableRow"
+                        <BaseTableRow v-for="(item, index) in localItemsReOrdered"
+                            ref="tableRow"
                             :key="itemKey ? item[itemKey] : index"
                             :item="item" :index="index"
                             :showSelect="showSelect"
@@ -86,7 +75,37 @@
                         >
                             <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
                         </BaseTableRow>
-                    </RecycleScroller>
+                    </Draggable>
+                    
+                    <template v-else>
+                        <RecycleScroller
+                            :items="itemsSorted"
+                            :item-size="itemSize"
+                            :buffer="1000"
+                            page-mode
+                            :key-field="itemKey"
+                            v-slot="{ item, index }"
+                        >
+                            <BaseTableRow ref="tableRow"
+                                class="draggable-row"
+                                :key="itemKey ? item[itemKey] : index"
+                                :item="item" :index="index"
+                                :showSelect="showSelect"
+                                :selected.sync="localSelected"
+                                :items="items"
+                                :contextItem="contextItem"
+                                :itemKey="itemKey"
+                                :showContextButton="!hideContextButton"
+                                :itemType="itemType"
+                                :itemSize="itemSize"
+                                :hasFocus="focusIndex == index"
+                                @select-range="selectRange(index, items, selected)"
+                                @show-contextmenu="onContextMenu($event, item)"
+                            >
+                                <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
+                            </BaseTableRow>
+                        </RecycleScroller>
+                    </template>
                 </template>
                 <!-- End content -->
 
@@ -111,9 +130,13 @@
 <script>
 import selectRange from '../../mixins/selectRange'
 import { mapGetters } from 'vuex'
+import Draggable from 'vuedraggable'
 
 export default {
     name: 'baseTable',
+    components: {
+        Draggable
+    },
     mixins: [
         selectRange,
     ],
@@ -136,6 +159,8 @@ export default {
         'itemType',
         'focusIndex',
         'itemsTotalCount',
+        'isDraggable',
+        'itemsReOrdered',
     ],
     data: function() { return {
         sticky: false,
@@ -164,7 +189,17 @@ export default {
             if (newVal == 'success') {
                 this.isReady = true
             }
-        }
+        },
+        isDraggable: function(newVal) {
+            if (newVal) {
+                this.localItemsReOrdered = this.items
+            }
+        },
+        items: function(newVal) {
+            if (this.isDraggable) {
+                this.localItemsReOrdered = newVal
+            }
+        },
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
@@ -174,6 +209,10 @@ export default {
         localSelected: {
             get() { return this.selected },
             set(localSelected) {this.$emit('update:selected', localSelected)}
+        },
+        localItemsReOrdered: {
+            get() { return this.itemsReOrdered },
+            set(localItemsReOrdered) {this.$emit('update:itemsReOrdered', localItemsReOrdered)}
         },
         searchEnabled() {
             return this.searchKey && this.searchResult && this.items
@@ -190,8 +229,11 @@ export default {
         onContextMenu(e, item) {
             // If we have a selection set the context item to the first item in our selection
             this.$emit('update:contextItem', this.selected && this.selected.length > 0 ? this.selected[0] : item)
-            this.$emit('update:contextMouseEvent', e)
-            this.$emit('show-contextmenu', e)
+            this.$emit('update:contextMouseEvent', e, item)
+            this.$emit('show-contextmenu', e, item)
+        },
+        focusSearch() {
+            this.$refs.searchField.setFocus()
         },
         getYPos(element) {
             var yPosition = 0;
@@ -468,6 +510,15 @@ export default {
         justify-content: center;
         min-height: 200px;
     }
+    .sortable-drag {
+        // display: none;
+        // position: absolute;
+        // left: 0 !important;
+        // transform-origin: 0% 0% !important;
+    }
+    // .sortable-ghost {
+    //     opacity: .5;
+    // }
 }
 
 </style>

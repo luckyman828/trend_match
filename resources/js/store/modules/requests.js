@@ -45,7 +45,6 @@ export default {
             }
         },
         async insertOrUpdateRequest({ commit, dispatch }, { selectionInput, request }) {
-            console.log(selectionInput, request.content)
             // Update our state
             commit('INSERT_OR_UPDATE_REQUEST', { selectionInput, request })
             let requestMethod
@@ -123,8 +122,6 @@ export default {
             })
         },
         async insertOrUpdateRequestComment({ commit }, { request, comment }) {
-            console.log('insert or update', request, comment)
-
             let apiUrl = `/requests/${request.id}/discussions`
             let requestMethod = 'post'
             if (comment.id) {
@@ -187,27 +184,20 @@ export default {
                     )
                 })
         },
-        async resolveRequest({ commit, rootGetters }, request) {
-            const requestMethod = request.isResolved ? 'delete' : 'put'
-            commit('RESOLVE_REQUEST', { request, resolve: !request.isResolved, user: rootGetters['auth/authUser'] })
+        async updateRequestStatus({ commit, rootGetters }, { request, status }) {
+            const apiUrl = `/requests/${request.id}/status`
+            const authUser = rootGetters['auth/authUser']
 
-            const apiUrl = `/requests/${request.id}/complete`
-            await axios({
-                method: requestMethod,
-                url: apiUrl,
-            }).then(() => {
-                if (request.isResolved) {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Request resolved',
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                }
-            })
+            // Save that we just read the request thread
+            const date = new Date()
+            date.setSeconds(date.getSeconds() + 10)
+
+            commit('SET_REQUEST_STATUS', { request, status, user: authUser })
+            axios
+                .put(apiUrl, {
+                    status,
+                })
+                .then(response => {})
         },
     },
 
@@ -225,9 +215,13 @@ export default {
             if (existingRequestIndex >= 0) {
                 const existingRequest = selectionInput.rawSelectionInput.requests[existingRequestIndex]
                 const discussions = existingRequest.discussions
+                const author = request.author ? request.author : existingRequest.author
+                const author_id = request.author ? request.author_id : existingRequest.author_id
                 const updatedRequest = Object.assign(existingRequest, request)
-                // Dont touch the discussions
+                // Dont touch the discussions or the author
                 updatedRequest.discussions = discussions
+                updatedRequest.author = author
+                updatedRequest.author_id = author_id
                 Vue.set(selectionInput.rawSelectionInput.requests, existingRequestIndex, updatedRequest)
             }
             // Else insert the request
@@ -239,19 +233,23 @@ export default {
                 })
                 Object.defineProperty(request, 'hasUnreadAlignerComment', {
                     get: function() {
+                        if (request.status != 'Open' || request.selection.type != 'Master') return false
                         return (
-                            !request.isResolved &&
-                            (request.discussions.length <= 0 ||
-                                request.discussions[request.discussions.length - 1].role != 'Approver')
+                            request.discussions.length <= 0 ||
+                            request.discussions[request.discussions.length - 1].role != 'Approver'
                         )
                     },
                 })
                 Object.defineProperty(request, 'hasUnreadApproverComment', {
                     get: function() {
                         return (
-                            !request.isResolved &&
-                            request.discussions.length > 0 &&
-                            request.discussions[request.discussions.length - 1].role == 'Approver'
+                            (request.status != 'Open' &&
+                                (!request.lastReadAt ||
+                                    DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
+                                        DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
+                            (request.status == 'Open' &&
+                                request.discussions.length > 0 &&
+                                request.discussions[request.discussions.length - 1].role == 'Approver')
                         )
                     },
                 })
@@ -261,7 +259,6 @@ export default {
             }
         },
         DELETE_REQUEST(state, { selectionInput, request }) {
-            console.log('delete request', request)
             const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
             // Check if the request is the current request
@@ -286,15 +283,21 @@ export default {
             const index = request.discussions.findIndex(x => x.id == commentId)
             request.discussions.splice(index, 1)
         },
-        RESOLVE_REQUEST(state, { request, resolve, user }) {
-            if (resolve) {
-                request.completed_at = new Date()
-                request.completed_by_user = user
-            } else {
-                request.completed_at = null
-                request.completed_by_user = null
+        SET_REQUEST_STATUS(state, { request, status, user }) {
+            request.status = status
+            request.status_updated_at = new Date().toISOString()
+            if (user) {
+                request.status_updated_by_user = user
             }
         },
-        // UPDATE_REQUEST_COMMENT(state, {comment})
+        SET_REQUEST_READ(state, request) {
+            const date = new Date()
+            // Add a delay to avoid scenarios where the update time set by the API is later than the time set for our recent read
+            const delay = 3
+            date.setSeconds(date.getSeconds(date) + delay)
+
+            request.lastReadAt = date.toISOString()
+            localStorage.setItem(`request-${request.id}-readAt`, date.toISOString())
+        },
     },
 }

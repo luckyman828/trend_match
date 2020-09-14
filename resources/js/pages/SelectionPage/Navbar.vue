@@ -24,8 +24,8 @@
             <button class="button primary wide" @click="onExportCsv"><span>Export CSV</span></button>
         </div>
 
-        <ExportProductsModal v-if="exportModalVisible" :show="exportModalVisible" @close="exportModalVisible = false"/>
-        <ExportToCsvModal v-if="exportCsvModalVisible" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false"/>
+        <ExportProductsModal v-if="exportModalVisible" :show="exportModalVisible"/>
+        <ExportToCsvModal v-if="exportCsvModalVisible" :show="exportCsvModalVisible"/>
     </div>
 </template>
 
@@ -45,24 +45,25 @@ export default {
         SelectionPresenterModeButton,
         BudgetCounter,
     },
-    data: function () { return {
-        exportModalVisible: false,
-        exportCsvModalVisible: false,
-    }},
     computed: {
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', ['currentSelection']),
         ...mapGetters('selections', {
             showQty: 'getQuantityModeActive'
         }),
-        ...mapGetters('products', ['productsStatus']),
+        ...mapGetters('products', {
+            productsStatus: 'productsStatus',
+            exportModalVisible: 'getPDFModalVisible',
+            exportCsvModalVisible: 'getCSVModalVisisble',
+        }),
     },
     methods: {
+        ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL']),
         onExport() {
-            this.exportModalVisible = true
+            this.SET_SHOW_PDF_MODAL(true)
         },
         onExportCsv() {
-            this.exportCsvModalVisible = true
+            this.SET_SHOW_PDF_MODAL(true)
         }
     },
 };

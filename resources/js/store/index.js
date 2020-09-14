@@ -19,6 +19,7 @@ import lightbox from './modules/lightbox'
 import tables from './modules/tables'
 import changelog from './modules/changelog'
 import flyin from './modules/flyin'
+import mapProductData from './modules/mapProductData'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -45,6 +46,7 @@ const store = new Vuex.Store({
         tables,
         changelog,
         flyin,
+        mapProductData,
     },
 })
 

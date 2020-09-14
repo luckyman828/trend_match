@@ -13,8 +13,10 @@ export default {
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
+        selectedProducts: [],
         advancedFilter: null,
         unreadOnly: false,
+        hideCompleted: false,
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
@@ -23,6 +25,8 @@ export default {
         currentFocusRowIndex: null,
         lastSort: null,
         distributionScope: 'Feedback',
+        showPDFModal: false,
+        showCSVModal: false,
     },
 
     getters: {
@@ -30,6 +34,8 @@ export default {
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
+        getPDFModalVisible: state => state.showPDFModal,
+        getCSVModalVisisble: state => state.showCSVModal,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
         getDistributionScope: state => state.distributionScope,
         getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
@@ -42,6 +48,7 @@ export default {
         getAvailableProducts: state => {
             return state.availableProducts
         },
+        getSelectedProducts: state => state.selectedProducts,
         nextProduct: (state, getters, rootState, rootGetters) => {
             // If we have a nextProduct in our presenterQueue, then use that instead
             const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
@@ -90,9 +97,8 @@ export default {
         getAdvancedFilter: state => {
             return state.advancedFilter
         },
-        unreadOnly: state => {
-            return state.unreadOnly
-        },
+        unreadOnly: state => state.unreadOnly,
+        hideCompleted: state => state.hideCompleted,
         currentProductFilter: state => {
             return state.currentProductFilter
         },
@@ -187,6 +193,7 @@ export default {
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
+            const hideCompleted = getters.hideCompleted
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
             let productsToReturn = products
@@ -217,14 +224,17 @@ export default {
             if (unreadOnly) {
                 if (selectionMode == 'Approval') {
                     productsToReturn = productsToReturn.filter(
-                        product => getSelectionInput(product).hasUnreadAlignerComment
+                        product => !product.is_completed && getSelectionInput(product).hasUnreadAlignerComment
                     )
                 }
                 if (selectionMode == 'Alignment') {
                     productsToReturn = productsToReturn.filter(
-                        product => getSelectionInput(product).hasUnreadApproverComment
+                        product => !product.is_completed && getSelectionInput(product).hasUnreadApproverComment
                     )
                 }
+            }
+            if (hideCompleted) {
+                productsToReturn = productsToReturn.filter(x => !x.is_completed)
             }
 
             // Filter by advanced filters
@@ -354,7 +364,7 @@ export default {
                             getSelectionInput(product)[currentAction] == 'In' ||
                             getSelectionInput(product)[currentAction] == 'Focus'
                         )
-                    if (actionFilter == 'tickets') return product.hasOpenTicket
+                    if (actionFilter == 'tickets') return product.hasTicket
                 })
                 productsToReturn = filteredByAction
             }
@@ -435,11 +445,6 @@ export default {
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
-                if (addToState) {
-                    commit('insertProducts', { products, method: 'add' })
-                    dispatch('initProducts', products)
-                    commit('SORT_PRODUCTS')
-                }
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -460,10 +465,15 @@ export default {
                             { root: true }
                         )
 
-                        // Add the created ID to the product, if we only have 1 product
-                        if (products.length <= 1) {
-                            const product = products[0]
+                        // Add the created ID to the products
+                        products.map(product => {
                             product.id = response.data.added_product_id_map[product.datasource_id]
+                        })
+
+                        if (addToState) {
+                            commit('insertProducts', { products, method: 'add' })
+                            dispatch('initProducts', products)
+                            commit('SORT_PRODUCTS')
                         }
                         resolve(response)
                     })
@@ -725,7 +735,7 @@ export default {
                 commit(
                     'alerts/SHOW_SNACKBAR',
                     {
-                        msg: `Products will be deleted`,
+                        msg: `${products.length} Products will be deleted`,
                         iconClass: 'fa-trash',
                         type: 'danger',
                         callback: () => {
@@ -756,7 +766,7 @@ export default {
                                 {
                                     msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
                                     iconClass: 'fa-check',
-                                    type: 'check',
+                                    type: 'success',
                                 },
                                 { root: true }
                             )
@@ -797,6 +807,56 @@ export default {
                 }
             })
         },
+        toggleProductCompleted({ commit }, { selectionId, product }) {
+            // console.log('toggle product completd', selection, product)
+            const apiUrl = `selections/${selectionId}/products/complete`
+            const shouldBeCompleted = product.is_completed ? false : true
+
+            commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
+
+            const apiMethod = shouldBeCompleted ? 'put' : 'delete'
+            axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
+                    product_ids: [product.id],
+                },
+            }).then(response => {
+                // commit(
+                //     'alerts/SHOW_SNACKBAR',
+                //     {
+                //         msg: `Product ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                //         iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                //         type: shouldBeCompleted ? 'success' : 'danger',
+                //     },
+                //     { root: true }
+                // )
+            })
+        },
+        setProductsCompleted({ commit }, { selectionId, products, shouldBeCompleted }) {
+            const apiUrl = `selections/${selectionId}/products/complete`
+
+            commit('SET_PRODUCTS_COMPLETED', { products, shouldBeCompleted })
+
+            const apiMethod = shouldBeCompleted ? 'put' : 'delete'
+            axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
+                    product_ids: products.map(x => x.id),
+                },
+            }).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `${products.length} Products ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                        iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                        type: shouldBeCompleted ? 'success' : 'danger',
+                    },
+                    { root: true }
+                )
+            })
+        },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
                 // Cast datasource_id to a number
@@ -813,6 +873,15 @@ export default {
 
                 // Instantiate the selectionInputList on the product
                 Vue.set(product, 'selectionInputList', [])
+
+                Object.defineProperty(product, 'is_completed', {
+                    get: function() {
+                        return product.selectionInputList.length > 0 && product.selectionInputList[0].is_completed
+                    },
+                    set: function(value) {
+                        product.selectionInputList[0].is_completed = value
+                    },
+                })
 
                 // ---- START PRICES ----
                 // Currency
@@ -940,7 +1009,7 @@ export default {
                 })
                 Object.defineProperty(product, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return !!product.requests.find(x => x.hasUnreadAlignerComment && x.selection.type == 'Master')
+                        return !!product.requests.find(x => x.hasUnreadAlignerComment)
                     },
                 })
                 Object.defineProperty(product, 'hasUnreadApproverComment', {
@@ -951,18 +1020,24 @@ export default {
                 Object.defineProperty(product, 'hasNewComment', {
                     get: function() {
                         return (
-                            (rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
+                            !product.is_completed &&
+                            ((rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
                                 product.hasUnreadApproverComment) ||
-                            (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
-                                product.hasUnreadAlignerComment)
+                                (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
+                                    product.hasUnreadAlignerComment))
                         )
                     },
                 })
                 Object.defineProperty(product, 'hasOpenTicket', {
                     get: function() {
                         return !!product.requests.find(
-                            request => !request.isResolved && request.selection.type == 'Master'
+                            request => request.status == 'Open' && request.selection.type == 'Master'
                         )
+                    },
+                })
+                Object.defineProperty(product, 'hasTicket', {
+                    get: function() {
+                        return !!product.requests.find(request => request.selection.type == 'Master')
                     },
                 })
 
@@ -995,6 +1070,9 @@ export default {
         },
         SET_PRODUCTS_STATUS(state, status) {
             state.status = status
+        },
+        SET_PRODUCTS(state, products) {
+            state.products = products
         },
         insertProducts(state, { products, method }) {
             if (method == 'add') {
@@ -1040,6 +1118,9 @@ export default {
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
         },
+        SET_HIDE_COMPLETED(state, payload) {
+            state.hideCompleted = payload
+        },
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
         },
@@ -1069,6 +1150,15 @@ export default {
                 Vue.set(selectionInput, 'product_id', product.id)
                 Vue.set(selectionInput, 'product', product)
                 Vue.set(selectionInput, 'variants', rawSelectionInput.variants)
+
+                Object.defineProperty(selectionInput, 'is_completed', {
+                    get: function() {
+                        return rawSelectionInput.is_completed
+                    },
+                    set: function(value) {
+                        rawSelectionInput.is_completed = value
+                    },
+                })
 
                 Object.defineProperty(selectionInput, 'preferred_currency', {
                     get: function() {
@@ -1124,9 +1214,7 @@ export default {
 
                 Object.defineProperty(selectionInput, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return !!selectionInput.requests.find(
-                            x => x.hasUnreadAlignerComment && x.selection.type == 'Master'
-                        )
+                        return !!selectionInput.requests.find(x => x.hasUnreadAlignerComment)
                     },
                 })
                 Object.defineProperty(selectionInput, 'hasUnreadApproverComment', {
@@ -1137,8 +1225,13 @@ export default {
                 Object.defineProperty(selectionInput, 'hasOpenTicket', {
                     get: function() {
                         return selectionInput.requests.find(
-                            request => !request.isResolved && request.selection.type == 'Master'
+                            request => request.status == 'Open' && request.selection.type == 'Master'
                         )
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasTicket', {
+                    get: function() {
+                        return !!selectionInput.requests.find(request => request.selection.type == 'Master')
                     },
                 })
 
@@ -1296,6 +1389,15 @@ export default {
 
                 // PROCESS REQUESTS
                 selectionInput.requests.forEach(request => {
+                    Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
+                    // Object.defineProperty(request, 'lastReadAt', {
+                    //     get: function() {
+                    //         return localStorage.getItem(`request-${request.id}-readAt`)
+                    //     },
+                    //     set: function(value) {
+                    //         localStorage.setItem(`request-${request.id}-readAt`, value)
+                    //     },
+                    // })
                     Object.defineProperty(request, 'isResolved', {
                         get: function() {
                             return !!request.completed_at
@@ -1303,19 +1405,23 @@ export default {
                     })
                     Object.defineProperty(request, 'hasUnreadAlignerComment', {
                         get: function() {
+                            if (request.status != 'Open' || request.selection.type != 'Master') return false
                             return (
-                                !request.isResolved &&
-                                (request.discussions.length <= 0 ||
-                                    request.discussions[request.discussions.length - 1].role != 'Approver')
+                                request.discussions.length <= 0 ||
+                                request.discussions[request.discussions.length - 1].role != 'Approver'
                             )
                         },
                     })
                     Object.defineProperty(request, 'hasUnreadApproverComment', {
                         get: function() {
                             return (
-                                !request.isResolved &&
-                                request.discussions.length > 0 &&
-                                request.discussions[request.discussions.length - 1].role == 'Approver'
+                                (request.status != 'Open' &&
+                                    (!request.lastReadAt ||
+                                        DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
+                                            DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
+                                (request.status == 'Open' &&
+                                    request.discussions.length > 0 &&
+                                    request.discussions[request.discussions.length - 1].role == 'Approver')
                             )
                         },
                     })
@@ -1661,6 +1767,23 @@ export default {
         },
         SET_DISTRIBUTION_SCOPE(state, newScope) {
             state.distributionScope = newScope
+        },
+        SET_SELECTED_PRODUCTS(state, products) {
+            state.selectedProducts = products
+        },
+        SET_SHOW_CSV_MODAL(state, makeVisible) {
+            state.showCSVModal = makeVisible
+        },
+        SET_SHOW_PDF_MODAL(state, makeVisible) {
+            state.showPDFModal = makeVisible
+        },
+        TOGGLE_PRODUCT_COMPLETED(state, { product, shouldBeCompleted }) {
+            product.is_completed = shouldBeCompleted
+        },
+        SET_PRODUCTS_COMPLETED(state, { products, shouldBeCompleted }) {
+            products.map(product => {
+                product.is_completed = shouldBeCompleted
+            })
         },
     },
 }

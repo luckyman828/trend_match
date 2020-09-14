@@ -105,7 +105,7 @@ export default {
             return this.newRequest.content.length < 1 
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
         },
         selectionRequest () {
             return this.selectionInput.selectionRequest
@@ -151,6 +151,10 @@ export default {
                 discussions: [],
                 completed_at: null,
                 completed_by_user: null,
+                status: 'Open',
+                status_updated_at: null,
+                status_updated_by_user: null,
+                lastReadAt: new Date().toISOString(),
             }
             // dispatch action
             this.insertOrUpdateRequest({selectionInput: this.selectionInput, request: requestToPost})

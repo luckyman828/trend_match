@@ -14,7 +14,7 @@ $primary900: #08107a;
 $blue: #41a2fc;
 // $red: #ff6565;
 // $red: #ff395e;
-$orange: #686663;
+$orange: #db7921;
 $yellow: #ffdc16;
 $yellowGreen: #b5cc18;
 
@@ -102,6 +102,7 @@ $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white
     ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark), ('green', $green500, $green400, white, $green600),
     ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount)),
     ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
+    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount)),
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
 
 // BUTTON SIZES ($name, $height, $font-size, $padding, $icon-size, $icon-spacing)

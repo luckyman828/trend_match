@@ -15,9 +15,30 @@
                 <div class="request">
                     <Request :request="request" :disableControls="true"/>
 
-                    <!-- <div class="divider">
+                    <div class="resolve-actions" v-if="request.selection.type == 'Master'">
+                        <BaseButton
+                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            disabledTooltip="Only approvers and owners can accept a request"
+                            :buttonClass="request.status != 'Resolved' ? 'ghost green' : 'green'"
+                            @click="onSetStatus('Resolved')"
+                        >
+                            <i class="far fa-check-circle"></i>
+                            <span>Accept</span>
+                        </BaseButton>
+                        <BaseButton
+                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            disabledTooltip="Only approvers and owners can reject a request"
+                            :buttonClass="request.status != 'Rejected' ? 'ghost red' : 'red'"
+                            @click="onSetStatus('Rejected')"
+                        >
+                            <i class="far fa-times-circle"></i>
+                            <span>Reject</span>
+                        </BaseButton>
+                    </div>
+                    
+                    <div class="divider">
                         <span>Request comments</span>
-                    </div> -->
+                    </div>
                 </div>
 
 
@@ -27,13 +48,22 @@
                     :request="request"
                     :displayAuthor="!request.discussions[index+1] || request.discussions[index+1].role != request.discussions[index].role"/>
 
-                    <div class="divider" v-if="!request.isResolved && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
+                    <div class="divider" v-if="request.status == 'Open' && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
                         <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
+                    </div>
+
+                    <div class="divider" v-if="request.status != 'Open'">
+                        <span>
+                            Request 
+                            <span class="status" :class="request.status">
+                                {{request.status == 'Resolved' ? 'Accepted' : 'Rejected'}}
+                            </span>
+                            by {{request.status_updated_by_user ? request.status_updated_by_user.name : 'Anonymous'}}
+                        </span>
                     </div>
                 </div>
 
-
-                <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
+                <!-- <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
                     <button class="lg full-width" :class="[request.isResolved ? 'green' : 'primary', {'is-resolved': request.isResolved}]"
                     @click="onResolve">
                         <span v-if="!request.isResolved">Mark as resolved</span>
@@ -42,12 +72,12 @@
                             <span class="hover">Re-open request</span>
                         </template>
                     </button>
-                </div>
+                </div> -->
 
-                <div class="resolved-banner" 
+                <!-- <div class="resolved-banner" 
                 v-else-if="request.isResolved">
                     <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
-                </div>
+                </div> -->
 
                 <div class="form-wrapper" v-if="!request.isResolved && getCurrentPDPSelection.type == 'Master' && getCurrentSelectionMode != 'Feedback'">
                     <strong class="form-header">Write comment</strong>
@@ -117,11 +147,11 @@ export default {
         }
     },
     watch: {
-        request() {
-            this.$nextTick(() => {
-                this.activateWrite()
-            })
-        },
+        // request() {
+        //     this.$nextTick(() => {
+        //         // this.activateWrite()
+        //     })
+        // },
         currentProduct() {
             this.close()
         }
@@ -130,7 +160,7 @@ export default {
         ...mapMutations('requests', {
             close: 'SET_CURRENT_REQUEST_THREAD'
         }),
-        ...mapActions('requests', ['insertOrUpdateRequestComment', 'resolveRequest']),
+        ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
         activateWrite() {
             if (this.request.isResolved || this.getCurrentSelection.type != 'Master') return
             this.$refs.commentField.focus()
@@ -142,10 +172,9 @@ export default {
             this.writeActive = false
             document.activeElement.blur()
         },
-        onResolve() {
-            // If we are un-resolving the request, remove the focus from the button so we can use ENTER to start writing a new comment
-            if (this.request.isResolved) document.activeElement.blur()
-            this.resolveRequest(this.request)
+        onSetStatus(status) {
+            const statusToSet = this.request.status == status ? 'Open' : status
+            this.updateRequestStatus({request: this.request, status: statusToSet})
         },
         async onSubmit() {
 
@@ -177,8 +206,24 @@ export default {
         hotkeyHandler(e) {
             const key = e.code
             if (this.show && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+                if (key == 'Escape') {
+                    this.close()
+                }
                 if (key == 'Enter') {
                     this.activateWrite()
+                }
+                if (key == 'KeyR') {
+                    this.onSetStatus('Rejected')
+                }
+                if (key == 'KeyA') {
+                    this.onSetStatus('Resolved')
+                }
+                if (key == 'Tab') {
+                    if (e.shiftKey) {
+                        this.$emit('onTab', false)
+                    } else {
+                        this.$emit('onTab', true)
+                    }
                 }
             }
         },
@@ -190,7 +235,7 @@ export default {
         }, 10)
     },
     mounted() {
-        this.activateWrite()
+        // this.activateWrite()
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)
@@ -266,7 +311,7 @@ export default {
     .comment-section {
         height: 100%;
         overflow-y: auto;
-        padding: 16px 16px 64px;
+        padding: 0 16px 64px;
     }
     .form-wrapper {
         padding: 20px 16px 28px;
@@ -308,17 +353,34 @@ export default {
     align-items: center;
     margin: auto;
     // max-width: calc(100% - 16px * 2);
-    span {
-        margin: 0 12px;
-        white-space: nowrap;
+    > span {
+        margin: 0 8px;
         font-size: 12px;
         color: $fontSoft;
+        flex: 3;
+    }
+    .status {
+        font-weight: 700;
+        &.Resolved {
+            color: $green;
+        }
+        &.Rejected {
+            color: $red;
+        }
     }
     &::before, &::after {
         content: "";
         height: 1px;
         background: $borderColorEl;
-        width: 100%;
+        flex: 1;
+    }
+}
+.resolve-actions {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0 20px;
+    > :not(:first-child) {
+        margin-left: 8px;
     }
 }
 

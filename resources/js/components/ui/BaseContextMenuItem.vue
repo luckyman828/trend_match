@@ -2,7 +2,7 @@
     <div class="item context-menu-item"
     :class="[disabled && 'disabled no-close', {'has-submenu': hasSubmenu}]" tabindex="0"
     ref="contextMenuItem" :id="id"
-    v-tooltip="{content: disabled && disabledTooltip, container: `#${id}`}"
+    v-tooltip="{content: disabled && disabledTooltip || tooltip, container: `#${id}`}"
     @click="onClick"
     @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
 
@@ -27,6 +27,7 @@ export default {
         'iconClass',
         'disabled',
         'disabledTooltip',
+        'tooltip',
         'hotkey',
     ],
     data: function() { return {
@@ -128,9 +129,11 @@ export default {
     color: $dark05;
     display: flex;
     align-items: center;
+    font-size: 14px;
     .item-content {
         display: flex;
         align-items: center;
+        width: 100%;
     }
     &:not(.item-wrapper) {
         cursor: pointer;
@@ -141,7 +144,7 @@ export default {
     }
     .icon-wrapper {
         width: 32px;
-        display: block;
+        display: flex;
         color: $dark15;
         i {
             font-size: 16px;

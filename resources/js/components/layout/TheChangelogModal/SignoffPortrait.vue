@@ -31,6 +31,7 @@ img {
     overflow: hidden;
     height: 64px;
     width: 64px;
+    min-width: 64px;
     object-fit: cover;
     margin-right: 8px;
     border: $borderModule;
