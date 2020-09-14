@@ -167,9 +167,9 @@ export default {
         }
     },
     watch: {
-        // requestStatus(newVal) {
-        //     this.onReadRequest()
-        // }
+        requestStatus(newVal) {
+            this.onReadRequest()
+        }
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest', 'updateRequestStatus']),
@@ -214,9 +214,9 @@ export default {
             this.SET_CURRENT_REQUEST_THREAD(requestToSet)
         }
     },
-    // created() {
-    //     this.onReadRequest()
-    // },
+    created() {
+        this.onReadRequest()
+    },
     destroyed() {
         this.onReadRequest()
     }
