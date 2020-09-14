@@ -4,6 +4,118 @@
     classes="full-body">
 
         <ChangelogPost 
+            title="Chenille"
+            date="September 2020 Release"
+            featuredImgUrl="/images/blog/undraw_fashion_photoshoot_mtq8.svg"
+            singoff="Michael & David"
+        >
+
+            <template v-slot:lead>
+                <p>Chenille is here and this is a big one.</p>
+                <p>This update features both a new release of the dashboard and the iOS app.<br>
+                    The focus has been on improving approver/aligner communincation amongst other things.</p>
+                <p>Enjoy <br>
+                    - David, co-founder and web developer</p>
+            </template>
+
+            <template v-slot:body>
+                <h2>Mobile App</h2>
+                <h3>New features</h3>
+
+                <h4>Magic link for login, when you have forgot your password</h4>
+                <p>You can now log in with a link sent to your e-mail. (Yes that's right, no reason to reset your password every time).</p>
+
+                <h4>Magic link to selection from Dashboard</h4>
+                <p>Dashboard admins can send a "magic link" to selection members. The members who follow the link will be shown the selection in question on the mobile app, in addition to being automatically logged in.</p>
+
+                <h4>Custom product order</h4>
+                <p>Products will now be shown in a predetermined order, that can be set on the dashboard</p>
+
+                <h3>Bug fixes</h3>
+                <p>We've squashed a bug that caused the app to crash if a product with QTY input got extra variants added.</p>
+
+                <h2>Web dashboard</h2>
+                <h3>New features</h3>
+                <h4>Filter style overhaul</h4>
+                <p>
+                    The filter bar was getting quite cluttered. We have now collected all filters in a "filters" menu, that should satisfy all your filter needs.
+                </p>
+
+                <h4>Threads on requests v2</h4>
+                <p>
+                    Our last release saw the inclusion of threads on requests to facilitate better communication between aligners and approvers.
+                </p>
+                <p>This release, greatly expands upon the features added:</p>
+                <ul>
+                    <li>Alligners and Approvers can now Accept / Reject requests.</li>
+                    <li>The visual style of requests has been changed to better display the current state of a request (open/accepted/rejected).</li>
+                    <li>Styles can now be marked as <strong>complete</strong>, to stop the style from showing up as needing attention.</li>
+                    <li>We have added hotkey support to tab between requests. Use tab (Tab) to focus a request thread and use (A) to Accept or (R) to Reject.</li>
+                    <li>Tickets tab has been added in addition to Ins/Outs/Nds. This tab will show all products with requests made from master selections.</li>
+                    <li>Added filter to hide completed products, available from the Tickets tab.</li>
+                </ul>
+
+                <h4>Send login link</h4>
+                <p>You can send a login link to all selection members from the dashboard now. The link will open the corresponding selection for the user on the mobile app.</p>
+                <p>You have the option of sending a link to every member of every selection on the file, to all the members of a specific selection, or to a select number of members on a specific selection.</p>
+
+                <h4>Export selected styles</h4>
+                <p>You now have the option of only exporting the styles you have selected to PDF or CSV.</p>
+
+                <h4>Upload CSV / Products overhaul</h4>
+                <p>This release introduces great improvements to the upload functions available.</p>
+
+                <h4>Workbook upload overhaul (Excel files supported!)</h4>
+                <p>We now accept every workbook type supported by SheetJS (this includes Excel files).</p>
+                <p>This means that you can have comma as a decimal separator (in Excel files only) and period as a thousand separator (in Excel files only).</p>
+
+                <h4>Upload to existing file overhaul</h4>
+                <p>More options for adding to / editing existing files by uploading new workbooks.</p>
+                <ul>
+                    <li>Added different data update strategies: Smart | Add only | Replace.</li>
+                    <li><strong>Smart:</strong> Replace old data if new is available, add new data, leave the rest of the existing data untouched.</li>
+                    <li><strong>Add only: </strong> Only add new data, leaving all the existing data untouched.</li>
+                    <li><strong>Replace:</strong> Clear all existing data and insert the new instead.</li>
+                    <li>You of course still have the option of choosing which data you would like to update: Prices only, name, category, assortments - the choice is yours.</li>
+                    <li>Added ability to create missing products in existing file based on the styles in the uploaded workbook(s)</li>
+                    <li>Added ability to delete existing styles not present in the uploaded workbook(s).</li>
+                </ul>
+
+                <h4>Improved auto-mapping</h4>
+                <p>Automapping of workbook fields has also been improved.</p>
+                <p>Now currencies are automatically added to match the number of currencies present in the uploaded files.</p>
+                <p>The same is true with assortments + more minor improvements to the automapping.</p>
+
+                <h4>Custom product order</h4>
+                <p>Added option to set custom product order for users of both dashboard and app. This can be edited on "edit file" page.</p>
+
+                <h3>Fixes</h3>
+                <ul>
+                    <li>Fixed Markup could have more than 2 decimals.</li>
+                    <li>Adding image to new product before giving it an ID would throw an error.</li>
+                    <li>Added confirm dialog when about to close create product flyin before the new product has been saved (to avoid discarding the new product).</li>
+                    <li>Implemented variant ean and variant size ean support to upload workbook functions.</li>
+                    <li>Allow editing variant sizes on edit PDP.</li>
+                </ul>
+
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/Michael-Laugesen-Trendmatch (Thumbnail).png"
+                    name="Michael"
+                    title="Co-founder & Design lead"
+                />
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+            
+        </ChangelogPost>
+
+        <ChangelogPost 
             title="Cashmere"
             date="Late August 2020 Release"
             featuredImgUrl="/images/blog/undraw_coolness_dtmq (1).svg"
