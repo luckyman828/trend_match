@@ -134,9 +134,13 @@ export default {
             for (let i = 0; i < this.availableFiles.length; i++) {
                 const file = this.availableFiles[i]
                 if (!file.mappedKey.fieldName) return 'A file  has no product key mapped'
-                for (let i = 0; i < file.variantKeyList.length; i++) {
-                    const variantKey = file.variantKeyList[i]
-                    if (!variantKey.fieldName) return 'A file has no variant key mapped'
+
+                // If we are mapping variants
+                if (!this.uploadOptions || this.uploadOptions.scopes.find(scope => scope.name == 'variants' && !!scope.enabled)) {
+                    for (let i = 0; i < file.variantKeyList.length; i++) {
+                        const variantKey = file.variantKeyList[i]
+                        if (!variantKey.fieldName) return 'A file has no variant key mapped'
+                    }
                 }
             }
 
