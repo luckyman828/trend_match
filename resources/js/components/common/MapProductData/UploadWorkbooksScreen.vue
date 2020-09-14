@@ -7,7 +7,7 @@
                 :multiple="true"
                 accept="text/csv, .tsv, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                 iconClass="fal fa-file-csv"
-                :acceptedExtensions="['tsv', 'csv', 'xlsx', 'xml']"
+                :acceptedExtensions="['tsv', 'csv', 'xlsx', 'xml', 'xls']"
                 :fileList="fileList"
                 @update:fileList="e => $emit('update:fileList', e)"
             />
