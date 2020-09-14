@@ -37,7 +37,7 @@
                         <tr class="header">
                             <BaseTableHeader class="select" v-if="showSelect">
                                 <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                                @change="(checked) => checked ? $emit('update:selected', items) :  $emit('update:selected', [])"/>
+                                @change="(checked) => checked ? $emit('update:selected', itemsSorted) :  $emit('update:selected', [])"/>
                             </BaseTableHeader>
                             <slot name="header"/>
                             <BaseTableHeader v-if="!hideContextButton" class="context-button">Action</BaseTableHeader>
