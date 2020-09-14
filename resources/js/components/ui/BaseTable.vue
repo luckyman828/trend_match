@@ -81,6 +81,7 @@
                         <RecycleScroller
                             :items="itemsSorted"
                             :item-size="itemSize"
+                            :buffer="1000"
                             page-mode
                             :key-field="itemKey"
                             v-slot="{ item, index }"
