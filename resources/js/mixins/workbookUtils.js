@@ -327,7 +327,8 @@ export default {
                 }
             })
 
-            return products
+            // Remove products with no ID
+            return products.filter(x => !!x.datasource_id)
         },
     },
 }
