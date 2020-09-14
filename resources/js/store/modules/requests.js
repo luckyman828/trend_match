@@ -233,19 +233,23 @@ export default {
                 })
                 Object.defineProperty(request, 'hasUnreadAlignerComment', {
                     get: function() {
+                        if (request.status != 'Open' || request.selection.type != 'Master') return false
                         return (
-                            !request.isResolved &&
-                            (request.discussions.length <= 0 ||
-                                request.discussions[request.discussions.length - 1].role != 'Approver')
+                            request.discussions.length <= 0 ||
+                            request.discussions[request.discussions.length - 1].role != 'Approver'
                         )
                     },
                 })
                 Object.defineProperty(request, 'hasUnreadApproverComment', {
                     get: function() {
                         return (
-                            !request.isResolved &&
-                            request.discussions.length > 0 &&
-                            request.discussions[request.discussions.length - 1].role == 'Approver'
+                            (request.status != 'Open' &&
+                                (!request.lastReadAt ||
+                                    DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
+                                        DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
+                            (request.status == 'Open' &&
+                                request.discussions.length > 0 &&
+                                request.discussions[request.discussions.length - 1].role == 'Approver')
                         )
                     },
                 })
