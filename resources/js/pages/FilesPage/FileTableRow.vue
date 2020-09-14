@@ -50,7 +50,8 @@ export default {
             this.$emit('show-single-file', this.file)
         },
         onSubmitEdit() {
-            this.insertOrUpdateFile({file: fileToEdit, addToState: false})
+            this.insertOrUpdateFile({file: this.fileToEdit, addToState: false})
+            this.$emit('update:fileToEdit', {})
         }
     }
 }
