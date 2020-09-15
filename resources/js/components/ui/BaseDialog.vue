@@ -48,7 +48,6 @@ export default {
     },
     methods: {
         onConfirm() {
-            console.log('on confirm')
             if (this.resolve) this.resolve(true)
             this.hide()
         },
@@ -75,9 +74,7 @@ export default {
             })
         },
         hotkeyHandler(e) {
-            console.log('basedialog hoktey')
             if (e.key == 'Enter' && this.type == 'confirm') {
-                console.log('dialog enter')
                 this.onConfirm()
             }
         }

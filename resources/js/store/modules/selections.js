@@ -1021,7 +1021,6 @@ export default {
             }
         },
         async sendSelectionLink({ commit, dispatch }, { selectionList }) {
-            console.log('selection list', selectionList)
             // Do something
             await Promise.all(
                 selectionList.map(async selection => {

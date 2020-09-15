@@ -606,7 +606,6 @@ export default {
             document.activeElement.blur()
             if (!this.product.id) {
                 if (await this.$refs.confirmDiscardDialog.confirm()) {
-                    console.log('confirm confirmed')
                     this.$emit('closeSingle')
                 } 
             } else {

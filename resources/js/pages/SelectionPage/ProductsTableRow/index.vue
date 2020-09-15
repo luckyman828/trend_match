@@ -380,7 +380,6 @@ export default {
             if (this.singleVisible) return
             const key = event.code
             if (key == 'Tab') {
-                console.log('hotkey tab table row')
                 if (event.shiftKey) {
                     this.focusPrev(event)
                 } else {

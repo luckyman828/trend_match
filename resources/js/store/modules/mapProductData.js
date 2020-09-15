@@ -205,7 +205,11 @@ export default {
                 name: 'currency',
                 displayName: 'Currency Name',
                 type: 'string',
-                headersToMatch: ['currency', 'currency name'],
+                headersToMatch: [
+                    'currency',
+                    'currency name',
+                    '^(?=.*(DKK|SEK|NOK|GBP|EUR|CHF)).*(RRP|WHS|MU).*$', // VILA-style currencies --> Must include a currency code and RRP, WHS or MU
+                ],
             },
             {
                 scope: 'prices',

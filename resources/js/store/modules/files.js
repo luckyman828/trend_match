@@ -572,9 +572,7 @@ export default {
                     from_file_id: from.id,
                     to_file_id: destination.id,
                 })
-                .then(response => {
-                    console.log('file selections cloned', response)
-                })
+                .then(response => {})
         },
         fetchFileUsers({ commit }, file) {
             commit('SET_FILE_USERS_STATUS', 'loading')
@@ -651,7 +649,6 @@ export default {
             state.status = status
         },
         INSERT_FILE(state, file) {
-            console.log('insert file')
             state.files.push(file)
         },
         INSERT_MULTIPLE_FILES(state, files) {

@@ -227,12 +227,6 @@
 
             <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection"/>
 
-            <!-- <HotkeyHandler
-                :hotkeys="[
-                    {key: 'KeyR', callback: onKeyR}
-                ]"
-            /> -->
-
         </template>
     </BaseFlyin>
 </template>
@@ -358,9 +352,6 @@ export default {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
             }
-        },
-        onKeyR() {
-            console.log('on key R')
         },
         onToggleCompleted() {
             this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})

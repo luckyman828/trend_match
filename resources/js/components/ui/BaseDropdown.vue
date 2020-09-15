@@ -117,7 +117,6 @@ export default {
                 // Top + Left align
                 else if (wrapper.classList.contains('left')) {
                     if (wrapper.classList.contains('middle')) {
-                        console.log('contains middle!')
                         el.style.left = `${parentLeft + parentWidth + offset}px`
                     }
                     else {

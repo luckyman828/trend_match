@@ -220,16 +220,12 @@ export default {
                     type: 'info', 
                     iconClass: 'fa-exclamation-circle', 
                 })
-                console.log('not valid')
                 return
             }
-            console.log('instantiate products')
 
             // Instantiate products now, so we know that the method won't throw any errors after we have created a new file
             // Filter the fields to map by our uploadOptions
             const newProducts = this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFiles, this.uploadOptions) 
-
-            console.log('the new products', newProducts)
             this.$emit('submit', newProducts)
         },
         reset() {

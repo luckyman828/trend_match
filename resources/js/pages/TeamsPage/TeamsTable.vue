@@ -308,10 +308,8 @@ export default {
             if (await this.$refs.confirmDeleteMultipleTeams.confirm()) {
                 for (let i = this.selectedTeams.length -1; i >= 0; i--) {
                     const team = this.selectedTeams[i]
-                    console.log('delete this team', team.name)
                     this.deleteTeam(team)
                 }
-                console.log('reset selected teams')
                 this.selectedTeams = []
             }
         },

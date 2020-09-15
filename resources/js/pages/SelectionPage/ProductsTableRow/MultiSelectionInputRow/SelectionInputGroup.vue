@@ -71,7 +71,6 @@ export default {
         // Watch for changes to the current focus index 
         focusGroupIndex: function(newVal, oldVal) {
             if (newVal == this.index) {
-                console.log('focus this group godammit')
                 this.$refs.selectionInputGroup.focus()
             }
         }

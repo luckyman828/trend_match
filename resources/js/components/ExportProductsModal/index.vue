@@ -224,7 +224,6 @@ export default {
 
                     await axios.post(endpoint, payload, config)
                         .then(function(response) {
-                            console.log('response', response)
                             window.open(response.data.FileUrl)
                             vm.generatedPDF = response.data.FileUrl
                         })

@@ -84,24 +84,49 @@ export default {
         async instantiatePricemaps() {
             // Add one price map first 
             await this.onAddPriceMap()
+
+            let currenciesToInstantiateCount = -1 // Start at -1 since we are already instantiating one from the start
+
             // Test the amount of matches returned for the currency field
             const currencyField = this.fieldsToMap.find(x => x.name == 'currency')
             const currencyMatches = this.autoMapField(currencyField, this.availableFiles)
-            // Instantiate one additional price map, for each additional currency field
-            // for (let i = 1; i < currencyMatches.length; i++) {
-            //     this.onAddPriceMap()
-            // }
-            let firstMatchIngored = false
-            currencyMatches.map(fileMatch => {
-                fileMatch.matches.map(match => {
-                    // ignore the first match
-                    if (!firstMatchIngored) {
-                        firstMatchIngored = true
-                    } else {
-                        this.onAddPriceMap()
+
+            if (currencyMatches) {
+                currencyMatches.map(match => {
+                    currenciesToInstantiateCount += match.matches.length
+                })
+            }
+
+            // Find currencies included in header names
+            // Look for a 3-letter currency code + MU/RRP/WHS in a field name
+            const currenciesInHeaders = []
+            this.availableFiles.map(file => {
+                const regexp = /^(?=.*(dkk|sek|nok|gbp|eur|chf)).*(rrp|whs|mu).*$/
+                file.headers.map(header => {
+                    // find a currency match
+                    const headerMatch = header.toLowerCase().match(regexp)
+                    // If we have a match the currency is in the 2nd group
+                    if (headerMatch) {
+                        const headerCurrency = headerMatch[1]
+
+                        const existsInArray = currenciesInHeaders.includes(headerCurrency.toUpperCase())
+                        if (!existsInArray) {
+                            currenciesInHeaders.push(headerCurrency.toUpperCase())
+                        }
+
                     }
                 })
+
             })
+
+            currenciesToInstantiateCount += currenciesInHeaders.length
+
+
+
+            // Instantiate one additional price map, for each additional currency field
+            for (let i = 0; i < currenciesToInstantiateCount; i++) {
+                this.onAddPriceMap()
+            }
         },
         async onAddPriceMap() {
             this.currencyMapGroupId++
@@ -117,10 +142,38 @@ export default {
                 const existingMatches = this.fieldsToMap.filter(x => x.name == field.name).map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
                 const availableFiles = fileMatch ? [fileMatch] : this.availableFiles
                 this.autoMapField(field, availableFiles, existingMatches)
+
                 if (!fileMatch) {
                     fileMatch = field.file
                 }
             })
+
+            // If we didn't match a currency, check if one of the other mapped fields contain the currency name
+            const currencyField = newFields.find(field => field.name == 'currency')
+            if (!currencyField.fieldName) {
+                let currencyMatch = null
+                const otherFields = newFields.filter(field => field.name != 'currency')
+
+                for (let i = 0; i < otherFields.length; i++) {
+                    const field = otherFields[i]
+                    if (!field.fieldName) continue // Skip this field if it has no fieldName mapped
+
+                    const regexp = /^(?=.*(dkk|sek|nok|gbp|eur|chf)).*(rrp|whs|mu).*$/ // Regex that matches strings with a currency code and rrp, whs or mu
+                    const regexpMatch =  field.fieldName.toLowerCase().match(regexp)
+
+                    if (regexpMatch) {
+                        // The currency name is captured in the first capturing group (index 1)
+                        currencyMatch = regexpMatch[1]
+                        // Break loop if we have found a match
+                        break
+                    }
+                }
+                // Set a custom entry
+                if (currencyMatch) {
+                    currencyField.customEntry = true
+                    currencyField.fieldName = currencyMatch.toUpperCase()
+                }
+            }
         },
         onRemovePriceMap(groupId) {
             for (let i = this.fieldsToMap.length-1; i >= 0; i--) {

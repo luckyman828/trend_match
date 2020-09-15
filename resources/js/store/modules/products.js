@@ -649,7 +649,6 @@ export default {
             })
         },
         async uploadImage({ commit, dispatch }, { file, product, picture, image, callback }) {
-            console.log('upload image')
             return new Promise(async (resolve, reject) => {
                 // First generate presigned URL we can put the image to from the API
                 const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`

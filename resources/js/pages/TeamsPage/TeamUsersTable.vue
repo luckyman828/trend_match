@@ -155,7 +155,6 @@ export default {
         ...mapGetters('users', ['users']),
         ...mapGetters('auth', ['authUser']),
         readyStatus() {
-            console.log('get ready status', this.currentTeamStatus)
             return this.currentTeamStatus
         },
         team() {
@@ -265,7 +264,6 @@ export default {
             }
         },
         onEditUserRole(mouseEvent, user) {
-            console.log('on eidt user rle', mouseEvent, user)
             this.userToEdit = user;
             this.contextUser = user
             this.originalUser = JSON.parse(JSON.stringify(user));

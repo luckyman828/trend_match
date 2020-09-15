@@ -110,7 +110,6 @@ export default{
             })
         },
         async initSignalR() {
-            console.log('init SignalR')
             // Connect to SignalR
             Vue.prototype.$connection = new signalR.HubConnectionBuilder()
             .withAutomaticReconnect()
