@@ -2,6 +2,7 @@
     <div class="products-table-wrapper">
 
         <BaseTable :stickyHeader="true"
+            ref="tableComp"
             contentStatus="success"
             :items="products"
             :itemsTotalCount="stateProducts.length"
@@ -374,7 +375,25 @@ export default {
             // Resort
             this.onSort(true, 'sequence')
         },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
+        },
     },
+    created() {
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
+    }
 }
 </script>
 

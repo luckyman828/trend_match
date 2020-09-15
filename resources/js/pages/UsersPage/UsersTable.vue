@@ -2,6 +2,7 @@
     <div class="users-table">
 
         <BaseTable v-if="currentTab == 'Users'" stickyHeader="true"
+            ref="tableComp"
             :contentStatus="readyStatus"
             loadingMsg="loading users"
             errorMsg="error loading users"
@@ -421,10 +422,26 @@ export default {
 
             this.sortArray(array, this.sortAsc, this.sortKey)
         },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
+        },
     },
     created() {
         const forceRefresh = this.getUsersTable.workspaceId != this.currentWorkspace.id
         this.initData(forceRefresh)
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>

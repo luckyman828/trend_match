@@ -1,6 +1,7 @@
 <template>
     <div class="folders-table-wrapper">
         <BaseTable class="folders-table" stickyHeader="true"
+            ref="tableComp"
             :contentStatus="readyStatus"
             loadingMsg="loading folder content"
             errorMsg="error loading folder content"
@@ -441,11 +442,27 @@ export default {
                 this.deleteMultipleFiles(files)
                 this.selected = []
             }
-        }
+        },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
+        },
     },
     created() {
         const forceRefresh = this.getFilesTable.workspaceId != this.currentWorkspace.id
         this.initData(forceRefresh)
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>

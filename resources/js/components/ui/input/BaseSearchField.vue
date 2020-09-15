@@ -48,8 +48,10 @@ export default {
             if (this.searchString.length > 0) {
                 e.stopPropagation()
                 this.clear()
+                return
             }
-            // Else do nothing
+
+            document.activeElement.blur()
         },
         onInput() {
             clearTimeout(this.theTimeOut)

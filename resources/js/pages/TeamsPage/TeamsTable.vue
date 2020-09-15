@@ -2,6 +2,7 @@
     <div class="teams-table">
 
         <BaseTable v-if="currentTab == 'Teams'" stickyHeader="true"
+            ref="tableComp"
             :contentStatus="readyStatus"
             :errorCallback="() => initData()"
             loadingMsg="loading teams"
@@ -346,11 +347,27 @@ export default {
             let sortAsc = this.sortAsc
 
             this.sortArray(array, this.sortAsc, this.sortKey)
+        },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
         }
     },
     created() {
         const forceRefresh = this.getTeamsTable.workspaceId != this.currentWorkspace.id
         this.initData(forceRefresh)
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>

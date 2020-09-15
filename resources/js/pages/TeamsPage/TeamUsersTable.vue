@@ -1,6 +1,7 @@
 <template>
     <div class="team-users-table">
-        <BaseTable :contentStatus="readyStatus" 
+        <BaseTable :contentStatus="readyStatus"
+            ref="tableComp"
             loadingMsg="loading team" 
             errorMsg="error loading team"
             :errorCallback="() => initData()"
@@ -272,10 +273,26 @@ export default {
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
         },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
+        }
     },
     created() {
         this.initData()
+        document.addEventListener('keydown', this.hotkeyHandler)
     },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
+    }
 }
 </script>
 
