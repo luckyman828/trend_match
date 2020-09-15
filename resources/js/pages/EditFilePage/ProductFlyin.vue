@@ -536,6 +536,7 @@ export default {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'updateProduct', 'insertProducts', 'uploadImage', 'deleteImages', 'deleteProducts', 'initProducts']),
         ...mapMutations('products', ['setCurrentProduct']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        ...mapMutations('flyin', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
         showCurrencyContext(e, price) {
             this.contextPrice = price
             this.$nextTick(() => {
@@ -606,7 +607,10 @@ export default {
             if (!this.product.id) {
                 if (await this.$refs.confirmDiscardDialog.confirm()) {
                     this.$emit('closeSingle')
-                }
+                } 
+                // else {
+                //     this.INCREMENT_VISIBLE_AMOUNT()
+                // }
             } else {
                 // Emit event to parent
                 this.$emit('closeSingle')

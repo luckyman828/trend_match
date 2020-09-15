@@ -59,12 +59,10 @@ export default {
                 // SHOW
                 this.init()
             } else {
+                this.DECREMENT_VISIBLE_AMOUNT()
                 document.body.removeEventListener('keydown', this.hotkeyHandler)
             }
         },
-        $route() {
-            console.log('route change')
-        }
     },
     methods: {
         ...mapMutations('flyin', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
@@ -74,7 +72,7 @@ export default {
             document.body.addEventListener('keydown', this.hotkeyHandler)
         },
         close () {
-            this.DECREMENT_VISIBLE_AMOUNT()
+            // this.DECREMENT_VISIBLE_AMOUNT()
             this.visible = false
             this.$emit('close')
         },

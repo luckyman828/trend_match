@@ -39,6 +39,15 @@ export default {
     }},
     computed: {
     },
+    watch: {
+        show(isVisible) {
+            if (isVisible) {
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+            } else {
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+            }
+        }
+    },
     methods: {
         close() {
             this.$emit('close')
@@ -50,10 +59,14 @@ export default {
         },
     },
     created() {
-        document.body.addEventListener('keydown', this.hotkeyHandler)
+        if (this.show) {
+            document.body.addEventListener('keydown', this.hotkeyHandler)
+        }
     },
     destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        if (this.show) {
+            document.body.removeEventListener('keydown', this.hotkeyHandler)
+        }
     }
 }
 </script>

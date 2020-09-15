@@ -63,7 +63,7 @@ export default {
             this.SET_SHOW_PDF_MODAL(true)
         },
         onExportCsv() {
-            this.SET_SHOW_PDF_MODAL(true)
+            this.SET_SHOW_CSV_MODAL(true)
         }
     },
 };
