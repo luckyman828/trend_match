@@ -149,6 +149,8 @@ export default {
                 if (!keyField) return
 
                 file.rows.map(row => {
+                    let rowCurrency = null
+
                     // Find the product corresponding to this row, or instantiate a new product if none exists
                     const keyValue = row[keyField]
 
@@ -271,12 +273,20 @@ export default {
 
                         // START MAP PRICES
                         if (product.prices && field.scope == 'prices') {
+                            // Find the currency for this row && field to map.
+                            // This only works because the currency field is always the first price field being mapped
+                            if (field.name == 'currency') {
+                                rowCurrency = fieldValue
+                            }
+
                             // Check if the price group already exists
-                            let priceGroup = product.prices.find(x => x.mappingGroupId == field.groupId)
+                            let priceGroup = product.prices.find(
+                                x => x.mappingGroupId == field.groupId && x.currency == rowCurrency
+                            )
                             if (!priceGroup) {
                                 priceGroup = {
                                     mappingGroupId: field.groupId, // Save a temporary key to the price group to match them by
-                                    currency: null,
+                                    currency: rowCurrency,
                                     wholesale_price: null,
                                     recommended_retail_price: null,
                                     mark_up: null,
