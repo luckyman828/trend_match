@@ -9,7 +9,7 @@
             :itemSize="139"
             :selected.sync="selectedProducts"
             :contextItem.sync="contextItem"
-            :searchKey="['datasource_id','title','category']"
+            :searchKey="['datasource_id','title','category','eans']"
             :searchResult.sync="productsFilteredBySearch"
             :isDraggable="editOrderModeActive"
             :itemsReOrdered.sync="localProducts"

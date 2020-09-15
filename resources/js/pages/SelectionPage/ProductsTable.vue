@@ -9,7 +9,7 @@
             :itemSize="currentSelections.length > 1 ? 247 : 139"
             :selected.sync="selectedProducts"
             :contextItem.sync="contextProduct"
-            :searchKey="['datasource_id','title','category']"
+            :searchKey="['datasource_id','title','category','eans']"
             :searchResult.sync="productsFilteredBySearch"
             :hideContextButton="true"
             :focusIndex="currentFocusRowIndex"
