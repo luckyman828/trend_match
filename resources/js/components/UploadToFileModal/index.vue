@@ -172,8 +172,10 @@ export default {
                 await this.deleteProducts({file: this.currentFile, products: productsToDelete})
             }
             // Update all existing products
-            this.submitStatus = 'Updating products'
-            await this.updateManyProducts({file: this.currentFile, products: this.products})
+            if (this.products.length > 0) {
+                this.submitStatus = 'Updating products'
+                await this.updateManyProducts({file: this.currentFile, products: this.products})
+            }
 
             // Create products to create
             if (productsToCreate.length > 0) {
