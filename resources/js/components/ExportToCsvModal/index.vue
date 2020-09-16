@@ -22,6 +22,28 @@
                 </div>
 
                 <div class="form-section">
+                    <h4>Choose what to export</h4>
+                    <BaseCheckboxInputField v-model="exportAlignment">
+                        <span>Alignment</span>
+                    </BaseCheckboxInputField>
+                    <BaseCheckboxInputField v-model="exportFeedback">
+                        <span>Feedback</span>
+                    </BaseCheckboxInputField>
+                    <BaseCheckboxInputField v-model="exportRequests">
+                        <span>Requests</span>
+                    </BaseCheckboxInputField>
+                    <BaseCheckboxInputField v-model="exportComments">
+                        <span>Comments</span>
+                    </BaseCheckboxInputField>
+                    <BaseCheckboxInputField v-model="exportQuantity">
+                        <span>Quantity</span>
+                    </BaseCheckboxInputField>
+
+                    <h4>Export variants?</h4>
+                    <!-- <BaseCheckboxInputField v-model="exportVariants">
+                        <span>Comments</span>
+                    </BaseCheckboxInputField>
+
                     <h4>Export Current Selection</h4>
                     <BaseRadioInputField class="form-element" :value="'currentRequests'" v-model="exportOption">
                         <span>Export Alignment & Requests</span>
@@ -37,7 +59,7 @@
 
                     <BaseRadioInputField class="form-element" :value="'currentQty'" v-model="exportOption">
                         <span>Export Quantity</span>
-                    </BaseRadioInputField>
+                    </BaseRadioInputField> -->
                 </div>
                 <div class="form-section">
                     <h4>Export Multiple Selections</h4>
@@ -68,7 +90,7 @@
                     </BaseRadioInputField>
 
 
-                    <BaseButton style="width: 100%" buttonClass="dark full-width lg" :disabled="!exportOption"
+                    <BaseButton style="width: 100%" buttonClass="dark full-width lg"
                     v-tooltip="!exportOption && 'Please choose an export option'"
                     @click="onExport">
                         <span>Export</span>
@@ -122,6 +144,14 @@ export default {
         // selectionsToExport: [],
         exportSelected: false,
         currencyToExport: null,
+
+        exportAlignment: false,
+        exportFeedback: false,
+        exportRequests: false,
+        exportComments: false,
+        exportQuantity: false,
+        exportVariants: false,
+
         exportOption: null,
         defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
     }},
@@ -162,23 +192,81 @@ export default {
             this.$refs.currencyContext.show(e)
         },
         onExport() {
-            const option = this.exportOption
-            if (option == 'currentRequests')
-                this.exportCurrentSelection()
-            if (option == 'currentFeedback')
-                this.exportCurrentSelectionFeedback()
-            if (option == 'currentQty')
-                this.exportCurrentSelectionQty()
-            if (option == 'alignments')
-                this.exportActionsPerSelection()
-            if (option == 'requests')
-                this.exportRequestsPerSelection()
-            if (option == 'comments')
-                this.exportCommentsPerSelection()
-            if (option == 'quantity')
-                this.exportQtyPerSelection()
-            if (option == 'currentVariants')
-                this.exportCurrentVariantsFeedback()
+            // START HEADERS
+            // Instantiate default headers
+            const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
+
+            if (this.exportVariants) {
+                tihs.headers.push('Variant Name')
+            }
+
+            // Add additional headers based on settings
+            const uniqueAlignmentOrigins = []
+            const uniqueFeedbackOrigins = []
+            const firstProductInput = this.getActiveSelectionInput(this.productsToExport[0])
+
+            if (this.exportAlignment || this.exportRequests) {
+                uniqueAlignmentOrigins.push(...firstProductInput.actions)
+                headers.push(...uniqueAlignmentOrigins.map(x => 'Alignment: ' + x.selection.name))
+            }
+
+            if (this.exportFeedback || this.exportComments) {
+                uniqueFeedbackOrigins.push(...firstProductInput.feedbacks)
+                headers.push(...uniqueFeedbackOrigins.map(x => `Feedback: ${x.selection.name} - ${x.user ? x.user.name : 'Anonymous'}`))
+            }
+
+            console.log('headers', headers)
+
+            // END HEADERS
+
+            // .concat(['Product Total Qty', 'Product Total Spend', 'Variant Total Qty', 'Variant Total Spend', 'Your Qty', 'Your Spend'])
+
+
+
+
+            // START ROW DATA
+            const rows = []
+            this.productsToExport.forEach(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
+                const currentRow = this.getDefaultProductRowData(product)
+
+
+                
+                if (this.exportVariants) {
+                    // Insert a blank column space for variant names
+                    currentRow.push('') 
+                }
+
+                // START ALIGNMENT
+
+
+                // END ALIGNMENT
+                // selectionInput.variants.forEach(variant => {
+                //     const rowToPush = this.getDefaultProductRowData(product).concat([
+                //         selectionInput.quantity,
+                //         selectionInput.quantity * productPrice.wholesale_price,
+                //         variant.totalQuantity,
+                //         variant.totalQuantity * productPrice.wholesale_price,
+                //         variant.quantity,
+                //         variant.quantity * productPrice.wholesale_price
+                //     ])
+
+                //     rows.push(rowToPush)
+                // })
+
+                // START VARIANT
+                if (this.exportVariants) {
+
+                }
+                // END VARIANT
+
+                rows.push(currentRow)
+            })
+            // END ROW DATA
+
+            console.log('the result', [headers].concat(rows))
+
+            // this.exportToCsv('Kollekt Quantity Export.csv', [headers].concat(rows))
 
         },
         getDefaultProductRowData(product) {
