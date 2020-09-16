@@ -13,6 +13,7 @@
                     :multipleOptionArrays="true" 
                     optionGroupNameKey="fileName" 
                     optionGroupOptionsKey="headers"
+                    :groupIndex="availableFiles.findIndex(x => x.fileName == fieldToMap.file.fileName)"
                     :submitOnChange="true" 
                     :search="true" 
                     :allowManualEntry="true"

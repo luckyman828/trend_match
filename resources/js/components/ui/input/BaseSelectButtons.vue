@@ -68,7 +68,7 @@
             </div>
 
             <template v-if="multipleOptionArrays">
-                <div class="option-group" v-for="(optionGroup, index) in optionsFilteredBySearch" :key="index">
+                <div class="option-group" v-for="(optionGroup, optionGroupIndex) in optionsFilteredBySearch" :key="optionGroupIndex">
                     <h4>{{optionGroupNameKey != null ? optionGroup[optionGroupNameKey] : `group-${index+1}`}}</h4>
                     <div class="option" v-for="(option, index) in optionGroupOptionsKey ? optionGroup[optionGroupOptionsKey] : optionGroup" :key="index" 
                     :class="[{'has-description': optionDescriptionKey}, 
@@ -77,9 +77,11 @@
 
                         <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
                             <BaseRadiobox v-if="type == 'radio'" ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" 
-                                @change="change($event, optionGroup)"/>
+                                :groupIndex="optionGroupIndex" :selectedGroupIndex="selectedGroupIndex"
+                                @change="change($event, optionGroup, index)"/>
                             <BaseCheckbox v-else ref="selectBox" :value="optionValueKey ? option[optionValueKey] : option" :modelValue="selection" v-model="selection" 
-                                @change="change($event, optionGroup)"/>
+                                :groupIndex="optionGroupIndex" :selectedGroupIndex="selectedGroupIndex"
+                                @change="change($event, optionGroup, index)"/>
 
                             <div class="label">
                                 <template v-if="optionNameKey">
@@ -153,6 +155,7 @@ export default {
         'unsetOption',
         'unsetValue',
         'value',
+        'groupIndex',
         'labelPrefix',
         'allowManualEntry',
     ],
@@ -163,6 +166,7 @@ export default {
         optionsFilteredBySearch: this.options,
         manualEntryActive: false,
         manualEntry: '',
+        selectedGroupIndex: null,
     }},
     computed: {
         searchKey() {
@@ -215,8 +219,9 @@ export default {
                 this.$emit('custom-entry', true)
             }
         },
-        change(option, optionGroup) {
+        change(option, optionGroup, optionGroupIndex) {
             if (optionGroup) this.optionGroup = optionGroup
+            if (optionGroupIndex) this.selectedGroupIndex = optionGroupIndex
             this.$emit('change', this.selection)
             if(this.emitOnChange) {
                 this.$emit('input', this.selection)
@@ -265,6 +270,7 @@ export default {
         this.focusSearch()
         // Preset the selection to the current option
         this.selection = this.value
+        this.selectedGroupIndex = this.groupIndex
     }
 }
 </script>
