@@ -5,111 +5,67 @@
             <h3 style="text-align: center">The products in your current view will be exported</h3>
             <form @submit.prevent>
 
-                <div class="form-element">
-                    <BaseCheckboxInputField v-model="exportSelected">
-                        Export selected products only
-                    </BaseCheckboxInputField>
-                </div>
+                <div class="form-section">
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportSelected">
+                            Export selected products only
+                        </BaseCheckboxInputField>
+                    </div>
 
 
-                <div class="form-element">
-                    <label for="currency-selector">Choose Currency to export</label>
-                    <BaseInputField id="currency-selector" type="select" :disabled="true"
-                    :value="currencyToExport || 'Choose currency to export'"
-                    @click="showCurrencyContext($event)">
-                        <i class="far fa-chevron-down"></i>
-                    </BaseInputField>
+                    <div class="form-element">
+                        <label for="currency-selector">Choose Currency to export</label>
+                        <BaseInputField id="currency-selector" type="select" :disabled="true"
+                        :value="currencyToExport || 'Choose currency to export'"
+                        @click="showCurrencyContext($event)">
+                            <i class="far fa-chevron-down"></i>
+                        </BaseInputField>
+                    </div>
                 </div>
 
                 <div class="form-section">
                     <h4>Choose what to export</h4>
-                    <BaseCheckboxInputField v-model="exportAlignment">
-                        <span>Alignment</span>
-                    </BaseCheckboxInputField>
-                    <BaseCheckboxInputField v-model="exportFeedback">
-                        <span>Feedback</span>
-                    </BaseCheckboxInputField>
-                    <BaseCheckboxInputField v-model="exportRequests">
-                        <span>Requests</span>
-                    </BaseCheckboxInputField>
-                    <BaseCheckboxInputField v-model="exportComments">
-                        <span>Comments</span>
-                    </BaseCheckboxInputField>
-                    <BaseCheckboxInputField v-model="exportQuantity">
-                        <span>Quantity</span>
-                    </BaseCheckboxInputField>
-
-                    <h4>Export variants?</h4>
-                    <!-- <BaseCheckboxInputField v-model="exportVariants">
-                        <span>Comments</span>
-                    </BaseCheckboxInputField>
-
-                    <h4>Export Current Selection</h4>
-                    <BaseRadioInputField class="form-element" :value="'currentRequests'" v-model="exportOption">
-                        <span>Export Alignment & Requests</span>
-                    </BaseRadioInputField>
-
-                    <BaseRadioInputField class="form-element" :value="'currentFeedback'" v-model="exportOption">
-                        <span>Export Alignment & Feedback</span>
-                    </BaseRadioInputField>
-
-                    <BaseRadioInputField class="form-element" :value="'currentVariants'" v-model="exportOption">
-                        <span>Export Variant Alignment & Feedback</span>
-                    </BaseRadioInputField>
-
-                    <BaseRadioInputField class="form-element" :value="'currentQty'" v-model="exportOption">
-                        <span>Export Quantity</span>
-                    </BaseRadioInputField> -->
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportAlignment">
+                            <span>Alignment</span>
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportFeedback">
+                            <span>Feedback</span>
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportRequests">
+                            <span>Requests</span>
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportComments">
+                            <span>Comments</span>
+                        </BaseCheckboxInputField>
+                    </div>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportQuantity">
+                            <span>Quantity</span>
+                        </BaseCheckboxInputField>
+                    </div>
                 </div>
+
                 <div class="form-section">
-                    <h4>Export Multiple Selections</h4>
-
-                    <!-- <div class="form-element">
-                        <label for="selections-selector">Choose selections to export</label>
-                        <BaseInputField id="selections-selector" type="select" :disabled="true"
-                        :value="`Exporting from ${selectionsToExport.length} Selections`"
-                        @click="showSelectionsContext($event)">
-                            <i class="far fa-chevron-down"></i>
-                        </BaseInputField>
-                    </div> -->
-
-                    <BaseRadioInputField class="form-element" :value="'alignments'" v-model="exportOption">
-                        <span>Export Alignments</span>
-                    </BaseRadioInputField>
-
-                    <BaseRadioInputField class="form-element" :value="'requests'" v-model="exportOption">
-                        <span>Export Requests</span>
-                    </BaseRadioInputField>
-
-                    <BaseRadioInputField class="form-element" :value="'comments'" v-model="exportOption">
-                        <span>Export Comments</span>
-                    </BaseRadioInputField>
-
-                    <BaseRadioInputField class="form-element" :value="'quantity'" v-model="exportOption">
-                        <span>Export Quantity</span>
-                    </BaseRadioInputField>
-
-
-                    <BaseButton style="width: 100%" buttonClass="dark full-width lg"
-                    v-tooltip="!exportOption && 'Please choose an export option'"
-                    @click="onExport">
-                        <span>Export</span>
-                    </BaseButton>
+                    <h4>Export variants?</h4>
+                    <BaseCheckboxInputField v-model="exportVariants">
+                        <span>Export variants</span>
+                    </BaseCheckboxInputField>
                 </div>
+
+                <BaseButton style="width: 100%" buttonClass="dark full-width lg"
+                v-tooltip="!exportOption && 'Please choose an export option'"
+                @click="onExport">
+                    <span>Export</span>
+                </BaseButton>
 
             </form>
-            <!-- <BaseContextMenu ref="selectionsContext">
-                <template v-slot:header>
-                    <span>Choose selections to export</span>
-                </template>
-                <template v-slot="slotProps">
-                    <BaseSelectButtons :options="getSelectionsAvailableForInputFiltering" optionNameKey="name"
-                    v-model="selectionsToExport" :submitOnChange="true"/>
-                    <div class="item-wrapper">
-                        <button style="margin-bottom: 8px; margin-top: -8px;" @click="slotProps.hide()" class="ghost full-width"><span>Apply & Close</span></button>
-                    </div>
-                </template>
-            </BaseContextMenu> -->
 
             <BaseContextMenu ref="currencyContext">
                 <template v-slot:header>
@@ -145,12 +101,12 @@ export default {
         exportSelected: false,
         currencyToExport: null,
 
-        exportAlignment: false,
-        exportFeedback: false,
-        exportRequests: false,
-        exportComments: false,
-        exportQuantity: false,
-        exportVariants: false,
+        exportAlignment: true,
+        exportFeedback: true,
+        exportRequests: true,
+        exportComments: true,
+        exportQuantity: true,
+        exportVariants: true,
 
         exportOption: null,
         defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
@@ -197,31 +153,96 @@ export default {
             const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
 
             if (this.exportVariants) {
-                tihs.headers.push('Variant Name')
+                headers.push('Variant Name')
             }
 
             // Add additional headers based on settings
-            const uniqueAlignmentOrigins = []
-            const uniqueFeedbackOrigins = []
             const firstProductInput = this.getActiveSelectionInput(this.productsToExport[0])
 
+            const uniqueAlignmentOrigins = []
+            const uniqueFeedbackOrigins = []
+
+            // START FIND UNIQUE INPUT HEADERS
+            // Loop through all products to find all input authors
+            this.productsToExport.map(product => {
+                const selectionInput = this.getActiveSelectionInput(product)
+
+                if (this.exportRequests || this.exportAlignment) {
+                    if (this.exportAlignment) {
+                        selectionInput.actions.map(action => {
+                            const originExists = uniqueAlignmentOrigins.find(x => x.selection_id == action.selection_id)
+                            if (!originExists) uniqueAlignmentOrigins.push({
+                                selection: action.selection,
+                                selection_id: action.selection_id,
+                            })
+                        })
+                    }
+                    if (this.exportRequests) {
+                        selectionInput.requests.map(request => {
+                            const originExists = uniqueAlignmentOrigins.find(x => x.selection_id == request.selection_id)
+                            if (!originExists) uniqueAlignmentOrigins.push({
+                                selection: request.selection,
+                                selection_id: request.selection_id,
+                            })
+                        })
+                    }
+                }
+                if (this.exportComments || this.exportFeedback) {
+                    if (this.exportFeedback) {
+                        selectionInput.feedbacks.map(feedback => {
+                            const originExists = uniqueFeedbackOrigins.find(x => x.selection_id == feedback.selection_id && x.user_id == feedback.user_id)
+                            if (!originExists) uniqueFeedbackOrigins.push({
+                                selection: feedback.selection,
+                                selection_id: feedback.selection_id,
+                                user: feedback.user,
+                                user_id: feedback.user_id
+                            })
+                        })
+                    }
+                    if (this.exportComments) {
+                        selectionInput.comments.map(comment => {
+                            const originExists = uniqueFeedbackOrigins.find(x => x.selection_id == comment.selection_id && x.user_id == comment.user_id)
+                            if (!originExists) uniqueFeedbackOrigins.push({
+                                selection: comment.selection,
+                                selection_id: comment.selection_id,
+                                user: comment.user,
+                                user_id: comment.user_id
+                            })
+                        })
+                    }
+                }
+            })
+            // END FIND UNIQUE INPUT HEADERS
+
+
+            // START PUSH UNIQUE INPUT HEADERS
             if (this.exportAlignment || this.exportRequests) {
-                uniqueAlignmentOrigins.push(...firstProductInput.actions)
-                headers.push(...uniqueAlignmentOrigins.map(x => 'Alignment: ' + x.selection.name))
+                uniqueAlignmentOrigins.map(origin => {
+                    if (this.exportAlignment) {
+                        headers.push(`${origin.selection.name} (Alignment)`)
+                    }
+                    if (this.exportRequests) {
+                        headers.push(`${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (Request)`)
+                    }
+                })
             }
 
             if (this.exportFeedback || this.exportComments) {
-                uniqueFeedbackOrigins.push(...firstProductInput.feedbacks)
-                headers.push(...uniqueFeedbackOrigins.map(x => `Feedback: ${x.selection.name} - ${x.user ? x.user.name : 'Anonymous'}`))
+                uniqueFeedbackOrigins.map(origin => {
+                    if (this.exportFeedback) {
+                        headers.push(`${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Feedback)`)
+                    }
+                    if (this.exportComments) {
+                        headers.push(`${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Comment)`)
+                    }
+                })
             }
+            // END PUSH UNIQUE INPUT HEADERS
+            
+
 
             console.log('headers', headers)
-
             // END HEADERS
-
-            // .concat(['Product Total Qty', 'Product Total Spend', 'Variant Total Qty', 'Variant Total Spend', 'Your Qty', 'Your Spend'])
-
-
 
 
             // START ROW DATA
@@ -231,16 +252,59 @@ export default {
                 const currentRow = this.getDefaultProductRowData(product)
 
 
-                
+                // INSTANTIATE SPACE FOR VARIANTS
                 if (this.exportVariants) {
                     // Insert a blank column space for variant names
                     currentRow.push('') 
                 }
 
-                // START ALIGNMENT
+                // START ALIGNMENT & REQUESTS
+                if (this.exportAlignment || this.exportRequests) {
+                    uniqueAlignmentOrigins.map(origin => {
+
+                        if (this.exportAlignment) {
+                            // Find the origin Action
+                            const originAction = selectionInput.actions.find(action => action.selection_id == origin.selection_id)
+                            currentRow.push(originAction ? originAction.action : 'None')
+                        }
+
+                        if (this.exportRequests) {
+                            // Find the origin Request(s)
+                            const originRequestList = selectionInput.requests.filter(request => request.selection_id == origin.selection_id)
+                            // Merge the requests with a double line-break
+                            currentRow.push(originRequestList.map(request => request.content).join('\n\n'))
+                        }
+
+                    })
+                }
+                // END ALIGNMENT & REQUESTS
+
+                // START FEEDBACK & COMMENTS
+                if (this.exportFeedback || this.exportComments) {
+                    uniqueFeedbackOrigins.map(origin => {
+
+                        if (this.exportFeedback) {
+                            // Find the origin Feedback
+                            const originFeedback = selectionInput.feedbacks.find(
+                                feedback => feedback.selection_id == origin.selection_id && feedback.user_id == origin.user_id
+                            )
+                            currentRow.push(originFeedback ? originFeedback.action : 'None')
+                        }
+
+                        if (this.exportComments) {
+                            // Find the origin Comment(s)
+                            const originCommentList = selectionInput.comments.filter(
+                                comment => comment.selection_id == origin.selection_id && comment.user_id == origin.user_id
+                            )
+                            // Merge the comments with a double line-break
+                            currentRow.push(originCommentList.map(comment => comment.content).join('\n\n'))
+                        }
+
+                    })
+                }
+                // END FEEDBACK & COMMENTS
 
 
-                // END ALIGNMENT
                 // selectionInput.variants.forEach(variant => {
                 //     const rowToPush = this.getDefaultProductRowData(product).concat([
                 //         selectionInput.quantity,
@@ -254,19 +318,72 @@ export default {
                 //     rows.push(rowToPush)
                 // })
 
+                // END PRODUCT ROW
+                // Push the product row data
+                rows.push(currentRow)
+
                 // START VARIANT
                 if (this.exportVariants) {
+                    selectionInput.variants.map(variant => {
+                        const variantRow = this.getDefaultProductRowData(product)
 
+                        // Push the variant name
+                        variantRow.push(variant.name)
+
+                        // START ALIGNMENT & REQUESTS
+                        if (this.exportAlignment || this.exportRequests) {
+                            uniqueAlignmentOrigins.map(origin => {
+
+                                if (this.exportAlignment) {
+                                    // Find the origin Action
+                                    const originAction = variant.actions.find(action => action.selection_id == origin.selection_id)
+                                    variantRow.push(originAction ? originAction.action : 'None')
+                                }
+
+                                if (this.exportRequests) {
+                                    // If we are exporting requests, push a blank
+                                    variantRow.push('')
+                                }
+
+                            })
+                        }
+                        // END ALIGNMENT & REQUESTS
+
+                        // START FEEDBACK & COMMENTS
+                        if (this.exportFeedback || this.exportComments) {
+                            uniqueFeedbackOrigins.map(origin => {
+
+                                if (this.exportFeedback) {
+                                    // Find the origin Feedback
+                                    const originFeedback = variant.feedbacks.find(
+                                        feedback => feedback.selection_id == origin.selection_id && feedback.user_id == origin.user_id
+                                    )
+                                    variantRow.push(originFeedback ? originFeedback.action : 'None')
+                                }
+
+                                if (this.exportComments) {
+                                    // If we are exporting comments, push a blank
+                                    variantRow.push('')
+                                }
+
+                            })
+                        }
+                        // END FEEDBACK & COMMENTS
+
+                        // Push variant row
+                        rows.push(variantRow)
+                    })
                 }
                 // END VARIANT
-
-                rows.push(currentRow)
             })
             // END ROW DATA
 
             console.log('the result', [headers].concat(rows))
+            let dateStr = DateTime.local().toLocaleString()
+            // Replace slashes with dashes in date
+            dateStr = dateStr.replace('/', '-')
 
-            // this.exportToCsv('Kollekt Quantity Export.csv', [headers].concat(rows))
+            this.exportToCsv(`Kollekt Export ${dateStr}.csv`, [headers].concat(rows))
 
         },
         getDefaultProductRowData(product) {
