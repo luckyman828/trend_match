@@ -4,12 +4,67 @@
     classes="full-body">
 
         <ChangelogPost 
+            title="Chiffon"
+            date="Mid-September 2020 Tweaks & Fixes"
+            featuredImgUrl="/images/blog/undraw_birthday_girl_n46w(1).svg"
+            singoff="David"
+        >
+            <template v-slot:lead>
+                <p>As with any major release, a lot of minor tweaks must follow.<br>Following the release of Chenille, we already have a new update ready for you.</p>
+                <p>This update contains a range of minor tweaks and bug-fixes.</p>
+                <p>Enjoy.</p>
+            </template>
+
+            <template v-slot:body>
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>
+                        Fix ctrl+c completing a product (now only works if NOT holding ctrl).
+                    </li>
+                    <li>
+                        Allow sorting by Ins OR focus separately.
+                    </li>
+                    <li>
+                        Now auto-mapping multiple currencies in the same file in multiple columns (i.e. you have columns; WHS DKK, WHS NOK, WHS SEK, in the same file).
+                    </li>
+                    <li>
+                        Fixed bug in upload to existing file that would only allow uploading if a variant key had been mapped (even when not replacing variants).
+                    </li>
+                    <li>
+                        Fix bug in upload from workbook that would only create 1 currency, when having mapped a single header with multiple currencies in it. Now correctly creating all the currencies on the products.
+                    </li>
+                    <li>
+                        Fix map field dropdowns showing the currently mapped field as being any field with the same name as the currently mapped field, no matter the mapped file.
+                    </li>
+                    <li>
+                        Added hotkey esc to unfocus table search fields
+                    </li>
+
+                </ul>
+
+                <h3>Thank you so much for your support</h3>
+                <p>Thank you for helping us become aware of new bugs, and for bringing us your wishes for improvements.<br>
+                It is what makes us able to make Kollekt even better.</p>
+                <p>Of course we have already started working on the next features, and will have another release ready within the next 2 weeks, if we do our job well.</p>
+                <p>Are you afraid of missing an update? If you want to receive our update newsletter, write to our CEO, Simon (<a href="mailto:simon@kollekt.dk">simon@kollekt.dk</a>), and he will make sure to include you in our maling list.</p>
+                <p>As always, if you have any questions about the update, please reach out to us, and we will be more than happy to give you a tour.</p>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+
+        <ChangelogPost 
             title="Chenille"
             date="September 2020 Release"
             featuredImgUrl="/images/blog/undraw_fashion_photoshoot_mtq8.svg"
             singoff="Michael & David"
         >
-
             <template v-slot:lead>
                 <p>Chenille is here and this is a big one.</p>
                 <p>This update features both a new release of the dashboard and the iOS app.<br>
