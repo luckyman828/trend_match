@@ -252,8 +252,10 @@
                 @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
                 <!-- Single Selection Only -->
                 <template v-if="getCurrentSelections.length == 1">
-                    <BaseTableHeader class="focus"/>
-                    <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
+                    <BaseTableHeader class="focus" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort" :descDefault="true">Focus</BaseTableHeader>
+                    <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentIns', 'alignmentFocus'] : ['ins', 'focus']" :currentSortKey="sortKey"
                     defaultTo="sequence"
                     @sort="onSort" :descDefault="true">In</BaseTableHeader>
                     <BaseTableHeader class="outs" :sortKey="distributionScope == 'Alignment' ? 'alignmentOuts' : 'outs'" :currentSortKey="sortKey"
@@ -786,11 +788,12 @@ export default {
                     flex: 1;
                 }
                 &.title {
-                    min-width: 200px;
-                    max-width: 200px;
+                    min-width: 140px;
+                    max-width: 140px;
                     display: flex;
                     align-items: center;
                     margin-right: auto;
+                    padding-right: 20px;
                     span {
                         white-space: nowrap;
                         text-overflow: ellipsis;
@@ -798,8 +801,8 @@ export default {
                         overflow: hidden
                     }
                     @media screen and (max-width: $screenXs) {
-                        min-width: 160px;
-                        max-width: 160px;
+                        min-width: 100px;
+                        max-width: 100px;
                     }
                 }
                 &.id {
@@ -840,6 +843,10 @@ export default {
                 &.focus, &.ins, &.outs, &.nds {
                     min-width: 48px;
                     max-width: 48px;
+                }
+                &.focus {
+                    min-width: 56px;
+                    max-width: 56px;
                 }
                 &.outs {
                     min-width: 52px;

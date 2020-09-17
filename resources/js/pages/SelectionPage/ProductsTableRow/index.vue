@@ -19,7 +19,7 @@
                 <span>{{product.datasource_id}}</span>
             </td>
             <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
+                <span v-tooltip="product.title">{{product.title}}</span>
                 <div class="variant-list">
                     <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
