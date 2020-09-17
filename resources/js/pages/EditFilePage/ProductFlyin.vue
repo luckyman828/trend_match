@@ -478,7 +478,7 @@ export default {
     watch: {
         currentProduct(newVal, oldVal) {
             this.initProduct()
-        }
+        },
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),

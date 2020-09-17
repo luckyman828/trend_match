@@ -266,7 +266,8 @@ export default {
         showFilters: false,
     }},
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 'availableBuyerGroups', 'getProductsFilteredBySearch']),
+        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
+        'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
         ...mapGetters('products', {
             products: 'productsFiltered',
         }),
