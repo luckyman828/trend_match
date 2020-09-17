@@ -62,7 +62,14 @@ export default {
                 name: 'title',
                 displayName: 'Name',
                 type: 'string',
-                headersToMatch: ['title', 'name', 'style name', 'product name', 'style_name', 'product_name'],
+                headersToMatch: [
+                    'title',
+                    '^(?!.*department).*name.*$',
+                    'style name',
+                    'product name',
+                    'style_name',
+                    'product_name',
+                ],
             },
             {
                 scope: null,
