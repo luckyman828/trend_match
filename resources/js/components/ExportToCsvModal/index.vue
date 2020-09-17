@@ -365,10 +365,10 @@ export default {
                         // START QUANTITY DATA
                         if (this.exportQuantity) {
                             const quantity = variant.quantity ? variant.quantity : 0
-                            currentRow.push('') // Blank for product total quantity
-                            currentRow.push('') // Blank for product total spend
-                            currentRow.push(quantity) // Variant total quantity
-                            currentRow.push(quantity * productPriceWhs) // Variant total spend
+                            variantRow.push('') // Blank for product total quantity
+                            variantRow.push('') // Blank for product total spend
+                            variantRow.push(quantity) // Variant total quantity
+                            variantRow.push(quantity * productPriceWhs) // Variant total spend
                         }
                         // END QUANTITY
 
@@ -445,7 +445,7 @@ export default {
             // Replace slashes with dashes in date
             dateStr = dateStr.replace('/', '-')
 
-            this.exportToCsv(`Kollekt Export ${dateStr}.csv`, [headers].concat(rows))
+            this.exportToCsv(`Kollekt Export - ${this.currentFile.name} - ${this.currentSelection.name} ${dateStr}.csv`, [headers].concat(rows))
 
         },
         getDefaultProductRowData(product) {
