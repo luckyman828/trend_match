@@ -171,9 +171,9 @@ export default {
                     if (!options || options.scopes.find(x => x.name == 'prices').enabled) baseProduct.prices = []
                     if (!options || options.scopes.find(x => x.name == 'assortments').enabled) {
                         baseProduct.assortments = []
-                        baseProduct.assortment_sizes = []
                     }
                     if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
+                    baseProduct.assortment_sizes = []
                     baseProduct.delivery_dates = []
 
                     const product = existingProduct ? existingProduct : baseProduct

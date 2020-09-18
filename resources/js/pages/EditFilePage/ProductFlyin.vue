@@ -313,8 +313,8 @@
                 </div>
 
                 <div class="assortment-sizes form-section">
-                    <h3>Assortment Sizes</h3>
-                    <Draggable
+                    <h3>Available Assortment Sizes</h3>
+                    <Draggable class="form-element"
                         handle=".drag-handle"
                     >
                         <div class="col-2 form-element" v-for="(assortment, index) in product.assortment_sizes" :key="index">

@@ -12,7 +12,7 @@
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <!-- <img :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :variant="product.variants[variantIndex]" size="sm"/>
+                    <BaseVariantImg :key="product.id + '-' + variantIndex" :variant="product.variants[variantIndex]" size="sm"/>
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">

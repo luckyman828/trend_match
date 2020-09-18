@@ -87,9 +87,9 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <!-- <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + currentImgIndex" v-if="selectionInput.variants.length > 0" 
-                    :variant="currentVariant" size="sm" :index="currentVariant.imageIndex"/>
+                    <BaseVariantImg :key="product.id + '-' + currentImgIndex"  
+                        :variant="currentVariant" size="sm" :index="currentVariant ? currentVariant.imageIndex : 0"
+                    />
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
@@ -179,12 +179,14 @@
 
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
-                <label>Description</label>
-                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
-                <label>Assortments (Box size)</label>
-                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => `${x.name} ${x.box_size && `(${x.box_size})`}`).join(',\n')"/>
+                <label>Box Sizes</label>
+                <BaseInputTextArea readOnly=true :value="product.assortment_sizes.join(', ')"/>
+                <label>Assortments</label>
+                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => `${x.name}`).join(',\n')"/>
                 <label>Category</label>
                 <BaseInputField readOnly=true :value="product.category"/>
+                <label>Description</label>
+                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
 
             </BaseFlyinColumn>
 
