@@ -147,7 +147,15 @@ export default {
             // Check that no fields have an error
             for (let i = 0; i < this.fieldsToMap.length; i++) {
                 const field = this.fieldsToMap[i]
-                if (field.enabled && !!field.error) return 'One or more fields has an error'
+
+                // Check that the field is in our scope
+                if (this.uploadOptions && 
+                    (!this.uploadOptions.fields.find(x => x.name == field.name && x.enabled))
+                ) {
+                    continue
+                }
+
+                if (field.enabled && !!field.error) return 'One or more fields have an error'
             }
             return false
         },
@@ -196,7 +204,7 @@ export default {
                 const field = this.fieldsToMap[i]
 
                 // Only check enabled and mapped fields
-                if (field.enabled && !!field.fieldName) {
+                if (field.enabled && !!field.fieldName && (!this.uploadOptions || this.uploadOptions.fields.find(x => x.name == field.name && x.enabled))) {
                     const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows, depth)
                     if (!fieldIsValid) {
                         return false
@@ -216,7 +224,7 @@ export default {
             
             if (!valid) {
                 this.SHOW_SNACKBAR({ 
-                    msg: `One or more fields have an error'`,
+                    msg: `One or more fields have an error`,
                     type: 'info', 
                     iconClass: 'fa-exclamation-circle', 
                 })
