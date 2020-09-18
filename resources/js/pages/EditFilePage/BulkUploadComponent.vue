@@ -101,7 +101,7 @@ export default {
                 productsToUpdate.push(product)
 
                 const basePicture = {
-                    name: null,
+                    name: image.name,
                     url: null,
                 }
 
@@ -122,6 +122,9 @@ export default {
 
                 if (existingVariant) {
                     variantToUpdate = existingVariant
+
+                    // If the picture already exists on this variant, do nothing.
+                    if (existingVariant.pictures.find(x => x.name == image.name)) return
 
                     if (shouldBeFirst) {
                         variantToUpdate.pictures.unshift(basePicture)
