@@ -155,6 +155,7 @@ export default {
 
                 file.rows.map(row => {
                     let rowCurrency = null
+                    let rowAssortmentName = null
 
                     // Find the product corresponding to this row, or instantiate a new product if none exists
                     const keyValue = row[keyField]
@@ -318,11 +319,20 @@ export default {
 
                         // START MAP ASSORTMENTS
                         if (product.assortments && field.scope == 'assortments') {
-                            let assortmentGroup = product.assortments.find(x => x.mappingGroupId == field.groupId)
+                            // Find the assortment name for this row && field to map.
+                            // This only works because the assortment name field is always the first assortment field being mapped
+                            if (field.name == 'name') {
+                                rowAssortmentName = fieldValue
+                            }
+
+                            // Check if the assortment group already exists
+                            let assortmentGroup = product.assortments.find(
+                                x => x.mappingGroupId == field.groupId && x.name == rowAssortmentName
+                            )
                             if (!assortmentGroup) {
                                 assortmentGroup = {
                                     mappingGroupId: field.groupId,
-                                    name: null,
+                                    name: rowAssortmentName,
                                     box_ean: null,
                                     box_size: null,
                                 }

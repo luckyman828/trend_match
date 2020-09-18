@@ -153,7 +153,7 @@ export default {
                 // Loop through the new products keys - The product will only contain the keys that we want to update
 
                 Object.keys(newProduct).map(key => {
-                    if (key == 'datasource_id') return // Don't fiddle with the datasource_id
+                    if (key == 'datasource_id' || key == 'id') return // Don't fiddle with the datasource_id or id
 
                     // STRATEGY: REPLACE
                     if (strategy == 'replace') {
@@ -207,7 +207,7 @@ export default {
             this.onReset()
         },
         setKeyValue(srcProduct, targetProduct, key, strategy) {
-            if (srcProduct[key] == null) return // Don't do anything if we don't have a value
+            if (srcProduct[key] == null || key == 'id') return // Don't do anything if we don't have a value
 
             // Handle arrays first
             // If the product key value is an array (variants, prices, assortments, eans)
