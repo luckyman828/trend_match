@@ -17,6 +17,7 @@ export default {
         advancedFilter: null,
         unreadOnly: false,
         hideCompleted: false,
+        noImagesOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
@@ -99,6 +100,7 @@ export default {
         },
         unreadOnly: state => state.unreadOnly,
         hideCompleted: state => state.hideCompleted,
+        noImagesOnly: state => state.noImagesOnly,
         currentProductFilter: state => {
             return state.currentProductFilter
         },
@@ -187,6 +189,7 @@ export default {
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
             const hideCompleted = getters.hideCompleted
+            const noImagesOnly = getters.noImagesOnly
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
             let productsToReturn = products
@@ -340,6 +343,14 @@ export default {
                     })
                     return include
                 })
+            }
+
+            // Filter by no images
+            if (noImagesOnly) {
+                const filteredByNoImages = productsToReturn.filter(
+                    product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
+                )
+                productsToReturn = filteredByNoImages
             }
 
             // Filter by actions
@@ -662,7 +673,8 @@ export default {
                     new Compressor(image, {
                         quality: 0.8,
                         checkOrientation: true,
-                        maxHeight: 2016,
+                        // maxHeight: 2016,
+                        maxHeight: 1080,
                         success(result) {
                             compressedImage = result
                             resolve()
@@ -1771,6 +1783,9 @@ export default {
             products.map(product => {
                 product.is_completed = shouldBeCompleted
             })
+        },
+        SET_NO_IMAGES_ONLY(state, boolean) {
+            state.noImagesOnly = boolean
         },
     },
 }

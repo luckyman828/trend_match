@@ -1,7 +1,24 @@
 <template>
     <div class="edit-file-component">
 
-        <ThePageHeader :title="`Editing: ${file.name}`"/>
+        <!-- <ThePageHeader :title="`Editing: ${file.name}`"/> -->
+        <h1>Editing: {{file.name}}</h1>
+
+        <button class="primary md"
+            style="margin-bottom: 20px"
+            @click="showBulkUpload = !showBulkUpload"
+        >
+            <template v-if="!showBulkUpload">
+                <i class="far fa-upload"></i>
+                <span>Bulk upload images</span>
+            </template>
+            <template v-else>
+                <i class="far fa-check"></i>
+                <span>Finish bulk uploading</span>
+            </template>
+        </button>
+
+        <BulkUploadComponent v-if="showBulkUpload"/>
 
         <div class="quick-actions" v-if="productsEligibleForVariantImageShift.length > 0">
             <p>Recommended actions</p>
@@ -25,6 +42,7 @@ import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import ProductsTable from './ProductsTable'
 import EditFileHeader from './EditFileHeader'
 import ProductFlyin from './ProductFlyin'
+import BulkUploadComponent from './BulkUploadComponent'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 // Mixins
 import sortArray from '../../mixins/sortArray'
@@ -35,12 +53,14 @@ export default{
         ProductsTable,
         ProductFlyin,
         ThePageHeader,
+        BulkUploadComponent,
     },
     mixins: [
         sortArray
     ],
     data: function () { return {
         sortKey: 'sequence',
+        showBulkUpload: false,
     }},
     computed: {
         ...mapGetters('files', ['currentFile']),

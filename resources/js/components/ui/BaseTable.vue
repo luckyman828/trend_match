@@ -308,7 +308,8 @@ export default {
             this.tableWidth = tableWidth
         },
         initScrollHeader() {
-            if (this.stickyHeader && !this.scrollHeaderInitialized) {
+            // if (this.stickyHeader && !this.scrollHeaderInitialized) {
+            if (this.stickyHeader && !this.sticky) {
                 this.distToTop =  this.getYPos(this.$refs.stickyHeader)
                 this.scrollHeaderInitialized = true
             }

@@ -115,6 +115,10 @@
                 </BaseContextMenu>
                 </v-popover>
 
+                <BaseCheckboxInputField class="small" v-model="noImagesOnly">
+                    <span>No images only</span>
+                </BaseCheckboxInputField>
+
                 <button class="invisible primary" v-if="activeFiltersCount > 0"
                 @click="onClearFilters"><span>Clear filter</span></button>
 
@@ -308,18 +312,20 @@ export default {
             return this.selectedBuyerGroups.length 
                 + this.selectedCategories.length 
                 + this.selectedDeliveryDates.length
-        }
-        // localProducts: {
-        //     get() {return this.products},
-        //     set(products) {
-        //         this.SET_PRODUCTS(products)
-        //     }
-        // }
+        },
+        noImagesOnly: {
+            get () {
+                return this.$store.getters['products/noImagesOnly']
+            },
+            set (value) {
+                this.SET_NO_IMAGES_ONLY(value)
+            }
+        },
     },
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts', 'updateManyProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'SET_PRODUCTS',
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS', 'SET_NO_IMAGES_ONLY']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products

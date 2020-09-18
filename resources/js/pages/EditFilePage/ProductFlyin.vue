@@ -494,10 +494,10 @@ export default {
         currentVariant: null,
     }},
     watch: {
-        currentProduct(newVal, oldVal) {
-            console.log('current product changed')
-            this.initProduct()
-        },
+        currentProduct: {
+            deep: true,
+            handler: 'initProduct'
+        }
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
@@ -535,19 +535,6 @@ export default {
                 }
             })
             return filesToDelete
-        },
-        imagesToUpload() {
-            // Check if we have any files (images) we need to upload
-            const variants = this.productToEdit.variants
-            let imagesToUpload = []
-            variants.forEach(variant => {
-                variant.pictures.forEach(picture => {
-                    if (picture.imageToUpload) {
-                        imagesToUpload.push(picture.imageToUpload)
-                    }
-                })
-            })
-            return imagesToUpload
         },
     },
     methods: {
@@ -635,7 +622,7 @@ export default {
         onAddVariant() {
             const newVariant = {
                 id: this.$uuid.v4(),
-                name: null,
+                name: 'Unnamed',
                 image: null,
                 blob_id: null,
                 sizes: [],
