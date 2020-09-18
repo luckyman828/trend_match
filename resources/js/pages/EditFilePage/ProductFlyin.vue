@@ -312,6 +312,41 @@
                     </div>
                 </div>
 
+                <div class="assortment-sizes form-section">
+                    <h3>Assortment Sizes</h3>
+                    <Draggable
+                        handle=".drag-handle"
+                    >
+                        <div class="col-2 form-element" v-for="(assortment, index) in product.assortment_sizes" :key="index">
+                            <BaseEditInputWrapper 
+                                ref="assortmentSizeInput"
+                                :type="'text'"
+                                :submitOnBlur="true"
+                                :oldValue="product.assortment_sizes[index]"
+                                v-model="product.assortment_sizes[index]"
+                                @submit="onSubmitField"
+                            />
+
+                            <div style="display: flex; align-items: center; height: 40px;">
+                                <div class="drag-handle square ghost primary"
+                                    style="margin-left: 8px;"
+                                >
+                                    <i class="far fa-arrows-alt-v"></i>
+                                </div>
+                                <button class="invisible ghost-hover" @click="onRemoveAssortmentSize(index)">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </Draggable>
+                    <div class="form-element">
+                        <button class="ghost" @click="onAddAssortmentSize">
+                            <i class="far fa-plus"></i><span>Add EAN</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="EANs form-section">
                     <h3>Variant Sizes</h3>
                     <div v-if="!currentVariant">
