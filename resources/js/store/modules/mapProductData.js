@@ -156,6 +156,13 @@ export default {
                 displayName: 'Buyer Group',
                 headersToMatch: ['buyer group', 'buyer', 'pricelist', 'buying group'],
             },
+            {
+                scope: null,
+                name: 'assortment_sizes',
+                displayName: 'Custom Assortment Sizes',
+                type: 'number',
+                headersToMatch: ['box size', 'assortment box size', 'ass size', 'assortment size'],
+            },
             // VARIANTS
             // {
             //     scope: 'variants',

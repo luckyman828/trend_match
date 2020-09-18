@@ -168,8 +168,10 @@ export default {
                     // Instantiate arrays based on options if any
                     if (!options || options.scopes.find(x => x.name == 'variants').enabled) baseProduct.variants = []
                     if (!options || options.scopes.find(x => x.name == 'prices').enabled) baseProduct.prices = []
-                    if (!options || options.scopes.find(x => x.name == 'assortments').enabled)
+                    if (!options || options.scopes.find(x => x.name == 'assortments').enabled) {
                         baseProduct.assortments = []
+                        baseProduct.assortment_sizes = []
+                    }
                     if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
                     baseProduct.delivery_dates = []
 

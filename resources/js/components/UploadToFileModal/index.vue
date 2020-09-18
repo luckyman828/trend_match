@@ -203,9 +203,6 @@ export default {
 
             this.uploadInProgress = false
 
-            // Init the products
-            this.initProducts(this.products)
-
             this.onClose()
             this.onReset()
         },

@@ -561,6 +561,7 @@ export default {
                 variants: [],
                 assortments: [],
                 eans: [],
+                assortment_sizes: [],
             }
         },
         setCurrentProduct({ commit }, product) {
