@@ -423,7 +423,7 @@ export default {
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
 
-                if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') {
+                if (!event.ctrlKey && key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') {
                     this.onToggleCompleted()
                 }
 
