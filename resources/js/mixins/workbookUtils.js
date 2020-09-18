@@ -3,13 +3,17 @@ export default {
         parseWorkbookToRowsAndCells(workbook) {
             // Use SheetJS to parse the workbook
             const data = new Uint8Array(workbook)
-            var workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false })
+            var workbook = XLSX.read(data, {
+                type: 'array',
+                cellDates: true,
+                cellNF: false,
+                cellText: false,
+            })
             const sheet = workbook.Sheets[Object.keys(workbook.Sheets)[0]]
 
             const rows = XLSX.utils.sheet_to_json(sheet, {
                 raw: true,
                 blankrows: false,
-                dateNF: 'YYYY-MM-DD',
                 defval: null,
             })
 
@@ -58,8 +62,9 @@ export default {
                             // If true then add a "1-" to the date to avoid ambiguity
                             valueToTest = '1-' + valueToTest
                         }
+                        const isNumber = typeof valueToTest == 'number'
                         const dateValue = new Date(valueToTest)
-                        if (!dateValue instanceof Date || isNaN(dateValue)) {
+                        if (!dateValue instanceof Date || isNaN(dateValue) || isNumber) {
                             field.error = `Invalid <strong>Date format</strong>.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i + 2}</strong>
                             <br>Make sure that values only contain <strong>English</strong> month names`
@@ -166,6 +171,7 @@ export default {
                     if (!options || options.scopes.find(x => x.name == 'assortments').enabled)
                         baseProduct.assortments = []
                     if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
+                    baseProduct.delivery_dates = []
 
                     const product = existingProduct ? existingProduct : baseProduct
 
@@ -184,6 +190,14 @@ export default {
                         // Limit decimals to 2 places
                         if (typeof fieldValue == 'number')
                             fieldValue = Math.round((fieldValue + Number.EPSILON) * 100) / 100
+
+                        // Format date values
+                        if (field.type == 'date') {
+                            // If the field value is not null, format it as a date
+                            if (fieldValue instanceof Date) {
+                                fieldValue = DateTime.fromJSDate(fieldValue).toISODate()
+                            }
+                        }
 
                         // START MAP VARIANTS
                         // console.log('at least try try map variants?')
@@ -322,7 +336,7 @@ export default {
                         const productField = product[field.name]
                         if (Array.isArray(productField)) {
                             const valueExistsInArray = productField.includes(fieldValue)
-                            if (!valueExistsInArray) productField.push(fieldValue)
+                            if (!valueExistsInArray && fieldValue != null) productField.push(fieldValue)
                             return
                         }
                         product[field.name] = fieldValue

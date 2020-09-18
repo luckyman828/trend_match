@@ -132,21 +132,14 @@ export default {
             const products = getters.products
             let uniqueDeliveryDates = []
             products.forEach(product => {
-                if (product.delivery_date) {
-                    // const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
-                    const found = uniqueDeliveryDates.find(x => x == product.delivery_date)
-                    if (!found)
-                        // uniqueDeliveryDates.push({
-                        //     name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        //         month: 'long',
-                        //         year: 'numeric',
-                        //     }),
-                        //     value: product.delivery_date,
-                        // })
-                        uniqueDeliveryDates.push(product.delivery_date)
-                }
+                product.delivery_dates.map(date => {
+                    const found = uniqueDeliveryDates.find(x => x == date)
+                    if (!found) {
+                        uniqueDeliveryDates.push(date)
+                    }
+                })
             })
-            return uniqueDeliveryDates
+            return uniqueDeliveryDates.sort()
         },
         availableBuyerGroups(state, getters) {
             const products = getters.products
@@ -208,7 +201,7 @@ export default {
             // Filter by delivery date
             if (deliveryDates.length > 0) {
                 const filteredByDeliveryDate = productsToReturn.filter(product => {
-                    return Array.from(deliveryDates).includes(product.delivery_date)
+                    return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
                 })
                 productsToReturn = filteredByDeliveryDate
             }
@@ -549,6 +542,7 @@ export default {
                 brand: null,
                 category: null,
                 delivery_date: null,
+                delivery_dates: [],
                 buying_group: null,
                 is_editor_choice: null,
                 compositions: null,
@@ -860,13 +854,7 @@ export default {
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
-                // Format delivery_date
-                if (product.delivery_date) {
-                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        month: 'long',
-                        year: 'numeric',
-                    })
-                }
+
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
 

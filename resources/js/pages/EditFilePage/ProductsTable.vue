@@ -6,7 +6,7 @@
             contentStatus="success"
             :items="products"
             :itemsTotalCount="stateProducts.length"
-            itemKey="id"
+            itemKey="datasource_id"
             :itemSize="139"
             :selected.sync="selectedProducts"
             :contextItem.sync="contextItem"
@@ -74,7 +74,7 @@
                                 </span>
                             </BaseContextMenuItem>
                             <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
+                                <BaseSelectButtons submitOnChange="true" :displayFunction="prettifyDate"
                                 :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
                             </template>
                         </v-popover>
@@ -394,6 +394,7 @@ export default {
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
+        this.onClearFilters()
     }
 }
 </script>

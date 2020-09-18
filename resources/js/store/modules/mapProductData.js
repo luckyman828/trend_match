@@ -123,7 +123,7 @@ export default {
             },
             {
                 scope: null,
-                name: 'delivery_date',
+                name: 'delivery_dates',
                 displayName: 'Delivery (date/month)',
                 type: 'date',
                 headersToMatch: [

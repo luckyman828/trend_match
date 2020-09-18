@@ -79,10 +79,23 @@ export default {
     computed: {
         previewValue() {
             // If custom enrtry, simply display the custom entry
-            if (this.mappedField.customEntry) return this.mappedField.fieldName
-            if (!this.mappedFile || !this.mappedField.fieldName) return 'Not mapped'
+            let valueToReturn = 'Not mapped'
+            if (!this.mappedField.customEntry && (!this.mappedFile || !this.mappedField.fieldName)) return valueToReturn
+            if (this.mappedField.customEntry) valueToReturn =  this.mappedField.fieldName
+            else {
+                valueToReturn = this.mappedFile.rows[0][this.mappedField.fieldName]
+            }
 
-            return this.mappedFile.rows[0][this.mappedField.fieldName]
+            // No value available
+            if (valueToReturn == null) return ''
+
+            // Change how the value is displayed
+            if (this.mappedField.type == 'date' && !this.mappedField.error) {
+                console.log('value to return', valueToReturn)
+                valueToReturn = DateTime.fromJSDate(new Date(valueToReturn)).toFormat('MMMM yyyy')
+            }
+
+            return valueToReturn
         }
     },
     watch: {
@@ -90,10 +103,10 @@ export default {
             if ((!this.mappedFile || !this.mappedField.fieldName) && !this.mappedField.customEntry) return
             const rows = this.mappedField.customEntry ? [] : this.mappedFile.rows
             const valid = this.validateMappedField(this.mappedField, rows, 10)
-            // Scroll into view if not valid
-            if (!valid) {
-                this.$el.scrollIntoView()
-            }
+            // // Scroll into view if not valid
+            // if (!valid) {
+            //     this.$el.scrollIntoView()
+            // }
         }
     },
 }

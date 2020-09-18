@@ -105,6 +105,9 @@ Vue.filter('truncate', function(value, limit) {
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
+Vue.filter('prettifyDate', function(value) {
+    return value ? DateTime.fromFormat(value, 'yyyy-MM-dd').toFormat('MMMM yyyy') : ''
+})
 Vue.filter('thousandSeparated', function(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 })
@@ -114,6 +117,16 @@ Vue.mixin({
     methods: {
         separateThousands(value) {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        },
+        prettifyDate(date, style) {
+            if (!date) return ''
+            if (!style) {
+                return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')
+            }
+            if (style == 'short') {
+                return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMM yy')
+            }
+            return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')
         },
     },
 })

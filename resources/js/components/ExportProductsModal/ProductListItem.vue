@@ -21,7 +21,9 @@
                             <td style="font-weight: 700;"><h4 style="margin: 0;">{{product.title}}</h4></td>
                         </tr>
                         <tr>
-                            <td>{{product.delivery_date}}</td>
+                            <td>
+                                {{prettyDates.join(', ')}}
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -162,6 +164,9 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['getActiveSelectionInput']),
+        prettyDates() {
+            return this.product.delivery_dates.map(date => this.prettifyDate(date, 'short'))
+        },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },

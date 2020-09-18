@@ -30,8 +30,8 @@ export default {
                                 if (typeof b[theKey] == 'string') bKey = b[theKey].toLowerCase()
 
                                 // Check if type is date
-                                if (key == 'delivery_date') aKey = new Date(aKey)
-                                if (key == 'delivery_date') bKey = new Date(bKey)
+                                if (key == 'delivery_date') aKey = new Date(prettifyDates(aKey[0]))
+                                if (key == 'delivery_date') bKey = new Date(prettifyDates(bKey[0]))
 
                                 if (type) if (aKey > bKey) returnValue = 1
                                 if (aKey < bKey) returnValue = -1

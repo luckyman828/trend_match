@@ -34,9 +34,21 @@
                     </div>
                 </div>
             </span></td>
-            <td class="delivery">
-                <span v-if="!product.delivery_date || product.delivery_date.length < 8">{{product.delivery_date}}</span>
-                <span v-else>{{product.delivery_date.substr(0, 3)}} {{product.delivery_date.substr(product.delivery_date.length - 4)}}</span>
+            <td class="delivery" v-tooltip="{
+                content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
+                trigger: 'hover'
+            }"
+                :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
+                @click="onViewSingle"
+            >
+                <span v-if="product.delivery_dates[0]">
+                    {{prettifyDate(product.delivery_dates[0], 'short')}}
+                    <span v-if="product.delivery_dates.length > 1"
+                        class="square ghost xs"
+                    > 
+                        <span>+{{+ product.delivery_dates.length -1}}</span>
+                    </span>
+                </span>
             </td>
 
             <!-- Start Prices -->

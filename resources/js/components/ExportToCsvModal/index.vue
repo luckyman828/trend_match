@@ -54,9 +54,18 @@
 
                 <div class="form-section">
                     <h4>Export variants?</h4>
-                    <BaseCheckboxInputField v-model="exportVariants">
-                        <span>Export variants</span>
-                    </BaseCheckboxInputField>
+                    <div class="form-element">
+                        <BaseCheckboxInputField v-model="exportVariants">
+                            <span>Export variants</span>
+                        </BaseCheckboxInputField>
+                    </div>
+
+                    <!-- <div class="form-element">
+                        <BaseCheckboxInputField v-if="exportVariants"
+                            v-model="excludeProductRows">
+                            <span>Variant rows only</span>
+                        </BaseCheckboxInputField>
+                    </div> -->
                 </div>
 
                 <BaseButton style="width: 100%" buttonClass="dark full-width lg"
@@ -108,6 +117,8 @@ export default {
         exportQuantity: true,
         exportVariants: true,
 
+        excludeProductRows: false,
+
         exportOption: null,
         defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
     }},
@@ -136,7 +147,8 @@ export default {
                 })
             })
             return currenciesToReturn
-        }
+        },
+        
     },
     methods: {
         ...mapActions('selections', ['fetchSelections']),
@@ -253,9 +265,6 @@ export default {
             }
             // END PUSH UNIQUE INPUT HEADERS
             
-
-
-            console.log('headers', headers)
             // END HEADERS
 
 
@@ -352,7 +361,9 @@ export default {
 
                 // END PRODUCT ROW
                 // Push the product row data
-                rows.push(currentRow)
+                if (!(this.exportVariants && this.excludeProductRows)) {
+                    rows.push(currentRow)
+                }
 
                 // START VARIANT
                 if (this.exportVariants) {
@@ -365,8 +376,8 @@ export default {
                         // START QUANTITY DATA
                         if (this.exportQuantity) {
                             const quantity = variant.quantity ? variant.quantity : 0
-                            variantRow.push('') // Blank for product total quantity
-                            variantRow.push('') // Blank for product total spend
+                            variantRow.push(quantity) // Product total qty
+                            variantRow.push(quantity * productPriceWhs) // Product total spend
                             variantRow.push(quantity) // Variant total quantity
                             variantRow.push(quantity * productPriceWhs) // Variant total spend
                         }
@@ -440,7 +451,6 @@ export default {
             })
             // END ROW DATA
 
-            console.log('the result', [headers].concat(rows))
             let dateStr = DateTime.local().toLocaleString()
             // Replace slashes with dashes in date
             dateStr = dateStr.replace('/', '-')
@@ -456,7 +466,7 @@ export default {
                 product.category, 
                 product.min_order, 
                 product.min_variant_order, 
-                product.delivery_date,
+                product.delivery_dates.map(date => this.prettifyDate(date, 'short')).join(', '),
                 priceToReturn.currency || '',
                 priceToReturn.wholesale_price || '',
                 priceToReturn.recommended_retail_price || '',
