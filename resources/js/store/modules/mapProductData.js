@@ -126,7 +126,7 @@ export default {
                 name: 'composition',
                 displayName: 'Composition',
                 type: 'string',
-                headersToMatch: ['composition', 'materials', 'quality', 'material'],
+                headersToMatch: ['composition', 'material'],
             },
             {
                 scope: null,
