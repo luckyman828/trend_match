@@ -57,9 +57,13 @@
             :style="{width: exportComments ? '24%' : '32%'}">
                 <div class="row">
                     <div class="assortments" style="display: -webkit-box; -webkit-box-orient: vertical; flex-direction: column; width: 100%;">
+                        <strong style="font-size: 11px">Assortment Sizes</strong>
+                        <p style="margin: 0; font-size: 10px;">{{product.assortment_sizes.join(', ')}}</p>
+
+                        <strong style="font-size: 11px; margin-top: 8px; display: block;">Assortments</strong>
                         <div v-for="(assortment, index) in product.assortments" :key="index"
-                        style="line-height: 1; word-break: break-word; margin-bottom: 2px;">
-                            <span style="font-size: 10px;">{{assortment.name || 'Unknown assortment'}} ({{assortment.box_size || 0}})</span>
+                            style="line-height: 1; word-break: break-word; margin-bottom: 2px;">
+                            <span style="font-size: 10px;">{{assortment.name || 'Unknown assortment'}}</span>
                         </div>
                     </div>
                 </div>
