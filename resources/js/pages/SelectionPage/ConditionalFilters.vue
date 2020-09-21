@@ -301,6 +301,7 @@ export default {
                         if (type == 'selection') {
                             const selectionId = filter.filter.id
 
+
                             if (filter.key == 'Comment') {
                                 if (operator == '=' && !selectionInput.comments.find(x => x.selection_id == selectionId)) include = false
                                 if (operator == '!=' && !!selectionInput.comments.find(x => x.selection_id == selectionId)) include = false
@@ -311,8 +312,8 @@ export default {
                             }
                             else {
                                 const selectionAction = selectionInput.actions.find(action => action.selection_id == selectionId)
-                                if (operator == '=' && (!selectionAction || selectionAction.action != filter.actionType)) include = false
-                                if (operator == '!=' && (!!selectionAction && selectionAction.action == filter.actionType)) include = false
+                                if (operator == '=' && (!selectionAction || selectionAction.action != filter.key)) include = false
+                                if (operator == '!=' && (!!selectionAction && selectionAction.action == filter.key)) include = false
                             }
                         }
                     }

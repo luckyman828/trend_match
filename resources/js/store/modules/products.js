@@ -305,16 +305,9 @@ export default {
                                     const selectionAction = selectionInput.actions.find(
                                         action => action.selection_id == selectionId
                                     )
-                                    if (
-                                        operator == '=' &&
-                                        (!selectionAction || selectionAction.action != filter.actionType)
-                                    )
+                                    if (operator == '=' && (!selectionAction || selectionAction.action != filter.key))
                                         include = false
-                                    if (
-                                        operator == '!=' &&
-                                        !!selectionAction &&
-                                        selectionAction.action == filter.actionType
-                                    )
+                                    if (operator == '!=' && !!selectionAction && selectionAction.action == filter.key)
                                         include = false
                                 }
                             }
