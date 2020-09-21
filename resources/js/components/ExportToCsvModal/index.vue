@@ -317,7 +317,15 @@ export default {
                             // Find the origin Request(s)
                             const originRequestList = selectionInput.requests.filter(request => request.selection_id == origin.selection_id)
                             // Merge the requests with a double line-break
-                            currentRow.push(originRequestList.map(request => request.content).join('\n\n'))
+                            const requestContentList = originRequestList.map(request => {
+                                let requestContent = request.content
+                                if (request.selection.type == 'Master') {
+                                    const requestStatus = request.status == 'Resolved' ? 'ACCEPTED' : request.status == 'Rejected' ? 'REJECTED' : 'OPEN'
+                                    requestContent = `[${requestStatus}] ${requestContent}`
+                                }
+                                return requestContent
+                            })
+                            currentRow.push(requestContentList.join('\n\n'))
                         }
 
                     })
