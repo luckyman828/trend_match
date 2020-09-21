@@ -414,7 +414,14 @@ export default {
                 // Add the request input to the row
                 selectionHeaders.forEach(header => {
                     const selectionRequest = selectionInput.requests.find(x => `${x.selection.name}` == header)
-                    if (selectionRequest) rowToPush.push(selectionRequest.content)
+                    if (selectionRequest) {
+                        let requestContent = selectionRequest.content
+                        if (selectionRequest.selection.type == 'Master') {
+                            requestContent = `
+                            [${selectionRequest.status == 'Resolved' ? 'ACCEPTED' : selectionRequest.status == 'Rejected' ? 'REJECTED' : 'OPEN'}] ${requestContent}`
+                        }
+                        rowToPush.push(requestContent)
+                    }
                     else rowToPush.push('')
                 })
 
