@@ -94,6 +94,9 @@
                                 <span style="font-size: 10px; display: block; margin-bottom: 4px;" 
                                 v-for="(request, index) in action.requests" 
                                 :key="'request-'+index">
+                                    <strong v-if="request.selection.type == 'Master'">
+                                        [{{request.status == 'Rejected' ? 'REJECTED' : request.status == 'Resolved' ? 'ACCEPTED' : 'OPEN'}}] 
+                                    </strong>
                                     {{request.content}}
                                 </span>
                             </div>
