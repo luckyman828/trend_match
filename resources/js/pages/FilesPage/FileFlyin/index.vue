@@ -64,11 +64,11 @@ export default {
     data: function() { return {
         showFileEditorsFlyin: false,
     }},
-    watch: {
-        currentFile(newVal) {
-            console.log('new file', newVal)
-        }
-    },
+    // watch: {
+    //     currentFile(newVal) {
+    //         console.log('new file', newVal)
+    //     }
+    // },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
         ...mapGetters('selections', ['selectionsStatus', 'currentSelection', 'getSelectionUsersFlyinIsVisible', 'getSelections']),
