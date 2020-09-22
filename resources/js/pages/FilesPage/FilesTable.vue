@@ -14,6 +14,7 @@
             :selected.sync="selected"
             :contextItem.sync="contextMenuItem"
             :contextMouseEvent.sync="contextMouseEvent"
+            :useVirtualScroller="false"
             @show-contextmenu="showContextMenu"
         >
             <template v-slot:header>

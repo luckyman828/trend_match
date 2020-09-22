@@ -15,6 +15,7 @@
             :contextMouseEvent.sync="contextMouseEvent"
             :searchKey="'title'"
             :searchResult.sync="teamsFilteredBySearch"
+            :useVirtualScroller="false"
             @show-contextmenu="showTeamContext"
         >
             <template v-slot:tabs>
