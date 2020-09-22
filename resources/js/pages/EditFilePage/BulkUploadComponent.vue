@@ -105,6 +105,8 @@ export default {
                     url: null,
                 }
 
+                let pictureToUpload = basePicture
+
                 // Asume we are adding a new variant
                 let variantToUpdate = {
                     id: this.$uuid.v4(),
@@ -123,14 +125,20 @@ export default {
                 if (existingVariant) {
                     variantToUpdate = existingVariant
 
-                    // If the picture already exists on this variant, do nothing.
-                    if (existingVariant.pictures.find(x => x.name == image.name)) return
+                    // Check for existing picture
+                    const existingPicture = existingVariant.pictures.find(x => x.name == image.name)
 
-                    if (shouldBeFirst) {
-                        variantToUpdate.pictures.unshift(basePicture)
+                    if (existingPicture) {
+                        if (existingPicture.name == image.name && !!existingPicture.url) return // don't reupload an existing image
+                        pictureToUpload = existingPicture
                     } else {
-                        variantToUpdate.pictures.push(basePicture)
+                        if (shouldBeFirst) {
+                            variantToUpdate.pictures.unshift(basePicture)
+                        } else {
+                            variantToUpdate.pictures.push(basePicture)
+                        }
                     }
+
                 } else {
                     product.variants.push(variantToUpdate)
                 }
@@ -139,7 +147,7 @@ export default {
                 await this.uploadImage({
                     file: this.file, 
                     product,
-                    picture: basePicture,
+                    picture: pictureToUpload,
                     image, 
                 })
                 this.uploadingCount--
