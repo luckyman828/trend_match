@@ -95,6 +95,11 @@ export default {
                 valueToReturn = DateTime.fromJSDate(new Date(valueToReturn)).toFormat('MMMM yyyy')
             }
 
+            // Format numbers
+            if (this.mappedField.type == 'number' && !this.mappedField.error) {
+                valueToReturn = valueToReturn.toFixed(2)
+            }
+
             return valueToReturn
         }
     },
