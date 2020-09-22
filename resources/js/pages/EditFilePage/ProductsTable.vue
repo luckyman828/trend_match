@@ -415,6 +415,7 @@ export default {
             margin-top: -24px;
             margin-right: -12px;
             margin-left: 4px;
+            z-index: 1;
         }
     }
     ::v-deep {
