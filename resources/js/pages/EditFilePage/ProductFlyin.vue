@@ -342,7 +342,7 @@
                     </Draggable>
                     <div class="form-element">
                         <button class="ghost" @click="onAddAssortmentSize">
-                            <i class="far fa-plus"></i><span>Add EAN</span>
+                            <i class="far fa-plus"></i><span>Add Size</span>
                         </button>
                     </div>
                 </div>

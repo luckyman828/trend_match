@@ -97,7 +97,7 @@ export default {
 
             // Format numbers
             if (this.mappedField.type == 'number' && !this.mappedField.error) {
-                valueToReturn = valueToReturn.toFixed(2)
+                valueToReturn = Math.round(valueToReturn * 1e2) / 1e2
             }
 
             return valueToReturn
