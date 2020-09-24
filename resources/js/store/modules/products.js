@@ -27,6 +27,7 @@ export default {
         distributionScope: 'Feedback',
         showPDFModal: false,
         showCSVModal: false,
+        openTicketsOnly: false,
     },
 
     getters: {
@@ -98,6 +99,7 @@ export default {
             return state.advancedFilter
         },
         unreadOnly: state => state.unreadOnly,
+        openTicketsOnly: state => state.openTicketsOnly,
         hideCompleted: state => state.hideCompleted,
         currentProductFilter: state => {
             return state.currentProductFilter
@@ -193,6 +195,7 @@ export default {
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
+            const openTicketsOnly = getters.openTicketsOnly
             const hideCompleted = getters.hideCompleted
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
@@ -235,6 +238,12 @@ export default {
             }
             if (hideCompleted) {
                 productsToReturn = productsToReturn.filter(x => !x.is_completed)
+            }
+
+            if (openTicketsOnly) {
+                productsToReturn = productsToReturn.filter(x =>
+                    x.requests.find(request => request.selection.type == 'Master' && request.status == 'Open')
+                )
             }
 
             // Filter by advanced filters
@@ -305,16 +314,9 @@ export default {
                                     const selectionAction = selectionInput.actions.find(
                                         action => action.selection_id == selectionId
                                     )
-                                    if (
-                                        operator == '=' &&
-                                        (!selectionAction || selectionAction.action != filter.actionType)
-                                    )
+                                    if (operator == '=' && (!selectionAction || selectionAction.action != filter.key))
                                         include = false
-                                    if (
-                                        operator == '!=' &&
-                                        !!selectionAction &&
-                                        selectionAction.action == filter.actionType
-                                    )
+                                    if (operator == '!=' && !!selectionAction && selectionAction.action == filter.key)
                                         include = false
                                 }
                             }
@@ -1119,6 +1121,9 @@ export default {
         },
         SET_HIDE_COMPLETED(state, payload) {
             state.hideCompleted = payload
+        },
+        SET_OPEN_TICKETS_ONLY(state, payload) {
+            state.openTicketsOnly = payload
         },
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
