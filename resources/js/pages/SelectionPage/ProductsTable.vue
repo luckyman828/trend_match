@@ -106,7 +106,7 @@
                                     </span>
                                 </BaseContextMenuItem>
                                 <template slot="popover">
-                                    <BaseSelectButtons submitOnChange="true" 
+                                    <BaseSelectButtons submitOnChange="true" :displayFunction="prettifyDate"
                                     :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
                                 </template>
                             </v-popover>
@@ -128,7 +128,7 @@
                                     </span>
                                 </BaseContextMenuItem>
                                 <template slot="popover">
-                                    <BaseSelectButtons submitOnChange="true" 
+                                    <BaseSelectButtons submitOnChange="true"
                                     :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
                                 </template>
                             </v-popover>
@@ -829,8 +829,8 @@ export default {
                     height: 100%;
                 }
                 &.delivery {
-                    min-width: 80px;
-                    max-width: 80px;
+                    min-width: 96px;
+                    max-width: 96px;
                     margin-right: auto;
                 }
                 &.wholesale-price, &.recommended-retail-price {
@@ -982,6 +982,7 @@ export default {
             margin-top: -24px;
             margin-right: -12px;
             margin-left: 4px;
+            z-index: 1;
         }
     }
 }

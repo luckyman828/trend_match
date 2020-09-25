@@ -130,7 +130,7 @@ export default {
             },
             {
                 scope: null,
-                name: 'delivery_date',
+                name: 'delivery_dates',
                 displayName: 'Delivery (date/month)',
                 type: 'date',
                 headersToMatch: [
@@ -162,6 +162,12 @@ export default {
                 name: 'buying_group',
                 displayName: 'Buyer Group',
                 headersToMatch: ['buyer group', 'buyer', 'pricelist', 'buying group'],
+            },
+            {
+                scope: null,
+                name: 'assortment_sizes',
+                displayName: 'Custom Assortment Sizes',
+                headersToMatch: ['box size', 'assortment box size', 'ass size', 'assortment size'],
             },
             // VARIANTS
             // {

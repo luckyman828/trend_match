@@ -85,10 +85,10 @@
 
                             <div class="label">
                                 <template v-if="optionNameKey">
-                                    {{option[optionNameKey]}}
+                                    {{displayFunction ? displayFunction(option[optionNameKey]) : option[optionNameKey]}}
                                 </template>
                                 <template v-else>
-                                    {{option}}
+                                    {{displayFunction ? displayFunction(option) : option}}
                                 </template>
                                 <p class="description" v-if="optionDescriptionKey">
                                     {{optionGroup[optionDescriptionKey]}}
@@ -117,10 +117,10 @@
                                 <span v-html="labelPrefix" style="margin-right: 4px"></span>
                             </template>
                             <template v-if="optionNameKey">
-                                {{option[optionNameKey]}}
+                                {{displayFunction ? displayFunction(option[optionNameKey]) : option[optionNameKey]}}
                             </template>
                             <template v-else>
-                                {{option}}
+                                {{displayFunction ? displayFunction(option) : option}}
                             </template>
                             <p class="description" v-if="optionDescriptionKey">
                                 {{option[optionDescriptionKey]}}
@@ -158,6 +158,7 @@ export default {
         'groupIndex',
         'labelPrefix',
         'allowManualEntry',
+        'displayFunction',
     ],
     data: function () { return {
         selection: [],

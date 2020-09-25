@@ -12,7 +12,7 @@
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <!-- <img :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :variant="product.variants[variantIndex]" size="sm"/>
+                    <BaseVariantImg :key="product.id + '-' + variantIndex" :variant="product.variants[variantIndex]" size="sm"/>
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
@@ -34,9 +34,21 @@
                     </div>
                 </div>
             </span></td>
-            <td class="delivery">
-                <span v-if="!product.delivery_date || product.delivery_date.length < 8">{{product.delivery_date}}</span>
-                <span v-else>{{product.delivery_date.substr(0, 3)}} {{product.delivery_date.substr(product.delivery_date.length - 4)}}</span>
+            <td class="delivery" v-tooltip="{
+                content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
+                trigger: 'hover'
+            }"
+                :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
+                @click="onViewSingle"
+            >
+                <span v-if="product.delivery_dates[0]">
+                    {{prettifyDate(product.delivery_dates[0], 'short')}}
+                    <span v-if="product.delivery_dates.length > 1"
+                        class="square ghost xs"
+                    > 
+                        <span>+{{+ product.delivery_dates.length -1}}</span>
+                    </span>
+                </span>
             </td>
 
             <!-- Start Prices -->
@@ -53,7 +65,8 @@
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs" v-tooltip="`
+                <div class="square ghost xs" v-if="product.min_variant_order != null || product.min"
+                v-tooltip="`
                     ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
                 `">
                     <span>

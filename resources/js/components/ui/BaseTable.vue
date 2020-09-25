@@ -77,35 +77,52 @@
                         </BaseTableRow>
                     </Draggable>
                     
-                    <template v-else>
-                        <RecycleScroller
-                            :items="itemsSorted"
-                            :item-size="itemSize"
-                            :buffer="1000"
-                            page-mode
-                            :key-field="itemKey"
-                            v-slot="{ item, index }"
+                    <RecycleScroller v-else-if="useVirtualScroller"
+                        :items="itemsSorted"
+                        :item-size="itemSize"
+                        :buffer="1000"
+                        page-mode
+                        :key-field="itemKey"
+                        v-slot="{ item, index }"
+                    >
+                        <BaseTableRow ref="tableRow"
+                            class="draggable-row"
+                            :key="itemKey ? item[itemKey] : index"
+                            :item="item" :index="index"
+                            :showSelect="showSelect"
+                            :selected.sync="localSelected"
+                            :items="items"
+                            :contextItem="contextItem"
+                            :itemKey="itemKey"
+                            :showContextButton="!hideContextButton"
+                            :itemType="itemType"
+                            :itemSize="itemSize"
+                            :hasFocus="focusIndex == index"
+                            @select-range="selectRange(index, items, selected)"
+                            @show-contextmenu="onContextMenu($event, item)"
                         >
-                            <BaseTableRow ref="tableRow"
-                                class="draggable-row"
-                                :key="itemKey ? item[itemKey] : index"
-                                :item="item" :index="index"
-                                :showSelect="showSelect"
-                                :selected.sync="localSelected"
-                                :items="items"
-                                :contextItem="contextItem"
-                                :itemKey="itemKey"
-                                :showContextButton="!hideContextButton"
-                                :itemType="itemType"
-                                :itemSize="itemSize"
-                                :hasFocus="focusIndex == index"
-                                @select-range="selectRange(index, items, selected)"
-                                @show-contextmenu="onContextMenu($event, item)"
-                            >
-                                <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
-                            </BaseTableRow>
-                        </RecycleScroller>
-                    </template>
+                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
+                        </BaseTableRow>
+                    </RecycleScroller>
+
+                    <BaseTableRow ref="tableRow" v-else
+                        v-for="(item, index) in itemsSorted"
+                        :key="itemKey ? item[itemKey] : index"
+                        :item="item" :index="index"
+                        :showSelect="showSelect"
+                        :selected.sync="localSelected"
+                        :items="items"
+                        :contextItem="contextItem"
+                        :itemKey="itemKey"
+                        :showContextButton="!hideContextButton"
+                        :itemType="itemType"
+                        :itemSize="itemSize"
+                        :hasFocus="focusIndex == index"
+                        @select-range="selectRange(index, items, selected)"
+                        @show-contextmenu="onContextMenu($event, item)"
+                    >
+                        <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
+                    </BaseTableRow>
                 </template>
                 <!-- End content -->
 
@@ -162,6 +179,29 @@ export default {
         'isDraggable',
         'itemsReOrdered',
     ],
+    props: {
+        stickyHeader: {},
+        contentStatus: {},
+        loadingMsg: {},
+        errorCallback: {},
+        errorMsg: {},
+        hideSelect: {},
+        items: {},
+        selected: {},
+        itemKey: {},
+        contextItem: {},
+        itemSize: {},
+        hideContextButton: {},
+        searchResult: {},
+        searchKey: {},
+        hideTopBar: {},
+        itemType: {},
+        focusIndex: {},
+        itemsTotalCount: {},
+        isDraggable: {},
+        itemsReOrdered: {},
+        useVirtualScroller: {default: true}
+    },
     data: function() { return {
         sticky: false,
         distToTop: null,
@@ -308,7 +348,8 @@ export default {
             this.tableWidth = tableWidth
         },
         initScrollHeader() {
-            if (this.stickyHeader && !this.scrollHeaderInitialized) {
+            // if (this.stickyHeader && !this.scrollHeaderInitialized) {
+            if (this.stickyHeader && !this.sticky) {
                 this.distToTop =  this.getYPos(this.$refs.stickyHeader)
                 this.scrollHeaderInitialized = true
             }

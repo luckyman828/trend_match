@@ -26,7 +26,7 @@ export default {
 
             // If we already have a snackbar with the same message add our count to the count of that snackbar
             const duplicateSnackbarIndex = state.snackbars.findIndex(x => x.msg == msg)
-            if (duplicateSnackbarIndex >= 0 && !['warning'].includes(type)) {
+            if (duplicateSnackbarIndex >= 0 && !['warning'].includes(type) && !timeoutCallback) {
                 state.snackbars[duplicateSnackbarIndex].count++
                 return
             }

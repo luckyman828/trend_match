@@ -6,7 +6,7 @@
             contentStatus="success"
             :items="products"
             :itemsTotalCount="stateProducts.length"
-            itemKey="id"
+            itemKey="datasource_id"
             :itemSize="139"
             :selected.sync="selectedProducts"
             :contextItem.sync="contextItem"
@@ -74,7 +74,7 @@
                                 </span>
                             </BaseContextMenuItem>
                             <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
+                                <BaseSelectButtons submitOnChange="true" :displayFunction="prettifyDate"
                                 :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
                             </template>
                         </v-popover>
@@ -114,6 +114,10 @@
 
                 </BaseContextMenu>
                 </v-popover>
+
+                <BaseCheckboxInputField class="small" v-model="noImagesOnly">
+                    <span>No images only</span>
+                </BaseCheckboxInputField>
 
                 <button class="invisible primary" v-if="activeFiltersCount > 0"
                 @click="onClearFilters"><span>Clear filter</span></button>
@@ -308,18 +312,20 @@ export default {
             return this.selectedBuyerGroups.length 
                 + this.selectedCategories.length 
                 + this.selectedDeliveryDates.length
-        }
-        // localProducts: {
-        //     get() {return this.products},
-        //     set(products) {
-        //         this.SET_PRODUCTS(products)
-        //     }
-        // }
+        },
+        noImagesOnly: {
+            get () {
+                return this.$store.getters['products/noImagesOnly']
+            },
+            set (value) {
+                this.SET_NO_IMAGES_ONLY(value)
+            }
+        },
     },
     methods: {
         ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts', 'updateManyProducts']),
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'SET_PRODUCTS',
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS']),
+        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS', 'SET_NO_IMAGES_ONLY']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products
@@ -394,6 +400,7 @@ export default {
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
+        this.onClearFilters()
     }
 }
 </script>
@@ -408,6 +415,7 @@ export default {
             margin-top: -24px;
             margin-right: -12px;
             margin-left: 4px;
+            z-index: 1;
         }
     }
     ::v-deep {

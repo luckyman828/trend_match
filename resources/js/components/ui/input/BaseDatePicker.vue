@@ -2,13 +2,14 @@
     <div class="date-picker">
         <div class="input-parent controls-right controls-inside control-items-2">
 
-            <date-picker :id="id" :type="type" valueType="format"
+            <date-picker :id="id" :type="type" :valueType="formatIn"
             :clearable="false" inputClass="input-wrapper"
-            v-model="localValue" :format="format"/>
+            :disabled-dates="disabledDates"
+            v-model="localValue" :format="formatOut"/>
 
-            <div class="controls">
+            <!-- <div class="controls">
                 <button v-if="value != oldValue" v-tooltip.top="`Revert to original (${oldValue})`" @click.stop="revert" class="square true-square yellow-green"><span>E</span></button>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -21,7 +22,9 @@ export default {
         'value',
         'oldValue',
         'id',
-        'format'
+        'formatIn',
+        'formatOut',
+        'disabledDates'
     ],
     computed: {
         localValue: {

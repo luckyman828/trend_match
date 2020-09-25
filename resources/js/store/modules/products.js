@@ -17,6 +17,7 @@ export default {
         advancedFilter: null,
         unreadOnly: false,
         hideCompleted: false,
+        noImagesOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
@@ -101,6 +102,7 @@ export default {
         unreadOnly: state => state.unreadOnly,
         openTicketsOnly: state => state.openTicketsOnly,
         hideCompleted: state => state.hideCompleted,
+        noImagesOnly: state => state.noImagesOnly,
         currentProductFilter: state => {
             return state.currentProductFilter
         },
@@ -134,21 +136,14 @@ export default {
             const products = getters.products
             let uniqueDeliveryDates = []
             products.forEach(product => {
-                if (product.delivery_date) {
-                    // const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
-                    const found = uniqueDeliveryDates.find(x => x == product.delivery_date)
-                    if (!found)
-                        // uniqueDeliveryDates.push({
-                        //     name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        //         month: 'long',
-                        //         year: 'numeric',
-                        //     }),
-                        //     value: product.delivery_date,
-                        // })
-                        uniqueDeliveryDates.push(product.delivery_date)
-                }
+                product.delivery_dates.map(date => {
+                    const found = uniqueDeliveryDates.find(x => x == date)
+                    if (!found) {
+                        uniqueDeliveryDates.push(date)
+                    }
+                })
             })
-            return uniqueDeliveryDates
+            return uniqueDeliveryDates.sort()
         },
         availableBuyerGroups(state, getters) {
             const products = getters.products
@@ -197,6 +192,7 @@ export default {
             const unreadOnly = getters.unreadOnly
             const openTicketsOnly = getters.openTicketsOnly
             const hideCompleted = getters.hideCompleted
+            const noImagesOnly = getters.noImagesOnly
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
             let productsToReturn = products
@@ -211,7 +207,7 @@ export default {
             // Filter by delivery date
             if (deliveryDates.length > 0) {
                 const filteredByDeliveryDate = productsToReturn.filter(product => {
-                    return Array.from(deliveryDates).includes(product.delivery_date)
+                    return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
                 })
                 productsToReturn = filteredByDeliveryDate
             }
@@ -349,6 +345,14 @@ export default {
                     })
                     return include
                 })
+            }
+
+            // Filter by no images
+            if (noImagesOnly) {
+                const filteredByNoImages = productsToReturn.filter(
+                    product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
+                )
+                productsToReturn = filteredByNoImages
             }
 
             // Filter by actions
@@ -551,6 +555,7 @@ export default {
                 brand: null,
                 category: null,
                 delivery_date: null,
+                delivery_dates: [],
                 buying_group: null,
                 is_editor_choice: null,
                 compositions: null,
@@ -558,6 +563,7 @@ export default {
                 variants: [],
                 assortments: [],
                 eans: [],
+                assortment_sizes: [],
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -670,7 +676,8 @@ export default {
                     new Compressor(image, {
                         quality: 0.8,
                         checkOrientation: true,
-                        maxHeight: 2016,
+                        // maxHeight: 2016,
+                        maxHeight: 1080,
                         success(result) {
                             compressedImage = result
                             resolve()
@@ -862,13 +869,7 @@ export default {
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
-                // Format delivery_date
-                if (product.delivery_date) {
-                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        month: 'long',
-                        year: 'numeric',
-                    })
-                }
+
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
 
@@ -1788,6 +1789,9 @@ export default {
             products.map(product => {
                 product.is_completed = shouldBeCompleted
             })
+        },
+        SET_NO_IMAGES_ONLY(state, boolean) {
+            state.noImagesOnly = boolean
         },
     },
 }

@@ -136,20 +136,14 @@
                             @change="validateProductId" @submit="onSubmitField"/>
                         </div>
                         <div class="form-element">
-                            <label for="delivery">Delivery</label>
-                            <BaseDatePicker ref="product.delivery_date" :id="'delivery'" :type="'month'" :format="'MMMM YYYY'"
-                            :oldValue="originalProduct.delivery_date" v-model="product.delivery_date" 
-                            @submit="onSubmitField"/>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <div class="form-element">
                             <label for="category">Brand</label>
                             <BaseEditInputWrapper id="brand" :type="'text'" 
                             :submitOnBlur="true"
                             :value="product.brand" :oldValue="originalProduct.brand" v-model="product.brand"
                             @submit="onSubmitField"/>
                         </div>
+                    </div>
+                    <div class="col-2">
                         <div class="form-element">
                             <label for="category">Category</label>
                             <BaseEditInputWrapper id="category" :type="'text'" 
@@ -157,13 +151,13 @@
                             :value="product.category" :oldValue="originalProduct.category" v-model="product.category"
                             @submit="onSubmitField"/>
                         </div>
-                    </div>
-                    <div class="form-element">
-                        <label for="buying-group">Buyer Group</label>
-                        <BaseEditInputWrapper id="buying-group" :type="'text'" 
-                        :submitOnBlur="true"
-                        :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"
-                        @submit="onSubmitField"/>
+                        <div class="form-element">
+                            <label for="buying-group">Buyer Group</label>
+                            <BaseEditInputWrapper id="buying-group" :type="'text'" 
+                            :submitOnBlur="true"
+                            :value="product.buying_group" :oldValue="originalProduct.buying_group" v-model="product.buying_group"
+                            @submit="onSubmitField"/>
+                        </div>
                     </div>
                     <div class="form-element">
                         <label for="composition">Composition</label>
@@ -182,6 +176,30 @@
             </BaseFlyinColumn>
 
             <BaseFlyinColumn>
+                <div class="deliveries form-section">
+                    <h3>Delivery</h3>
+                    <div class="col-2 form-element" v-for="(delivery, index) in product.delivery_dates" :key="'delivery-'+index">
+                        <BaseDatePicker
+                            :type="'month'" 
+                            :formatIn="'YYYY-MM-DD'"
+                            :formatOut="'MMMM YYYY'"
+                            v-model="product.delivery_dates[index]" 
+                            @submit="onSubmitField"
+                        />
+
+                        <div style="display: flex; align-items: center; height: 40px;">
+                            <button class="invisible ghost-hover" @click="onRemoveDelivery(index)">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-element">
+                        <button class="ghost" @click="onAddDelivery">
+                            <i class="far fa-plus"></i><span>Add Delivery</span>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="minimum form-section">
                     <h3>Minimum</h3>
                     <div class="col-2 delivery form-element">
@@ -290,6 +308,41 @@
                     <div class="form-element">
                         <button class="ghost" @click="addAssortment">
                             <i class="far fa-plus"></i><span>Add assortment</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="assortment-sizes form-section">
+                    <h3>Available Assortment Sizes</h3>
+                    <Draggable class="form-element"
+                        handle=".drag-handle"
+                    >
+                        <div class="col-2 form-element" v-for="(assortment, index) in product.assortment_sizes" :key="index">
+                            <BaseEditInputWrapper 
+                                ref="assortmentSizeInput"
+                                :type="'text'"
+                                :submitOnBlur="true"
+                                :oldValue="product.assortment_sizes[index]"
+                                v-model="product.assortment_sizes[index]"
+                                @submit="onSubmitField"
+                            />
+
+                            <div style="display: flex; align-items: center; height: 40px;">
+                                <div class="drag-handle square ghost primary"
+                                    style="margin-left: 8px;"
+                                >
+                                    <i class="far fa-arrows-alt-v"></i>
+                                </div>
+                                <button class="invisible ghost-hover" @click="onRemoveAssortmentSize(index)">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </Draggable>
+                    <div class="form-element">
+                        <button class="ghost" @click="onAddAssortmentSize">
+                            <i class="far fa-plus"></i><span>Add Size</span>
                         </button>
                     </div>
                 </div>
@@ -476,9 +529,10 @@ export default {
         currentVariant: null,
     }},
     watch: {
-        currentProduct(newVal, oldVal) {
-            this.initProduct()
-        },
+        currentProduct: {
+            deep: true,
+            handler: 'initProduct'
+        }
     },
     computed: {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
@@ -516,19 +570,6 @@ export default {
                 }
             })
             return filesToDelete
-        },
-        imagesToUpload() {
-            // Check if we have any files (images) we need to upload
-            const variants = this.productToEdit.variants
-            let imagesToUpload = []
-            variants.forEach(variant => {
-                variant.pictures.forEach(picture => {
-                    if (picture.imageToUpload) {
-                        imagesToUpload.push(picture.imageToUpload)
-                    }
-                })
-            })
-            return imagesToUpload
         },
     },
     methods: {
@@ -616,10 +657,10 @@ export default {
         onAddVariant() {
             const newVariant = {
                 id: this.$uuid.v4(),
-                name: null,
+                name: 'Unnamed',
                 image: null,
                 blob_id: null,
-                sizes: null,
+                sizes: [],
                 images: [],
                 pictures: [{
                     url: null,
@@ -940,7 +981,13 @@ export default {
         },
         onRemoveSize(index) {
             this.currentVariant.ean_sizes.splice(index, 1)
-        }
+        },
+        onAddDelivery() {
+            this.product.delivery_dates.push(new Date().toLocaleDateString({}, {month: 'long', year: 'numeric'}))
+        },
+        onRemoveDelivery(index) {
+            this.product.delivery_dates.splice(index, 1)
+        },
     },
     created() {
         document.body.addEventListener('keydown', this.hotkeyHandler)

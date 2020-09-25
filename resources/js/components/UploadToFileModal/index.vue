@@ -118,7 +118,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['updateManyProducts', 'insertProducts', 'deleteProducts']),
+        ...mapActions('products', ['updateManyProducts', 'insertProducts', 'deleteProducts', 'initProducts']),
         ...mapActions('files', ['syncExternalImages']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onReset() {
@@ -185,8 +185,11 @@ export default {
             }
 
             // Upload images we need to upload
+            // Test that we actually have new images to upload
             this.submitStatus = 'Uploading images. This may take a while'
-            await this.syncExternalImages({file: this.currentFile, products: this.products, progressCallback: this.uploadImagesProgressCalback}).catch(err => {
+            await this.syncExternalImages({
+                file: this.currentFile, products: this.products, progressCallback: this.uploadImagesProgressCalback
+            }).catch(err => {
                 this.SHOW_SNACKBAR({ 
                     msg: `<p><strong>Hey you!</strong><br></p>
                     <p>We will display your images from your provided URLs.</p>
@@ -199,6 +202,7 @@ export default {
             })
 
             this.uploadInProgress = false
+
             this.onClose()
             this.onReset()
         },

@@ -4,6 +4,57 @@
     classes="full-body">
 
         <ChangelogPost 
+                title="Cotton"
+                date="Late September 2020 Release"
+                featuredImgUrl="/images/blog/undraw_Portfolio_re_qwm5.svg"
+                singoff="David"
+            >
+            <template v-slot:lead>
+                <p>September has been a busy month, and we are happy to be able to release a lot of new features for you.</p>
+                <p>Followng this dashboard update will also be an update of the iOS app, bringing you new features across the board.</p>
+            </template>
+
+            <template v-slot:body>
+                <h3>New features</h3>
+
+                <h4>Bulk image upload</h4>
+                <p>From the edit products page, you can now select a bulk of images to upload at once.<br>
+                The only requirement is that your image names start with the following pattern: <br>
+                {PRODUCT ID}_{VARIANT NAME}.</p>
+                <p>Kollekt will automatically figure out what product and variant the image belongs to and upload it.
+                    I hope that this will save you a lot of time.
+                </p>
+                
+                <h4>Support multiple delivery dates</h4>
+                <p>Finally you can set multiple delivery dates for a single product.</p>
+                <p>This will be displayed both on the dashboard and in the updated iOS app.</p>
+
+                <h4>Assortment and box-size split</h4>
+                <p>Assortment names and available box sizes have been split into 2 seperate fields now.</p>
+                <p>This should make it easier to get a quick overview of the box-sizes and assortments available for a style.</p>
+
+                <h4>CSV export overhaul</h4>
+                <p>We decided to change the CSV export modal entirely to give you more control over the exact data you get out.</p>
+                <p>We plan to continue improving this feature as we get more feedback from you, our users, so please tell us how we can make it even better for you.</p>
+
+                <h3>Fixes</h3>
+                <ul>
+                    <li>Limit number of decimals displayed for numbers to 2.</li>
+                    <li>Fixed delivery dates sometimes being wrong due to wrong reading of timezone data.</li>
+                    <li>Fixed "Add new team" and "Add new folder" sometimes submitting/cancelling automtically.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost> 
+
+        <ChangelogPost 
             title="Chiffon"
             date="Mid-September 2020 Tweaks & Fixes"
             featuredImgUrl="/images/blog/undraw_birthday_girl_n46w(1).svg"
