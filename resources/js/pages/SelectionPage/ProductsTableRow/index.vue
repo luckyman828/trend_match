@@ -65,7 +65,8 @@
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs" v-tooltip="`
+                <div class="square ghost xs" v-if="product.min_variant_order != null || product.min"
+                v-tooltip="`
                     ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
                 `">
                     <span>

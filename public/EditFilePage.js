@@ -4617,7 +4617,7 @@ var render = function() {
                             },
                             [
                               _c("i", { staticClass: "far fa-plus" }),
-                              _c("span", [_vm._v("Add EAN")])
+                              _c("span", [_vm._v("Add Size")])
                             ]
                           )
                         ])
