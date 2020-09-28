@@ -78,7 +78,7 @@ export default {
     computed: {
         ...mapGetters('selections', ['getAuthUserSelectionWriteAccess']),
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
     },
     methods: {

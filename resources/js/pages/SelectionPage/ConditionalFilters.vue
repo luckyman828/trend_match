@@ -1,12 +1,14 @@
 <template>
-    <div class="conditional-filters">
-        <div class="overlay" v-close-popover></div>
+    <div class="conditional-filters" ref="filterWrapper" v-click-outside="onClose">
         <h3>Advanced filters</h3>
 
         <template></template>
         <div class="key-filter" v-for="(keyFilter, index) in keyFilters.filter(x => x.type == 'key')" :key="'key-'+index">
 
-            <v-popover trigger="click">
+            <v-popover trigger="click"
+                placement="left"
+                offset="0, -40px"
+            >
                 <BaseInputField class="select-key" disabled=true 
                 :value="keyFilter.key.name" type="select" inputClass="small"/>
                 <template slot="popover">
@@ -16,7 +18,10 @@
                 </template>
             </v-popover>
 
-            <v-popover trigger="click">
+            <v-popover trigger="click"
+                placement="left"
+                offset="0, -20px"
+            >
                 <BaseInputField class="select-operator" disabled=true 
                 :value="keyFilter.operator" type="select" inputClass="small"/>
                 <template slot="popover">
@@ -31,90 +36,75 @@
             v-model.number="keyFilter.value" type="number"/>
 
             <button class="ghost remove"
-            @click="onRemoveFilter(index)">
+            @click="onRemoveFilter(index, 'key')">
                 <i class="far fa-trash"></i>
             </button>
         </div>
 
-        <template v-if="!!keyFilters.find(x => x.type == 'user')">
-            <h3>User feedback filters</h3>
-            <div class="user-filter key-filter" v-for="(userFilter, index) in keyFilters.filter(x => x.type == 'user')" :key="'user-'+index">
+        <button class="ghost"
+        @click="onAddFilter">
+            <i class="fas fa-plus"></i>
+            <span>Add filter</span>
+        </button>
 
-                <v-popover trigger="click">
-                    <BaseInputField class="select-key" disabled=true 
-                    :value="userFilter.user.name" type="select" inputClass="small"/>
-                    <template slot="popover">
-                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
-                        type="radio" :submitOnChange="true" optionNameKey="name" optionDescriptionKey="selectionName"
-                        :options="availableFeedbackUsers" v-model="userFilter.user"/>
-                    </template>
-                </v-popover>
+        <h3>User / Selection filters</h3>
+        <div class="user-filter key-filter" v-for="(authorFilter, index) in keyFilters.filter(x => x.type == 'author')" :key="'author-'+index">
 
-                <v-popover trigger="click">
-                    <BaseInputField class="select-operator" disabled=true 
-                    :value="userFilter.operator" type="select" inputClass="small"/>
-                    <template slot="popover">
-                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
-                        type="radio" :submitOnChange="true" optionNameKey="name" optionValueKey="value"
-                        :options="availableUserOperators" v-model="userFilter.operator"/>
-                    </template>
-                </v-popover>
+            <v-popover trigger="click" 
+                placement="left"
+                offset="0, -60px"
+            >
+                <BaseInputField class="select-key" disabled=true
+                :value="authorFilter.filter.name" type="select" inputClass="small"/>
+                <template slot="popover">
+                    <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
+                    :multipleOptionArrays="true"
+                    type="radio" 
+                    :submitOnChange="true"
+                    :options="availableFilters"
+                    optionGroupOptionsKey="options"
+                    optionGroupNameKey="name"
+                    optionNameKey="name"
+                    v-model="authorFilter.filter"/>
+                </template>
+            </v-popover>
 
-                <v-popover trigger="click">
-                    <BaseInputField class="select-action-type" disabled=true 
-                    :value="userFilter.actionType" type="select" inputClass="small"/>
-                    <template slot="popover">
-                        <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
-                        type="radio" :submitOnChange="true" 
-                        :options="availableActionTypes" v-model="userFilter.actionType"/>
-                    </template>
-                </v-popover>
+            <v-popover trigger="click">
+                <BaseInputField class="select-operator" disabled=true 
+                :value="authorFilter.operator" type="select" inputClass="small"/>
+                <template slot="popover">
+                    <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
+                    type="radio" :submitOnChange="true" optionNameKey="name" optionValueKey="value"
+                    :options="availableUserOperators" v-model="authorFilter.operator"/>
+                </template>
+            </v-popover>
 
-                <button class="ghost remove"
-                @click="onRemoveFilter(index)">
-                    <i class="far fa-trash"></i>
-                </button>
-            </div>
-        </template>
+            <v-popover trigger="click">
+                <BaseInputField class="select-action-type" disabled=true 
+                :value="authorFilter.key" type="select" inputClass="small"/>
+                <template slot="popover">
+                    <BaseSelectButtons style="width: 200px; padding-top: 8px;" v-close-popover
+                    type="radio" :submitOnChange="true" optionNameKey="name" optionValueKey="value"
+                    :options="availableActionTypes" v-model="authorFilter.key"/>
+                </template>
+            </v-popover>
 
-
-
-        <div class="action-list">
-            <button class="ghost"
-            @click="onAddFilter">
-                <i class="fas fa-plus"></i>
-                <span>Add filter</span>
-            </button>
-
-            <button class="ghost"
-            @click="onAddUserFilter">
-                <i class="fas fa-plus"></i>
-                <span>Add user filter</span>
+            <button class="ghost remove"
+            @click="onRemoveFilter(index, 'author')">
+                <i class="far fa-trash"></i>
             </button>
         </div>
+
+        <button class="ghost"
+        @click="onAddAuthorFilter">
+            <i class="fas fa-plus"></i>
+            <span>Add user/selection filter</span>
+        </button>
 
         <button class="primary full-width submit"
         @click="onSubmit" v-close-popover>
             <span>Apply filter ({{productsFiltered.length}} products)</span>
         </button>
-
-        <!-- <BaseSelectButtonsContextMenu
-            ref="selectKeyContext"
-            header="Choose key"
-            :submitOnChange="true" 
-            type="radio"
-            :options="availableKeys"
-            optionNameKey="name"
-            v-model="contextKeyFilter.key"
-        /> -->
-        <!-- <BaseSelectButtonsContextMenu
-            ref="selectOperatorContext"
-            header="Choose operator"
-            :submitOnChange="true" 
-            type="radio"
-            :options="availableOperators"
-            v-model="contextKeyFilter.operator"
-        /> -->
 
     </div>
 </template>
@@ -130,47 +120,58 @@ export default {
         availableKeys: [
             {
                 name: 'Order minimum',
-                value: 'min_order'
+                value: 'min_order',
+                scope: 'product',
             },
             {
                 name: 'Variant minimum',
-                value: 'min_variant_order'
+                value: 'min_variant_order',
+                scope: 'product',
             },
             {
                 name: 'Recommended retail price',
-                value: 'recommended_retail_price'
+                value: 'recommended_retail_price',
+                scope: 'product',
             },
             {
                 name: 'Wholesale price',
-                value: 'wholesale_price'
+                value: 'wholesale_price',
+                scope: 'product',
             },
             {
                 name: 'Mark up',
-                value: 'mark_up'
+                value: 'mark_up',
+                scope: 'product',
             },
             {
                 name: 'Num. Requests',
-                value: 'requests'
+                value: 'requests',
+                scope: 'user',
             },
             {
                 name: 'Num. Comments',
-                value: 'comments'
+                value: 'comments',
+                scope: 'user',
             },
             {
                 name: 'Num. In',
-                value: 'ins'
+                value: 'ins',
+                scope: 'user',
             },
             {
                 name: 'Num. Out',
-                value: 'outs'
+                value: 'outs',
+                scope: 'user',
             },
             {
                 name: 'Num. Focus',
-                value: 'focus'
+                value: 'focus',
+                scope: 'user',
             },
             {
                 name: 'Num. Not decided',
-                value: 'nds'
+                value: 'nds',
+                scope: 'user',
             },
         ],
         defaultKeyFilterObject: {
@@ -180,12 +181,15 @@ export default {
             },
             operator: '>',
             value: 0,
+            filter: {name: 'Add filter'},
         },
-        defaultUserFilterObject: {
-            type: 'user',
-            actionType: 'In',
+        defaultAuthorFilterObject: {
+            type: 'author',
+            key: 'Choose key',
             operator: '=',
-            user: {name: 'Choose user'},
+            filter: {
+                name: 'Choose filter'
+            },
         },
         availableOperators: [
             {name: '> Greater than', value: '>'}, {name: '< Less than', value: '<'}, {name: '= Equal to', value: '='}, {name: '!= Not equal to', value: '!='}
@@ -193,7 +197,14 @@ export default {
         availableUserOperators: [
             {name: '= Equal to', value: '='}, {name: '!= Not equal to', value: '!='}
         ],
-        availableActionTypes: ['In', 'Out', 'Focus', 'None'],
+        availableActionTypes: [
+            {name: 'Action: In', value: 'In'}, 
+            {name: 'Action: Out', value: 'Out'}, 
+            {name: 'Action: Focus', value: 'Focus'}, 
+            {name: 'Action: None', value: 'None'}, 
+            {name: 'Has Comment', value: 'Comment'}, 
+            {name: 'Has Request', value: 'Request'}
+            ],
         keyFilters: [],
         contextKeyFilter: [],
     }},
@@ -202,34 +213,109 @@ export default {
             products: 'products',
             getActiveSelectionInput: 'getActiveSelectionInput'
         }),
-        availableFeedbackUsers() {
+        ...mapGetters('auth', ['authUser']),
+        availableUsers() {
             // Every product should include every feedback user, so we should be able to simple do this:
             const selectionInput = this.getActiveSelectionInput(this.products[0])
-            return selectionInput.feedbacks.map(feedback => {
-                return {
+            const usersToReturn = [{
+                name: 'You',
+                user_id: this.authUser.id,
+            }]
+            
+            selectionInput.actions.map(action => {
+                if (usersToReturn.find(x => x.user_id == action.user_id)) return
+                usersToReturn.push( {
+                    name: action.user ? action.user.name : 'Anonymous',
+                    user_id: action.user_id,
+                })
+            })
+            selectionInput.feedbacks.map(feedback => {
+                if (usersToReturn.find(x => x.user_id == feedback.user_id)) return
+                usersToReturn.push({
                     name: feedback.user ? feedback.user.name : 'Anonymous',
                     user_id: feedback.user_id,
-                    selection: feedback.selection,
-                    selection_id: feedback.selection_id,
-                    selectionName: feedback.selection.name
-                }
+                })
             })
+
+            // usersToReturn.push(...)
+            return usersToReturn
+        },
+        availableSelections() {
+            // Every product should include every feedback user, so we should be able to simple do this:
+            const selectionInput = this.getActiveSelectionInput(this.products[0])
+            return selectionInput.actions.map(action => {
+                return action.selection
+            })
+        },
+        availableFilters() {
+            return [
+                {
+                    name: 'Selection',
+                    options: this.availableSelections.map(x => {
+                        x.filterType = 'selection'
+                        return x
+                    })
+                },
+                {
+                    name: 'User',
+                    options: this.availableUsers.map(x => {
+                        x.filterType = 'user'
+                        return x
+                    })
+                }
+            ]
         },
         productsFiltered() {
             return this.products.filter(product => {
                 let include = true
                 this.keyFilters.forEach(filter => {
 
-                    // FILTER BY USER FEEDBACK
-                    if (filter.type == 'user') {
-                        if (!filter.user.user_id) return
+                    // FILTER BY USER / SELECTION INPUT
+                    if (filter.type == 'author') {
+                        if (!filter.filter.filterType) return
+
                         const operator = filter.operator
-                        const userId = filter.user.user_id
-                        const selectionId = filter.user.selection_id
+                        const type = filter.filter.filterType
                         const selectionInput = this.getActiveSelectionInput(product)
-                        const userFeedback = selectionInput.feedbacks.find(feedback => feedback.user_id == userId && feedback.selection_id == selectionId)
-                        if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType)) include = false
-                        if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.actionType)) include = false
+
+                        if (type == 'user') {
+                            const userId = filter.filter.user_id
+
+                            if (filter.key == 'Comment') {
+                                if (operator == '=' && !selectionInput.comments.find(x => x.user_id == userId)) include = false
+                                if (operator == '!=' && !!selectionInput.comments.find(x => x.user_id == userId)) include = false
+                            }
+                            else if (filter.key == 'Request') {
+                                if (operator == '=' && !selectionInput.requests.find(x => x.author_id == userId)) include = false
+                                if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId)) include = false
+                            }
+                            else {
+                                const actionArray = this.distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
+                                const userFeedback = selectionInput[actionArray].find(action => action.user_id == userId)
+                                // console.log('find action array match', actionArray, userFeedback, filter.key)
+                                if (operator == '=' && (!userFeedback || userFeedback.action != filter.key)) include = false
+                                if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.key)) include = false
+                            }
+                        }
+
+                        if (type == 'selection') {
+                            const selectionId = filter.filter.id
+
+
+                            if (filter.key == 'Comment') {
+                                if (operator == '=' && !selectionInput.comments.find(x => x.selection_id == selectionId)) include = false
+                                if (operator == '!=' && !!selectionInput.comments.find(x => x.selection_id == selectionId)) include = false
+                            }
+                            else if (filter.key == 'Request') {
+                                if (operator == '=' && !selectionInput.requests.find(x => x.selection_id == selectionId)) include = false
+                                if (operator == '!=' && !!selectionInput.requests.find(x => x.selection_id == selectionId)) include = false
+                            }
+                            else {
+                                const selectionAction = selectionInput.actions.find(action => action.selection_id == selectionId)
+                                if (operator == '=' && (!selectionAction || selectionAction.action != filter.key)) include = false
+                                if (operator == '!=' && (!!selectionAction && selectionAction.action == filter.key)) include = false
+                            }
+                        }
                     }
 
                     // FILTER BY KEY
@@ -263,8 +349,29 @@ export default {
         onAddUserFilter() {
             this.keyFilters.push(JSON.parse(JSON.stringify(this.defaultUserFilterObject)))
         },
-        onRemoveFilter(index) {
-            this.keyFilters.splice(index, 1)
+        onAddSelectionFilter() {
+            this.keyFilters.push(JSON.parse(JSON.stringify(this.defaultSelectionFilterObject)))
+        },
+        onAddAuthorFilter() {
+            this.keyFilters.push(JSON.parse(JSON.stringify(this.defaultAuthorFilterObject)))
+        },
+        onRemoveFilter(index, type) {
+            let keyIndex = -1
+            let theIndex = 0
+            let foundMatch = false
+            this.keyFilters.forEach(key => {
+                if (foundMatch) return
+
+                if (key.type == type) keyIndex++
+
+                if (index == keyIndex) {
+                    foundMatch = true
+                } else {
+                    theIndex++
+                }
+
+            })
+            this.keyFilters.splice(theIndex, 1)
         },
         showKeyContext(e, keyFilter) {
             this.contextKeyFilter = keyFilter
@@ -279,19 +386,32 @@ export default {
             })
         },
         onSubmit() {
-            this.SET_ADVANCED_FILTER(JSON.parse(JSON.stringify(this.keyFilters)))
+            // Remove unset filters
+            const filtersToSet = this.keyFilters.filter(x => !(x.type == 'author' && !x.filter || x.type == 'key' && !x.key.value))
+            this.SET_ADVANCED_FILTER(JSON.parse(JSON.stringify(filtersToSet)))
+        },
+        onClose() {
+            this.$emit('close')
         }
     },
     created() {
         this.onAddFilter()
+        this.onAddAuthorFilter()
     }
 }
 </script>
 
+<style lang="scss">
+.tooltip.advanced-filter {
+    max-width: none;
+}
+
+</style>
+
 <style lang="scss" scoped>
 .conditional-filters {
     padding: 16px;
-    width: 298px;
+    // width: 298px;
     .overlay {
         display: block;
         height: 200vh;
@@ -308,7 +428,7 @@ export default {
             max-width: 100px;
         }
         .select-operator {
-            max-width: 48px;
+            max-width: 36px;
             ::v-deep {
                 .input-wrapper {
                     padding-left: 0;

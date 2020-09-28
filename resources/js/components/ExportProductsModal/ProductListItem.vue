@@ -21,7 +21,9 @@
                             <td style="font-weight: 700;"><h4 style="margin: 0;">{{product.title}}</h4></td>
                         </tr>
                         <tr>
-                            <td>{{product.delivery_date}}</td>
+                            <td>
+                                {{prettyDates.join(', ')}}
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -55,9 +57,13 @@
             :style="{width: exportComments ? '24%' : '32%'}">
                 <div class="row">
                     <div class="assortments" style="display: -webkit-box; -webkit-box-orient: vertical; flex-direction: column; width: 100%;">
+                        <strong style="font-size: 11px">Assortment Sizes</strong>
+                        <p style="margin: 0; font-size: 10px;">{{product.assortment_sizes.join(', ')}}</p>
+
+                        <strong style="font-size: 11px; margin-top: 8px; display: block;">Assortments</strong>
                         <div v-for="(assortment, index) in product.assortments" :key="index"
-                        style="line-height: 1; word-break: break-word; margin-bottom: 2px;">
-                            <span style="font-size: 10px;">{{assortment.name || 'Unknown assortment'}} ({{assortment.box_size || 0}})</span>
+                            style="line-height: 1; word-break: break-word; margin-bottom: 2px;">
+                            <span style="font-size: 10px;">{{assortment.name || 'Unknown assortment'}}</span>
                         </div>
                     </div>
                 </div>
@@ -92,6 +98,9 @@
                                 <span style="font-size: 10px; display: block; margin-bottom: 4px;" 
                                 v-for="(request, index) in action.requests" 
                                 :key="'request-'+index">
+                                    <strong v-if="request.selection.type == 'Master'">
+                                        [{{request.status == 'Resolved' ? 'ACCEPTED' : request.status == 'Rejected' ? 'REJECTED' : 'OPEN'}}] 
+                                    </strong>
                                     {{request.content}}
                                 </span>
                             </div>
@@ -162,6 +171,9 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['getActiveSelectionInput']),
+        prettyDates() {
+            return this.product.delivery_dates.map(date => this.prettifyDate(date, 'short'))
+        },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },

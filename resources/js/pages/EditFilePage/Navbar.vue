@@ -20,8 +20,14 @@
 
             <!-- <button class="button dark" @click="onExport"><span>Export PDF</span></button>
             <button class="button dark" @click="onExportCsv"><span>Export CSV</span></button> -->
-            <button class="button primary" @click="onUploadToFile"><span>Upload CSV to file</span></button>
-            <button class="button primary" @click="onNewProduct"><span>Create new product</span></button>
+            <button class="button primary" @click="onUploadToFile">
+                <i class="far fa-upload"></i>
+                <span>Upload data to file</span>
+            </button>
+            <button class="button primary" @click="onNewProduct">
+                <i class="far fa-plus"></i>
+                <span>Create new product</span>
+            </button>
 
         </div>
 

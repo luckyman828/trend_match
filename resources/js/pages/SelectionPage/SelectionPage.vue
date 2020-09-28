@@ -151,9 +151,9 @@ export default{
         },
     },
     methods: {
-        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
+        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS', 'SET_PRODUCTS_COMPLETED']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
-        ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST']),
+        ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST', 'DELETE_REQUEST', 'INSERT_OR_UPDATE_REQUEST_COMMENT', 'DELETE_REQUEST_COMMENT']),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
@@ -184,6 +184,7 @@ export default{
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         onUpdateAction(action, selectionInput) {
+            console.log('on update action')
             if (this.currentSelectionMode == 'Feedback') {
                 const selectionFeedback = selectionInput.yourSelectionFeedback
                 const newAction = selectionFeedback.action == action ? 'None' : action
@@ -226,6 +227,17 @@ export default{
                 this.$router.push({name: 'files'})
             }
         },
+
+        productCompletedStatusChangedHandler(selectionId, shouldBeCompleted, productIdList) {
+            // console.log('productcompletd', selectionId, shouldBeCompleted, productIdList)
+            const products = []
+            productIdList.map(productId => {
+                const product = this.products.find(x => x.id == productId)
+                if (product) products.push(product)
+            })
+            this.SET_PRODUCTS_COMPLETED({selectionId, shouldBeCompleted, products})
+        },
+
         commentArrivedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentArrived", selectionId, comment)
@@ -241,19 +253,49 @@ export default{
             }
         },
         requestArrivedHandler(selectionId, request) {
-            if (request.author_id != this.authUser.id) {
+            // if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
                 this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
+            // }
+        },
+        requestDeletedHandler(selectionId, requestIdentifier) {
+            if (requestIdentifier.author_id != this.authUser.id) {
+                // console.log("OnRequestArrived", selectionId, request)
+                const product = this.products.find(x => x.id == requestIdentifier.product_id)
+                const request = {
+                    id: requestIdentifier.request_id,
+                    author_id: requestIdentifier.author_id,
+                    product_id: requestIdentifier.product_id,
+                    selection_id: requestIdentifier.selection_id,
+                }
+                this.DELETE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
+            }
+        },
+        requestCommentArrivedHandler(selectionId, requestComment) {
+            if (requestComment.author_id != this.authUser.id) {
+                // console.log("OnRequestArrived", selectionId, request)
+                const requestProduct = this.products.find(product => !!product.requests.find(x => x.id == requestComment.request_id))
+                const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
+                this.INSERT_OR_UPDATE_REQUEST_COMMENT({request, comment: requestComment})
+            }
+        },
+        requestCommentDeletedHandler(selectionId, requestComment) {
+            if (requestComment.author_id != this.authUser.id) {
+                const requestProduct = this.products.find(product => !!product.requests.find(x => x.id == requestComment.request_id))
+                const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
+                this.DELETE_REQUEST_COMMENT({request, comment: requestComment})
             }
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {
+                // console.log('bulk feedback arrived', selectionId, feedbacks)
                 this.SET_FEEDBACKS(feedbacks)
             }
         },
         feedbackArrivedHandler(selectionId, feedback) {
             if (feedback.user_id != this.authUser.id) {
+                // console.log('feedback arrived', selectionId, feedback)
                 this.SET_FEEDBACKS([feedback])
             }
         },
@@ -281,12 +323,18 @@ export default{
             connection.on('SubscribeSelectionsChanged', this.subscribeSelectionsChangedHandler)  
             connection.on('OnSelectionPresentationChanged',  this.selectionPresentationChangedHandler)
 
+            connection.on('OnProductCompletedStatusChanged',  this.productCompletedStatusChangedHandler)
+
             // Comments
             connection.on("OnCommentArrived", this.commentArrivedHandler)
             connection.on("OnCommentDeleted", this.commentDeletedHandler)
 
             // Requests
             connection.on("OnRequestArrived", this.requestArrivedHandler)
+            connection.on("OnRequestDeleted", this.requestDeletedHandler)
+
+            connection.on("OnAddOrUpdateDiscussion", this.requestCommentArrivedHandler)
+            connection.on("OnDiscussionDeleted", this.requestCommentDeletedHandler)
 
             // Feedback
             connection.on("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)
@@ -303,12 +351,18 @@ export default{
             connection.off('SubscribeSelectionsChanged', this.subscribeSelectionsChangedHandler)  
             connection.off('OnSelectionPresentationChanged',  this.selectionPresentationChangedHandler)
 
+            connection.off('OnProductCompletedStatusChanged',  this.productCompletedStatusChangedHandler)
+
             // Comments
             connection.off("OnCommentArrived", this.commentArrivedHandler)
             connection.off("OnCommentDeleted", this.commentDeletedHandler)
 
             // Requests
             connection.off("OnRequestArrived", this.requestArrivedHandler)
+            connection.off("OnRequestArrived", this.requestDeletedHandler)
+
+            connection.off("OnAddOrUpdateDiscussion", this.requestCommentArrivedHandler)
+            connection.off("OnDiscussionDeleted", this.requestCommentDeletedHandler)
 
             // Feedback
             connection.off("OnBulkFeedbackArrived", this.bulkFeedbackArrivedHandler)

@@ -1,18 +1,15 @@
 <template>
-    <tr class="team-row table-row" ref="teamRow" :class="{active: contextMenuIsActive}"
-    @contextmenu.prevent="$emit('showContextMenu', $event, team)"
-    @click.ctrl="$refs.selectBox.check()">
-        <td class="select">
-            <BaseCheckbox ref="selectBox" :value="team" :modelValue="localSelectedTeams" v-model="localSelectedTeams"
-            @checkRange="$emit('selectRange')"
-            />
-        </td>
+    <BaseTableInnerRow>
         <td v-if="editTitle" class="title">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
-            <BaseEditInputWrapper ref="editTitle" :activateOnMount="true" :type="'text'"
-                :value="teamToEdit.title" :oldValue="team.title" v-model="teamToEdit.title"
-                @submit="insertOrUpdateTeam(teamToEdit); editTitle = false" 
-                @cancel="$emit('cancelEditTitle'); editTitle = false;"/>
+            <BaseInputField inputClass="small" 
+            v-model="teamToEdit.title" 
+            :selectOnFocus="true"
+            :focusOnMount="true"
+            actionOnBlur="Cancel"
+            @submit="insertOrUpdateTeam(teamToEdit); editTitle = false"
+            @cancel="$emit('cancelEditTitle'); editTitle = false;"
+            @blur="$emit('cancelEditTitle'); editTitle = false;"/>
         </td>
         <td v-else class="title clickable" @click="showSingle()">
             <i class="fa-users" :class="team.id ? 'fas' : 'far'"></i>
@@ -28,7 +25,7 @@
         </td> -->
         <td class="currency">
             <button v-if="authUserWorkspaceRole == 'Admin'" class="ghost editable sm" 
-            @click.stop="$emit('editCurrency', $event, team)">
+            @click.stop="$emit('edit-currency', $event, team)">
                 <span>{{team.currency ? team.currency : 'Set currency'}}</span>
             </button>
             <span v-else>{{team.currency ? team.currency : 'No currency set'}}</span>
@@ -38,12 +35,8 @@
             @click="showSingle()">
                 <span>View{{authUserWorkspaceRole == 'Admin' ? '/ Edit' : ''}}</span>
             </button>
-            <button v-if="authUserWorkspaceRole == 'Admin'" class="invisible ghost-hover" 
-            @click.stop="$emit('showContextMenu', $event, team)">
-                <i class="far fa-ellipsis-h medium"></i>
-            </button>
         </td>
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -53,8 +46,6 @@ export default {
     name: 'teamsTableRow',
     props: [
         'team',
-        'selectedTeams',
-        'contextTeam',
     ],
     data: function() { return {
         editTitle: false,
@@ -66,14 +57,6 @@ export default {
     }},
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
-        localSelectedTeams: {
-            get() { return this.selectedTeams },
-            set(localSelectedTeams) {this.$emit('input', localSelectedTeams)}
-        },
-        contextMenuIsActive() {
-            return this.getContextMenuIsVisible && this.contextTeam && this.contextTeam.id == this.team.id && this.selectedTeams.length <= 1
-        }
     },
     methods: {
         ...mapActions('teams', ['insertOrUpdateTeam']),

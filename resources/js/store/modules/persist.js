@@ -420,9 +420,7 @@ export default {
                     },
                     { headers: {} }
                 )
-                .then(response => {
-                    console.log('cached workspace id')
-                })
+                .then(response => {})
                 .catch(err => {
                     console.log(err)
                 })

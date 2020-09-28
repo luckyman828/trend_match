@@ -14,10 +14,48 @@
                     </div>
                 </template>
                 <template v-slot:right>
-                    <div class="item-group">
-                        <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                    <div class="item-group" v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))">
+                        <!-- Master actions -->
+                        <BaseButton buttonClass="pill xs ghost"
+                        targetAreaPadding="4px 4px"
+                        :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                        @click="onToggleCompleted">
+                            <template v-if="!product.is_completed">
+                                <i class="far fa-circle" style="font-weight: 400;"></i>
+                                <span>Complete</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check-circle primary"></i>
+                                <span>Completed</span>
+                            </template>
+                        </BaseButton>
+                        <!-- END Master actions -->
                     </div>
                     <div class="item-group">
+                        <v-popover>
+                            <button class="ghost">
+                                <i class="far fa-ellipsis-h"></i>
+                            </button>
+                            <div slot="popover">
+                                <BaseContextMenu :inline="true">
+                                    <!-- <template v-slot:header>
+                                        <span>More actions</span>
+                                    </template> -->
+                                    <template v-slot:default>
+                                        <div class="item-group">
+                                            <div class="item-wrapper">
+                                                <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </BaseContextMenu>
+                            </div>
+                        </v-popover>
+                    </div>
+                    <!-- <div class="item-group">
+                        <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                    </div> -->
+                    <div class="item-group" v-if="activeSelectionList.length > 1">
                         <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                     </div>
                     <div class="item-group">
@@ -49,9 +87,9 @@
             <BaseFlyinColumn class="details">
                 
                 <div class="main-img" @click="cycleImage(true)">
-                    <!-- <img v-if="selectionInput.variants[0] != null" :src="variantImage(product.variants[currentImgIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + currentImgIndex" v-if="selectionInput.variants.length > 0" 
-                    :variant="currentVariant" size="sm" :index="currentVariant.imageIndex"/>
+                    <BaseVariantImg :key="product.id + '-' + currentImgIndex"  
+                        :variant="currentVariant" size="sm" :index="currentVariant ? currentVariant.imageIndex : 0"
+                    />
                     <button class="white controls" v-tooltip="'View large images'"
                     @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
@@ -125,8 +163,8 @@
                     </div>
                 </div>
 
-                <label>Delivery Date</label>
-                <BaseInputField readOnly=true :value="product.delivery_date"/>
+                <label>Delivery Date(s)</label>
+                <BaseInputTextArea readOnly=true :value="product.delivery_dates.map(date => `${prettifyDate(date)}`).join('\n')"/>
 
                 <div class="col-2 minimum">
                     <div>
@@ -141,12 +179,14 @@
 
                 <label>Composition</label>
                 <BaseInputField readOnly=true :value="product.composition"/>
-                <label>Description</label>
-                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
-                <label>Assortments (Box size)</label>
-                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => `${x.name} ${x.box_size && `(${x.box_size})`}`).join(',\n')"/>
+                <label>Box Sizes</label>
+                <BaseInputTextArea readOnly=true :value="product.assortment_sizes.join(', ')"/>
+                <label>Assortments</label>
+                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => `${x.name}`).join(',\n')"/>
                 <label>Category</label>
                 <BaseInputField readOnly=true :value="product.category"/>
+                <label>Description</label>
+                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
 
             </BaseFlyinColumn>
 
@@ -156,12 +196,17 @@
             :selectionInput="selectionInput" :requests="selectionInput.requests"
             @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
 
-            <CommentsSection class="comments" ref="commentsSection"
+            <CommentsSection v-if="!showRequestThread" class="comments" ref="commentsSection"
             :selectionInput="selectionInput"
             @activateRequestWrite="$refs.requestsSection.activateWrite()"
             @hotkeyEnter="hotkeyEnterHandler"/>
 
+            <RequestThreadSection v-else
+            @onTab="onTabRequestThread"/>
+
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
+
+            <!-- <RequestThreadFlyin/> -->
 
             <BaseDialog ref="confirmCloseInPresentation" type="confirm"
             confirmColor="dark" confirmText="Okay, close it">
@@ -200,6 +245,9 @@ import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import BudgetCounter from '../BudgetCounter'
+// import RequestThreadFlyin from './RequestThreadFlyin'
+import RequestThreadSection from './RequestThreadSection'
+import HotkeyHandler from '../../../components/common/HotkeyHandler'
 
 export default {
     name: 'productFlyin',
@@ -219,12 +267,15 @@ export default {
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
+        // RequestThreadFlyin,
+        RequestThreadSection,
+        HotkeyHandler,
     },
     data: function () { return {
         currentImgIndex: 0,
         lastBroadcastProductId: null,
         tooltipVariant: null,
-        actionDistributionTooltipTab: 'Feedback'
+        actionDistributionTooltipTab: 'Feedback',
     }},
     watch: {
         product(newVal, oldVal) {
@@ -248,12 +299,18 @@ export default {
                 document.body.addEventListener('keydown', this.keydownHandler)
 
             } else {
+                // On close
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
+                this.SET_CURRENT_REQUEST_THREAD(null)
             }
         }
     },
     computed: {
+        ...mapGetters('requests', {
+            showRequestThread: 'getRequestThreadVisible',
+            currentRequestThread: 'getCurrentRequestThread'
+        }),
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
             availableProducts: 'getAvailableProducts'
@@ -262,6 +319,11 @@ export default {
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
+            activeSelectionList: 'getCurrentSelections',
+        }),
+        ...mapGetters('requests', ['getRequestThreadVisible']),
+        ...mapGetters('files', {
+            approvalEnabled: 'getApprovalEnabled',
         }),
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
@@ -280,17 +342,21 @@ export default {
             return this.currentSelectionModeAction
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
             }
+        },
+        onToggleCompleted() {
+            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
         },
         onBroadcastProduct(product) {
             this.lastBroadcastProductId = product.id
@@ -342,10 +408,26 @@ export default {
                 }
             }
         },
+        onTabRequestThread(cycleForward) {
+            const requests = this.product.requests.filter(x => x.selection.type == 'Master')
+
+            // Find the index of our current request thread
+            const index = requests.findIndex(x => x.id == this.currentRequestThread.id)
+            if (cycleForward && index + 1 <= requests.length) {
+                this.SET_CURRENT_REQUEST_THREAD(requests[index+1])
+            } else if (!cycleForward && index > 0) {
+                this.SET_CURRENT_REQUEST_THREAD(requests[index-1])
+            }
+            
+        },
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+
+                if (!event.ctrlKey && key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') {
+                    this.onToggleCompleted()
+                }
 
                 if (this.userWriteAccess.actions.hasAccess) {
                     if (key == 'KeyI')
@@ -355,11 +437,25 @@ export default {
                     if (key == 'KeyF' || key == 'KeyU')
                         this.onUpdateAction('Focus')
                 }
+
+            }
+            if (key == 'Tab') {
+                event.preventDefault()
+                // Find requests with threads
+                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
+                if (requestsWithThreads.length <= 0) return
+
+                // // Else, show the first reqeust thread
+                if (!this.currentRequestThread) {
+                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
+                }
             }
         },
         hotkeyEnterHandler(e) {
+            // If the request thread flyin is visible, do nothing
+            if (this.getRequestThreadVisible || !this.selection.is_open) return
             // If the current mode is Alignment, focus the request field. Else focus comment
-            if (this.currentSelectionMode == 'Alignment') {
+            if (this.currentSelectionMode == 'Alignment' && !this.product.is_completed) {
                 this.$refs.requestsSection.activateWrite()
             } else {
                 this.$refs.commentsSection.activateWrite()
@@ -374,6 +470,9 @@ export default {
                 if (key == 'ArrowDown')
                     e.preventDefault(),
                     this.cycleImage(false)
+            }
+            if (key == 'Tab') {
+                e.preventDefault()
             }
         }
     },

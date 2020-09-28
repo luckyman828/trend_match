@@ -5,26 +5,73 @@ import store from './store'
 Vue.use(VueRouter)
 
 // Define route components
-import LoginScreen from './pages/LoginPage/LoginScreen'
-import RecoverPasswordScreen from './pages/LoginPage/RecoverPasswordScreen'
-import VerificationCodeScreen from './pages/LoginPage/VerificationCodeScreen'
-import SetNewPasswordScreen from './pages/LoginPage/SetNewPasswordScreen'
-import TeamsPage from './pages/TeamsPage'
-import UsersPage from './pages/UsersPage'
-import SelectionPage from './pages/SelectionPage'
-import FilesPage from './pages/FilesPage'
-import EditFilePage from './pages/EditFilePage'
+
+// import RecoverPasswordScreen from './pages/LoginPage/RecoverPasswordScreen'
+// import VerificationCodeScreen from './pages/LoginPage/VerificationCodeScreen'
+// import SetNewPasswordScreen from './pages/LoginPage/SetNewPasswordScreen'
+// import TeamsPage from './pages/TeamsPage'
+// import UsersPage from './pages/UsersPage'
+// import SelectionPage from './pages/SelectionPage'
+// import FilesPage from './pages/FilesPage'
+// import EditFilePage from './pages/EditFilePage'
 
 const routes = [
-    { path: '/login', name: 'login', component: LoginScreen },
-    { path: '/login/recover-password', name: 'recoverPassword', component: RecoverPasswordScreen },
-    { path: '/login/verification-code', name: 'verificationCode', component: VerificationCodeScreen },
-    { path: '/login/set-new-password', name: 'setNewPassword', component: SetNewPasswordScreen },
-    { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
-    { path: '/files', name: 'files', component: FilesPage },
-    { path: '/teams', name: 'teams', component: TeamsPage },
-    { path: '/users', name: 'users', component: UsersPage },
-    { path: '/file/:fileId/selection/:selectionId', name: 'selection', component: SelectionPage },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/LoginPage/LoginScreen'),
+    },
+    {
+        path: '/login/recover-password',
+        name: 'recoverPassword',
+        component: () =>
+            import(/* webpackChunkName: "RecoverPasswordScreen" */ './pages/LoginPage/RecoverPasswordScreen'),
+    },
+    {
+        path: '/login/verification-code',
+        name: 'verificationCode',
+        component: () =>
+            import(/* webpackChunkName: "VerificationCodeScreen" */ './pages/LoginPage/VerificationCodeScreen'),
+    },
+    {
+        path: '/login/set-new-password',
+        name: 'setNewPassword',
+        component: () =>
+            import(/* webpackChunkName: "SetNewPasswordScreen" */ './pages/LoginPage/SetNewPasswordScreen'),
+    },
+    {
+        path: '/file/:fileId/edit',
+        name: 'editFile',
+        component: () => import(/* webpackChunkName: "EditFilePage" */ './pages/EditFilePage'),
+    },
+    {
+        path: '/files',
+        name: 'files',
+        component: () => import(/* webpackChunkName: "FilesPage" */ './pages/FilesPage'),
+    },
+    {
+        path: '/teams',
+        name: 'teams',
+        component: () => import(/* webpackChunkName: "TeamsPage" */ './pages/TeamsPage'),
+    },
+    {
+        path: '/users',
+        name: 'users',
+        component: () => import(/* webpackChunkName: "UsersPage" */ './pages/UsersPage'),
+    },
+    {
+        path: '/file/:fileId/selection/:selectionId',
+        name: 'selection',
+        component: () => import(/* webpackChunkName: "SelectionPage" */ './pages/SelectionPage'),
+    },
+    // { path: '/login/recover-password', name: 'recoverPassword', component: RecoverPasswordScreen },
+    // { path: '/login/verification-code', name: 'verificationCode', component: VerificationCodeScreen },
+    // { path: '/login/set-new-password', name: 'setNewPassword', component: SetNewPasswordScreen },
+    // { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
+    // { path: '/files', name: 'files', component: FilesPage },
+    // { path: '/teams', name: 'teams', component: TeamsPage },
+    // { path: '/users', name: 'users', component: UsersPage },
+    // { path: '/file/:fileId/selection/:selectionId', name: 'selection', component: SelectionPage },
     { path: '*', redirect: '/files' },
 ]
 

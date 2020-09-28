@@ -1,14 +1,17 @@
 <template>
-    <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label}]">
+    <div class="input-field" :class="[type, {'read-only': readOnly}, {'error': error || errorTooltip}, {'has-label': label},
+    {'has-icon-right': !!$slots.default}]">
         <div v-tooltip.top="errorTooltip" :class="[{'input-wrapper': type == 'select'}, inputClass]" @click="onClick">
             <span v-if="label" class="label" v-html="label"></span>
             <input ref="inputField" :type="type" :id="id" :placeholder="placeholder" :autocomplete="autocomplete"
             :value="value" :disabled="disabled || readOnly"
             :class="[{'input-wrapper': type != 'select'}, inputClass]" 
             @input="$emit('input', $event.target.value)" 
-            @blur="$emit('blur', $event)" 
+            @blur="onBlur" 
             @paste="$emit('paste', $event)"
-            @focus="onFocus">
+            @focus="onFocus"
+            @keydown.esc="onCancel"
+            @keydown.enter="onSubmit">
             <div class="icon-right">
                 <slot/>
             </div>
@@ -25,6 +28,8 @@ export default {
     name: 'inputField',
     data: function() {return {
         error: null,
+        initialValue: null,
+        actionFired: false,
     }},
     props: [
         'type',
@@ -37,11 +42,18 @@ export default {
         'errorTooltip',
         'label',
         'inputClass',
-        'selectOnFocus'
+        'selectOnFocus',
+        'focusOnMount',
+        'actionOnBlur',
     ],
     computed: {
         inputField() {
             return this.$refs.inputField
+        }
+    },
+    watch: {
+        value(newVal) {
+            this.$emit('change', newVal)
         }
     },
     methods: {
@@ -58,7 +70,32 @@ export default {
         },
         onFocus() {
             if (this.selectOnFocus) this.select()
+        },
+        onBlur(e) {
+            this.$emit('blur', e)
+            if (!this.actionFired) {
+                if (this.actionOnBlur == 'Submit') this.onSubmit()
+                if (this.actionOnBlur == 'Cancel') this.onCancel()
+            }
+            this.actionFired = false
+        },
+        onCancel() {
+            this.actionFired = true
+            this.$emit('input', this.initialValue)
+            this.$emit('cancel')
+        },
+        onSubmit() {
+            this.actionFired = true
+            this.initialValue = this.value
+            this.$emit('input', this.initialValue)
+            this.$emit('submit', this.initialValue)
         }
+    },
+    mounted() {
+        if (this.focusOnMount) this.focus()
+    },
+    created() {
+        this.initialValue = this.value
     }
 }
 </script>
@@ -102,13 +139,20 @@ export default {
                 display: flex;
             }
         }
+        &.has-icon-right {
+            .input-wrapper {
+                padding-right: 36px;
+            }
+        }
     }
     .input-wrapper {
         position: relative;
+        text-overflow: ellipsis;
         input {
             border: none;
             background: inherit;
             width: 100%;
+            text-overflow: ellipsis;
         }
         &.small {
             + .icon-left, + .icon-right {

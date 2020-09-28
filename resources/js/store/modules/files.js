@@ -16,6 +16,7 @@ export default {
         currentFolderStatus: null,
         path: [],
         flyinVisible: false,
+        fileUsersStatus: null,
     },
 
     getters: {
@@ -26,9 +27,11 @@ export default {
         getCurrentFilePath: state => state.path,
         getCurrentFolderStatus: state => state.currentFolderStatus,
         currentFile: state => state.currentFile,
+        getCurrentFile: state => state.currentFile,
         currentFolderId: state => state.currentFolderId,
         currentFolder: state => state.currentFolder,
         getCurrentFolder: state => state.currentFolder,
+        getApprovalEnabled: state => state.currentFile && state.currentFile.approval_enabled,
         files: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
@@ -48,6 +51,7 @@ export default {
                 return state.files[index - 1]
             }
         },
+        getFileUsersStatus: state => state.fileUsersStatus,
     },
 
     actions: {
@@ -182,15 +186,17 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        async insertOrUpdateFile({ commit, dispatch }, file) {
+        async insertOrUpdateFile({ commit, dispatch }, { file, addToState = true }) {
+            // console.log('insert or update', file, addToState)
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
             let requestBody = file
+            // commit('INSERT_FILE', file)
             // Check if we are inserting or updating
             if (!file.id) {
                 // If we are inserting
-                commit('INSERT_FILE', file)
+                if (addToState) commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
                 if (file.parent_id == 0) {
@@ -209,6 +215,7 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
+                    // console.log('success!')
                     // Display message
                     const wasCreated = !file.id
                     const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`
@@ -224,7 +231,7 @@ export default {
                         { root: true }
                     )
                     // Set the files ID if not already set
-                    if (!file.id) file.id = response.data.id
+                    if (wasCreated) file.id = response.data.id
                     // console.log('done creating file', file)
                 })
                 .catch(err => {
@@ -468,7 +475,7 @@ export default {
                     product.variants.map(variant => {
                         // console.log('variant to map', variant)
                         variant.pictures.map((picture, index) => {
-                            if (!picture.url) return
+                            if (!picture.url || picture.url.search('kollektcdn.com') >= 0) return // Don't upload images that don't exists or are already on our cdn
                             imageMaps.push({
                                 mapping_id: variant.id,
                                 datasource_id: product.datasource_id,
@@ -535,7 +542,10 @@ export default {
 
                                 variant.pictures[pictureIndex].url = urlMap.cdn_url
 
-                                productsToUpdate.push(product)
+                                const productAlreadyAdded = productsToUpdate.find(
+                                    x => x.datasource_id == product.datasource_id
+                                )
+                                if (!productAlreadyAdded) productsToUpdate.push(product)
                             })
                         })
                         .catch(err => {
@@ -563,8 +573,67 @@ export default {
                     from_file_id: from.id,
                     to_file_id: destination.id,
                 })
+                .then(response => {})
+        },
+        fetchFileUsers({ commit }, file) {
+            commit('SET_FILE_USERS_STATUS', 'loading')
+            const apiUrl = `/files/${file.id}/users`
+            axios
+                .get(apiUrl)
                 .then(response => {
-                    console.log('file selections cloned', response)
+                    Vue.set(file, 'users', response.data)
+                    commit('SET_FILE_USERS_STATUS', 'success')
+                })
+                .catch(err => {
+                    commit('SET_FILE_USERS_STATUS', 'error')
+                })
+        },
+        async addUsersToFile({ commit }, { file, users }) {
+            commit('ADD_USERS_TO_FILE', { file, users })
+
+            await Promise.all(
+                users.map(async user => {
+                    const apiUrl = `/files/${file.id}/users/${user.id}`
+                    await axios.put(apiUrl)
+                })
+            )
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} users added`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit('REMOVE_USERS_FROM_FILE', { file, users })
+                })
+        },
+        async removeUsersFromFile({ commit }, { file, users }) {
+            commit('REMOVE_USERS_FROM_FILE', { file, users })
+
+            await Promise.all(
+                users.map(async user => {
+                    const apiUrl = `/files/${file.id}/users/${user.id}`
+                    await axios.delete(apiUrl)
+                })
+            )
+                .then(() => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${users.length} users removed`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit('ADD_USERS_TO_FILE', { file, users })
                 })
         },
     },
@@ -614,8 +683,8 @@ export default {
                 state.files.splice(index, 1)
             }
         },
-        removeUnsavedFiles(state) {
-            state.files = state.files.filter(x => x.id != null)
+        REMOVE_UNSAVED_FILES(state) {
+            state.files = state.files.filter(x => !!x.id)
         },
         setAvailableFileIds(state, fileIds) {
             state.availableFileIds = fileIds
@@ -656,6 +725,19 @@ export default {
                 // Else add it to the path
                 else state.path.push(folder)
             }
+        },
+        ADD_USERS_TO_FILE(state, { file, users }) {
+            file.users.push(...users)
+        },
+        REMOVE_USERS_FROM_FILE(state, { file, users }) {
+            for (let i = users.length - 1; i >= 0; i--) {
+                const user = users[i]
+                const index = file.users.findIndex(x => x.id == user.id)
+                file.users.splice(index, 1)
+            }
+        },
+        SET_FILE_USERS_STATUS(state, status) {
+            state.fileUsersStatus = status
         },
     },
 }

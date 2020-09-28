@@ -1,41 +1,43 @@
 <template>
     <div class="teams-table">
 
-        <BaseFlexTable v-if="currentTab == 'Teams'" stickyHeader="true"
-        :contentStatus="readyStatus"
-        loadingMsg="loading teams"
-        errorMsg="error loading teams"
-        :errorCallback="() => initData()">
+        <BaseTable v-if="currentTab == 'Teams'" stickyHeader="true"
+            ref="tableComp"
+            :contentStatus="readyStatus"
+            :errorCallback="() => initData()"
+            loadingMsg="loading teams"
+            errorMsg="error loading teams"
+            :items="teams"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selectedTeams"
+            :contextItem.sync="contextTeam"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="'title'"
+            :searchResult.sync="teamsFilteredBySearch"
+            :useVirtualScroller="false"
+            @show-contextmenu="showTeamContext"
+        >
             <template v-slot:tabs>
                 <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField :searchKey="['title']" :arrayToSearch="teams" v-model="teamsFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>showing <strong>{{teamsFilteredBySearch.length}}</strong> of <strong>{{teams.length}}</strong> records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
             <template v-slot:header>
-                <BaseTableHeader class="select">
+                <!-- <BaseTableHeader class="select">
                     <BaseCheckbox :value="selectedTeams.length > 0" :modelValue="true" 
                     @change="(checked) => checked ? selectedTeams = teams : selectedTeams = []"/>
-                </BaseTableHeader>
+                </BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Name</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'users'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Members</BaseTableHeader>
                 <!-- <BaseTableHeader :sortKey="'files'" :currentSortKey="sortKey" :sortAsc="sortAsc" :descDefault="true" @sort="sortTeams">Files</BaseTableHeader> -->
                 <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Team Currency</BaseTableHeader>
-                <BaseTableHeader class="action">Action</BaseTableHeader>
+                <BaseTableHeader class="action"/>
             </template>
-            <template v-slot:body>
-                <TeamsTableRow :ref="'teamRow-'+team.id" v-for="(team, index) in teamsFilteredBySearch" :key="team.id" :team="team" :contextTeam="contextTeam"
-                @showContextMenu="showTeamContext($event, team)" @showSingle="showSingleTeam" @editCurrency="onEditTeamCurrency($event, team)"
-                @cancelEditTitle="removeUnsavedTeam" v-model="selectedTeams" :selectedTeams="selectedTeams"
-                @selectRange="selectRange(index, teams, selectedTeams)"/>
+            <template v-slot:row="rowProps">
+                <TeamsTableRow :team="rowProps.item" :ref="'teamRow-'+rowProps.item.id"
+                @showSingle="showSingleTeam" @edit-currency="onEditTeamCurrency"
+                @cancelEditTitle="removeUnsavedTeam"
+                />
             </template>
             <template v-slot:footer>
                 <td>
@@ -47,7 +49,7 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <TeamFlyin :show="teamFlyInVisible" @close="teamFlyInVisible = false"/>
 
@@ -64,7 +66,7 @@
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 disabledTooltip="Only admins can rename teams"
                 hotkey="KeyR"
-                @click="$refs['teamRow-'+contextTeam.id][0].editTitle = true">
+                @click="$refs['teamRow-'+contextTeam.id].editTitle = true">
                     <span><u>R</u>ename</span>
                 </BaseContextMenuItem>
 
@@ -72,7 +74,7 @@
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 disabledTooltip="Only admins can change team currency"
                 hotkey="KeyC"
-                @click.stop="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                @click="onEditTeamCurrency(contextMouseEvent, contextTeam)">
                     <span><u>C</u>hange currency</span>
                 </BaseContextMenuItem>
             </div>
@@ -103,7 +105,7 @@
                     :disabled="authUserWorkspaceRole != 'Admin'"
                     disabledTooltip="Only admins can change team currency"
                     hotkey="KeyC"
-                    @click="onEditTeamCurrency(slotProps.mouseEvent, contextTeam)">
+                    @click="onEditTeamCurrency(contextMouseEvent, contextTeam)">
                         <span><u>C</u>hange currency</span>
                     </BaseContextMenuItem>
                 </div>
@@ -154,7 +156,6 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TeamsTableRow from './TeamsTableRow'
 import TeamFlyin from './TeamFlyin'
 import sortArray from '../../mixins/sortArray'
-import selectRange from '../../mixins/selectRange'
 
 export default {
     name: 'teamsTable',
@@ -163,7 +164,6 @@ export default {
     ],
     mixins: [
         sortArray,
-        selectRange,
     ],
     components: {
         TeamsTableRow,
@@ -245,7 +245,7 @@ export default {
         },
         removeUnsavedTeam() {
             // Check that we have a new team
-            const existingNewTeam = this.teams.find(x => x.id == null)
+            const existingNewTeam = this.teams.find(x => !x.id)
             if (existingNewTeam) {
                 this.teams.pop()
             }
@@ -257,17 +257,17 @@ export default {
             if (existingNewTeam) {
                 // Focus the edit field
                 this.$nextTick(() => {
-                    if (this.$refs['teamRow-null'][0].editTitle = true) {
-                        this.$refs['teamRow-null'][0].$refs['editTitle'].setActive()
+                    if (this.$refs['teamRow-0'].editTitle == true) {
+                        this.$refs['teamRow-0'].$refs['editTitle'].setActive()
                     } else {
-                        this.$refs['teamRow-null'][0].editTitle = true
+                        this.$refs['teamRow-0'].editTitle = true
                     }
                 })
             }
             // Else create a new team
             else {
                 const newTeam = {
-                    id: null,
+                    id: 0,
                     title: 'New team',
                     owner: null,
                     user_count: 0,
@@ -279,7 +279,7 @@ export default {
                 // wait for the new team to be rendered
                 this.$nextTick(() => {
                     // Activate title edit of new folder
-                    this.$refs['teamRow-null'][0].editTitle = true
+                    this.$refs['teamRow-0'].editTitle = true
                 })
             }
             
@@ -289,7 +289,7 @@ export default {
             this.SET_CURRENT_TEAM(team)
             this.teamFlyInVisible = true
         },
-        showTeamContext(e, team) {
+        showTeamContext(e) {
             // If we have a selection, show context menu for that selection instead
             let contextMenu
             if (this.selectedTeams.length > 1) {
@@ -297,8 +297,6 @@ export default {
             } else {
                 contextMenu = this.$refs.contextMenuTeam
             }
-            this.contextTeam = this.selectedTeams.length > 0 ? this.selectedTeams[0] : team
-            this.contextMouseEvent = e
             contextMenu.show(e)
         },
         async onDeleteTeam(team) {
@@ -311,10 +309,8 @@ export default {
             if (await this.$refs.confirmDeleteMultipleTeams.confirm()) {
                 for (let i = this.selectedTeams.length -1; i >= 0; i--) {
                     const team = this.selectedTeams[i]
-                    console.log('delete this team', team.name)
                     this.deleteTeam(team)
                 }
-                console.log('reset selected teams')
                 this.selectedTeams = []
             }
         },
@@ -350,11 +346,27 @@ export default {
             let sortAsc = this.sortAsc
 
             this.sortArray(array, this.sortAsc, this.sortKey)
+        },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
         }
     },
     created() {
         const forceRefresh = this.getTeamsTable.workspaceId != this.currentWorkspace.id
         this.initData(forceRefresh)
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>

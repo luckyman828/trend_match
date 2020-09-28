@@ -12,7 +12,11 @@ clickOutsideDirective.install = Vue => {
                         el.contains(clickOriginTarget) ||
                         !document.contains(clickOriginTarget)
                     ) &&
-                    !(event.target.classList.contains('.snackbar') || event.target.closest('.snackbar'))
+                    !(
+                        event.target.classList.contains('.snackbar') ||
+                        event.target.closest('.snackbar') ||
+                        (event.target.classList.contains('.tooltip') || event.target.closest('.tooltip'))
+                    )
                 ) {
                     // and if it did, call method provided in attribute value
                     vnode.context[binding.expression](event)

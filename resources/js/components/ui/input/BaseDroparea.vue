@@ -1,5 +1,5 @@
 <template>
-    <div class="drop-area" :class="{'drag-active': dragActive}"
+    <div class="drop-area" :class="{'drag-active': dragActive}" @click.self="activate"
     @dragenter="dragEnter" @dragleave="dragLeave" @drop="dragDrop">
         <input type="file" ref="fileInput" :accept="accept" :multiple="multiple"
         @input="onInput">

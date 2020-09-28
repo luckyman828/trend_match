@@ -1,219 +1,302 @@
 <template>
     <div class="products-table-wrapper" ref="table" @focusout="onBlur">
 
-        <BaseFlexTable class="products-table" :stickyHeader=true>
+        <BaseTable ref="tableComp"
+            :stickyHeader="true"
+            :items="products"
+            :itemsTotalCount="stateProducts.length"
+            itemKey="id"
+            :itemSize="currentSelections.length > 1 ? 247 : 139"
+            :selected.sync="selectedProducts"
+            :contextItem.sync="contextProduct"
+            :searchKey="['datasource_id','title','category','eans']"
+            :searchResult.sync="productsFilteredBySearch"
+            :hideContextButton="true"
+            :focusIndex="currentFocusRowIndex"
+            @show-contextmenu="onShowContextMenu"
+            @search-enter="onViewSingle(productsFilteredBySearch[0])"
+        >
             <template v-slot:tabs>
-                <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
-                v-model="currentProductFilter"
-                modelValue="overview"/>
-                <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                :modelValue="insTabValue"/>
-                <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
-                <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="outs"/>
-                <BaseTableTab :label="`Nds`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length" 
-                v-model="currentProductFilter" :disabled="currentSelections.length > 1"
-                v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                modelValue="nds"/>
+                <div class="tabs-inner">
+                    <BaseTableTab :label="`Overview`" :count="stateProducts.length" 
+                    v-model="currentProductFilter"
+                    modelValue="overview"/>
+                    <BaseTableTab :label="`In`" :count="stateProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])).length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    :modelValue="insTabValue"/>
+                    <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
+                    <BaseTableTab :label="`Out`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    modelValue="outs"/>
+                    <BaseTableTab :label="`Nds`" :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    modelValue="nds"/>
+                    <BaseTableTab v-if="selection.type == 'Master' && approvalEnabled" :label="`Tickets`" 
+                    :count="!hideCompleted ? stateProducts.filter(x => x.hasTicket).length : stateProducts.filter(x => x.hasTicket && !x.is_completed).length" 
+                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
+                    modelValue="tickets"/>
+                </div>
 
                 <!-- Selection Selector -->
                 <MultipleSelectionSelector v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
                 <!-- Selection Selector Ends -->
 
             </template>
-            <template v-slot:topBar>
-                <BaseTableTopBar class="table-top-bar">
-                    <template v-slot:left>
-                        <BaseSearchField :arrayToSearch="products" :searchKey="['datasource_id','title','category', 'eans']"
-                        ref="searchField"
-                        v-model="productsFilteredBySearch" @keyup.enter.native="onViewSearchProduct"/>
+            <template v-slot:topBarLeft>
+                <v-popover 
+                    trigger="manual" 
+                    :open="showFilters"
+                    :autoHide="false"
+                >
+                    <button class="ghost"
+                    @click="toggleShowFilters">
+                        <i class="far fa-filter"></i>
+                        <span>Filters</span>
+                        <div class="circle primary xs" v-if="activeFiltersCount > 0">
+                            {{activeFiltersCount}}
+                        </div>
+                    </button>
+                    <BaseContextMenu slot="popover" :inline="true" 
+                        v-click-outside="hideFilters"
+                    >
 
-                        <v-popover trigger="click" :autoHide="false">
-                            <!-- <button class="ghost">
-                                <span>Advanced Filters</span>
-                            </button> -->
-                            <BaseButton buttonClass="ghost filter-button" @click="showAdvancedFilters = true">
-                                <span>Advanced Filters</span>
-                                <div v-if="getHasAdvancedFilter" class="circle primary xs">
-                                    <span>{{getAdvancedFilter.length}}</span>
-                                </div>
-                                <i class="far fa-chevron-down"></i>
-                            </BaseButton>
-                            <template slot="popover">
-                                <ConditionalFilters :distributionScope="distributionScope"/>
-                            </template>
-                        </v-popover>
+                        <div class="item-group">
+                            <v-popover trigger="click" :disabled="availableCategories.length <= 0"
+                                placement="right"
+                            >
+                                <BaseContextMenuItem
+                                    iconClass="far fa-filter"
+                                    :disabled="availableCategories.length <= 0"
+                                    disabledTooltip="No categories available"
+                                    @click="showAdvancedFilters = false"
+                                >
+                                    <span>Category</span>
+                                    <span v-if="selectedCategories.length > 0" 
+                                        class="filter-counter circle primary xs">
+                                        <span>{{selectedCategories.length}}</span>
+                                    </span>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
+                                    :options="availableCategories" v-model="selectedCategories"/>
+                                </template>
+                            </v-popover>
+                        </div>
 
-                        <v-popover trigger="click" :disabled="availableCategories.length <= 0">
-                            <BaseButton buttonClass="ghost filter-button" :disabled="availableCategories.length <= 0"
-                            disabledTooltip="No categories available">
-                                <span>Category</span>
-                                <span v-if="selectedCategories.length > 0" class="circle primary xs">
-                                    <span>{{selectedCategories.length}}</span>
-                                </span>
-                                <i class="far fa-chevron-down"></i>
-                            </BaseButton>
-                            <template slot="popover">
-                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                                :options="availableCategories" v-model="selectedCategories"/>
-                            </template>
-                        </v-popover>
+                        <div class="item-group">
+                            <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0"
+                                placement="right"
+                            >
+                                <BaseContextMenuItem 
+                                    iconClass="far fa-calendar-week"
+                                    :disabled="availableDeliveryDates.length <= 0"
+                                    disabledTooltip="No delivery dates available"
+                                    @click="showAdvancedFilters = false"
+                                >
+                                    <span>Delivery</span>
+                                    <span v-if="selectedDeliveryDates.length > 0" class="filter-counter circle primary xs">
+                                        <span>{{selectedDeliveryDates.length}}</span>
+                                    </span>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <BaseSelectButtons submitOnChange="true" :displayFunction="prettifyDate"
+                                    :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
+                                </template>
+                            </v-popover>
+                        </div>
 
-                        <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0">
-                            <BaseButton buttonClass="ghost filter-button" :disabled="availableDeliveryDates.length <= 0"
-                            disabledTooltip="No delivery dates available">
-                                <span>Delivery</span>
-                                <i class="far fa-chevron-down"></i>
-                                <span v-if="selectedDeliveryDates.length > 0" class="circle primary xs">
-                                    <span>{{selectedDeliveryDates.length}}</span>
-                                </span>
-                            </BaseButton>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                            </template>
-                        </v-popover>
+                        <div class="item-group">
+                            <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0"
+                                placement="right"
+                            >
+                                <BaseContextMenuItem
+                                    iconClass="far fa-box"
+                                    :disabled="availableBuyerGroups.length <= 0"
+                                    disabledTooltip="No buyer groups available"
+                                    @click="showAdvancedFilters = false"
+                                >
+                                    <span>Buyer group</span>
+                                    <span v-if="selectedBuyerGroups.length > 0" class="filter-counter circle primary xs">
+                                        <span>{{selectedBuyerGroups.length}}</span>
+                                    </span>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <BaseSelectButtons submitOnChange="true"
+                                    :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
+                                </template>
+                            </v-popover>
+                        </div>
 
-                        <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0">
-                            <BaseButton buttonClass="ghost filter-button" :disabled="availableBuyerGroups.length <= 0"
-                            disabledTooltip="No buyer groups available">
-                                <span>Buyer group</span>
-                                <span v-if="selectedBuyerGroups.length > 0" class="circle primary xs">
-                                    <span>{{selectedBuyerGroups.length}}</span>
-                                </span>
-                                <i class="far fa-chevron-down"></i>
-                            </BaseButton>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                            </template>
-                        </v-popover>
+                        <div class="item-group">
+                            <v-popover trigger="click" 
+                                placement="right"
+                                popoverInnerClass="tooltip-inner popover-inner"
+                                :open="showAdvancedFilters"
+                                :autoHide="false
+                            ">
+                                <BaseContextMenuItem 
+                                    iconClass="far fa-sliders-v"
+                                    @click="showAdvancedFilters = true"
+                                >
+                                    <span>Advanced Filters</span>
+                                    <div v-if="getHasAdvancedFilter" class="filter-counter circle primary xs">
+                                        <span>{{getAdvancedFilter.length}}</span>
+                                    </div>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <ConditionalFilters :distributionScope="distributionScope"
+                                    :key="advancedFilterKey"
+                                    @close="showAdvancedFilters = false"/>
+                                </template>
+                            </v-popover>
+                        </div>
 
-                        <v-popover trigger="click">
-                            <button class="ghost filter-button">
-                                <span>Selection Input</span>
-                                <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
-                                    <span>{{selectedSelectionIds.length}}</span>
-                                </span>
-                                <i class="far fa-chevron-down"></i>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="getSelectionsAvailableForInputFiltering" v-model="selectedSelectionIds"
-                                optionNameKey="name" optionValueKey="id"/>
-                            </template>
-                        </v-popover>
+                        <div class="item-group" v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 
+                            || selectedSelectionIds.length > 0 ||unreadOnly || getHasAdvancedFilter"
+                        >
+                            <BaseContextMenuItem
+                                iconClass="far fa-times"
+                                color="danger"
+                                @click="resetFilters(); showFilters = false; showAdvancedFilters = false"
+                            >
+                                <span>Clear filters</span>
+                            </BaseContextMenuItem>
+                        </div>
 
-                        <v-popover trigger="click">
-                            <button class="ghost filter-button" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
-                                <span>Show input from: {{distributionScope}}</span>
-                                <i class="far fa-chevron-down"></i>
-                            </button>
-                            <template slot="popover">
-                                <BaseSelectButtons type="radio" submitOnChange="true" 
-                                :options="['Alignment', 'Feedback']" v-model="distributionScope"/>
-                            </template>
-                        </v-popover>
+                    </BaseContextMenu>
+                </v-popover>
 
-                        <!-- Temp. disabled until the functionality gets hooked up -->
-                        <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master'">
-                            <span>Unread only</span>
-                        </BaseCheckboxInputField>
+                <!-- Temp. disabled until the functionality gets hooked up -->
+                <BaseCheckboxInputField class="small" v-model="unreadOnly" v-if="currentSelectionMode != 'Feedback' && selection.type == 'Master'">
+                    <span>Unread only</span>
+                </BaseCheckboxInputField>
 
-                        <BaseCheckboxInputField class="small" v-if="['ins', 'focus'].includes(currentProductFilter)"
-                        :value="insTabValue == 'focus'"
-                        @check="onToggleFocusOnly">
-                            <span>Focus only</span>
-                        </BaseCheckboxInputField>
+                <BaseCheckboxInputField class="small" v-if="['ins', 'focus'].includes(currentProductFilter)"
+                :value="insTabValue == 'focus'"
+                @check="onToggleFocusOnly">
+                    <span>Focus only</span>
+                </BaseCheckboxInputField>
 
-                        <button class="invisible primary" 
-                        v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
-                        || getHasAdvancedFilter"
-                        @click="resetFilters">
-                            <span>Clear filter</span>
-                        </button>
+                <BaseCheckboxInputField class="small" v-if="currentProductFilter == 'tickets'"
+                v-model="hideCompleted">
+                    <span>Hide completed</span>
+                </BaseCheckboxInputField>
 
-                    </template>
-                    <template v-slot:right>
-                        <template v-if="selectedProducts.length > 0">
-                            <span class="hide-screen-md">{{selectedProducts.length}} selected</span>
-                            <span class="show-screen-md">({{selectedProducts.length}})</span>
-                        </template>
-                        <span v-if="productsFilteredBySearch.length != totalProductCount">
-                            {{productsFilteredBySearch.length}}/{{totalProductCount}}<span class="hide-screen-md"> showing</span>
+                <BaseCheckboxInputField class="small" v-if="currentProductFilter == 'tickets'"
+                v-model="openTicketsOnly">
+                    <span>Open tickets only</span>
+                </BaseCheckboxInputField>
+
+                <button class="invisible primary" 
+                v-if="selectedCategories.length > 0 || selectedDeliveryDates.length > 0 || selectedBuyerGroups.length > 0 || selectedSelectionIds.length > 0 ||unreadOnly
+                || getHasAdvancedFilter"
+                @click="resetFilters">
+                    <span>Clear filter</span>
+                </button>
+
+            </template>
+
+            <template v-slot:topBarRight>
+                <v-popover trigger="click">
+                    <button class="ghost filter-button">
+                        <span>Selection Input</span>
+                        <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
+                            <span>{{selectedSelectionIds.length}}</span>
                         </span>
-                        <span v-else>{{totalProductCount}}<span class="hide-screen-md"> records</span></span>
+                        <i class="far fa-chevron-down"></i>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" 
+                        :options="getSelectionsAvailableForInputFiltering" v-model="selectedSelectionIds"
+                        optionNameKey="name" optionValueKey="id"/>
                     </template>
-                </BaseTableTopBar>
+                </v-popover>
+
+                <v-popover trigger="click">
+                    <button class="ghost filter-button" v-tooltip="'Select what type of input is displayed in the table.<br><strong>This does not change the type of input you make.</strong>'">
+                        <span>Show input from: {{distributionScope}}</span>
+                        <i class="far fa-chevron-down"></i>
+                    </button>
+                    <template slot="popover">
+                        <BaseSelectButtons type="radio" submitOnChange="true" 
+                        :options="['Alignment', 'Feedback']" v-model="distributionScope"/>
+                    </template>
+                </v-popover>
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="select"><BaseCheckbox :modelValue="true" :value="selectedProducts.length > 0"
-                @change="(checked) => checked ? selectedProducts = productsFilteredBySearch : selectedProducts = []"/>
-                </BaseTableHeader>
-                <BaseTableHeader class="image"></BaseTableHeader>
+                <BaseTableHeader class="image"/>
                 <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">ID</BaseTableHeader>
                 <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">Product Name</BaseTableHeader>
                 <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort">Delivery</BaseTableHeader>
                 <BaseTableHeader class="wholesale-price hide-screen-xs" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
                 <BaseTableHeader class="recommended-retail-price hide-screen-xs" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
                 <BaseTableHeader class="mark-up hide-screen-xs" :sortKey="'mark_up'" :currentSortKey="sortKey"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">MU</BaseTableHeader>
-                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
+                <BaseTableHeader class="currency hide-screen-xs"/>
                 <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
                 v-tooltip="{content: 'Minimum per Variant / Minimum per Order', delay: {show: 300}}"
+                defaultTo="sequence"
                 @sort="onSort" :descDefault="true">Minimum</BaseTableHeader>
                 <!-- Single Selection Only -->
                 <template v-if="getCurrentSelections.length == 1">
-                    <BaseTableHeader class="focus"></BaseTableHeader>
-                    <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
+                    <BaseTableHeader class="focus" :sortKey="distributionScope == 'Alignment' ? ['alignmentFocus', 'alignmentIns'] : ['focus', 'ins']" :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort" :descDefault="true">Focus</BaseTableHeader>
+                    <BaseTableHeader class="ins" :sortKey="distributionScope == 'Alignment' ? ['alignmentIns', 'alignmentFocus'] : ['ins', 'focus']" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">In</BaseTableHeader>
                     <BaseTableHeader class="outs" :sortKey="distributionScope == 'Alignment' ? 'alignmentOuts' : 'outs'" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">Out</BaseTableHeader>
                     <BaseTableHeader class="nds" :sortKey="distributionScope == 'Alignment' ? 'alignmentNds' : 'nds'" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">ND</BaseTableHeader>
                     <BaseTableHeader :sortKey="['requests', 'comments']" :currentSortKey="sortKey"
+                    defaultTo="sequence"
                     @sort="onSort" :descDefault="true">Requests</BaseTableHeader>
                 </template>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
+            <template v-slot:row="rowProps">
 
-                <RecycleScroller
-                    class="products-scroller"
-                    :items="productsFilteredBySearch"
-                    :item-size="currentSelections.length > 1 ? 247 : 139"
-                    page-mode
-                    key-field="id"
-                    v-slot="{ item, index }"
-                >
-                    <ProductsTableRow class="product-row flex-table-row"
-                    @showContext="onShowContextMenu($event, item)"
-                    :selection="selection" :currentAction="currentAction"
-                    :product="item" :index="index" v-model="selectedProducts" :selectedProducts="selectedProducts"
-                    :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
-                    :distributionScope="distributionScope"
-                    @onViewSingle="onViewSingle" @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
+                <ProductsTableRow v-if="productsFilteredBySearch.length > 0"
+                ref="row"
+                class="product-row flex-table-row"
+                :product="rowProps.item" :index="rowProps.index"
+                :selection="selection"
+                :currentAction="currentAction"
+                :distributionTooltipComp="$refs.actionDistributionTooltip" :variantTooltipComp="$refs.variantTooltip"
+                :distributionScope="distributionScope"
+                :rowComponent="rowProps.rowComponent"
+                @onViewSingle="onViewSingle" 
+                @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"/>
                     
-                </RecycleScroller>
-
-                <tr v-if="productsFilteredBySearch.length <= 0">
+                <tr v-else>
                     <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
-                        No products to show. Try changing your filters.</p>
+                        No products to show. Try changing your filters.
+                    </p>
                 </tr>
+
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenu">
             <template v-if="contextSelectionInput">
@@ -248,12 +331,23 @@
 
                 </div>
                 <div class="item-group">
+                    <BaseContextMenuItem 
+                        :iconClass="!contextProduct.is_completed ? 'far fa-check-circle' : 'far fa-times-circle'"
+                        hotkey="KeyC"
+                        @click="onToggleProductsCompleted([contextProduct])" v-close-popover
+                    >
+                        <span v-if="!contextProduct.is_completed"><u>C</u>omplete</span>
+                        <span v-else>Undo <u>c</u>omplete</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
                     <BaseContextMenuItem iconClass="far fa-eye"
                     hotkey="KeyV"
                     @click="onViewSingle(contextProduct)" v-close-popover>
                         <u>V</u>iew
                     </BaseContextMenuItem>
                 </div>
+
             </template>
         </BaseContextMenu>
 
@@ -268,6 +362,9 @@
                 @click="selectedProducts = []">
                     <span><u>C</u>lear selection</span>
                 </BaseContextMenuItem>
+
+
+
             </div>
 
             <template v-if="selectedProducts.length > 1">
@@ -307,6 +404,49 @@
                     </BaseContextMenuItem>
                 </div>
             </template>
+
+            <div class="item-group">
+                <BaseContextMenuItem 
+                    iconClass="far fa-check-circle"
+                    hotkey="KeyC"
+                    @click="onSetProductsCompleted(selectedProducts, true)" v-close-popover
+                >
+                    <span><u>C</u>omplete products</span>
+                </BaseContextMenuItem>
+                <BaseContextMenuItem 
+                    iconClass="far fa-times-circle"
+                    hotkey="KeyN"
+                    @click="onSetProductsCompleted(selectedProducts, false)" v-close-popover
+                >
+                    <span>U<u>n</u>do complete products</span>
+                </BaseContextMenuItem>
+            </div>
+
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-file-export"
+                    hotkey="KeyE"
+                >
+                    <template>
+                        <span><u>E</u>xport selected</span>
+                    </template>
+
+                    <template v-slot:submenu>
+                        <div class="item-group">
+                            <BaseContextMenuItem iconClass="far fa-file-pdf"
+                            hotkey="KeyP"
+                            @click="onExportToPdf">
+                                <span><u>P</u>DF</span>
+                            </BaseContextMenuItem>
+
+                            <BaseContextMenuItem iconClass="far fa-file-csv"
+                            hotkey="KeyC"
+                            @click="onExportToCsv">
+                                <span><u>C</u>SV</span>
+                            </BaseContextMenuItem>
+                        </div>
+                    </template>
+                </BaseContextMenuItem>
+            </div>
         </BaseContextMenu>
 
         <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip"
@@ -354,8 +494,7 @@ export default {
         ConditionalFilters,
     },
     data: function() { return {
-        sortKey: 'datasource_id',
-        selectedProducts: [],
+        sortKey: 'sequence',
         showContextMenu: false,
         contextProduct: null,
         tooltipSelectionInput: null,
@@ -365,8 +504,13 @@ export default {
         actionDistributionTooltipTab: 'Feedback',
         showAdvancedFilters: false,
         insTabValue: 'ins',
+        advancedFilterKey: 0,
+        showFilters: false,
     }},
     computed: {
+        ...mapGetters('files', {
+            approvalEnabled: 'getApprovalEnabled'
+        }),
         ...mapGetters('products', ['availableCategories', 'availableDeliveryDates', 'currentFocusRowIndex',
             'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible', 'getActiveSelectionInput', 'getHasAdvancedFilter', 'getAdvancedFilter']),
         ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 
@@ -382,6 +526,14 @@ export default {
         contextSelectionInput() {
             if (!this.contextProduct) return
             return this.getActiveSelectionInput(this.contextProduct)
+        },
+        selectedProducts: {
+            get() {
+                return this.$store.getters['products/getSelectedProducts']
+            },
+            set(products) {
+                this.SET_SELECTED_PRODUCTS(products)
+            }
         },
         productsFilteredBySearch: {
             get() {
@@ -447,6 +599,22 @@ export default {
                 this.setUnreadOnly(value)
             }
         },
+        hideCompleted: {
+            get () {
+                return this.$store.getters['products/hideCompleted']
+            },
+            set (value) {
+                this.SET_HIDE_COMPLETED(value)
+            }
+        },
+        openTicketsOnly: {
+            get () {
+                return this.$store.getters['products/openTicketsOnly']
+            },
+            set (value) {
+                this.SET_OPEN_TICKETS_ONLY(value)
+            }
+        },
         totalProductCount() {
             if (['ins', 'focus'].includes(this.currentProductFilter)) {
                 return this.stateProducts.filter(product => ['In', 'Focus'].includes(this.getActiveSelectionInput(product)[this.currentAction])).length
@@ -458,23 +626,55 @@ export default {
                 return this.stateProducts.filter(product => this.getActiveSelectionInput(product)[this.currentAction] == 'None').length
             }
             return this.stateProducts.length
+        },
+        tooltipBoundariesEl() {
+            return document.getElementById('main')
+        },
+        activeFiltersCount() {
+            const advancedFilterCount = this.getAdvancedFilter ? this.getAdvancedFilter.length : 0
+            return this.selectedBuyerGroups.length 
+                + this.selectedCategories.length 
+                + this.selectedDeliveryDates.length
+                + advancedFilterCount
         }
     },
     methods: {
         ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories',
         'updateSelectedDeliveryDates', 'setUnreadOnly', 'setCurrentProductFilter',
         'updateSelectedBuyerGroups','setCurrentProduct', 'setAvailableProducts',
-        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE']),
+        'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_SELECTED_SELECTION_IDS', 'SET_ADVANCED_FILTER', 'SET_DISTRIBUTION_SCOPE',
+        'SET_SELECTED_PRODUCTS', 'SET_SHOW_PDF_MODAL', 'SET_SHOW_CSV_MODAL', 'SET_HIDE_COMPLETED', 'SET_OPEN_TICKETS_ONLY']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'setProductsCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        toggleShowFilters() {
+            this.showFilters = !this.showFilters
+        },
+        hideFilters() {
+            this.showFilters = false
+        },
+        onToggleProductsCompleted(products) {
+            products.map(product => {
+                this.toggleProductCompleted({selectionId: this.selection.id, product})
+            })
+        },
+        onSetProductsCompleted(products, shouldBeCompleted) {
+            this.setProductsCompleted({selectionId: this.selection.id, products, shouldBeCompleted})
+        },
+        onExportToCsv() {
+            this.SET_SHOW_CSV_MODAL(true)
+        },
+        onExportToPdf() {
+            this.SET_SHOW_PDF_MODAL(true)
+        },
         resetFilters() {
             this.selectedCategories = []
             this.selectedDeliveryDates = []
             this.selectedBuyerGroups = []
             this.selectedSelectionIds = []
             this.unreadOnly = false
+            this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
         },
         onToggleFocusOnly(focusOnly) {
@@ -495,12 +695,8 @@ export default {
             document.activeElement.blur()
             this.showSelectionProductPDP({product, selection: this.selection})
         },
-        onShowContextMenu(mouseEvent, product) {
+        onShowContextMenu(mouseEvent) {
             let contextMenu = this.$refs.contextMenu
-            this.contextProduct = product
-            if (this.selectedProducts.length > 0) {
-                this.contextProduct = this.selectedProducts[0]
-            }
             if (this.selectedProducts.length > 1) {
                 contextMenu = this.$refs.contextMenuSelection
             }
@@ -509,22 +705,24 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            // console.log('on sort', this.stateProducts, sortAsc, sortKey)
             this.sortArray(this.stateProducts, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
             this.$emit('updateAction', action, selectionInput)
         },
         onUpdateMultipleActions(products, newAction) {
+            // Filter out products that have already been completed
+            const productsToUpdate = products.filter(x => !x.is_completed)
+
             if (this.currentSelectionMode == 'Feedback') {
-                const actions = products.map(product => {
+                const actions = productsToUpdate.map(product => {
                     const selectionInput = this.getActiveSelectionInput(product)
                     return selectionInput.yourSelectionFeedback
                 })
                 this.updateFeedbacks({actions, newAction})
             }
             if (this.currentSelectionMode == 'Alignment') {
-                const actions = products.map(product => {
+                const actions = productsToUpdate.map(product => {
                     const selectionInput = this.getActiveSelectionInput(product)
                     return selectionInput.selectionAction
                 })
@@ -548,7 +746,8 @@ export default {
                 || this.singleVisible) return // Don't mess with user input
 
             if (key == 'KeyS') {
-                this.$refs.searchField.setFocus()
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
                 e.preventDefault() // Avoid entering an "s" in the search field
             }
             if (key == 'Tab' && !e.shiftKey) {
@@ -564,6 +763,7 @@ export default {
         // Preset distribution scope
         this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
         this.actionDistributionTooltipTab = this.distributionScope
+        this.onSort(true, 'sequence')
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
@@ -584,144 +784,222 @@ export default {
 </style>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
-
-
-    .products-table-wrapper {
-        ::v-deep {
-            tr:not(.table-top-bar) > * {
-                flex: 0 1 auto;
-            }
-            tr {
-                th, td {
-                    &.title {
-                        min-width: 220px;
-                        max-width: 220px;
-                        display: flex;
-                        align-items: center;
-                        margin-right: auto;
-                        @media screen and (max-width: $screenXs) {
-                            min-width: 160px;
-                            max-width: 160px;
-                        }
+@import '~@/_variables.scss';
+.products-table-wrapper {
+    ::v-deep {
+        tr:not(.table-top-bar) > * {
+            flex: 0 1 auto;
+        }
+        .table-row {
+            padding-top: 0;
+            padding-bottom: 0;
+            padding-right: 0;
+        }
+        tr {
+            th, td {
+                &.action {
+                    flex: 1;
+                }
+                &.title {
+                    min-width: 140px;
+                    max-width: 140px;
+                    display: flex;
+                    align-items: center;
+                    margin-right: auto;
+                    padding-right: 20px;
+                    span {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        display: block;
+                        overflow: hidden
                     }
-                    &.id {
-                        min-width: 80px;
-                        max-width: 80px;
-                        margin-left: 16px
-                    }
-                    &.image {
+                    @media screen and (max-width: $screenXs) {
                         min-width: 100px;
                         max-width: 100px;
-                        height: 100%;
-                    }
-                    &.delivery {
-                        min-width: 80px;
-                        max-width: 80px;
-                        margin-right: auto;
-                    }
-                    &.wholesale-price, &.recommended-retail-price {
-                        min-width: 64px;
-                        max-width: 64px;
-                    }
-                    &.currency {
-                        min-width: 38px;
-                        max-width: 38px;
-                    }
-                    &.mark-up {
-                        min-width: 36px;
-                        max-width: 36px;
-                    }
-                    &.currency {
-                        margin-right: auto;
-                    }
-                    &.minimum {
-                        min-width: 104px;
-                        max-width: 104px;
-                        margin-right: auto;
-                    }
-                    &.focus, &.ins, &.outs, &.nds {
-                        min-width: 48px;
-                        max-width: 48px;
-                    }
-                    &.outs {
-                        min-width: 52px;
-                        max-width: 52px;
-                    }
-                    &.nds {
-                        margin-right: auto;
-                    }
-                    &.requests {
-                        // margin-left: 32px;
-                        .button {
-                            padding: 0 4px;
-                        }
-                    }
-                    &.action {
-                        flex: 0 1 auto;
-                        margin-left: auto;
-                        @media screen and (min-width: $screenMd+1) {
-                            min-width: 232px;
-                            max-width: 232px;
-                            
-                        }
-                        // min-width: 40px;
-                        // max-width: 40px;
-                        // margin-left: 32px;
                     }
                 }
-                td {
-                    // &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up, &.minimum {
-                    //     padding-bottom: 20px;
-                    // }
-                    &:not(.image):not(.select):not(.action):not(.id) {
-                        padding-bottom: 28px;
+                &.id {
+                    min-width: 80px;
+                    max-width: 80px;
+                    margin-left: 16px
+                }
+                &.image {
+                    min-width: 100px;
+                    max-width: 100px;
+                    height: 100%;
+                }
+                &.delivery {
+                    min-width: 96px;
+                    max-width: 96px;
+                    margin-right: auto;
+                }
+                &.wholesale-price, &.recommended-retail-price {
+                    min-width: 64px;
+                    max-width: 64px;
+                }
+                &.currency {
+                    min-width: 38px;
+                    max-width: 38px;
+                }
+                &.mark-up {
+                    min-width: 36px;
+                    max-width: 36px;
+                }
+                &.currency {
+                    margin-right: auto;
+                }
+                &.minimum {
+                    min-width: 104px;
+                    max-width: 104px;
+                    margin-right: auto;
+                }
+                &.focus, &.ins, &.outs, &.nds {
+                    min-width: 48px;
+                    max-width: 48px;
+                }
+                &.focus {
+                    min-width: 56px;
+                    max-width: 56px;
+                }
+                &.outs {
+                    min-width: 52px;
+                    max-width: 52px;
+                }
+                &.nds {
+                    margin-right: auto;
+                }
+                &.requests {
+                    // margin-left: 32px;
+                    .button {
+                        padding: 0 4px;
                     }
                 }
             }
+            &.id {
+                min-width: 80px;
+                max-width: 80px;
+                margin-left: 16px
+            }
+            &.image {
+                min-width: 100px;
+                max-width: 100px;
+                height: 100%;
+            }
+            &.delivery {
+                min-width: 80px;
+                max-width: 80px;
+                margin-right: auto;
+            }
+            &.wholesale-price, &.recommended-retail-price {
+                min-width: 64px;
+                max-width: 64px;
+            }
+            &.currency {
+                min-width: 38px;
+                max-width: 38px;
+            }
+            &.mark-up {
+                min-width: 36px;
+                max-width: 36px;
+            }
+            &.currency {
+                margin-right: auto;
+            }
+            &.minimum {
+                min-width: 104px;
+                max-width: 104px;
+                margin-right: auto;
+            }
+            &.focus, &.ins, &.outs, &.nds {
+                min-width: 48px;
+                max-width: 48px;
+            }
+            &.outs {
+                min-width: 52px;
+                max-width: 52px;
+            }
+            &.nds {
+                margin-right: auto;
+            }
+            &.requests {
+                // margin-left: 32px;
+                .button {
+                    padding: 0 4px;
+                }
+            }
+            &.action {
+                flex: 0 1 auto;
+                margin-left: auto;
+                @media screen and (min-width: $screenMd+1) {
+                    min-width: 232px;
+                    max-width: 232px;
+                    
+                }
+                // min-width: 40px;
+                // max-width: 40px;
+                // margin-left: 32px;
+            }
+        }
+        td {
+            // &.id, &.title, &.delivery, &.wholesale-price, &.recommended-retail-price, &.mark-up, &.minimum {
+            //     padding-bottom: 20px;
+            // }
+            &:not(.image):not(.select):not(.action):not(.id) {
+                padding-bottom: 28px;
+            }
         }
     }
-    .product-row {
-        &.action-2 {
-            box-shadow: 4px 0 $primary inset
-        }
-        &.action-1 {
-            box-shadow: 4px 0 $green inset
-        }
-        &.action-0 {
-            box-shadow: 4px 0 $red inset
-        }
+}
+.product-row {
+    &.action-2 {
+        box-shadow: 4px 0 $primary inset
     }
+    &.action-1 {
+        box-shadow: 4px 0 $green inset
+    }
+    &.action-0 {
+        box-shadow: 4px 0 $red inset
+    }
+}
 
-    .selection-selector {
-        display: flex;
-        margin-left: auto;
-        > *:not(:first-child) {
-            margin-left: 8px;
-        }
+.selection-selector {
+    display: flex;
+    margin-left: auto;
+    > *:not(:first-child) {
+        margin-left: 8px;
     }
+}
 
-    .table-top-bar {
-        button {
-            position: relative;
-            .circle {
-                position: absolute;
-                right: -8px;
-                top: -8px;
-            }
+.tabs-inner {
+    width: calc(100% - 200px);
+    display: flex;
+}
+
+.table-top-bar {
+    button {
+        position: relative;
+        .circle {
+            margin-top: -24px;
+            margin-right: -12px;
+            margin-left: 4px;
+            z-index: 1;
         }
     }
-    .filter-button {
-        @media screen and (max-width: $screenMd) {
-            span {
-                margin-right: 8px;
-                &:first-child {
-                    margin-left: 8px;
-                }
-            }
-            .fa-chevron-down {
-                display: none;
+}
+.filter-button {
+    @media screen and (max-width: $screenMd) {
+        > span {
+            margin-right: 8px;
+            &:first-child {
+                margin-left: 8px;
             }
         }
+        .fa-chevron-down {
+            display: none;
+        }
     }
+}
+.filter-counter {
+    margin-left: auto;
+}
 </style>

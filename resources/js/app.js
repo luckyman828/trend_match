@@ -6,7 +6,12 @@ window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 window.axios.defaults.baseURL = process.env.MIX_API_BASE_URL
 
+window.XLSX = require('xlsx')
+
 window.focusVisible = require('focus-visible')
+
+import { DateTime } from 'luxon'
+window.DateTime = DateTime
 
 import store from './store/index'
 import router from './router'
@@ -19,9 +24,6 @@ Vue.use(VueCookies)
 
 import UUID from 'vue-uuid'
 Vue.use(UUID)
-
-import VuePapaParse from 'vue-papa-parse'
-Vue.use(VuePapaParse)
 
 import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
@@ -100,6 +102,9 @@ Vue.filter('truncate', function(value, limit) {
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
+Vue.filter('prettifyDate', function(value) {
+    return value ? DateTime.fromFormat(value, 'yyyy-MM-dd').toFormat('MMMM yyyy') : ''
+})
 Vue.filter('thousandSeparated', function(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 })
@@ -109,6 +114,16 @@ Vue.mixin({
     methods: {
         separateThousands(value) {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        },
+        prettifyDate(date, style) {
+            if (!date) return ''
+            if (!style) {
+                return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')
+            }
+            if (style == 'short') {
+                return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMM yy')
+            }
+            return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')
         },
     },
 })

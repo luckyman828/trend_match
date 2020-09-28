@@ -1,9 +1,15 @@
 <template>
     <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.name + '</strong> to PDF'"
-    @close="$emit('close')" :show="show">
+    @close="SET_SHOW_PDF_MODAL(false)" :show="show">
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported</h3>
             <form @submit.prevent>
+
+                <div class="form-element">
+                    <BaseCheckboxInputField v-model="exportSelected">
+                        Export selected products only
+                    </BaseCheckboxInputField>
+                </div>
 
                 <!-- Selection export options -->
                 <template v-if="$route.name == 'selection'">
@@ -107,7 +113,7 @@
 
 <script>
 import axios from 'axios';
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportPdf from './ExportPdf'
 
 
@@ -120,6 +126,7 @@ export default {
         ExportPdf
     },
     data: function () { return {
+        exportSelected: false,
         exportingPDF: false,
         exportComments: this.$route.name == 'selection' ? true : false,
         generatedPDF: null,
@@ -136,15 +143,21 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('products', ['getProductsFilteredBySearch']),
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('products', ['getActiveSelectionInput']),
+        ...mapGetters('products', ['getActiveSelectionInput', 'getSelectedProducts']),
         productsToExport() {
-            const products = this.getProductsFilteredBySearch
-            if (this.onlyWithRequests) {
-                return products.filter(product => this.getActiveSelectionInput(product).requests.length > 0)
-            } else return products
-        }
+            const products = this.exportSelected ? this.getSelectedProducts : this.getProductsFilteredBySearch
+            return products.filter(product => {
+                let includeProduct = true
+                if (this.onlyWithRequests) {
+                    if (this.getActiveSelectionInput(product).requests.length <= 0) includeProduct = false 
+                }
+                return includeProduct
+
+            })
+        },
     },
     methods: {
+        ...mapMutations('products', ['SET_SHOW_PDF_MODAL']),
         printToPdf: async function(event) {
             const vm = this
             // var endpoint = "https://v2018.api2pdf.com/wkhtmltopdf/html"
@@ -211,7 +224,6 @@ export default {
 
                     await axios.post(endpoint, payload, config)
                         .then(function(response) {
-                            console.log('response', response)
                             window.open(response.data.FileUrl)
                             vm.generatedPDF = response.data.FileUrl
                         })
@@ -224,7 +236,12 @@ export default {
             })
         },
     },
-};
+    created() {
+        if (this.getSelectedProducts.length > 0) {
+            this.exportSelected = true
+        }
+    }
+}
 </script>
 
 <style lang="scss" scoped>

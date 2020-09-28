@@ -83,7 +83,19 @@ export default {
 
                     // Set the given ID to the comment if we were posting a new comment
                     // if (!comment.id) comment.id = response.data.id
-                    if (!comment.id) Object.assign(comment, response.data)
+                    if (!comment.id) {
+                        Object.assign(comment, response.data)
+                    } else {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: 'Comment updated',
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     // On error, set error on the comment

@@ -9,7 +9,7 @@
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="showQty" class="quantity">{{variant.quantity}}</span>
+                        <span v-if="showQty" class="quantity">{{variant[currentQty]}}</span>
                     </div>
                 </div>
                 <div class="quantity-progress" v-if="showQty" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
@@ -34,6 +34,7 @@ export default {
         'product',
         'selection',
         'selectionInput',
+        'distributionScope',
     ],
     data() { return {
         tooltipIsVisible: false
@@ -59,10 +60,13 @@ export default {
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
             multiSelectionMode: 'getMultiSelectionModeIsActive',
+            currentQty: 'getCurrentSelectionModeQty',
             showQty: 'getQuantityModeActive',
+            currentSelectionMode: 'currentSelectionMode'
         }),
         minimumPercentage() {
-            const percentage = Math.min((this.variant.totalQuantity / this.product.min_variant_order) * 100, 100)
+            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
+            const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
         }
     },

@@ -37,6 +37,15 @@ export default {
         resolve: null,
         reject: null,
     }},
+    watch: {
+        visible(newVal) {
+            if (newVal) {
+                document.addEventListener('keydown', this.hotkeyHandler)
+            } else {
+                document.removeEventListener('keydown', this.hotkeyHandler)
+            }
+        }
+    },
     methods: {
         onConfirm() {
             if (this.resolve) this.resolve(true)
@@ -63,7 +72,15 @@ export default {
                 this.resolve = resolve
                 this.reject = reject
             })
+        },
+        hotkeyHandler(e) {
+            if (e.key == 'Enter' && this.type == 'confirm') {
+                this.onConfirm()
+            }
         }
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
     }
 }
 </script>

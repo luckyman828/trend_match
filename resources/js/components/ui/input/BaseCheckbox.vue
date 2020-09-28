@@ -18,7 +18,9 @@ export default {
     props: [
         'value',
         'modelValue',
-        'disabled'
+        'disabled',
+        'groupIndex',
+        'selectedGroupIndex',
     ],
     data: function() { return {
         shiftClicked: false,

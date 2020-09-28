@@ -14,18 +14,23 @@ export default {
     },
     props: [
         'value',
-        'modelValue'
+        'modelValue',
+        'groupIndex',
+        'selectedGroupIndex',
     ],
     computed: {
         shouldBeChecked() {
-            // return this.modelValue == this.value
+            let shouldBeChecked = false
             if (this.value != null || this.modelValue) {
                 // Check if the modelValue (the value we bind to v-model) is an array
                 if (Array.isArray(this.modelValue)) {
-                    return this.modelValue.includes(this.value)
+                    shouldBeChecked = this.modelValue.includes(this.value)
                 }
-                else return this.modelValue == this.value
+                else shouldBeChecked = this.modelValue == this.value
             }
+            if (this.groupIndex != null && this.groupIndex != this.selectedGroupIndex) shouldBeChecked = false
+            
+            return shouldBeChecked
         }
     },
     methods: {

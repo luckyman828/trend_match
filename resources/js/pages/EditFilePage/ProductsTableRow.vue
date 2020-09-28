@@ -1,12 +1,6 @@
 <template>
-    <tr class="products-table-row"
-    @contextmenu.prevent="$emit('showContextMenu', $event, product)"
-    @click.ctrl="$refs.selectCheckbox.check()">
+    <BaseTableInnerRow class="products-table-row">
         
-        <td class="select" 
-        @click.self="$refs.selectCheckbox.check()">
-            <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
-        </td>
         <td class="image clickable" @click="onViewSingle">
             <div class="img-wrapper">
                 <BaseVariantImg :key="product.id" v-if="product.variants[0] != null" :variant="product.variants[0]" size="sm"/>
@@ -26,8 +20,21 @@
                 </div>
             </div>
         </span></td>
-        <td class="delivery">
-            <span>{{product.delivery_date}}</span>
+        <td class="delivery" v-tooltip="{
+                content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
+                trigger: 'hover'
+            }"
+            :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
+            @click="onViewSingle"
+        >
+            <span v-if="product.delivery_dates[0]">
+                {{prettifyDate(product.delivery_dates[0], 'short')}}
+                <span v-if="product.delivery_dates.length > 1"
+                    class="square ghost xs"
+                > 
+                    <span>+{{+ product.delivery_dates.length -1}}</span>
+                </span>
+            </span>
         </td>
 
         <!-- Start Prices -->
@@ -56,12 +63,15 @@
         </td>
 
         <td class="action">
-            <button class="invisible ghost-hover primary" 
-            @click="$emit('onViewSingle',product)"><span>View / Edit</span></button>
-            <button class="invisible ghost-hover" @click="$emit('showContextMenu', $event, product)"><i class="far fa-ellipsis-h"></i></button>
+            <button class="invisible ghost-hover primary" v-if="!editOrderModeActive"
+            @click="onViewSingle"><span>View / Edit</span></button>
+
+            <div class="square primary drag-handle" v-else>
+                <i class="far fa-arrows-alt-v"></i>
+            </div>
         </td>
 
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -72,7 +82,8 @@ export default {
     name: 'productsRow',
     props: [
         'product',
-        'selectedProducts'
+        'selectedProducts',
+        'editOrderModeActive',
     ],
     mixins: [
         variantImage,
@@ -104,7 +115,7 @@ export default {
             else return variant.image
         },
         onViewSingle() {
-            this.$emit('onViewSingle',this.product)
+            this.$emit('view-single-product',this.product)
         },
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -122,7 +133,6 @@ export default {
 <style scoped lang="scss">
     @import '~@/_variables.scss';
     .products-table-row {
-        height: 138px;
         .img-wrapper {
             // border: $borderModule;
             border: $borderElSoft;
@@ -162,4 +172,11 @@ export default {
     .variant-list-item:not(:first-child) {
         margin-left: 4px;
     }
+
+.drag-handle {
+    cursor: grab;
+    i {
+        font-weight: 400 !important;
+    }
+}
 </style>

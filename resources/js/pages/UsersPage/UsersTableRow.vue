@@ -1,10 +1,5 @@
 <template>
-    <tr class="user-row table-row" ref="userRow" :class="[{self: isSelf}, {active: contextMenuIsActive}]"
-    @contextmenu.prevent="$emit('showContextMenu', $event, user)" @click.ctrl="selectUser" :key="user.id">
-        <td class="select">
-            <BaseCheckbox ref="selectBox" :value="user" :modelValue="selectedUsers" 
-            @change="$emit('update:selectedUsers', $event)"/>
-        </td>
+    <BaseTableInnerRow>
         <td class="title" v-if="editName">
             <i class="fa-user" :class="user.id ? 'fas' : 'far'"></i>
             <BaseEditInputWrapper ref="editName" :activateOnMount="true" :type="'text'"
@@ -41,10 +36,7 @@
             <!-- Member -->
             <span v-else>{{user.currency ? user.currency : 'No currency set'}}</span>
         </td>
-        <td class="action">
-            <button class="invisible ghost-hover" @click.stop="$emit('showContextMenu', $event, user)"><i class="far fa-ellipsis-h medium"></i></button>
-        </td>
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -54,8 +46,6 @@ export default {
     name: 'usersTableRow',
     props: [
         'user',
-        'selectedUsers',
-        'contextUser',
     ],
     data: function() { return {
         editName: false,
@@ -65,13 +55,9 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('contextMenu', ['getContextMenuIsVisible']),
         isSelf() {
             return this.authUser.id == this.user.id
         },
-        contextMenuIsActive () {
-            return this.getContextMenuIsVisible && this.contextUser && this.contextUser.id == this.user.id && this.selectedUsers.length <= 1
-        }
     },
     methods: {
         selectUser() {

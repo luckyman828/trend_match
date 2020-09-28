@@ -38,14 +38,14 @@
                 </div>
             </div>
 
-            <div class="quantity-input" v-if="showQty && selectionMode != 'Approval'">
+            <div class="quantity-input" v-if="showQty">
                 <BaseInputField ref="qtyInput" inputClass="small" v-model.number="newQuantity"
                 :selectOnFocus="true" type="number"
                 :disabled="!userWriteAccess.actions.hasAccess" :readOnly="!userWriteAccess.actions.hasAccess"
                 v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                 @keyup.enter.native="onSubmitQuantity"/>
                 <div class="total" v-tooltip.right="'total quantity input / variant minimum'">
-                    <span>{{variant.totalQuantity}} / {{product.min_variant_order}}</span>
+                    <span>{{actionDistributionTooltipTab == 'Alignment' ? variant.totalQuantity : variant.totalFeedbackQuantity}} / {{product.min_variant_order}}</span>
                 </div>
             </div>
         </div>
@@ -76,11 +76,11 @@ export default {
         'actionDistributionTooltipTab',
     ],
     data() { return {
-        newQuantity: this.variant.quantity,
+        newQuantity: 0,
     }},
     watch: {
         variant(newVariant) {
-            this.newQuantity = newVariant.quantity
+            this.newQuantity = newVariant[this.currentQty]
             this.$nextTick(() => {
                 this.focusQtyInput()
             })
@@ -91,11 +91,12 @@ export default {
         ...mapGetters('selections', {
             selectionMode: 'currentSelectionMode',
             currentAction: 'currentSelectionModeAction',
+            currentQty: 'getCurrentSelectionModeQty',
             getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
             showQty: 'getQuantityModeActive'
         }),
         userWriteAccess () {
-            return this.getUserWriteAccess(this.selection)
+            return this.getUserWriteAccess(this.selection, this.product)
         },
     },
     
@@ -121,7 +122,7 @@ export default {
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
             if (newAction == 'Out') {
-                this.variant.quantity = 0
+                this.variant[this.currentQty] = 0
                 this.newQuantity = 0
             }
             let currentAction
@@ -170,11 +171,14 @@ export default {
                 actionToSet = 'In'
             }
             this.updateVariantAction(actionToSet)
-            this.variant.quantity = newQty
+            this.variant[this.currentQty] = newQty
         }
     },
     mounted() {
-        this.focusQtyInput()
+        this.newQuantity = this.variant[this.currentQty]
+        this.$nextTick(() => {
+            this.focusQtyInput()
+        })
     }
 }
 </script>

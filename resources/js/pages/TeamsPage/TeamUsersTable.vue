@@ -1,37 +1,30 @@
 <template>
     <div class="team-users-table">
-        <BaseFlexTable :contentStatus="readyStatus" 
-        loadingMsg="loading team" 
-        errorMsg="error loading team"
-        :errorCallback="() => fetchData()">
-            <template v-slot:topBar>
-                <BaseTableTopBar>
-                    <template v-slot:left>
-                        <BaseSearchField ref="searchField" :searchKey="['name','email']" :arrayToSearch="team.users" v-model="usersFilteredBySearch"/>
-                    </template>
-                    <template v-slot:right>
-                        <span>{{team.users ? team.users.length : 0}} records</span>
-                    </template>
-                </BaseTableTopBar>
-            </template>
+        <BaseTable :contentStatus="readyStatus"
+            ref="tableComp"
+            loadingMsg="loading team" 
+            errorMsg="error loading team"
+            :errorCallback="() => initData()"
+            :items="team.users"
+            itemKey="id"
+            :itemSize="50"
+            :selected.sync="selectedUsers"
+            :contextItem.sync="contextUser"
+            :contextMouseEvent.sync="contextMouseEvent"
+            :searchKey="['name','email']"
+            :searchResult.sync="usersFilteredBySearch"
+            itemType="user"
+            @show-contextmenu="showUserContext">
             <template v-slot:header>
-                <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selectedUsers = team.users : selectedUsers = []"/>
-                </BaseTableHeader>
                 <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
                 <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
                 <BaseTableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Team Role</BaseTableHeader>
-                <!-- <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">User Currency</BaseTableHeader> -->
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
-            <template v-slot:body>
-                <TeamUsersTableRow :ref="'userRow-'+user.id" 
-                v-for="(user, index) in usersSorted" 
-                :key="user.id" :user="user" :index="index"
-                :contextUser="contextUser"
-                :team="team" @showContextMenu="showUserContext($event, user)" @editRole="onEditUserRole($event, user)" v-model="selectedUsers" :selectedUsers="selectedUsers"
-                @editCurrency="onEditUserCurrency($event, user)"/>
+            <template v-slot:row="rowProps">
+                <TeamUsersTableRow
+                :team="team" :user="rowProps.item" 
+                @edit-role="onEditUserRole"
+                @editCurrency="onEditUserCurrency"/>
             </template>
             <template v-slot:footer>
                 <td>
@@ -43,29 +36,13 @@
                     </BaseButton>
                 </td>
             </template>
-        </BaseFlexTable>
+        </BaseTable>
 
         <BaseContextMenu ref="contextMenuUser" class="context-user">
-        <!-- <BaseContextMenu ref="contextMenuUser" class="context-user" v-slot="slotProps"
-        @keybind-r="$refs['userRow-'+contextUser.id][0].editName = true"
-        @keybind-c="onEditUserCurrency(contextMouseEvent, contextUser)"
-        @keybind-t="onEditUserRole(contextMouseEvent, contextUser)"
-        @keybind-d="onRemoveUserFromTeam(contextUser)"> -->
-            <!-- <div class="item-group">
-                <div class="item" @click="$refs['userRow-'+slotProps.item.id][0].editName = true">
-                    <div class="icon-wrapper"><i class="far fa-pen"></i></div>
-                    <span><u>R</u>ename User</span>
-                </div>
-            </div> -->
             <div class="item-group">
-                <!-- <div class="item" @click.stop="onEditUserCurrency(slotProps.mouseEvent, slotProps.item)">
-                    <div class="icon-wrapper"><i class="far fa-usd-circle"></i></div>
-                    <span><u>C</u>hange User Currency</span>
-                </div> -->
                 <BaseContextMenuItem iconClass="far fa-user-shield"
                 hotkey="KeyR"
                 @click="onEditUserRole(contextMouseEvent, contextUser)">
-                    <div class="icon-wrapper"><i class="far fa-user-shield"></i></div>
                     <span>Change Team <u>R</u>ole</span>
                 </BaseContextMenuItem>
             </div>
@@ -194,9 +171,6 @@ export default {
         workspaceUsers() {
             return this.users
         },
-        usersSorted() {
-            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
-        }
     },
     watch: {
         team(newVal, oldVal) {
@@ -234,7 +208,7 @@ export default {
 
             this.sortArray(this.team.users, this.sortAsc, this.sortKey)
         },
-        showUserContext(e, user) {
+        showUserContext(e) {
             if (this.authUserWorkspaceRole != 'Admin') return
 
             // If we have a selection, show context menu for that selection instead
@@ -244,8 +218,6 @@ export default {
             } else {
                 contextMenu = this.$refs.contextMenuUser
             }
-            this.contextUser = this.selectedUsers.length > 0 ? this.selectedUsers[0] : user
-            this.contextMouseEvent = e
             contextMenu.show(e)
         },
         onAddUser(e) {
@@ -299,10 +271,26 @@ export default {
             contextMenu.item = user;
             contextMenu.show(mouseEvent)
         },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' 
+                || e.target.tagName.toUpperCase() == 'INPUT'
+                || this.singleVisible) return // Don't mess with user input
+
+            if (key == 'KeyS') {
+                this.$refs.tableComp.focusSearch()
+                // this.$refs.searchField.setFocus()
+                e.preventDefault() // Avoid entering an "s" in the search field
+            }
+        }
     },
     created() {
         this.initData()
+        document.addEventListener('keydown', this.hotkeyHandler)
     },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
+    }
 }
 </script>
 

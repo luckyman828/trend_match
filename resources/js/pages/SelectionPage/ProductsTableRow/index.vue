@@ -1,33 +1,32 @@
 <template>
-    <tr class="products-table-row" tabindex="0" @focus="onRowFocus" :class="['action-'+selectionInput[currentAction], {'multi-selection': multiSelectionMode}]"
-    @keydown="hotkeyHandler($event)" @keyup.self="keypressHandler($event)" ref="row" @contextmenu.prevent="$emit('showContext', $event)"
-    @click.ctrl="$refs.selectCheckbox.check()">
+    <BaseTableInnerRow class="products-table-row" tabindex="0" ref="row"
+    :class="['action-'+selectionInput[currentAction], {'multi-selection': multiSelectionMode}]"
+    @focus.native="onRowFocus" 
+    @keydown.native="hotkeyHandler($event)" 
+    @keyup.self.native="keypressHandler($event)">
 
         <div class="product-details">
-            <div v-if="hasUnreadComment" class="unread-indicator circle xxs primary" 
+            <div v-if="displayUnreadBullets && product.hasNewComment" class="unread-indicator circle xxs primary" 
             v-tooltip.right="'A message needs a reply'"/>
             
-            <td class="select" 
-            @click.self="$refs.selectCheckbox.check()">
-                <BaseCheckbox ref="selectCheckbox" :value="product" :modelValue="localSelectedProducts" v-model="localSelectedProducts"/>
-            </td>
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <!-- <img :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :variant="product.variants[variantIndex]" size="sm"/>
+                    <BaseVariantImg :key="product.id + '-' + variantIndex" :variant="product.variants[variantIndex]" size="sm"/>
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
                 <span>{{product.datasource_id}}</span>
             </td>
             <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{product.title | truncate(titleTruncateSize)}}</span>
+                <span v-tooltip="product.title">{{product.title}}</span>
                 <div class="variant-list">
                     <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
                     </div> -->
                     <VariantListItem v-for="(variant, index) in selectionInput.variants.slice(0,5)" :key="index" 
                     :variant="variant" :selectionInput="selectionInput" :selection="selection" :product="product"
+                    :distributionScope="distributionScope"
                     v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product, selectionInput}, disabled: multiSelectionMode}"
                     @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
                     <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
@@ -35,8 +34,21 @@
                     </div>
                 </div>
             </span></td>
-            <td class="delivery">
-                <span>{{product.delivery_date}}</span>
+            <td class="delivery" v-tooltip="{
+                content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
+                trigger: 'hover'
+            }"
+                :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
+                @click="onViewSingle"
+            >
+                <span v-if="product.delivery_dates[0]">
+                    {{prettifyDate(product.delivery_dates[0], 'short')}}
+                    <span v-if="product.delivery_dates.length > 1"
+                        class="square ghost xs"
+                    > 
+                        <span>+{{+ product.delivery_dates.length -1}}</span>
+                    </span>
+                </span>
             </td>
 
             <!-- Start Prices -->
@@ -53,14 +65,15 @@
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs" v-tooltip="`
+                <div class="square ghost xs" v-if="product.min_variant_order != null || product.min"
+                v-tooltip="`
                     ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
                 `">
                     <span>
-                        <span v-if="showQty">{{selectionInput.quantity}} /</span>
+                        <span v-if="showQty">{{distributionScope == 'Alignment' ? selectionInput.quantity : selectionInput.totalFeedbackQuantity}} /</span>
                         <span>{{product.min_order}}</span>
                     </span>
-                    <i class="far fa-box"></i>
+                    <i class="fa-box" :class="productHasReachedMinimum ? 'fas primary' : 'far'"></i>
                 </div>
             </td>
             
@@ -99,13 +112,22 @@
                 <!-- End Distribution -->
 
                 <td class="requests">
-                    <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests'">
-                        <span>{{selectionInput.requests.length}}</span><i class="far fa-clipboard-check"></i>
-                        <i v-if="selectionInput.hasAuthUserRequest" class="own-request fas fa-user-circle"></i>
+
+                    <button class="requests-button ghost xs" @click="onViewSingle" 
+                    v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'">
+                        <span>{{selectionInput.requests.length}}</span>
+                        <span v-if="getApprovalEnabled && selectionInput.hasOpenTicket"
+                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span>
+                        <!-- <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
+                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span> -->
+                        <i class="far fa-clipboard-check"></i>
+                        <div v-if="displayUnreadBullets && product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>
+
                     <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
                         <span>{{selectionInput.comments.length}}</span><i class="far fa-comment"></i>
                     </button>
+
                 </td>
             </template>
             
@@ -113,10 +135,10 @@
 
                 <!-- Single Selection Input only -->
                 <template v-if="!multiSelectionMode">
-                    <div class="your-product-qty" v-if="selectionInput.quantity">
+                    <div class="your-product-qty" v-if="selectionInput[currentQty]">
                         <div class="pill xs ghost">
                             <i class="fas fa-box primary"></i>
-                            <span>{{selectionInput.quantity}}</span>
+                            <span>{{selectionInput[currentQty]}}</span>
                         </div>
                     </div>
                     <div class="fly-over-wrapper">
@@ -155,6 +177,26 @@
                     <button class="invisible ghost-hover primary" 
                     @click="onViewSingle"><span>View</span></button>
                 </template>
+
+                <!-- Master actions -->
+                    <div v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))"
+                        class="extra-actions"
+                    >
+                        <BaseButton buttonClass="pill xs ghost"
+                        targetAreaPadding="4px 4px"
+                        :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                        @click="onToggleCompleted">
+                            <template v-if="!product.is_completed">
+                                <i class="far fa-circle" style="font-weight: 400;"></i>
+                                <span>Complete</span>
+                            </template>
+                            <template v-else>
+                                <i class="far fa-check-circle primary"></i>
+                                <span>Completed</span>
+                            </template>
+                        </BaseButton>
+                    </div>
+                <!-- END Master actions -->
             </td>
         </div>
 
@@ -163,7 +205,7 @@
         :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
         @updateAction="onUpdateAction"/>
 
-    </tr>
+    </BaseTableInnerRow>
 </template>
 
 <script>
@@ -208,16 +250,19 @@ export default {
     }},
     computed: {
         ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
-        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
+        ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
+            currentQty: 'getCurrentSelectionModeQty',
+            displayUnreadBullets: 'getDisplayUnreadBullets',
         }),
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },
         userWriteAccess () {
-            return this.getAuthUserSelectionWriteAccess(this.selection)
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
         localSelectedProducts: {
             get() { return this.selectedProducts },
@@ -236,13 +281,17 @@ export default {
             if (this.currentSelectionMode == 'Alignment') {
                 return this.selectionInput.hasUnreadApproverComment
             }
+        },
+        productHasReachedMinimum() {
+            const totalQty = this.distributionScope == 'Alignment' ? this.selectionInput.quantity : this.selectionInput.totalFeedbackQuantity
+            return totalQty >= this.product.min_order
         }
     },
     watch: {
         // Watch for changes to the current focus index 
         currentFocusRowIndex: function(newVal, oldVal) {
             if (newVal == this.index) {
-                this.$refs.row.focus()
+                this.$refs.row.$el.focus()
             }
         },
         // product(newVal, oldVal) {
@@ -250,7 +299,7 @@ export default {
         // }
     },
     methods: {
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -319,7 +368,7 @@ export default {
             // If the current focus is the first group
             else if (this.focusGroupIndex == 0) {
                 // Focus the current row
-                this.$refs.row.focus()
+                this.$refs.row.$el.focus()
                 this.focusGroupIndex = null
             } else {
                 this.focusGroupIndex--
@@ -337,7 +386,11 @@ export default {
                 this.setCurrentFocusRowIndex(this.index-1)
             }
         },
+        onToggleCompleted() {
+            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
+        },
         hotkeyHandler(event) {
+            if (this.singleVisible) return
             const key = event.code
             if (key == 'Tab') {
                 if (event.shiftKey) {
@@ -357,12 +410,14 @@ export default {
                 this.focusNextRow(event)
         },
         keypressHandler(event) {
+            if (this.singleVisible) return
             const key = event.code
             if (key == 'Enter') {
                 document.activeElement.blur()
                 // this.$emit('onViewSingle', this.product)
                 this.onViewSingle()
             }
+            if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') this.onToggleCompleted()
             if (this.currentSelections.length <= 1 // Check that we are not doing multi selection input
             && this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {
@@ -379,135 +434,143 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
-    .products-table-row {
-        display: block;
-        padding: 0;
-        .unread-indicator {
-            position: absolute;
-            left: -20px;
-            @media screen and (max-width: $screenSm) {
-                left: -16px;
-            }
-        }
-        &:focus {
-            outline: solid 2px $primary;
-            outline-offset: -2px;
-        }
-        .img-wrapper {
-            border: $borderElSoft;
-            height: 100%;
-            width: 100%;
-            // width: 48px;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-            }
-        }
-        @media screen and (max-width: $screenMd) {
-            &:not(.multi-selection) {
-                &.action-Focus {
-                    box-shadow: -8px 0 0px $primary inset;
-                }
-                &.action-In {
-                    box-shadow: -8px 0 0px $green inset;
-                }
-                &.action-Out {
-                    box-shadow: -8px 0 0px $red inset;
-                }
-            }
-        }
-    }
-    td.id, td.title {
-        position: relative;
-    }
-    .variant-list {
+@import '~@/_variables.scss';
+.products-table-row {
+    display: block;
+    padding: 0;
+    .unread-indicator {
         position: absolute;
-        left: 0;
-        bottom: -20px;
-        display: flex;
-    }
-    .product-details {
-        height: 138px;
-        padding: 8px;
-        display: flex;
-        align-items: center;
-    }
-    .requests-button {
-        position: relative;
-        .own-request {
-            position: absolute;
-            right: -10px;
-            bottom: -8px;
-            color:  $primary;
-            border-radius: 20px;
-            font-size: 16px;
-            &::before {
-                background: white;
-                border-radius: 20px;
-            }
+        left: -20px;
+        @media screen and (max-width: $screenSm) {
+            left: -16px;
         }
     }
-
-    // Flyover actions
-    .gradient {
-        display: none;
+    &:focus {
+        // outline: solid 2px $primary;
+        // outline-offset: -2px;
+        outline: none;
     }
-    td.action {
-        position: relative;
+    .img-wrapper {
+        border: $borderElSoft;
         height: 100%;
-        .your-product-qty {
-            position: absolute;
-            top: 0;
-            right: 12px;
-            z-index: 2;
+        width: 100%;
+        // width: 48px;
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
     }
     @media screen and (max-width: $screenMd) {
-        td.action {
-            position: relative;
-            height: 100%;
-            .fly-over-wrapper {
-                overflow: hidden;
-                width: 36px;
-                height: 100%;
-                position: relative;
-                &:hover {
-                    overflow: visible;
-                    .fly-over .inner {
-                        background: $bgModuleHover;
-                    }
-                    button.options {
-                        display: none;
-                    }
-                }
+        &:not(.multi-selection) {
+            &.action-Focus {
+                box-shadow: -8px 0 0px $primary inset;
             }
-            .fly-over {
-                height: 100%;
-                position: absolute;
-                right: 0;
-                padding-right: 4px;
-                .inner {
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    padding-left: 20px;
-                    >* {
-                        margin-left: 4px;
-                    }
-                }
-                .gradient {
-                    display: block;
-                    height: 100%;
-                    position: absolute;
-                    top: 0;
-                    left: -40px;
-                    width: 40px;
-                    background: linear-gradient(90deg, transparent, $bgModuleHover);
-                    pointer-events: none;
-                }
+            &.action-In {
+                box-shadow: -8px 0 0px $green inset;
+            }
+            &.action-Out {
+                box-shadow: -8px 0 0px $red inset;
             }
         }
     }
+}
+td.id, td.title {
+    position: relative;
+}
+.variant-list {
+    position: absolute;
+    left: 0;
+    bottom: -20px;
+    display: flex;
+}
+.product-details {
+    height: 138px;
+    padding: 8px;
+    padding-left: 2px;
+    display: flex;
+    align-items: center;
+}
+.requests-button {
+    position: relative;
+    &:hover {
+        .new-comment-bullet {
+            top: -7px;
+            right: -5px;
+        }
+    }
+    .new-comment-bullet {
+        position: absolute;
+        right: -4px;
+        top: -6px;
+        width: 10px;
+        height: 10px;
+    }
+}
+
+// Flyover actions
+.gradient {
+    display: none;
+}
+td.action {
+    position: relative;
+    height: 100%;
+    .your-product-qty {
+        position: absolute;
+        top: 0;
+        right: 12px;
+        z-index: 2;
+    }
+}
+@media screen and (max-width: $screenMd) {
+    td.action {
+        position: relative;
+        height: 100%;
+        .fly-over-wrapper {
+            overflow: hidden;
+            width: 36px;
+            height: 100%;
+            position: relative;
+            &:hover {
+                overflow: visible;
+                .fly-over .inner {
+                    background: $bgModuleHover;
+                }
+                button.options {
+                    display: none;
+                }
+            }
+        }
+        .fly-over {
+            height: 100%;
+            position: absolute;
+            right: 0;
+            padding-right: 4px;
+            .inner {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 20px;
+                >* {
+                    margin-left: 4px;
+                }
+            }
+            .gradient {
+                display: block;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: -40px;
+                width: 40px;
+                background: linear-gradient(90deg, transparent, $bgModuleHover);
+                pointer-events: none;
+            }
+        }
+    }
+}
+.extra-actions {
+    position: absolute;
+    right: 4px;
+    bottom: 0px;
+}
 </style>

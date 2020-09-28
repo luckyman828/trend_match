@@ -22,6 +22,7 @@ export default {
                     'The owner aligns selections and can make requests. Also manages the team and can add/remove users',
             },
         ],
+        workspaceFetchedFromId: null,
     },
 
     getters: {
@@ -56,6 +57,7 @@ export default {
                 }
             }
         },
+        getWorkspaceFetchedFromId: state => state.workspaceFetchedFromId,
     },
 
     actions: {
@@ -64,6 +66,7 @@ export default {
             // Set the state to loading
             commit('setLoading', true)
             commit('SET_TEAMS_STATUS', 'loading')
+            commit('SET_WORKSPACE_FETCHED_FROM_ID', workspaceId)
 
             const apiUrl = `/workspaces/${workspaceId}/teams`
 
@@ -377,18 +380,15 @@ export default {
             team.user_count = team.users.length
         },
         REMOVE_USERS_FROM_TEAM(state, { team, users }) {
-            console.log(users)
-            // users.forEach(user => {
-            //     const index = team.users.findIndex(x => x.id == user.id)
-            //     team.users.splice(index, 1)
-            //     team.user_count = team.users.length
-            // })
             for (let i = users.length; i--; ) {
                 const user = users[i]
                 const index = team.users.findIndex(x => x.id == user.id)
                 team.users.splice(index, 1)
                 team.user_count = team.users.length
             }
+        },
+        SET_WORKSPACE_FETCHED_FROM_ID(state, workspaceId) {
+            state.workspaceFetchedFromId = workspaceId
         },
     },
 }

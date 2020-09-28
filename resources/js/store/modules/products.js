@@ -13,8 +13,11 @@ export default {
         selectedDeliveryDates: [],
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
+        selectedProducts: [],
         advancedFilter: null,
         unreadOnly: false,
+        hideCompleted: false,
+        noImagesOnly: false,
         currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
@@ -23,6 +26,9 @@ export default {
         currentFocusRowIndex: null,
         lastSort: null,
         distributionScope: 'Feedback',
+        showPDFModal: false,
+        showCSVModal: false,
+        openTicketsOnly: false,
     },
 
     getters: {
@@ -30,6 +36,8 @@ export default {
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
+        getPDFModalVisible: state => state.showPDFModal,
+        getCSVModalVisisble: state => state.showCSVModal,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
         getDistributionScope: state => state.distributionScope,
         getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
@@ -42,6 +50,7 @@ export default {
         getAvailableProducts: state => {
             return state.availableProducts
         },
+        getSelectedProducts: state => state.selectedProducts,
         nextProduct: (state, getters, rootState, rootGetters) => {
             // If we have a nextProduct in our presenterQueue, then use that instead
             const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
@@ -90,9 +99,10 @@ export default {
         getAdvancedFilter: state => {
             return state.advancedFilter
         },
-        unreadOnly: state => {
-            return state.unreadOnly
-        },
+        unreadOnly: state => state.unreadOnly,
+        openTicketsOnly: state => state.openTicketsOnly,
+        hideCompleted: state => state.hideCompleted,
+        noImagesOnly: state => state.noImagesOnly,
         currentProductFilter: state => {
             return state.currentProductFilter
         },
@@ -126,21 +136,14 @@ export default {
             const products = getters.products
             let uniqueDeliveryDates = []
             products.forEach(product => {
-                if (product.delivery_date) {
-                    // const found = uniqueDeliveryDates.find(x => x.value == product.delivery_date)
-                    const found = uniqueDeliveryDates.find(x => x == product.delivery_date)
-                    if (!found)
-                        // uniqueDeliveryDates.push({
-                        //     name: new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        //         month: 'long',
-                        //         year: 'numeric',
-                        //     }),
-                        //     value: product.delivery_date,
-                        // })
-                        uniqueDeliveryDates.push(product.delivery_date)
-                }
+                product.delivery_dates.map(date => {
+                    const found = uniqueDeliveryDates.find(x => x == date)
+                    if (!found) {
+                        uniqueDeliveryDates.push(date)
+                    }
+                })
             })
-            return uniqueDeliveryDates
+            return uniqueDeliveryDates.sort()
         },
         availableBuyerGroups(state, getters) {
             const products = getters.products
@@ -187,6 +190,9 @@ export default {
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const unreadOnly = getters.unreadOnly
+            const openTicketsOnly = getters.openTicketsOnly
+            const hideCompleted = getters.hideCompleted
+            const noImagesOnly = getters.noImagesOnly
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
             let productsToReturn = products
@@ -201,7 +207,7 @@ export default {
             // Filter by delivery date
             if (deliveryDates.length > 0) {
                 const filteredByDeliveryDate = productsToReturn.filter(product => {
-                    return Array.from(deliveryDates).includes(product.delivery_date)
+                    return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
                 })
                 productsToReturn = filteredByDeliveryDate
             }
@@ -217,14 +223,23 @@ export default {
             if (unreadOnly) {
                 if (selectionMode == 'Approval') {
                     productsToReturn = productsToReturn.filter(
-                        product => getSelectionInput(product).hasUnreadAlignerComment
+                        product => !product.is_completed && getSelectionInput(product).hasUnreadAlignerComment
                     )
                 }
                 if (selectionMode == 'Alignment') {
                     productsToReturn = productsToReturn.filter(
-                        product => getSelectionInput(product).hasUnreadApproverComment
+                        product => !product.is_completed && getSelectionInput(product).hasUnreadApproverComment
                     )
                 }
+            }
+            if (hideCompleted) {
+                productsToReturn = productsToReturn.filter(x => !x.is_completed)
+            }
+
+            if (openTicketsOnly) {
+                productsToReturn = productsToReturn.filter(x =>
+                    x.requests.find(request => request.selection.type == 'Master' && request.status == 'Open')
+                )
             }
 
             // Filter by advanced filters
@@ -232,20 +247,75 @@ export default {
                 productsToReturn = productsToReturn.filter(product => {
                     let include = true
                     getters.getAdvancedFilter.forEach((filter, index) => {
-                        // FILTER BY USER FEEDBACK
-                        if (filter.type == 'user') {
-                            if (!filter.user.user_id) return
+                        // FILTER BY USER / SELECTION INPUT
+                        if (filter.type == 'author') {
+                            if (!filter.filter.filterType) return
+
                             const operator = filter.operator
-                            const userId = filter.user.user_id
-                            const selectionId = filter.user.selection_id
+                            const type = filter.filter.filterType
                             const selectionInput = getSelectionInput(product)
-                            const userFeedback = selectionInput.feedbacks.find(
-                                feedback => feedback.user_id == userId && feedback.selection_id == selectionId
-                            )
-                            if (operator == '=' && (!userFeedback || userFeedback.action != filter.actionType))
-                                include = false
-                            if (operator == '!=' && (!!userFeedback && userFeedback.action == filter.actionType))
-                                include = false
+
+                            if (type == 'user') {
+                                const userId = filter.filter.user_id
+
+                                if (filter.key == 'Comment') {
+                                    if (operator == '=' && !selectionInput.comments.find(x => x.user_id == userId))
+                                        include = false
+                                    if (operator == '!=' && !!selectionInput.comments.find(x => x.user_id == userId))
+                                        include = false
+                                } else if (filter.key == 'Request') {
+                                    if (operator == '=' && !selectionInput.requests.find(x => x.author_id == userId))
+                                        include = false
+                                    if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId))
+                                        include = false
+                                } else {
+                                    const actionArray =
+                                        getters.getDistributionScope == 'Alignment' ? 'actions' : 'feedbacks'
+                                    const userFeedback = selectionInput[actionArray].find(
+                                        action => action.user_id == userId
+                                    )
+                                    if (operator == '=' && (!userFeedback || userFeedback.action != filter.key))
+                                        include = false
+                                    if (operator == '!=' && !!userFeedback && userFeedback.action == filter.key)
+                                        include = false
+                                }
+                            }
+
+                            if (type == 'selection') {
+                                const selectionId = filter.filter.id
+
+                                if (filter.key == 'Comment') {
+                                    if (
+                                        operator == '=' &&
+                                        !selectionInput.comments.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                    if (
+                                        operator == '!=' &&
+                                        !!selectionInput.comments.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                } else if (filter.key == 'Request') {
+                                    if (
+                                        operator == '=' &&
+                                        !selectionInput.requests.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                    if (
+                                        operator == '!=' &&
+                                        !!selectionInput.requests.find(x => x.selection_id == selectionId)
+                                    )
+                                        include = false
+                                } else {
+                                    const selectionAction = selectionInput.actions.find(
+                                        action => action.selection_id == selectionId
+                                    )
+                                    if (operator == '=' && (!selectionAction || selectionAction.action != filter.key))
+                                        include = false
+                                    if (operator == '!=' && !!selectionAction && selectionAction.action == filter.key)
+                                        include = false
+                                }
+                            }
                         }
 
                         // FILTER BY KEY
@@ -272,35 +342,21 @@ export default {
                             if (operator == '<=' && keyValue > value) include = false
                             if (operator == '<' && keyValue >= value) include = false
                         }
-
-                        // let filterKey = filter.key.value
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'ins')
-                        //     filterKey = 'alignmentIns'
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'outs')
-                        //     filterKey = 'alignmentOuts'
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'focus')
-                        //     filterKey = 'alignmentFocus'
-                        // if (getters.getDistributionScope == 'Alignment' && filterKey == 'nds')
-                        //     filterKey = 'alignmentNds'
-                        // const keyValue = Array.isArray(product[filterKey])
-                        //     ? product[filterKey].length
-                        //     : product[filterKey]
-                        // const operator = filter.operator
-                        // const value = filter.value
-                        // if (index == 0) console.log('filter products', keyValue, operator, value)
-                        // if (operator == '>' && keyValue <= value) include = false
-                        // if (operator == '>=' && keyValue < value) include = false
-                        // if (operator == '=' && keyValue != value) include = false
-                        // if (operator == '!=' && keyValue == value) include = false
-                        // if (operator == '<=' && keyValue > value) include = false
-                        // if (operator == '<' && keyValue >= value) include = false
                     })
                     return include
                 })
             }
 
+            // Filter by no images
+            if (noImagesOnly) {
+                const filteredByNoImages = productsToReturn.filter(
+                    product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
+                )
+                productsToReturn = filteredByNoImages
+            }
+
             // Filter by actions
-            if (['ins', 'outs', 'nds', 'focus'].includes(actionFilter)) {
+            if (['ins', 'outs', 'nds', 'focus', 'tickets'].includes(actionFilter)) {
                 const filteredByAction = productsToReturn.filter(product => {
                     if (actionFilter == 'nds')
                         return (
@@ -314,6 +370,7 @@ export default {
                             getSelectionInput(product)[currentAction] == 'In' ||
                             getSelectionInput(product)[currentAction] == 'Focus'
                         )
+                    if (actionFilter == 'tickets') return product.hasTicket
                 })
                 productsToReturn = filteredByAction
             }
@@ -394,11 +451,6 @@ export default {
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
             return new Promise((resolve, reject) => {
-                if (addToState) {
-                    commit('insertProducts', { products, method: 'add' })
-                    dispatch('initProducts', products)
-                    commit('SORT_PRODUCTS')
-                }
                 const apiUrl = `/files/${file.id}/products`
                 axios
                     .post(apiUrl, {
@@ -419,10 +471,15 @@ export default {
                             { root: true }
                         )
 
-                        // Add the created ID to the product, if we only have 1 product
-                        if (products.length <= 1) {
-                            const product = products[0]
+                        // Add the created ID to the products
+                        products.map(product => {
                             product.id = response.data.added_product_id_map[product.datasource_id]
+                        })
+
+                        if (addToState) {
+                            commit('insertProducts', { products, method: 'add' })
+                            dispatch('initProducts', products)
+                            commit('SORT_PRODUCTS')
                         }
                         resolve(response)
                     })
@@ -498,6 +555,7 @@ export default {
                 brand: null,
                 category: null,
                 delivery_date: null,
+                delivery_dates: [],
                 buying_group: null,
                 is_editor_choice: null,
                 compositions: null,
@@ -505,6 +563,7 @@ export default {
                 variants: [],
                 assortments: [],
                 eans: [],
+                assortment_sizes: [],
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -598,7 +657,6 @@ export default {
             })
         },
         async uploadImage({ commit, dispatch }, { file, product, picture, image, callback }) {
-            console.log('upload image')
             return new Promise(async (resolve, reject) => {
                 // First generate presigned URL we can put the image to from the API
                 const apiUrl = `/media/generate-persigned-url?file_id=${file.id}&datasource_id=${product.datasource_id}`
@@ -618,7 +676,8 @@ export default {
                     new Compressor(image, {
                         quality: 0.8,
                         checkOrientation: true,
-                        maxHeight: 2016,
+                        // maxHeight: 2016,
+                        maxHeight: 1080,
                         success(result) {
                             compressedImage = result
                             resolve()
@@ -677,48 +736,72 @@ export default {
         },
         async deleteProducts({ state, getters, commit, dispatch }, { file, products }) {
             return new Promise((resolve, reject) => {
-                const apiUrl = `/files/${file.id}/products`
-                axios
-                    .post(apiUrl, {
-                        method: 'Remove',
-                        products: products,
-                    })
-                    .then(response => {
-                        commit('DELETE_PRODUCTS', products)
-                        resolve(response)
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
-                                callback: () => restoreProducts(),
-                                callbackLabel: 'Restore products',
-                                iconClass: 'fa-trash',
-                                type: 'danger',
-                            },
-                            { root: true }
-                        )
-                    })
-                    .catch(err => {
-                        reject(err)
-                        // Re-add the products
-                        commit('insertProducts', { products, method: 'add' })
-                        // Show error message
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Something went wrong when deleting the product(s). Please try again.',
-                                iconClass: 'fa-exclamation-triangle',
-                                type: 'warning',
-                                callback: () => dispatch('deleteProducts', { file, products }),
-                                callbackLabel: 'Retry',
-                                duration: 0,
-                            },
-                            { root: true }
-                        )
-                    })
+                commit('DELETE_PRODUCTS', products)
+
+                // Start timer for deletion
+                let wasCancelled = false
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `${products.length} Products will be deleted`,
+                        iconClass: 'fa-trash',
+                        type: 'danger',
+                        callback: () => {
+                            wasCancelled = true
+                            restoreProducts()
+                        },
+                        callbackLabel: 'Undo',
+                        timeoutCallback: () => {
+                            if (!wasCancelled) {
+                                sendRequest()
+                            }
+                        },
+                    },
+                    { root: true }
+                )
+
+                const sendRequest = async () => {
+                    const apiUrl = `/files/${file.id}/products`
+                    axios
+                        .post(apiUrl, {
+                            method: 'Remove',
+                            products: products,
+                        })
+                        .then(response => {
+                            resolve(response)
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: `${products.length} product${products.length > 1 ? 's' : ''} deleted`,
+                                    iconClass: 'fa-check',
+                                    type: 'success',
+                                },
+                                { root: true }
+                            )
+                        })
+                        .catch(err => {
+                            reject(err)
+                            // Re-add the products
+                            commit('insertProducts', { products, method: 'add' })
+                            // Show error message
+                            commit(
+                                'alerts/SHOW_SNACKBAR',
+                                {
+                                    msg: 'Something went wrong when deleting the product(s). Please try again.',
+                                    iconClass: 'fa-exclamation-triangle',
+                                    type: 'warning',
+                                    callback: () => dispatch('deleteProducts', { file, products }),
+                                    callbackLabel: 'Retry',
+                                    duration: 0,
+                                },
+                                { root: true }
+                            )
+                        })
+                }
 
                 const restoreProducts = async () => {
-                    await dispatch('insertProducts', { file, products, addToState: true })
+                    // await dispatch('insertProducts', { file, products, addToState: true })
+                    commit('insertProducts', { products, method: 'add' })
                     commit('SORT_PRODUCTS')
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -732,22 +815,75 @@ export default {
                 }
             })
         },
+        toggleProductCompleted({ commit }, { selectionId, product }) {
+            // console.log('toggle product completd', selection, product)
+            const apiUrl = `selections/${selectionId}/products/complete`
+            const shouldBeCompleted = product.is_completed ? false : true
+
+            commit('TOGGLE_PRODUCT_COMPLETED', { product, shouldBeCompleted })
+
+            const apiMethod = shouldBeCompleted ? 'put' : 'delete'
+            axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
+                    product_ids: [product.id],
+                },
+            }).then(response => {
+                // commit(
+                //     'alerts/SHOW_SNACKBAR',
+                //     {
+                //         msg: `Product ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                //         iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                //         type: shouldBeCompleted ? 'success' : 'danger',
+                //     },
+                //     { root: true }
+                // )
+            })
+        },
+        setProductsCompleted({ commit }, { selectionId, products, shouldBeCompleted }) {
+            const apiUrl = `selections/${selectionId}/products/complete`
+
+            commit('SET_PRODUCTS_COMPLETED', { products, shouldBeCompleted })
+
+            const apiMethod = shouldBeCompleted ? 'put' : 'delete'
+            axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
+                    product_ids: products.map(x => x.id),
+                },
+            }).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: `${products.length} Products ${shouldBeCompleted ? 'completed' : 'un-completed'}`,
+                        iconClass: shouldBeCompleted ? 'fa-check' : 'fa-times',
+                        type: shouldBeCompleted ? 'success' : 'danger',
+                    },
+                    { root: true }
+                )
+            })
+        },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
-                // Format delivery_date
-                if (product.delivery_date) {
-                    product.delivery_date = new Date(product.delivery_date).toLocaleDateString('en-GB', {
-                        month: 'long',
-                        year: 'numeric',
-                    })
-                }
+
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
 
                 // Instantiate the selectionInputList on the product
                 Vue.set(product, 'selectionInputList', [])
+
+                Object.defineProperty(product, 'is_completed', {
+                    get: function() {
+                        return product.selectionInputList.length > 0 && product.selectionInputList[0].is_completed
+                    },
+                    set: function(value) {
+                        product.selectionInputList[0].is_completed = value
+                    },
+                })
 
                 // ---- START PRICES ----
                 // Currency
@@ -875,19 +1011,35 @@ export default {
                 })
                 Object.defineProperty(product, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return (
-                            (product.requests.length > 0 && product.comments.length <= 0) ||
-                            (product.comments.length > 0 &&
-                                product.comments[product.comments.length - 1].role != 'Approver')
-                        )
+                        return !!product.requests.find(x => x.hasUnreadAlignerComment)
                     },
                 })
                 Object.defineProperty(product, 'hasUnreadApproverComment', {
                     get: function() {
+                        return !!product.requests.find(x => x.hasUnreadApproverComment)
+                    },
+                })
+                Object.defineProperty(product, 'hasNewComment', {
+                    get: function() {
                         return (
-                            product.comments.length > 0 &&
-                            product.comments[product.comments.length - 1].role == 'Approver'
+                            !product.is_completed &&
+                            ((rootGetters['selections/getCurrentSelectionMode'] == 'Alignment' &&
+                                product.hasUnreadApproverComment) ||
+                                (rootGetters['selections/getCurrentSelectionMode'] == 'Approval' &&
+                                    product.hasUnreadAlignerComment))
                         )
+                    },
+                })
+                Object.defineProperty(product, 'hasOpenTicket', {
+                    get: function() {
+                        return !!product.requests.find(
+                            request => request.status == 'Open' && request.selection.type == 'Master'
+                        )
+                    },
+                })
+                Object.defineProperty(product, 'hasTicket', {
+                    get: function() {
+                        return !!product.requests.find(request => request.selection.type == 'Master')
                     },
                 })
 
@@ -920,6 +1072,9 @@ export default {
         },
         SET_PRODUCTS_STATUS(state, status) {
             state.status = status
+        },
+        SET_PRODUCTS(state, products) {
+            state.products = products
         },
         insertProducts(state, { products, method }) {
             if (method == 'add') {
@@ -965,6 +1120,12 @@ export default {
         setUnreadOnly(state, payload) {
             state.unreadOnly = payload
         },
+        SET_HIDE_COMPLETED(state, payload) {
+            state.hideCompleted = payload
+        },
+        SET_OPEN_TICKETS_ONLY(state, payload) {
+            state.openTicketsOnly = payload
+        },
         setCurrentProductFilter(state, payload) {
             state.currentProductFilter = payload
         },
@@ -994,6 +1155,15 @@ export default {
                 Vue.set(selectionInput, 'product_id', product.id)
                 Vue.set(selectionInput, 'product', product)
                 Vue.set(selectionInput, 'variants', rawSelectionInput.variants)
+
+                Object.defineProperty(selectionInput, 'is_completed', {
+                    get: function() {
+                        return rawSelectionInput.is_completed
+                    },
+                    set: function(value) {
+                        rawSelectionInput.is_completed = value
+                    },
+                })
 
                 Object.defineProperty(selectionInput, 'preferred_currency', {
                     get: function() {
@@ -1046,27 +1216,27 @@ export default {
                         return selectionInput.requests.find(x => x.selection_id == selectionInput.selection_id)
                     },
                 })
-                Object.defineProperty(selectionInput, 'hasAuthUserRequest', {
-                    get: function() {
-                        return !!selectionInput.requests.find(x => x.user_id == authUser.id)
-                    },
-                })
 
                 Object.defineProperty(selectionInput, 'hasUnreadAlignerComment', {
                     get: function() {
-                        return (
-                            (selectionInput.requests.length > 0 && selectionInput.comments.length <= 0) ||
-                            (selectionInput.comments.length > 0 &&
-                                selectionInput.comments[selectionInput.comments.length - 1].role != 'Approver')
-                        )
+                        return !!selectionInput.requests.find(x => x.hasUnreadAlignerComment)
                     },
                 })
                 Object.defineProperty(selectionInput, 'hasUnreadApproverComment', {
                     get: function() {
-                        return (
-                            selectionInput.comments.length > 0 &&
-                            selectionInput.comments[selectionInput.comments.length - 1].role == 'Approver'
+                        return !!selectionInput.requests.find(x => x.hasUnreadApproverComment)
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasOpenTicket', {
+                    get: function() {
+                        return selectionInput.requests.find(
+                            request => request.status == 'Open' && request.selection.type == 'Master'
                         )
+                    },
+                })
+                Object.defineProperty(selectionInput, 'hasTicket', {
+                    get: function() {
+                        return !!selectionInput.requests.find(request => request.selection.type == 'Master')
                     },
                 })
 
@@ -1142,12 +1312,34 @@ export default {
                         return totalQty
                     },
                 })
+                // Get the user's quantity
+                Object.defineProperty(selectionInput, 'your_quantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            totalQty += variant.your_quantity
+                        })
+                        return totalQty
+                    },
+                })
                 // Get total
                 Object.defineProperty(selectionInput, 'totalQuantity', {
                     get: function() {
                         let totalQty = 0
                         selectionInput.variants.map(variant => {
                             variant.actions.map(action => {
+                                totalQty += action.quantity
+                            })
+                        })
+                        return totalQty
+                    },
+                })
+
+                Object.defineProperty(selectionInput, 'totalFeedbackQuantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            variant.feedbacks.map(action => {
                                 totalQty += action.quantity
                             })
                         })
@@ -1200,6 +1392,46 @@ export default {
                     },
                 })
 
+                // PROCESS REQUESTS
+                selectionInput.requests.forEach(request => {
+                    Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
+                    // Object.defineProperty(request, 'lastReadAt', {
+                    //     get: function() {
+                    //         return localStorage.getItem(`request-${request.id}-readAt`)
+                    //     },
+                    //     set: function(value) {
+                    //         localStorage.setItem(`request-${request.id}-readAt`, value)
+                    //     },
+                    // })
+                    Object.defineProperty(request, 'isResolved', {
+                        get: function() {
+                            return !!request.completed_at
+                        },
+                    })
+                    Object.defineProperty(request, 'hasUnreadAlignerComment', {
+                        get: function() {
+                            if (request.status != 'Open' || request.selection.type != 'Master') return false
+                            return (
+                                request.discussions.length <= 0 ||
+                                request.discussions[request.discussions.length - 1].role != 'Approver'
+                            )
+                        },
+                    })
+                    Object.defineProperty(request, 'hasUnreadApproverComment', {
+                        get: function() {
+                            return (
+                                (request.status != 'Open' &&
+                                    (!request.lastReadAt ||
+                                        DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
+                                            DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
+                                (request.status == 'Open' &&
+                                    request.discussions.length > 0 &&
+                                    request.discussions[request.discussions.length - 1].role == 'Approver')
+                            )
+                        },
+                    })
+                })
+
                 // PROCESS VARIANTS
                 selectionInput.variants.forEach(variant => {
                     // VARIANTS
@@ -1221,6 +1453,7 @@ export default {
                                     feedbacks.push({
                                         id: variantFeedback.id,
                                         action: variantFeedback.feedback,
+                                        quantity: variantFeedback.quantity,
                                         user_id: feedback.user_id,
                                         user: feedback.user,
                                         selection_id: feedback.selection_id,
@@ -1234,7 +1467,9 @@ export default {
                     // Get the user's feedback
                     Object.defineProperty(variant, 'your_feedback', {
                         get: function() {
-                            const userFeedback = variant.feedbacks.find(x => x.user_id == authUser.id)
+                            const userFeedback = variant.feedbacks.find(
+                                x => x.user_id == authUser.id && x.selection_id == selectionInput.selection_id
+                            )
                             return userFeedback ? userFeedback.action : 'None'
                         },
                         set: function(newAction) {
@@ -1250,11 +1485,13 @@ export default {
                                 userFeedback.variants.splice(userVariantFeedbackIndex, 1, {
                                     feedback: newAction,
                                     id: variant.id,
+                                    quantity: variant.your_quantity,
                                 })
                             } else {
                                 userFeedback.variants.push({
                                     feedback: newAction,
                                     id: variant.id,
+                                    quantity: variant.your_quantity,
                                 })
                             }
                         },
@@ -1340,10 +1577,48 @@ export default {
                             }
                         },
                     })
+                    // Get the user's feedback quantity
+                    Object.defineProperty(variant, 'your_quantity', {
+                        get: function() {
+                            const userFeedback = variant.feedbacks.find(
+                                x => x.user_id == authUser.id && x.selection_id == selectionInput.selection_id
+                            )
+                            return userFeedback ? userFeedback.quantity : 0
+                        },
+                        set: function(newQuantity) {
+                            // Find the current action for the variant input for this action action
+                            const userFeedback = selectionInput.feedbacks.find(
+                                feedback =>
+                                    feedback.user_id == authUser.id &&
+                                    feedback.selection_id == selectionInput.selection_id
+                            )
+                            // If the user has already made variant input, update the action
+                            const currentVariantFeedbackIndex = userFeedback.variants.findIndex(x => x.id == variant.id)
+                            if (currentVariantFeedbackIndex >= 0) {
+                                userFeedback.variants.splice(currentVariantFeedbackIndex, 1, {
+                                    id: variant.id,
+                                    feedback: variant.your_feedback,
+                                    quantity: newQuantity,
+                                })
+                            } else {
+                                userFeedback.variants.push({
+                                    id: variant.id,
+                                    feedback: variant.your_feedback,
+                                    quantity: newQuantity,
+                                })
+                            }
+                        },
+                    })
                     // Get the selection's quantity
                     Object.defineProperty(variant, 'totalQuantity', {
                         get: function() {
                             return variant.actions.reduce((total, x) => (total += x.quantity), 0)
+                        },
+                    })
+                    // Get the selection's quantity
+                    Object.defineProperty(variant, 'totalFeedbackQuantity', {
+                        get: function() {
+                            return variant.feedbacks.reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
 
@@ -1422,7 +1697,6 @@ export default {
                             if (variant.action == 'None') {
                                 variant.action = newAction
                             }
-                            // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction
                                 variant.quantity = 0
@@ -1473,6 +1747,7 @@ export default {
                             // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
+                                variant.your_quantity = 0
                             }
                         })
                     }
@@ -1481,6 +1756,7 @@ export default {
         },
         SET_FEEDBACKS(state, actions) {
             actions.forEach(action => {
+                if (!action.variants) action.variants = []
                 // Find the actions product
                 const product = state.products.find(product => product.id == action.product_id)
                 // Loop through the products selectionInput and update the action in all of them (sync)
@@ -1496,6 +1772,26 @@ export default {
         },
         SET_DISTRIBUTION_SCOPE(state, newScope) {
             state.distributionScope = newScope
+        },
+        SET_SELECTED_PRODUCTS(state, products) {
+            state.selectedProducts = products
+        },
+        SET_SHOW_CSV_MODAL(state, makeVisible) {
+            state.showCSVModal = makeVisible
+        },
+        SET_SHOW_PDF_MODAL(state, makeVisible) {
+            state.showPDFModal = makeVisible
+        },
+        TOGGLE_PRODUCT_COMPLETED(state, { product, shouldBeCompleted }) {
+            product.is_completed = shouldBeCompleted
+        },
+        SET_PRODUCTS_COMPLETED(state, { products, shouldBeCompleted }) {
+            products.map(product => {
+                product.is_completed = shouldBeCompleted
+            })
+        },
+        SET_NO_IMAGES_ONLY(state, boolean) {
+            state.noImagesOnly = boolean
         },
     },
 }
