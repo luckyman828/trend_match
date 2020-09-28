@@ -179,7 +179,7 @@
                 </template>
 
                 <!-- Master actions -->
-                    <div v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))"
+                    <div v-if="(ticketsEnabled && product.is_completed) || selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment'"
                         class="extra-actions"
                     >
                         <BaseButton buttonClass="pill xs ghost"
@@ -273,6 +273,9 @@ export default {
         },
         titleTruncateSize () {
             return window.innerWidth < 1260 ? 16 : 24
+        },
+        ticketsEnabled() {
+            return this.selection.settings.ticket_level != 'None'
         },
         hasUnreadComment() {
             if (this.currentSelectionMode == 'Approval') {
