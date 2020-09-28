@@ -1,13 +1,13 @@
 <template>
     <div class="request-wrapper" :class="[{own: isOwn}, {master: isMaster}, 
     {'has-traits': request.focus}, {'edit-active': editActive}, {'no-controls': disableControls}, 
-    {'has-thread': approvalEnabled && isMaster}]">
+    {'has-thread': approvalEnabled && isTicket}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request"
         @click="isMaster && !disableControls && approvalEnabled && onToggleRequestThread($event)">
-            <div class="ribbon" v-if="request.selection && request.selection.type == 'Master'"
+            <div class="ribbon" v-if="approvalEnabled && isTicket"
                 :class="request.status"
                 v-tooltip="statusTooltip"
             />
@@ -38,7 +38,7 @@
                     @keydown.esc.native="onCancel"/>
                 </span>
 
-                <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
+                <div class="thread-controls" v-if="isTicket && approvalEnabled">
                     <div class="resolve-actions" v-if="getCurrentSelectionMode != 'Feedback'">
                         <BaseButton
                             v-tooltip="'Accept'"
@@ -144,6 +144,9 @@ export default {
         },
         isMaster() {
             return this.request.selection.type == 'Master'
+        },
+        isTicket() {
+            return this.request.type == 'Ticket'
         },
         hasNewComment() {
             const request = this.request
