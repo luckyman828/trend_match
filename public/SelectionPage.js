@@ -2089,7 +2089,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('auth', ['authUser'])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('files', {
     approvalEnabled: 'getApprovalEnabled'
   })), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('requests', ['getCurrentRequestThread'])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection'])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('selections', {
-    displayUnreadBullets: 'getDisplayUnreadBullets'
+    displayUnreadBullets: 'getDisplayUnreadBullets',
+    ticketModeActive: 'getTicketModeActive'
   })), {}, {
     isOwn: function isOwn() {
       return this.request.selection_id == this.getCurrentPDPSelection.id;
@@ -2789,9 +2790,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.update();
     }
   },
-  computed: _objectSpread(_objectSpread(_objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('requests', {
+  computed: _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('requests', {
     currentRequestThread: 'getCurrentRequestThread'
-  })), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('auth', ['authUser'])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess'])), {}, {
+  })), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('auth', ['authUser'])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess'])), Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapGetters"])('selections', {
+    ticketModeActive: 'getTicketModeActive',
+    currentTicketMode: 'getCurrentTicketMode'
+  })), {}, {
     currentSelectionMode: function currentSelectionMode() {
       return this.getSelectionCurrentMode(this.selectionInput.selection);
     },
@@ -2819,7 +2823,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     cancelRequest: function cancelRequest() {
       this.deactivateWrite();
-      this.newRequest.content = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.content : '';
+      this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : '';
     },
     onDeleteRequest: function onDeleteRequest() {
       this.deleteRequest({
@@ -2850,7 +2854,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _this.submitting = true; // Instantiate the request to post
 
                 requestToPost = {
-                  id: _this.selectionRequest && _this.currentSelection.type != 'Master' ? _this.selectionRequest.id : null,
+                  id: _this.selectionRequest && _this.currentTicketMode != 'Multiple' ? _this.selectionRequest.id : null,
                   author_id: _this.authUser.id,
                   product_id: _this.selectionInput.product_id,
                   selection_id: _this.selectionInput.selection_id,
@@ -2895,9 +2899,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // Find the existing selection request if any
       // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
       // Set the new request equal to the existing if one exists
-      this.newRequest.content = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.content : ''; // Set the id of the new request if one exists
+      this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''; // Set the id of the new request if one exists
 
-      this.newRequest.id = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.id : null;
+      this.newRequest.id = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null;
       this.writeActive = false; // Preset the height of the request field
 
       this.resizeTextareas();
@@ -11550,9 +11554,7 @@ var render = function() {
                   _c("strong", { staticClass: "form-header" }, [
                     _vm._v(
                       _vm._s(
-                        _vm.currentSelection.type == "Master"
-                          ? "Open ticket"
-                          : "Your Request"
+                        _vm.ticketModeActive ? "Open ticket" : "Your Request"
                       )
                     )
                   ]),

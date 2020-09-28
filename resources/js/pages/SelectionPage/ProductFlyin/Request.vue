@@ -137,7 +137,8 @@ export default {
         ...mapGetters('requests', ['getCurrentRequestThread']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         ...mapGetters('selections', {
-            displayUnreadBullets: 'getDisplayUnreadBullets'
+            displayUnreadBullets: 'getDisplayUnreadBullets',
+            ticketModeActive: 'getTicketModeActive'
         }),
         isOwn() {
             return this.request.selection_id == this.getCurrentPDPSelection.id

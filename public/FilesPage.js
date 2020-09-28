@@ -2126,6 +2126,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2190,6 +2206,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }, {
         value: 'None',
         label: 'No one'
+      }],
+      ticketLevelOptions: [{
+        value: 'Multiple',
+        label: 'Multiple'
+      }, {
+        value: 'Single',
+        label: 'Single'
+      }, {
+        value: 'None',
+        label: 'None'
       }],
       cloningSetup: false,
       settingsSelections: []
@@ -2296,6 +2322,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.contextChildLevel.hide();
       this.$refs.contextDisplayLevel.hide();
       this.$refs.contextAuthorLevel.hide();
+      this.$refs.contextTicketLevel.hide();
       this.$refs.contextParentLevel.show(e);
     },
     showChildLevelContext: function showChildLevelContext(e, option) {
@@ -2303,6 +2330,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.contextParentLevel.hide();
       this.$refs.contextDisplayLevel.hide();
       this.$refs.contextAuthorLevel.hide();
+      this.$refs.contextTicketLevel.hide();
       this.$refs.contextChildLevel.show(e);
     },
     showDisplayLevelContext: function showDisplayLevelContext(e, settings, key) {
@@ -2311,6 +2339,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.contextParentLevel.hide();
       this.$refs.contextChildLevel.hide();
       this.$refs.contextAuthorLevel.hide();
+      this.$refs.contextTicketLevel.hide();
       this.$refs.contextDisplayLevel.show(e);
     },
     showDisplayAuthorContext: function showDisplayAuthorContext(e, settings, key) {
@@ -2319,7 +2348,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$refs.contextParentLevel.hide();
       this.$refs.contextChildLevel.hide();
       this.$refs.contextDisplayLevel.hide();
+      this.$refs.contextTicketLevel.hide();
       this.$refs.contextAuthorLevel.show(e);
+    },
+    showTicketLevelContext: function showTicketLevelContext(e, settings, key) {
+      this.contextSelectionSettings = settings;
+      this.contextSelectionSettingsKey = key;
+      this.$refs.contextParentLevel.hide();
+      this.$refs.contextChildLevel.hide();
+      this.$refs.contextDisplayLevel.hide();
+      this.$refs.contextAuthorLevel.hide();
+      this.$refs.contextTicketLevel.show(e);
     },
     onCloneSettings: function onCloneSettings(e) {
       this.$refs.contextCloneSettings.show(e);
@@ -9374,6 +9413,52 @@ var render = function() {
                                     )
                                   ],
                                   1
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "div",
+                                  { staticClass: "item-wrapper" },
+                                  [
+                                    _c(
+                                      "label",
+                                      { staticClass: "settings-label" },
+                                      [_vm._v("Can make tickets")]
+                                    ),
+                                    _vm._v(" "),
+                                    _c(
+                                      "BaseInputField",
+                                      {
+                                        attrs: {
+                                          disabled: "true",
+                                          type: "select",
+                                          value: _vm.ticketLevelOptions.find(
+                                            function(x) {
+                                              return (
+                                                x.value ==
+                                                _vm.contextSelection.settings
+                                                  .ticket_level
+                                              )
+                                            }
+                                          ).label
+                                        },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.showTicketLevelContext(
+                                              $event,
+                                              _vm.contextSelection.settings,
+                                              "ticket_level"
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "fas fa-caret-down"
+                                        })
+                                      ]
+                                    )
+                                  ],
+                                  1
                                 )
                               ])
                             ])
@@ -9578,6 +9663,48 @@ var render = function() {
                                       type: "radio",
                                       submitOnChange: true,
                                       options: _vm.displayAuthorOptions,
+                                      optionNameKey: "label",
+                                      optionValueKey: "value"
+                                    },
+                                    on: { submit: slotProps.hide },
+                                    model: {
+                                      value:
+                                        _vm.contextSelectionSettings[
+                                          _vm.contextSelectionSettingsKey
+                                        ],
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.contextSelectionSettings,
+                                          _vm.contextSelectionSettingsKey,
+                                          $$v
+                                        )
+                                      },
+                                      expression:
+                                        "contextSelectionSettings[contextSelectionSettingsKey]"
+                                    }
+                                  })
+                                ]
+                              }
+                            }
+                          ],
+                          null,
+                          true
+                        )
+                      }),
+                      _vm._v(" "),
+                      _c("BaseContextMenu", {
+                        ref: "contextTicketLevel",
+                        scopedSlots: _vm._u(
+                          [
+                            {
+                              key: "default",
+                              fn: function(slotProps) {
+                                return [
+                                  _c("BaseSelectButtons", {
+                                    attrs: {
+                                      type: "radio",
+                                      submitOnChange: true,
+                                      options: _vm.ticketLevelOptions,
                                       optionNameKey: "label",
                                       optionValueKey: "value"
                                     },
