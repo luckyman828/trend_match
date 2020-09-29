@@ -91,7 +91,6 @@ export default {
 
             // Change how the value is displayed
             if (this.mappedField.type == 'date' && !this.mappedField.error) {
-                console.log('value to return', valueToReturn)
                 valueToReturn = DateTime.fromJSDate(new Date(valueToReturn)).toFormat('MMMM yyyy')
             }
 
