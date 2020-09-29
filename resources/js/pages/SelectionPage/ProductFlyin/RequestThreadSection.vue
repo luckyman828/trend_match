@@ -15,7 +15,7 @@
                 <div class="request">
                     <Request :request="request" :disableControls="true"/>
 
-                    <div class="resolve-actions" v-if="request.type == 'Ticket' && ['Owner', 'Approver'].includes(request.selection.your_role)">
+                    <div class="resolve-actions" v-if="request.type == 'Ticket' && isRequestOwner">
                         <BaseButton
                             :disabled="getCurrentSelectionMode == 'Feedback'"
                             disabledTooltip="Only approvers and owners can accept a request"
@@ -79,7 +79,7 @@
                     <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
                 </div> -->
 
-                <div class="form-wrapper" v-if="!request.isResolved && request.type == 'Ticket' && getCurrentSelectionMode != 'Feedback'">
+                <div class="form-wrapper" v-if="!request.isResolved && request.type == 'Ticket' && isRequestOwner">
                     <strong class="form-header">Write comment</strong>
 
                     <form @submit="onSubmit" :class="[{active: writeActive}]">
@@ -144,6 +144,9 @@ export default {
         hasNewComment() {
             return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
             this.getCurrentSelectionMode == 'Approval' && this.request.hasUnreadAlignerComment
+        },
+        isRequestOwner() {
+            return ['Owner', 'Approver'].includes(this.request.selection.your_role)
         }
     },
     watch: {
@@ -162,7 +165,7 @@ export default {
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
         activateWrite() {
-            if (this.request.isResolved || this.request.type == 'Ticket') return
+            if (this.request.isResolved || this.request.type == 'Ticket' || !this.isRequestOwner) return
             this.$refs.commentField.focus()
             this.$refs.commentField.select()
             this.writeActive = true

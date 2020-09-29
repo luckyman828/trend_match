@@ -143,6 +143,9 @@ export default {
             // Set submitting to true
             this.submitting = true
 
+            this.$set(this.selectionInput.selection, 'your_role', this.currentSelection.your_role)
+            this.$set(this.selectionInput.selection, 'your_job', this.currentSelection.your_job)
+
             // Instantiate the request to post
             const requestToPost = {
                 id: this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null,
@@ -152,6 +155,7 @@ export default {
                 content: this.newRequest.content,
                 author: this.authUser,
                 selection: this.selectionInput.selection,
+                type: this.currentSelection.settings.ticket_level != 'None' ? 'Ticket' : 'Request',
                 discussions: [],
                 completed_at: null,
                 completed_by_user: null,
