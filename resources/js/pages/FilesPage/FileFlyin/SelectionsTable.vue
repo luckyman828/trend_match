@@ -802,15 +802,11 @@ export default {
         ticketLevelOptions: [
             {
                 value: 'Multiple',
-                label: 'Multiple'
-            },
-            {
-                value: 'Single',
-                label: 'Single'
+                label: 'True'
             },
             {
                 value: 'None',
-                label: 'None'
+                label: 'False'
             },
         ],
         cloningSetup: false,

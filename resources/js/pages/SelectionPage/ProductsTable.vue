@@ -37,7 +37,7 @@
                     v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     modelValue="nds"/>
-                    <BaseTableTab v-if="selection.type == 'Master' && approvalEnabled" :label="`Tickets`" 
+                    <BaseTableTab v-if="selection.settings.ticket_level != 'None' && approvalEnabled" :label="`Tickets`" 
                     :count="!hideCompleted ? stateProducts.filter(x => x.hasTicket).length : stateProducts.filter(x => x.hasTicket && !x.is_completed).length" 
                     v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
