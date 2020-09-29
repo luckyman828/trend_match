@@ -372,7 +372,8 @@ export default {
         },
         onSaveOrder() {
             const products = this.products
-            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.products
+            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.productsFilteredBySearch
+
             productsReOrdered.map((reOrdered, index) => {
                 // Find the corresponding product
                 const product = this.products.find(x => x.id == reOrdered.id)

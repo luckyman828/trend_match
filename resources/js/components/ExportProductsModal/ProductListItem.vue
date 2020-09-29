@@ -99,7 +99,7 @@
                                 v-for="(request, index) in action.requests" 
                                 :key="'request-'+index">
                                     <strong v-if="request.selection.type == 'Master'">
-                                        [{{request.status == 'Rejected' ? 'REJECTED' : request.status == 'Resolved' ? 'ACCEPTED' : 'OPEN'}}] 
+                                        [{{request.status == 'Resolved' ? 'ACCEPTED' : request.status == 'Rejected' ? 'REJECTED' : 'OPEN'}}] 
                                     </strong>
                                     {{request.content}}
                                 </span>

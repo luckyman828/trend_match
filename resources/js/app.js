@@ -16,9 +16,6 @@ window.DateTime = DateTime
 import store from './store/index'
 import router from './router'
 
-// import VuePapaParse from 'vue-papa-parse'
-// Vue.use(VuePapaParse)
-
 // import VueDragscroll from 'vue-dragscroll'
 // Vue.use(VueDragscroll)
 

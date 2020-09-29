@@ -36,19 +36,21 @@ export default {
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
         nextFile: state => {
+            const files = state.files.filter(x => x.type == 'File')
             // Find the index of the current file and add 1
-            const index = state.files.findIndex(x => x.id == state.currentFile.id)
+            const index = files.findIndex(x => x.id == state.currentFile.id)
             // Check that the current file is not the last in the array
-            if (index + 1 < state.files.length) {
-                return state.files[index + 1]
+            if (index + 1 < files.length) {
+                return files[index + 1]
             }
         },
         prevFile: state => {
+            const files = state.files.filter(x => x.type == 'File')
             // Find the index of the current file and add 1
-            const index = state.files.findIndex(x => x.id == state.currentFile.id)
+            const index = files.findIndex(x => x.id == state.currentFile.id)
             // Check that the current file is not the first in the array
             if (index > 0) {
-                return state.files[index - 1]
+                return files[index - 1]
             }
         },
         getFileUsersStatus: state => state.fileUsersStatus,

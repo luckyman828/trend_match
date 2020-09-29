@@ -207,6 +207,7 @@ export default {
                 if (field.enabled && !!field.fieldName && (!this.uploadOptions || this.uploadOptions.fields.find(x => x.name == field.name && x.enabled))) {
                     const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows, depth)
                     if (!fieldIsValid) {
+                        console.log('error in this field!', field)
                         return false
                     }
                 }
@@ -220,7 +221,6 @@ export default {
             // Loop through the fields and look for errors
             // assume no errors
             const valid = this.validateAllFields()
-            // console.log('validate all fields', valid)
             
             if (!valid) {
                 this.SHOW_SNACKBAR({ 
