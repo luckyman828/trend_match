@@ -39,10 +39,10 @@
                 </span>
 
                 <div class="thread-controls" v-if="isTicket && approvalEnabled && !disableControls">
-                    <div class="resolve-actions" v-if="['Owner', 'Approver'].includes(request.selection.your_role)">
+                    <div class="resolve-actions" v-if="hasTicketControl">
                         <BaseButton
                             v-tooltip="'Accept'"
-                            :disabled="!['Owner', 'Approver'].includes(request.selection.your_role)"
+                            :disabled="!hasTicketControl"
                             disabledTooltip="Only approvers and owners can accept a request"
                             :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
                             @click="onSetStatus('Resolved')"
@@ -52,7 +52,7 @@
                         </BaseButton>
                         <BaseButton
                             v-tooltip="'Reject'"
-                            :disabled="!['Owner', 'Approver'].includes(request.selection.your_role)"
+                            :disabled="!hasTicketControl"
                             disabledTooltip="Only approvers and owners can reject a request"
                             :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
                             @click="onSetStatus('Rejected')"
@@ -138,7 +138,8 @@ export default {
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         ...mapGetters('selections', {
             displayUnreadBullets: 'getDisplayUnreadBullets',
-            ticketModeActive: 'getTicketModeActive'
+            ticketModeActive: 'getTicketModeActive',
+
         }),
         isOwn() {
             return this.request.selection_id == this.getCurrentPDPSelection.id
@@ -168,7 +169,10 @@ export default {
         },
         requestStatus() {
             return this.request.status
-        }
+        },
+        hasTicketControl() {
+            return ['Owner', 'Approver'].includes(this.request.selection.your_role) || this.currentSelection.your_role == 'Approver'
+        },
     },
     watch: {
         requestStatus(newVal) {
