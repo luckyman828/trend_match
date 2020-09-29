@@ -25,7 +25,7 @@
 
             <!-- Deny access for feedback -->
             <div class="form-wrapper" v-if="currentSelectionMode == 'Alignment'">
-                <strong class="form-header">{{currentSelection.type == 'Master' ? 'Open ticket' : 'Your Request'}}</strong>
+                <strong class="form-header">{{ticketModeActive ? 'Open ticket' : 'Your Request'}}</strong>
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
 
@@ -96,10 +96,14 @@ export default {
     },
     computed: {
         ...mapGetters('requests', {
-            currentRequestThread: 'getCurrentRequestThread'
+            currentRequestThread: 'getCurrentRequestThread',
         }),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', {
+            ticketModeActive: 'getTicketModeActive',
+            currentTicketMode: 'getCurrentTicketMode',
+        }),
         currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
         submitDisabled () {
             return this.newRequest.content.length < 1 
@@ -109,7 +113,7 @@ export default {
         },
         selectionRequest () {
             return this.selectionInput.selectionRequest
-        }
+        },
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
@@ -126,7 +130,7 @@ export default {
         },
         cancelRequest() {
             this.deactivateWrite()
-            this.newRequest.content = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.content : ''
+            this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
         },
         onDeleteRequest() {
             this.deleteRequest({selectionInput: this.selectionInput, request: this.selectionRequest})
@@ -141,7 +145,7 @@ export default {
 
             // Instantiate the request to post
             const requestToPost = {
-                id: this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.id : null,
+                id: this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null,
                 author_id: this.authUser.id,
                 product_id: this.selectionInput.product_id,
                 selection_id: this.selectionInput.selection_id,
@@ -177,9 +181,9 @@ export default {
             // Find the existing selection request if any
             // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
-            this.newRequest.content = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.content : ''
+            this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
             // Set the id of the new request if one exists
-            this.newRequest.id = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.id : null
+            this.newRequest.id = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null
             this.writeActive = false
 
             // Preset the height of the request field

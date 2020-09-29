@@ -15,7 +15,7 @@
                 <div class="request">
                     <Request :request="request" :disableControls="true"/>
 
-                    <div class="resolve-actions" v-if="request.type == 'Ticket'">
+                    <div class="resolve-actions" v-if="request.type == 'Ticket' && ['Owner', 'Approver'].includes(request.selection.your_role)">
                         <BaseButton
                             :disabled="getCurrentSelectionMode == 'Feedback'"
                             disabledTooltip="Only approvers and owners can accept a request"

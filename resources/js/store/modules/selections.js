@@ -74,6 +74,11 @@ export default {
                 getters.currentSelectionMode != 'Approval'
             )
         },
+        getTicketModeActive: (state, getters) => {
+            return getters.currentSelection.settings && getters.currentSelection.settings.ticket_level != 'None'
+        },
+        getCurrentTicketMode: (state, getters) =>
+            getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {

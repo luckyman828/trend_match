@@ -6,7 +6,7 @@
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request"
-        @click="isMaster && !disableControls && approvalEnabled && onToggleRequestThread($event)">
+        @click="isTicket && !disableControls && approvalEnabled && onToggleRequestThread($event)">
             <div class="ribbon" v-if="approvalEnabled && isTicket"
                 :class="request.status"
                 v-tooltip="statusTooltip"
@@ -38,11 +38,11 @@
                     @keydown.esc.native="onCancel"/>
                 </span>
 
-                <div class="thread-controls" v-if="isTicket && approvalEnabled">
-                    <div class="resolve-actions" v-if="getCurrentSelectionMode != 'Feedback'">
+                <div class="thread-controls" v-if="isTicket && approvalEnabled && !disableControls">
+                    <div class="resolve-actions" v-if="['Owner', 'Approver'].includes(request.selection.your_role)">
                         <BaseButton
                             v-tooltip="'Accept'"
-                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            :disabled="!['Owner', 'Approver'].includes(request.selection.your_role)"
                             disabledTooltip="Only approvers and owners can accept a request"
                             :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
                             @click="onSetStatus('Resolved')"
@@ -52,7 +52,7 @@
                         </BaseButton>
                         <BaseButton
                             v-tooltip="'Reject'"
-                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            :disabled="!['Owner', 'Approver'].includes(request.selection.your_role)"
                             disabledTooltip="Only approvers and owners can reject a request"
                             :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
                             @click="onSetStatus('Rejected')"
@@ -137,7 +137,8 @@ export default {
         ...mapGetters('requests', ['getCurrentRequestThread']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         ...mapGetters('selections', {
-            displayUnreadBullets: 'getDisplayUnreadBullets'
+            displayUnreadBullets: 'getDisplayUnreadBullets',
+            ticketModeActive: 'getTicketModeActive'
         }),
         isOwn() {
             return this.request.selection_id == this.getCurrentPDPSelection.id

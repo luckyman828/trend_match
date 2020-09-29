@@ -1032,14 +1032,12 @@ export default {
                 })
                 Object.defineProperty(product, 'hasOpenTicket', {
                     get: function() {
-                        return !!product.requests.find(
-                            request => request.status == 'Open' && request.selection.type == 'Master'
-                        )
+                        return !!product.requests.find(request => request.status == 'Open' && request.type == 'Ticket')
                     },
                 })
                 Object.defineProperty(product, 'hasTicket', {
                     get: function() {
-                        return !!product.requests.find(request => request.selection.type == 'Master')
+                        return !!product.requests.find(request => request.type == 'Ticket')
                     },
                 })
 
@@ -1230,13 +1228,13 @@ export default {
                 Object.defineProperty(selectionInput, 'hasOpenTicket', {
                     get: function() {
                         return selectionInput.requests.find(
-                            request => request.status == 'Open' && request.selection.type == 'Master'
+                            request => request.status == 'Open' && request.type == 'Ticket'
                         )
                     },
                 })
                 Object.defineProperty(selectionInput, 'hasTicket', {
                     get: function() {
-                        return !!selectionInput.requests.find(request => request.selection.type == 'Master')
+                        return !!selectionInput.requests.find(request => request.type == 'Ticket')
                     },
                 })
 
