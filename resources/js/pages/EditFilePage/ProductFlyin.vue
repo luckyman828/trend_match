@@ -952,10 +952,11 @@ export default {
         },
         removePicture(index) {
             const variant = this.product.variants[index]
-            if (variant.imageIndex > 0 && variant.imageIndex == variant.pictures.length -1) {
+            const toDeleteIsLastPicture = variant.imageIndex > 0 && variant.imageIndex == variant.pictures.length -1
+            variant.pictures.splice(variant.imageIndex, 1)
+            if (toDeleteIsLastPicture) {
                 variant.imageIndex--
             }
-            variant.pictures.splice(variant.imageIndex, 1)
             if (variant.pictures.length <= 0) {
                 this.onAddImageToVariant(variant)
             }
