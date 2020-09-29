@@ -169,7 +169,7 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles"
+                    <BaseSelectButtons type="radio" ref="userCurrencySelector" :options="availableSelectionRoles.filter(x => !(selection.type != 'Master' && x.role == 'Approver'))"
                     v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
                     :optionNameKey="'role'" :optionValueKey="'role'"
                     @submit="onUpdateSelectionUsersRole();slotProps.hide()"/>
