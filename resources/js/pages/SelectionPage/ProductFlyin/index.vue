@@ -409,7 +409,7 @@ export default {
             }
         },
         onTabRequestThread(cycleForward) {
-            const requests = this.product.requests.filter(x => x.selection.type == 'Master')
+            const requests = this.product.requests.filter(x => x.type == 'Ticket')
 
             // Find the index of our current request thread
             const index = requests.findIndex(x => x.id == this.currentRequestThread.id)

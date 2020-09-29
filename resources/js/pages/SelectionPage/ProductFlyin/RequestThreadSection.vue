@@ -63,23 +63,7 @@
                     </div>
                 </div>
 
-                <!-- <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
-                    <button class="lg full-width" :class="[request.isResolved ? 'green' : 'primary', {'is-resolved': request.isResolved}]"
-                    @click="onResolve">
-                        <span v-if="!request.isResolved">Mark as resolved</span>
-                        <template v-else>
-                            <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
-                            <span class="hover">Re-open request</span>
-                        </template>
-                    </button>
-                </div> -->
-
-                <!-- <div class="resolved-banner" 
-                v-else-if="request.isResolved">
-                    <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
-                </div> -->
-
-                <div class="form-wrapper" v-if="!request.isResolved && request.type == 'Ticket' && hasTicketControl">
+                <div class="form-wrapper" v-if="request.type == 'Ticket' && hasTicketControl">
                     <strong class="form-header">Write comment</strong>
 
                     <form @submit="onSubmit" :class="[{active: writeActive}]">
@@ -165,7 +149,7 @@ export default {
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
         activateWrite() {
-            if (this.request.isResolved || this.request.type == 'Ticket' || !this.hasTicketControl) return
+            if (this.request.type != 'Ticket' || !this.hasTicketControl) return
             this.$refs.commentField.focus()
             this.$refs.commentField.select()
             this.writeActive = true
