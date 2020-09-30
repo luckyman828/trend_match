@@ -84,12 +84,12 @@ export default {
         // selectionRequest: null,
     }},
     watch: {
-        selectionInput: function(newVal, oldVal) {
-            this.update()
-        },
-        requests: function(newVal, oldVal) {
-            this.update()
-        },
+        // selectionInput: function(newVal, oldVal) {
+        //     this.update()
+        // },
+        // requests: function(newVal, oldVal) {
+        //     this.update()
+        // },
         selectionRequest: function(newVal, oldVal) {
             this.update()
         },
@@ -183,15 +183,16 @@ export default {
         },
         update() {
             // Find the existing selection request if any
-            // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
-            this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
-            // Set the id of the new request if one exists
-            this.newRequest.id = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null
-            this.writeActive = false
+            if (this.currentTicketMode == 'None') {
+                this.newRequest.content = this.selectionRequest ? this.selectionRequest.content : ''
+                // Set the id of the new request if one exists
+                this.newRequest.id = this.selectionRequest ? this.selectionRequest.id : null
+                this.deactivateWrite()
 
-            // Preset the height of the request field
-            this.resizeTextareas()
+                // Preset the height of the request field
+                this.resizeTextareas()
+            }
         },
         resizeTextareas() {
             if (this.currentSelectionMode == 'Alignment') {

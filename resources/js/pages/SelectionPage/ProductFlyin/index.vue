@@ -445,12 +445,12 @@ export default {
             if (key == 'Tab') {
                 event.preventDefault()
                 // Find requests with threads
-                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
-                if (requestsWithThreads.length <= 0) return
+                const requestsWithTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                if (requestsWithTickets.length <= 0) return
 
                 // // Else, show the first reqeust thread
                 if (!this.currentRequestThread) {
-                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
+                    this.SET_CURRENT_REQUEST_THREAD(requestsWithTickets[0])
                 }
             }
         },
