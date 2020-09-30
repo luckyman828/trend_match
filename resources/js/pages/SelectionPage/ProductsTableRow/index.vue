@@ -117,9 +117,7 @@
                     v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'">
                         <span>{{selectionInput.requests.length}}</span>
                         <span v-if="getApprovalEnabled && selectionInput.hasOpenTicket"
-                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span>
-                        <!-- <span v-if="getApprovalEnabled && selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length > 0"
-                            > ({{selectionInput.requests.filter(x => !x.isResolved && x.selection.type == 'Master').length}})</span> -->
+                            > ({{selectionInput.requests.filter(x => x.type == 'Ticket' && x.status == 'Open').length}})</span>
                         <i class="far fa-clipboard-check"></i>
                         <div v-if="displayUnreadBullets && product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
                     </button>

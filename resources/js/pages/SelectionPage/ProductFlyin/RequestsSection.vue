@@ -172,12 +172,12 @@ export default {
             // this.selectionRequest = requestToPost
 
             // Reset comment
-            this.writeActive = false
-            // Unset the focus
-            document.activeElement.blur()
+            this.deactivateWrite()
+            this.newRequest.content = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.content : ''
+            // Set the id of the new request if one exists
+            this.newRequest.id = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.id : null
             
             // Reset request
-            this.newRequest.content = this.selectionRequest.content
             this.resizeTextareas()
 
         },
