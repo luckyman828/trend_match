@@ -351,7 +351,7 @@ export default {
             this.setSingleVisisble(true)
         },
         async onDeleteProducts(products) {
-            await this.deleteProducts({file: this.file, products})
+            await this.deleteProducts({file: this.file, products: products.slice()})
             this.selectedProducts = []
         },
         onSort(sortAsc, sortKey) {

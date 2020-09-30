@@ -761,6 +761,7 @@ export default {
                 )
 
                 const sendRequest = async () => {
+                    commit('DELETE_PRODUCTS', products)
                     const apiUrl = `/files/${file.id}/products`
                     axios
                         .post(apiUrl, {
