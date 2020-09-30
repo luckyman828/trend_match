@@ -809,8 +809,8 @@ export default {
                 label: 'False'
             },
             {
-                value: 'INVALID. PLEASE CHANGE',
-                label: 'Single'
+                value: 'Single',
+                label: 'INVALID. PLEASE CHANGE'
             },
         ],
         cloningSetup: false,
