@@ -14,7 +14,7 @@
                     </div>
                 </template>
                 <template v-slot:right>
-                    <div class="item-group" v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))">
+                    <div class="item-group" v-if="(ticketsEnabled && product.is_completed) || selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment'">
                         <!-- Master actions -->
                         <BaseButton buttonClass="pill xs ghost"
                         targetAreaPadding="4px 4px"
@@ -344,6 +344,9 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
+        ticketsEnabled() {
+            return this.selection.settings.ticket_level != 'None'
+        }
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
