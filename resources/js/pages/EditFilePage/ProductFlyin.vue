@@ -584,6 +584,10 @@ export default {
             })
         },
         async onDeleteProduct() {
+            if (!this.product.id) {
+                this.onCloseSingle()
+                return
+            }
             if (await this.$refs.confirmDeleteProduct.confirm()) {
                 this.deleteProducts({file: this.currentFile, products: [this.product]})
                 this.onCloseSingle()

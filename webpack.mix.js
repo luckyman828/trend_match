@@ -22,7 +22,7 @@ mix.js('resources/js/app.js', 'public/js')
         },
         plugins: [new CaseSensitivePathsPlugin()],
         output: {
-            chunkFilename: 'js/[name].js',
+            chunkFilename: 'js/[name].[hash].js',
         },
     })
     .version()
