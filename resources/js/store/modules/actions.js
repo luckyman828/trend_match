@@ -17,7 +17,7 @@ export default {
         async updateActions({ commit, dispatch, rootGetters }, { actions, newAction }) {
             // Complete the product if it was IN but now is OUT
             let productsToComplete = []
-            if (newAction == 'Out') {
+            if (newAction == 'Out' && rootGetters['selections/getCurrentSelection'].type == 'Master') {
                 actions.map(action => {
                     if (['In', 'Focus'].includes(action.action)) {
                         const product = rootGetters['products/products'].find(x => x.id == action.product_id)
@@ -55,7 +55,6 @@ export default {
             axios
                 .post(apiUrl, requestBody)
                 .then(response => {
-                    console.log('then')
                     if (productsToComplete.length > 0) {
                         dispatch(
                             'products/setProductsCompleted',

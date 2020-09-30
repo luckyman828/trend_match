@@ -179,7 +179,6 @@ export default{
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         onUpdateAction(action, selectionInput) {
-            console.log('on update action')
             if (this.currentSelectionMode == 'Feedback') {
                 const selectionFeedback = selectionInput.yourSelectionFeedback
                 const newAction = selectionFeedback.action == action ? 'None' : action
