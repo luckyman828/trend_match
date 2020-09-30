@@ -1408,7 +1408,7 @@ export default {
                     })
                     Object.defineProperty(request, 'hasUnreadAlignerComment', {
                         get: function() {
-                            if (request.status != 'Open' || request.selection.type != 'Master') return false
+                            if (request.status != 'Open' || request.type != 'Ticket') return false
                             return (
                                 request.discussions.length <= 0 ||
                                 request.discussions[request.discussions.length - 1].role != 'Approver'
