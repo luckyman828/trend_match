@@ -808,6 +808,10 @@ export default {
                 value: 'None',
                 label: 'False'
             },
+            {
+                value: 'INVALID. PLEASE CHANGE',
+                label: 'Single'
+            },
         ],
         cloningSetup: false,
         settingsSelections: [],
