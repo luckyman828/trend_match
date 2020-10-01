@@ -271,6 +271,9 @@ export default {
         }
     }
     &.no-controls {
+        .request {
+            cursor: default;
+        }
         .request > .inner {
             padding-bottom: 20px;
         }
@@ -347,10 +350,11 @@ export default {
     //     border-left: solid 8px $green;
     // }
     .inner {
-        padding: 8px 8px 12px;
+        padding: 8px 12px 12px 8px;
         display: flex;
         flex-direction: column;
         flex: 1;
+        overflow: hidden;
     }
     .thread-controls {
         // position: absolute;

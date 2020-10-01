@@ -13,7 +13,7 @@
         <template v-slot>
             <div class="inner">
                 <div class="request">
-                    <Request :request="request" :disableControls="true"/>
+                    <Request :request="request" :disableControls="true" :selectionInput="selectionInput"/>
 
                     <div class="resolve-actions" v-if="request.type == 'Ticket' && hasTicketControl">
                         <BaseButton
@@ -105,6 +105,9 @@ export default {
         Request,
         RequestComment,
     },
+    props: [
+        'selectionInput'
+    ],
     data: function () { return {
         newComment: {
             content: '',

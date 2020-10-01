@@ -202,6 +202,7 @@
             @hotkeyEnter="hotkeyEnterHandler"/>
 
             <RequestThreadSection v-else
+            :selectionInput="selectionInput"
             @onTab="onTabRequestThread"/>
 
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
@@ -414,14 +415,15 @@ export default {
         onTabRequestThread(cycleForward) {
             const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
             const tickets = []
-            tickets.push(...allTickets.filter(x => x.selection_id == this.selection.id))
-            tickets.push(...allTickets.filter(x => x.selection_id != this.selection.id).sort((a, b) => {
-                return a.type == 'Master' ? 1 : -1
-            }))
+            const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+            const otherTickets = allTickets
+                .filter(x => x.selection_id != this.selection.id)
+                .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)
+            tickets.push(...ownTickets)
+            tickets.push(...otherTickets)
 
             // Find the index of our current request thread
             const index = tickets.findIndex(x => x.id == this.currentRequestThread.id)
-            console.log('tab tickets', tickets, index)
             if (cycleForward && index + 1 <= tickets.length) {
                 this.SET_CURRENT_REQUEST_THREAD(tickets[index+1])
             } else if (!cycleForward && index > 0) {
@@ -451,15 +453,13 @@ export default {
             if (key == 'Tab') {
                 event.preventDefault()
                 // Find requests with threads
-                const requestsWithTickets = this.product.requests.filter(x => x.type == 'Ticket').sort((a, b) => {
-                    return a.type == 'Master' ? 1 : -1
-                })
-                if (requestsWithTickets.length <= 0) return
+                const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                if (allTickets.length <= 0) return
 
                 // // Else, show the first reqeust thread
                 if (!this.currentRequestThread) {   
-                    const ownTickets = requestsWithTickets.filter(x => x.selection_id == this.selection.id)
-                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : requestsWithTickets[0]
+                    const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
                     this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
                 }
             }
