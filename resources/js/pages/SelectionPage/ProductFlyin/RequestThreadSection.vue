@@ -134,20 +134,22 @@ export default {
         }
     },
     watch: {
-        // request() {
-        //     this.$nextTick(() => {
-        //         // this.activateWrite()
-        //     })
-        // },
+        request() {
+            this.onReadRequest()
+        },
         currentProduct() {
             this.close()
         }
     },
     methods: {
         ...mapMutations('requests', {
-            close: 'SET_CURRENT_REQUEST_THREAD'
+            close: 'SET_CURRENT_REQUEST_THREAD',
+            SET_REQUEST_READ: 'SET_REQUEST_READ',
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
+        onReadRequest() {
+            this.SET_REQUEST_READ(this.request)
+        },
         activateWrite() {
             if (this.request.type != 'Ticket' || !this.hasTicketControl) return
             this.$refs.commentField.focus()
@@ -223,6 +225,7 @@ export default {
     },
     mounted() {
         // this.activateWrite()
+        this.onReadRequest()
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)

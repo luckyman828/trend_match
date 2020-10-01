@@ -59,7 +59,7 @@ export default {
         getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
         getDisplayUnreadBullets: (state, getters) => {
-            return getters.getCurrentSelection.type == 'Master' && getters.getCurrentSelectionMode != 'Feedback'
+            return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,

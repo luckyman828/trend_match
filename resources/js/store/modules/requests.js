@@ -212,13 +212,7 @@ export default {
                 })
                 Object.defineProperty(request, 'hasUnreadAlignerComment', {
                     get: function() {
-                        if (request.datasource_id == 12168829) {
-                            console.log('get has unread alignmer comment 1', request)
-                        }
                         if (request.status != 'Open' || request.type != 'Ticket') return false
-                        if (request.datasource_id == 12168829) {
-                            console.log('get has unread alignmer comment 2', request)
-                        }
                         return (
                             request.discussions.length <= 0 ||
                             request.discussions[request.discussions.length - 1].role != 'Approver'

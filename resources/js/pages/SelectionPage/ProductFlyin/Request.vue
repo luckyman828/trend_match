@@ -223,7 +223,7 @@ export default {
         }
     },
     created() {
-        this.onReadRequest()
+        // this.onReadRequest()
     },
     destroyed() {
         this.onReadRequest()

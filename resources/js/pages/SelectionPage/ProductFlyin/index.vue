@@ -412,14 +412,20 @@ export default {
             }
         },
         onTabRequestThread(cycleForward) {
-            const requests = this.product.requests.filter(x => x.type == 'Ticket')
+            const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+            const tickets = []
+            tickets.push(...allTickets.filter(x => x.selection_id == this.selection.id))
+            tickets.push(...allTickets.filter(x => x.selection_id != this.selection.id).sort((a, b) => {
+                return a.type == 'Master' ? 1 : -1
+            }))
 
             // Find the index of our current request thread
-            const index = requests.findIndex(x => x.id == this.currentRequestThread.id)
-            if (cycleForward && index + 1 <= requests.length) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index+1])
+            const index = tickets.findIndex(x => x.id == this.currentRequestThread.id)
+            console.log('tab tickets', tickets, index)
+            if (cycleForward && index + 1 <= tickets.length) {
+                this.SET_CURRENT_REQUEST_THREAD(tickets[index+1])
             } else if (!cycleForward && index > 0) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index-1])
+                this.SET_CURRENT_REQUEST_THREAD(tickets[index-1])
             }
             
         },
@@ -445,12 +451,16 @@ export default {
             if (key == 'Tab') {
                 event.preventDefault()
                 // Find requests with threads
-                const requestsWithTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                const requestsWithTickets = this.product.requests.filter(x => x.type == 'Ticket').sort((a, b) => {
+                    return a.type == 'Master' ? 1 : -1
+                })
                 if (requestsWithTickets.length <= 0) return
 
                 // // Else, show the first reqeust thread
-                if (!this.currentRequestThread) {
-                    this.SET_CURRENT_REQUEST_THREAD(requestsWithTickets[0])
+                if (!this.currentRequestThread) {   
+                    const ownTickets = requestsWithTickets.filter(x => x.selection_id == this.selection.id)
+                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : requestsWithTickets[0]
+                    this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
                 }
             }
         },
