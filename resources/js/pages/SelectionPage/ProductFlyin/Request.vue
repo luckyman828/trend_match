@@ -77,7 +77,7 @@
             </div>
         </div> 
         <!-- Request Controls -->
-        <div class="controls" v-if="!editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
+        <div class="controls" v-if="!selectionInput.is_completed && !editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
 
             <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
             @click="onDeleteRequest">

@@ -200,14 +200,14 @@ export default {
                 })
                 .then(response => {})
         },
-        initRequests({}, requests) {
+        initRequests({ rootGetters }, requests) {
             requests.map(request => {
                 if (!request.discussions) Vue.set(request, 'discussions', [])
 
                 Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
-                Object.defineProperty(request, 'isResolved', {
+                Object.defineProperty(request, 'product', {
                     get: function() {
-                        return !!request.completed_at
+                        return rootGetters['products/products'].find(x => x.id == request.product_id)
                     },
                 })
                 Object.defineProperty(request, 'hasUnreadAlignerComment', {
