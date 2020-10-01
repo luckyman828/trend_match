@@ -1,25 +1,47 @@
 <template>
-    <BaseFlyin class="product-single" :show="show" @close="onCloseSingle" :columns=4
-    :class="{'has-budget': showQty}">
+    <BaseFlyin
+        class="product-single"
+        :show="show"
+        @close="onCloseSingle"
+        :columns="4"
+        :class="{ 'has-budget': showQty }"
+    >
         <template v-slot:header>
-            <BaseFlyinHeader class="the-flyin-header" v-if="show" :next="nextProduct" :prev="prevProduct"
-            @close="onCloseSingle" @next="showNextProduct" @prev="showPrevProduct">
+            <BaseFlyinHeader
+                class="the-flyin-header"
+                v-if="show"
+                :next="nextProduct"
+                :prev="prevProduct"
+                @close="onCloseSingle"
+                @next="showNextProduct"
+                @prev="showPrevProduct"
+            >
                 <template v-slot:left>
                     <div class="item-group product-title-wrapper">
-                        <h3>{{`#${product.datasource_id}: ${product.title}`}}</h3>
-                        <span class="product-count">Product 
-                            {{availableProducts.findIndex(x => x.id == product.id)+1}} 
-                            of 
-                            {{availableProducts.length}}</span>
+                        <h3>{{ `#${product.datasource_id}: ${product.title}` }}</h3>
+                        <span class="product-count"
+                            >Product
+                            {{ availableProducts.findIndex(x => x.id == product.id) + 1 }}
+                            of
+                            {{ availableProducts.length }}</span
+                        >
                     </div>
                 </template>
                 <template v-slot:right>
-                    <div class="item-group" v-if="(ticketsEnabled && product.is_completed) || selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment'">
+                    <div
+                        class="item-group"
+                        v-if="
+                            (ticketsEnabled && product.is_completed) ||
+                                (selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment')
+                        "
+                    >
                         <!-- Master actions -->
-                        <BaseButton buttonClass="pill xs ghost"
-                        targetAreaPadding="4px 4px"
-                        :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
-                        @click="onToggleCompleted">
+                        <BaseButton
+                            buttonClass="pill xs ghost"
+                            targetAreaPadding="4px 4px"
+                            :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
+                            @click="onToggleCompleted"
+                        >
                             <template v-if="!product.is_completed">
                                 <i class="far fa-circle" style="font-weight: 400;"></i>
                                 <span>Complete</span>
@@ -44,7 +66,10 @@
                                     <template v-slot:default>
                                         <div class="item-group">
                                             <div class="item-wrapper">
-                                                <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
+                                                <SelectionPresenterModeButton
+                                                    :selection="selection"
+                                                    @toggle="onTogglePresenterMode"
+                                                />
                                             </div>
                                         </div>
                                     </template>
@@ -56,26 +81,35 @@
                         <SelectionPresenterModeButton :selection="selection" @toggle="onTogglePresenterMode"/>
                     </div> -->
                     <div class="item-group" v-if="activeSelectionList.length > 1">
-                        <SelectionSelector ref="selectionSelector" v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"/>
+                        <SelectionSelector
+                            ref="selectionSelector"
+                            v-if="currentSelectionMode == 'Alignment' && !selection.is_presenting"
+                        />
                     </div>
                     <div class="item-group">
-                        <BaseButton :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
-                        :disabled="!userWriteAccess.actions.hasAccess" 
-                        v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction('Focus')">
+                        <BaseButton
+                            :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                            :disabled="!userWriteAccess.actions.hasAccess"
+                            v-tooltip="userWriteAccess.actions.msg"
+                            @click="onUpdateAction('Focus')"
+                        >
                             <i class="far fa-star"></i>
                         </BaseButton>
-                        <BaseButton :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'"
-                        :disabled="!userWriteAccess.actions.hasAccess" 
-                        v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction('In')">
+                        <BaseButton
+                            :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost' : 'green'"
+                            :disabled="!userWriteAccess.actions.hasAccess"
+                            v-tooltip="userWriteAccess.actions.msg"
+                            @click="onUpdateAction('In')"
+                        >
                             <i class="far fa-heart"></i>
                             <span>In</span>
                         </BaseButton>
-                        <BaseButton :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'"
-                        :disabled="!userWriteAccess.actions.hasAccess" 
-                        v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction('Out')">
+                        <BaseButton
+                            :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost' : 'red'"
+                            :disabled="!userWriteAccess.actions.hasAccess"
+                            v-tooltip="userWriteAccess.actions.msg"
+                            @click="onUpdateAction('Out')"
+                        >
                             <i class="far fa-times-circle"></i>
                             <span>out</span>
                         </BaseButton>
@@ -85,13 +119,14 @@
         </template>
         <template v-slot v-if="show">
             <BaseFlyinColumn class="details">
-                
                 <div class="main-img" @click="cycleImage(true)">
-                    <BaseVariantImg :key="product.id + '-' + currentImgIndex"  
-                        :variant="currentVariant" size="sm" :index="currentVariant ? currentVariant.imageIndex : 0"
+                    <BaseVariantImage
+                        :key="product.id + '-' + currentImgIndex"
+                        :variant="currentVariant"
+                        size="sm"
+                        :index="currentVariant ? currentVariant.imageIndex : 0"
                     />
-                    <button class="white controls" v-tooltip="'View large images'"
-                    @click.stop="onShowLightbox">
+                    <button class="white controls" v-tooltip="'View large images'" @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
                     </button>
 
@@ -99,26 +134,39 @@
                         <div class="square white trigger">
                             <i class="far fa-images"></i>
                             <div class="count circle xxs dark">
-                                <span>{{currentVariant.pictures.length}}</span>
+                                <span>{{ currentVariant.pictures.length }}</span>
                             </div>
                         </div>
                         <div class="drawer">
-                            <div class="image-wrapper" v-for="(image, index) in currentVariant.pictures" :key="index"
-                            :class="{'active': currentVariant.imageIndex == index}">
-                                <BaseVariantImg :variant="currentVariant" size="sm" :index="index"
-                                @click.native.stop="currentVariant.imageIndex = index"/>
+                            <div
+                                class="image-wrapper"
+                                v-for="(image, index) in currentVariant.pictures"
+                                :key="index"
+                                :class="{ active: currentVariant.imageIndex == index }"
+                            >
+                                <BaseVariantImage
+                                    :variant="currentVariant"
+                                    size="sm"
+                                    :index="index"
+                                    @click.native.stop="currentVariant.imageIndex = index"
+                                />
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="product-variants" v-dragscroll>
-                    <VariantListItem v-for="(variant, index) in selectionInput.variants" :key="index"
-                    :variant="variant" :product="product" :selection="selection" :selectionInput="selectionInput"
-                    :class="{'active': currentImgIndex == index}"
-                    v-tooltip-trigger="{tooltipRef: 'variantTooltip', showArg: variant}"
-                    @click.native="currentImgIndex = index"/>
+                    <VariantListItem
+                        v-for="(variant, index) in selectionInput.variants"
+                        :key="index"
+                        :variant="variant"
+                        :product="product"
+                        :selection="selection"
+                        :selectionInput="selectionInput"
+                        :class="{ active: currentImgIndex == index }"
+                        v-tooltip-trigger="{ tooltipRef: 'variantTooltip', showArg: variant }"
+                        @click.native="currentImgIndex = index"
+                    />
                 </div>
 
                 <!-- <label>Style number</label>
@@ -127,89 +175,114 @@
                 <div class="col-3 prices">
                     <div>
                         <v-popover :disabled="product.prices.length < 1">
-                            <label>WHS ({{product.yourPrice.currency}}) <i class="far fa-info-circle"></i></label>
+                            <label>WHS ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
                                 <BaseTooltipList header="Wholesale price">
-                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
-                                    :label="price.currency" :value="price.wholesale_price"/>
+                                    <BaseTooltipListItem
+                                        v-for="(price, index) in product.prices"
+                                        :key="index"
+                                        :label="price.currency"
+                                        :value="price.wholesale_price"
+                                    />
                                 </BaseTooltipList>
                             </template>
                         </v-popover>
-                        <BaseInputField readOnly=true :value="product.yourPrice.wholesale_price"/>
+                        <BaseInputField readOnly="true" :value="product.yourPrice.wholesale_price" />
                     </div>
                     <div>
                         <v-popover :disabled="product.prices.length < 1">
-                            <label>RRP ({{product.yourPrice.currency}}) <i class="far fa-info-circle"></i></label>
+                            <label>RRP ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
                                 <BaseTooltipList header="Recommended retail price">
-                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
-                                    :label="price.currency" :value="price.recommended_retail_price"/>
+                                    <BaseTooltipListItem
+                                        v-for="(price, index) in product.prices"
+                                        :key="index"
+                                        :label="price.currency"
+                                        :value="price.recommended_retail_price"
+                                    />
                                 </BaseTooltipList>
                             </template>
                         </v-popover>
-                        <BaseInputField readOnly=true :value="product.yourPrice.recommended_retail_price"/>
+                        <BaseInputField readOnly="true" :value="product.yourPrice.recommended_retail_price" />
                     </div>
                     <div>
                         <v-popover :disabled="product.prices.length < 1">
                             <label>Mark up <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
                                 <BaseTooltipList header="Mark up">
-                                    <BaseTooltipListItem v-for="(price, index) in product.prices" :key="index"
-                                    :label="price.currency" :value="price.mark_up"/>
+                                    <BaseTooltipListItem
+                                        v-for="(price, index) in product.prices"
+                                        :key="index"
+                                        :label="price.currency"
+                                        :value="price.mark_up"
+                                    />
                                 </BaseTooltipList>
                             </template>
                         </v-popover>
-                        <BaseInputField readOnly=true :value="product.yourPrice.mark_up"/>
+                        <BaseInputField readOnly="true" :value="product.yourPrice.mark_up" />
                     </div>
                 </div>
 
                 <label>Delivery Date(s)</label>
-                <BaseInputTextArea readOnly=true :value="product.delivery_dates.map(date => `${prettifyDate(date)}`).join('\n')"/>
+                <BaseInputTextArea
+                    readOnly="true"
+                    :value="product.delivery_dates.map(date => `${prettifyDate(date)}`).join('\n')"
+                />
 
                 <div class="col-2 minimum">
                     <div>
                         <label>Order min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.min_order"/>
+                        <BaseInputField readOnly="true" :value="product.min_order" />
                     </div>
                     <div>
                         <label>Variant min. (pcs)</label>
-                        <BaseInputField readOnly=true :value="product.min_variant_order"/>
+                        <BaseInputField readOnly="true" :value="product.min_variant_order" />
                     </div>
                 </div>
 
                 <label>Composition</label>
-                <BaseInputField readOnly=true :value="product.composition"/>
+                <BaseInputField readOnly="true" :value="product.composition" />
                 <label>Box Sizes</label>
-                <BaseInputTextArea readOnly=true :value="product.assortment_sizes.join(', ')"/>
+                <BaseInputTextArea readOnly="true" :value="product.assortment_sizes.join(', ')" />
                 <label>Assortments</label>
-                <BaseInputTextArea readOnly=true :value="product.assortments.map(x => `${x.name}`).join(',\n')"/>
+                <BaseInputTextArea readOnly="true" :value="product.assortments.map(x => `${x.name}`).join(',\n')" />
                 <label>Category</label>
-                <BaseInputField readOnly=true :value="product.category"/>
+                <BaseInputField readOnly="true" :value="product.category" />
                 <label>Description</label>
-                <BaseInputTextArea readOnly=true :value="product.sale_description"/>
-
+                <BaseInputTextArea readOnly="true" :value="product.sale_description" />
             </BaseFlyinColumn>
 
-            <DistributionSection :selectionInput="selectionInput" :product="product"/>
+            <DistributionSection :selectionInput="selectionInput" :product="product" />
 
-            <RequestsSection class="comments" ref="requestsSection"
-            :selectionInput="selectionInput" :requests="selectionInput.requests"
-            @activateCommentWrite="$refs.commentsSection.activateWrite()"/>
+            <RequestsSection
+                class="comments"
+                ref="requestsSection"
+                :selectionInput="selectionInput"
+                :requests="selectionInput.requests"
+                @activateCommentWrite="$refs.commentsSection.activateWrite()"
+            />
 
-            <CommentsSection v-if="!showRequestThread" class="comments" ref="commentsSection"
-            :selectionInput="selectionInput"
-            @activateRequestWrite="$refs.requestsSection.activateWrite()"
-            @hotkeyEnter="hotkeyEnterHandler"/>
+            <CommentsSection
+                v-if="!showRequestThread"
+                class="comments"
+                ref="commentsSection"
+                :selectionInput="selectionInput"
+                @activateRequestWrite="$refs.requestsSection.activateWrite()"
+                @hotkeyEnter="hotkeyEnterHandler"
+            />
 
-            <RequestThreadSection v-else
-            @onTab="onTabRequestThread"/>
+            <RequestThreadSection v-else @onTab="onTabRequestThread" />
 
-            <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
+            <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show" />
 
             <!-- <RequestThreadFlyin/> -->
 
-            <BaseDialog ref="confirmCloseInPresentation" type="confirm"
-            confirmColor="dark" confirmText="Okay, close it">
+            <BaseDialog
+                ref="confirmCloseInPresentation"
+                type="confirm"
+                confirmColor="dark"
+                confirmText="Okay, close it"
+            >
                 <div class="icon-graphic">
                     <i class="lg primary far fa-file"></i>
                     <i class="lg far fa-arrow-right"></i>
@@ -220,15 +293,18 @@
                 <p>Press any product to access your queue again</p>
             </BaseDialog>
 
-            <BaseTooltip ref="variantTooltip"
-            @show="variant => tooltipVariant = variant">
-                <VariantTooltip :variant="tooltipVariant" :selection="selection" :product="product"
-                :actionDistributionTooltipTab="actionDistributionTooltipTab" :selectionInput="selectionInput"
-                @changeTab="tab => actionDistributionTooltipTab = tab"/>
+            <BaseTooltip ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
+                <VariantTooltip
+                    :variant="tooltipVariant"
+                    :selection="selection"
+                    :product="product"
+                    :actionDistributionTooltipTab="actionDistributionTooltipTab"
+                    :selectionInput="selectionInput"
+                    @changeTab="tab => (actionDistributionTooltipTab = tab)"
+                />
             </BaseTooltip>
 
-            <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection"/>
-
+            <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection" />
         </template>
     </BaseFlyin>
 </template>
@@ -251,12 +327,8 @@ import HotkeyHandler from '../../../components/common/HotkeyHandler'
 
 export default {
     name: 'productFlyin',
-    props: [
-        'show',
-    ],
-    mixins: [
-        variantImage
-    ],
+    props: ['show'],
+    mixins: [variantImage],
     components: {
         CommentsSection,
         DistributionSection,
@@ -271,12 +343,14 @@ export default {
         RequestThreadSection,
         HotkeyHandler,
     },
-    data: function () { return {
-        currentImgIndex: 0,
-        lastBroadcastProductId: null,
-        tooltipVariant: null,
-        actionDistributionTooltipTab: 'Feedback',
-    }},
+    data: function() {
+        return {
+            currentImgIndex: 0,
+            lastBroadcastProductId: null,
+            tooltipVariant: null,
+            actionDistributionTooltipTab: 'Feedback',
+        }
+    },
     watch: {
         product(newVal, oldVal) {
             if (oldVal && oldVal.id != newVal.id) {
@@ -291,31 +365,38 @@ export default {
         show(newVal, oldVal) {
             if (newVal) {
                 // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
-                if (this.broadcastActive && (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)) {
+                if (
+                    this.broadcastActive &&
+                    (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)
+                ) {
                     this.onBroadcastProduct(this.product)
                 }
                 document.activeElement.blur()
                 document.body.addEventListener('keyup', this.hotkeyHandler)
                 document.body.addEventListener('keydown', this.keydownHandler)
-
             } else {
                 // On close
                 document.body.removeEventListener('keyup', this.hotkeyHandler)
                 document.body.removeEventListener('keydown', this.keydownHandler)
                 this.SET_CURRENT_REQUEST_THREAD(null)
             }
-        }
+        },
     },
     computed: {
         ...mapGetters('requests', {
             showRequestThread: 'getRequestThreadVisible',
-            currentRequestThread: 'getCurrentRequestThread'
+            currentRequestThread: 'getCurrentRequestThread',
         }),
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
-            availableProducts: 'getAvailableProducts'
+            availableProducts: 'getAvailableProducts',
         }),
-        ...mapGetters('selections', ['getCurrentPDPSelection', 'getSelectionCurrentMode', 'getSelectionModeAction', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', [
+            'getCurrentPDPSelection',
+            'getSelectionCurrentMode',
+            'getSelectionModeAction',
+            'getAuthUserSelectionWriteAccess',
+        ]),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
@@ -328,25 +409,33 @@ export default {
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
         },
-        product () {
+        product() {
             return this.currentProduct
         },
         currentVariant() {
             return this.selectionInput.variants[this.currentImgIndex]
         },
-        broadcastActive () {return this.selection.is_presenting},
-        selection () { return this.getCurrentPDPSelection },
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.selection) },
-        currentSelectionModeAction () { return this.getSelectionModeAction(this.currentSelectionMode) },
-        currentAction () {
+        broadcastActive() {
+            return this.selection.is_presenting
+        },
+        selection() {
+            return this.getCurrentPDPSelection
+        },
+        currentSelectionMode() {
+            return this.getSelectionCurrentMode(this.selection)
+        },
+        currentSelectionModeAction() {
+            return this.getSelectionModeAction(this.currentSelectionMode)
+        },
+        currentAction() {
             return this.currentSelectionModeAction
         },
-        userWriteAccess () {
+        userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
         ticketsEnabled() {
             return this.selection.settings.ticket_level != 'None'
-        }
+        },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
@@ -359,7 +448,7 @@ export default {
             }
         },
         onToggleCompleted() {
-            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
+            this.toggleProductCompleted({ selectionId: this.selection.id, product: this.product })
         },
         onBroadcastProduct(product) {
             this.lastBroadcastProductId = product.id
@@ -369,9 +458,11 @@ export default {
             this.$emit('updateAction', action, this.selectionInput)
         },
         onShowLightbox() {
-            const lightboxImages = this.product.variants.reduce((arr, variant) => 
-                arr.concat(variant.pictures.map((picture, index) => 
-                    this.variantImage(variant, {index}))), [])
+            const lightboxImages = this.product.variants.reduce(
+                (arr, variant) =>
+                    arr.concat(variant.pictures.map((picture, index) => this.variantImage(variant, { index }))),
+                []
+            )
             // this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
             let lightboxImageIndex = 0
             for (let i = 0; i <= this.currentImgIndex; i++) {
@@ -388,7 +479,7 @@ export default {
             this.SET_LIGHTBOX_VISIBLE(true)
         },
         async onCloseSingle() {
-            if (this.selection.is_presenting && !await this.$refs.confirmCloseInPresentation.confirm()) {
+            if (this.selection.is_presenting && !(await this.$refs.confirmCloseInPresentation.confirm())) {
                 return
             }
 
@@ -401,13 +492,13 @@ export default {
                 if (this.currentImgIndex + 1 == this.product.variants.length) {
                     this.currentImgIndex = 0
                 } else {
-                    this.currentImgIndex ++
+                    this.currentImgIndex++
                 }
             } else {
                 if (this.currentImgIndex == 0) {
-                this.currentImgIndex = this.product.variants.length - 1
+                    this.currentImgIndex = this.product.variants.length - 1
                 } else {
-                    this.currentImgIndex --
+                    this.currentImgIndex--
                 }
             }
         },
@@ -417,30 +508,29 @@ export default {
             // Find the index of our current request thread
             const index = requests.findIndex(x => x.id == this.currentRequestThread.id)
             if (cycleForward && index + 1 <= requests.length) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index+1])
+                this.SET_CURRENT_REQUEST_THREAD(requests[index + 1])
             } else if (!cycleForward && index > 0) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index-1])
+                this.SET_CURRENT_REQUEST_THREAD(requests[index - 1])
             }
-            
         },
         hotkeyHandler(event) {
             const key = event.code
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
-
-                if (!event.ctrlKey && key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') {
+                if (
+                    !event.ctrlKey &&
+                    key == 'KeyC' &&
+                    this.selection.type == 'Master' &&
+                    this.currentSelectionMode == 'Alignment'
+                ) {
                     this.onToggleCompleted()
                 }
 
                 if (this.userWriteAccess.actions.hasAccess) {
-                    if (key == 'KeyI')
-                        this.onUpdateAction('In')
-                    if (key == 'KeyO')
-                        this.onUpdateAction('Out')
-                    if (key == 'KeyF' || key == 'KeyU')
-                        this.onUpdateAction('Focus')
+                    if (key == 'KeyI') this.onUpdateAction('In')
+                    if (key == 'KeyO') this.onUpdateAction('Out')
+                    if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus')
                 }
-
             }
             if (key == 'Tab') {
                 event.preventDefault()
@@ -467,28 +557,23 @@ export default {
         keydownHandler(e) {
             const key = event.code
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
-                if (key == 'ArrowUp')
-                    e.preventDefault(),
-                    this.cycleImage(true)
-                if (key == 'ArrowDown')
-                    e.preventDefault(),
-                    this.cycleImage(false)
+                if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
+                if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
             }
             if (key == 'Tab') {
                 e.preventDefault()
             }
-        }
+        },
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)
         document.body.removeEventListener('keydown', this.keydownHandler)
-    }
+    },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-
 
 ::v-deep {
     &.product-single {
@@ -553,8 +638,7 @@ export default {
     .details {
         background: $bgContent;
         ::v-deep {
-            .body > *:not(:last-child)
-            {
+            .body > *:not(:last-child) {
                 margin-bottom: 16px;
             }
             .main-img {
@@ -601,7 +685,8 @@ export default {
         border-radius: $borderRadiusEl;
         border-color: transparent;
         z-index: 1;
-        &:hover, &.hover {
+        &:hover,
+        &.hover {
             background: white;
             border-color: $borderColorEl;
             box-shadow: $shadowEl;
@@ -630,11 +715,11 @@ export default {
             display: none;
             overflow-y: auto;
             max-height: 200px;
-            >:not(:last-child) {
+            > :not(:last-child) {
                 margin-bottom: 4px;
             }
         }
-        >:not(:last-child) {
+        > :not(:last-child) {
             margin-bottom: 4px;
         }
         .image-wrapper {

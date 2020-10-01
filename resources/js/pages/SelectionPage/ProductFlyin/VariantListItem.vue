@@ -1,22 +1,27 @@
 <template>
-    <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
+    <div class="variant-list-item-wrapper" :class="{ 'has-action': variant[currentAction] != 'None' }">
         <div class="variant">
             <div class="img-wrapper">
                 <!-- <img :src="variantImage(variant,'sm')"> -->
-                <BaseVariantImg :variant="variant" size="sm" :index="variant.imageIndex"/>
+                <BaseVariantImage :variant="variant" size="sm" :index="variant.imageIndex" />
                 <div class="your-action" v-if="variant[currentAction] != 'None'">
                     <div class="pill ghost xs">
                         <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
                         <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
                         <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="showQty" class="quantity">{{variant[currentQty]}}</span>
+                        <span v-if="showQty" class="quantity">{{ variant[currentQty] }}</span>
                     </div>
                 </div>
-                <div class="quantity-progress" v-if="showQty" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
+                <div
+                    class="quantity-progress"
+                    v-if="showQty"
+                    :class="{ full: minimumPercentage >= 100 }"
+                    :style="{ width: `${minimumPercentage}%` }"
+                ></div>
             </div>
             <div class="color-wrapper">
-                <div class="circle-img"><img :src="variantImage(variant, {size: 'sm'})"></div>
-                <span>{{variant.name || 'Unnamed' | truncate(6)}}</span>
+                <div class="circle-img"><img :src="variantImage(variant, { size: 'sm' })" /></div>
+                <span>{{ variant.name || 'Unnamed' | truncate(6) }}</span>
             </div>
         </div>
     </div>
@@ -29,22 +34,16 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'variantListItem',
-    props: [
-        'variant',
-        'product',
-        'selection',
-        'selectionInput',
-        'distributionScope',
-    ],
-    data() { return {
-        tooltipIsVisible: false
-    }},
-    components: {
-        ActionDistributionList
+    props: ['variant', 'product', 'selection', 'selectionInput', 'distributionScope'],
+    data() {
+        return {
+            tooltipIsVisible: false,
+        }
     },
-    mixins: [
-        variantImage
-    ],
+    components: {
+        ActionDistributionList,
+    },
+    mixins: [variantImage],
     filters: {
         truncate: function(text, length) {
             const clamp = '...'
@@ -53,7 +52,7 @@ export default {
             var content = node.textContent
             // return `<span>124</span>`
             return content.length > length ? content.slice(0, length) + clamp : content
-        }
+        },
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
@@ -62,13 +61,16 @@ export default {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             currentQty: 'getCurrentSelectionModeQty',
             showQty: 'getQuantityModeActive',
-            currentSelectionMode: 'currentSelectionMode'
+            currentSelectionMode: 'currentSelectionMode',
         }),
         minimumPercentage() {
-            const totalQty = this.currentSelectionMode == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
+            const totalQty =
+                this.currentSelectionMode == 'Alignment'
+                    ? this.variant.totalQuantity
+                    : this.variant.totalFeedbackQuantity
             const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
-        }
+        },
     },
 }
 </script>
@@ -221,5 +223,4 @@ div.header {
         }
     }
 }
-
 </style>

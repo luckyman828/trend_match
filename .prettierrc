@@ -14,7 +14,7 @@
         {
             "files": "*.vue",
             "options": {
-                "semi": true
+                "semi": false
             }
         }
     ]

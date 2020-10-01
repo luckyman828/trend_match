@@ -12,6 +12,14 @@
                     <div class="item-group">
 
                         <BaseButton buttonClass="ghost" 
+                        :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
+                        disabledTooltip="Only admins and editors can manage video presentations"
+                        @click="$router.push({name: 'editVideoPresentation', params: {fileId: file.id}})">
+                            <i class="far fa-video"></i>
+                            <span>Add/Edit Video Presentation</span>
+                        </BaseButton>
+
+                        <BaseButton buttonClass="ghost" 
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can manage file editors"
                         @click="showEditorsFlyin">

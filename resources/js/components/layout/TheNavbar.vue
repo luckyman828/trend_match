@@ -8,6 +8,7 @@
         <NavbarFiles v-if="$route.name == 'files'"/>
         <NavbarSelection v-if="$route.name == 'selection' && currentFile"/>
         <NavbarEditFile v-if="$route.name == 'editFile' && currentFile"/>
+        <NavbarEditVideoPresentation v-if="$route.name == 'editVideoPresentation' && currentFile"/>
         <NavbarTeams v-if="$route.name == 'teams'"/>
         <NavbarUsers v-if="$route.name == 'users'"/>
   </nav>
@@ -20,6 +21,7 @@ import NavbarFiles from '../../pages/FilesPage/Navbar'
 import NavbarTeams from '../../pages/TeamsPage/Navbar'
 import NavbarUsers from '../../pages/UsersPage/Navbar'
 import NavbarEditFile from '../../pages/EditFilePage/Navbar'
+import NavbarEditVideoPresentation from '../../pages/EditVideoPresentationPage/Navbar'
 
 export default {
     name: "navbar",
@@ -29,6 +31,7 @@ export default {
         NavbarTeams,
         NavbarUsers,
         NavbarEditFile,
+        NavbarEditVideoPresentation,
     },
     computed: {
         ...mapGetters('files', ['currentFile'])

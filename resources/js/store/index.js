@@ -20,6 +20,7 @@ import tables from './modules/tables'
 import changelog from './modules/changelog'
 import flyin from './modules/flyin'
 import mapProductData from './modules/mapProductData'
+import videoPresentation from './modules/videoPresentation'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -47,6 +48,7 @@ const store = new Vuex.Store({
         changelog,
         flyin,
         mapProductData,
+        videoPresentation,
     },
 })
 

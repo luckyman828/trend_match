@@ -64,14 +64,11 @@ const routes = [
         name: 'selection',
         component: () => import(/* webpackChunkName: "SelectionPage" */ './pages/SelectionPage'),
     },
-    // { path: '/login/recover-password', name: 'recoverPassword', component: RecoverPasswordScreen },
-    // { path: '/login/verification-code', name: 'verificationCode', component: VerificationCodeScreen },
-    // { path: '/login/set-new-password', name: 'setNewPassword', component: SetNewPasswordScreen },
-    // { path: '/file/:fileId/edit', name: 'editFile', component: EditFilePage },
-    // { path: '/files', name: 'files', component: FilesPage },
-    // { path: '/teams', name: 'teams', component: TeamsPage },
-    // { path: '/users', name: 'users', component: UsersPage },
-    // { path: '/file/:fileId/selection/:selectionId', name: 'selection', component: SelectionPage },
+    {
+        path: '/file/:fileId/video/edit',
+        name: 'editVideoPresentation',
+        component: () => import(/* webpackChunkName: "VideoPresentationName" */ './pages/EditVideoPresentationPage'),
+    },
     { path: '*', redirect: '/files' },
 ]
 

@@ -1,15 +1,19 @@
 <template>
-    <div class="page-loader">
-
+    <div class="page-loader" :class="{ 'fit-page': fitPage }">
         <!-- Error  -->
-        <BaseContentLoadError v-if="status == 'error'" :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+        <BaseContentLoadError
+            v-if="status == 'error'"
+            :msg="errorMsg || 'error loading content'"
+            :callback="errorCallback"
+        />
 
         <!-- Loading -->
-        <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'"/>
+        <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
 
         <!-- Success -->
-        <slot v-else/>
-
+        <div class="page-wrapper" v-else>
+            <slot />
+        </div>
     </div>
 </template>
 
@@ -18,14 +22,7 @@ import { mapGetters } from 'vuex'
 
 export default {
     name: 'pageLoader',
-    props: [
-        'loading',
-        'error',
-        'status',
-        'loadingMsg',
-        'errorMsg',
-        'errorCallback'
-    ],
+    props: ['loading', 'error', 'status', 'loadingMsg', 'errorMsg', 'errorCallback', 'fitPage'],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
     },
@@ -35,16 +32,26 @@ export default {
             if (!oldVal || newVal.id != oldVal.id) {
                 this.$emit('workspaceChange', newVal)
             }
-        }
+        },
     },
 }
 </script>
 
 <style lang="scss">
-    .page-loader {
-        height: 500px;
-        > * {
-            padding-bottom: 100px;
+@import '~@/_variables.scss';
+.page-loader {
+    height: 500px;
+    &.fit-page {
+        height: 100%;
+        .page-wrapper {
+            padding: 0;
         }
     }
+    .page-wrapper {
+        padding: 20px 60px 100px;
+        @media screen and (max-width: $screenSm) {
+            padding: 20px;
+        }
+    }
+}
 </style>

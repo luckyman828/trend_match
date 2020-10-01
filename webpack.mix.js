@@ -11,6 +11,7 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
  | file for the application as well as bundling up all the JS files.
  |
  */
+const chunkFilename = process.env.NODE_ENV == 'production' ? 'js/[name].[hash].js' : 'js/[name].js'
 
 mix.js('resources/js/app.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
@@ -22,7 +23,7 @@ mix.js('resources/js/app.js', 'public/js')
         },
         plugins: [new CaseSensitivePathsPlugin()],
         output: {
-            chunkFilename: 'js/[name].[hash].js',
+            chunkFilename: chunkFilename,
         },
     })
     .version()

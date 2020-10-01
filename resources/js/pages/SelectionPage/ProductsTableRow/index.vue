@@ -1,208 +1,319 @@
 <template>
-    <BaseTableInnerRow class="products-table-row" tabindex="0" ref="row"
-    :class="['action-'+selectionInput[currentAction], {'multi-selection': multiSelectionMode}]"
-    @focus.native="onRowFocus" 
-    @keydown.native="hotkeyHandler($event)" 
-    @keyup.self.native="keypressHandler($event)">
-
+    <BaseTableInnerRow
+        class="products-table-row"
+        tabindex="0"
+        ref="row"
+        :class="['action-' + selectionInput[currentAction], { 'multi-selection': multiSelectionMode }]"
+        @focus.native="onRowFocus"
+        @keydown.native="hotkeyHandler($event)"
+        @keyup.self.native="keypressHandler($event)"
+    >
         <div class="product-details">
-            <div v-if="displayUnreadBullets && product.hasNewComment" class="unread-indicator circle xxs primary" 
-            v-tooltip.right="'A message needs a reply'"/>
-            
+            <div
+                v-if="displayUnreadBullets && product.hasNewComment"
+                class="unread-indicator circle xxs primary"
+                v-tooltip.right="'A message needs a reply'"
+            />
+
             <td class="image clickable" @click="onViewSingle">
                 <div class="img-wrapper">
                     <!-- <img :key="product.id + '-' + variantIndex" v-if="product.variants.length > 0" :src="variantImage(product.variants[variantIndex], 'sm')"> -->
-                    <BaseVariantImg :key="product.id + '-' + variantIndex" :variant="product.variants[variantIndex]" size="sm"/>
+                    <BaseVariantImage
+                        :key="product.id + '-' + variantIndex"
+                        :variant="product.variants[variantIndex]"
+                        size="sm"
+                    />
                 </div>
             </td>
             <td class="id clickable" @click="onViewSingle">
-                <span>{{product.datasource_id}}</span>
+                <span>{{ product.datasource_id }}</span>
             </td>
-            <td class="title"><span class="clickable" @click="onViewSingle">
-                <span v-tooltip="product.title">{{product.title}}</span>
-                <div class="variant-list">
-                    <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
+            <td class="title">
+                <span class="clickable" @click="onViewSingle">
+                    <span v-tooltip="product.title">{{ product.title }}</span>
+                    <div class="variant-list">
+                        <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
                     </div> -->
-                    <VariantListItem v-for="(variant, index) in selectionInput.variants.slice(0,5)" :key="index" 
-                    :variant="variant" :selectionInput="selectionInput" :selection="selection" :product="product"
-                    :distributionScope="distributionScope"
-                    v-tooltip-trigger="{tooltipComp: variantTooltipComp, showArg: {variant, product, selectionInput}, disabled: multiSelectionMode}"
-                    @mouseenter.native="variantIndex = index" @mouseleave.native="onMouseleaveVariant"/>
-                    <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
-                        <span>+ {{selectionInput.variants.length - 5}} more</span>
+                        <VariantListItem
+                            v-for="(variant, index) in selectionInput.variants.slice(0, 5)"
+                            :key="index"
+                            :variant="variant"
+                            :selectionInput="selectionInput"
+                            :selection="selection"
+                            :product="product"
+                            :distributionScope="distributionScope"
+                            v-tooltip-trigger="{
+                                tooltipComp: variantTooltipComp,
+                                showArg: { variant, product, selectionInput },
+                                disabled: multiSelectionMode,
+                            }"
+                            @mouseenter.native="variantIndex = index"
+                            @mouseleave.native="onMouseleaveVariant"
+                        />
+                        <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
+                            <span>+ {{ selectionInput.variants.length - 5 }} more</span>
+                        </div>
                     </div>
-                </div>
-            </span></td>
-            <td class="delivery" v-tooltip="{
-                content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
-                trigger: 'hover'
-            }"
+                </span>
+            </td>
+            <td
+                class="delivery"
+                v-tooltip="{
+                    content:
+                        product.delivery_dates.length > 1 &&
+                        product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
+                    trigger: 'hover',
+                }"
                 :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
                 @click="onViewSingle"
             >
                 <span v-if="product.delivery_dates[0]">
-                    {{prettifyDate(product.delivery_dates[0], 'short')}}
-                    <span v-if="product.delivery_dates.length > 1"
-                        class="square ghost xs"
-                    > 
-                        <span>+{{+ product.delivery_dates.length -1}}</span>
+                    {{ prettifyDate(product.delivery_dates[0], 'short') }}
+                    <span v-if="product.delivery_dates.length > 1" class="square ghost xs">
+                        <span>+{{ +product.delivery_dates.length - 1 }}</span>
                     </span>
                 </span>
             </td>
 
             <!-- Start Prices -->
             <td class="wholesale-price hide-screen-xs">
-                <span>{{product.yourPrice.wholesale_price}}</span>
+                <span>{{ product.yourPrice.wholesale_price }}</span>
             </td>
             <td class="recommended-retail-price hide-screen-xs">
-                <span>{{product.yourPrice.recommended_retail_price}}</span>
+                <span>{{ product.yourPrice.recommended_retail_price }}</span>
             </td>
             <td class="mark-up hide-screen-xs">
-                <span>{{product.yourPrice.mark_up}}</span>
+                <span>{{ product.yourPrice.mark_up }}</span>
             </td>
-            <td class="currency hide-screen-xs"><span v-if="product.yourPrice.currency != 'Not set'">{{product.yourPrice.currency}}</span></td>
+            <td class="currency hide-screen-xs">
+                <span v-if="product.yourPrice.currency != 'Not set'">{{ product.yourPrice.currency }}</span>
+            </td>
             <!-- End Prices -->
 
             <td class="minimum">
-                <div class="square ghost xs" v-if="product.min_variant_order != null || product.min"
-                v-tooltip="`
-                    ${showQty ? `<strong>Total QTY /</strong> Minimum` : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
-                `">
+                <div
+                    class="square ghost xs"
+                    v-if="product.min_variant_order != null || product.min"
+                    v-tooltip="
+                        `
+                    ${
+                        showQty
+                            ? `<strong>Total QTY /</strong> Minimum`
+                            : `<strong>Variant Minimum: </strong> ${product.min_variant_order}`
+                    }
+                `
+                    "
+                >
                     <span>
-                        <span v-if="showQty">{{distributionScope == 'Alignment' ? selectionInput.quantity : selectionInput.totalFeedbackQuantity}} /</span>
-                        <span>{{product.min_order}}</span>
+                        <span v-if="showQty"
+                            >{{
+                                distributionScope == 'Alignment'
+                                    ? selectionInput.quantity
+                                    : selectionInput.totalFeedbackQuantity
+                            }}
+                            /</span
+                        >
+                        <span>{{ product.min_order }}</span>
                     </span>
                     <i class="fa-box" :class="productHasReachedMinimum ? 'fas primary' : 'far'"></i>
                 </div>
             </td>
-            
+
             <!-- Start Distribution -->
             <template v-if="currentSelections.length == 1">
                 <td class="focus">
-                    <div tabindex="-1" class="square ghost xs tooltip-target" 
-                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Focus'}}">
-                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentFocus.length : selectionInput.focus.length}}</span>
+                    <div
+                        tabindex="-1"
+                        class="square ghost xs tooltip-target"
+                        v-tooltip-trigger="{
+                            tooltipComp: distributionTooltipComp,
+                            showArg: { selectionInput, type: 'Focus' },
+                        }"
+                    >
+                        <span>{{
+                            distributionScope == 'Alignment'
+                                ? selectionInput.alignmentFocus.length
+                                : selectionInput.focus.length
+                        }}</span>
                         <i class="far fa-star"></i>
                     </div>
                 </td>
 
                 <td class="ins">
-                    <div class="tooltip-target square ghost xs"
-                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'In'}}">
-                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentIns.length : selectionInput.ins.length}}</span>
+                    <div
+                        class="tooltip-target square ghost xs"
+                        v-tooltip-trigger="{
+                            tooltipComp: distributionTooltipComp,
+                            showArg: { selectionInput, type: 'In' },
+                        }"
+                    >
+                        <span>{{
+                            distributionScope == 'Alignment'
+                                ? selectionInput.alignmentIns.length
+                                : selectionInput.ins.length
+                        }}</span>
                         <i class="far fa-heart"></i>
                     </div>
                 </td>
 
                 <td class="outs">
-                    <div class="square ghost xs tooltip-target"
-                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'Out'}}">
-                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentOuts.length : selectionInput.outs.length}}</span>
+                    <div
+                        class="square ghost xs tooltip-target"
+                        v-tooltip-trigger="{
+                            tooltipComp: distributionTooltipComp,
+                            showArg: { selectionInput, type: 'Out' },
+                        }"
+                    >
+                        <span>{{
+                            distributionScope == 'Alignment'
+                                ? selectionInput.alignmentOuts.length
+                                : selectionInput.outs.length
+                        }}</span>
                         <i class="far fa-times-circle"></i>
                     </div>
                 </td>
 
                 <td class="nds">
-                    <div class="tooltip-target square ghost xs"
-                    v-tooltip-trigger="{tooltipComp: distributionTooltipComp, showArg: {selectionInput, type: 'None'}}">
-                        <span>{{distributionScope == 'Alignment' ? selectionInput.alignmentNds.length : selectionInput.nds.length}}</span>
+                    <div
+                        class="tooltip-target square ghost xs"
+                        v-tooltip-trigger="{
+                            tooltipComp: distributionTooltipComp,
+                            showArg: { selectionInput, type: 'None' },
+                        }"
+                    >
+                        <span>{{
+                            distributionScope == 'Alignment'
+                                ? selectionInput.alignmentNds.length
+                                : selectionInput.nds.length
+                        }}</span>
                     </div>
                 </td>
                 <!-- End Distribution -->
 
                 <td class="requests">
-
-                    <button class="requests-button ghost xs" @click="onViewSingle" 
-                    v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'">
-                        <span>{{selectionInput.requests.length}}</span>
-                        <span v-if="getApprovalEnabled && selectionInput.hasOpenTicket"
-                            > ({{selectionInput.requests.filter(x => x.type == 'Ticket' && x.status == 'Open').length}})</span>
+                    <button
+                        class="requests-button ghost xs"
+                        @click="onViewSingle"
+                        v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'"
+                    >
+                        <span>{{ selectionInput.requests.length }}</span>
+                        <span v-if="getApprovalEnabled && selectionInput.hasOpenTicket">
+                            ({{
+                                selectionInput.requests.filter(x => x.type == 'Ticket' && x.status == 'Open').length
+                            }})</span
+                        >
                         <i class="far fa-clipboard-check"></i>
-                        <div v-if="displayUnreadBullets && product.hasNewComment" class="circle xs primary new-comment-bullet"></div>
+                        <div
+                            v-if="displayUnreadBullets && product.hasNewComment"
+                            class="circle xs primary new-comment-bullet"
+                        ></div>
                     </button>
 
                     <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
-                        <span>{{selectionInput.comments.length}}</span><i class="far fa-comment"></i>
+                        <span>{{ selectionInput.comments.length }}</span
+                        ><i class="far fa-comment"></i>
                     </button>
-
                 </td>
             </template>
-            
-            <td class="action">
 
+            <td class="action">
                 <!-- Single Selection Input only -->
                 <template v-if="!multiSelectionMode">
                     <div class="your-product-qty" v-if="selectionInput[currentQty]">
                         <div class="pill xs ghost">
                             <i class="fas fa-box primary"></i>
-                            <span>{{selectionInput[currentQty]}}</span>
+                            <span>{{ selectionInput[currentQty] }}</span>
                         </div>
                     </div>
                     <div class="fly-over-wrapper">
                         <div class="fly-over">
                             <div class="gradient"></div>
                             <div class="inner">
-                                <BaseButton class="" :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost': 'primary'"
-                                :disabled="!userWriteAccess.actions.hasAccess" 
-                                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                                @click="onUpdateAction('Focus', selectionInput)">
+                                <BaseButton
+                                    class=""
+                                    :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                                    :disabled="!userWriteAccess.actions.hasAccess"
+                                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                                    @click="onUpdateAction('Focus', selectionInput)"
+                                >
                                     <i class="far fa-star"></i>
                                 </BaseButton>
-                                <BaseButton class=""  :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost': 'green'" 
-                                :disabled="!userWriteAccess.actions.hasAccess" 
-                                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                                @click="onUpdateAction('In', selectionInput)">
+                                <BaseButton
+                                    class=""
+                                    :buttonClass="selectionInput[currentAction] != 'In' ? 'ghost' : 'green'"
+                                    :disabled="!userWriteAccess.actions.hasAccess"
+                                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                                    @click="onUpdateAction('In', selectionInput)"
+                                >
                                     <i class="far fa-heart"></i>
                                     <span>In</span>
                                 </BaseButton>
-                                <BaseButton class=""  :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost': 'red'" 
-                                :disabled="!userWriteAccess.actions.hasAccess" 
-                                v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
-                                @click="onUpdateAction('Out', selectionInput)">
+                                <BaseButton
+                                    class=""
+                                    :buttonClass="selectionInput[currentAction] != 'Out' ? 'ghost' : 'red'"
+                                    :disabled="!userWriteAccess.actions.hasAccess"
+                                    v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
+                                    @click="onUpdateAction('Out', selectionInput)"
+                                >
                                     <i class="far fa-times-circle"></i>
                                     <span>out</span>
                                 </BaseButton>
-                                <button class="view invisible ghost-hover primary" 
-                                @click="onViewSingle"><span>View</span></button>
-                                <button class="options invisible ghost-hover show-screen-md" @click="$emit('showContext', $event)"><i class="far fa-ellipsis-h"></i></button>
+                                <button class="view invisible ghost-hover primary" @click="onViewSingle">
+                                    <span>View</span>
+                                </button>
+                                <button
+                                    class="options invisible ghost-hover show-screen-md"
+                                    @click="$emit('showContext', $event)"
+                                >
+                                    <i class="far fa-ellipsis-h"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </template>
                 <!-- END Single Selection Input only -->
                 <template v-else>
-                    <button class="invisible ghost-hover primary" 
-                    @click="onViewSingle"><span>View</span></button>
+                    <button class="invisible ghost-hover primary" @click="onViewSingle"><span>View</span></button>
                 </template>
 
                 <!-- Master actions -->
-                    <div v-if="(ticketsEnabled && product.is_completed) || selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment'"
-                        class="extra-actions"
-                    >
-                        <BaseButton buttonClass="pill xs ghost"
+                <div
+                    v-if="
+                        (ticketsEnabled && product.is_completed) ||
+                            (selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment')
+                    "
+                    class="extra-actions"
+                >
+                    <BaseButton
+                        buttonClass="pill xs ghost"
                         targetAreaPadding="4px 4px"
                         :disabled="!(selection.type == 'Master' && currentSelectionMode == 'Alignment')"
-                        @click="onToggleCompleted">
-                            <template v-if="!product.is_completed">
-                                <i class="far fa-circle" style="font-weight: 400;"></i>
-                                <span>Complete</span>
-                            </template>
-                            <template v-else>
-                                <i class="far fa-check-circle primary"></i>
-                                <span>Completed</span>
-                            </template>
-                        </BaseButton>
-                    </div>
+                        @click="onToggleCompleted"
+                    >
+                        <template v-if="!product.is_completed">
+                            <i class="far fa-circle" style="font-weight: 400;"></i>
+                            <span>Complete</span>
+                        </template>
+                        <template v-else>
+                            <i class="far fa-check-circle primary"></i>
+                            <span>Completed</span>
+                        </template>
+                    </BaseButton>
+                </div>
                 <!-- END Master actions -->
             </td>
         </div>
 
-        <MultiSelectionInputRow v-if="multiSelectionMode"
-        :product="product" :focusGroupIndex="focusGroupIndex" :currentAction="currentAction"
-        :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
-        @updateAction="onUpdateAction"/>
-
+        <MultiSelectionInputRow
+            v-if="multiSelectionMode"
+            :product="product"
+            :focusGroupIndex="focusGroupIndex"
+            :currentAction="currentAction"
+            :distributionTooltipComp="distributionTooltipComp"
+            :distributionScope="distributionScope"
+            @updateAction="onUpdateAction"
+        />
     </BaseTableInnerRow>
 </template>
 
@@ -229,9 +340,7 @@ export default {
         MultiSelectionInputRow,
         VariantListItem,
     },
-    mixins: [
-        variantImage,
-    ],
+    mixins: [variantImage],
     filters: {
         truncate: function(text, length) {
             const clamp = '...'
@@ -240,14 +349,20 @@ export default {
             var content = node.textContent
             // return `<span>124</span>`
             return content.length > length ? content.slice(0, length) + clamp : content
+        },
+    },
+    data: function() {
+        return {
+            focusGroupIndex: null,
+            variantIndex: 0,
         }
     },
-    data: function() { return {
-        focusGroupIndex: null,
-        variantIndex: 0,
-    }},
     computed: {
-        ...mapGetters('selections', ['getCurrentSelections', 'currentSelectionMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', [
+            'getCurrentSelections',
+            'currentSelectionMode',
+            'getAuthUserSelectionWriteAccess',
+        ]),
         ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
         ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
@@ -259,17 +374,21 @@ export default {
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },
-        userWriteAccess () {
+        userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
         localSelectedProducts: {
-            get() { return this.selectedProducts },
-            set(localSelectedProducts) {this.$emit('input', localSelectedProducts)}
+            get() {
+                return this.selectedProducts
+            },
+            set(localSelectedProducts) {
+                this.$emit('input', localSelectedProducts)
+            },
         },
         currentSelections() {
             return this.getCurrentSelections
         },
-        titleTruncateSize () {
+        titleTruncateSize() {
             return window.innerWidth < 1260 ? 16 : 24
         },
         ticketsEnabled() {
@@ -284,12 +403,15 @@ export default {
             }
         },
         productHasReachedMinimum() {
-            const totalQty = this.distributionScope == 'Alignment' ? this.selectionInput.quantity : this.selectionInput.totalFeedbackQuantity
+            const totalQty =
+                this.distributionScope == 'Alignment'
+                    ? this.selectionInput.quantity
+                    : this.selectionInput.totalFeedbackQuantity
             return totalQty >= this.product.min_order
-        }
+        },
     },
     watch: {
-        // Watch for changes to the current focus index 
+        // Watch for changes to the current focus index
         currentFocusRowIndex: function(newVal, oldVal) {
             if (newVal == this.index) {
                 this.$refs.row.$el.focus()
@@ -306,8 +428,7 @@ export default {
             const amount = product.variants.length
             if (amount > 4) {
                 return window.innerWidth > 1260 ? 12 : 6
-            }
-            else if (amount > 2) {
+            } else if (amount > 2) {
                 return window.innerWidth > 1260 ? 20 : 15
             }
         },
@@ -328,7 +449,7 @@ export default {
             this.$emit('updateAction', action, selectionInput)
         },
         onViewSingle() {
-            this.showSelectionProductPDP({product: this.product, selection: this.selection})
+            this.showSelectionProductPDP({ product: this.product, selection: this.selection })
         },
         onRowFocus() {
             this.focusGroupIndex = null
@@ -348,7 +469,7 @@ export default {
                 this.focusGroupIndex = 0
             }
             // If the focused group is the last group
-            else if (this.focusGroupIndex == this.currentSelections.length-1) {
+            else if (this.focusGroupIndex == this.currentSelections.length - 1) {
                 this.focusNextRow(event)
             } else {
                 this.focusGroupIndex++
@@ -378,17 +499,17 @@ export default {
         focusNextRow(event) {
             // Get the next row
             event.preventDefault()
-            this.setCurrentFocusRowIndex(this.index+1)
+            this.setCurrentFocusRowIndex(this.index + 1)
         },
         focusPrevRow(event) {
             if (this.index > 0) {
                 // Get the previous row
                 event.preventDefault()
-                this.setCurrentFocusRowIndex(this.index-1)
+                this.setCurrentFocusRowIndex(this.index - 1)
             }
         },
         onToggleCompleted() {
-            this.toggleProductCompleted({selectionId: this.selection.id, product: this.product})
+            this.toggleProductCompleted({ selectionId: this.selection.id, product: this.product })
         },
         hotkeyHandler(event) {
             if (this.singleVisible) return
@@ -403,12 +524,10 @@ export default {
             // Check if the key pressed is a number
             if (isFinite(event.key)) {
                 // Focus the seleciton input group corresponding to the pressed number
-                this.focusGroupIndex = event.key-1
+                this.focusGroupIndex = event.key - 1
             }
-            if (key == 'ArrowLeft')
-                this.focusPrevRow(event)
-            if (key == 'ArrowRight')
-                this.focusNextRow(event)
+            if (key == 'ArrowLeft') this.focusPrevRow(event)
+            if (key == 'ArrowRight') this.focusNextRow(event)
         },
         keypressHandler(event) {
             if (this.singleVisible) return
@@ -418,18 +537,17 @@ export default {
                 // this.$emit('onViewSingle', this.product)
                 this.onViewSingle()
             }
-            if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment') this.onToggleCompleted()
-            if (this.currentSelections.length <= 1 // Check that we are not doing multi selection input
-            && this.userWriteAccess.actions.hasAccess // Check if the user has write access
+            if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment')
+                this.onToggleCompleted()
+            if (
+                this.currentSelections.length <= 1 && // Check that we are not doing multi selection input
+                this.userWriteAccess.actions.hasAccess // Check if the user has write access
             ) {
-                if (key == 'KeyI')
-                    this.onUpdateAction('In', this.selectionInput)
-                if (key == 'KeyO')
-                    this.onUpdateAction('Out', this.selectionInput)
-                if (key == 'KeyF' || key == 'KeyU')
-                    this.onUpdateAction('Focus', this.selectionInput)
+                if (key == 'KeyI') this.onUpdateAction('In', this.selectionInput)
+                if (key == 'KeyO') this.onUpdateAction('Out', this.selectionInput)
+                if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus', this.selectionInput)
             }
-        }
+        },
     },
 }
 </script>
@@ -476,7 +594,8 @@ export default {
         }
     }
 }
-td.id, td.title {
+td.id,
+td.title {
     position: relative;
 }
 .variant-list {
@@ -552,7 +671,7 @@ td.action {
                 display: flex;
                 align-items: center;
                 padding-left: 20px;
-                >* {
+                > * {
                     margin-left: 4px;
                 }
             }
