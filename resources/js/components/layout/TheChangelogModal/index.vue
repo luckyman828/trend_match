@@ -4,6 +4,44 @@
     classes="full-body">
 
         <ChangelogPost 
+                title="Cotton: Alice blue"
+                date="Early October Release"
+                featuredImgUrl="/images/blog/undraw_Done_checking_re_6vyx.svg"
+            >
+            <template v-slot:lead>
+                <p>We are ready with another improvement to the new ticket workflow, thanks to your continued feedback.</p>
+                <p>This release allows any selection to make tickets - if you give them permission.</p>
+            </template>
+
+            <template v-slot:body>
+                <h3>New features</h3>
+
+                <h4>Tickets from sub-selections</h4>
+                <p>Any selection can now be allowed to make tickets.</p>
+                <p>Tickets replace requests on selections that can make them. The difference is that a ticket can be "Accepted" or "Rejected" by approvers, and you can discuss the ticket in a comment thread.</p>
+                <p><strong>How to enable tickets:</strong><br>
+                To enable tickets for a selection, open its settings and you will find the option at the bottom of the "Requests" column.</p>
+
+                <h4>Omni-potent Approvers</h4>
+                <p>Approvers on master selections are now approvers for all sub-selections as well.<br>
+                This was a necessary technical change to enable the workflow of tickets from sub-selections.</p>
+
+                <h3>Fixes</h3>
+                <ul>
+                    <li>Selecting all products and deleting them did not actually delete any products. It does now :)</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost> 
+
+        <ChangelogPost 
                 title="Cotton"
                 date="Late September 2020 Release"
                 featuredImgUrl="/images/blog/undraw_Portfolio_re_qwm5.svg"

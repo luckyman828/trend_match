@@ -36,7 +36,6 @@ import TheNavbar from './components/layout/TheNavbar'
 // import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import TheImageLightbox from './components/layout/TheImageLightbox'
 import TheSnackbarSpawner from './components/layout/TheSnackbarSpawner'
-import TheChangelogModal from './components/layout/TheChangelogModal/index'
 import LoginPage from './pages/LoginPage/'
 
 export default{
@@ -50,7 +49,7 @@ export default{
         LoginPage,
         TheImageLightbox,
         TheSnackbarSpawner,
-        TheChangelogModal,
+        'TheChangelogModal': () => import('./components/layout/TheChangelogModal/index')
     },
     data: function() { return {
         error: false,
