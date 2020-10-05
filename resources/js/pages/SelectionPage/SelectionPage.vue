@@ -92,7 +92,7 @@
             <p><strong>You will now be redirected to the files overview</strong></p>
         </BaseDialog>
 
-        <ScannerModeControls v-if="getScannerModeActive"/>
+        <ScannerModeControls/>
 
     </div>
 </template>
