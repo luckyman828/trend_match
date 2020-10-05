@@ -67,6 +67,7 @@ export default {
     // position: absolute;
     // left: 0;
     // top: 0;
+
     grid-area: sidebar;
     border-right: $borderModule;
     box-shadow: $shadowModule;
