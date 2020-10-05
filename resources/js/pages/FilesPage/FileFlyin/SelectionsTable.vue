@@ -578,10 +578,19 @@
                                     <i class="fas fa-caret-down"></i>
                                 </BaseInputField>
                             </div>
+                            <div class="item-wrapper">
+                                <label class="settings-label">Can make tickets</label>
+                                <BaseInputField disabled=true type="select" 
+                                :value="ticketLevelOptions.find(x => x.value == contextSelection.settings.ticket_level).label"
+                                @click="showTicketLevelContext($event, contextSelection.settings, 'ticket_level')">
+                                    <i class="fas fa-caret-down"></i>
+                                </BaseInputField>
+                            </div>
                         </div>
                     </div>
                     
                 </div>
+
                 <div class="item-group footer item-wrapper" style="display: flex; justify-content: space-between; width: 100%;">
                     <!-- <div class="item-wrapper" > -->
                         <div>
@@ -622,6 +631,13 @@
                     <BaseSelectButtons type="radio" :submitOnChange="true"
                     v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
                     :options="displayAuthorOptions" :optionNameKey="'label'"
+                    :optionValueKey="'value'"/>
+                </BaseContextMenu>
+
+                <BaseContextMenu ref="contextTicketLevel" v-slot="slotProps">
+                    <BaseSelectButtons type="radio" :submitOnChange="true"
+                    v-model="contextSelectionSettings[contextSelectionSettingsKey]" @submit="slotProps.hide"
+                    :options="ticketLevelOptions" :optionNameKey="'label'"
                     :optionValueKey="'value'"/>
                 </BaseContextMenu>
 
@@ -783,6 +799,20 @@ export default {
                 label: 'No one'
             },
         ],
+        ticketLevelOptions: [
+            {
+                value: 'Multiple',
+                label: 'True'
+            },
+            {
+                value: 'None',
+                label: 'False'
+            },
+            // {
+            //     value: 'Single',
+            //     label: 'INVALID. PLEASE CHANGE'
+            // },
+        ],
         cloningSetup: false,
         settingsSelections: [],
     }},
@@ -875,6 +905,7 @@ export default {
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.hide()
             this.$refs.contextAuthorLevel.hide()
+            this.$refs.contextTicketLevel.hide()
             this.$refs.contextParentLevel.show(e)
         },
         showChildLevelContext(e, option) {
@@ -882,6 +913,7 @@ export default {
             this.$refs.contextParentLevel.hide()
             this.$refs.contextDisplayLevel.hide()
             this.$refs.contextAuthorLevel.hide()
+            this.$refs.contextTicketLevel.hide()
             this.$refs.contextChildLevel.show(e)
         },
         showDisplayLevelContext(e, settings, key) {
@@ -890,6 +922,7 @@ export default {
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
             this.$refs.contextAuthorLevel.hide()
+            this.$refs.contextTicketLevel.hide()
             this.$refs.contextDisplayLevel.show(e)
         },
         showDisplayAuthorContext(e, settings, key) {
@@ -898,7 +931,17 @@ export default {
             this.$refs.contextParentLevel.hide()
             this.$refs.contextChildLevel.hide()
             this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextTicketLevel.hide()
             this.$refs.contextAuthorLevel.show(e)
+        },
+        showTicketLevelContext(e, settings, key) {
+            this.contextSelectionSettings = settings
+            this.contextSelectionSettingsKey = key
+            this.$refs.contextParentLevel.hide()
+            this.$refs.contextChildLevel.hide()
+            this.$refs.contextDisplayLevel.hide()
+            this.$refs.contextAuthorLevel.hide()
+            this.$refs.contextTicketLevel.show(e)
         },
         onCloneSettings(e) {
             this.$refs.contextCloneSettings.show(e)

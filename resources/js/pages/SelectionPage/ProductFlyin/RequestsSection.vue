@@ -25,7 +25,7 @@
 
             <!-- Deny access for feedback -->
             <div class="form-wrapper" v-if="currentSelectionMode == 'Alignment'">
-                <strong class="form-header">{{currentSelection.type == 'Master' ? 'Open ticket' : 'Your Request'}}</strong>
+                <strong class="form-header">{{ticketModeActive ? 'Open ticket' : 'Your Request'}}</strong>
 
                 <form @submit="onSubmit" :class="[{active: writeActive}]">
 
@@ -84,22 +84,31 @@ export default {
         // selectionRequest: null,
     }},
     watch: {
-        selectionInput: function(newVal, oldVal) {
-            this.update()
-        },
-        requests: function(newVal, oldVal) {
-            this.update()
-        },
+        // selectionInput: function(newVal, oldVal) {
+        //     this.update()
+        // },
+        // requests: function(newVal, oldVal) {
+        //     this.update()
+        // },
         selectionRequest: function(newVal, oldVal) {
             this.update()
         },
+        currentRequestThread(newVal) {
+            if (newVal) {
+                this.deactivateWrite()
+            }
+        }
     },
     computed: {
         ...mapGetters('requests', {
-            currentRequestThread: 'getCurrentRequestThread'
+            currentRequestThread: 'getCurrentRequestThread',
         }),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
+        ...mapGetters('selections', {
+            ticketModeActive: 'getTicketModeActive',
+            currentTicketMode: 'getCurrentTicketMode',
+        }),
         currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
         submitDisabled () {
             return this.newRequest.content.length < 1 
@@ -109,11 +118,13 @@ export default {
         },
         selectionRequest () {
             return this.selectionInput.selectionRequest
-        }
+        },
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         activateWrite() {
+            this.SET_CURRENT_REQUEST_THREAD(null)
             this.$refs.requestField.focus()
             this.$refs.requestField.select()
             this.writeActive = true
@@ -126,7 +137,7 @@ export default {
         },
         cancelRequest() {
             this.deactivateWrite()
-            this.newRequest.content = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.content : ''
+            this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
         },
         onDeleteRequest() {
             this.deleteRequest({selectionInput: this.selectionInput, request: this.selectionRequest})
@@ -139,15 +150,19 @@ export default {
             // Set submitting to true
             this.submitting = true
 
+            this.$set(this.selectionInput.selection, 'your_role', this.currentSelection.your_role)
+            this.$set(this.selectionInput.selection, 'your_job', this.currentSelection.your_job)
+
             // Instantiate the request to post
             const requestToPost = {
-                id: this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.id : null,
+                id: this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null,
                 author_id: this.authUser.id,
                 product_id: this.selectionInput.product_id,
                 selection_id: this.selectionInput.selection_id,
                 content: this.newRequest.content,
                 author: this.authUser,
                 selection: this.selectionInput.selection,
+                type: this.currentSelection.settings.ticket_level != 'None' ? 'Ticket' : 'Request',
                 discussions: [],
                 completed_at: null,
                 completed_by_user: null,
@@ -164,26 +179,27 @@ export default {
             // this.selectionRequest = requestToPost
 
             // Reset comment
-            this.writeActive = false
-            // Unset the focus
-            document.activeElement.blur()
+            this.deactivateWrite()
+            this.newRequest.content = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.content : ''
+            // Set the id of the new request if one exists
+            this.newRequest.id = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.id : null
             
             // Reset request
-            this.newRequest.content = this.selectionRequest.content
             this.resizeTextareas()
 
         },
         update() {
             // Find the existing selection request if any
-            // this.selectionRequest = this.requests.find(x => x.selection_id == this.selection.id)
             // Set the new request equal to the existing if one exists
-            this.newRequest.content = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.content : ''
-            // Set the id of the new request if one exists
-            this.newRequest.id = this.selectionRequest && this.currentSelection.type != 'Master' ? this.selectionRequest.id : null
-            this.writeActive = false
+            if (this.currentTicketMode == 'None') {
+                this.newRequest.content = this.selectionRequest ? this.selectionRequest.content : ''
+                // Set the id of the new request if one exists
+                this.newRequest.id = this.selectionRequest ? this.selectionRequest.id : null
+                this.deactivateWrite()
 
-            // Preset the height of the request field
-            this.resizeTextareas()
+                // Preset the height of the request field
+                this.resizeTextareas()
+            }
         },
         resizeTextareas() {
             if (this.currentSelectionMode == 'Alignment') {
@@ -198,7 +214,7 @@ export default {
                 if (key == 'Enter') {
                     this.$emit('hotkeyEnter', e)
                 }
-                if (key == 'Tab' && this.writeActive) {
+                if (key == 'Tab' && this.writeActive && !this.currentRequestThread) {
                     this.deactivateWrite()
                     this.$emit('activateCommentWrite')
                 }

@@ -240,6 +240,17 @@
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
+
+        <BaseDialog ref="confirmDeleteDialog" type="confirm"
+            confirmColor="red" confirmText="Yes, delete them" cancelText="No, wait">
+                <div class="icon-graphic">
+                    <i class="lg primary far fa-boxes"></i>
+                    <i class="lg far fa-arrow-right"></i>
+                    <i class="lg dark far fa-trash"></i>
+                </div>
+                <h3>Really delete {{selectedProducts.length}} products?</h3>
+                <p>They will be permanently deleted.</p>
+            </BaseDialog>
     </div>
 </template>
 
@@ -351,8 +362,10 @@ export default {
             this.setSingleVisisble(true)
         },
         async onDeleteProducts(products) {
-            await this.deleteProducts({file: this.file, products})
-            this.selectedProducts = []
+            if (products.length <= 1 || await this.$refs.confirmDeleteDialog.confirm()) {
+                await this.deleteProducts({file: this.file, products: products.slice()})
+                this.selectedProducts = []
+            } 
         },
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)
@@ -372,7 +385,8 @@ export default {
         },
         onSaveOrder() {
             const products = this.products
-            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.products
+            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.productsFilteredBySearch
+
             productsReOrdered.map((reOrdered, index) => {
                 // Find the corresponding product
                 const product = this.products.find(x => x.id == reOrdered.id)

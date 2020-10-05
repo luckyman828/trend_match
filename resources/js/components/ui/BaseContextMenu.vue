@@ -206,6 +206,7 @@ export default {
         > * {
             width: 240px;
             border-top: none;
+            height: 100%;
             &.item-group:not(:first-child) {
                 border-top: none;
             }

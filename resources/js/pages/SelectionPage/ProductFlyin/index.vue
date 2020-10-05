@@ -14,7 +14,7 @@
                     </div>
                 </template>
                 <template v-slot:right>
-                    <div class="item-group" v-if="product.hasTicket && (product.is_completed || (selection.type == 'Master' && currentSelectionMode == 'Alignment'))">
+                    <div class="item-group" v-if="(ticketsEnabled && product.is_completed) || selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment'">
                         <!-- Master actions -->
                         <BaseButton buttonClass="pill xs ghost"
                         targetAreaPadding="4px 4px"
@@ -202,6 +202,7 @@
             @hotkeyEnter="hotkeyEnterHandler"/>
 
             <RequestThreadSection v-else
+            :selectionInput="selectionInput"
             @onTab="onTabRequestThread"/>
 
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show"/>
@@ -344,6 +345,9 @@ export default {
         userWriteAccess () {
             return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
+        ticketsEnabled() {
+            return this.selection.settings.ticket_level != 'None'
+        }
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
@@ -409,14 +413,21 @@ export default {
             }
         },
         onTabRequestThread(cycleForward) {
-            const requests = this.product.requests.filter(x => x.selection.type == 'Master')
+            const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+            const tickets = []
+            const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+            const otherTickets = allTickets
+                .filter(x => x.selection_id != this.selection.id)
+                .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)
+            tickets.push(...ownTickets)
+            tickets.push(...otherTickets)
 
             // Find the index of our current request thread
-            const index = requests.findIndex(x => x.id == this.currentRequestThread.id)
-            if (cycleForward && index + 1 <= requests.length) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index+1])
+            const index = tickets.findIndex(x => x.id == this.currentRequestThread.id)
+            if (cycleForward && index + 1 <= tickets.length) {
+                this.SET_CURRENT_REQUEST_THREAD(tickets[index+1])
             } else if (!cycleForward && index > 0) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index-1])
+                this.SET_CURRENT_REQUEST_THREAD(tickets[index-1])
             }
             
         },
@@ -442,12 +453,14 @@ export default {
             if (key == 'Tab') {
                 event.preventDefault()
                 // Find requests with threads
-                const requestsWithThreads = this.product.requests.filter(x => x.selection.type == 'Master')
-                if (requestsWithThreads.length <= 0) return
+                const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                if (allTickets.length <= 0) return
 
                 // // Else, show the first reqeust thread
-                if (!this.currentRequestThread) {
-                    this.SET_CURRENT_REQUEST_THREAD(requestsWithThreads[0])
+                if (!this.currentRequestThread) {   
+                    const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
+                    this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
                 }
             }
         },

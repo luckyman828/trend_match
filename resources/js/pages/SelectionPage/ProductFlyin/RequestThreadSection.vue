@@ -13,9 +13,9 @@
         <template v-slot>
             <div class="inner">
                 <div class="request">
-                    <Request :request="request" :disableControls="true"/>
+                    <Request :request="request" :disableControls="true" :selectionInput="selectionInput"/>
 
-                    <div class="resolve-actions" v-if="request.selection.type == 'Master'">
+                    <div class="resolve-actions" v-if="request.type == 'Ticket' && hasTicketControl">
                         <BaseButton
                             :disabled="getCurrentSelectionMode == 'Feedback'"
                             disabledTooltip="Only approvers and owners can accept a request"
@@ -63,23 +63,7 @@
                     </div>
                 </div>
 
-                <!-- <div class="resolve-button" v-if="getCurrentSelectionMode == 'Alignment' && getCurrentPDPSelection.type == 'Master'">
-                    <button class="lg full-width" :class="[request.isResolved ? 'green' : 'primary', {'is-resolved': request.isResolved}]"
-                    @click="onResolve">
-                        <span v-if="!request.isResolved">Mark as resolved</span>
-                        <template v-else>
-                            <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
-                            <span class="hover">Re-open request</span>
-                        </template>
-                    </button>
-                </div> -->
-
-                <!-- <div class="resolved-banner" 
-                v-else-if="request.isResolved">
-                    <span>Resolved by {{request.completed_by_user ? request.completed_by_user.name : 'Aligner'}}</span>
-                </div> -->
-
-                <div class="form-wrapper" v-if="!request.isResolved && getCurrentPDPSelection.type == 'Master' && getCurrentSelectionMode != 'Feedback'">
+                <div class="form-wrapper" v-if="request.type == 'Ticket' && hasTicketControl">
                     <strong class="form-header">Write comment</strong>
 
                     <form @submit="onSubmit" :class="[{active: writeActive}]">
@@ -121,6 +105,9 @@ export default {
         Request,
         RequestComment,
     },
+    props: [
+        'selectionInput'
+    ],
     data: function () { return {
         newComment: {
             content: '',
@@ -144,25 +131,30 @@ export default {
         hasNewComment() {
             return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
             this.getCurrentSelectionMode == 'Approval' && this.request.hasUnreadAlignerComment
+        },
+        hasTicketControl() {
+            return ['Owner', 'Approver'].includes(this.request.selection.your_role) || this.getCurrentSelection.your_role == 'Approver'
         }
     },
     watch: {
-        // request() {
-        //     this.$nextTick(() => {
-        //         // this.activateWrite()
-        //     })
-        // },
+        request() {
+            this.onReadRequest()
+        },
         currentProduct() {
             this.close()
         }
     },
     methods: {
         ...mapMutations('requests', {
-            close: 'SET_CURRENT_REQUEST_THREAD'
+            close: 'SET_CURRENT_REQUEST_THREAD',
+            SET_REQUEST_READ: 'SET_REQUEST_READ',
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
+        onReadRequest() {
+            this.SET_REQUEST_READ(this.request)
+        },
         activateWrite() {
-            if (this.request.isResolved || this.getCurrentSelection.type != 'Master') return
+            if (this.request.type != 'Ticket' || !this.hasTicketControl) return
             this.$refs.commentField.focus()
             this.$refs.commentField.select()
             this.writeActive = true
@@ -236,6 +228,7 @@ export default {
     },
     mounted() {
         // this.activateWrite()
+        this.onReadRequest()
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)

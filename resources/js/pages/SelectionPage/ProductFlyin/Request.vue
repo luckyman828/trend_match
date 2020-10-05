@@ -1,13 +1,13 @@
 <template>
     <div class="request-wrapper" :class="[{own: isOwn}, {master: isMaster}, 
     {'has-traits': request.focus}, {'edit-active': editActive}, {'no-controls': disableControls}, 
-    {'has-thread': approvalEnabled && isMaster}]">
+    {'has-thread': approvalEnabled && isTicket}]">
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
         <div class="request"
-        @click="isMaster && !disableControls && approvalEnabled && onToggleRequestThread($event)">
-            <div class="ribbon" v-if="request.selection && request.selection.type == 'Master'"
+        @click="isTicket && !disableControls && approvalEnabled && onToggleRequestThread($event)">
+            <div class="ribbon" v-if="approvalEnabled && isTicket"
                 :class="request.status"
                 v-tooltip="statusTooltip"
             />
@@ -38,11 +38,11 @@
                     @keydown.esc.native="onCancel"/>
                 </span>
 
-                <div class="thread-controls" v-if="isMaster && !disableControls && approvalEnabled">
-                    <div class="resolve-actions" v-if="getCurrentSelectionMode != 'Feedback'">
+                <div class="thread-controls" v-if="isTicket && approvalEnabled && !disableControls">
+                    <div class="resolve-actions" v-if="hasTicketControl">
                         <BaseButton
                             v-tooltip="'Accept'"
-                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            :disabled="!hasTicketControl"
                             disabledTooltip="Only approvers and owners can accept a request"
                             :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
                             @click="onSetStatus('Resolved')"
@@ -52,7 +52,7 @@
                         </BaseButton>
                         <BaseButton
                             v-tooltip="'Reject'"
-                            :disabled="getCurrentSelectionMode == 'Feedback'"
+                            :disabled="!hasTicketControl"
                             disabledTooltip="Only approvers and owners can reject a request"
                             :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
                             @click="onSetStatus('Rejected')"
@@ -77,7 +77,7 @@
             </div>
         </div> 
         <!-- Request Controls -->
-        <div class="controls" v-if="!editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
+        <div class="controls" v-if="!selectionInput.is_completed && !editActive && !disableControls && isOwn && getCurrentPDPSelection.your_role == 'Owner'">
 
             <button v-tooltip.top="{content: 'Delete', delay: {show: 300}}" class="button invisible ghost-hover"
             @click="onDeleteRequest">
@@ -137,13 +137,18 @@ export default {
         ...mapGetters('requests', ['getCurrentRequestThread']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         ...mapGetters('selections', {
-            displayUnreadBullets: 'getDisplayUnreadBullets'
+            displayUnreadBullets: 'getDisplayUnreadBullets',
+            ticketModeActive: 'getTicketModeActive',
+
         }),
         isOwn() {
             return this.request.selection_id == this.getCurrentPDPSelection.id
         },
         isMaster() {
             return this.request.selection.type == 'Master'
+        },
+        isTicket() {
+            return this.request.type == 'Ticket'
         },
         hasNewComment() {
             const request = this.request
@@ -164,7 +169,10 @@ export default {
         },
         requestStatus() {
             return this.request.status
-        }
+        },
+        hasTicketControl() {
+            return ['Owner', 'Approver'].includes(this.request.selection.your_role) || this.currentSelection.your_role == 'Approver'
+        },
     },
     watch: {
         requestStatus(newVal) {
@@ -215,7 +223,7 @@ export default {
         }
     },
     created() {
-        this.onReadRequest()
+        // this.onReadRequest()
     },
     destroyed() {
         this.onReadRequest()
@@ -263,6 +271,9 @@ export default {
         }
     }
     &.no-controls {
+        .request {
+            cursor: default;
+        }
         .request > .inner {
             padding-bottom: 20px;
         }
@@ -339,10 +350,11 @@ export default {
     //     border-left: solid 8px $green;
     // }
     .inner {
-        padding: 8px 8px 12px;
+        padding: 8px 12px 12px 8px;
         display: flex;
         flex-direction: column;
         flex: 1;
+        overflow: hidden;
     }
     .thread-controls {
         // position: absolute;

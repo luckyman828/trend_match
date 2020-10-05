@@ -59,7 +59,7 @@ export default {
         getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
         getDisplayUnreadBullets: (state, getters) => {
-            return getters.getCurrentSelection.type == 'Master' && getters.getCurrentSelectionMode != 'Feedback'
+            return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
@@ -74,6 +74,11 @@ export default {
                 getters.currentSelectionMode != 'Approval'
             )
         },
+        getTicketModeActive: (state, getters) => {
+            return getters.currentSelection.settings && getters.currentSelection.settings.ticket_level != 'None'
+        },
+        getCurrentTicketMode: (state, getters) =>
+            getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {

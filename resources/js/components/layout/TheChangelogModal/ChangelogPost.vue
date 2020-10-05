@@ -40,6 +40,7 @@ export default {
     background: white;
     border: $borderModule;
     border-radius: $borderRadiusModule;
+    box-shadow: $shadowModule;
     overflow: hidden;
     max-width: 680px;
     margin: auto;

@@ -155,6 +155,7 @@ export default{
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
         ...mapMutations('requests', ['INSERT_OR_UPDATE_REQUEST', 'DELETE_REQUEST', 'INSERT_OR_UPDATE_REQUEST_COMMENT', 'DELETE_REQUEST_COMMENT']),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
+        ...mapActions('requests', ['initRequests']),
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
                 if (this.currentSelectionMode == 'Feedback') {
@@ -184,7 +185,6 @@ export default{
             // this.$cookies.set(`quick_in_${this.currentFile.id}_${this.currentTask.id}`, true, Infinity)
         },
         onUpdateAction(action, selectionInput) {
-            console.log('on update action')
             if (this.currentSelectionMode == 'Feedback') {
                 const selectionFeedback = selectionInput.yourSelectionFeedback
                 const newAction = selectionFeedback.action == action ? 'None' : action
@@ -252,10 +252,11 @@ export default{
                 this.DELETE_COMMENT({selectionInput: this.getActiveSelectionInput(product), comment})
             }
         },
-        requestArrivedHandler(selectionId, request) {
+        async requestArrivedHandler(selectionId, request) {
             // if (request.author_id != this.authUser.id) {
                 // console.log("OnRequestArrived", selectionId, request)
                 const product = this.products.find(x => x.id == request.product_id)
+                await this.initRequests([request])
                 this.INSERT_OR_UPDATE_REQUEST({selectionInput: this.getActiveSelectionInput(product), request})
             // }
         },
