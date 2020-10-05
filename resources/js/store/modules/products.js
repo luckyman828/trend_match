@@ -1655,10 +1655,15 @@ export default {
                     if (selectionAction) {
                         selectionAction.action = newAction
                         selectionAction.user = user
+
+                        const allVariantsOut = !selectionInput.variants.find(variant =>
+                            ['In', 'Focus'].includes(variant.action)
+                        )
+
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (variant.action == 'None') {
+                            if (allVariantsOut || variant.action == 'None') {
                                 variant.action = newAction
                             }
                             if (['Out', 'None'].includes(newAction)) {
@@ -1702,10 +1707,14 @@ export default {
                     if (selectionAction) {
                         selectionAction.action = newAction
                         selectionAction.user = user
+
+                        const allVariantsOut = !selectionInput.variants.find(variant =>
+                            ['In', 'Focus'].includes(variant.your_feedback)
+                        )
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (variant.your_feedback == 'None') {
+                            if (variant.your_feedback == 'None' || allVariantsOut) {
                                 variant.your_feedback = newAction
                             }
                             // variant.action = newAction
