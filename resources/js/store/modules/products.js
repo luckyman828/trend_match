@@ -1659,7 +1659,7 @@ export default {
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
                             if (variant.action == 'None') {
-                                variant.action = 'Out'
+                                variant.action = newAction
                             }
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction
@@ -1706,7 +1706,7 @@ export default {
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
                             if (variant.your_feedback == 'None') {
-                                variant.your_feedback = 'Out'
+                                variant.your_feedback = newAction
                             }
                             // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {

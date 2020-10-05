@@ -80,7 +80,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP']),
-        ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
+        ...mapActions('actions', ['updateActions', 'updateFeedbacks', 'setActions', 'setFeedbacks']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE', 'SET_SCANNER_VARIANT_MODE']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
@@ -154,13 +154,6 @@ export default {
             // If the new action to set is the same as the one already set, return
             // if (this.variant[this.currentAction] == newAction) return
 
-            // Loop through all the variants. If their action is None, then give them a default action
-            product.variants.forEach(productVariant => {
-                if (productVariant.id != variant.id && productVariant[this.currentAction] == 'None') {
-                    productVariant[this.currentAction] = 'Out'
-                }
-            })
-
             // Set the variant feedback
             variant[this.currentAction] = newAction
             if (newAction == 'Out') {
@@ -178,9 +171,16 @@ export default {
                 currentAction = selectionInput.selectionAction
             }
 
+            // Loop through all the variants. If their action is None, then give them a default action
+            selectionInput.variants.map(productVariant => {
+                if (productVariant.id != variant.id && productVariant[this.currentAction] == 'None') {
+                    productVariant[this.currentAction] = 'Out'
+                }
+            })
+
             // If the product has no action, set it's action to the variants new action
             if (currentAction.action == 'None') {
-                newProductAction = newAction
+                currentAction.action = newAction
             }
             // If all variants are marked OUT, mark the product OUT
             else if (
@@ -188,7 +188,7 @@ export default {
                     ['Focus', 'In', 'None'].includes(selectionVariant[this.currentAction])
                 )
             ) {
-                newProductAction = 'Out'
+                currentAction.action = 'Out'
             }
             // If at least ONE varaint in IN or FOCUS mark the product as IN
             else if (
@@ -197,15 +197,17 @@ export default {
                 )
             ) {
                 if (selectionInput[this.currentAction] != 'Focus') {
-                    newProductAction = 'In'
+                    currentAction.action = 'In'
                 }
             }
 
             if (this.selectionMode == 'Feedback') {
-                this.updateFeedbacks({ actions: [currentAction], newAction: newProductAction })
+                this.setFeedbacks([currentAction])
+                // this.updateFeedbacks({ actions: [currentAction], newAction: newProductAction })
             }
             if (this.selectionMode == 'Alignment') {
-                this.updateActions({ actions: [currentAction], newAction: newProductAction })
+                this.setActions([currentAction])
+                // this.updateActions({ actions: [currentAction], newAction: newProductAction })
             }
         },
     },
