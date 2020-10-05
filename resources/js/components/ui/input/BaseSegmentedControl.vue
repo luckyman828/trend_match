@@ -22,11 +22,11 @@ export default {
     props: ['options', 'currentOptionIndex', 'sizeClass'],
     methods: {
         setOption(index) {
-            this.$emit('input', index);
-            this.$emit('change', index);
+            this.$emit('input', index)
+            this.$emit('change', index)
         },
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -35,6 +35,7 @@ export default {
     padding: 2px;
     background: $grey;
     border-radius: 50px;
+    cursor: pointer;
     .option {
         &:not(:first-child) {
             margin-left: 4px;

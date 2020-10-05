@@ -29,10 +29,12 @@ export default {
         showPDFModal: false,
         showCSVModal: false,
         openTicketsOnly: false,
+        pdpVariantIndex: 0,
     },
 
     getters: {
         loadingProducts: state => state.loading,
+        getPdpVariantIndex: state => state.pdpVariantIndex,
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
@@ -1657,7 +1659,7 @@ export default {
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
                             if (variant.action == 'None') {
-                                variant.action = newAction
+                                variant.action = 'Out'
                             }
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction
@@ -1704,7 +1706,7 @@ export default {
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
                             if (variant.your_feedback == 'None') {
-                                variant.your_feedback = newAction
+                                variant.your_feedback = 'Out'
                             }
                             // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
@@ -1754,6 +1756,9 @@ export default {
         },
         SET_NO_IMAGES_ONLY(state, boolean) {
             state.noImagesOnly = boolean
+        },
+        SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
+            state.pdpVariantIndex = index
         },
     },
 }

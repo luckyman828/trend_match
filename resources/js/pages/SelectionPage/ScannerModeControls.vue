@@ -44,26 +44,19 @@
                 </button>
                 <span>Out</span>
             </div>
-
-            <div class="action-list-item" :class="{ ghost: scannerMode != 'None' }">
-                <button class="white circle" @click="SET_SCANNER_MODE('None')">
-                    <i class="far fa-circle"></i>
-                </button>
-                <span>None</span>
-            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     name: 'scannerModeControls',
     data: function() {
         return {
             scanStarted: false,
             scanStr: '',
-        };
+        }
     },
     computed: {
         ...mapGetters('scanner', {
@@ -78,10 +71,10 @@ export default {
         }),
         variantModeActive: {
             get() {
-                return this.$store.getters['scanner/getScannerVariantMode'];
+                return this.$store.getters['scanner/getScannerVariantMode']
             },
             set(value) {
-                this.SET_SCANNER_VARIANT_MODE(value);
+                this.SET_SCANNER_VARIANT_MODE(value)
             },
         },
     },
@@ -90,104 +83,104 @@ export default {
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE', 'SET_SCANNER_VARIANT_MODE']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
         scanHandler(e) {
             // Check if we get at least 12 concecutive inputs with very small interval
             // If that is the case, we have a scan
-            this.scanStr += e.key;
+            this.scanStr += e.key
             if (!this.scanStarted) {
-                this.scanStarted = true;
+                this.scanStarted = true
                 setTimeout(() => {
                     if (this.scanStr.length >= 12) {
-                        this.onScan(this.scanStr);
-                        this.scanStr = '';
-                        this.scanStarted = false;
+                        this.onScan(this.scanStr)
+                        this.scanStr = ''
+                        this.scanStarted = false
                     }
-                }, 50);
+                }, 50)
             }
         },
         onScan(scanCode) {
             if (!this.scannerMode) {
-                this.SET_SCANNER_MODE('product');
+                this.SET_SCANNER_MODE('product')
             }
 
             // Find the matched product / variant
-            const product = this.products.find(product => product.eans.includes(scanCode));
+            const product = this.products.find(product => product.eans.includes(scanCode))
             if (!product) {
                 this.SHOW_SNACKBAR({
                     msg: `Scan didn't match any products`,
                     type: 'info',
                     iconClass: 'fa-exclamation-circle',
-                });
-                return;
+                })
+                return
             }
 
-            if (this.scannerMode == 'product') {
-                this.showSelectionProductPDP({ product, selection: this.getCurrentSelection });
-            } else {
-                const selectionInput = this.getActiveSelectionInput(product);
+            const selectionInput = this.getActiveSelectionInput(product)
+            const variantIndex = selectionInput.variants.findIndex(
+                variant => variant.ean == scanCode || variant.ean_sizes.find(size => size.ean == scanCode)
+            )
+            const variant = selectionInput.variants[variantIndex]
 
-                let variant;
+            if (this.scannerMode == 'product') {
+                this.showSelectionProductPDP({ product, selection: this.getCurrentSelection })
+                if (this.variantModeActive && variant) {
+                    // Show the scanned variant
+                    this.SET_CURRENT_PDP_VARIANT_INDEX(variantIndex)
+                }
+            } else {
                 if (this.variantModeActive) {
-                    variant = selectionInput.variants.find(
-                        variant => variant.ean == scanCode || variant.ean_sizes.find(size => size.ean == scanCode)
-                    );
                     if (!variant) {
                         this.SHOW_SNACKBAR({
                             msg: `Scan didn't match any variant`,
                             type: 'info',
                             iconClass: 'fa-exclamation-circle',
-                        });
-                        return;
+                        })
+                        return
                     }
-                }
-
-                if (this.variantModeActive) {
-                    this.updateVariantAction(this.scannerMode, product, selectionInput, variant);
+                    this.updateVariantAction(this.scannerMode, product, selectionInput, variant)
                 } else {
                     if (this.selectionMode == 'Feedback') {
-                        const selectionFeedback = selectionInput.yourSelectionFeedback;
-                        this.updateFeedbacks({ actions: [selectionFeedback], newAction: this.scannerMode });
+                        const selectionFeedback = selectionInput.yourSelectionFeedback
+                        this.updateFeedbacks({ actions: [selectionFeedback], newAction: this.scannerMode })
                     }
                     if (this.selectionMode == 'Alignment') {
-                        const selectionAction = selectionInput.selectionAction;
-                        this.updateActions({ actions: [selectionAction], newAction: this.scannerMode });
+                        const selectionAction = selectionInput.selectionAction
+                        this.updateActions({ actions: [selectionAction], newAction: this.scannerMode })
                     }
                 }
             }
         },
         updateVariantAction(newAction, product, selectionInput, variant) {
-            console.log('updatevariant action', newAction, product, selectionInput, variant);
             // If the new action to set is the same as the one already set, return
             // if (this.variant[this.currentAction] == newAction) return
 
             // Loop through all the variants. If their action is None, then give them a default action
             product.variants.forEach(productVariant => {
                 if (productVariant.id != variant.id && productVariant[this.currentAction] == 'None') {
-                    if (newAction == 'Out') productVariant[this.currentAction] = 'Out';
-                    else productVariant[this.currentAction] = 'In';
+                    productVariant[this.currentAction] = 'Out'
                 }
-            });
+            })
 
             // Set the variant feedback
-            variant[this.currentAction] = newAction;
+            variant[this.currentAction] = newAction
             if (newAction == 'Out') {
-                variant[this.currentQty] = 0;
+                variant[this.currentQty] = 0
             }
-            let currentAction;
-            let newProductAction;
+            let currentAction
+            let newProductAction
 
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None
-                currentAction = selectionInput.yourSelectionFeedback;
+                currentAction = selectionInput.yourSelectionFeedback
             }
             if (this.selectionMode == 'Alignment') {
                 // Find the users feedback action for the product and make sure it is not None
-                currentAction = selectionInput.selectionAction;
+                currentAction = selectionInput.selectionAction
             }
 
             // If the product has no action, set it's action to the variants new action
             if (currentAction.action == 'None') {
-                newProductAction = newAction;
+                newProductAction = newAction
             }
             // If all variants are marked OUT, mark the product OUT
             else if (
@@ -195,7 +188,7 @@ export default {
                     ['Focus', 'In', 'None'].includes(selectionVariant[this.currentAction])
                 )
             ) {
-                newProductAction = 'Out';
+                newProductAction = 'Out'
             }
             // If at least ONE varaint in IN or FOCUS mark the product as IN
             else if (
@@ -204,27 +197,27 @@ export default {
                 )
             ) {
                 if (selectionInput[this.currentAction] != 'Focus') {
-                    newProductAction = 'In';
+                    newProductAction = 'In'
                 }
             }
 
             if (this.selectionMode == 'Feedback') {
-                this.updateFeedbacks({ actions: [currentAction], newAction: newProductAction });
+                this.updateFeedbacks({ actions: [currentAction], newAction: newProductAction })
             }
             if (this.selectionMode == 'Alignment') {
-                this.updateActions({ actions: [currentAction], newAction: newProductAction });
+                this.updateActions({ actions: [currentAction], newAction: newProductAction })
             }
         },
     },
     created() {
         // Hook up event listeners for scans
-        document.addEventListener('keyup', this.scanHandler);
+        document.addEventListener('keyup', this.scanHandler)
     },
     destroyed() {
         // Clean up event listeners
-        document.removeEventListener('keyup', this.scanHandler);
+        document.removeEventListener('keyup', this.scanHandler)
     },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -246,6 +239,7 @@ export default {
     padding: 8px 16px 12px;
     z-index: 11;
     transition: transform 0.1s ease-out;
+    width: 400px;
     &.hide {
         transform: translateY(calc(100% + 20px));
     }
@@ -274,7 +268,6 @@ export default {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 80px;
             opacity: 0.5;
             &:hover {
                 opacity: 1;
