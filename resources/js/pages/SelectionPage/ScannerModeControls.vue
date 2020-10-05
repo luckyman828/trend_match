@@ -128,6 +128,14 @@ export default {
                     this.SET_CURRENT_PDP_VARIANT_INDEX(variantIndex)
                 }
             } else {
+                if (product.is_completed) {
+                    this.SHOW_SNACKBAR({
+                        msg: `Scan ignored. Product is marked as completed`,
+                        type: 'info',
+                        iconClass: 'fa-exclamation-circle',
+                    })
+                    return
+                }
                 if (this.variantModeActive) {
                     if (!variant) {
                         this.SHOW_SNACKBAR({
