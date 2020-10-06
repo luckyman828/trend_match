@@ -91,10 +91,6 @@ export default {
             } else {
                 movedTiming.start = 0
             }
-            // const timingsAfter = this.videoTimings.slice(newIndex + 1)
-            // timingsToUpdate.map(timing => {
-            //     timing.start += movedTiming.duration
-            // })
         },
     },
 }

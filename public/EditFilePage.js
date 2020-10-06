@@ -6595,7 +6595,7 @@
                                                                                             attrs: {
                                                                                                 submitOnChange: 'true',
                                                                                                 displayFunction:
-                                                                                                    _vm.prettifyDate,
+                                                                                                    _vm.getPrettyDate,
                                                                                                 options:
                                                                                                     _vm.availableDeliveryDates,
                                                                                             },
@@ -7244,13 +7244,13 @@
                                                 _vm.product.delivery_dates.length > 1 &&
                                                 _vm.product.delivery_dates
                                                     .map(function(x) {
-                                                        return _vm.prettifyDate(x, 'short')
+                                                        return _vm.getPrettyDate(x, 'short')
                                                     })
                                                     .join(', '),
                                             trigger: 'hover',
                                         },
                                         expression:
-                                            "{\n            content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),\n            trigger: 'hover'\n        }",
+                                            "{\n            content: product.delivery_dates.length > 1 && product.delivery_dates.map(x => getPrettyDate(x, 'short')).join(', '),\n            trigger: 'hover'\n        }",
                                     },
                                 ],
                                 staticClass: 'delivery',
@@ -7262,7 +7262,7 @@
                                     ? _c('span', [
                                           _vm._v(
                                               '\n            ' +
-                                                  _vm._s(_vm.prettifyDate(_vm.product.delivery_dates[0], 'short')) +
+                                                  _vm._s(_vm.getPrettyDate(_vm.product.delivery_dates[0], 'short')) +
                                                   '\n            '
                                           ),
                                           _vm.product.delivery_dates.length > 1

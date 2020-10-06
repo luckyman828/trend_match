@@ -226,7 +226,7 @@
                 <label>Delivery Date(s)</label>
                 <BaseInputTextArea
                     readOnly="true"
-                    :value="product.delivery_dates.map(date => `${prettifyDate(date)}`).join('\n')"
+                    :value="product.delivery_dates.map(date => `${getPrettyDate(date)}`).join('\n')"
                 />
 
                 <div class="col-2 minimum">

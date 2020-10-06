@@ -4,8 +4,12 @@ export default {
     namespaced: true,
 
     state: {
-        videoId: null,
-        provider: null,
+        currentVideo: {
+            name: 'Test Video',
+            id: 1,
+            providerVideoId: 'MKpsH_r6Cd8',
+            provider: 'Youtube',
+        },
         searchItemDragActive: false,
         videoTimings: [],
         timingClone: null,
@@ -14,15 +18,40 @@ export default {
     },
 
     getters: {
+        getCurrentVideo: state => state.currentVideo,
         getSearchItemDragActive: state => state.searchItemDragActive,
-        getVideoId: state => state.getVideoId,
-        getProvider: state => state.provider,
         getVideoTimings: state => state.videoTimings,
         getTimingClone: state => state.timingClone,
         getTimelineZoom: state => state.timelineZoom,
     },
 
     actions: {
+        setVideoByURL({ getters, commit }, { video, url }) {
+            const domainRegex = new RegExp(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^.\/\n?]+)/)
+            const providerMatches = url.match(domainRegex)
+            if (providerMatches.length < 2) return false
+            const provider = providerMatches[1]
+            const providerCapitalized = provider.charAt(0).toUpperCase() + provider.slice(1)
+
+            let videoIdRegex
+            if (provider == 'vimeo') {
+                videoIdRegex = new RegExp(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/([0-9]*)/)
+            }
+            if (provider == 'youtube') {
+                videoIdRegex = new RegExp(
+                    /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/watch\?v=(([A-z]|[0-9])*)/
+                )
+            }
+
+            const videoIdMatches = url.match(videoIdRegex)
+            if (videoIdMatches.length < 2) return false
+            const videoId = videoIdMatches[1]
+
+            console.log('set video by url', url, provider, providerCapitalized, videoId)
+
+            video.provider = providerCapitalized
+            video.providerVideoId = videoId
+        },
         addTiming({ getters, commit, dispatch }, { newTiming, index }) {
             // Set the start time of the new timing by the timing just before it
             const newIndex = index != null ? index : getters.getVideoTimings.length
@@ -60,6 +89,20 @@ export default {
                 Object.defineProperty(timing, 'end', {
                     get() {
                         return timing.start + timing.duration
+                    },
+                })
+                Object.defineProperty(timing, 'startObj', {
+                    get() {
+                        return Duration.fromMillis(timing.start * 1000)
+                            .shiftTo('hours', 'minutes', 'seconds')
+                            .toObject()
+                    },
+                })
+                Object.defineProperty(timing, 'endObj', {
+                    get() {
+                        return Duration.fromMillis(timing.end * 1000)
+                            .shiftTo('hours', 'minutes', 'seconds')
+                            .toObject()
                     },
                 })
                 Object.defineProperty(timing, 'index', {

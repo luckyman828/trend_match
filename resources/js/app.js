@@ -12,6 +12,8 @@ window.focusVisible = require('focus-visible')
 
 import { DateTime } from 'luxon'
 window.DateTime = DateTime
+import Duration from 'luxon/src/duration.js'
+window.Duration = Duration
 
 import store from './store/index'
 import router from './router'
@@ -35,6 +37,12 @@ Vue.use(tooltipTriggerDirective)
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'
 Vue.use(VueVirtualScroller)
+
+import VueYoutube from 'vue-youtube'
+Vue.use(VueYoutube)
+
+import vueVimeoPlayer from 'vue-vimeo-player'
+Vue.use(vueVimeoPlayer)
 
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip, {
@@ -102,7 +110,7 @@ Vue.filter('truncate', function(value, limit) {
 Vue.filter('formatDate', function(value) {
     return new Date(value).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
 })
-Vue.filter('prettifyDate', function(value) {
+Vue.filter('getPrettyDate', function(value) {
     return value ? DateTime.fromFormat(value, 'yyyy-MM-dd').toFormat('MMMM yyyy') : ''
 })
 Vue.filter('thousandSeparated', function(value) {
@@ -118,7 +126,7 @@ Vue.mixin({
         separateThousands(value) {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         },
-        prettifyDate(date, style) {
+        getPrettyDate(date, style) {
             if (!date) return ''
             if (!style) {
                 return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')

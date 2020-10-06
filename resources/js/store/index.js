@@ -21,6 +21,7 @@ import changelog from './modules/changelog'
 import flyin from './modules/flyin'
 import mapProductData from './modules/mapProductData'
 import videoPresentation from './modules/videoPresentation'
+import videoPlayer from './modules/videoPlayer'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -49,6 +50,7 @@ const store = new Vuex.Store({
         flyin,
         mapProductData,
         videoPresentation,
+        videoPlayer,
     },
 })
 

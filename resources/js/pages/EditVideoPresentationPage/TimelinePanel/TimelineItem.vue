@@ -14,13 +14,37 @@
                 <BaseVariantImage :variant="product.variants[0]" size="sm" />
             </div>
             <span class="time">
-                <BaseEditableSpan :value="timing.start" pattern="^(2[0-3]|[01][0-9]):[0-5][0-9]$" maxlength="5">{{
-                    timing.start | timeStampify
-                }}</BaseEditableSpan>
+                <BaseEditableSpan
+                    :value="timing.start"
+                    pattern="^([0-9]|[0-5][0-9])$"
+                    maxlength="2"
+                    :selectOnFocus="true"
+                    >{{ timing.startObj.minutes }}</BaseEditableSpan
+                >
+                <span>:</span>
+                <BaseEditableSpan
+                    :value="timing.start"
+                    pattern="^([0-9]|[0-5][0-9])$"
+                    maxlength="2"
+                    :selectOnFocus="true"
+                    >{{ timing.startObj.seconds }}</BaseEditableSpan
+                >
                 <span> - </span>
-                <BaseEditableSpan :value="timing.start" pattern="^(2[0-3]|[01][0-9]):[0-5][0-9]$" maxlength="5">{{
-                    timing.end | timeStampify
-                }}</BaseEditableSpan>
+                <BaseEditableSpan
+                    :value="timing.start"
+                    pattern="^([0-9]|[0-5][0-9])$"
+                    maxlength="2"
+                    :selectOnFocus="true"
+                    >{{ timing.endObj.minutes }}</BaseEditableSpan
+                >
+                <span>:</span>
+                <BaseEditableSpan
+                    :value="timing.start"
+                    pattern="^([0-9]|[0-5][0-9])$"
+                    maxlength="2"
+                    :selectOnFocus="true"
+                    >{{ timing.endObj.seconds }}</BaseEditableSpan
+                >
             </span>
         </div>
     </div>

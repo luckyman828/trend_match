@@ -6,10 +6,11 @@
             v-bind="$attrs"
             v-model="currentValue"
             :pattern="pattern"
+            @input="$event => $emit('input', $event.target.value)"
             @keydown.esc="onCancel"
             @keydown.enter="onSubmit"
             @focus="onFocus"
-            @blur="onCancel"
+            @blur="onBlur"
         />
     </form>
 </template>
@@ -22,6 +23,7 @@ export default {
         return {
             currentValue: this.getDefaultValue(),
             isValid: true,
+            hasFocus: false,
         }
     },
     computed: {
@@ -59,7 +61,7 @@ export default {
         resizeWidth() {
             const inputField = this.$refs.inputField
             if (!inputField) return
-            inputField.style.width = `calc(${inputField.value.length}ch + 10px)`
+            inputField.style.width = `calc(${inputField.value.length}ch + ${this.hasFocus ? '12px' : '2px'})`
         },
         checkValid() {
             this.isValid = this.$refs.form.checkValidity()
@@ -77,7 +79,14 @@ export default {
             document.activeElement.blur()
         },
         onFocus() {
+            this.hasFocus = true
             if (this.selectOnFocus) this.$refs.inputField.select()
+            this.resizeWidth()
+        },
+        onBlur() {
+            this.hasFocus = false
+            this.onCancel()
+            this.resizeWidth()
         },
     },
     mounted() {
@@ -94,12 +103,13 @@ form {
 .editable {
     border: none;
     display: inline;
-    padding: 2px 4px;
     resize: none;
     border: $borderEl;
     border-color: transparent;
     border-radius: $borderRadiusEl;
+    padding: 0;
     &:focus {
+        padding: 2px 4px;
         outline: none;
         border-color: $borderColorEl;
     }

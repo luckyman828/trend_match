@@ -37,14 +37,14 @@
             v-tooltip="{
                 content:
                     product.delivery_dates.length > 1 &&
-                    product.delivery_dates.map(x => prettifyDate(x, 'short')).join(', '),
+                    product.delivery_dates.map(x => getPrettyDate(x, 'short')).join(', '),
                 trigger: 'hover',
             }"
             :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
             @click="onViewSingle"
         >
             <span v-if="product.delivery_dates[0]">
-                {{ prettifyDate(product.delivery_dates[0], 'short') }}
+                {{ getPrettyDate(product.delivery_dates[0], 'short') }}
                 <span v-if="product.delivery_dates.length > 1" class="square ghost xs">
                     <span>+{{ +product.delivery_dates.length - 1 }}</span>
                 </span>

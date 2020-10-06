@@ -1,7 +1,7 @@
 <template>
     <div class="products-table-wrapper">
-
-        <BaseTable :stickyHeader="true"
+        <BaseTable
+            :stickyHeader="true"
             ref="tableComp"
             contentStatus="success"
             :items="products"
@@ -10,7 +10,7 @@
             :itemSize="139"
             :selected.sync="selectedProducts"
             :contextItem.sync="contextItem"
-            :searchKey="['datasource_id','title','category','eans']"
+            :searchKey="['datasource_id', 'title', 'category', 'eans']"
             :searchResult.sync="productsFilteredBySearch"
             :isDraggable="editOrderModeActive"
             :itemsReOrdered.sync="localProducts"
@@ -20,133 +20,137 @@
             @search-enter="onViewSingle(productsFilteredBySearch[0])"
         >
             <template v-slot:topBarLeft>
-                <v-popover 
-                trigger="manual" 
-                :open="showFilters"
-                :autoHide="false"
-            >
-                <button class="ghost"
-                @click="toggleShowFilters">
-                    <i class="far fa-filter"></i>
-                    <span>Filters</span>
-                    <div class="circle primary xs" v-if="activeFiltersCount > 0">
-                        {{activeFiltersCount}}
-                    </div>
-                </button>
-                <BaseContextMenu slot="popover" :inline="true" 
-                    v-click-outside="hideFilters"
-                >
+                <v-popover trigger="manual" :open="showFilters" :autoHide="false">
+                    <button class="ghost" @click="toggleShowFilters">
+                        <i class="far fa-filter"></i>
+                        <span>Filters</span>
+                        <div class="circle primary xs" v-if="activeFiltersCount > 0">
+                            {{ activeFiltersCount }}
+                        </div>
+                    </button>
+                    <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
+                        <div class="item-group">
+                            <v-popover trigger="click" :disabled="availableCategories.length <= 0" placement="right">
+                                <BaseContextMenuItem
+                                    iconClass="far fa-filter"
+                                    :disabled="availableCategories.length <= 0"
+                                    disabledTooltip="No categories available"
+                                >
+                                    <span>Category</span>
+                                    <span v-if="selectedCategories.length > 0" class="filter-counter circle primary xs">
+                                        <span>{{ selectedCategories.length }}</span>
+                                    </span>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <BaseSelectButtons
+                                        style="width: 200px; padding-top: 8px;"
+                                        submitOnChange="true"
+                                        :options="availableCategories"
+                                        v-model="selectedCategories"
+                                    />
+                                </template>
+                            </v-popover>
+                        </div>
 
-                    <div class="item-group">
-                        <v-popover trigger="click" :disabled="availableCategories.length <= 0"
-                            placement="right"
-                        >
+                        <div class="item-group">
+                            <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0" placement="right">
+                                <BaseContextMenuItem
+                                    iconClass="far fa-calendar-week"
+                                    :disabled="availableDeliveryDates.length <= 0"
+                                    disabledTooltip="No delivery dates available"
+                                >
+                                    <span>Delivery</span>
+                                    <span
+                                        v-if="selectedDeliveryDates.length > 0"
+                                        class="filter-counter circle primary xs"
+                                    >
+                                        <span>{{ selectedDeliveryDates.length }}</span>
+                                    </span>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <BaseSelectButtons
+                                        submitOnChange="true"
+                                        :displayFunction="getPrettyDate"
+                                        :options="availableDeliveryDates"
+                                        v-model="selectedDeliveryDates"
+                                    />
+                                </template>
+                            </v-popover>
+                        </div>
+
+                        <div class="item-group">
+                            <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
+                                <BaseContextMenuItem
+                                    iconClass="far fa-box"
+                                    :disabled="availableBuyerGroups.length <= 0"
+                                    disabledTooltip="No buyer groups available"
+                                >
+                                    <span>Buyer group</span>
+                                    <span
+                                        v-if="selectedBuyerGroups.length > 0"
+                                        class="filter-counter circle primary xs"
+                                    >
+                                        <span>{{ selectedBuyerGroups.length }}</span>
+                                    </span>
+                                </BaseContextMenuItem>
+                                <template slot="popover">
+                                    <BaseSelectButtons
+                                        submitOnChange="true"
+                                        :options="availableBuyerGroups"
+                                        v-model="selectedBuyerGroups"
+                                    />
+                                </template>
+                            </v-popover>
+                        </div>
+
+                        <div class="item-group" v-if="activeFiltersCount > 0">
                             <BaseContextMenuItem
-                                iconClass="far fa-filter"
-                                :disabled="availableCategories.length <= 0"
-                                disabledTooltip="No categories available"
+                                iconClass="far fa-times"
+                                color="danger"
+                                @click="
+                                    onClearFilters()
+                                    showFilters = false
+                                "
                             >
-                                <span>Category</span>
-                                <span v-if="selectedCategories.length > 0" 
-                                    class="filter-counter circle primary xs">
-                                    <span>{{selectedCategories.length}}</span>
-                                </span>
+                                <span>Clear filters</span>
                             </BaseContextMenuItem>
-                            <template slot="popover">
-                                <BaseSelectButtons style="width: 200px; padding-top: 8px;" submitOnChange="true" 
-                                :options="availableCategories" v-model="selectedCategories"/>
-                            </template>
-                        </v-popover>
-                    </div>
-
-                    <div class="item-group">
-                        <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0"
-                            placement="right"
-                        >
-                            <BaseContextMenuItem 
-                                iconClass="far fa-calendar-week"
-                                :disabled="availableDeliveryDates.length <= 0"
-                                disabledTooltip="No delivery dates available"
-                            >
-                                <span>Delivery</span>
-                                <span v-if="selectedDeliveryDates.length > 0" class="filter-counter circle primary xs">
-                                    <span>{{selectedDeliveryDates.length}}</span>
-                                </span>
-                            </BaseContextMenuItem>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" :displayFunction="prettifyDate"
-                                :options="availableDeliveryDates" v-model="selectedDeliveryDates"/>
-                            </template>
-                        </v-popover>
-                    </div>
-
-                    <div class="item-group">
-                        <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0"
-                            placement="right"
-                        >
-                            <BaseContextMenuItem
-                                iconClass="far fa-box"
-                                :disabled="availableBuyerGroups.length <= 0"
-                                disabledTooltip="No buyer groups available"
-                            >
-                                <span>Buyer group</span>
-                                <span v-if="selectedBuyerGroups.length > 0" class="filter-counter circle primary xs">
-                                    <span>{{selectedBuyerGroups.length}}</span>
-                                </span>
-                            </BaseContextMenuItem>
-                            <template slot="popover">
-                                <BaseSelectButtons submitOnChange="true" 
-                                :options="availableBuyerGroups" v-model="selectedBuyerGroups"/>
-                            </template>
-                        </v-popover>
-                    </div>
-
-
-                    <div class="item-group" v-if="activeFiltersCount > 0">
-                        <BaseContextMenuItem
-                            iconClass="far fa-times"
-                            color="danger"
-                            @click="onClearFilters(); showFilters = false;"
-                        >
-                            <span>Clear filters</span>
-                        </BaseContextMenuItem>
-                    </div>
-
-                </BaseContextMenu>
+                        </div>
+                    </BaseContextMenu>
                 </v-popover>
 
                 <BaseCheckboxInputField class="small" v-model="noImagesOnly">
                     <span>No images only</span>
                 </BaseCheckboxInputField>
 
-                <button class="invisible primary" v-if="activeFiltersCount > 0"
-                @click="onClearFilters"><span>Clear filter</span></button>
-
+                <button class="invisible primary" v-if="activeFiltersCount > 0" @click="onClearFilters">
+                    <span>Clear filter</span>
+                </button>
             </template>
 
             <template v-slot:topBarRight>
-
                 <template v-if="!editOrderModeActive">
-                    <BaseButton buttonClass="primary"
-                    @click="onSaveOrder">
+                    <BaseButton buttonClass="primary" @click="onSaveOrder">
                         <span>Save current product order</span>
                     </BaseButton>
 
-                    <BaseButton buttonClass="primary ghost"
-                    @click="onEnterOrderMode(true)">
+                    <BaseButton buttonClass="primary ghost" @click="onEnterOrderMode(true)">
                         <span>Manually edit product order</span>
                     </BaseButton>
                 </template>
 
                 <!-- EDIT ORDER MODE ACTIVE -->
                 <template v-else>
-                    <BaseButton buttonClass="ghost primary"
-                    @click="onEnterOrderMode(false)">
+                    <BaseButton buttonClass="ghost primary" @click="onEnterOrderMode(false)">
                         <span>Cancel changes</span>
                     </BaseButton>
 
-                    <BaseButton buttonClass="primary"
-                    @click="onSaveOrder(); onEnterOrderMode(false)">
+                    <BaseButton
+                        buttonClass="primary"
+                        @click="
+                            onSaveOrder()
+                            onEnterOrderMode(false)
+                        "
+                    >
                         <span>Done editing order</span>
                     </BaseButton>
 
@@ -154,67 +158,98 @@
                 </template>
             </template>
 
-
             <template v-slot:header>
                 <BaseTableHeader class="image"></BaseTableHeader>
-                <BaseTableHeader class="id" :sortKey="'datasource_id'" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort">ID</BaseTableHeader>
-                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort">Product Name</BaseTableHeader>
-                <BaseTableHeader class="delivery" :sortKey="'delivery_date'" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort">Delivery</BaseTableHeader>
-                <BaseTableHeader class="wholesale-price" :sortKey="'wholesale_price'" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort" :descDefault="true">WHS</BaseTableHeader>
-                <BaseTableHeader class="recommended-retail-price" :sortKey="'recommended_retail_price'" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort" :descDefault="true">RRP</BaseTableHeader>
-                <BaseTableHeader class="mark-up" :sortKey="'mark_up'" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort" :descDefault="true">MU</BaseTableHeader>
+                <BaseTableHeader
+                    class="id"
+                    :sortKey="'datasource_id'"
+                    :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort"
+                    >ID</BaseTableHeader
+                >
+                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" defaultTo="sequence" @sort="onSort"
+                    >Product Name</BaseTableHeader
+                >
+                <BaseTableHeader
+                    class="delivery"
+                    :sortKey="'delivery_date'"
+                    :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort"
+                    >Delivery</BaseTableHeader
+                >
+                <BaseTableHeader
+                    class="wholesale-price"
+                    :sortKey="'wholesale_price'"
+                    :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort"
+                    :descDefault="true"
+                    >WHS</BaseTableHeader
+                >
+                <BaseTableHeader
+                    class="recommended-retail-price"
+                    :sortKey="'recommended_retail_price'"
+                    :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort"
+                    :descDefault="true"
+                    >RRP</BaseTableHeader
+                >
+                <BaseTableHeader
+                    class="mark-up"
+                    :sortKey="'mark_up'"
+                    :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort"
+                    :descDefault="true"
+                    >MU</BaseTableHeader
+                >
                 <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
-                <BaseTableHeader class="minimum" :sortKey="['min_order', 'min_variant_order']" :currentSortKey="sortKey"
-                defaultTo="sequence"
-                @sort="onSort" :descDefault="true">Min. Variant/Order</BaseTableHeader>
-                <BaseTableHeader class="action"/>
+                <BaseTableHeader
+                    class="minimum"
+                    :sortKey="['min_order', 'min_variant_order']"
+                    :currentSortKey="sortKey"
+                    defaultTo="sequence"
+                    @sort="onSort"
+                    :descDefault="true"
+                    >Min. Variant/Order</BaseTableHeader
+                >
+                <BaseTableHeader class="action" />
             </template>
             <template v-slot:row="rowProps">
                 <ProductsTableRow
-                :product="rowProps.item" :index="rowProps.index"
-                :editOrderModeActive="editOrderModeActive"
-                @view-single-product="onViewSingle"/>
+                    :product="rowProps.item"
+                    :index="rowProps.index"
+                    :editOrderModeActive="editOrderModeActive"
+                    @view-single-product="onViewSingle"
+                />
             </template>
         </BaseTable>
 
         <BaseContextMenu ref="contextMenu">
             <div class="item-group" v-if="selectedProducts.length > 0">
-                <BaseContextMenuItem iconClass="far fa-times"
-                hokey="KeyC"
-                @click="selectedProducts = []">
+                <BaseContextMenuItem iconClass="far fa-times" hokey="KeyC" @click="selectedProducts = []">
                     <span><u>C</u>lear Selection</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-pen" 
-                hotkey="KeyV"
-                @click="onViewSingle(contextItem)">
+                <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyV" @click="onViewSingle(contextItem)">
                     <span><u>V</u>iew / Edit</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-plus" 
-                hotkey="KeyA"
-                @click="onNewProduct()">
+                <BaseContextMenuItem iconClass="far fa-plus" hotkey="KeyA" @click="onNewProduct()">
                     <span><u>A</u>dd New Product</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash-alt" 
-                hotkey="KeyD"
-                @click="onDeleteProducts([contextItem])">
+                <BaseContextMenuItem
+                    iconClass="far fa-trash-alt"
+                    hotkey="KeyD"
+                    @click="onDeleteProducts([contextItem])"
+                >
                     <span><u>D</u>elete Product</span>
                 </BaseContextMenuItem>
             </div>
@@ -222,35 +257,40 @@
 
         <BaseContextMenu ref="contextMenuSelected">
             <template v-slot:header>
-                <span>Choose action for {{selectedProducts.length}} products</span>
+                <span>Choose action for {{ selectedProducts.length }} products</span>
             </template>
 
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-times" 
-                hotkey="KeyC"
-                @click="selectedProducts = []">
+                <BaseContextMenuItem iconClass="far fa-times" hotkey="KeyC" @click="selectedProducts = []">
                     <span><u>C</u>lear Selection</span>
                 </BaseContextMenuItem>
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash-alt" 
-                hotkey="KeyD"
-                @click="onDeleteProducts(selectedProducts)">
+                <BaseContextMenuItem
+                    iconClass="far fa-trash-alt"
+                    hotkey="KeyD"
+                    @click="onDeleteProducts(selectedProducts)"
+                >
                     <span><u>D</u>elete Products</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
 
-        <BaseDialog ref="confirmDeleteDialog" type="confirm"
-            confirmColor="red" confirmText="Yes, delete them" cancelText="No, wait">
-                <div class="icon-graphic">
-                    <i class="lg primary far fa-boxes"></i>
-                    <i class="lg far fa-arrow-right"></i>
-                    <i class="lg dark far fa-trash"></i>
-                </div>
-                <h3>Really delete {{selectedProducts.length}} products?</h3>
-                <p>They will be permanently deleted.</p>
-            </BaseDialog>
+        <BaseDialog
+            ref="confirmDeleteDialog"
+            type="confirm"
+            confirmColor="red"
+            confirmText="Yes, delete them"
+            cancelText="No, wait"
+        >
+            <div class="icon-graphic">
+                <i class="lg primary far fa-boxes"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Really delete {{ selectedProducts.length }} products?</h3>
+            <p>They will be permanently deleted.</p>
+        </BaseDialog>
     </div>
 </template>
 
@@ -269,74 +309,91 @@ export default {
     components: {
         ProductsTableRow,
     },
-    mixins: [
-        sortArray
-    ],
-    data: function() { return {
-        selectedProducts: [],
-        // productsFilteredBySearch: this.products,
-        contextItem: null,
-        editOrderModeActive: false,
-        localProducts: [],
-        showFilters: false,
-    }},
+    mixins: [sortArray],
+    data: function() {
+        return {
+            selectedProducts: [],
+            // productsFilteredBySearch: this.products,
+            contextItem: null,
+            editOrderModeActive: false,
+            localProducts: [],
+            showFilters: false,
+        }
+    },
     computed: {
-        ...mapGetters('products', ['productTotals', 'availableCategories', 'availableDeliveryDates', 
-        'availableBuyerGroups', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('products', [
+            'productTotals',
+            'availableCategories',
+            'availableDeliveryDates',
+            'availableBuyerGroups',
+            'getProductsFilteredBySearch',
+            'singleVisible',
+        ]),
         ...mapGetters('products', {
             products: 'productsFiltered',
         }),
-        ...mapState('products', {stateProducts: 'products'}),
+        ...mapState('products', { stateProducts: 'products' }),
         productsFilteredBySearch: {
             get() {
                 return this.$store.getters['products/getProductsFilteredBySearch']
             },
             set(value) {
                 this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
-            }
+            },
         },
         selectedCategories: {
-            get () {
+            get() {
                 return this.$store.getters['products/selectedCategories']
             },
-            set (value) {
+            set(value) {
                 this.updateSelectedCategories(value)
-            }
+            },
         },
         selectedDeliveryDates: {
-            get () {
+            get() {
                 return this.$store.getters['products/selectedDeliveryDates']
             },
-            set (value) {
+            set(value) {
                 this.updateSelectedDeliveryDates(value)
-            }
+            },
         },
         selectedBuyerGroups: {
-            get () {
+            get() {
                 return this.$store.getters['products/selectedBuyerGroups']
             },
-            set (value) {
+            set(value) {
                 this.updateSelectedBuyerGroups(value)
-            }
+            },
         },
         activeFiltersCount() {
-            return this.selectedBuyerGroups.length 
-                + this.selectedCategories.length 
-                + this.selectedDeliveryDates.length
+            return this.selectedBuyerGroups.length + this.selectedCategories.length + this.selectedDeliveryDates.length
         },
         noImagesOnly: {
-            get () {
+            get() {
                 return this.$store.getters['products/noImagesOnly']
             },
-            set (value) {
+            set(value) {
                 this.SET_NO_IMAGES_ONLY(value)
-            }
+            },
         },
     },
     methods: {
-        ...mapActions('products', ['setCurrentProduct', 'instantiateNewProduct', 'deleteProducts', 'updateManyProducts']),
-        ...mapMutations('products', ['setSingleVisisble','updateSelectedCategories', 'SET_PRODUCTS',
-        'updateSelectedDeliveryDates', 'updateSelectedBuyerGroups', 'SET_PRODUCTS_FILTERED_BY_SEARCH', 'SET_AVAILABLE_PRODUCTS', 'SET_NO_IMAGES_ONLY']),
+        ...mapActions('products', [
+            'setCurrentProduct',
+            'instantiateNewProduct',
+            'deleteProducts',
+            'updateManyProducts',
+        ]),
+        ...mapMutations('products', [
+            'setSingleVisisble',
+            'updateSelectedCategories',
+            'SET_PRODUCTS',
+            'updateSelectedDeliveryDates',
+            'updateSelectedBuyerGroups',
+            'SET_PRODUCTS_FILTERED_BY_SEARCH',
+            'SET_AVAILABLE_PRODUCTS',
+            'SET_NO_IMAGES_ONLY',
+        ]),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products
@@ -362,10 +419,10 @@ export default {
             this.setSingleVisisble(true)
         },
         async onDeleteProducts(products) {
-            if (products.length <= 1 || await this.$refs.confirmDeleteDialog.confirm()) {
-                await this.deleteProducts({file: this.file, products: products.slice()})
+            if (products.length <= 1 || (await this.$refs.confirmDeleteDialog.confirm())) {
+                await this.deleteProducts({ file: this.file, products: products.slice() })
                 this.selectedProducts = []
-            } 
+            }
         },
         onSort(sortAsc, sortKey) {
             this.$emit('onSort', sortAsc, sortKey)
@@ -376,7 +433,7 @@ export default {
             this.selectedBuyerGroups = []
         },
         onEnterOrderMode(shouldBeActive) {
-            this.editOrderModeActive = shouldBeActive 
+            this.editOrderModeActive = shouldBeActive
             if (shouldBeActive) {
                 this.onClearFilters()
             } else {
@@ -390,7 +447,7 @@ export default {
             productsReOrdered.map((reOrdered, index) => {
                 // Find the corresponding product
                 const product = this.products.find(x => x.id == reOrdered.id)
-                product.sequence =  index+1
+                product.sequence = index + 1
             })
             this.updateManyProducts({ file: this.file, products })
             // Resort
@@ -398,9 +455,7 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (e.target.type == 'textarea' 
-                || e.target.tagName.toUpperCase() == 'INPUT'
-                || this.singleVisible) return // Don't mess with user input
+            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT' || this.singleVisible) return // Don't mess with user input
 
             if (key == 'KeyS') {
                 this.$refs.tableComp.focusSearch()
@@ -415,7 +470,7 @@ export default {
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
         this.onClearFilters()
-    }
+    },
 }
 </script>
 
@@ -437,7 +492,8 @@ export default {
             flex: 0 1 auto;
         }
         tr {
-            th, td {
+            th,
+            td {
                 &.title {
                     min-width: 220px;
                     max-width: 220px;
@@ -452,7 +508,7 @@ export default {
                 &.id {
                     min-width: 80px;
                     max-width: 80px;
-                    margin-left: 16px
+                    margin-left: 16px;
                 }
                 &.image {
                     min-width: 100px;
@@ -464,7 +520,8 @@ export default {
                     max-width: 80px;
                     margin-right: auto;
                 }
-                &.wholesale-price, &.recommended-retail-price {
+                &.wholesale-price,
+                &.recommended-retail-price {
                     min-width: 64px;
                     max-width: 64px;
                 }
@@ -502,15 +559,12 @@ export default {
 
 // SMALL SCREENS AND HIGH DPI
 @media screen and (max-width: $screenMd) {
-
-    @media	only screen and (-webkit-min-device-pixel-ratio: 1.3),
-    only screen and (-o-min-device-pixel-ratio: 13/10),
-    only screen and (min-resolution: 120dpi)
-    {
-        
+    @media only screen and (-webkit-min-device-pixel-ratio: 1.3),
+        only screen and (-o-min-device-pixel-ratio: 13/10),
+        only screen and (min-resolution: 120dpi) {
     }
 }
 .filter-counter {
-margin-left: auto;
+    margin-left: auto;
 }
 </style>
