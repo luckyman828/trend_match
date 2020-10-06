@@ -1,14 +1,11 @@
 <template>
     <form @submit.prevent class="select-fields">
-
         <h3>Select fields to add/replace</h3>
 
         <template v-if="uploadOptions">
             <div class="form-section">
                 <div class="form-element">
-                    <BaseCheckboxInputField class="replace-all" 
-                    :value="replaceAll"
-                    @input="toggleAll">
+                    <BaseCheckboxInputField class="replace-all" :value="replaceAll" @input="toggleAll">
                         <span>Replace all</span>
                     </BaseCheckboxInputField>
                 </div>
@@ -17,23 +14,31 @@
             <div class="form-section">
                 <div class="form-element" v-for="(scope, index) in uploadOptions.scopes" :key="index">
                     <BaseCheckboxInputField v-model="scope.enabled">
-                        <span>{{scope.displayName}}</span>
+                        <span>{{ scope.displayName }}</span>
+                    </BaseCheckboxInputField>
+
+                    <!-- Variant only -->
+                    <BaseCheckboxInputField v-if="scope.name == 'variants' && scope.enabled" v-model="scope.imagesOnly" style="margin-top: 4px;">
+                        <span>Images only</span>
                     </BaseCheckboxInputField>
                 </div>
             </div>
 
             <div class="form-section">
                 <div class="col-2">
-                    <BaseCheckboxInputField v-for="(field, index) in uploadOptions.fields" :key="index" 
-                    v-model="field.enabled">
-                        <span>{{field.displayName}}</span>
+                    <BaseCheckboxInputField
+                        v-for="(field, index) in uploadOptions.fields"
+                        :key="index"
+                        v-model="field.enabled"
+                    >
+                        <span>{{ field.displayName }}</span>
                     </BaseCheckboxInputField>
                 </div>
             </div>
 
-
             <div class="form-controls">
-                <BaseButton type="button" 
+                <BaseButton
+                    type="button"
                     buttonClass="lg primary full-width"
                     style="width: 100%;"
                     :disabled="continueDisabled"
@@ -45,8 +50,7 @@
             </div>
         </template>
 
-        <BaseLoader v-else msg="Getting settings ready"/>
-
+        <BaseLoader v-else msg="Getting settings ready" />
     </form>
 </template>
 
@@ -54,9 +58,7 @@
 import { mapActions } from 'vuex'
 export default {
     name: 'selectFieldsScreen',
-    props: [
-        'uploadOptions'
-    ],
+    props: ['uploadOptions'],
     computed: {
         replaceAll() {
             for (let i = 0; i < this.uploadOptions.fields.length; i++) {
@@ -80,7 +82,7 @@ export default {
             //     if (field.enabled) return false
             // }
             // return true
-        }
+        },
     },
     methods: {
         ...mapActions('mapProductData', ['getUploadOptions']),
@@ -92,7 +94,7 @@ export default {
             this.uploadOptions.scopes.map(scope => {
                 scope.enabled = newValue
             })
-        }
+        },
     },
     async created() {
         // Get default upload options
@@ -100,10 +102,8 @@ export default {
             const options = await this.getUploadOptions(false)
             this.$emit('update:uploadOptions', options)
         }
-    }
+    },
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

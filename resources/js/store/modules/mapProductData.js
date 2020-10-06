@@ -311,6 +311,7 @@ export default {
                         name: 'variants',
                         enabled: enabledByDefault,
                         displayName: 'Variants & Images',
+                        imagesOnly: false,
                     },
                     {
                         name: 'prices',
