@@ -33,6 +33,7 @@
                 <MapVariantsForm class="form-section"
                     v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'variants').enabled"
                     :fieldsToMap="fieldsToMap"
+                    :uploadOptions="uploadOptions"
                     :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                 />
