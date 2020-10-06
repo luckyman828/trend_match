@@ -1,6 +1,6 @@
 <template>
     <div class="video-preview">
-        <form class="url-input" @submit.prevent v-if="!playerReady">
+        <form class="url-input" @submit.prevent v-if="!playerReady || editModeActive">
             <h3>Enter the URL of your video to get started</h3>
             <div class="form-element">
                 <label for="url-input">Video URL</label>
@@ -20,9 +20,21 @@
             >
                 <span>Get video by URL</span>
             </button>
+            <div class="controls" v-if="playerReady">
+                <button v-tooltip="'Cancel'" @click="editModeActive = false">
+                    <i class="far fa-times"></i>
+                </button>
+            </div>
         </form>
 
-        <PreviewPlayer v-else :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider" />
+        <div class="preview-wrapper" v-else>
+            <PreviewPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider" />
+            <div class="video-controls">
+                <button class="white" v-tooltip="'Change video'" @click="editModeActive = true">
+                    <i class="far fa-pen"></i>
+                </button>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -38,6 +50,7 @@ export default {
     data: function() {
         return {
             videoUrl: '',
+            editModeActive: false,
         }
     },
     computed: {
@@ -62,7 +75,9 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-
+.video-preview {
+    position: relative;
+}
 .url-input {
     max-width: 400px;
     margin: auto;
@@ -71,6 +86,11 @@ export default {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    .controls {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+    }
     .input-field {
         width: 100%;
     }
@@ -79,6 +99,23 @@ export default {
         color: $fontSoft;
         font-size: 12px;
         margin-bottom: -8px;
+    }
+}
+.preview-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    .video-controls {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        opacity: 0;
+        z-index: 1;
+    }
+    &:hover {
+        .video-controls {
+            opacity: 1;
+        }
     }
 }
 </style>

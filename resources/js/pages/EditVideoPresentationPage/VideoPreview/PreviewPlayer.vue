@@ -82,14 +82,11 @@ export default {
             'SET_DESIRED_STATUS',
         ]),
         onPlayerReady() {
-            console.log('set player rady')
             this.playerReady = true
-            console.log('set iframe asdasd', this.$refs.player.player)
             this.SET_PLAYER_REFERENCE(this.$refs.player.player)
-            console.log('set iframe reference', this.$el.getElementsByTagName('iframe')[0])
             this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
             // Pre-mute the player
-            this.togglePlayerMuted()
+            this.togglePlayerMuted(true)
             this.startTimerListener()
 
             // Save a timestamp
@@ -132,6 +129,8 @@ export default {
     },
     destroyed() {
         this.clearTimerListener()
+        this.SET_CURRENT_PLAYER_TIMESTAMP(0)
+        this.SET_PLAYER_STATUS(null)
     },
 }
 </script>

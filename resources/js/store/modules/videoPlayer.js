@@ -81,12 +81,12 @@ export default {
     },
 
     actions: {
-        async togglePlayerMuted({ commit, getters }) {
+        async togglePlayerMuted({ commit, getters }, muteOverride) {
             const player = getters.getPlayer
             const providerMap = getters.getProviderMap
             const shouldBeMuted = !getters.getIsMuted
             commit('SET_PLAYER_MUTED', shouldBeMuted)
-            if (shouldBeMuted) {
+            if (shouldBeMuted || muteOverride) {
                 await player[providerMap.mute](0)
             } else {
                 await player[providerMap.mute](1)
@@ -99,7 +99,7 @@ export default {
                 commit('SET_DESIRED_STATUS', 'paused')
                 player[providerMap.pause]()
             } else {
-                if (getters.getStatus == 'ended') commit('SET_CURRENT_PLAYER_TIMESTAMP', 0)
+                if (getters.getTimestamp == getters.getDuration) commit('SET_CURRENT_PLAYER_TIMESTAMP', 0)
                 commit('SET_DESIRED_STATUS', 'playing')
                 player[providerMap.play]()
             }
@@ -119,7 +119,6 @@ export default {
             state.playerProvider = provider
         },
         SET_PLAYER_REFERENCE(state, player) {
-            console.log('set player reference')
             state.player = player
         },
         SET_CURRENT_PLAYER_TIMESTAMP(state, timestamp) {

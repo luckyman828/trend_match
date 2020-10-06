@@ -7,8 +7,8 @@ export default {
         currentVideo: {
             name: 'Test Video',
             id: 1,
-            providerVideoId: 'MKpsH_r6Cd8',
-            provider: 'Youtube',
+            providerVideoId: '458294507',
+            provider: 'Vimeo',
         },
         searchItemDragActive: false,
         videoTimings: [],
