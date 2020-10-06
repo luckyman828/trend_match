@@ -84,9 +84,9 @@ export default {
         async togglePlayerMuted({ commit, getters }, muteOverride) {
             const player = getters.getPlayer
             const providerMap = getters.getProviderMap
-            const shouldBeMuted = !getters.getIsMuted
+            const shouldBeMuted = !getters.getIsMuted || muteOverride
             commit('SET_PLAYER_MUTED', shouldBeMuted)
-            if (shouldBeMuted || muteOverride) {
+            if (shouldBeMuted) {
                 await player[providerMap.mute](0)
             } else {
                 await player[providerMap.mute](1)

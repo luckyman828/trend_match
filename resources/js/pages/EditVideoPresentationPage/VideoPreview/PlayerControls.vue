@@ -7,7 +7,7 @@
                     <button class="invisible white circle ghost-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                     </button>
-                    <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted">
+                    <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted()">
                         <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume'"></i>
                     </button>
                 </div>
