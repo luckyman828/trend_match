@@ -99,6 +99,7 @@ export default {
                 commit('SET_DESIRED_STATUS', 'paused')
                 player[providerMap.pause]()
             } else {
+                if (getters.getStatus == 'ended') commit('SET_CURRENT_PLAYER_TIMESTAMP', 0)
                 commit('SET_DESIRED_STATUS', 'playing')
                 player[providerMap.play]()
             }

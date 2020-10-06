@@ -10,7 +10,7 @@
             @ready="onPlayerReady"
             @play="SET_PLAYER_STATUS('playing')"
             @pause="SET_PLAYER_STATUS('paused')"
-            @ended="SET_PLAYER_STATUS('ended')"
+            @ended="onPlayerVideoEnded"
         />
 
         <youtube
@@ -34,7 +34,7 @@
             @playing="SET_PLAYER_STATUS('playing')"
             @paused="SET_PLAYER_STATUS('paused')"
             @buffering="SET_PLAYER_STATUS('buffering')"
-            @ended="SET_PLAYER_STATUS('ended')"
+            @ended="onPlayerVideoEnded"
             @error="SET_PLAYER_STATUS('error')"
         />
         <!-- </div> -->
@@ -67,6 +67,7 @@ export default {
             currentTimestamp: 'getTimestamp',
             isSeeking: 'getIsSeeking',
             isPlaying: 'getIsPlaying',
+            duration: 'getDuration',
         }),
     },
     methods: {
@@ -78,6 +79,7 @@ export default {
             'SET_PLAYER_DURATION',
             'SET_PLAYER_STATUS',
             'SET_IFRAME_REFERENCE',
+            'SET_DESIRED_STATUS',
         ]),
         onPlayerReady() {
             console.log('set player rady')
@@ -94,6 +96,11 @@ export default {
             this.lastTimestamp = Date.now()
 
             this.getVideoDuration()
+        },
+        onPlayerVideoEnded() {
+            this.SET_PLAYER_STATUS('ended')
+            this.SET_DESIRED_STATUS('paused')
+            this.SET_CURRENT_PLAYER_TIMESTAMP(this.duration)
         },
         startTimerListener() {
             // Clear the current one if any
