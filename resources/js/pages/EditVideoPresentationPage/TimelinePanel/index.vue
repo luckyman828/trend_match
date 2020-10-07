@@ -1,5 +1,5 @@
 <template>
-    <div class="timeline-panel">
+    <div class="timeline-panel" v-horizontal-scroll>
         <div class="rail">
             <Draggable
                 class="draggable"

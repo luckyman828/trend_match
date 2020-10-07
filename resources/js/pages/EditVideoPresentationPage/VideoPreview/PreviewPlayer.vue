@@ -1,5 +1,5 @@
 <template>
-    <div class="player-wrapper">
+    <div class="player-wrapper" :class="{ 'drag-active': isDragging }">
         <vimeo-player
             v-if="provider == 'Vimeo'"
             ref="player"
@@ -11,7 +11,7 @@
             @play="onPlayingStatus"
             @pause="SET_PLAYER_STATUS('paused')"
             @ended="onEndedStatus"
-            @timeupdate="$event => onSetTimestamp($event.seconds)"
+            @timeupdate="$event => onTimeupdate($event.seconds)"
         />
 
         <youtube
@@ -69,6 +69,7 @@ export default {
             isSeeking: 'getIsSeeking',
             isPlaying: 'getIsPlaying',
             duration: 'getDuration',
+            isDragging: 'getTimelineKnobIsBeingDragged',
         }),
     },
     methods: {
@@ -104,13 +105,16 @@ export default {
             this.SET_DESIRED_STATUS('paused')
             this.SET_CURRENT_PLAYER_TIMESTAMP(this.duration)
         },
+        onTimeupdate(timestamp) {
+            this.onSetTimestamp(timestamp)
+        },
         startTimerListener() {
             // Clear the current one if any
             this.clearTimerListener()
 
-            if (!this.provider == 'Vimeo') {
-                this.intervalTimer = setInterval(this.getVideoTimeStamp, 50)
-            }
+            // if (!this.provider == 'Vimeo') {
+            this.intervalTimer = setInterval(this.getVideoTimeStamp, 50)
+            // }
         },
         clearTimerListener() {
             if (this.intervalTimer) {
@@ -118,7 +122,7 @@ export default {
             }
         },
         async getVideoTimeStamp() {
-            if (!this.isSeeking && this.isPlaying) {
+            if (!this.isSeeking && this.isPlaying && !this.isDragging) {
                 // Get the duration since last we read a timestamp
                 const newTime = Date.now()
                 const diff = newTime - this.lastTimestamp
@@ -134,8 +138,10 @@ export default {
             this.onSetTimestamp(timestamp)
         },
         onSetTimestamp(timestamp) {
-            this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
-            this.lastTimestamp = Date.now()
+            if (!this.isDragging) {
+                this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
+                this.lastTimestamp = Date.now()
+            }
         },
         async getVideoDuration() {
             const duration = await this.player.getDuration()
@@ -179,6 +185,9 @@ export default {
                 width: 100%;
             }
         }
+    }
+    &.drag-active {
+        cursor: grabbing;
     }
 }
 </style>

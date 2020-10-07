@@ -1,5 +1,5 @@
 <template>
-    <div class="timeline" @click="onClickToTimestamp">
+    <div class="timeline" @click="onClickToTimestamp" :class="{ 'drag-active': isDragging }">
         <div class="rail" :style="railStyle">
             <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div>
         </div>
@@ -7,12 +7,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'videoTimeline',
     data: function() {
         return {
-            isDragging: false,
             dragTime: 0,
             stopDragTimeout: null,
         }
@@ -23,6 +22,7 @@ export default {
             timestamp: 'getTimestamp',
             player: 'getPlayer',
             playerIframe: 'getIframe',
+            isDragging: 'getTimelineKnobIsBeingDragged',
         }),
         watchedPercentage() {
             const timeToUse = this.isDragging ? this.dragTime : this.timestamp
@@ -42,6 +42,7 @@ export default {
     },
     methods: {
         ...mapActions('videoPlayer', ['seekTo']),
+        ...mapMutations('videoPlayer', ['SET_IS_DRAGGING']),
         addDragListeners() {
             document.addEventListener('mouseup', this.onDragEnd)
             document.body.addEventListener('mouseleave', this.onDragEnd)
@@ -60,7 +61,7 @@ export default {
         onDragStart(e) {
             // Remove any previous drag listener - just in case
             this.removeDragListeners()
-            this.isDragging = true
+            this.SET_IS_DRAGGING(true)
             // clearTimeout(this.stopDragTimeout)
             this.getDragTime(e)
             this.addDragListeners()
@@ -72,7 +73,7 @@ export default {
             this.seekTo(this.dragTime)
             this.removeDragListeners()
 
-            this.isDragging = false
+            this.SET_IS_DRAGGING(false)
             this.dragTime = null
             // Use a timeout to let the player set the new timestamp before reverting to using the player timestamp
             // this.stopDragTimeout = setTimeout(() => {
@@ -93,6 +94,14 @@ export default {
 .timeline {
     width: 100%;
     background: #bbbbbb;
+    cursor: pointer;
+    &.drag-active {
+        .rail,
+        .knob {
+            transition: none;
+            cursor: grabbing;
+        }
+    }
     &:hover {
         .rail {
             height: 12px;
@@ -103,6 +112,7 @@ export default {
         }
     }
     .rail {
+        cursor: pointer;
         height: 8px;
         position: relative;
         margin-right: 14px;
@@ -110,6 +120,7 @@ export default {
         transition: width 0.05s, height 0.1s;
     }
     .knob {
+        cursor: pointer;
         transition: 0.1s;
         height: 14px;
         width: 14px;

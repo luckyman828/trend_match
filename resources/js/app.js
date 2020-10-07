@@ -33,6 +33,8 @@ import clickOutsideDirective from './directives/clickOutsideDirective'
 Vue.use(clickOutsideDirective)
 import tooltipTriggerDirective from './directives/tooltipTriggerDirective'
 Vue.use(tooltipTriggerDirective)
+import horizontalScrollDirective from './directives/horizontalScrollDirective'
+Vue.use(horizontalScrollDirective)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'

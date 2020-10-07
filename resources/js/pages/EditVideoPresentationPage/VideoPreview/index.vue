@@ -1,5 +1,5 @@
 <template>
-    <div class="video-preview">
+    <div class="video-preview" :class="{ 'drag-active': isDragging }">
         <form class="url-input" @submit.prevent v-if="!playerReady || editModeActive">
             <h3>Enter the URL of your video to get started</h3>
             <div class="form-element">
@@ -57,6 +57,9 @@ export default {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
         }),
+        ...mapGetters('videoPlayer', {
+            isDragging: 'getTimelineKnobIsBeingDragged',
+        }),
         playerReady() {
             return this.currentVideo.providerVideoId && this.currentVideo.provider
         },
@@ -77,6 +80,9 @@ export default {
 @import '~@/_variables.scss';
 .video-preview {
     position: relative;
+    &.drag-active {
+        cursor: grabbing;
+    }
 }
 .url-input {
     max-width: 400px;

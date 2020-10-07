@@ -1,7 +1,12 @@
 <template>
     <LoginPage v-if="$route.path.startsWith('/login')" />
 
-    <div class="app" id="app-component" v-else-if="authUser && currentWorkspace" :class="{ 'hide-nav': hideNav }">
+    <div
+        class="app"
+        id="app-component"
+        v-else-if="authUser && currentWorkspace"
+        :class="{ 'hide-nav': hideNav, 'drag-active': dragActive }"
+    >
         <TheNavbar />
         <TheSidebar />
         <div class="main" id="main" ref="main">
@@ -68,6 +73,12 @@ export default {
         ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
         ...mapGetters('changelog', ['getShowChangelog']),
+        ...mapGetters('videoPlayer', {
+            isDragging: 'getTimelineKnobIsBeingDragged',
+        }),
+        dragActive() {
+            return this.isDragging
+        },
     },
     watch: {
         // Watch for changes to the authStatus
@@ -311,6 +322,9 @@ body,
     &.hide-nav {
         // grid-template-rows: 0 auto;
         // margin-top: -72px;
+    }
+    &.drag-active {
+        cursor: grabbing;
     }
 }
 .main {
