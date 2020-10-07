@@ -8,6 +8,7 @@
                     id="url-input"
                     v-model="videoUrl"
                     placeholder="Your video URL"
+                    :focusOnMount="true"
                     @submit="onSetVideoByURL"
                 />
                 <p class="example">Example: https://vimeo.com/123456789</p>
@@ -71,6 +72,7 @@ export default {
         ...mapActions('videoPresentation', ['setVideoByURL']),
         onSetVideoByURL() {
             this.setVideoByURL({ video: this.currentVideo, url: this.videoUrl })
+            this.editModeActive = false
         },
     },
 }

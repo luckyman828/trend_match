@@ -1,16 +1,16 @@
 const horizontalSrollDirective = {}
 horizontalSrollDirective.install = Vue => {
-    Vue.directive('click-outside', {
+    Vue.directive('horizontal-scroll', {
         bind: function(el, binding, vnode) {
             el.onWheel = function(e) {
                 if (e.type != 'wheel') {
                     return
                 }
                 let delta = (e.deltaY || -e.wheelDelta || e.detail) >> 10 || 1
-                delta = delta * -300
+                delta = delta * -100
                 document.documentElement.scrollLeft -= delta
                 // safari needs also this
-                document.body.scrollLeft -= delta
+                el.scrollLeft -= delta
                 e.preventDefault()
             }
 

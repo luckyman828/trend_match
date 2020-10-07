@@ -83,7 +83,7 @@ export default {
             'SET_IFRAME_REFERENCE',
             'SET_DESIRED_STATUS',
         ]),
-        onPlayerReady() {
+        onPlayerReady(e, a) {
             this.playerReady = true
             this.SET_PLAYER_REFERENCE(this.$refs.player.player)
             this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
@@ -93,10 +93,12 @@ export default {
 
             // Save a timestamp
             this.lastTimestamp = Date.now()
-
             this.getVideoDuration()
         },
-        onPlayingStatus() {
+        onPlayingStatus(e) {
+            if (this.provider == 'Vimeo') {
+                this.SET_PLAYER_DURATION(e.duration)
+            }
             this.SET_PLAYER_STATUS('playing')
             this.getVideoTimeStampFromProvider()
         },

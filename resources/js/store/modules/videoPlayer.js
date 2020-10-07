@@ -109,6 +109,9 @@ export default {
             }
         },
         async seekTo({ commit, getters }, timestamp) {
+            const duration = getters.getDuration
+            timestamp = Math.min(timestamp, duration)
+            console.log('seek to', timestamp, duration)
             const player = getters.getPlayer
             const providerMap = getters.getProviderMap
             commit('SET_IS_SEEKING', true)
