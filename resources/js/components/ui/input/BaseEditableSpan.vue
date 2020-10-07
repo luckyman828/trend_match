@@ -45,7 +45,6 @@ export default {
             })
         },
         value() {
-            console.log('value changed')
             this.$nextTick(() => {
                 this.currentValue = this.getDefaultValue()
             })

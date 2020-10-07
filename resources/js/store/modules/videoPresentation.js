@@ -50,34 +50,55 @@ export default {
             video.provider = providerCapitalized
             video.providerVideoId = videoId
         },
-        addTiming({ getters, commit, dispatch }, { newTiming, index }) {
-            // Set the start time of the new timing by the timing just before it
-            const newIndex = index != null ? index : getters.getVideoTimings.length
-            if (newIndex > 0) {
-                const timingBefore = getters.getVideoTimings[newIndex - 1]
-                newTiming.start = timingBefore.end
-                const defaultDuration = 5
-                newTiming.end = newTiming.start + defaultDuration
-            }
-
-            commit('ADD_TIMING', { timing: newTiming, index })
+        addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
             dispatch('initTimings', [newTiming])
-            // Shuffle timings around
-            if (index) {
-                const timingsToUpdate = getters.getVideoTimings.slice(index + 1)
-                timingsToUpdate.map(timing => {
-                    timing.start += newTiming.duration
-                })
+            const allTimings = getters.getVideoTimings
+            // First find out what index to give the new timing, so we insert it at it's correct spot
+            // We will insert the new timing at the current timestamp
+            let index = 0
+            const timestamp = rootGetters['videoPlayer/getTimestamp']
+            // Find the last timing that ends before this timestamp
+            const prevTiming = allTimings
+                .slice()
+                .reverse()
+                .find(x => x.end < timestamp)
+
+            const conflictingTiming = allTimings.find(x => x.start < timestamp && x.end > timestamp)
+            if (prevTiming) {
+                index = prevTiming.index + 1
             }
+            if (conflictingTiming) {
+                index = conflictingTiming.index + 1
+                const desiredDuration = newTiming.end - newTiming.start
+                newTiming.start = conflictingTiming.end
+                newTiming.end = newTiming.start + desiredDuration
+            }
+            commit('ADD_TIMING', { timing: newTiming, index })
+            dispatch('bumpConflictingTimings', newTiming)
+        },
+        bumpConflictingTimings({ getters, dispatch }, newTiming) {
+            // This function recursively bumps timings until there is space for all of them
+            // It does nothing if my conflictin timings are found
+            const conflictingTimings = getters.getVideoTimings.filter(
+                x => x.id != newTiming.id && x.end > newTiming.start && x.start < x.end
+            )
+            console.log('bump conflicting', newTiming, getters.getVideoTimings, conflictingTimings)
+            conflictingTimings.map(timing => {
+                const delta = newTiming.end - timing.start
+                timing.start += delta
+                timing.end += delta
+                // Call the function recursively until there are no more conflicts
+                dispatch('bumpConflictingTimings', timing)
+            })
         },
         removeTiming({ getters, commit }, index) {
-            const allTimings = getters.getVideoTimings
-            const timingToRemove = allTimings[index]
-            const timingsAfter = allTimings.slice(index + 1)
-            // Shuffle timings around
-            timingsAfter.map(timing => {
-                timing.start -= timingToRemove.duration
-            })
+            // const allTimings = getters.getVideoTimings
+            // const timingToRemove = allTimings[index]
+            // const timingsAfter = allTimings.slice(index + 1)
+            // // Shuffle timings around
+            // timingsAfter.map(timing => {
+            //     timing.start -= timingToRemove.duration
+            // })
             commit('REMOVE_TIMING', index)
         },
         initTimings({ state, getters }, timings) {
@@ -111,11 +132,23 @@ export default {
                         return allTimings.findIndex(x => x.id == timing.id)
                     },
                 })
+                Object.defineProperty(timing, 'nextTiming', {
+                    get() {
+                        const allTimings = getters.getVideoTimings
+                        return allTimings[timing.index + 1]
+                    },
+                })
+                Object.defineProperty(timing, 'prevTiming', {
+                    get() {
+                        const allTimings = getters.getVideoTimings
+                        return allTimings[timing.index - 1]
+                    },
+                })
                 Object.defineProperty(timing, 'timeToPrev', {
                     get() {
-                        if (timing.index <= 0) return 0
+                        if (!timing.prevTiming) return 0
                         const allTimings = getters.getVideoTimings
-                        return timing.start - allTimings[timing.index - 1].end
+                        return timing.start - timing.prevTiming.end
                     },
                 })
             })

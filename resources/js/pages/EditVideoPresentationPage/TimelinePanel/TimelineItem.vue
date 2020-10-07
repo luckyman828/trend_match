@@ -100,9 +100,6 @@ export default {
             return {
                 left: `${start}%`,
                 right: `${end}%`,
-                // marginLeft: `${left}%`,
-                // width: `${width}%`,
-                // minWidth: `${width}%`,
             }
         },
     },
@@ -137,7 +134,7 @@ export default {
             const left = elRect.left
 
             const playerWidth = playerRect.width
-            const offset = this.dragMode == 'end' ? -4 : 4
+            const offset = this.dragMode == 'end' ? 12 : -12
             const mouseX = e.clientX - playerRect.left + offset
 
             // Find the percent X we are along the timeline
@@ -146,7 +143,19 @@ export default {
             // Get the corresponding timestamp
             const timestamp = this.videoDuration * xPercent
 
-            this.timing[this.dragMode] = timestamp
+            // Make sure the start is before the end
+            const minDuration = 2
+
+            if (this.dragMode == 'end') {
+                const maxCap = this.timing.nextTiming ? this.timing.nextTiming.start : this.videoDuration
+                // Cap the end at the start of the next element
+                this.timing.end = Math.min(Math.max(timestamp, minDuration, this.timing.start + minDuration), maxCap)
+                // this.timing.start = Math.max(Math.min(this.timing.start, timestamp - minDuration), 0)
+            } else {
+                const minCap = this.timing.prevTiming ? this.timing.prevTiming.end : 0
+                this.timing.start = Math.max(Math.min(timestamp, this.timing.end - minDuration), minCap)
+                // this.timing.end = Math.min(Math.max(this.timing.end, timestamp + minDuration), this.videoDuration)
+            }
         },
         onDragEnd() {
             this.removeDragListeners()
@@ -201,6 +210,7 @@ export default {
     }
     .inner {
         width: 100%;
+        min-width: 100vw;
         height: 100%;
         overflow: hidden;
         display: flex;

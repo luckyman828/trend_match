@@ -1,5 +1,5 @@
 <template>
-    <Draggable
+    <!-- <Draggable
         :list="[product]"
         tag="div"
         :group="{ name: 'videoTimings', pull: 'clone', put: false }"
@@ -11,25 +11,25 @@
         @end="SET_SEARCH_ITEM_DRAG_ACTIVE(false)"
         :key="product.id"
         :clone="onClone"
-    >
-        <div class="drag-wrapper" :key="product.id">
-            <div class="product-search-list-item drag-item">
-                <div class="image">
-                    <BaseVariantImage :key="product.id" :variant="product.variants[0]" size="sm" />
-                </div>
-                <div class="details">
-                    <span class="id">#{{ product.datasource_id }}</span>
-                    <strong class="name">{{ product.title }}</strong>
-                </div>
-                <div class="actions">
-                    <!-- If the product is not already in the queue -->
-                    <BaseButton buttonClass="ghost" targetAreaPadding="20px" @click="onAddTiming">
-                        <i class="fas fa-plus"></i>
-                    </BaseButton>
-                </div>
+    > -->
+    <div class="drag-wrapper" :key="product.id">
+        <div class="product-search-list-item drag-item">
+            <div class="image">
+                <BaseVariantImage :key="product.id" :variant="product.variants[0]" size="sm" />
+            </div>
+            <div class="details">
+                <span class="id">#{{ product.datasource_id }}</span>
+                <strong class="name">{{ product.title }}</strong>
+            </div>
+            <div class="actions">
+                <!-- If the product is not already in the queue -->
+                <BaseButton buttonClass="ghost" targetAreaPadding="20px" @click="onAddTiming">
+                    <i class="fas fa-plus"></i>
+                </BaseButton>
             </div>
         </div>
-    </Draggable>
+    </div>
+    <!-- </Draggable> -->
 </template>
 
 <script>
