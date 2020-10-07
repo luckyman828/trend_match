@@ -91,7 +91,7 @@ export default {
             if (!this.scanStarted) {
                 this.scanStarted = true
                 setTimeout(() => {
-                    if (this.scanStr.length >= 12) {
+                    if (this.scanStr.length >= 7) {
                         this.onScan(this.scanStr)
                         this.scanStr = ''
                         this.scanStarted = false

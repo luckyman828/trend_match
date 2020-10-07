@@ -1050,6 +1050,7 @@ export default {
                         Vue.set(variant, 'imageIndex', 0)
                     }
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
 
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {
@@ -1315,6 +1316,7 @@ export default {
                     // VARIANTS
                     Vue.set(variant, 'imageIndex', 0)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
 
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {
