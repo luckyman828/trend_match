@@ -14,7 +14,6 @@ export default {
         videoTimings: [],
         timingClone: null,
         timingId: 0,
-        timelineZoom: 3,
     },
 
     getters: {
@@ -22,7 +21,6 @@ export default {
         getSearchItemDragActive: state => state.searchItemDragActive,
         getVideoTimings: state => state.videoTimings,
         getTimingClone: state => state.timingClone,
-        getTimelineZoom: state => state.timelineZoom,
     },
 
     actions: {
@@ -58,6 +56,8 @@ export default {
             if (newIndex > 0) {
                 const timingBefore = getters.getVideoTimings[newIndex - 1]
                 newTiming.start = timingBefore.end
+                const defaultDuration = 5
+                newTiming.end = newTiming.start + defaultDuration
             }
 
             commit('ADD_TIMING', { timing: newTiming, index })
@@ -86,9 +86,9 @@ export default {
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
 
-                Object.defineProperty(timing, 'end', {
+                Object.defineProperty(timing, 'duration', {
                     get() {
-                        return timing.start + timing.duration
+                        return timing.end - timing.start
                     },
                 })
                 Object.defineProperty(timing, 'startObj', {
@@ -145,9 +145,6 @@ export default {
         },
         SET_TIMING_CLONE(state, clone) {
             state.timingClone = clone
-        },
-        SET_TIMELINE_ZOOM(state, zoom) {
-            state.timelineZoom = zoom
         },
     },
 }

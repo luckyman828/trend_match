@@ -4,6 +4,7 @@
             <Draggable
                 class="draggable"
                 v-model="videoTimings"
+                handle=".inner"
                 tag="div"
                 :forceFallback="true"
                 group="videoTimings"
@@ -19,7 +20,7 @@
                     :timing="productTiming"
                     :index="index"
                 />
-                <div class="spacer" :style="spacerStyle"></div>
+                <!-- <div class="spacer" :style="spacerStyle"></div> -->
             </Draggable>
         </div>
     </div>
@@ -108,7 +109,7 @@ export default {
     background: $dark;
     overflow-x: auto;
     .rail {
-        padding: 16px 0 24px 16px;
+        padding: 16px 0 24px;
         height: 100%;
         &::after {
             content: '';

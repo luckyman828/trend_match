@@ -4,6 +4,7 @@
         tag="div"
         :group="{ name: 'videoTimings', pull: 'clone', put: false }"
         :forceFallback="true"
+        fallbackTolerance="20"
         fallbackOnBody="true"
         fallbackClass="sortable-drag"
         @start="SET_SEARCH_ITEM_DRAG_ACTIVE(true)"
@@ -55,7 +56,7 @@ export default {
         onAddTiming() {
             const newTiming = {
                 start: 0,
-                duration: 5,
+                end: 5,
                 product: this.product,
             }
             this.addTiming({ newTiming })

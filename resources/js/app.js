@@ -121,6 +121,11 @@ Vue.filter('thousandSeparated', function(value) {
 Vue.filter('timestampify', function(value) {
     return new Date(value * 1000).toISOString().substr(14, 5)
 })
+Vue.filter('rounded', function(value, decimalCount) {
+    const amountOfDecimals = decimalCount != null ? decimalCount : 0
+    return Number(Math.round(value + `e${amountOfDecimals}`) + `e-${amountOfDecimals}`)
+    return Math.round((124.4 + Number.EPSILON) * 100) / 100
+})
 
 // Define global mixins
 Vue.mixin({
