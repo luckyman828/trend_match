@@ -116,7 +116,7 @@ Vue.filter('getPrettyDate', function(value) {
 Vue.filter('thousandSeparated', function(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 })
-Vue.filter('timeStampify', function(value) {
+Vue.filter('timestampify', function(value) {
     return new Date(value * 1000).toISOString().substr(14, 5)
 })
 

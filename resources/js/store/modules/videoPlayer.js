@@ -19,6 +19,7 @@ export default {
                 mute: 'setVolume',
                 unMute: 'setVolume',
                 seekTo: 'setCurrentTime',
+                getTimestamp: 'getCurrentTime',
             },
             Youtube: {
                 play: 'playVideo',
@@ -26,6 +27,7 @@ export default {
                 mute: 'mute',
                 unMute: 'unMute',
                 seekTo: 'seekTo',
+                getTimestamp: 'getCurrentTime',
             },
         },
     },
@@ -111,6 +113,12 @@ export default {
             commit('SET_CURRENT_PLAYER_TIMESTAMP', timestamp)
             await player[providerMap.seekTo](timestamp)
             commit('SET_IS_SEEKING', false)
+        },
+        async getCurrentTimestamp({ commit, getters }) {
+            const player = getters.getPlayer
+            const providerMap = getters.getProviderMap
+            const timestamp = await player[providerMap.getTimestamp]()
+            return timestamp
         },
     },
 

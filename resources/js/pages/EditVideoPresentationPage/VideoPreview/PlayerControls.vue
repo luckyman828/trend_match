@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="time" style="margin-left: 40px;">
-                    <span>{{ timestamp | timeStampify }} / {{ duration | timeStampify }}</span>
+                    <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
                 </div>
             </div>
         </div>

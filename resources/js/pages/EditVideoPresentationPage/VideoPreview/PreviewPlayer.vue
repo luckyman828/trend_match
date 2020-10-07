@@ -8,9 +8,10 @@
             :controls="false"
             :autoplay="true"
             @ready="onPlayerReady"
-            @play="SET_PLAYER_STATUS('playing')"
+            @play="onPlayingStatus"
             @pause="SET_PLAYER_STATUS('paused')"
-            @ended="onPlayerVideoEnded"
+            @ended="onEndedStatus"
+            @timeupdate="$event => onSetTimestamp($event.seconds)"
         />
 
         <youtube
@@ -31,10 +32,10 @@
             :resize="true"
             :fitParent="true"
             @ready="onPlayerReady"
-            @playing="SET_PLAYER_STATUS('playing')"
+            @playing="onPlayingStatus"
             @paused="SET_PLAYER_STATUS('paused')"
             @buffering="SET_PLAYER_STATUS('buffering')"
-            @ended="onPlayerVideoEnded"
+            @ended="onEndedStatus"
             @error="SET_PLAYER_STATUS('error')"
         />
         <!-- </div> -->
@@ -71,7 +72,7 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('videoPlayer', ['togglePlayerMuted']),
+        ...mapActions('videoPlayer', ['togglePlayerMuted', 'getCurrentTimestamp']),
         ...mapActions('products', ['initTimings']),
         ...mapMutations('videoPlayer', [
             'SET_PLAYER_REFERENCE',
@@ -94,7 +95,11 @@ export default {
 
             this.getVideoDuration()
         },
-        onPlayerVideoEnded() {
+        onPlayingStatus() {
+            this.SET_PLAYER_STATUS('playing')
+            this.getVideoTimeStampFromProvider()
+        },
+        onEndedStatus() {
             this.SET_PLAYER_STATUS('ended')
             this.SET_DESIRED_STATUS('paused')
             this.SET_CURRENT_PLAYER_TIMESTAMP(this.duration)
@@ -103,7 +108,9 @@ export default {
             // Clear the current one if any
             this.clearTimerListener()
 
-            this.intervalTimer = setInterval(this.getVideoTimeStamp, 50)
+            if (!this.provider == 'Vimeo') {
+                this.intervalTimer = setInterval(this.getVideoTimeStamp, 50)
+            }
         },
         clearTimerListener() {
             if (this.intervalTimer) {
@@ -115,11 +122,19 @@ export default {
                 // Get the duration since last we read a timestamp
                 const newTime = Date.now()
                 const diff = newTime - this.lastTimestamp
-                const timeStamp = this.currentTimestamp + diff / 1000
+                const timestamp = this.currentTimestamp + diff / 1000
 
-                // const timeStamp = await this.player.getCurrentTime()
-                this.SET_CURRENT_PLAYER_TIMESTAMP(timeStamp)
+                // const timestamp = await this.player.getCurrentTime()
+                this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
             }
+            this.lastTimestamp = Date.now()
+        },
+        async getVideoTimeStampFromProvider() {
+            const timestamp = await this.getCurrentTimestamp()
+            this.onSetTimestamp(timestamp)
+        },
+        onSetTimestamp(timestamp) {
+            this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
             this.lastTimestamp = Date.now()
         },
         async getVideoDuration() {
