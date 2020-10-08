@@ -72,15 +72,9 @@ export default {
             return timingIndex
         },
         getCurrentTiming: (state, getters, rootState, rootGetters) => {
-            const timingIndex = getters.getCurrentTimingIndex
-            if (timingIndex < 0) return
             const timings = rootGetters['videoPresentation/getVideoTimings']
-            return timings[timingIndex]
-        },
-        getCurrentProduct: (state, getters) => {
-            const timing = getters.getCurrentTiming
-            if (!timing) return
-            return timing.product
+            const timestamp = getters.getTimestamp
+            return timings.find(x => x.start < timestamp && x.end > timestamp)
         },
     },
 

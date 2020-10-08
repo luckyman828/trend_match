@@ -22,10 +22,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '~@/_variables.scss';
 .edit-video-presentation {
     display: grid;
     grid-template-columns: 300px auto;
-    grid-template-rows: auto 200px;
+    grid-template-rows: auto calc(#{$heightEditVideoTimeline} + #{$heightPreviewPlayerControls});
     grid-template-areas:
         'sidebar main'
         'sidebar timeline';

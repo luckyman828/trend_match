@@ -168,7 +168,7 @@ export default {
         border-top: $borderModule;
         box-shadow: $shadowModule;
         position: relative;
-        padding: 16px 0 24px;
+        padding: 16px 0 20px;
         height: 100%;
         .timeline-cursor {
             position: absolute;

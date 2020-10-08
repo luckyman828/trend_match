@@ -1,7 +1,7 @@
 <template>
-    <div class="timeline-item" :style="style" :id="`timeline-item-${timing.id}`">
+    <div class="timeline-item" :style="style" :id="`timeline-item-${timing.id}`" :class="{ current: isCurrent }">
         <div class="controls">
-            <button class="red" @click="onRemoveTiming">
+            <button class="white circle sm" @click="onRemoveTiming">
                 <i class="far fa-trash"></i>
             </button>
         </div>
@@ -18,57 +18,32 @@
             />
             <div
                 class="drag-left"
-                @mousedown="onDragStart($event, 'start')"
-                @mousemove="onMouseMove($event, 'left')"
-                @mouseleave="onMouseLeave($event, 'left')"
+                @mousedown="onDragCapStart($event, 'start')"
+                @mousemove="onMouseMoveCap($event, 'left')"
+                @mouseleave="onMouseLeaveCap($event, 'left')"
             ></div>
             <div
                 class="drag-right"
-                @mousedown="onDragStart($event, 'end')"
-                @mousemove="onMouseMove($event, 'right')"
-                @mouseleave="onMouseLeave($event, 'right')"
+                @mousedown="onDragCapStart($event, 'end')"
+                @mousemove="onMouseMoveCap($event, 'right')"
+                @mouseleave="onMouseLeaveCap($event, 'right')"
             ></div>
         </div>
         <div class="inner">
-            <span class="name">
-                {{ product.title }}
-            </span>
             <div class="img-wrapper">
-                <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                <div class="img-sizer">
+                    <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                </div>
             </div>
-            <span class="time">
-                <BaseEditableSpan
-                    :value="timing.startObj.minutes"
-                    pattern="^([0-9]|[0-5][0-9])$"
-                    maxlength="2"
-                    :selectOnFocus="true"
-                    >{{ timing.startObj.minutes | rounded }}</BaseEditableSpan
-                >
-                <span>:</span>
-                <BaseEditableSpan
-                    :value="timing.startObj.seconds"
-                    pattern="^([0-9]|[0-5][0-9])$"
-                    maxlength="2"
-                    :selectOnFocus="true"
-                    >{{ timing.startObj.seconds | rounded }}</BaseEditableSpan
-                >
-                <span> - </span>
-                <BaseEditableSpan
-                    :value="timing.endObj.minutes"
-                    pattern="^([0-9]|[0-5][0-9])$"
-                    maxlength="2"
-                    :selectOnFocus="true"
-                    >{{ timing.endObj.minutes | rounded }}</BaseEditableSpan
-                >
-                <span>:</span>
-                <BaseEditableSpan
-                    :value="timing.endObj.seconds"
-                    pattern="^([0-9]|[0-5][0-9])$"
-                    maxlength="2"
-                    :selectOnFocus="true"
-                    >{{ timing.endObj.seconds | rounded }}</BaseEditableSpan
-                >
-            </span>
+            <div class="details">
+                <span class="name">
+                    {{ product.title }}
+                </span>
+                <div class="time">
+                    <span class="start">{{ timing.start | timestampify }}</span>
+                    <span class="end">{{ timing.end | timestampify }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -89,6 +64,7 @@ export default {
             playerIframe: 'getIframe',
             videoDuration: 'getDuration',
             cursorTimestamp: 'getTimestamp',
+            currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('videoPresentation', {
             zoom: 'getTimelineZoom',
@@ -111,24 +87,27 @@ export default {
                 marginLeft: `${start - prevEnd}%`,
             }
         },
+        isCurrent() {
+            return this.currentTiming && this.currentTiming.id == this.timing.id
+        },
     },
     methods: {
         ...mapActions('videoPresentation', ['removeTiming']),
         onRemoveTiming() {
             this.removeTiming(this.index)
         },
-        onMouseMove(e, direction) {
+        onMouseMoveCap(e, direction) {
             const cursor = this.$refs[`cursor-${direction}`]
             const offset = direction == 'right' ? -12 : 0
             cursor.style.display = 'Block'
             cursor.style.left = `${e.clientX + offset}px`
             cursor.style.top = `${e.clientY}px`
         },
-        onMouseLeave(e, direction) {
+        onMouseLeaveCap(e, direction) {
             const cursor = this.$refs[`cursor-${direction}`]
             cursor.style.display = 'None'
         },
-        onDragStart(e, dragMode) {
+        onDragCapStart(e, dragMode) {
             // Remove any previous drag listener - just in case
             this.removeDragListeners()
             this.isDragging = true
@@ -215,15 +194,13 @@ export default {
 @import '~@/_variables.scss';
 
 .timeline-item {
-    height: 100%;
     background: white;
     border-radius: $borderRadiusEl;
-    border: $borderElHard;
-    box-shadow: $shadowEl;
-    overflow: hidden;
-    padding: 8px 12px;
+    box-shadow: $shadowElHard;
+    padding: 6px;
     pointer-events: all;
     position: relative; // DON'T CHANGE !! - We need it to be relative for draggable to work
+    transition: 0.05s ease-out;
 
     // Make not draggable
     user-drag: none;
@@ -234,10 +211,15 @@ export default {
     -ms-user-select: none;
     .controls {
         position: absolute;
-        top: 4px;
+        top: -10px;
         right: 4px;
         opacity: 0;
-        transition: 0.1 ease-out;
+        transition: 0.1s ease-out;
+        z-index: 2;
+    }
+    &.current {
+        background: $primary;
+        color: white;
     }
     &:hover {
         .controls {
@@ -246,29 +228,47 @@ export default {
     }
     .inner {
         width: 100%;
-        min-width: 100vw;
         height: 100%;
         overflow: hidden;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        white-space: nowrap;
     }
     .img-wrapper {
-        margin: 4px 0;
-        flex: 1;
         overflow: hidden;
-        img {
-            height: 100%;
-            width: 100%;
-            object-fit: contain;
-            object-position: left;
+        width: 48px;
+        min-width: 48px;
+        border: $borderEl;
+        border-radius: 50px;
+        .img-sizer {
+            height: 0;
+            padding-top: 100%;
+            position: relative;
+            img {
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
         }
     }
-    .name {
-        font-size: 12px;
-        font-weight: 500;
-    }
-    .time {
-        font-size: 10px;
+    .details {
+        display: flex;
+        flex-direction: column;
+        margin-left: 4px;
+        justify-content: space-between;
+        .name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .time {
+            font-size: 12px;
+            .end {
+                margin-left: 8px;
+            }
+        }
     }
     .edge-drag-controls {
         position: absolute;

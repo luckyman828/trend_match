@@ -33,8 +33,6 @@ export default {
             isMuted: 'getIsMuted',
             timestamp: 'getTimestamp',
             duration: 'getDuration',
-            currentTimingIndex: 'getCurrentTimingIndex',
-            product: 'getCurrentProduct',
             desiredStatus: 'getDesiredStatus',
         }),
         ...mapGetters('videoPresentation', {
@@ -43,12 +41,6 @@ export default {
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapActions('products', ['setProductAction']),
-        onSetProductAction(newAction) {
-            const product = this.product
-            const actionToSet = product.yourAction == newAction ? 'None' : newAction
-            this.setProductAction({ product, newAction: actionToSet })
-        },
     },
 }
 </script>
