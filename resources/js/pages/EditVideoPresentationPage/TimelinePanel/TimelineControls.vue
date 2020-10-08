@@ -1,6 +1,5 @@
 <template>
-    <div class="player-controls">
-        <!-- <VideoTimeline /> -->
+    <div class="timeline-controls">
         <div class="main">
             <div class="left">
                 <div class="button-list">
@@ -16,38 +15,41 @@
                     <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
                 </div>
             </div>
+            <div class="right">
+                <button class="invisible ghost-hover white" @click="onToggleZoom">
+                    <span>Zoom: {{ zoom }}x</span>
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-// import VideoTimeline from './VideoTimeline'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+
 export default {
-    name: 'playerControls',
-    // components: {
-    //     VideoTimeline,
-    // },
+    name: 'timelineControls',
     computed: {
         ...mapGetters('videoPlayer', {
             isMuted: 'getIsMuted',
             timestamp: 'getTimestamp',
             duration: 'getDuration',
-            currentTimingIndex: 'getCurrentTimingIndex',
-            product: 'getCurrentProduct',
             desiredStatus: 'getDesiredStatus',
         }),
         ...mapGetters('videoPresentation', {
+            zoom: 'getTimelineZoom',
             timings: 'getVideoTimings',
         }),
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapActions('products', ['setProductAction']),
-        onSetProductAction(newAction) {
-            const product = this.product
-            const actionToSet = product.yourAction == newAction ? 'None' : newAction
-            this.setProductAction({ product, newAction: actionToSet })
+        ...mapMutations('videoPresentation', ['SET_TIMELINE_ZOOM']),
+        onToggleZoom() {
+            const zoomLevels = [1, 2, 4, 8]
+            const index = zoomLevels.findIndex(x => x == this.zoom)
+            let newIndex = index + 1
+            if (newIndex >= zoomLevels.length) newIndex = 0
+            this.SET_TIMELINE_ZOOM(zoomLevels[newIndex])
         },
     },
 }
@@ -55,7 +57,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.player-controls {
+.timeline-controls {
     background: #000000;
     background: $dark;
     height: $heightPreviewPlayerControls;
@@ -67,7 +69,7 @@ export default {
     .main {
         display: flex;
         align-items: center;
-        padding: 0 60px 0 20px;
+        padding: 0 20px;
         flex: 1;
         > * {
             display: flex;

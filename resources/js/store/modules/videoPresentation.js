@@ -14,6 +14,8 @@ export default {
         videoTimings: [],
         timingClone: null,
         timingId: 0,
+        cursorPosition: 0, // returned as a timestamp in seconds
+        timelineZoom: 1,
     },
 
     getters: {
@@ -21,6 +23,8 @@ export default {
         getSearchItemDragActive: state => state.searchItemDragActive,
         getVideoTimings: state => state.videoTimings,
         getTimingClone: state => state.timingClone,
+        getCursorPosition: state => state.cursorPosition,
+        getTimelineZoom: state => state.timelineZoom,
     },
 
     actions: {
@@ -57,19 +61,23 @@ export default {
             // We will insert the new timing at the current timestamp
             let index = 0
             const timestamp = rootGetters['videoPlayer/getTimestamp']
+            // Set the desired `start` time equal to the timestamp
+            const desiredDuration = newTiming.end - newTiming.start
+            newTiming.start = timestamp
+            newTiming.end = newTiming.start + desiredDuration
+
             // Find the last timing that ends before this timestamp
             const prevTiming = allTimings
                 .slice()
                 .reverse()
                 .find(x => x.end < timestamp)
 
-            const conflictingTiming = allTimings.find(x => x.start < timestamp && x.end > timestamp)
             if (prevTiming) {
                 index = prevTiming.index + 1
             }
+            const conflictingTiming = allTimings.find(x => x.start < timestamp && x.end > timestamp)
             if (conflictingTiming) {
                 index = conflictingTiming.index + 1
-                const desiredDuration = newTiming.end - newTiming.start
                 newTiming.start = conflictingTiming.end
                 newTiming.end = newTiming.start + desiredDuration
             }
@@ -80,10 +88,11 @@ export default {
             // This function recursively bumps timings until there is space for all of them
             // It does nothing if my conflictin timings are found
             const conflictingTimings = getters.getVideoTimings.filter(
-                x => x.id != newTiming.id && x.end > newTiming.start && x.start < x.end
+                x => x.id != newTiming.id && x.end > newTiming.start && x.start < newTiming.end
             )
-            console.log('bump conflicting', newTiming, getters.getVideoTimings, conflictingTimings)
+            console.log('bump conflicting timings', newTiming.start, newTiming.end, conflictingTimings)
             conflictingTimings.map(timing => {
+                console.log('i am conflicting', timing.start, timing.end)
                 const delta = newTiming.end - timing.start
                 timing.start += delta
                 timing.end += delta
@@ -178,6 +187,12 @@ export default {
         },
         SET_TIMING_CLONE(state, clone) {
             state.timingClone = clone
+        },
+        SET_CURSOR_POSITION(state, timestamp) {
+            state.cursorPosition = timestamp
+        },
+        SET_TIMELINE_ZOOM(state, zoom) {
+            state.timelineZoom = zoom
         },
     },
 }

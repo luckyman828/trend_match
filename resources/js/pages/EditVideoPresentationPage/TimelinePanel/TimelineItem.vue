@@ -86,7 +86,6 @@ export default {
     },
     computed: {
         ...mapGetters('videoPlayer', {
-            zoom: 'getTimelineZoom',
             playerIframe: 'getIframe',
             videoDuration: 'getDuration',
         }),
@@ -94,12 +93,17 @@ export default {
             return this.timing.product
         },
         style() {
-            const width = (this.timing.duration / this.videoDuration) * 100 * this.zoom
-            const start = (this.timing.start / this.videoDuration) * 100 * this.zoom
-            const end = (1 - this.timing.end / this.videoDuration) * 100 * this.zoom
+            const width = (this.timing.duration / this.videoDuration) * 100
+            const start = (this.timing.start / this.videoDuration) * 100
+            const end = (1 - this.timing.end / this.videoDuration) * 100
+            const prevEnd = this.timing.prevTiming ? (this.timing.prevTiming.end / this.videoDuration) * 100 : 0
             return {
-                left: `${start}%`,
-                right: `${end}%`,
+                // left: `${start}%`,
+                // right: `${end}%`,
+                width: `${width}%`,
+                minWidth: `${width}%`,
+                maxWidth: `${width}%`,
+                marginLeft: `${start - prevEnd}%`,
             }
         },
     },
@@ -188,7 +192,8 @@ export default {
     box-shadow: $shadowEl;
     overflow: hidden;
     padding: 8px 12px;
-    position: absolute;
+    position: relative; // DON'T CHANGE !! - We need it to be relative for draggable to work
+
     // Make not draggable
     user-drag: none;
     user-select: none;

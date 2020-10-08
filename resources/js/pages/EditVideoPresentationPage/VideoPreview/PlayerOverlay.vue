@@ -1,18 +1,21 @@
 <template>
     <div class="player-overlay" :class="{ paused: playerStatus == 'paused' }">
         <div class="over-player" @click="onTogglePlay" />
-        <PlayerControls />
+        <VideoTimeline />
+        <!-- <PlayerControls /> -->
     </div>
 </template>
 
 <script>
-import PlayerControls from './PlayerControls'
 import { mapActions, mapGetters } from 'vuex'
+import PlayerControls from './PlayerControls'
+import VideoTimeline from './VideoTimeline'
 
 export default {
     name: 'playerOverlay',
     components: {
         PlayerControls,
+        VideoTimeline,
     },
     computed: {
         ...mapGetters('videoPlayer', {
@@ -39,10 +42,10 @@ export default {
     top: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    // overflow: hidden;
     .over-player {
         flex: 1;
     }

@@ -124,7 +124,6 @@ Vue.filter('timestampify', function(value) {
 Vue.filter('rounded', function(value, decimalCount) {
     const amountOfDecimals = decimalCount != null ? decimalCount : 0
     return Number(Math.round(value + `e${amountOfDecimals}`) + `e-${amountOfDecimals}`)
-    return Math.round((124.4 + Number.EPSILON) * 100) / 100
 })
 
 // Define global mixins

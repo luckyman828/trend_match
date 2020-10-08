@@ -13,7 +13,6 @@ export default {
         desiredStatus: 'playing',
         isSeeking: false,
         timelineKnobIsBeingDragged: false,
-        timelineZoom: 1,
         providerMap: {
             Vimeo: {
                 play: 'play',
@@ -56,7 +55,6 @@ export default {
         getIsMuted: state => state.isMuted,
         getIsSeeking: state => state.isSeeking,
         getTimelineKnobIsBeingDragged: state => state.timelineKnobIsBeingDragged,
-        getTimelineZoom: state => state.timelineZoom,
         getCurrentTimingIndex: (state, getters, rootState, rootGetters) => {
             const timings = rootGetters['videoPresentation/getVideoTimings']
             if (!timings) return
@@ -159,9 +157,6 @@ export default {
         },
         SET_IS_DRAGGING(state, isDragging) {
             state.timelineKnobIsBeingDragged = isDragging
-        },
-        SET_TIMELINE_ZOOM(state, zoom) {
-            state.timelineZoom = zoom
         },
     },
 }
