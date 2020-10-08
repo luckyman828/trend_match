@@ -89,6 +89,10 @@ export default {
             playerIframe: 'getIframe',
             videoDuration: 'getDuration',
         }),
+        ...mapGetters('videoPresentation', {
+            zoom: 'getTimelineZoom',
+            rail: 'getTimelineRail',
+        }),
         product() {
             return this.timing.product
         },
@@ -139,10 +143,11 @@ export default {
 
             const playerWidth = playerRect.width
             const offset = this.dragMode == 'end' ? 12 : -12
-            const mouseX = e.clientX - playerRect.left + offset
+            const scrollX = this.rail.scrollLeft
+            const mouseX = e.clientX - playerRect.left + offset + scrollX
 
             // Find the percent X we are along the timeline
-            const xPercent = mouseX / playerWidth
+            const xPercent = mouseX / playerWidth / this.zoom
 
             // Get the corresponding timestamp
             const timestamp = this.videoDuration * xPercent

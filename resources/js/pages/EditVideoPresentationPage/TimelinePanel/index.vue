@@ -46,12 +46,12 @@ export default {
         ...mapGetters('videoPresentation', {
             getVideoTimings: 'getVideoTimings',
             timingClone: 'getTimingClone',
-            cursorPosition: 'getCursorPosition',
             zoom: 'getTimelineZoom',
         }),
         ...mapGetters('videoPlayer', {
             playerIframe: 'getIframe',
             videoDuration: 'getDuration',
+            playerTimestamp: 'getTimestamp',
         }),
         videoTimings: {
             get() {
@@ -62,7 +62,7 @@ export default {
             },
         },
         cursorStyle() {
-            const percX = (this.cursorPosition / this.videoDuration) * 100
+            const percX = (this.playerTimestamp / this.videoDuration) * 100
             return {
                 left: `${percX}%`,
             }
@@ -79,8 +79,9 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS', 'ADD_TIMING', 'SET_CURSOR_POSITION']),
+        ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS', 'ADD_TIMING', 'SET_TIMELINE_RAIL']),
         ...mapActions('videoPresentation', ['addTiming']),
+        ...mapActions('videoPlayer', ['seekTo']),
         onAdd(e) {
             const newIndex = e.newIndex
             const newTiming = this.timingClone
@@ -119,11 +120,13 @@ export default {
             const playerRect = this.playerIframe.getBoundingClientRect()
             const scrollX = this.$refs.rail.scrollLeft
             const adjustedX = e.clientX - playerRect.left + scrollX
-            console.log('set cursor pos', this.$refs.rail)
             const percX = ((adjustedX / playerRect.width) * 100) / this.zoom
             const timestamp = this.videoDuration * (percX / 100)
-            this.SET_CURSOR_POSITION(timestamp)
+            this.seekTo(timestamp)
         },
+    },
+    mounted() {
+        this.SET_TIMELINE_RAIL(this.$refs.rail)
     },
 }
 </script>

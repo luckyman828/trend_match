@@ -16,6 +16,7 @@ export default {
         timingId: 0,
         cursorPosition: 0, // returned as a timestamp in seconds
         timelineZoom: 1,
+        timelineRail: null,
     },
 
     getters: {
@@ -25,6 +26,7 @@ export default {
         getTimingClone: state => state.timingClone,
         getCursorPosition: state => state.cursorPosition,
         getTimelineZoom: state => state.timelineZoom,
+        getTimelineRail: state => state.timelineRail,
     },
 
     actions: {
@@ -193,6 +195,9 @@ export default {
         },
         SET_TIMELINE_ZOOM(state, zoom) {
             state.timelineZoom = zoom
+        },
+        SET_TIMELINE_RAIL(state, rail) {
+            state.timelineRail = rail
         },
     },
 }

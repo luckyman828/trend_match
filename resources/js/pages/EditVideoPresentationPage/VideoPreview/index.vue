@@ -118,7 +118,7 @@ export default {
         right: 8px;
         top: 8px;
         opacity: 0;
-        z-index: 1;
+        z-index: 3;
     }
     &:hover {
         .video-controls {
