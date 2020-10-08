@@ -1,10 +1,13 @@
 <template>
-    <BaseModal ref="exportModal" :header="'Export <strong>' + currentFile.name + '</strong> to CSV(Excel)'"
-    @close="SET_SHOW_CSV_MODAL(false)" :show="show">
+    <BaseModal
+        ref="exportModal"
+        :header="'Export <strong>' + currentFile.name + '</strong> to CSV(Excel)'"
+        @close="SET_SHOW_CSV_MODAL(false)"
+        :show="show"
+    >
         <template v-slot v-if="show">
             <h3 style="text-align: center">The products in your current view will be exported</h3>
             <form @submit.prevent>
-
                 <div class="form-section">
                     <div class="form-element">
                         <BaseCheckboxInputField v-model="exportSelected">
@@ -12,12 +15,15 @@
                         </BaseCheckboxInputField>
                     </div>
 
-
                     <div class="form-element">
                         <label for="currency-selector">Choose Currency to export</label>
-                        <BaseInputField id="currency-selector" type="select" :disabled="true"
-                        :value="currencyToExport || 'Choose currency to export'"
-                        @click="showCurrencyContext($event)">
+                        <BaseInputField
+                            id="currency-selector"
+                            type="select"
+                            :disabled="true"
+                            :value="currencyToExport || 'Choose currency to export'"
+                            @click="showCurrencyContext($event)"
+                        >
                             <i class="far fa-chevron-down"></i>
                         </BaseInputField>
                     </div>
@@ -68,12 +74,14 @@
                     </div> -->
                 </div>
 
-                <BaseButton style="width: 100%" buttonClass="dark full-width lg"
-                v-tooltip="!exportOption && 'Please choose an export option'"
-                @click="onExport">
+                <BaseButton
+                    style="width: 100%"
+                    buttonClass="dark full-width lg"
+                    v-tooltip="!exportOption && 'Please choose an export option'"
+                    @click="onExport"
+                >
                     <span>Export</span>
                 </BaseButton>
-
             </form>
 
             <BaseContextMenu ref="currencyContext">
@@ -81,10 +89,20 @@
                     <span>Choose currency to export</span>
                 </template>
                 <template v-slot="slotProps">
-                    <BaseSelectButtons type="radio" :options="availaleCurrencies"
-                    v-model="currencyToExport" :submitOnChange="true"/>
+                    <BaseSelectButtons
+                        type="radio"
+                        :options="availaleCurrencies"
+                        v-model="currencyToExport"
+                        :submitOnChange="true"
+                    />
                     <div class="item-wrapper">
-                        <button style="margin-bottom: 8px; margin-top: -8px;" @click="slotProps.hide()" class="ghost full-width"><span>Apply & Close</span></button>
+                        <button
+                            style="margin-bottom: 8px; margin-top: -8px;"
+                            @click="slotProps.hide()"
+                            class="ghost full-width"
+                        >
+                            <span>Apply & Close</span>
+                        </button>
                     </div>
                 </template>
             </BaseContextMenu>
@@ -96,36 +114,56 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import exportToCsv from '../../mixins/exportToCsv'
 
-
 export default {
-    name: "exportCSVModal",
-    props: [
-        'show'
-    ],
-    mixins: [
-        exportToCsv
-    ],
-    data: function () { return {
-        // selectionsToExport: [],
-        exportSelected: false,
-        currencyToExport: null,
+    name: 'exportCSVModal',
+    props: ['show'],
+    mixins: [exportToCsv],
+    data: function() {
+        return {
+            // selectionsToExport: [],
+            exportSelected: false,
+            currencyToExport: null,
 
-        exportAlignment: true,
-        exportFeedback: true,
-        exportRequests: true,
-        exportComments: true,
-        exportQuantity: true,
-        exportVariants: true,
+            exportAlignment: true,
+            exportFeedback: true,
+            exportRequests: true,
+            exportComments: true,
+            exportQuantity: true,
+            exportVariants: true,
 
-        excludeProductRows: false,
+            excludeProductRows: false,
 
-        exportOption: null,
-        defaultCsvHeaders: ['Product ID', 'Product Name', 'Category', 'Product Minimum', 'Variant Minimum', 'Delivery', 'Currency', 'WHS', 'RRP', 'MU'],
-    }},
+            exportOption: null,
+            defaultCsvHeaders: [
+                'Product ID',
+                'Product Name',
+                'Category',
+                'Product Minimum',
+                'Variant Minimum',
+                'Delivery',
+                'Currency',
+                'WHS',
+                'RRP',
+                'MU',
+                'Product EANs',
+            ],
+        }
+    },
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
-        ...mapGetters('selections', ['currentSelection', 'selections', 'selectionsStatus', 'getSelections', 'getSelectionsAvailableForInputFiltering']),
-        ...mapGetters('products', ['productsFiltered', 'getActiveSelectionInput', 'getSelectedSelectionIds', 'getSelectedProducts']),
+        ...mapGetters('selections', [
+            'currentSelection',
+            'selections',
+            'selectionsStatus',
+            'getSelections',
+            'getSelectionsAvailableForInputFiltering',
+        ]),
+        ...mapGetters('products', [
+            'productsFiltered',
+            'getActiveSelectionInput',
+            'getSelectedSelectionIds',
+            'getSelectedProducts',
+        ]),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
@@ -142,13 +180,11 @@ export default {
             const products = this.productsFiltered
             products.forEach(product => {
                 product.prices.forEach(price => {
-                    if (!currenciesToReturn.includes(price.currency))
-                        currenciesToReturn.push(price.currency)
+                    if (!currenciesToReturn.includes(price.currency)) currenciesToReturn.push(price.currency)
                 })
             })
             return currenciesToReturn
         },
-        
     },
     methods: {
         ...mapActions('selections', ['fetchSelections']),
@@ -165,7 +201,7 @@ export default {
             const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
 
             if (this.exportVariants) {
-                headers.push('Variant Name')
+                headers.push('Variant Name', 'Variant EANs')
             }
 
             // Add additional headers based on settings
@@ -183,43 +219,53 @@ export default {
                     if (this.exportAlignment) {
                         selectionInput.actions.map(action => {
                             const originExists = uniqueAlignmentOrigins.find(x => x.selection_id == action.selection_id)
-                            if (!originExists) uniqueAlignmentOrigins.push({
-                                selection: action.selection,
-                                selection_id: action.selection_id,
-                            })
+                            if (!originExists)
+                                uniqueAlignmentOrigins.push({
+                                    selection: action.selection,
+                                    selection_id: action.selection_id,
+                                })
                         })
                     }
                     if (this.exportRequests) {
                         selectionInput.requests.map(request => {
-                            const originExists = uniqueAlignmentOrigins.find(x => x.selection_id == request.selection_id)
-                            if (!originExists) uniqueAlignmentOrigins.push({
-                                selection: request.selection,
-                                selection_id: request.selection_id,
-                            })
+                            const originExists = uniqueAlignmentOrigins.find(
+                                x => x.selection_id == request.selection_id
+                            )
+                            if (!originExists)
+                                uniqueAlignmentOrigins.push({
+                                    selection: request.selection,
+                                    selection_id: request.selection_id,
+                                })
                         })
                     }
                 }
                 if (this.exportComments || this.exportFeedback) {
                     if (this.exportFeedback) {
                         selectionInput.feedbacks.map(feedback => {
-                            const originExists = uniqueFeedbackOrigins.find(x => x.selection_id == feedback.selection_id && x.user_id == feedback.user_id)
-                            if (!originExists) uniqueFeedbackOrigins.push({
-                                selection: feedback.selection,
-                                selection_id: feedback.selection_id,
-                                user: feedback.user,
-                                user_id: feedback.user_id
-                            })
+                            const originExists = uniqueFeedbackOrigins.find(
+                                x => x.selection_id == feedback.selection_id && x.user_id == feedback.user_id
+                            )
+                            if (!originExists)
+                                uniqueFeedbackOrigins.push({
+                                    selection: feedback.selection,
+                                    selection_id: feedback.selection_id,
+                                    user: feedback.user,
+                                    user_id: feedback.user_id,
+                                })
                         })
                     }
                     if (this.exportComments) {
                         selectionInput.comments.map(comment => {
-                            const originExists = uniqueFeedbackOrigins.find(x => x.selection_id == comment.selection_id && x.user_id == comment.user_id)
-                            if (!originExists) uniqueFeedbackOrigins.push({
-                                selection: comment.selection,
-                                selection_id: comment.selection_id,
-                                user: comment.user,
-                                user_id: comment.user_id
-                            })
+                            const originExists = uniqueFeedbackOrigins.find(
+                                x => x.selection_id == comment.selection_id && x.user_id == comment.user_id
+                            )
+                            if (!originExists)
+                                uniqueFeedbackOrigins.push({
+                                    selection: comment.selection,
+                                    selection_id: comment.selection_id,
+                                    user: comment.user,
+                                    user_id: comment.user_id,
+                                })
                         })
                     }
                 }
@@ -228,10 +274,11 @@ export default {
 
             // START QUANTITY HEADERS
             if (this.exportQuantity) {
-                headers.push(...['Product Total Qty', 'Product Total Spend', 'Variant Total Qty', 'Variant Total Spend'])
+                headers.push(
+                    ...['Product Total Qty', 'Product Total Spend', 'Variant Total Qty', 'Variant Total Spend']
+                )
             }
             // END QUANTITY HEADERS
-
 
             // START PUSH UNIQUE INPUT HEADERS
             if (this.exportAlignment || this.exportRequests) {
@@ -252,21 +299,28 @@ export default {
             if (this.exportFeedback || this.exportComments) {
                 uniqueFeedbackOrigins.map(origin => {
                     if (this.exportFeedback) {
-                        headers.push(`${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Feedback)`)
+                        headers.push(
+                            `${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Feedback)`
+                        )
                         if (this.exportQuantity) {
-                            headers.push(`${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (QTY)`)
-                            headers.push(`${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (Spend)`)
+                            headers.push(
+                                `${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (QTY)`
+                            )
+                            headers.push(
+                                `${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (Spend)`
+                            )
                         }
                     }
                     if (this.exportComments) {
-                        headers.push(`${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Comment)`)
+                        headers.push(
+                            `${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Comment)`
+                        )
                     }
                 })
             }
             // END PUSH UNIQUE INPUT HEADERS
-            
-            // END HEADERS
 
+            // END HEADERS
 
             // START ROW DATA
             const rows = []
@@ -276,11 +330,12 @@ export default {
                 const productPriceWhs = productPrice && productPrice.wholesale_price ? productPrice.wholesale_price : 0
                 const currentRow = this.getDefaultProductRowData(product)
 
-
                 // INSTANTIATE SPACE FOR VARIANTS
                 if (this.exportVariants) {
                     // Insert a blank column space for variant names
-                    currentRow.push('') 
+                    currentRow.push('')
+                    // Insert a blank space for variant EANS
+                    currentRow.push('')
                 }
 
                 // START QUANTITY DATA
@@ -296,15 +351,16 @@ export default {
                 // START ALIGNMENT & REQUESTS
                 if (this.exportAlignment || this.exportRequests) {
                     uniqueAlignmentOrigins.map(origin => {
-
                         if (this.exportAlignment) {
                             // Find the origin Action
-                            const originAction = selectionInput.actions.find(action => action.selection_id == origin.selection_id)
+                            const originAction = selectionInput.actions.find(
+                                action => action.selection_id == origin.selection_id
+                            )
                             currentRow.push(originAction ? originAction.action : 'None')
 
                             if (this.exportQuantity) {
                                 if (!originAction) {
-                                    currentRow.push(...['',''])
+                                    currentRow.push(...['', ''])
                                 } else {
                                     const quantity = originAction.quantity ? originAction.quantity : 0
                                     currentRow.push(quantity)
@@ -315,19 +371,25 @@ export default {
 
                         if (this.exportRequests) {
                             // Find the origin Request(s)
-                            const originRequestList = selectionInput.requests.filter(request => request.selection_id == origin.selection_id)
+                            const originRequestList = selectionInput.requests.filter(
+                                request => request.selection_id == origin.selection_id
+                            )
                             // Merge the requests with a double line-break
                             const requestContentList = originRequestList.map(request => {
                                 let requestContent = request.content
                                 if (request.selection.type == 'Master') {
-                                    const requestStatus = request.status == 'Resolved' ? 'ACCEPTED' : request.status == 'Rejected' ? 'REJECTED' : 'OPEN'
+                                    const requestStatus =
+                                        request.status == 'Resolved'
+                                            ? 'ACCEPTED'
+                                            : request.status == 'Rejected'
+                                            ? 'REJECTED'
+                                            : 'OPEN'
                                     requestContent = `[${requestStatus}] ${requestContent}`
                                 }
                                 return requestContent
                             })
                             currentRow.push(requestContentList.join('\n\n'))
                         }
-
                     })
                 }
                 // END ALIGNMENT & REQUESTS
@@ -335,17 +397,17 @@ export default {
                 // START FEEDBACK & COMMENTS
                 if (this.exportFeedback || this.exportComments) {
                     uniqueFeedbackOrigins.map(origin => {
-
                         if (this.exportFeedback) {
                             // Find the origin Feedback
                             const originFeedback = selectionInput.feedbacks.find(
-                                feedback => feedback.selection_id == origin.selection_id && feedback.user_id == origin.user_id
+                                feedback =>
+                                    feedback.selection_id == origin.selection_id && feedback.user_id == origin.user_id
                             )
                             currentRow.push(originFeedback ? originFeedback.action : 'None')
 
                             if (this.exportQuantity) {
                                 if (!originFeedback) {
-                                    currentRow.push(...['',''])
+                                    currentRow.push(...['', ''])
                                 } else {
                                     const quantity = originFeedback.quantity ? originFeedback.quantity : 0
                                     currentRow.push(quantity)
@@ -357,12 +419,12 @@ export default {
                         if (this.exportComments) {
                             // Find the origin Comment(s)
                             const originCommentList = selectionInput.comments.filter(
-                                comment => comment.selection_id == origin.selection_id && comment.user_id == origin.user_id
+                                comment =>
+                                    comment.selection_id == origin.selection_id && comment.user_id == origin.user_id
                             )
                             // Merge the comments with a double line-break
                             currentRow.push(originCommentList.map(comment => comment.content).join('\n\n'))
                         }
-
                     })
                 }
                 // END FEEDBACK & COMMENTS
@@ -381,6 +443,15 @@ export default {
                         // Push the variant name
                         variantRow.push(variant.name)
 
+                        // Push the variant EANS
+                        const allVariantEans = []
+                        if (variant.ean) allVariantEans.push(variant.ean)
+                        variant.ean_sizes.map(size => {
+                            const existsInArr = allVariantEans.find(x => x == size.ean)
+                            if (!existsInArr) allVariantEans.push(size.ean)
+                        })
+                        variantRow.push(allVariantEans.join(', '))
+
                         // START QUANTITY DATA
                         if (this.exportQuantity) {
                             const quantity = variant.quantity ? variant.quantity : 0
@@ -394,15 +465,16 @@ export default {
                         // START ALIGNMENT & REQUESTS
                         if (this.exportAlignment || this.exportRequests) {
                             uniqueAlignmentOrigins.map(origin => {
-
                                 if (this.exportAlignment) {
                                     // Find the origin Action
-                                    const originAction = variant.actions.find(action => action.selection_id == origin.selection_id)
+                                    const originAction = variant.actions.find(
+                                        action => action.selection_id == origin.selection_id
+                                    )
                                     variantRow.push(originAction ? originAction.action : 'None')
 
                                     if (this.exportQuantity) {
                                         if (!originAction) {
-                                            variantRow.push(...['',''])
+                                            variantRow.push(...['', ''])
                                         } else {
                                             const quantity = originAction.quantity ? originAction.quantity : 0
                                             variantRow.push(quantity)
@@ -415,7 +487,6 @@ export default {
                                     // If we are exporting requests, push a blank
                                     variantRow.push('')
                                 }
-
                             })
                         }
                         // END ALIGNMENT & REQUESTS
@@ -423,17 +494,18 @@ export default {
                         // START FEEDBACK & COMMENTS
                         if (this.exportFeedback || this.exportComments) {
                             uniqueFeedbackOrigins.map(origin => {
-
                                 if (this.exportFeedback) {
                                     // Find the origin Feedback
                                     const originFeedback = variant.feedbacks.find(
-                                        feedback => feedback.selection_id == origin.selection_id && feedback.user_id == origin.user_id
+                                        feedback =>
+                                            feedback.selection_id == origin.selection_id &&
+                                            feedback.user_id == origin.user_id
                                     )
                                     variantRow.push(originFeedback ? originFeedback.action : 'None')
 
                                     if (this.exportQuantity) {
                                         if (!originFeedback) {
-                                            variantRow.push(...['',''])
+                                            variantRow.push(...['', ''])
                                         } else {
                                             const quantity = originFeedback.quantity ? originFeedback.quantity : 0
                                             variantRow.push(quantity)
@@ -446,7 +518,6 @@ export default {
                                     // If we are exporting comments, push a blank
                                     variantRow.push('')
                                 }
-
                             })
                         }
                         // END FEEDBACK & COMMENTS
@@ -463,22 +534,25 @@ export default {
             // Replace slashes with dashes in date
             dateStr = dateStr.replace('/', '-')
 
-            this.exportToCsv(`Kollekt Export - ${this.currentFile.name} - ${this.currentSelection.name} ${dateStr}.csv`, [headers].concat(rows))
-
+            this.exportToCsv(
+                `Kollekt Export - ${this.currentFile.name} - ${this.currentSelection.name} ${dateStr}.csv`,
+                [headers].concat(rows)
+            )
         },
         getDefaultProductRowData(product) {
             const priceToReturn = this.getProductPrice(product)
             return [
-                product.datasource_id, 
-                product.title, 
-                product.category, 
-                product.min_order, 
-                product.min_variant_order, 
+                product.datasource_id,
+                product.title,
+                product.category,
+                product.min_order,
+                product.min_variant_order,
                 product.delivery_dates.map(date => this.prettifyDate(date, 'short')).join(', '),
                 priceToReturn.currency || '',
                 priceToReturn.wholesale_price || '',
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
+                product.eans.join(', '),
             ]
         },
         getProductPrice(product) {
@@ -491,7 +565,7 @@ export default {
                 }
             }
             return priceToReturn
-        }
+        },
     },
     mounted() {
         this.currencyToExport = this.availaleCurrencies[0]
@@ -503,13 +577,10 @@ export default {
         if (this.getSelectedProducts.length > 0) {
             this.exportSelected = true
         }
-    }
+    },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-
-    
-
 </style>
