@@ -16,6 +16,7 @@
                     :fallbackTolerance="10"
                     @add="onAdd"
                     @sort="onSort"
+                    @start="onDragStart"
                 >
                     <TimelineItem
                         v-for="(productTiming, index) in videoTimings"
@@ -82,6 +83,17 @@ export default {
         ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS', 'ADD_TIMING', 'SET_TIMELINE_RAIL']),
         ...mapActions('videoPresentation', ['addTiming']),
         ...mapActions('videoPlayer', ['seekTo']),
+        onDragStart(e) {
+            // Clear clone styles to get correct width
+            const origialEl = e.item
+            const cloneEl = origialEl.parentElement.children[origialEl.parentElement.children.length - 1]
+            cloneEl.style.minWidth = ''
+            cloneEl.style.maxWidth = ''
+            // const originalWidth = origialEl.getBoundingClientRect().width
+            // cloneEl.style.width = `${originalWidth}px`
+            // cloneEl.style.minWidth = `${originalWidth}px`
+            // cloneEl.style.maxWidth = `${originalWidth}px`
+        },
         onAdd(e) {
             const newIndex = e.newIndex
             const newTiming = this.timingClone
@@ -95,25 +107,32 @@ export default {
             const movedTiming = this.videoTimings[newIndex]
             console.log('on sort', movedTiming, oldIndex, newIndex)
 
+            // If we moved forward
             if (newIndex > oldIndex) {
-                const timingsBefore = this.videoTimings.slice(oldIndex, newIndex)
+                const timingsBefore = this.videoTimings.slice(oldIndex, newIndex - 1)
+                console.log('timings before', timingsBefore)
                 timingsBefore.map(timing => {
                     timing.start -= movedTiming.duration
+                    timing.end -= movedTiming.duration
                 })
             }
 
+            // If we moved backward
             if (newIndex < oldIndex) {
-                const timingsAfter = this.videoTimings.slice(newIndex)
+                const timingsAfter = this.videoTimings.slice(newIndex - 1, oldIndex)
                 timingsAfter.map(timing => {
                     timing.start += movedTiming.duration
+                    timing.end += movedTiming.duration
                 })
             }
 
+            const desiredDuration = movedTiming.end - movedTiming.start
             if (newIndex > 0) {
                 movedTiming.start = this.videoTimings[newIndex - 1].end
             } else {
                 movedTiming.start = 0
             }
+            movedTiming.end = movedTiming.start + desiredDuration
         },
         setCursorPosition(e) {
             // Set cursor position as a timestamp

@@ -49,8 +49,6 @@ export default {
             if (videoIdMatches.length < 2) return false
             const videoId = videoIdMatches[1]
 
-            console.log('set video by url', url, provider, providerCapitalized, videoId)
-
             video.provider = providerCapitalized
             video.providerVideoId = videoId
         },
@@ -90,9 +88,7 @@ export default {
             const conflictingTimings = getters.getVideoTimings.filter(
                 x => x.id != newTiming.id && x.end > newTiming.start && x.start < newTiming.end
             )
-            console.log('bump conflicting timings', newTiming.start, newTiming.end, conflictingTimings)
             conflictingTimings.map(timing => {
-                console.log('i am conflicting', timing.start, timing.end)
                 const delta = newTiming.end - timing.start
                 timing.start += delta
                 timing.end += delta
