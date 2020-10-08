@@ -88,6 +88,7 @@ export default {
         ...mapGetters('videoPlayer', {
             playerIframe: 'getIframe',
             videoDuration: 'getDuration',
+            cursorTimestamp: 'getTimestamp',
         }),
         ...mapGetters('videoPresentation', {
             zoom: 'getTimelineZoom',
@@ -154,15 +155,24 @@ export default {
 
             // Make sure the start is before the end
             const minDuration = 2
+            const snapThreshold = 4 // In seconds
 
             if (this.dragMode == 'end') {
                 const maxCap = this.timing.nextTiming ? this.timing.nextTiming.start : this.videoDuration
                 // Cap the end at the start of the next element
-                this.timing.end = Math.min(Math.max(timestamp, minDuration, this.timing.start + minDuration), maxCap)
+                let newEnd = Math.min(Math.max(timestamp, minDuration, this.timing.start + minDuration), maxCap)
+                // Check if the new end is close to the cursor. If so snap to it
+                if (newEnd < this.cursorTimestamp + snapThreshold && newEnd > this.cursorTimestamp - snapThreshold)
+                    newEnd = this.cursorTimestamp
+                this.timing.end = newEnd
                 // this.timing.start = Math.max(Math.min(this.timing.start, timestamp - minDuration), 0)
             } else {
                 const minCap = this.timing.prevTiming ? this.timing.prevTiming.end : 0
-                this.timing.start = Math.max(Math.min(timestamp, this.timing.end - minDuration), minCap)
+                let newStart = Math.max(Math.min(timestamp, this.timing.end - minDuration), minCap)
+                // Check if the new start is close to the cursor. If so snap to it
+                if (newStart < this.cursorTimestamp + snapThreshold && newStart > this.cursorTimestamp - snapThreshold)
+                    newStart = this.cursorTimestamp
+                this.timing.start = newStart
                 // this.timing.end = Math.min(Math.max(this.timing.end, timestamp + minDuration), this.videoDuration)
             }
         },
@@ -197,6 +207,7 @@ export default {
     box-shadow: $shadowEl;
     overflow: hidden;
     padding: 8px 12px;
+    pointer-events: all;
     position: relative; // DON'T CHANGE !! - We need it to be relative for draggable to work
 
     // Make not draggable

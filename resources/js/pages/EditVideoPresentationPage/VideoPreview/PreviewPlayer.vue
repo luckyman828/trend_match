@@ -174,6 +174,12 @@ export default {
     background: black;
     height: 100%;
     position: relative;
+    ::v-deep {
+        iframe {
+            height: 100%;
+            width: 100%;
+        }
+    }
     .player {
         pointer-events: none;
         height: 100%;

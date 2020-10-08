@@ -2,7 +2,7 @@
     <div class="timeline-panel">
         <TimelineControls />
         <div class="rail" v-horizontal-scroll ref="rail">
-            <div class="timeline" ref="timeline" :style="timelineStyle" @click="setCursorPosition">
+            <div class="timeline" ref="timeline" :style="timelineStyle" @click.self="setCursorPosition">
                 <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
                 <Draggable
                     class="draggable"
@@ -158,12 +158,14 @@ export default {
             background: $primary;
             left: 0;
             top: 0;
+            transition: 0.05s;
         }
         .draggable {
             width: 100%;
             height: 100%;
             display: flex;
             position: relative;
+            pointer-events: none;
         }
     }
 }

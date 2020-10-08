@@ -7,14 +7,13 @@ export default {
         currentVideo: {
             name: 'Test Video',
             id: 1,
-            providerVideoId: '458294507',
-            provider: 'Vimeo',
+            providerVideoId: 'hGRii5f_uSc',
+            provider: 'Youtube',
         },
         searchItemDragActive: false,
         videoTimings: [],
         timingClone: null,
         timingId: 0,
-        cursorPosition: 0, // returned as a timestamp in seconds
         timelineZoom: 1,
         timelineRail: null,
     },
@@ -24,7 +23,6 @@ export default {
         getSearchItemDragActive: state => state.searchItemDragActive,
         getVideoTimings: state => state.videoTimings,
         getTimingClone: state => state.timingClone,
-        getCursorPosition: state => state.cursorPosition,
         getTimelineZoom: state => state.timelineZoom,
         getTimelineRail: state => state.timelineRail,
     },
@@ -189,9 +187,6 @@ export default {
         },
         SET_TIMING_CLONE(state, clone) {
             state.timingClone = clone
-        },
-        SET_CURSOR_POSITION(state, timestamp) {
-            state.cursorPosition = timestamp
         },
         SET_TIMELINE_ZOOM(state, zoom) {
             state.timelineZoom = zoom
