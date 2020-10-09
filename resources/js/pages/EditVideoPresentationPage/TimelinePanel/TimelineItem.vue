@@ -1,7 +1,8 @@
 <template>
     <div class="timeline-item" :style="style" :id="`timeline-item-${timing.id}`" :class="{ current: isCurrent }">
         <div class="controls">
-            <button class="white circle sm" @click="onRemoveTiming">
+            <button class="pill red sm" @click="onRemoveTiming">
+                <span>Delete</span>
                 <i class="far fa-trash"></i>
             </button>
         </div>
@@ -17,13 +18,13 @@
                 class="cursor-icon-left cursor-icon"
             />
             <div
-                class="drag-left"
+                class="drag-left drag-cap-handle"
                 @mousedown="onDragCapStart($event, 'start')"
                 @mousemove="onMouseMoveCap($event, 'left')"
                 @mouseleave="onMouseLeaveCap($event, 'left')"
             ></div>
             <div
-                class="drag-right"
+                class="drag-right drag-cap-handle"
                 @mousedown="onDragCapStart($event, 'end')"
                 @mousemove="onMouseMoveCap($event, 'right')"
                 @mouseleave="onMouseLeaveCap($event, 'right')"
@@ -196,11 +197,11 @@ export default {
 .timeline-item {
     background: white;
     border-radius: $borderRadiusEl;
-    box-shadow: $shadowElHard;
+    box-shadow: 0 3px 6px rgba(black, 0.2);
     padding: 6px;
     pointer-events: all;
     position: relative; // DON'T CHANGE !! - We need it to be relative for draggable to work
-    transition: 0.05s ease-out;
+    transition: width 0.05s ease-out;
 
     // Make not draggable
     user-drag: none;
@@ -225,6 +226,9 @@ export default {
         .controls {
             opacity: 1;
         }
+    }
+    &.dragged {
+        background: orange;
     }
     .inner {
         width: 100%;

@@ -4,7 +4,7 @@
         <div class="rail" v-horizontal-scroll ref="rail">
             <div class="timeline" ref="timeline" :style="timelineStyle" @click.self="setCursorPosition">
                 <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
-                <Draggable
+                <!-- <Draggable
                     class="draggable"
                     v-model="videoTimings"
                     handle=".inner"
@@ -17,14 +17,16 @@
                     @add="onAdd"
                     @sort="onSort"
                     @start="onDragStart"
-                >
-                    <TimelineItem
-                        v-for="(productTiming, index) in videoTimings"
-                        :key="productTiming.id"
-                        :timing="productTiming"
-                        :index="index"
-                    />
-                </Draggable>
+                > -->
+                <TimelineItem
+                    v-for="(timing, index) in videoTimings"
+                    :class="{ dragged: draggedTiming && draggedTiming.id == timing.id }"
+                    :key="timing.id"
+                    :timing="timing"
+                    :index="index"
+                    @mousedown.native="onDragStart($event, timing)"
+                />
+                <!-- </Draggable> -->
             </div>
         </div>
     </div>
@@ -43,11 +45,25 @@ export default {
         Draggable,
         TimelineControls,
     },
+    data: function() {
+        return {
+            dragStartPos: null,
+            draggedTiming: null,
+            draggedEl: null,
+            isDragging: false,
+            draggedElStartX: null,
+            draggedElWidth: null,
+            newDragPosValid: false,
+            draggedElEndDist: null,
+        }
+    },
     computed: {
         ...mapGetters('videoPresentation', {
             getVideoTimings: 'getVideoTimings',
             timingClone: 'getTimingClone',
             zoom: 'getTimelineZoom',
+            timelineRail: 'getTimelineRail',
+            timelineEl: 'getTimelineEl',
         }),
         ...mapGetters('videoPlayer', {
             playerIframe: 'getIframe',
@@ -80,19 +96,134 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS', 'ADD_TIMING', 'SET_TIMELINE_RAIL']),
+        ...mapMutations('videoPresentation', [
+            'SET_VIDEO_TIMINGS',
+            'ADD_TIMING',
+            'SET_TIMELINE_RAIL',
+            'SET_TIMELINE_EL',
+        ]),
         ...mapActions('videoPresentation', ['addTiming']),
         ...mapActions('videoPlayer', ['seekTo']),
-        onDragStart(e) {
-            // Clear clone styles to get correct width
-            const origialEl = e.item
-            const cloneEl = origialEl.parentElement.children[origialEl.parentElement.children.length - 1]
-            cloneEl.style.minWidth = ''
-            cloneEl.style.maxWidth = ''
-            // const originalWidth = origialEl.getBoundingClientRect().width
-            // cloneEl.style.width = `${originalWidth}px`
-            // cloneEl.style.minWidth = `${originalWidth}px`
-            // cloneEl.style.maxWidth = `${originalWidth}px`
+        // onDragStart(e) {
+        //     // Clear clone styles to get correct width
+        //     const origialEl = e.item
+        //     const cloneEl = origialEl.parentElement.children[origialEl.parentElement.children.length - 1]
+        //     cloneEl.style.minWidth = ''
+        //     cloneEl.style.maxWidth = ''
+        //     // const originalWidth = origialEl.getBoundingClientRect().width
+        //     // cloneEl.style.width = `${originalWidth}px`
+        //     // cloneEl.style.minWidth = `${originalWidth}px`
+        //     // cloneEl.style.maxWidth = `${originalWidth}px`
+        // },
+        onDragStart(e, timing) {
+            // Check that we have not clicked the cap drag handles
+            if (e.target.classList.contains('drag-cap-handle')) return
+            // Save a reference to the dragged timing
+            this.draggedEl = document.getElementById(`timeline-item-${timing.id}`)
+            // this.draggedElEndX =
+            this.draggedTiming = timing
+            // Add a dragstart threshold
+            this.dragStartPos = { x: e.clientX, y: e.clientY }
+            // Remove old drag listeners
+            this.removeDragListeners()
+            // Add new
+            this.addDragListeners()
+        },
+        onDragMove(e) {
+            // Check if we have moved the mouse further can our threshold
+            if (!this.isDragging) {
+                const dragThreshold = 10
+                const deltaX = Math.abs(this.dragStartPos.x - e.clientX)
+                const deltaY = Math.abs(this.dragStartPos.y - e.clientY)
+                const movedDist = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2))
+                if (movedDist >= dragThreshold) {
+                    this.isDragging = true
+                    const elRect = this.draggedEl.getBoundingClientRect()
+                    this.draggedElStartX = elRect.left + (e.clientX - elRect.left)
+                    this.draggedElWidth = elRect.width
+                    this.draggedElEndDist = elRect.right - e.clientX
+                }
+                return
+            }
+
+            // Get the timestamp that our new mousePos corresponds to
+            // We will use the new timestamp to limit the movement of the dragged element
+            // And to check the validity of the new pos
+            // const mouseTimestamp = this.getTimestampFromMouseEvent(e)
+
+            // Get a reference to the dragged timing
+            const timing = this.draggedTiming
+
+            // const desiredDuration = timing.duration
+            // const desiredStart = mouseTimestamp
+            // const desiredEnd = desiredStart + desiredDuration
+
+            // const newStart = Math.max(mouseTimestamp, 0)
+            // const newEnd = Math.min(newStart + desiredDuration, this.videoDuration)
+
+            // Now we have our desired end and start. Position the timing accordingly.
+            // This code is used simply to display the new position. We will use the newEnd and newStart to check the validity of the new position
+            const startX = this.draggedElStartX
+            const deltaX = e.clientX - startX
+
+            const distToEnd = this.draggedElEndDist
+            const distToStart = this.draggedElWidth - distToEnd
+            // Get the start and end caps of our drag
+            const timelineEnd = this.timelineEl.getBoundingClientRect().right
+            const timelineStart = this.timelineEl.getBoundingClientRect().left
+
+            const deltaXMax = timelineEnd - distToEnd - startX
+            const deltaXMin = timelineStart - startX + distToStart
+            const deltaXToMove = Math.min(Math.max(deltaX, deltaXMin), deltaXMax)
+            this.draggedEl.style.transform = `translateX(${deltaXToMove}px)`
+
+            // Check if the drag is valid
+            this.newDragPosValid = true
+        },
+        onDragEnd(e) {
+            if (this.newDragPosValid) this.saveNewPosition()
+            // Remove the transform from the dragged element
+            this.draggedEl.style.transform = ''
+            // Reset our drag variables
+            this.isDragging = false
+            this.draggedEl = null
+            this.draggedTiming = null
+            this.draggedStartPos = null
+            this.removeDragListeners()
+        },
+        saveNewPosition() {
+            const elLeftX = this.draggedEl.getBoundingClientRect().left
+            const newStart = this.getTimestampFromMouseX(elLeftX)
+
+            // Set the new start and end of the dragged timing
+            console.log('save new pos', newStart)
+            const timing = this.draggedTiming
+            const desiredDuration = timing.duration
+            timing.start = Math.max(0, newStart)
+            timing.end = Math.min(this.videoDuration, timing.start + desiredDuration)
+        },
+        getTimestampFromMouseX(mouseX) {
+            // Get timestamp that corresponds to the drag position
+            const playerRect = this.playerIframe.getBoundingClientRect()
+            const timelineRail = this.timelineRail
+
+            // Get the adjusted X position on the timeline
+            const adjustedX = mouseX - playerRect.left + timelineRail.scrollLeft
+
+            // Get the percentage of the total video duration
+            const durationPerc = adjustedX / playerRect.width / this.zoom
+            const mouseTimestamp = this.videoDuration * durationPerc
+            return mouseTimestamp
+        },
+        addDragListeners() {
+            document.addEventListener('mouseup', this.onDragEnd)
+            document.addEventListener('mousemove', this.onDragMove)
+            document.body.addEventListener('mouseleave', this.onDragEnd)
+        },
+        removeDragListeners() {
+            document.removeEventListener('mouseup', this.onDragEnd)
+            document.removeEventListener('mousemove', this.onDragMove)
+            document.body.removeEventListener('mouseleave', this.onDragEnd)
         },
         onAdd(e) {
             const newIndex = e.newIndex
@@ -146,6 +277,7 @@ export default {
     },
     mounted() {
         this.SET_TIMELINE_RAIL(this.$refs.rail)
+        this.SET_TIMELINE_EL(this.$refs.timeline)
     },
 }
 </script>
@@ -170,6 +302,7 @@ export default {
         position: relative;
         padding: 16px 0 20px;
         height: 100%;
+        display: flex;
         .timeline-cursor {
             position: absolute;
             height: 100%;

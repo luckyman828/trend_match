@@ -16,6 +16,7 @@ export default {
         timingId: 0,
         timelineZoom: 1,
         timelineRail: null,
+        timelineEl: null,
     },
 
     getters: {
@@ -25,6 +26,7 @@ export default {
         getTimingClone: state => state.timingClone,
         getTimelineZoom: state => state.timelineZoom,
         getTimelineRail: state => state.timelineRail,
+        getTimelineEl: state => state.timelineEl,
     },
 
     actions: {
@@ -189,6 +191,9 @@ export default {
         },
         SET_TIMELINE_RAIL(state, rail) {
             state.timelineRail = rail
+        },
+        SET_TIMELINE_EL(state, el) {
+            state.timelineEl = el
         },
     },
 }
