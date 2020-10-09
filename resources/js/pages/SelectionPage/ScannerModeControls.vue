@@ -100,6 +100,8 @@ export default {
             }
         },
         onScan(scanCode) {
+            const succesAudio = new Audio('/assets/SFX/pling.mp3')
+            const failAudio = new Audio('/assets/SFX/error.mp3')
             if (!this.scannerMode) {
                 this.SET_SCANNER_MODE('product')
             }
@@ -107,6 +109,7 @@ export default {
             // Find the matched product / variant
             const product = this.products.find(product => product.eans.includes(scanCode))
             if (!product) {
+                failAudio.play()
                 this.SHOW_SNACKBAR({
                     msg: `Scan didn't match any products`,
                     type: 'info',
@@ -122,6 +125,7 @@ export default {
             const variant = selectionInput.variants[variantIndex]
 
             if (this.scannerMode == 'product') {
+                succesAudio.play()
                 this.showSelectionProductPDP({ product, selection: this.getCurrentSelection })
                 if (this.variantModeActive && variant) {
                     // Show the scanned variant
@@ -129,6 +133,7 @@ export default {
                 }
             } else {
                 if (product.is_completed) {
+                    failAudio.play()
                     this.SHOW_SNACKBAR({
                         msg: `Scan ignored. Product is marked as completed`,
                         type: 'info',
@@ -138,6 +143,7 @@ export default {
                 }
                 if (this.variantModeActive) {
                     if (!variant) {
+                        failAudio.play()
                         this.SHOW_SNACKBAR({
                             msg: `Scan didn't match any variant`,
                             type: 'info',
@@ -147,6 +153,7 @@ export default {
                     }
                     this.updateVariantAction(this.scannerMode, product, selectionInput, variant)
                 } else {
+                    succesAudio.play()
                     if (this.selectionMode == 'Feedback') {
                         const selectionFeedback = selectionInput.yourSelectionFeedback
                         this.updateFeedbacks({ actions: [selectionFeedback], newAction: this.scannerMode })
