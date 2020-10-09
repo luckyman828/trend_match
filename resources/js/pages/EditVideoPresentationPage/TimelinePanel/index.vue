@@ -20,7 +20,10 @@
                 > -->
                 <TimelineItem
                     v-for="(timing, index) in videoTimings"
-                    :class="{ dragged: draggedTiming && draggedTiming.id == timing.id }"
+                    :class="[
+                        { dragged: draggedTiming && draggedTiming.id == timing.id },
+                        { error: draggedTiming && draggedTiming.id == timing.id && !newDragPosValid },
+                    ]"
                     :key="timing.id"
                     :timing="timing"
                     :index="index"
@@ -53,7 +56,7 @@ export default {
             isDragging: false,
             draggedElStartX: null,
             draggedElWidth: null,
-            newDragPosValid: false,
+            newDragPosValid: true,
             draggedElEndDist: null,
         }
     },
@@ -149,36 +152,87 @@ export default {
             // Get the timestamp that our new mousePos corresponds to
             // We will use the new timestamp to limit the movement of the dragged element
             // And to check the validity of the new pos
-            // const mouseTimestamp = this.getTimestampFromMouseEvent(e)
+
+            // Get original mouseclick position data to get the actual end and start of our element
+            const distToEnd = this.draggedElEndDist
+            const distToStart = this.draggedElWidth - distToEnd
 
             // Get a reference to the dragged timing
             const timing = this.draggedTiming
 
-            // const desiredDuration = timing.duration
-            // const desiredStart = mouseTimestamp
-            // const desiredEnd = desiredStart + desiredDuration
-
-            // const newStart = Math.max(mouseTimestamp, 0)
-            // const newEnd = Math.min(newStart + desiredDuration, this.videoDuration)
+            // Get the desired start and end
+            const desiredDuration = timing.duration
+            const desiredStart = this.getTimestampFromMouseX(e.clientX - distToStart)
+            const desiredEnd = desiredStart + desiredDuration
 
             // Now we have our desired end and start. Position the timing accordingly.
             // This code is used simply to display the new position. We will use the newEnd and newStart to check the validity of the new position
             const startX = this.draggedElStartX
             const deltaX = e.clientX - startX
 
-            const distToEnd = this.draggedElEndDist
-            const distToStart = this.draggedElWidth - distToEnd
             // Get the start and end caps of our drag
             const timelineEnd = this.timelineEl.getBoundingClientRect().right
             const timelineStart = this.timelineEl.getBoundingClientRect().left
 
             const deltaXMax = timelineEnd - distToEnd - startX
             const deltaXMin = timelineStart - startX + distToStart
-            const deltaXToMove = Math.min(Math.max(deltaX, deltaXMin), deltaXMax)
-            this.draggedEl.style.transform = `translateX(${deltaXToMove}px)`
+            let deltaXToMove = Math.min(Math.max(deltaX, deltaXMin), deltaXMax)
 
-            // Check if the drag is valid
-            this.newDragPosValid = true
+            // Check if we have a timing conflict
+            // Check for any conflicting timings
+            let newPosValid = true
+            const conflictThreshold = 10
+            const timingConflict = this.videoTimings.find(
+                x =>
+                    x.id != timing.id &&
+                    ((desiredStart < x.end + conflictThreshold && desiredEnd > x.start) ||
+                        (desiredEnd > x.start - conflictThreshold && desiredStart < x.end))
+            )
+            if (timingConflict) {
+                // Check if we are within our snap threshold. If so, simply snap. Else report an error
+                const snapToEnd =
+                    desiredStart < timingConflict.end + conflictThreshold &&
+                    desiredStart > timingConflict.end - conflictThreshold
+                const snapToStart =
+                    desiredEnd > timingConflict.start - conflictThreshold &&
+                    desiredEnd < timingConflict.start + conflictThreshold
+
+                if (!snapToEnd && !snapToStart) {
+                    newPosValid = false
+                } else {
+                    const conflictEl = timingConflict && document.getElementById(`timeline-item-${timingConflict.id}`)
+                    const conflictRect = conflictEl.getBoundingClientRect()
+                    const conflictStartX = timingConflict && conflictRect.left
+                    const conflictEndX = timingConflict && conflictRect.right
+                    if (snapToEnd) {
+                        deltaXToMove = conflictEndX - startX + distToStart
+                    } else {
+                        deltaXToMove = conflictStartX - startX - distToEnd
+                    }
+                }
+            }
+            this.newDragPosValid = newPosValid
+
+            // if (timingConflict) {
+            //     const conflictEl = timingConflict && document.getElementById(`timeline-item-${timingConflict.id}`)
+            //     const conflictRect = conflictEl.getBoundingClientRect()
+            //     const conflictStartX = timingConflict && conflictRect.left
+            //     const conflictEndX = timingConflict && conflictRect.right
+
+            //     const elStartX = e.clientX - distToStart
+            //     const elEndX = e.clientX + distToEnd
+            //     const snapThreshold = 100
+            //     console.log('timing conflict check', elEndX, conflictStartX, snapThreshold)
+            //     if (elEndX > conflictStartX - snapThreshold && elEndX < conflictStartX + snapThreshold) {
+            //         deltaXToMove = conflictStartX - startX - this.draggedElWidth
+            //     }
+            //     if (elStartX < conflictEndX - snapThreshold && elStartX > conflictEndX + snapThreshold) {
+            //         deltaXToMove = conflictEndX - startX + conflictRect.width
+            //     }
+            // }
+
+            // Set the transform of the dragged element
+            this.draggedEl.style.transform = `translateX(${deltaXToMove}px)`
         },
         onDragEnd(e) {
             if (this.newDragPosValid) this.saveNewPosition()
@@ -196,11 +250,13 @@ export default {
             const newStart = this.getTimestampFromMouseX(elLeftX)
 
             // Set the new start and end of the dragged timing
-            console.log('save new pos', newStart)
             const timing = this.draggedTiming
             const desiredDuration = timing.duration
             timing.start = Math.max(0, newStart)
             timing.end = Math.min(this.videoDuration, timing.start + desiredDuration)
+
+            // Sort timings by start time after change
+            this.videoTimings.sort((a,b) => {return a.start > b.start ? 1 : -1})
         },
         getTimestampFromMouseX(mouseX) {
             // Get timestamp that corresponds to the drag position
@@ -292,7 +348,7 @@ export default {
     background: $dark;
     overflow: hidden;
     .rail {
-        overflow-x: auto;
+        overflow-x: scroll;
         height: 100%;
     }
     .timeline {

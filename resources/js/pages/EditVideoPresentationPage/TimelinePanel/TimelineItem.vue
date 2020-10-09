@@ -98,6 +98,7 @@ export default {
             this.removeTiming(this.index)
         },
         onMouseMoveCap(e, direction) {
+            if (this.$el.classList.contains('dragged')) return
             const cursor = this.$refs[`cursor-${direction}`]
             const offset = direction == 'right' ? -12 : 0
             cursor.style.display = 'Block'
@@ -105,6 +106,7 @@ export default {
             cursor.style.top = `${e.clientY}px`
         },
         onMouseLeaveCap(e, direction) {
+            if (this.$el.classList.contains('dragged')) return
             const cursor = this.$refs[`cursor-${direction}`]
             cursor.style.display = 'None'
         },
@@ -222,13 +224,18 @@ export default {
         background: $primary;
         color: white;
     }
-    &:hover {
+    &:hover:not(.dragged) {
         .controls {
             opacity: 1;
         }
     }
     &.dragged {
-        background: orange;
+        background: $yellow;
+        z-index: 1;
+    }
+    &.error {
+        opacity: 0.8;
+        background: $red;
     }
     .inner {
         width: 100%;
@@ -255,6 +262,13 @@ export default {
                 position: absolute;
                 left: 0;
                 top: 0;
+                // Make not draggable
+                user-drag: none;
+                user-select: none;
+                -moz-user-select: none;
+                -webkit-user-drag: none;
+                -webkit-user-select: none;
+                -ms-user-select: none;
             }
         }
     }

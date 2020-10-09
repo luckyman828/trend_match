@@ -62,7 +62,7 @@ export default {
             let index = 0
             const timestamp = rootGetters['videoPlayer/getTimestamp']
             // Set the desired `start` time equal to the timestamp
-            const desiredDuration = newTiming.end - newTiming.start
+            const desiredDuration = (newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom)
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
 

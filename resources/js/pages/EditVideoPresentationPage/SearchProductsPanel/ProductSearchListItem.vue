@@ -42,21 +42,26 @@ export default {
         Draggable,
     },
     props: ['product'],
+    computed: {
+        ...mapGetters('videoPlayer', {
+            videoDuration: 'getDuration',
+        }),
+    },
     methods: {
         ...mapMutations('videoPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('videoPresentation', ['addTiming']),
-        onClone(original) {
-            const newTiming = {
-                start: 0,
-                duration: 5,
-                product: original,
-            }
-            this.SET_TIMING_CLONE(newTiming)
-        },
+        // onClone(original) {
+        //     const newTiming = {
+        //         start: 0,
+        //         duration: 40,
+        //         product: original,
+        //     }
+        //     this.SET_TIMING_CLONE(newTiming)
+        // },
         onAddTiming() {
             const newTiming = {
                 start: 0,
-                end: 5,
+                end: this.videoDuration / 12,
                 product: this.product,
             }
             this.addTiming({ newTiming })
