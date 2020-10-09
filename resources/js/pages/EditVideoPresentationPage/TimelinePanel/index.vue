@@ -67,6 +67,7 @@ export default {
             zoom: 'getTimelineZoom',
             timelineRail: 'getTimelineRail',
             timelineEl: 'getTimelineEl',
+            snapThreshold: 'getSnapThreshold',
         }),
         ...mapGetters('videoPlayer', {
             playerIframe: 'getIframe',
@@ -181,14 +182,12 @@ export default {
             // Check if we have a timing conflict
             // Check for any conflicting timings
             let newPosValid = true
-            const conflictThreshold = 10
-            const timingConflict = this.videoTimings.find(
-                x =>
-                    x.id != timing.id &&
-                    ((desiredStart < x.end + conflictThreshold && desiredEnd > x.start) ||
-                        (desiredEnd > x.start - conflictThreshold && desiredStart < x.end))
-            )
-            if (timingConflict) {
+
+            const conflictThreshold = this.snapThreshold
+            const timingConflictList = this.getPosConflicts([timing.id], desiredStart, desiredEnd, conflictThreshold)
+
+            if (timingConflictList.length > 0) {
+                const timingConflict = timingConflictList[0]
                 // Check if we are within our snap threshold. If so, simply snap. Else report an error
                 const snapToEnd =
                     desiredStart < timingConflict.end + conflictThreshold &&
@@ -209,30 +208,27 @@ export default {
                     } else {
                         deltaXToMove = conflictStartX - startX - distToEnd
                     }
+
+                    // Check if there is still any issues after we have snapped
+                    const newStart = this.getTimestampFromMouseX(e.clientX - distToStart)
+                    const newEnd = newStart + desiredDuration
+                    const newConflicts = this.getPosConflicts([timing.id, timingConflict.id], newStart, newEnd, 0)
+                    if (newConflicts.length > 0) newPosValid = false
                 }
             }
             this.newDragPosValid = newPosValid
 
-            // if (timingConflict) {
-            //     const conflictEl = timingConflict && document.getElementById(`timeline-item-${timingConflict.id}`)
-            //     const conflictRect = conflictEl.getBoundingClientRect()
-            //     const conflictStartX = timingConflict && conflictRect.left
-            //     const conflictEndX = timingConflict && conflictRect.right
-
-            //     const elStartX = e.clientX - distToStart
-            //     const elEndX = e.clientX + distToEnd
-            //     const snapThreshold = 100
-            //     console.log('timing conflict check', elEndX, conflictStartX, snapThreshold)
-            //     if (elEndX > conflictStartX - snapThreshold && elEndX < conflictStartX + snapThreshold) {
-            //         deltaXToMove = conflictStartX - startX - this.draggedElWidth
-            //     }
-            //     if (elStartX < conflictEndX - snapThreshold && elStartX > conflictEndX + snapThreshold) {
-            //         deltaXToMove = conflictEndX - startX + conflictRect.width
-            //     }
-            // }
-
             // Set the transform of the dragged element
             this.draggedEl.style.transform = `translateX(${deltaXToMove}px)`
+        },
+        getPosConflicts(idsToIgnore = [], desiredStart, desiredEnd, threshold = 0) {
+            const conflicts = this.videoTimings.filter(
+                x =>
+                    !idsToIgnore.includes(x.id) &&
+                    ((desiredStart < x.end + threshold && desiredEnd > x.start) ||
+                        (desiredEnd > x.start - threshold && desiredStart < x.end))
+            )
+            return conflicts
         },
         onDragEnd(e) {
             if (this.newDragPosValid) this.saveNewPosition()
@@ -256,7 +252,9 @@ export default {
             timing.end = Math.min(this.videoDuration, timing.start + desiredDuration)
 
             // Sort timings by start time after change
-            this.videoTimings.sort((a,b) => {return a.start > b.start ? 1 : -1})
+            this.videoTimings.sort((a, b) => {
+                return a.start > b.start ? 1 : -1
+            })
         },
         getTimestampFromMouseX(mouseX) {
             // Get timestamp that corresponds to the drag position

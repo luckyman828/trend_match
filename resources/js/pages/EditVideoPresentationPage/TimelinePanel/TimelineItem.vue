@@ -70,6 +70,7 @@ export default {
         ...mapGetters('videoPresentation', {
             zoom: 'getTimelineZoom',
             rail: 'getTimelineRail',
+            snapThreshold: 'getSnapThreshold',
         }),
         product() {
             return this.timing.product
@@ -137,7 +138,7 @@ export default {
 
             // Make sure the start is before the end
             const minDuration = 2
-            const snapThreshold = 4 // In seconds
+            const snapThreshold = this.snapThreshold // In seconds
 
             if (this.dragMode == 'end') {
                 const maxCap = this.timing.nextTiming ? this.timing.nextTiming.start : this.videoDuration

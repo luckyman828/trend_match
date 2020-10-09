@@ -17,6 +17,7 @@ export default {
         timelineZoom: 1,
         timelineRail: null,
         timelineEl: null,
+        snapThreshold: 12, // In seconds
     },
 
     getters: {
@@ -27,6 +28,9 @@ export default {
         getTimelineZoom: state => state.timelineZoom,
         getTimelineRail: state => state.timelineRail,
         getTimelineEl: state => state.timelineEl,
+        // getSnapThreshold: (state, getters) => state.snapThreshold / getters.getTimelineZoom, // Manually set snap threshold
+        getSnapThreshold: (state, getters, rootState, rootGetters) =>
+            rootGetters['videoPlayer/getDuration'] / 32 / getters.getTimelineZoom, // Threshold relative to video length
     },
 
     actions: {
