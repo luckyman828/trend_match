@@ -3,7 +3,7 @@ horizontalSrollDirective.install = Vue => {
     Vue.directive('horizontal-scroll', {
         bind: function(el, binding, vnode) {
             el.onWheel = function(e) {
-                if (e.type != 'wheel') {
+                if (e.type != 'wheel' || e.altKey) {
                     return
                 }
                 let delta = (e.deltaY || -e.wheelDelta || e.detail) >> 10 || 1

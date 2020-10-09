@@ -1,23 +1,9 @@
 <template>
     <div class="timeline-panel">
         <TimelineControls />
-        <div class="rail" v-horizontal-scroll ref="rail">
+        <div class="rail" v-horizontal-scroll ref="rail" v-on:wheel.alt="onZoomWheel">
             <div class="timeline" ref="timeline" :style="timelineStyle" @click.self="setCursorPosition">
                 <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
-                <!-- <Draggable
-                    class="draggable"
-                    v-model="videoTimings"
-                    handle=".inner"
-                    tag="div"
-                    :forceFallback="true"
-                    group="videoTimings"
-                    draggable=".timeline-item"
-                    fallbackClass="sortable-drag"
-                    :fallbackTolerance="10"
-                    @add="onAdd"
-                    @sort="onSort"
-                    @start="onDragStart"
-                > -->
                 <TimelineItem
                     v-for="(timing, index) in videoTimings"
                     :class="[
@@ -29,7 +15,6 @@
                     :index="index"
                     @mousedown.native="onDragStart($event, timing)"
                 />
-                <!-- </Draggable> -->
             </div>
         </div>
     </div>
@@ -63,11 +48,11 @@ export default {
     computed: {
         ...mapGetters('videoPresentation', {
             getVideoTimings: 'getVideoTimings',
-            timingClone: 'getTimingClone',
             zoom: 'getTimelineZoom',
             timelineRail: 'getTimelineRail',
             timelineEl: 'getTimelineEl',
             snapThreshold: 'getSnapThreshold',
+            zoomLevels: 'getZoomLevels',
         }),
         ...mapGetters('videoPlayer', {
             playerIframe: 'getIframe',
@@ -105,20 +90,32 @@ export default {
             'ADD_TIMING',
             'SET_TIMELINE_RAIL',
             'SET_TIMELINE_EL',
+            'SET_TIMELINE_ZOOM',
         ]),
-        ...mapActions('videoPresentation', ['addTiming']),
+        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent']),
         ...mapActions('videoPlayer', ['seekTo']),
-        // onDragStart(e) {
-        //     // Clear clone styles to get correct width
-        //     const origialEl = e.item
-        //     const cloneEl = origialEl.parentElement.children[origialEl.parentElement.children.length - 1]
-        //     cloneEl.style.minWidth = ''
-        //     cloneEl.style.maxWidth = ''
-        //     // const originalWidth = origialEl.getBoundingClientRect().width
-        //     // cloneEl.style.width = `${originalWidth}px`
-        //     // cloneEl.style.minWidth = `${originalWidth}px`
-        //     // cloneEl.style.maxWidth = `${originalWidth}px`
-        // },
+        onZoomWheel(e) {
+            const zoomLevels = this.zoomLevels
+            const zoomIndex = zoomLevels.findIndex(x => x == this.zoom)
+            const oldZoom = this.zoom
+            const zoomIn = e.deltaY < 0
+            if ((zoomIn && zoomIndex >= zoomLevels.length - 1) || (!zoomIn && zoomIndex <= 0)) return
+            const newZoom = zoomIn ? zoomLevels[zoomIndex + 1] : zoomLevels[zoomIndex - 1]
+
+            const railEl = this.timelineRail
+            const railRect = railEl.getBoundingClientRect()
+            const railScrollX = railEl.scrollLeft
+            const zoomRatio = newZoom / oldZoom
+
+            const mouseX = e.clientX - railRect.left // the target to keep in the same spot
+            const newScrollX = zoomRatio * (railScrollX + mouseX) - mouseX
+
+            this.SET_TIMELINE_ZOOM(newZoom)
+
+            this.$nextTick(() => {
+                railEl.scroll(newScrollX, 0)
+            })
+        },
         onDragStart(e, timing) {
             // Check that we have not clicked the cap drag handles
             if (e.target.classList.contains('drag-cap-handle')) return
@@ -278,46 +275,6 @@ export default {
             document.removeEventListener('mouseup', this.onDragEnd)
             document.removeEventListener('mousemove', this.onDragMove)
             document.body.removeEventListener('mouseleave', this.onDragEnd)
-        },
-        onAdd(e) {
-            const newIndex = e.newIndex
-            const newTiming = this.timingClone
-            this.addTiming({ newTiming, index: newIndex })
-        },
-        onSort(e) {
-            const triggeredByTimingAdd = e.from.classList.contains('product-result')
-            if (triggeredByTimingAdd) return
-            const newIndex = Math.min(e.newIndex, this.videoTimings.length - 1)
-            const oldIndex = e.oldIndex
-            const movedTiming = this.videoTimings[newIndex]
-            console.log('on sort', movedTiming, oldIndex, newIndex)
-
-            // If we moved forward
-            if (newIndex > oldIndex) {
-                const timingsBefore = this.videoTimings.slice(oldIndex, newIndex - 1)
-                console.log('timings before', timingsBefore)
-                timingsBefore.map(timing => {
-                    timing.start -= movedTiming.duration
-                    timing.end -= movedTiming.duration
-                })
-            }
-
-            // If we moved backward
-            if (newIndex < oldIndex) {
-                const timingsAfter = this.videoTimings.slice(newIndex - 1, oldIndex)
-                timingsAfter.map(timing => {
-                    timing.start += movedTiming.duration
-                    timing.end += movedTiming.duration
-                })
-            }
-
-            const desiredDuration = movedTiming.end - movedTiming.start
-            if (newIndex > 0) {
-                movedTiming.start = this.videoTimings[newIndex - 1].end
-            } else {
-                movedTiming.start = 0
-            }
-            movedTiming.end = movedTiming.start + desiredDuration
         },
         setCursorPosition(e) {
             // Set cursor position as a timestamp

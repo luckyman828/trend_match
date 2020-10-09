@@ -39,13 +39,14 @@ export default {
         ...mapGetters('videoPresentation', {
             zoom: 'getTimelineZoom',
             timings: 'getVideoTimings',
+            zoomLevels: 'getZoomLevels',
         }),
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
         ...mapMutations('videoPresentation', ['SET_TIMELINE_ZOOM']),
         onToggleZoom() {
-            const zoomLevels = [1, 2, 4, 8]
+            const zoomLevels = this.zoomLevels
             const index = zoomLevels.findIndex(x => x == this.zoom)
             let newIndex = index + 1
             if (newIndex >= zoomLevels.length) newIndex = 0

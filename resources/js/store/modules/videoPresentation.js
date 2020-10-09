@@ -12,25 +12,25 @@ export default {
         },
         searchItemDragActive: false,
         videoTimings: [],
-        timingClone: null,
         timingId: 0,
         timelineZoom: 1,
         timelineRail: null,
         timelineEl: null,
         snapThreshold: 12, // In seconds
+        zoomLevels: [1, 2, 4, 8, 16, 32],
     },
 
     getters: {
         getCurrentVideo: state => state.currentVideo,
         getSearchItemDragActive: state => state.searchItemDragActive,
         getVideoTimings: state => state.videoTimings,
-        getTimingClone: state => state.timingClone,
         getTimelineZoom: state => state.timelineZoom,
         getTimelineRail: state => state.timelineRail,
         getTimelineEl: state => state.timelineEl,
         // getSnapThreshold: (state, getters) => state.snapThreshold / getters.getTimelineZoom, // Manually set snap threshold
         getSnapThreshold: (state, getters, rootState, rootGetters) =>
             rootGetters['videoPlayer/getDuration'] / 32 / getters.getTimelineZoom, // Threshold relative to video length
+        getZoomLevels: state => state.zoomLevels,
     },
 
     actions: {
@@ -164,6 +164,15 @@ export default {
                 })
             })
         },
+        getTimestampFromMouseEvent({ getters, rootGetters }, mouseEvent) {
+            const mouseX = mouseEvent.clientX
+            const rail = getters.getTimelineRail
+            const railRect = rail.getBoundingClientRect()
+            const adjustedX = mouseX - railRect.left + rail.scrollLeft
+            const durationPerc = adjustedX / railRect.width
+            const timestamp = rootGetters['videoPlayer/getDuration'] * durationPerc
+            return timestamp
+        },
     },
 
     mutations: {
@@ -186,9 +195,6 @@ export default {
         },
         REMOVE_TIMING(state, index) {
             state.videoTimings.splice(index, 1)
-        },
-        SET_TIMING_CLONE(state, clone) {
-            state.timingClone = clone
         },
         SET_TIMELINE_ZOOM(state, zoom) {
             state.timelineZoom = zoom
