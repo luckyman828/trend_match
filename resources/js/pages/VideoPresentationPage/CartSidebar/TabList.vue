@@ -35,21 +35,7 @@
 import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'tabList',
-    props: ['cartView'],
-    computed: {
-        ...mapGetters('products', {
-            products: 'products',
-        }),
-        actionGroups() {
-            return {
-                ins: this.products.filter(x => ['In', 'Focus'].includes(x.yourAction)),
-                focus: this.products.filter(x => x.yourAction == 'Focus'),
-                outs: this.products.filter(x => x.yourAction == 'Out'),
-                nds: this.products.filter(x => x.yourAction == 'None'),
-                all: this.products,
-            }
-        },
-    },
+    props: ['cartView', 'actionGroups'],
     methods: {
         onSetCartView(newView) {
             this.$emit('update:cartView', newView)

@@ -4,7 +4,7 @@
             <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider">
                 <div class="watch-overlay">
                     <ProductDetailsSidebar />
-                    <!-- <CartSidebar /> -->
+                    <CartSidebar />
                     <PauseOverlay />
                 </div>
             </VideoPlayer>

@@ -1,8 +1,8 @@
 <template>
-    <div class="cart-item" :class="`action-${product.yourAction}`">
+    <div class="cart-item" :class="`action-${selectionInput[currentAction]}`">
         <div class="action-indicator"></div>
         <div class="img-wrapper">
-            <img :src="product.getThumbnail" />
+            <BaseVariantImage :variant="product.variants[0]" size="sm" />
         </div>
         <div class="details-wrapper flex-list flex-v justify-content">
             <div class="flex-list space-between">
@@ -43,9 +43,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     name: 'cartItem',
-    props: ['product', 'index'],
+    props: ['product', 'index', 'currentAction'],
+    computed: {
+        ...mapGetters('products', {
+            getActiveSelectionInput: 'getActiveSelectionInput',
+        }),
+        selectionInput() {
+            return this.getActiveSelectionInput(this.product)
+        },
+    },
 }
 </script>
 
