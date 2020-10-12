@@ -66,6 +66,7 @@ $info: $blue;
 $secondary: #69e4a6;
 $secondaryLight: rgba($secondary, 0.35);
 
+$dark100: #0d131c;
 $dark: #1c293b;
 $dark05: #313f52;
 $dark1: #535353;
@@ -212,4 +213,5 @@ $transformElActive: scale(0.97);
 // Player Controls
 $heightPreviewPlayerControls: 48px;
 $heightPauseOverlay: 170px;
-$heightEditVideoTimeline: 108px;
+// $heightEditVideoTimeline: 108px;
+$heightEditVideoTimeline: 168px;

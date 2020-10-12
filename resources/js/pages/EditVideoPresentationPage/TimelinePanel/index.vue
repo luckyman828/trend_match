@@ -1,27 +1,48 @@
 <template>
     <div class="timeline-panel">
         <TimelineControls />
-        <div class="rail" v-horizontal-scroll ref="rail" v-on:wheel.alt="onZoomWheel">
-            <div
-                class="timeline"
-                ref="timeline"
-                :style="timelineStyle"
-                @mousedown.self="onTimelineMousedown"
-                @mouseup.self="onTimelineMouseup"
-            >
-                <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
-                <TimelineItem
-                    v-for="(timing, index) in videoTimings"
-                    :class="[
-                        { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
-                        { error: isDragging && draggedTiming && draggedTiming.id == timing.id && !newDragPosValid },
-                    ]"
-                    :key="timing.id"
-                    :timing="timing"
-                    :index="index"
-                    :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
-                    @mousedown.native="onDragStart($event, timing)"
-                />
+        <div class="timeline-area">
+            <div class="rail-wrapper">
+                <div class="rail" v-horizontal-scroll ref="rail" v-on:wheel.alt="onZoomWheel">
+                    <div class="timeline-interval-markers" :style="timelineStyle">
+                        <!-- <div
+                                class="interval-mark"
+                                v-for="(interval, index) in timelineIntervals"
+                                :key="index"
+                                :style="intervalMarkStyle"
+                            >
+                                <span>{{ interval }}</span>
+                            </div> -->
+                        <div class="interval-sub-markers" :style="intervalSubmarkStyle"></div>
+                    </div>
+                    <div
+                        class="timeline"
+                        ref="timeline"
+                        :style="timelineStyle"
+                        @mousedown.self="onTimelineMousedown"
+                        @mouseup.self="onTimelineMouseup"
+                    >
+                        <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
+                        <TimelineItem
+                            v-for="(timing, index) in videoTimings"
+                            :class="[
+                                { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
+                                {
+                                    error:
+                                        isDragging &&
+                                        draggedTiming &&
+                                        draggedTiming.id == timing.id &&
+                                        !newDragPosValid,
+                                },
+                            ]"
+                            :key="timing.id"
+                            :timing="timing"
+                            :index="index"
+                            :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
+                            @mousedown.native="onDragStart($event, timing)"
+                        />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -81,14 +102,33 @@ export default {
                 left: `${percX}%`,
             }
         },
+        timelineIntervals() {
+            const interval = 60 // seconds between start of each line
+            const intervalCount = Math.floor(this.videoDuration / interval)
+            const intervalArray = []
+            for (let i = 0; i <= intervalCount; i++) {
+                intervalArray.push(interval * i)
+            }
+            return intervalArray
+        },
         timelineStyle() {
+            return {
+                width: `${100 * this.zoom}%`,
+            }
+        },
+        intervalMarkStyle() {
+            const widthPercent = 100 / this.timelineIntervals.length
+            return {
+                width: `${widthPercent}%`,
+            }
+        },
+        intervalSubmarkStyle() {
             const interval = 4 // seconds between start of each line
-            const lineThickness = 2
+            const lineThickness = 1
             const distPerc = (interval / this.videoDuration) * 100
             const lineColor = '#445f7b'
             return {
                 background: `repeating-linear-gradient(90deg, transparent, transparent ${distPerc}%, ${lineColor} ${distPerc}px, ${lineColor} calc(${distPerc}% + ${lineThickness}px))`,
-                width: `${100 * this.zoom}%`,
             }
         },
     },
@@ -292,14 +332,14 @@ export default {
         },
         getTimestampFromMouseX(mouseX) {
             // Get timestamp that corresponds to the drag position
-            const playerRect = this.playerIframe.getBoundingClientRect()
+            const railRect = this.$refs.rail.getBoundingClientRect()
             const timelineRail = this.timelineRail
 
             // Get the adjusted X position on the timeline
-            const adjustedX = mouseX - playerRect.left + timelineRail.scrollLeft
+            const adjustedX = mouseX - railRect.left + timelineRail.scrollLeft
 
             // Get the percentage of the total video duration
-            const durationPerc = adjustedX / playerRect.width / this.zoom
+            const durationPerc = adjustedX / railRect.width / this.zoom
             const mouseTimestamp = this.videoDuration * durationPerc
             return mouseTimestamp
         },
@@ -315,10 +355,10 @@ export default {
         },
         setCursorPosition(e) {
             // Set cursor position as a timestamp
-            const playerRect = this.playerIframe.getBoundingClientRect()
+            const railRect = this.$refs.rail.getBoundingClientRect()
             const scrollX = this.$refs.rail.scrollLeft
-            const adjustedX = e.clientX - playerRect.left + scrollX
-            const percX = ((adjustedX / playerRect.width) * 100) / this.zoom
+            const adjustedX = e.clientX - railRect.left + scrollX
+            const percX = ((adjustedX / railRect.width) * 100) / this.zoom
             const timestamp = this.videoDuration * (percX / 100)
             this.seekTo(timestamp)
         },
@@ -339,21 +379,72 @@ export default {
     flex-direction: column;
     background: $dark;
     overflow: hidden;
+    .timeline-area {
+        padding: 0 16px;
+        height: 100%;
+    }
+    .rail-wrapper {
+        border-radius: 8px 8px 0 0;
+        background: $dark100;
+        height: 100%;
+        padding: 32px 16px 8px;
+    }
     .rail {
         overflow-x: scroll;
+        overflow-y: hidden;
+        position: relative;
         height: 100%;
+        &::-webkit-scrollbar-track {
+            background: $dark100;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: white;
+            &:hover {
+                background: $grey700;
+            }
+        }
+    }
+    .timeline-interval-markers {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: calc(100% - 8px);
+        width: 100%;
+        display: flex;
+        pointer-events: none;
+        .interval-mark {
+            color: white;
+            border-left: solid white 1px;
+            height: calc(100% + 32px);
+            position: relative;
+            font-size: 10px;
+            z-index: 1;
+            span {
+                position: absolute;
+                left: 0;
+                top: -16px;
+                transform: translateX(-50%);
+            }
+        }
+        .interval-sub-markers {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
     }
     .timeline {
         flex: 1;
-        border-top: $borderModule;
-        box-shadow: $shadowModule;
         position: relative;
-        padding: 16px 0 20px;
+        // padding: 16px 0 20px;
+        align-items: center;
         height: 100%;
         display: flex;
+        padding-bottom: 8px;
         .timeline-cursor {
             position: absolute;
-            height: 100%;
+            height: calc(100% - 8px);
             width: 2px;
             background: $primary;
             left: 0;

@@ -231,8 +231,8 @@ export default {
     }
     &:focus,
     &:focus-within {
-        background: $primary;
-        color: white;
+        // background: $primary;
+        // color: white;
         border-color: $primary;
         &:not(.dragged):not(.drag-caps) {
             .controls {
@@ -242,7 +242,7 @@ export default {
         }
     }
     &.current {
-        border-color: $primary;
+        // border-color: $primary;
     }
     &.dragged {
         background: $yellow;
