@@ -202,6 +202,8 @@ export default {
         },
         initRequests({ rootGetters }, requests) {
             requests.map(request => {
+                if (request.hasBeenInitialized) return
+
                 if (!request.discussions) Vue.set(request, 'discussions', [])
 
                 Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
@@ -232,6 +234,8 @@ export default {
                         )
                     },
                 })
+
+                request.hasBeenInitialized = true
             })
         },
     },
