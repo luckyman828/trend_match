@@ -177,8 +177,8 @@ export default {
 
             // Get the desired start and end
             const desiredDuration = timing.duration
-            const desiredStart = this.getTimestampFromMouseX(e.clientX - distToStart)
-            const desiredEnd = desiredStart + desiredDuration
+            let desiredStart = this.getTimestampFromMouseX(e.clientX - distToStart)
+            let desiredEnd = desiredStart + desiredDuration
 
             // Now we have our desired end and start. Position the timing accordingly.
             // This code is used simply to display the new position. We will use the newEnd and newStart to check the validity of the new position
@@ -186,13 +186,33 @@ export default {
             const deltaX = e.clientX - startX
 
             // Get the start and end caps of our drag
-            const timelineEnd = this.timelineEl.getBoundingClientRect().right
-            const timelineStart = this.timelineEl.getBoundingClientRect().left
+            const timelineRect = this.timelineEl.getBoundingClientRect()
+            const timelineEnd = timelineRect.right
+            const timelineStart = timelineRect.left
+            const timelineWidth = timelineRect.width
 
             const deltaXMax = timelineEnd - distToEnd - startX
             const deltaXMin = timelineStart - startX + distToStart
             let deltaXToMove = Math.min(Math.max(deltaX, deltaXMin), deltaXMax)
 
+            // Snap to cursor if within treshold
+            const snapThreshold = this.snapThreshold
+            const cursorTimestamp = this.playerTimestamp
+            const cursorX = this.$refs.timelineCursor.getBoundingClientRect().left
+            // Snap start
+            if (desiredStart > cursorTimestamp - snapThreshold && desiredStart < cursorTimestamp + snapThreshold) {
+                desiredStart = cursorTimestamp
+                desiredEnd = desiredStart + desiredDuration
+                deltaXToMove = cursorX - startX + distToStart
+            }
+            // Snap end
+            if (desiredEnd > cursorTimestamp - snapThreshold && desiredEnd < cursorTimestamp + snapThreshold) {
+                desiredEnd = cursorTimestamp
+                desiredStart = desiredEnd - desiredDuration
+                deltaXToMove = cursorX - startX - distToEnd
+            }
+
+            // Snap to other timings or report conflicts
             // Check if we have a timing conflict
             // Check for any conflicting timings
             let newPosValid = true
