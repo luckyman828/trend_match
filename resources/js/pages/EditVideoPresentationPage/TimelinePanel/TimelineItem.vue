@@ -224,17 +224,20 @@ export default {
         position: absolute;
         top: -14px;
         right: 4px;
-        display: none;
+        opacity: 0;
+        pointer-events: none;
         transition: 0.1s ease-out;
         z-index: 2;
     }
-    &:focus {
+    &:focus,
+    &:focus-within {
         background: $primary;
         color: white;
         border-color: $primary;
         &:not(.dragged):not(.drag-caps) {
             .controls {
-                display: block;
+                opacity: 1;
+                pointer-events: all;
             }
         }
     }
