@@ -1045,8 +1045,8 @@ export default {
                     max-width: 48px;
                 }
                 &.focus {
-                    min-width: 56px;
-                    max-width: 56px;
+                    min-width: 64px;
+                    max-width: 64px;
                 }
                 &.outs {
                     min-width: 52px;
