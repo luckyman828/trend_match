@@ -2,7 +2,13 @@
     <div class="timeline-panel">
         <TimelineControls />
         <div class="rail" v-horizontal-scroll ref="rail" v-on:wheel.alt="onZoomWheel">
-            <div class="timeline" ref="timeline" :style="timelineStyle" @click.self="setCursorPosition">
+            <div
+                class="timeline"
+                ref="timeline"
+                :style="timelineStyle"
+                @mousedown.self="onTimelineMousedown"
+                @mouseup.self="onTimelineMouseup"
+            >
                 <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
                 <TimelineItem
                     v-for="(timing, index) in videoTimings"
@@ -44,6 +50,7 @@ export default {
             draggedElWidth: null,
             newDragPosValid: true,
             draggedElEndDist: null,
+            timelineClickOrigin: false,
         }
     },
     computed: {
@@ -95,6 +102,15 @@ export default {
         ]),
         ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent']),
         ...mapActions('videoPlayer', ['seekTo']),
+        onTimelineMousedown(e) {
+            this.timelineClickOrigin = true
+        },
+        onTimelineMouseup(e) {
+            if (this.timelineClickOrigin) {
+                this.setCursorPosition(e)
+            }
+            this.timelineClickOrigin = false
+        },
         onZoomWheel(e) {
             const zoomLevels = this.zoomLevels
             const zoomIndex = zoomLevels.findIndex(x => x == this.zoom)
