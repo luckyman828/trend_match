@@ -7,12 +7,13 @@
                 <TimelineItem
                     v-for="(timing, index) in videoTimings"
                     :class="[
-                        { dragged: draggedTiming && draggedTiming.id == timing.id },
-                        { error: draggedTiming && draggedTiming.id == timing.id && !newDragPosValid },
+                        { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
+                        { error: isDragging && draggedTiming && draggedTiming.id == timing.id && !newDragPosValid },
                     ]"
                     :key="timing.id"
                     :timing="timing"
                     :index="index"
+                    :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
                     @mousedown.native="onDragStart($event, timing)"
                 />
             </div>

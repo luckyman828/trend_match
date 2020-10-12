@@ -1,5 +1,11 @@
 <template>
-    <div class="timeline-item" :style="style" :id="`timeline-item-${timing.id}`" :class="{ current: isCurrent }">
+    <div
+        class="timeline-item"
+        :style="style"
+        :id="`timeline-item-${timing.id}`"
+        :class="[{ current: isCurrent }, { 'drag-caps': isDragging }]"
+        tabindex="0"
+    >
         <div class="controls">
             <button class="pill red sm" @click="onRemoveTiming">
                 <span>Delete</span>
@@ -53,7 +59,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'timelineItem',
-    props: ['timing', 'index'],
+    props: ['timing', 'index', 'dragActive', 'isDragged'],
     data: function() {
         return {
             isDragging: false,
@@ -144,31 +150,31 @@ export default {
                 const maxCap = this.timing.nextTiming ? this.timing.nextTiming.start : this.videoDuration
                 // Cap the end at the start of the next element
                 let newEnd = Math.min(Math.max(timestamp, minDuration, this.timing.start + minDuration), maxCap)
+                // Check if the new end is close to the cursor. If so snap to it
+                if (newEnd < this.cursorTimestamp + snapThreshold && newEnd > this.cursorTimestamp - snapThreshold) {
+                    newEnd = this.cursorTimestamp
+                }
                 // If we are close to another timing. Snap to its start
                 const next = this.timing.nextTiming
                 if (next && newEnd + snapThreshold > next.start) {
                     newEnd = next.start
-                }
-                // Check if the new end is close to the cursor. If so snap to it
-                if (newEnd < this.cursorTimestamp + snapThreshold && newEnd > this.cursorTimestamp - snapThreshold) {
-                    newEnd = this.cursorTimestamp
                 }
                 this.timing.end = newEnd
                 // this.timing.start = Math.max(Math.min(this.timing.start, timestamp - minDuration), 0)
             } else {
                 const minCap = this.timing.prevTiming ? this.timing.prevTiming.end : 0
                 let newStart = Math.max(Math.min(timestamp, this.timing.end - minDuration), minCap)
-                // If we are close to another timing. Snap to its end
-                const prev = this.timing.prevTiming
-                if (prev && newStart - snapThreshold < prev.end) {
-                    newStart = prev.end
-                }
                 // Check if the new start is close to the cursor. If so snap to it
                 if (
                     newStart < this.cursorTimestamp + snapThreshold &&
                     newStart > this.cursorTimestamp - snapThreshold
                 ) {
                     newStart = this.cursorTimestamp
+                }
+                // If we are close to another timing. Snap to its end
+                const prev = this.timing.prevTiming
+                if (prev && newStart - snapThreshold < prev.end) {
+                    newStart = prev.end
                 }
                 this.timing.start = newStart
                 // this.timing.end = Math.min(Math.max(this.timing.end, timestamp + minDuration), this.videoDuration)
@@ -199,6 +205,7 @@ export default {
 
 .timeline-item {
     background: white;
+    border: solid 2px white;
     border-radius: $borderRadiusEl;
     box-shadow: 0 3px 6px rgba(black, 0.2);
     padding: 6px;
@@ -215,20 +222,24 @@ export default {
     -ms-user-select: none;
     .controls {
         position: absolute;
-        top: -10px;
+        top: -14px;
         right: 4px;
-        opacity: 0;
+        display: none;
         transition: 0.1s ease-out;
         z-index: 2;
     }
-    &.current {
+    &:focus {
         background: $primary;
         color: white;
-    }
-    &:hover:not(.dragged) {
-        .controls {
-            opacity: 1;
+        border-color: $primary;
+        &:not(.dragged):not(.drag-caps) {
+            .controls {
+                display: block;
+            }
         }
+    }
+    &.current {
+        border-color: $primary;
     }
     &.dragged {
         background: $yellow;
