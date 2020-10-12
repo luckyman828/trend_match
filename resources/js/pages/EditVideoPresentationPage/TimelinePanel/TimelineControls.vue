@@ -40,6 +40,7 @@ export default {
             zoom: 'getTimelineZoom',
             timings: 'getVideoTimings',
             zoomLevels: 'getZoomLevels',
+            timelineRail: 'getTimelineRail',
         }),
     },
     methods: {
@@ -50,7 +51,21 @@ export default {
             const index = zoomLevels.findIndex(x => x == this.zoom)
             let newIndex = index + 1
             if (newIndex >= zoomLevels.length) newIndex = 0
-            this.SET_TIMELINE_ZOOM(zoomLevels[newIndex])
+            const newZoom = zoomLevels[newIndex]
+            const oldZoom = this.zoom
+
+            const railEl = this.timelineRail
+            const railScrollX = railEl.scrollLeft
+            const zoomRatio = newZoom / oldZoom
+            const offsetX = railEl.getBoundingClientRect().width / 2
+            // const newScrollX = zoomRatio * railScrollX
+            const newScrollX = zoomRatio * (railScrollX + offsetX) - offsetX
+
+            this.SET_TIMELINE_ZOOM(newZoom)
+
+            this.$nextTick(() => {
+                railEl.scroll(newScrollX, 0)
+            })
         },
     },
 }
