@@ -67,7 +67,13 @@ const routes = [
     {
         path: '/file/:fileId/video/edit',
         name: 'editVideoPresentation',
-        component: () => import(/* webpackChunkName: "VideoPresentationPage" */ './pages/EditVideoPresentationPage'),
+        component: () =>
+            import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
+    },
+    {
+        path: '/file/:fileId/selection/:selectionId/video/watch',
+        name: 'watchVideoPresentation',
+        component: () => import(/* webpackChunkName: "WatchVideoPresentationPage" */ './pages/VideoPresentationPage'),
     },
     { path: '*', redirect: '/files' },
 ]

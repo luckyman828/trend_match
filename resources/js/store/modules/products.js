@@ -873,6 +873,14 @@ export default {
 
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
+                Object.defineProperty(product, 'name', {
+                    get: function() {
+                        return product.title
+                    },
+                    set: function(value) {
+                        product.title = value
+                    },
+                })
 
                 // Instantiate the selectionInputList on the product
                 Vue.set(product, 'selectionInputList', [])

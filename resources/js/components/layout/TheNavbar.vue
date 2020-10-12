@@ -5,13 +5,14 @@
                 <img src="/images/kollekt-logo-color-1.svg" />
             </router-link>
         </div> -->
-        <NavbarFiles v-if="$route.name == 'files'"/>
-        <NavbarSelection v-if="$route.name == 'selection' && currentFile"/>
-        <NavbarEditFile v-if="$route.name == 'editFile' && currentFile"/>
-        <NavbarEditVideoPresentation v-if="$route.name == 'editVideoPresentation' && currentFile"/>
-        <NavbarTeams v-if="$route.name == 'teams'"/>
-        <NavbarUsers v-if="$route.name == 'users'"/>
-  </nav>
+        <NavbarFiles v-if="$route.name == 'files'" />
+        <NavbarSelection v-if="$route.name == 'selection' && currentFile" />
+        <NavbarEditFile v-if="$route.name == 'editFile' && currentFile" />
+        <NavbarEditVideoPresentation v-if="$route.name == 'editVideoPresentation' && currentFile" />
+        <NavbarWatchVideoPresentation v-if="$route.name == 'watchVideoPresentation' && currentFile" />
+        <NavbarTeams v-if="$route.name == 'teams'" />
+        <NavbarUsers v-if="$route.name == 'users'" />
+    </nav>
 </template>
 
 <script>
@@ -22,9 +23,10 @@ import NavbarTeams from '../../pages/TeamsPage/Navbar'
 import NavbarUsers from '../../pages/UsersPage/Navbar'
 import NavbarEditFile from '../../pages/EditFilePage/Navbar'
 import NavbarEditVideoPresentation from '../../pages/EditVideoPresentationPage/Navbar'
+import NavbarWatchVideoPresentation from '../../pages/VideoPresentationPage/Navbar'
 
 export default {
-    name: "navbar",
+    name: 'navbar',
     components: {
         NavbarSelection,
         NavbarFiles,
@@ -32,11 +34,12 @@ export default {
         NavbarUsers,
         NavbarEditFile,
         NavbarEditVideoPresentation,
+        NavbarWatchVideoPresentation,
     },
     computed: {
-        ...mapGetters('files', ['currentFile'])
+        ...mapGetters('files', ['currentFile']),
     },
-};
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -59,5 +62,4 @@ export default {
         width: 100%;
     }
 }
-
 </style>

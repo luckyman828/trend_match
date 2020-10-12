@@ -74,7 +74,12 @@ export default {
         getCurrentTiming: (state, getters, rootState, rootGetters) => {
             const timings = rootGetters['videoPresentation/getVideoTimings']
             const timestamp = getters.getTimestamp
-            return timings.find(x => x.start < timestamp && x.end > timestamp)
+            return timings.find(x => x.start <= timestamp && x.end > timestamp)
+        },
+        getCurrentProduct: (state, getters) => {
+            const currentTiming = getters.getCurrentTiming
+            if (!currentTiming) return
+            return currentTiming.product
         },
     },
 
@@ -87,7 +92,7 @@ export default {
             if (shouldBeMuted) {
                 await player[providerMap.mute](0)
             } else {
-                await player[providerMap.mute](1)
+                await player[providerMap.unMute](1)
             }
         },
         async togglePlaying({ commit, getters }) {

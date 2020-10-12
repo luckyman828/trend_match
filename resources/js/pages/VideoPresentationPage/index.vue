@@ -1,0 +1,81 @@
+<template>
+    <PageLoader
+        :status="status"
+        loadingMsg="loading file"
+        errorMsg="error loading file"
+        :fitPage="true"
+        :errorCallback="() => fetchData()"
+    >
+        <VideoPresentationPage />
+    </PageLoader>
+</template>
+
+<script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import VideoPresentationPage from './VideoPresentationPage'
+import PageLoader from '../../components/common/PageLoader'
+
+export default {
+    name: 'watchVideoPresentationLoader',
+    components: {
+        PageLoader,
+        VideoPresentationPage,
+    },
+    data: function() {
+        return {
+            loadingData: true,
+        }
+    },
+    computed: {
+        ...mapGetters('products', ['productsStatus']),
+        ...mapGetters('selections', ['currentSelectionStatus']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('files', ['filesStatus']),
+        status() {
+            if (this.productsStatus == 'error' || this.currentSelectionStatus == 'error' || this.filesStatus == 'error')
+                return 'error'
+            if (
+                this.productsStatus == 'loading' ||
+                this.currentSelectionStatus == 'loading' ||
+                this.filesStatus == 'loading' ||
+                this.loadingData
+            )
+                return 'loading'
+            return 'success'
+        },
+    },
+    methods: {
+        ...mapActions('files', ['fetchFile']),
+        ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
+        ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
+        async fetchData() {
+            this.loadingData = true
+            // Fetch the current file and the products
+            const fileId = this.$route.params.fileId
+            this.fetchFile(fileId)
+
+            // Fetch current selection
+            const selectionId = this.$route.params.selectionId
+            const selection = await this.fetchSelection({ selectionId })
+
+            // Fetch selection products
+            await this.fetchProducts({ fileId })
+            await this.fetchSelectionProducts(selection)
+
+            // Fetch selection settings
+            await this.fetchSelectionSettings(selection) // Used to know whether comments are anonyized or not
+
+            // Fetch selections that are available for alignment for the auth user
+            const selections = await this.fetchSelections({ fileId })
+
+            this.loadingData = false
+        },
+    },
+    created() {
+        this.fetchData()
+    },
+}
+</script>
+
+<style scoped lang="scss"></style>

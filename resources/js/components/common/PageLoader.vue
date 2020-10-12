@@ -45,6 +45,7 @@ export default {
         height: 100%;
         .page-wrapper {
             padding: 0;
+            height: 100%;
         }
     }
     .page-wrapper {
