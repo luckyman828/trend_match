@@ -3,6 +3,12 @@
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider">
                 <div class="watch-overlay">
+                    <div class="actions" v-if="!isPlaying">
+                        <router-link class="button pill ghost white" :to="{ name: 'selection' }">
+                            <i class="far fa-arrow-left"></i>
+                            <span>Back to selection</span>
+                        </router-link>
+                    </div>
                     <ProductDetailsSidebar />
                     <CartSidebar />
                     <PauseOverlay />
@@ -33,6 +39,9 @@ export default {
     computed: {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
+        }),
+        ...mapGetters('videoPlayer', {
+            isPlaying: 'getIsPlaying',
         }),
     },
     methods: {
@@ -77,5 +86,12 @@ export default {
     z-index: 1;
     overflow: hidden;
     pointer-events: none;
+    .actions {
+        pointer-events: all;
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
 </style>

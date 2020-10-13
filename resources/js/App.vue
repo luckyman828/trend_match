@@ -5,10 +5,10 @@
         class="app"
         id="app-component"
         v-else-if="authUser && currentWorkspace"
-        :class="{ 'hide-nav': hideNav, 'drag-active': dragActive }"
+        :class="[{ 'hide-nav': hideNav, 'drag-active': dragActive }, { 'full-screen': fullScreenContent }]"
     >
-        <TheNavbar />
-        <TheSidebar />
+        <TheNavbar v-if="!fullScreenContent" />
+        <TheSidebar v-if="!fullScreenContent" />
         <div class="main" id="main" ref="main">
             <!-- <div class="main" id="main" ref="main" @scroll.passive="scrollHandler"> -->
             <!-- <div class="container"> -->
@@ -45,9 +45,6 @@ import TheChangelogModal from './components/layout/TheChangelogModal/index'
 import LoginPage from './pages/LoginPage/'
 
 export default {
-    beforeRouteEnter(to, from, next) {
-        'before route enter'
-    },
     name: 'app',
     components: {
         TheSidebar,
@@ -78,6 +75,9 @@ export default {
         }),
         dragActive() {
             return this.isDragging
+        },
+        fullScreenContent() {
+            return this.$route.name == 'watchVideoPresentation'
         },
     },
     watch: {
@@ -285,46 +285,42 @@ html,
 body,
 #app {
     color: $dark;
-    // font-family: 'Source Sans Pro', sans-serif;
-    // background: white;
 }
 .app {
-    // max-height: calc(100vh - 70px);
-    // overflow: scroll;
     scroll-behavior: smooth;
-    display: grid;
     min-height: 100vh;
     min-width: 100vw;
     max-height: 100vh;
     overflow: hidden;
     transition: 0.3s;
-    // grid-template-columns: 160px auto;
-    grid-template-columns: 80px auto;
-    // grid-template-rows: 72px auto;
-    grid-template-rows: 60px auto;
-    grid-template-areas:
-        'sidebar navbar'
-        'sidebar main';
-    @media only screen and (-webkit-min-device-pixel-ratio: 1.3),
-        only screen and (-o-min-device-pixel-ratio: 13/10),
-        only screen and (min-resolution: 120dpi) {
-        .app {
-            grid-template-columns: 200px auto;
+    &:not(.full-screen) {
+        display: grid;
+        grid-template-columns: 80px auto;
+        grid-template-rows: 60px auto;
+        grid-template-areas:
+            'sidebar navbar'
+            'sidebar main';
+        @media only screen and (-webkit-min-device-pixel-ratio: 1.3),
+            only screen and (-o-min-device-pixel-ratio: 13/10),
+            only screen and (min-resolution: 120dpi) {
+            .app {
+                grid-template-columns: 200px auto;
+            }
         }
-    }
-    // @media screen and (max-width: $screenMd) {
-    //     grid-template-columns: 80px auto;
-    // }
-    @media screen and (max-width: $screenSm) {
-        grid-template-columns: 52px auto;
-        grid-template-rows: 52px auto;
-    }
-    &.hide-nav {
-        // grid-template-rows: 0 auto;
-        // margin-top: -72px;
+        @media screen and (max-width: $screenSm) {
+            grid-template-columns: 52px auto;
+            grid-template-rows: 52px auto;
+        }
     }
     &.drag-active {
         cursor: grabbing;
+    }
+    &.full-screen {
+        .main {
+            max-height: 100vh;
+            height: 100vh;
+            overflow: auto;
+        }
     }
 }
 .main {

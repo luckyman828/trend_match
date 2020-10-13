@@ -1,13 +1,15 @@
 <template>
     <div class="pause-overlay">
-        <div class="product-timing-list">
-            <TimingListItem
-                class="product-timing-list-item"
-                v-for="(timing, index) in timings"
-                :key="timing.timestamp"
-                :timing="timing"
-                :index="index"
-            />
+        <div class="rail">
+            <div class="product-timing-list">
+                <TimingListItem
+                    class="product-timing-list-item"
+                    v-for="(timing, index) in timings"
+                    :key="timing.timestamp"
+                    :timing="timing"
+                    :index="index"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -45,6 +47,9 @@ export default {
     pointer-events: all;
     .paused & {
         transform: none;
+    }
+    .rail {
+        height: 100%;
     }
     .product-timing-list {
         display: flex;
