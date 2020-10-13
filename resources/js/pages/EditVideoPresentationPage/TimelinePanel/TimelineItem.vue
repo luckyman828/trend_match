@@ -68,7 +68,6 @@ export default {
     },
     computed: {
         ...mapGetters('videoPlayer', {
-            playerIframe: 'getIframe',
             videoDuration: 'getDuration',
             cursorTimestamp: 'getTimestamp',
             currentTiming: 'getCurrentTiming',
@@ -125,19 +124,21 @@ export default {
             this.addDragListeners()
         },
         onDragMove(e) {
-            const playerRect = this.playerIframe.getBoundingClientRect()
+            const railRect = this.rail.getBoundingClientRect()
             const elRect = this.$el.getBoundingClientRect()
 
             const width = elRect.width
             const left = elRect.left
+            const railPadding = 16
 
-            const playerWidth = playerRect.width
+            const railWidth = railRect.width
             const offset = this.dragMode == 'end' ? 12 : -12
             const scrollX = this.rail.scrollLeft
-            const mouseX = e.clientX - playerRect.left + offset + scrollX
+            const mouseX = e.clientX - railRect.left + offset + scrollX
 
             // Find the percent X we are along the timeline
-            const xPercent = mouseX / playerWidth / this.zoom
+            const xPercent = mouseX / railWidth / this.zoom
+            console.log('drag move x-percent', xPercent)
 
             // Get the corresponding timestamp
             const timestamp = this.videoDuration * xPercent

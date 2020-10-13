@@ -4,43 +4,50 @@
         <div class="timeline-area">
             <div class="rail-wrapper">
                 <div class="rail" v-horizontal-scroll ref="rail" v-on:wheel.alt="onZoomWheel">
-                    <div class="timeline-interval-markers" :style="timelineStyle">
-                        <!-- <div
-                                class="interval-mark"
-                                v-for="(interval, index) in timelineIntervals"
-                                :key="index"
-                                :style="intervalMarkStyle"
-                            >
-                                <span>{{ interval }}</span>
-                            </div> -->
-                        <div class="interval-sub-markers" :style="intervalSubmarkStyle"></div>
-                    </div>
-                    <div
-                        class="timeline"
-                        ref="timeline"
-                        :style="timelineStyle"
-                        @mousedown.self="onTimelineMousedown"
-                        @mouseup.self="onTimelineMouseup"
-                    >
-                        <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle" />
-                        <TimelineItem
-                            v-for="(timing, index) in videoTimings"
-                            :class="[
-                                { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
-                                {
-                                    error:
-                                        isDragging &&
-                                        draggedTiming &&
-                                        draggedTiming.id == timing.id &&
-                                        !newDragPosValid,
-                                },
-                            ]"
-                            :key="timing.id"
-                            :timing="timing"
-                            :index="index"
-                            :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
-                            @mousedown.native="onDragStart($event, timing)"
-                        />
+                    <div class="timeline-wrapper">
+                        <div class="interval-wrapper">
+                            <div class="timeline-interval-markers" :style="timelineStyle">
+                                <div
+                                    class="interval-mark"
+                                    v-for="(interval, index) in timelineIntervals"
+                                    :key="index"
+                                    :style="intervalMarkStyle"
+                                >
+                                    <span class="interval-number">{{ interval.timestamp }}</span>
+                                    <div class="sub-marks" :style="intervalSubmarkStyle"></div>
+                                </div>
+                                <!-- <div class="interval-sub-markers" :style="intervalSubmarkStyle"></div> -->
+                            </div>
+                        </div>
+                        <div
+                            class="timeline"
+                            ref="timeline"
+                            :style="timelineStyle"
+                            @mousedown.self="onTimelineMousedown"
+                            @mouseup.self="onTimelineMouseup"
+                        >
+                            <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle">
+                                <div class="cursor-time">{{ cursorTimestamp | timestampify }}</div>
+                            </div>
+                            <TimelineItem
+                                v-for="(timing, index) in videoTimings"
+                                :class="[
+                                    { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
+                                    {
+                                        error:
+                                            isDragging &&
+                                            draggedTiming &&
+                                            draggedTiming.id == timing.id &&
+                                            !newDragPosValid,
+                                    },
+                                ]"
+                                :key="timing.id"
+                                :timing="timing"
+                                :index="index"
+                                :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
+                                @mousedown.native="onDragStart($event, timing)"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -96,18 +103,28 @@ export default {
                 this.SET_VIDEO_TIMINGS(value)
             },
         },
+        cursorTimestamp() {
+            return this.playerTimestamp
+        },
         cursorStyle() {
-            const percX = (this.playerTimestamp / this.videoDuration) * 100
+            const percX = (this.cursorTimestamp / this.videoDuration) * 100
             return {
                 left: `${percX}%`,
             }
         },
         timelineIntervals() {
-            const interval = 60 // seconds between start of each line
-            const intervalCount = Math.floor(this.videoDuration / interval)
+            // const intervalCount = 12 * this.zoom // Decide how many intervals we want
+            // const intervalDuration = this.videoDuration / intervalCount // seconds between start of each line
+            // // Make sure the intervalduration is a whole number divisible by four
+            // const divisibleByInt = Math.max(4 / this.zoom, 4 / this.zoom)
+            // const flooredDuration = Math.floor(intervalDuration / divisibleByInt) * divisibleByInt
             const intervalArray = []
-            for (let i = 0; i <= intervalCount; i++) {
-                intervalArray.push(interval * i)
+            const desiredCount = 12 * this.zoom
+            const minDuration = 1
+            const intervalDuration = Math.max(Math.floor(this.videoDuration / desiredCount / 2) * 2, minDuration)
+            const intervalCount = Math.floor(this.videoDuration / intervalDuration)
+            for (let i = 0; i < intervalCount + 1; i++) {
+                intervalArray.push({ timestamp: intervalDuration * i, duration: intervalDuration })
             }
             return intervalArray
         },
@@ -117,18 +134,21 @@ export default {
             }
         },
         intervalMarkStyle() {
-            const widthPercent = 100 / this.timelineIntervals.length
+            const duration = this.timelineIntervals[0].duration
+            const widthPercent = (duration / this.videoDuration) * 100
+            const widthToUse = duration > 0 ? widthPercent : 100 / this.timelineIntervals.length
+
             return {
-                width: `${widthPercent}%`,
+                width: `${widthToUse}%`,
+                minWidth: `${widthToUse}%`,
             }
         },
         intervalSubmarkStyle() {
-            const interval = 4 // seconds between start of each line
             const lineThickness = 1
-            const distPerc = (interval / this.videoDuration) * 100
-            const lineColor = '#445f7b'
+            const distPerc = 25
+            const lineColor = '#425e80'
             return {
-                background: `repeating-linear-gradient(90deg, transparent, transparent ${distPerc}%, ${lineColor} ${distPerc}px, ${lineColor} calc(${distPerc}% + ${lineThickness}px))`,
+                background: `repeating-linear-gradient(90deg, transparent, transparent ${distPerc}%, ${lineColor} ${distPerc}%, ${lineColor} calc(${distPerc}% + ${lineThickness}px))`,
             }
         },
     },
@@ -237,7 +257,7 @@ export default {
 
             // Snap to cursor if within treshold
             const snapThreshold = this.snapThreshold
-            const cursorTimestamp = this.playerTimestamp
+            const cursorTimestamp = this.cursorTimestamp
             const cursorX = this.$refs.timelineCursor.getBoundingClientRect().left
             // Snap start
             if (desiredStart > cursorTimestamp - snapThreshold && desiredStart < cursorTimestamp + snapThreshold) {
@@ -292,6 +312,8 @@ export default {
             }
             this.newDragPosValid = newPosValid
 
+            deltaXToMove = Math.min(Math.max(deltaXToMove, deltaXMin), deltaXMax)
+
             // Set the transform of the dragged element
             this.draggedEl.style.transform = `translateX(${deltaXToMove}px)`
         },
@@ -331,15 +353,17 @@ export default {
             })
         },
         getTimestampFromMouseX(mouseX) {
+            console.log('get timestamp from mouse', mouseX)
             // Get timestamp that corresponds to the drag position
             const railRect = this.$refs.rail.getBoundingClientRect()
             const timelineRail = this.timelineRail
+            const railPadding = 16
 
             // Get the adjusted X position on the timeline
-            const adjustedX = mouseX - railRect.left + timelineRail.scrollLeft
+            const adjustedX = mouseX - railRect.left + timelineRail.scrollLeft - railPadding
 
             // Get the percentage of the total video duration
-            const durationPerc = adjustedX / railRect.width / this.zoom
+            const durationPerc = adjustedX / (railRect.width - 2 * railPadding) / this.zoom
             const mouseTimestamp = this.videoDuration * durationPerc
             return mouseTimestamp
         },
@@ -356,9 +380,10 @@ export default {
         setCursorPosition(e) {
             // Set cursor position as a timestamp
             const railRect = this.$refs.rail.getBoundingClientRect()
+            const railPadding = 16
             const scrollX = this.$refs.rail.scrollLeft
-            const adjustedX = e.clientX - railRect.left + scrollX
-            const percX = ((adjustedX / railRect.width) * 100) / this.zoom
+            const adjustedX = e.clientX - railRect.left + scrollX - railPadding
+            const percX = ((adjustedX / (railRect.width - 2 * railPadding)) * 100) / this.zoom
             const timestamp = this.videoDuration * (percX / 100)
             this.seekTo(timestamp)
         },
@@ -387,7 +412,7 @@ export default {
         border-radius: 8px 8px 0 0;
         background: $dark100;
         height: 100%;
-        padding: 32px 16px 8px;
+        padding: 0 0 8px;
     }
     .rail {
         overflow-x: scroll;
@@ -404,52 +429,83 @@ export default {
             }
         }
     }
-    .timeline-interval-markers {
+    .timeline-wrapper {
+        height: 100%;
+        padding: 0 16px;
+    }
+    .interval-wrapper {
         position: absolute;
         left: 0;
         top: 0;
-        height: calc(100% - 8px);
+        height: calc(100% - 24px - 40px);
+        margin-top: 40px;
+        width: 100%;
+        pointer-events: none;
+        padding: 0 16px 0;
+    }
+    .timeline-interval-markers {
+        height: 100%;
         width: 100%;
         display: flex;
-        pointer-events: none;
+        overflow: hidden;
+        padding-left: 2px;
         .interval-mark {
             color: white;
-            border-left: solid white 1px;
-            height: calc(100% + 32px);
+            border-left: solid $grey800 1px;
+            height: 100%;
             position: relative;
             font-size: 10px;
             z-index: 1;
+            margin-top: 12px;
             span {
                 position: absolute;
                 left: 0;
                 top: -16px;
                 transform: translateX(-50%);
             }
-        }
-        .interval-sub-markers {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            .sub-marks {
+                height: calc(100% - 32px);
+                width: 100%;
+                margin-bottom: 16px;
+            }
         }
     }
     .timeline {
         flex: 1;
         position: relative;
-        // padding: 16px 0 20px;
         align-items: center;
         height: 100%;
         display: flex;
-        padding-bottom: 8px;
+        padding: 16px 0 0;
+        z-index: 1;
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            width: 16px;
+            right: -16px;
+            height: 1px;
+        }
         .timeline-cursor {
             position: absolute;
             height: calc(100% - 8px);
             width: 2px;
             background: $primary;
             left: 0;
-            top: 0;
+            top: 8px;
             transition: 0.05s;
+            z-index: 1;
+            .cursor-time {
+                position: absolute;
+                top: 0;
+                left: 0;
+                transform: translateX(-50%);
+                background: $primary;
+                color: white;
+                line-height: 1;
+                font-size: 10px;
+                padding: 2px 4px;
+            }
         }
         .draggable {
             width: 100%;
