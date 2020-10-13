@@ -20,12 +20,12 @@
                             <span>Back to selection</span>
                         </router-link>
                     </div>
-                    <ProductDetailsSidebar />
-                    <CartSidebar />
+                    <ProductDetailsSidebar v-if="playerStarted" />
+                    <CartSidebar v-if="playerStarted" />
                     <PauseOverlay />
+                    <PlayerControls />
                 </div>
             </VideoPlayer>
-            <PlayerControls />
         </div>
     </div>
 </template>
@@ -114,6 +114,11 @@ export default {
         display: flex;
         flex-direction: column;
     }
+    ::v-deep {
+        .timeline {
+            bottom: $heightPlayerControls;
+        }
+    }
 }
 .watch-overlay {
     position: absolute;
@@ -145,14 +150,19 @@ export default {
     align-items: center;
     flex-direction: column;
     display: flex;
-    background: rgba($dark100, 0.8);
+    background: rgba(black, 0.85);
     color: white;
     pointer-events: all;
-    cursor: pointer;
     h3 {
         color: white;
     }
-    // button {
-    // }
+    button {
+        // cursor: pointer;
+        margin-bottom: 92px;
+        transition: 0.1s ease-out;
+        &:hover {
+            opacity: 0.9;
+        }
+    }
 }
 </style>

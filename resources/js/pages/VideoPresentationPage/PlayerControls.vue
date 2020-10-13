@@ -11,11 +11,14 @@
                     </button>
                     <button
                         class="invisible white circle ghost-hover"
-                        v-tooltip="{ content: 'Enter full-screen mode', delay: { enter: 1 } }"
+                        v-tooltip="{
+                            content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
+                            delay: { show: 500 },
+                        }"
                         ref="buttonToClick"
-                        @click="onEnterFullscreen"
+                        @click="toggleFullscreenMode"
                     >
-                        <i class="far fa-expand"></i>
+                        <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
                     </button>
                 </div>
 
@@ -96,6 +99,11 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'playerControls',
+    data: function() {
+        return {
+            fullscreenModeActive: false,
+        }
+    },
     computed: {
         ...mapGetters('videoPlayer', {
             isMuted: 'getIsMuted',
@@ -145,6 +153,13 @@ export default {
                 this.updateActions({ actions: [selectionAction], newAction })
             }
         },
+        toggleFullscreenMode() {
+            if (this.fullscreenModeActive) {
+                this.onExitFullscreen()
+            } else {
+                this.onEnterFullscreen()
+            }
+        },
         onEnterFullscreen() {
             const elem = document.documentElement
             if (elem.requestFullscreen) {
@@ -160,6 +175,46 @@ export default {
                 elem.msRequestFullscreen()
             }
         },
+        onExitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen()
+            } else if (document.mozCancelFullScreen) {
+                /* Firefox */
+                document.mozCancelFullScreen()
+            } else if (document.webkitExitFullscreen) {
+                /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen()
+            } else if (document.msExitFullscreen) {
+                /* IE/Edge */
+                document.msExitFullscreen()
+            }
+        },
+        fullscreenChangeHandler(e) {
+            if (this.fullscreenModeActive) {
+                this.fullscreenModeActive = false
+            } else {
+                this.fullscreenModeActive = true
+            }
+        },
+        addFullscreenListeners() {
+            document.addEventListener('fullscreenchange', this.fullscreenChangeHandler, false)
+            document.addEventListener('mozfullscreenchange', this.fullscreenChangeHandler, false)
+            document.addEventListener('MSFullscreenChange', this.fullscreenChangeHandler, false)
+            document.addEventListener('webkitfullscreenchange', this.fullscreenChangeHandler, false)
+        },
+        removeFullscreenListeners() {
+            document.removeEventListener('fullscreenchange', this.fullscreenChangeHandler, false)
+            document.removeEventListener('mozfullscreenchange', this.fullscreenChangeHandler, false)
+            document.removeEventListener('MSFullscreenChange', this.fullscreenChangeHandler, false)
+            document.removeEventListener('webkitfullscreenchange', this.fullscreenChangeHandler, false)
+        },
+    },
+    created() {
+        this.addFullscreenListeners()
+    },
+    destroyed() {
+        this.removeFullscreenListeners()
+        if (this.fullscreenModeActive) this.onExitFullscreen()
     },
 }
 </script>
@@ -167,6 +222,7 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .player-controls {
+    pointer-events: all;
     background: $dark100;
     height: $heightPlayerControls;
     width: 100%;
@@ -174,6 +230,9 @@ export default {
     display: flex;
     flex-direction: column;
     color: white;
+    position: absolute;
+    left: 0;
+    bottom: 0;
     .main {
         display: flex;
         align-items: center;

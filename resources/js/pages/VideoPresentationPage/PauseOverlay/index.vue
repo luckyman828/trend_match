@@ -43,7 +43,7 @@ export default {
     box-shadow: $shadowModule;
     border-radius: 8px 8px 0 0;
     height: $heightPauseOverlay;
-    bottom: 0;
+    bottom: calc(#{$heightPlayerControls} + 8px);
     pointer-events: all;
     .paused & {
         transform: none;

@@ -353,7 +353,6 @@ export default {
             })
         },
         getTimestampFromMouseX(mouseX) {
-            console.log('get timestamp from mouse', mouseX)
             // Get timestamp that corresponds to the drag position
             const railRect = this.$refs.rail.getBoundingClientRect()
             const timelineRail = this.timelineRail
