@@ -457,7 +457,12 @@ export default {
             font-size: 10px;
             z-index: 1;
             margin-top: 12px;
-            span {
+            &:last-child {
+                .interval-number {
+                    display: none;
+                }
+            }
+            .interval-number {
                 position: absolute;
                 left: 0;
                 top: -16px;

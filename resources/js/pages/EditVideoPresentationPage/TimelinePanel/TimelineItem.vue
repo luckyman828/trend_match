@@ -132,13 +132,14 @@ export default {
             const railPadding = 16
 
             const railWidth = railRect.width
-            const offset = this.dragMode == 'end' ? 12 : -12
+            const offsetAmount = 8
+            const offset = this.dragMode == 'end' ? offsetAmount : -offsetAmount
             const scrollX = this.rail.scrollLeft
-            const mouseX = e.clientX - railRect.left + offset + scrollX
+            const mouseX = e.clientX - railRect.left + offset + scrollX - 16
 
             // Find the percent X we are along the timeline
-            const xPercent = mouseX / railWidth / this.zoom
-            console.log('drag move x-percent', xPercent)
+            const xPercent = mouseX / (railWidth - 32) / this.zoom
+            // console.log('drag move x-percent', xPercent)
 
             // Get the corresponding timestamp
             const timestamp = this.videoDuration * xPercent
@@ -324,7 +325,7 @@ export default {
         .drag-right {
             position: absolute;
             height: 100%;
-            width: 16px;
+            width: 20px;
             pointer-events: all;
             &:hover {
                 cursor: none;
