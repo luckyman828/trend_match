@@ -41,22 +41,14 @@
                 </template>
             </button>
         </div>
-
-        <!-- <div class="preview-wrapper" v-else>
-            <PreviewPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider" />
-        </div> -->
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import PreviewPlayer from './PreviewPlayer'
 
 export default {
     name: 'videoPreview',
-    components: {
-        PreviewPlayer,
-    },
     data: function() {
         return {
             videoUrl: '',

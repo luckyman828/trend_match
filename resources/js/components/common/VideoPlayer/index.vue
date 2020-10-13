@@ -6,7 +6,7 @@
             class="player"
             :videoId="providerVideoId"
             :controls="false"
-            :autoplay="true"
+            :autoplay="autoplay"
             @ready="onPlayerReady"
             @play="onPlayingStatus"
             @pause="SET_PLAYER_STATUS('paused')"
@@ -21,7 +21,7 @@
             tabindex="-1"
             :videoId="providerVideoId"
             :playerVars="{
-                autoplay: 1,
+                autoplay: autoplay ? 1 : 0,
                 controls: 0,
                 modestbranding: 1,
                 fs: 0,
@@ -55,7 +55,7 @@ export default {
     components: {
         PlayerOverlay,
     },
-    props: ['providerVideoId', 'provider'],
+    props: ['providerVideoId', 'provider', 'autoplay'],
     data: function() {
         return {
             playerReady: false,
@@ -101,6 +101,7 @@ export default {
             if (this.provider == 'Vimeo') {
                 this.SET_PLAYER_DURATION(e.duration)
             }
+            this.SET_DESIRED_STATUS('playing')
             this.SET_PLAYER_STATUS('playing')
             this.getVideoTimeStampFromProvider()
         },

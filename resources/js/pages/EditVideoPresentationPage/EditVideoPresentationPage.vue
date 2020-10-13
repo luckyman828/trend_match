@@ -1,7 +1,7 @@
 <template>
     <div class="edit-video-presentation">
         <SearchProductsPanel />
-        <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider">
+        <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider" :autoplay="true">
             <VideoPreview />
         </VideoPlayer>
 

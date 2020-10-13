@@ -1,7 +1,18 @@
 <template>
     <div class="video-presentation-page">
         <div class="video-presentation-wrapper">
-            <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider">
+            <VideoPlayer
+                :providerVideoId="currentVideo.providerVideoId"
+                :provider="currentVideo.provider"
+                :autoplay="false"
+            >
+                <div class="play-overlay" v-if="!playerStarted" @click="onStartPlaying">
+                    <h3>Welcome to the video presentation</h3>
+                    <button class="xl white">
+                        <i class="far fa-play"></i>
+                        <span>Play in full-screen</span>
+                    </button>
+                </div>
                 <div class="watch-overlay">
                     <div class="actions" v-if="!isPlaying">
                         <router-link class="button pill ghost white" :to="{ name: 'selection' }">
@@ -36,6 +47,11 @@ export default {
         CartSidebar,
         PauseOverlay,
     },
+    data: function() {
+        return {
+            playerStarted: false,
+        }
+    },
     computed: {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
@@ -46,6 +62,7 @@ export default {
     },
     methods: {
         ...mapActions('videoPresentation', ['addTiming']),
+        ...mapActions('videoPlayer', ['togglePlaying']),
         createTestData() {
             const products = this.$store.state.products.products
             const limit = 10
@@ -60,6 +77,26 @@ export default {
                 this.addTiming({ newTiming })
             }
         },
+        onEnterFullscreen() {
+            const elem = document.documentElement
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen()
+            } else if (elem.mozRequestFullScreen) {
+                /* Firefox */
+                elem.mozRequestFullScreen()
+            } else if (elem.webkitRequestFullscreen) {
+                /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen()
+            } else if (elem.msRequestFullscreen) {
+                /* IE/Edge */
+                elem.msRequestFullscreen()
+            }
+        },
+        onStartPlaying() {
+            this.togglePlaying()
+            this.onEnterFullscreen()
+            this.playerStarted = true
+        },
     },
     created() {
         this.createTestData()
@@ -68,6 +105,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~@/_variables.scss';
 .video-presentation-page {
     height: 100%;
     .video-presentation-wrapper {
@@ -93,5 +131,28 @@ export default {
         left: 50%;
         transform: translateX(-50%);
     }
+}
+.play-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+    background: rgba($dark100, 0.8);
+    color: white;
+    pointer-events: all;
+    cursor: pointer;
+    h3 {
+        color: white;
+    }
+    // button {
+    // }
 }
 </style>

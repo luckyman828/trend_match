@@ -10,7 +10,7 @@ export default {
         iframe: null,
         isMuted: false,
         isPlaying: false,
-        desiredStatus: 'playing',
+        desiredStatus: 'paused',
         isSeeking: false,
         timelineKnobIsBeingDragged: false,
         providerMap: {

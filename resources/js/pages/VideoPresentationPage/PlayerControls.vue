@@ -9,6 +9,14 @@
                     <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted()">
                         <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume'"></i>
                     </button>
+                    <button
+                        class="invisible white circle ghost-hover"
+                        v-tooltip="{ content: 'Enter full-screen mode', delay: { enter: 1 } }"
+                        ref="buttonToClick"
+                        @click="onEnterFullscreen"
+                    >
+                        <i class="far fa-expand"></i>
+                    </button>
                 </div>
 
                 <div class="time" style="margin-left: 40px;">
@@ -135,6 +143,21 @@ export default {
                 const selectionAction = selectionInput.selectionAction
                 const newAction = selectionAction.action == action ? 'None' : action
                 this.updateActions({ actions: [selectionAction], newAction })
+            }
+        },
+        onEnterFullscreen() {
+            const elem = document.documentElement
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen()
+            } else if (elem.mozRequestFullScreen) {
+                /* Firefox */
+                elem.mozRequestFullScreen()
+            } else if (elem.webkitRequestFullscreen) {
+                /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen()
+            } else if (elem.msRequestFullscreen) {
+                /* IE/Edge */
+                elem.msRequestFullscreen()
             }
         },
     },
