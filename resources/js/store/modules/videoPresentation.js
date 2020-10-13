@@ -7,11 +7,24 @@ export default {
         currentVideo: {
             name: 'Test Video',
             id: 1,
-            providerVideoId: 'hGRii5f_uSc',
+            providerVideoId: 'SoonHVLkz2Q',
             provider: 'Youtube',
         },
         searchItemDragActive: false,
-        videoTimings: [],
+        videoTimings: [
+            {
+                id: 1,
+                start: 3,
+                end: 24,
+                product_id: '750475784351613090',
+            },
+            {
+                id: 2,
+                start: 24,
+                end: 46,
+                product_id: '748096819460718599',
+            },
+        ],
         timingId: 0,
         timelineZoom: 1,
         timelineRail: null,
@@ -112,12 +125,18 @@ export default {
             // })
             commit('REMOVE_TIMING', index)
         },
-        initTimings({ state, getters }, timings) {
+        initTimings({ state, getters, rootGetters }, timings) {
             timings.map(timing => {
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
 
+                Object.defineProperty(timing, 'product', {
+                    get() {
+                        const products = rootGetters['products/products']
+                        return products.find(x => x.id == timing.product_id)
+                    },
+                })
                 Object.defineProperty(timing, 'duration', {
                     get() {
                         return timing.end - timing.start
