@@ -5,6 +5,7 @@
         :id="`timeline-item-${timing.id}`"
         :class="[{ current: isCurrent }, { 'drag-caps': isDragging }]"
         tabindex="0"
+        @keydown.delete="onRemoveTiming"
     >
         <div class="controls">
             <button class="pill red sm" @click="onRemoveTiming">
@@ -211,6 +212,7 @@ export default {
     border-radius: $borderRadiusEl;
     box-shadow: 0 3px 6px rgba(black, 0.2);
     padding: 6px;
+    padding-right: 0;
     pointer-events: all;
     position: relative; // DON'T CHANGE !! - We need it to be relative for draggable to work
     transition: width 0.05s ease-out;
@@ -294,6 +296,7 @@ export default {
         flex-direction: column;
         margin-left: 4px;
         justify-content: space-between;
+        padding-right: 6px;
         .name {
             font-size: 14px;
             font-weight: 500;

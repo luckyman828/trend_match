@@ -1,14 +1,19 @@
 <template>
     <div class="edit-video-presentation">
         <SearchProductsPanel />
-        <VideoPreview />
+        <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider">
+            <VideoPreview />
+        </VideoPlayer>
+
         <TimelinePanel />
     </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SearchProductsPanel from './SearchProductsPanel/'
 import VideoPreview from './VideoPreview/'
+import VideoPlayer from '../../components/common/VideoPlayer/'
 import TimelinePanel from './TimelinePanel/'
 
 export default {
@@ -17,6 +22,12 @@ export default {
         SearchProductsPanel,
         VideoPreview,
         TimelinePanel,
+        VideoPlayer,
+    },
+    computed: {
+        ...mapGetters('videoPresentation', {
+            currentVideo: 'getCurrentVideo',
+        }),
     },
 }
 </script>
