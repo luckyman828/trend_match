@@ -436,8 +436,8 @@ export default {
         position: absolute;
         left: 0;
         top: 0;
-        height: calc(100% - 24px - 40px);
-        margin-top: 40px;
+        height: calc(100% - 8px - 36px);
+        margin-top: 36px;
         width: 100%;
         pointer-events: none;
         padding: 0 16px 0;

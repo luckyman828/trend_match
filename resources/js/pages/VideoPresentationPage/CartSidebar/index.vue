@@ -96,7 +96,7 @@ export default {
             }
         },
         cartTotal() {
-            return this.cart.reduce((acc, curr) => (acc += curr.yourPrice.wholesale_price), 0)
+            return this.actionGroups.ins.reduce((acc, curr) => (acc += curr.yourPrice.wholesale_price), 0)
         },
     },
 }

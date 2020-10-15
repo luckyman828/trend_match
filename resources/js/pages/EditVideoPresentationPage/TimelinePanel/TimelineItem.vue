@@ -40,7 +40,7 @@
         <div class="inner">
             <div class="img-wrapper">
                 <div class="img-sizer">
-                    <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                    <BaseVariantImage :variant="product.variants && product.variants[0]" size="sm" />
                 </div>
             </div>
             <div class="details">
@@ -211,7 +211,7 @@ export default {
     border: solid 2px white;
     border-radius: $borderRadiusEl;
     box-shadow: 0 3px 6px rgba(black, 0.2);
-    padding: 6px;
+    padding: 4px;
     padding-right: 0;
     pointer-events: all;
     position: relative; // DON'T CHANGE !! - We need it to be relative for draggable to work

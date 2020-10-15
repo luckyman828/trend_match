@@ -5,12 +5,12 @@
             <VideoPreview />
         </VideoPlayer>
 
-        <TimelinePanel />
+        <TimelinePanel v-if="timingsReady" />
     </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import SearchProductsPanel from './SearchProductsPanel/'
 import VideoPreview from './VideoPreview/'
 import VideoPlayer from '../../components/common/VideoPlayer/'
@@ -24,10 +24,23 @@ export default {
         TimelinePanel,
         VideoPlayer,
     },
+    data: function() {
+        return {
+            timingsReady: false,
+        }
+    },
     computed: {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
+            videoTimings: 'getVideoTimings',
         }),
+    },
+    methods: {
+        ...mapActions('videoPresentation', ['initTimings']),
+    },
+    async created() {
+        await this.initTimings(this.videoTimings)
+        this.timingsReady = true
     },
 }
 </script>

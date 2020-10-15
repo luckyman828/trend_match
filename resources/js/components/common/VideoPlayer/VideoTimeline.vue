@@ -1,15 +1,23 @@
 <template>
-    <div class="timeline" @click="onClickToTimestamp" :class="{ 'drag-active': isDragging }">
-        <div class="rail" :style="railStyle">
-            <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div>
+    <div class="timeline">
+        <div class="timeline-wrapper" @click="onClickToTimestamp" :class="{ 'drag-active': isDragging }">
+            <div class="rail" :style="railStyle">
+                <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div>
+            </div>
         </div>
+        <TimelineItemList v-if="timings" :timings="timings" class="timing-list" />
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import TimelineItemList from './TimelineItemList'
+
 export default {
     name: 'videoTimeline',
+    components: {
+        TimelineItemList,
+    },
     data: function() {
         return {
             dragTime: 0,
@@ -23,6 +31,9 @@ export default {
             player: 'getPlayer',
             playerIframe: 'getIframe',
             isDragging: 'getTimelineKnobIsBeingDragged',
+        }),
+        ...mapGetters('videoPresentation', {
+            timings: 'getVideoTimings',
         }),
         watchedPercentage() {
             const timeToUse = this.isDragging ? this.dragTime : this.timestamp
@@ -92,6 +103,12 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .timeline {
+    position: relative;
+    .timing-list {
+        transition: 0.1s ease-out;
+    }
+}
+.timeline-wrapper {
     width: 100%;
     background: #bbbbbb;
     cursor: pointer;
@@ -111,6 +128,9 @@ export default {
         .knob {
             height: 18px;
             width: 18px;
+        }
+        & + .timing-list {
+            transform: translateY(-4px);
         }
     }
     .rail {

@@ -861,6 +861,12 @@ i {
 // POPOVER
 .popover {
     min-width: 200px;
+    &.min {
+        min-width: 0;
+        .tooltip-inner {
+            border: none;
+        }
+    }
 }
 .v-popover {
     .trigger {
