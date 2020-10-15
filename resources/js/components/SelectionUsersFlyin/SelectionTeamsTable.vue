@@ -194,8 +194,9 @@ export default {
             const usersAddedFromTeams = []
             await Promise.all(
                 teams.map(async team => {
-                    if (!!team.users) return
-                    await this.fetchTeamUsers(team)
+                    if (!team.users) {
+                        await this.fetchTeamUsers(team)
+                    }
                     // Check if the user already exists
                     team.users.map(user => {
                         if (
