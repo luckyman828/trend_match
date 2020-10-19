@@ -87,15 +87,16 @@ export default {
         scanHandler(e) {
             // Check if we get at least 12 concecutive inputs with very small interval
             // If that is the case, we have a scan
-            this.scanStr += e.key
+            // this.scanStr += e.key
+            this.scanStr += e.code.substr(e.code.length - 1)
             if (!this.scanStarted) {
                 this.scanStarted = true
                 setTimeout(() => {
-                    if (this.scanStr.length >= 7) {
+                    if (this.scanStr.length >= 10) {
                         this.onScan(this.scanStr)
-                        this.scanStr = ''
-                        this.scanStarted = false
                     }
+                    this.scanStr = ''
+                    this.scanStarted = false
                 }, 50)
             }
         },
@@ -103,7 +104,7 @@ export default {
             const succesAudio = new Audio('/assets/SFX/pling.mp3')
             const failAudio = new Audio('/assets/SFX/error.mp3')
             if (!this.scannerMode) {
-                return
+                this.SET_SCANNER_MODE('product')
             }
 
             // Find the matched product / variant
