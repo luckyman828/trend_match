@@ -160,7 +160,7 @@ export default {
             'SET_TIMELINE_EL',
             'SET_TIMELINE_ZOOM',
         ]),
-        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent']),
+        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent', 'updateCurrentVideo']),
         ...mapActions('videoPlayer', ['seekTo']),
         onTimelineMousedown(e) {
             this.timelineClickOrigin = true
@@ -351,6 +351,9 @@ export default {
             this.videoTimings.sort((a, b) => {
                 return a.start > b.start ? 1 : -1
             })
+
+            // Save the change to the API
+            this.updateCurrentVideo()
         },
         getTimestampFromMouseX(mouseX) {
             // Get timestamp that corresponds to the drag position

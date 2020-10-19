@@ -1,7 +1,7 @@
 <template>
     <div class="player-wrapper" :class="{ 'drag-active': isDragging }">
         <vimeo-player
-            v-if="provider == 'Vimeo'"
+            v-if="provider == 'vimeo'"
             ref="player"
             class="player"
             :videoId="providerVideoId"
@@ -15,7 +15,7 @@
         />
 
         <youtube
-            v-if="provider == 'Youtube'"
+            v-if="provider == 'youtube'"
             ref="player"
             class="player"
             tabindex="-1"
@@ -40,7 +40,7 @@
         />
         <!-- </div> -->
 
-        <PlayerOverlay v-if="playerReady">
+        <PlayerOverlay :playerReady="playerReady">
             <slot />
         </PlayerOverlay>
     </div>
@@ -76,7 +76,6 @@ export default {
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'getCurrentTimestamp']),
-        ...mapActions('products', ['initTimings']),
         ...mapMutations('videoPlayer', [
             'SET_PLAYER_REFERENCE',
             'SET_CURRENT_PLAYER_TIMESTAMP',

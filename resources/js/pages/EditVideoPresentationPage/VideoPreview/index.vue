@@ -1,6 +1,6 @@
 <template>
     <div class="video-preview" :class="{ 'drag-active': isDragging }">
-        <form class="url-input" @submit.prevent v-if="!playerReady || editModeActive">
+        <form class="url-input" @submit.prevent v-if="editModeActive">
             <div class="container">
                 <h3>Enter the URL of your video to get started</h3>
                 <div class="form-element">
@@ -22,7 +22,7 @@
                 >
                     <span>Get video by URL</span>
                 </button>
-                <div class="controls" v-if="playerReady">
+                <div class="controls">
                     <button v-tooltip="'Cancel'" @click="editModeActive = false">
                         <i class="far fa-times"></i>
                     </button>
@@ -59,12 +59,15 @@ export default {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
         }),
+        ...mapGetters('files', {
+            currentFile: 'currentFile',
+        }),
         ...mapGetters('videoPlayer', {
             isDragging: 'getTimelineKnobIsBeingDragged',
         }),
-        playerReady() {
-            return this.currentVideo.providerVideoId && this.currentVideo.provider
-        },
+        // playerReady() {
+        //     return this.currentVideo.providerVideoId && this.currentVideo.provider
+        // },
         submitDisabled() {
             return this.videoUrl.length < 5
         },
@@ -72,9 +75,12 @@ export default {
     methods: {
         ...mapActions('videoPresentation', ['setVideoByURL']),
         onSetVideoByURL() {
-            this.setVideoByURL({ video: this.currentVideo, url: this.videoUrl })
+            this.setVideoByURL({ file: this.currentFile, url: this.videoUrl })
             this.editModeActive = false
         },
+    },
+    created() {
+        if (!this.currentVideo) this.editModeActive = true
     },
 }
 </script>
@@ -106,6 +112,7 @@ export default {
 .url-input {
     background: white;
     height: 100%;
+    pointer-events: all;
     .container {
         margin: auto;
         height: 100%;

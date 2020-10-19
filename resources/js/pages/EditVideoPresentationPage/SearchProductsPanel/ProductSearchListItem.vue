@@ -60,9 +60,10 @@ export default {
         // },
         onAddTiming() {
             const newTiming = {
-                start: 0,
-                end: this.videoDuration / 12,
-                product: this.product,
+                id: null,
+                start_at_ms: 0,
+                end_at_ms: this.videoDuration / 12,
+                product_id: this.product.id,
             }
             this.addTiming({ newTiming })
         },

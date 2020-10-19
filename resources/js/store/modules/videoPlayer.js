@@ -14,7 +14,7 @@ export default {
         isSeeking: false,
         timelineKnobIsBeingDragged: false,
         providerMap: {
-            Vimeo: {
+            vimeo: {
                 play: 'play',
                 pause: 'pause',
                 mute: 'setVolume',
@@ -22,7 +22,7 @@ export default {
                 seekTo: 'setCurrentTime',
                 getTimestamp: 'getCurrentTime',
             },
-            Youtube: {
+            youtube: {
                 play: 'playVideo',
                 pause: 'pauseVideo',
                 mute: 'mute',
@@ -42,7 +42,7 @@ export default {
         getProviderVideoId: (state, getters, rootState, rootGetters) => {
             const currentVideo = rootGetters['videoPresentation/getCurrentVideo']
             if (!currentVideo) return
-            return currentVideo.providerVideoId
+            return currentVideo.identifier
         },
         getProviderMap: (state, getters) => state.providerMap[getters.getProvider],
         getPlayer: state => state.player,

@@ -100,7 +100,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPresentation', ['removeTiming']),
+        ...mapActions('videoPresentation', ['removeTiming', 'updateCurrentVideo']),
         onRemoveTiming() {
             this.removeTiming(this.index)
         },
@@ -188,6 +188,7 @@ export default {
             this.isDragging = false
 
             // Save the new duration / start
+            this.updateCurrentVideo()
         },
         addDragListeners() {
             document.addEventListener('mouseup', this.onDragEnd)

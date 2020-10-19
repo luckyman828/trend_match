@@ -22,7 +22,7 @@ export default {
         EditVideoPresentationPage,
     },
     data: function() {
-        return {}
+        return { dataReady: false }
     },
     computed: {
         ...mapGetters('products', ['productsStatus']),
@@ -31,6 +31,7 @@ export default {
             return this.productsStatus != 'success' || !this.currentFile
         },
         status() {
+            if (!this.dataReady) return 'loading'
             if (this.productsStatus == 'error' || this.filesStatus == 'error') return 'error'
             if (this.productsStatus == 'loading' || this.filesStatus == 'loading' || !this.currentFile) return 'loading'
             return 'success'
@@ -39,11 +40,18 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
-        fetchData() {
+        ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
+        async fetchData() {
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
-            this.fetchFile(fileId)
             this.fetchProducts({ fileId })
+            const file = await this.fetchFile(fileId)
+            if (file.has_video || true) {
+                const fileVideo = await this.fetchFileVideo(fileId)
+                this.SET_CURRENT_VIDEO(fileVideo)
+            }
+            this.dataReady = true
         },
     },
     created() {

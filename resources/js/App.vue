@@ -233,7 +233,6 @@ export default {
             response => response,
             error => {
                 if (this.$route.name != 'login') {
-                    console.log('throw user to the login page')
                     if (!!error.response && error.response.status === 401) {
                         // if you ever get an unauthorized, logout the user
                         this.logout()

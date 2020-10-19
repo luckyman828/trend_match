@@ -1,7 +1,7 @@
 <template>
     <div class="edit-video-presentation">
         <SearchProductsPanel />
-        <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider" :autoplay="true">
+        <VideoPlayer :providerVideoId="providerVideoId" :provider="provider" :autoplay="true">
             <VideoPreview />
         </VideoPlayer>
 
@@ -26,7 +26,7 @@ export default {
     },
     data: function() {
         return {
-            timingsReady: false,
+            timingsReady: true,
         }
     },
     computed: {
@@ -34,13 +34,10 @@ export default {
             currentVideo: 'getCurrentVideo',
             videoTimings: 'getVideoTimings',
         }),
-    },
-    methods: {
-        ...mapActions('videoPresentation', ['initTimings']),
-    },
-    async created() {
-        await this.initTimings(this.videoTimings)
-        this.timingsReady = true
+        ...mapGetters('videoPlayer', {
+            provider: 'getProvider',
+            providerVideoId: 'getProviderVideoId',
+        }),
     },
 }
 </script>

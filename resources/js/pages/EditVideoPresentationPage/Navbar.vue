@@ -25,7 +25,12 @@
         <!-- <div class="items-center">
         </div> -->
 
-        <div class="items-right"></div>
+        <div class="items-right">
+            <div class="pill ghost sm" :class="[status]">
+                <i class="far" :class="statusIconClasss"></i>
+                <span>{{ statusText }}</span>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -36,13 +41,46 @@ export default {
     name: 'editVideoPresentationNavbar',
     components: {},
     data: function() {
-        return {}
+        return {
+            currentStatus: this.status,
+            statusUpdateTimeout: null,
+        }
     },
     computed: {
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('products', ['products']),
+        ...mapGetters('videoPresentation', {
+            status: 'getStatus',
+        }),
+        statusIconClasss() {
+            if (this.currentStatus == 'success') return 'fa-check-circle green'
+            if (this.currentStatus == 'error') return 'fa-exclamation-circle red'
+            if (this.currentStatus == 'saving') return 'fa-save primary'
+        },
+        statusText() {
+            if (this.currentStatus == 'success') return 'All changes saved'
+            if (this.currentStatus == 'error') return 'Error saving!'
+            if (this.currentStatus == 'saving') return 'Saving..'
+        },
+    },
+    watch: {
+        status(newVal) {
+            // Make sure we show that we are saving for a little while to affirm the user
+            const delay = 500
+            if (newVal == 'saving') this.currentStatus = newVal
+            else {
+                if (this.statusUpdateTimeout) {
+                    clearTimeout(this.statusUpdateTimeout)
+                }
+                this.statusUpdateTimeout = setTimeout(() => {
+                    this.currentStatus = newVal
+                }, delay)
+            }
+        },
     },
     methods: {},
+    created() {
+        this.currentStatus = this.status
+    },
 }
 </script>
 
