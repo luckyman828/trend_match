@@ -103,7 +103,7 @@ export default {
             const succesAudio = new Audio('/assets/SFX/pling.mp3')
             const failAudio = new Audio('/assets/SFX/error.mp3')
             if (!this.scannerMode) {
-                this.SET_SCANNER_MODE('product')
+                return
             }
 
             // Find the matched product / variant
