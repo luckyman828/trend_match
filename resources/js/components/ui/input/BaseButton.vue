@@ -1,27 +1,12 @@
 <template>
-    <div
-        class="button-wrapper"
-        :class="[{ 'has-hover': hasHover }]"
-        @mouseover="hover = true"
-        @mouseleave="hover = false"
-    >
+    <div class="button-wrapper">
         <button
             v-bind="$attrs"
-            :class="[
-                hover && !!hoverClass ? hoverClass : buttonClass,
-                { disabled: disabled },
-                { 'has-target-area': !!targetAreaPadding },
-            ]"
+            :class="[buttonClass, { disabled: disabled }, { 'has-target-area': !!targetAreaPadding }]"
             v-tooltip="disabled && disabledTooltip"
             @click="!disabled && $emit('click', $event)"
         >
-            <div class="default">
-                <slot />
-            </div>
-
-            <div class="hover-only">
-                <slot name="hover" />
-            </div>
+            <slot />
 
             <!-- Target Area -->
             <div class="target-area" v-if="targetAreaPadding" :style="'padding: ' + targetAreaPadding"></div>
@@ -38,20 +23,9 @@
 <script>
 export default {
     name: 'baseButton',
-    props: [
-        'buttonClass',
-        'hotkey',
-        'disabled',
-        'tooltip',
-        'targetAreaPadding',
-        'disabledTooltip',
-        'hasHover',
-        'hoverClass',
-    ],
+    props: ['buttonClass', 'hotkey', 'disabled', 'tooltip', 'targetAreaPadding', 'disabledTooltip'],
     data: function() {
-        return {
-            hover: false,
-        }
+        return {}
     },
     computed: {
         hotkeyStyle() {
@@ -72,18 +46,6 @@ export default {
     }
     &.full-width {
         width: 100%;
-    }
-    &.has-hover:hover {
-        .default {
-            display: none;
-        }
-        .hover-only {
-            line-height: 1;
-            text-align: center;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-        }
     }
     .hotkey {
         position: absolute;

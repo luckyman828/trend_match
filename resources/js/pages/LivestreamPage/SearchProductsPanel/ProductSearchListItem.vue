@@ -16,15 +16,10 @@
                     v-else
                     class="stop-current"
                     buttonClass="square primary"
-                    :hasHover="true"
-                    hoverClass="square red"
                     targetAreaPadding="20px"
                     @click="onStopCurrent"
                 >
                     <i class="far fa-check"></i>
-                    <template v-slot:hover>
-                        <i class="far fa-times"></i>
-                    </template>
                 </BaseButton>
             </div>
         </div>

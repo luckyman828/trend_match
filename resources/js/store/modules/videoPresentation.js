@@ -13,8 +13,12 @@ export default {
         currentVideo: {
             name: 'Test Livestream',
             id: 1,
-            providerVideoId: null,
-            provider: null,
+            // Youtube live
+            // providerVideoId: 'Hp0wvlk7shg',
+            // provider: 'Youtube',
+            // Vimeo live
+            providerVideoId: '468992739',
+            provider: 'Vimeo',
         },
         searchItemDragActive: false,
         videoTimings: [],
