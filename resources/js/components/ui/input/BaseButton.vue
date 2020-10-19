@@ -1,22 +1,36 @@
 <template>
-    <div class="button-wrapper">
-        <button v-bind="$attrs" :class="[buttonClass, {disabled: disabled}, {'has-target-area': !!targetAreaPadding}]"
-        v-tooltip="disabled && disabledTooltip"
-        @click="!disabled && $emit('click', $event)">
-            <slot/>
+    <div
+        class="button-wrapper"
+        :class="[{ 'has-hover': hasHover }]"
+        @mouseover="hover = true"
+        @mouseleave="hover = false"
+    >
+        <button
+            v-bind="$attrs"
+            :class="[
+                hover && !!hoverClass ? hoverClass : buttonClass,
+                { disabled: disabled },
+                { 'has-target-area': !!targetAreaPadding },
+            ]"
+            v-tooltip="disabled && disabledTooltip"
+            @click="!disabled && $emit('click', $event)"
+        >
+            <div class="default">
+                <slot />
+            </div>
+
+            <div class="hover-only">
+                <slot name="hover" />
+            </div>
 
             <!-- Target Area -->
-            <div class="target-area" v-if="targetAreaPadding" 
-            :style="'padding: '+targetAreaPadding">
-
-            </div>
+            <div class="target-area" v-if="targetAreaPadding" :style="'padding: ' + targetAreaPadding"></div>
         </button>
-
 
         <!-- Hotkey -->
         <div class="hotkey" v-if="hotkey" :style="hotkeyStyle">
-            <span class="key">{{hotkey.key}}</span>
-            <span class="label">{{hotkey.label}}</span>
+            <span class="key">{{ hotkey.key }}</span>
+            <span class="label">{{ hotkey.label }}</span>
         </div>
     </div>
 </template>
@@ -31,12 +45,19 @@ export default {
         'tooltip',
         'targetAreaPadding',
         'disabledTooltip',
+        'hasHover',
+        'hoverClass',
     ],
+    data: function() {
+        return {
+            hover: false,
+        }
+    },
     computed: {
         hotkeyStyle() {
-            return this.hotkey && this.hotkey.align == 'right' ? {right: 0} : {left: 0}
-        }
-    }
+            return this.hotkey && this.hotkey.align == 'right' ? { right: 0 } : { left: 0 }
+        },
+    },
 }
 </script>
 
@@ -46,6 +67,24 @@ export default {
 .button-wrapper {
     position: relative;
     display: inline-flex;
+    .hover-only {
+        display: none;
+    }
+    &.full-width {
+        width: 100%;
+    }
+    &.has-hover:hover {
+        .default {
+            display: none;
+        }
+        .hover-only {
+            line-height: 1;
+            text-align: center;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
     .hotkey {
         position: absolute;
         bottom: -6px;
@@ -78,5 +117,4 @@ export default {
         box-sizing: content-box;
     }
 }
-
 </style>

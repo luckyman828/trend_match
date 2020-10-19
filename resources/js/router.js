@@ -6,15 +6,6 @@ Vue.use(VueRouter)
 
 // Define route components
 
-// import RecoverPasswordScreen from './pages/LoginPage/RecoverPasswordScreen'
-// import VerificationCodeScreen from './pages/LoginPage/VerificationCodeScreen'
-// import SetNewPasswordScreen from './pages/LoginPage/SetNewPasswordScreen'
-// import TeamsPage from './pages/TeamsPage'
-// import UsersPage from './pages/UsersPage'
-// import SelectionPage from './pages/SelectionPage'
-// import FilesPage from './pages/FilesPage'
-// import EditFilePage from './pages/EditFilePage'
-
 const routes = [
     {
         path: '/login',
@@ -75,6 +66,16 @@ const routes = [
         name: 'watchVideoPresentation',
         component: () => import(/* webpackChunkName: "WatchVideoPresentationPage" */ './pages/VideoPresentationPage'),
     },
+    {
+        path: '/file/:fileId/livestream/create',
+        name: 'createLivestream',
+        component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/LivestreamPage'),
+    },
+    {
+        path: '/workspace/:workspaceId/file/:fileId/selection/:selectionId/join',
+        name: 'joinSelection',
+        component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+    },
     { path: '*', redirect: '/files' },
 ]
 
@@ -97,6 +98,12 @@ router.beforeEach((to, from, next) => {
         next({ name: 'login' })
     }
 
+    // // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
+    // if (to.name == 'joinSelection') {
+    //     console.log('lets join this selection')
+    //     next()
+    // }
+
     // Check that the user is not going to the login page already
     else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {
         next({
@@ -105,7 +112,9 @@ router.beforeEach((to, from, next) => {
                 nextUrl: to.fullPath,
             },
         })
-    } else next()
+    } else {
+        next()
+    }
 })
 
 export default router

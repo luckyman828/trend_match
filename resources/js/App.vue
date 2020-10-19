@@ -1,6 +1,24 @@
 <template>
-    <LoginPage v-if="$route.path.startsWith('/login')" />
+    <!-- PUBLIC ROUTES -->
+    <div class="public" id="app-component" v-if="!isAuthenticated">
+        <LoginPage v-if="$route.path.startsWith('/login')" />
+        <div class="main" id="main" ref="main" v-else>
+            <div class="public-page">
+                <img src="/images/graphs.svg" class="bg-left" />
+                <img src="/images/graphs.svg" class="bg-right" />
+                <div class="container">
+                    <div class="inner">
+                        <img class="logo" src="/images/kollekt-logo.svg" />
+                        <transition name="fade">
+                            <router-view></router-view>
+                        </transition>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- PRIVATE ROUTES -->
     <div
         class="app"
         id="app-component"
@@ -173,20 +191,6 @@ export default {
             $crisp.push(['set', 'user:email', this.authUser.email])
             $crisp.push(['set', 'user:nickname', this.authUser.name])
         },
-        // onScroll(e) {
-        //     this.didScroll = true
-        //     // on scroll, let the interval function know the user has scrolled
-        //     $(window).scroll(function(event){
-        //     didScroll = true;
-        //     });
-        //     // run hasScrolled() and reset didScroll status
-        //     setInterval(function() {
-        //         if (didScroll) {
-        //             this.scrollHandler();
-        //             didScroll = false;
-        //         }
-        //     }, 250);
-        // }
         scrollHandler(e) {
             // this.didScroll = false
             let scrollDiff = 0
@@ -229,6 +233,7 @@ export default {
             response => response,
             error => {
                 if (this.$route.name != 'login') {
+                    console.log('throw user to the login page')
                     if (!!error.response && error.response.status === 401) {
                         // if you ever get an unauthorized, logout the user
                         this.logout()
@@ -244,20 +249,8 @@ export default {
             await this.getAuthUser().catch(err => {
                 this.error = err
             })
-
-            // Get some snowflake IDs now we're at it
-            // this.getUids()
         }
     },
-    // beforeRouteLeave(to, from, next) {
-    //     console.log('router about to route')
-    // },
-    // beforeRouteUpdate (to, from, next) {
-    //     console.log('router about to route')
-    // },
-    // beforeRouteEnter (to, from, next) {
-    //     console.log('router about to route')
-    // }
 }
 </script>
 
@@ -285,6 +278,33 @@ html,
 body,
 #app {
     color: $dark;
+}
+.public {
+    scroll-behavior: smooth;
+    min-height: 100vh;
+    min-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;
+    transition: 0.3s;
+    &.drag-active {
+        cursor: grabbing;
+    }
+    &.full-screen {
+        .main {
+            max-height: 100vh;
+            height: 100vh;
+            overflow: auto;
+        }
+    }
+    .main {
+        // box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: $bg;
+        position: relative;
+        min-height: 100vh;
+        height: 100vh;
+    }
 }
 .app {
     scroll-behavior: smooth;
@@ -389,6 +409,40 @@ body {
     &.disabled {
         &::after {
             display: block;
+        }
+    }
+}
+.public-page {
+    background: $dark05;
+    min-height: 100vh;
+    position: relative;
+    .bg-left,
+    .bg-right {
+        position: fixed;
+        bottom: 0;
+        width: 50%;
+        &.bg-left {
+            left: 0;
+        }
+        &.bg-right {
+            right: 0;
+        }
+    }
+    .container {
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        height: 100%;
+        max-width: 800px;
+        background: white;
+        z-index: 1;
+        padding: 60px 0;
+        .inner {
+            max-width: 400px;
+            width: 100%;
+            margin: auto;
+            text-align: center;
         }
     }
 }

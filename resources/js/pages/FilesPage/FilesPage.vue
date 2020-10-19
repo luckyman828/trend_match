@@ -1,21 +1,27 @@
 <template>
     <div class="files-page">
-        <Breadcrumbs/>
-        
+        <Breadcrumbs />
+
         <h1 v-if="!currentFolder">Files</h1>
-        <h1 v-else>{{currentFolder.name}}</h1>
+        <h1 v-else>{{ currentFolder.name }}</h1>
 
         <FilesTable
-        @setCurrentFolder="onSetCurrentFolder" @showSingleFile="showSingleFile"
-        @showFileOwnersFlyin="showFileOwnersFlyin"/>
+            @setCurrentFolder="onSetCurrentFolder"
+            @showSingleFile="showSingleFile"
+            @showFileOwnersFlyin="showFileOwnersFlyin"
+        />
 
-        <FileFlyin :file="currentFile" :show="getFileFlyinIsVisible" @close="SET_FILE_FLYIN_VISIBLE(false)"
-        @showFileOwnersFlyin="showFileOwnersFlyin" @showFileApproversFlyin="showFileApproversFlyin"/>
+        <FileFlyin
+            :file="currentFile"
+            :show="getFileFlyinIsVisible"
+            @close="SET_FILE_FLYIN_VISIBLE(false)"
+            @showFileOwnersFlyin="showFileOwnersFlyin"
+            @showFileApproversFlyin="showFileApproversFlyin"
+        />
 
         <!-- <FileOwnersFlyin :file="currentFile" :show="fileOwnersFlyinVisible" @close="fileOwnersFlyinVisible = false"/> -->
 
         <!-- <FileApproversFlyin :file="currentFile" :show="fileApproversFlyinVisible" @close="fileApproversFlyinVisible = false"/> -->
-    
     </div>
 </template>
 
@@ -36,12 +42,21 @@ export default {
         FileApproversFlyin,
         Breadcrumbs,
     },
-    data: function() { return {
-        fileOwnersFlyinVisible: false,
-        fileApproversFlyinVisible: false,
-    }},
+    data: function() {
+        return {
+            fileOwnersFlyinVisible: false,
+            fileApproversFlyinVisible: false,
+        }
+    },
     computed: {
-        ...mapGetters('files', ['files', 'currentFile', 'currentFolder', 'currentFolderId', 'getCurrentFilePath', 'getFileFlyinIsVisible']),
+        ...mapGetters('files', [
+            'files',
+            'currentFile',
+            'currentFolder',
+            'currentFolderId',
+            'getCurrentFilePath',
+            'getFileFlyinIsVisible',
+        ]),
         ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
     },
     methods: {
@@ -87,27 +102,26 @@ export default {
             const folder = await this.fetchFolder(routeFolderId)
             this.setCurrentFolder(folder)
         }
-    }
+    },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-    h1 {
-        margin-bottom: 16px;
-    }
-    .underline {
-        width: 100%;
-        border-bottom: solid 2px $light2;
-        margin-bottom: 20px;
-    }
-    .filters {
-        display: flex;
-        justify-content: space-between;
-    }
-    .item-filter-button {
-        min-width: 120px;
-        background: $light2;
-    }
-    
+h1 {
+    margin-bottom: 16px;
+}
+.underline {
+    width: 100%;
+    border-bottom: solid 2px $light2;
+    margin-bottom: 20px;
+}
+.filters {
+    display: flex;
+    justify-content: space-between;
+}
+.item-filter-button {
+    min-width: 120px;
+    background: $light2;
+}
 </style>
