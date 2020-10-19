@@ -125,31 +125,11 @@
                         :optionDescriptionKey="'description'"
                         :optionNameKey="'role'"
                         :optionValueKey="'role'"
+                        @submit="
+                            onUpdateUsersRole()
+                            slotProps.hide()
+                        "
                     />
-                </div>
-                <div class="item-group">
-                    <div class="item-wrapper">
-                        <button
-                            class="primary"
-                            :class="{ disabled: userToEdit.role == originalUser.role }"
-                            @click="
-                                onUpdateUsersRole()
-                                slotProps.hide()
-                            "
-                        >
-                            <span>Save</span>
-                        </button>
-                        <button
-                            class="invisible ghost-hover"
-                            style="margin-left: 8px;"
-                            @click="
-                                slotProps.hide()
-                                userToEdit.role = originalUser.role
-                            "
-                        >
-                            <span>Cancel</span>
-                        </button>
-                    </div>
                 </div>
             </template>
         </BaseContextMenu>
