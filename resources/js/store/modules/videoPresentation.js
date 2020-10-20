@@ -268,7 +268,6 @@ export default {
                         return currentTiming.id == timing.id
                     },
                 })
-                
             })
         },
         getTimestampFromMouseEvent({ getters, rootGetters }, mouseEvent) {

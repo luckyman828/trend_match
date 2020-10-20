@@ -1,11 +1,11 @@
 <template>
     <div class="edit-video-presentation">
         <SearchProductsPanel />
-        <VideoPlayer :providerVideoId="currentVideo.providerVideoId" :provider="currentVideo.provider" :autoplay="true">
+        <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="true">
             <VideoPreview />
         </VideoPlayer>
 
-        <TimelinePanel v-if="timingsReady" />
+        <TimelinePanel />
     </div>
 </template>
 
@@ -24,23 +24,11 @@ export default {
         TimelinePanel,
         VideoPlayer,
     },
-    data: function() {
-        return {
-            timingsReady: false,
-        }
-    },
     computed: {
-        ...mapGetters('videoPresentation', {
-            currentVideo: 'getCurrentVideo',
-            videoTimings: 'getVideoTimings',
+        ...mapGetters('videoPlayer', {
+            provider: 'getProvider',
+            videoId: 'getProviderVideoId',
         }),
-    },
-    methods: {
-        ...mapActions('videoPresentation', ['initTimings']),
-    },
-    async created() {
-        await this.initTimings(this.videoTimings)
-        this.timingsReady = true
     },
 }
 </script>

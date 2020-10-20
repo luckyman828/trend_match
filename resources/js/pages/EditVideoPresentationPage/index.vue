@@ -47,7 +47,7 @@ export default {
             const fileId = this.$route.params.fileId
             this.fetchProducts({ fileId })
             const file = await this.fetchFile(fileId)
-            if (file.has_video || true) {
+            if (file.video_count > 0) {
                 const fileVideo = await this.fetchFileVideo(fileId)
                 this.SET_CURRENT_VIDEO(fileVideo)
             }

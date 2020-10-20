@@ -19,7 +19,7 @@
 
         <!-- Access granted -->
         <template v-else>
-            <div class="video-presentation" style="margin-bottom: 32px">
+            <div class="video-presentation" style="margin-bottom: 32px" v-if="currentFile.video_count > 0">
                 <p><strong>This file has a video presentation</strong></p>
                 <router-link
                     class="button primary md"

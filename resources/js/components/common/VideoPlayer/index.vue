@@ -86,7 +86,11 @@ export default {
         ]),
         onPlayerReady(e, a) {
             this.playerReady = true
-            this.SET_PLAYER_REFERENCE(this.$refs.player.player)
+            const player = this.$refs.player.player
+            // Set player reference. Using VUEX causes trouble with the iframe
+            this.$store.state.videoPlayer.player = player
+            // this.SET_PLAYER_REFERENCE(player)
+
             this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
             // Pre-mute the player
             this.togglePlayerMuted(true)
@@ -97,7 +101,7 @@ export default {
             this.getVideoDuration()
         },
         onPlayingStatus(e) {
-            if (this.provider == 'Vimeo') {
+            if (this.provider == 'vimeo') {
                 this.SET_PLAYER_DURATION(e.duration)
             }
             this.SET_DESIRED_STATUS('playing')
