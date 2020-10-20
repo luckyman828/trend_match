@@ -1,5 +1,6 @@
 <template>
     <div
+        v-if="videoDuration"
         class="timeline-item"
         :style="style"
         :id="`timeline-item-${timing.id}`"
@@ -244,10 +245,15 @@ export default {
                 opacity: 1;
                 pointer-events: all;
             }
+            &.current {
+                border-color: white;
+            }
         }
     }
     &.current {
-        // border-color: $primary;
+        background: $primary;
+        color: white;
+        border-color: $primary;
     }
     &.dragged {
         background: $yellow;

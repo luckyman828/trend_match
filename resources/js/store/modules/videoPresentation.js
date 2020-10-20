@@ -126,8 +126,8 @@ export default {
 
             // Clean the timings end and start by flooring to whole Integers
             video.timings.map(timing => {
-                timing.start = Math.floor(timing.start)
-                timing.end = Math.floor(timing.end)
+                timing.start = Math.round(timing.start)
+                timing.end = Math.round(timing.end)
             })
 
             await axios
