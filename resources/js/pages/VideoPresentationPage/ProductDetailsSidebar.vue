@@ -113,7 +113,8 @@ export default {
     left: 0;
     top: 0;
     // height: 100%;
-    height: calc(100% - #{$heightPlayerControls} - 8px);
+    // height: calc(100% - #{$heightPlayerControls} - 8px);
+    height: calc(100% - #{$heightPlayerControls} - 8px - 80px);
     display: flex;
     flex-direction: column;
     pointer-events: all;
@@ -130,6 +131,7 @@ export default {
         opacity: 0;
     }
     &:hover {
+        height: calc(100% - #{$heightPlayerControls} - 8px);
         .background {
             transform: none;
             opacity: 1;
@@ -203,6 +205,7 @@ label {
     .name {
         font-size: 10px;
         font-weight: 500;
+        height: 12px;
     }
     .img-wrapper {
         width: 90px;

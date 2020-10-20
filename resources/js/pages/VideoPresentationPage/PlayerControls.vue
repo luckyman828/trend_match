@@ -67,7 +67,7 @@
             <div class="right">
                 <div class="price-list">
                     <template v-if="product">
-                        <div class="price-list-item">
+                        <div class="price-list-item" :class="{ hidden: !product.delivery_dates[0] }">
                             <label>Delivery</label>
                             <div class="pill white xs">
                                 <span>{{ getPrettyDate(product.delivery_dates[0]) }}</span>
@@ -260,6 +260,9 @@ export default {
     width: 100%;
     .price-list-item {
         margin-left: auto;
+        &.hidden {
+            visibility: hidden;
+        }
     }
     label {
         font-size: 12px;

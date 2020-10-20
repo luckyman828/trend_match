@@ -1,11 +1,7 @@
 <template>
     <div class="video-presentation-page">
         <div class="video-presentation-wrapper">
-            <VideoPlayer
-                :providerVideoId="currentVideo.providerVideoId"
-                :provider="currentVideo.provider"
-                :autoplay="false"
-            >
+            <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
                 <div class="play-overlay" v-if="!playerStarted" @click="onStartPlaying">
                     <h3>Welcome to the video presentation</h3>
                     <button class="xl white">
@@ -13,7 +9,7 @@
                         <span>Play in full-screen</span>
                     </button>
                 </div>
-                <div class="watch-overlay" v-if="timingsReady">
+                <div class="watch-overlay">
                     <div class="actions" v-if="!isPlaying">
                         <router-link class="button pill ghost white" :to="{ name: 'selection' }">
                             <i class="far fa-arrow-left"></i>
@@ -49,36 +45,21 @@ export default {
     },
     data: function() {
         return {
-            timingsReady: false,
             playerStarted: false,
         }
     },
     computed: {
         ...mapGetters('videoPresentation', {
-            currentVideo: 'getCurrentVideo',
             videoTimings: 'getVideoTimings',
         }),
         ...mapGetters('videoPlayer', {
             isPlaying: 'getIsPlaying',
+            videoId: 'getProviderVideoId',
+            provider: 'getProvider',
         }),
     },
     methods: {
-        ...mapActions('videoPresentation', ['addTiming', 'initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
-        // createTestData() {
-        //     const products = this.$store.state.products.products
-        //     const limit = 10
-        //     for (let i = 0; i < limit; i++) {
-        //         const product = products[i]
-        //         const duration = 10
-        //         const newTiming = {
-        //             start: duration * i,
-        //             end: duration * (i + 1),
-        //             product,
-        //         }
-        //         this.addTiming({ newTiming })
-        //     }
-        // },
         onEnterFullscreen() {
             const elem = document.documentElement
             if (elem.requestFullscreen) {
@@ -99,11 +80,6 @@ export default {
             this.onEnterFullscreen()
             this.playerStarted = true
         },
-    },
-    async created() {
-        await this.initTimings(this.videoTimings)
-        this.timingsReady = true
-        // this.createTestData()
     },
 }
 </script>

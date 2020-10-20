@@ -261,6 +261,14 @@ export default {
                         return timing.start - timing.prevTiming.end
                     },
                 })
+                Object.defineProperty(timing, 'isCurrent', {
+                    get() {
+                        const currentTiming = rootGetters['videoPlayer/getCurrentTiming']
+                        if (!currentTiming) return false
+                        return currentTiming.id == timing.id
+                    },
+                })
+                
             })
         },
         getTimestampFromMouseEvent({ getters, rootGetters }, mouseEvent) {

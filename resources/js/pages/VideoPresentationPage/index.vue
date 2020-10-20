@@ -1,8 +1,8 @@
 <template>
     <PageLoader
         :status="status"
-        loadingMsg="loading file"
-        errorMsg="error loading file"
+        loadingMsg="Getting your presentation ready"
+        errorMsg="Error loading video"
         :fitPage="true"
         :errorCallback="() => fetchData()"
     >
@@ -49,11 +49,13 @@ export default {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
+        ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
-            this.fetchFile(fileId)
+            const file = await this.fetchFile(fileId)
 
             // Fetch current selection
             const selectionId = this.$route.params.selectionId
@@ -68,6 +70,9 @@ export default {
 
             // Fetch selections that are available for alignment for the auth user
             const selections = await this.fetchSelections({ fileId })
+
+            const fileVideo = await this.fetchFileVideo(fileId)
+            this.SET_CURRENT_VIDEO(fileVideo)
 
             this.loadingData = false
         },

@@ -1,5 +1,5 @@
 <template>
-    <div class="timeline-item" :style="itemStyle">
+    <div class="timeline-item" :style="itemStyle" :class="{ current: timing.isCurrent }" @click="onSeekTo">
         <v-popover placement="top" popoverClass="min" :container="$el">
             <div class="timeline-marker">
                 <div class="inner"></div>
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'timelineItem',
     props: ['timing'],
@@ -31,6 +31,14 @@ export default {
             }
         },
     },
+    methods: {
+        ...mapActions('videoPlayer', {
+            seekTo: 'seekTo',
+        }),
+        onSeekTo() {
+            this.seekTo(this.timing.start)
+        },
+    },
 }
 </script>
 
@@ -38,7 +46,7 @@ export default {
 @import '~@/_variables.scss';
 .timeline-item {
     position: absolute;
-    bottom: 4px;
+    bottom: 0px;
     &:hover {
         .timeline-marker {
             opacity: 1;
@@ -49,20 +57,27 @@ export default {
         transition: 0.1s ease-out;
         opacity: 0.8;
         box-sizing: content-box;
-        padding: 4px 0;
+        padding: 8px 0;
         .inner {
             border-radius: 50px;
             background: white;
             height: 6px;
         }
     }
+    &.current {
+        .timeline-marker {
+            .inner {
+                background: $primary;
+            }
+        }
+    }
 }
 .product-card {
     width: 72px;
-    padding: 2px;
+    padding: 4px 4px 8px;
     .name {
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 11px;
+        font-weight: 500;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -70,6 +85,7 @@ export default {
     }
     img {
         width: 100%;
+        display: block;
     }
 }
 </style>

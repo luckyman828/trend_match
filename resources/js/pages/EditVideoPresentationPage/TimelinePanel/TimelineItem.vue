@@ -97,7 +97,7 @@ export default {
             }
         },
         isCurrent() {
-            return this.currentTiming && this.currentTiming.id == this.timing.id
+            return this.timing.isCurrent
         },
     },
     methods: {
