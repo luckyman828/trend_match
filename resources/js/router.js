@@ -98,11 +98,10 @@ router.beforeEach((to, from, next) => {
         next({ name: 'login' })
     }
 
-    // // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
-    // if (to.name == 'joinSelection') {
-    //     console.log('lets join this selection')
-    //     next()
-    // }
+    // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
+    if (to.name == 'joinSelection') {
+        next()
+    }
 
     // Check that the user is not going to the login page already
     else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {

@@ -144,6 +144,19 @@ export default {
             if (error) throw error
             else return response
         },
+        async testCatpcha({ commit }, token) {
+            // const apiUrl = '/verify-captcha'
+            const apiUrl = '/test'
+            const axiosInstance = axios.create({
+                baseURL: 'api',
+            })
+            // axiosInstance.post(apiUrl, {
+            //     token,
+            // })
+            axiosInstance.get(apiUrl, {
+                token,
+            })
+        },
     },
 
     mutations: {

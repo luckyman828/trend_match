@@ -13,6 +13,14 @@
             <BaseCheckboxInputField class="form-element" v-model="acceptTerms">
                 <span>I accept the terms & conditions</span>
             </BaseCheckboxInputField>
+
+            <vue-recaptcha
+                sitekey="6LfCa9kZAAAAALX6qHy872UuYkYVhz_tnfdu7HA7"
+                :loadRecaptchaScript="true"
+                @verify="onVerifyCaptcha"
+                @expired="onCaptchaExpired"
+            />
+
             <BaseButton
                 buttonClass="form-element primary full-width lg"
                 class="full-width"
@@ -27,26 +35,35 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import VueRecaptcha from 'vue-recaptcha'
+
 export default {
     name: 'joinSelectionPage',
+    components: {
+        VueRecaptcha,
+    },
     data: function() {
         return {
             newEmail: '',
             emailValid: false,
             acceptTerms: false,
+            captchaToken: null,
         }
     },
     computed: {
         submitDisabled() {
-            return !(this.emailValid && this.acceptTerms)
+            return false
+            return !(this.emailValid && this.acceptTerms && this.captchaToken)
         },
         disabledMsg() {
             if (!this.emailValid) return 'E-mail is invalid'
             if (!this.acceptTerms) return 'Please accept the terms & conditions'
+            if (!this.captchaToken) return 'You must pass the captcha test'
         },
     },
     methods: {
+        ...mapActions('auth', ['testCatpcha']),
         checkEmailIsValid(newVal) {
             const email = newVal
             const pattern = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -54,7 +71,19 @@ export default {
             this.emailValid = isValid
             return isValid
         },
-        onSubmit() {},
+        onVerifyCaptcha(token) {
+            this.captchaToken = token
+        },
+        onCaptchaExpired() {
+            this.captchaToken = null
+        },
+        onSubmit() {
+            // Make sure that submit should actually have been available
+            // if (this.submitDisabled) return
+
+            // Test the captcha
+            this.testCatpcha(this.captchaToken)
+        },
     },
 }
 </script>

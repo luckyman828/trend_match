@@ -4,6 +4,13 @@ window.Vue = require('vue')
 
 window.axios = require('axios')
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
+let csrfToken = document.head.querySelector('meta[name="csrf-token"]')
+
+if (csrfToken) {
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken.content
+} else {
+    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token')
+}
 window.axios.defaults.baseURL = process.env.MIX_API_BASE_URL
 
 window.XLSX = require('xlsx')
