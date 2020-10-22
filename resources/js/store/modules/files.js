@@ -523,9 +523,6 @@ export default {
                             const urlMaps = response.data.media_url_maps
                             // console.log('here are the uploaded images maps', urlMaps)
 
-                            let pictureIndex = 0
-                            let currentVariantId = null
-
                             urlMaps.forEach((urlMap, index) => {
                                 const product = products.find(product =>
                                     product.variants.find(variant => variant.id == urlMap.mapping_id)
@@ -535,12 +532,7 @@ export default {
 
                                 if (!variant) return
 
-                                if (currentVariantId == variant.id) {
-                                    pictureIndex++
-                                } else {
-                                    pictureIndex = 0
-                                    currentVariantId = variant.id
-                                }
+                                const pictureIndex = imageMaps[index].pictureIndex
 
                                 variant.pictures[pictureIndex].url = urlMap.cdn_url
 
