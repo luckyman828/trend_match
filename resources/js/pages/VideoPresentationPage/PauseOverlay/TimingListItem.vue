@@ -37,9 +37,13 @@ export default {
 @import '~@/_variables.scss';
 .product-timing-list-item {
     width: 75px;
+    min-width: 75px;
     overflow: hidden;
     &:not(:first-child) {
         margin-left: 32px;
+    }
+    &:not(.current) {
+        cursor: pointer;
     }
 }
 .name-wrapper {

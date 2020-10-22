@@ -185,7 +185,7 @@ export default {
                 dispatch('bumpConflictingTimings', timing)
             })
         },
-        removeTiming({ getters, commit }, index) {
+        removeTiming({ getters, commit, dispatch }, index) {
             commit('REMOVE_TIMING', index)
             dispatch('updateCurrentVideo')
         },

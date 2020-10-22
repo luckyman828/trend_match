@@ -1,7 +1,7 @@
 <template>
     <div class="pause-overlay">
         <div class="rail">
-            <div class="product-timing-list">
+            <div class="product-timing-list" v-horizontal-scroll v-dragscroll>
                 <TimingListItem
                     class="product-timing-list-item"
                     v-for="(timing, index) in timings"

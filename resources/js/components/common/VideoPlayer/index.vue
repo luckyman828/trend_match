@@ -93,7 +93,7 @@ export default {
 
             this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
             // Pre-mute the player
-            this.togglePlayerMuted(true)
+            // this.togglePlayerMuted(true)
             this.startTimerListener()
 
             // Save a timestamp

@@ -9,7 +9,7 @@ export default {
         status: null,
         iframe: null,
         isMuted: false,
-        volume: 0.5,
+        volume: 1,
         isPlaying: false,
         desiredStatus: 'paused',
         isSeeking: false,
