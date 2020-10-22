@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchProductsPanel from './SearchProductsPanel/'
 import VideoPreview from './VideoPreview/'
 import VideoPlayer from '../../components/common/VideoPlayer/'
@@ -38,6 +38,31 @@ export default {
             provider: 'getProvider',
             providerVideoId: 'getProviderVideoId',
         }),
+    },
+    methods: {
+        ...mapActions('videoPresentation', ['updateCurrentVideo']),
+        ...mapMutations('videoPresentation', ['REMOVE_TIMING']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+    },
+    created() {
+        // Remove timings that no longer have a matching product
+        let removedCount = 0
+        for (let i = this.videoTimings.length - 1; i >= 0; i--) {
+            const timing = this.videoTimings[i]
+            if (!timing.product) {
+                this.REMOVE_TIMING(i)
+                removedCount++
+            }
+        }
+        if (removedCount > 0) {
+            this.SHOW_SNACKBAR({
+                msg: `Removed ${removedCount} timing${removedCount > 1 ? 's' : ''}, whose product no longer exists.`,
+                iconClass: 'fa-info',
+                type: 'info',
+                duration: 10000, // 10 seconds
+            })
+            this.updateCurrentVideo()
+        }
     },
 }
 </script>

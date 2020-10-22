@@ -5,7 +5,7 @@
                 <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div>
             </div>
         </div>
-        <TimelineItemList v-if="timings" :timings="timings" class="timing-list" />
+        <TimelineItemList v-if="timings && productsReady" :timings="timings" class="timing-list" />
     </div>
 </template>
 
@@ -35,6 +35,9 @@ export default {
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',
         }),
+        ...mapGetters('products', {
+            productsStatus: 'productsStatus',
+        }),
         watchedPercentage() {
             const timeToUse = this.isDragging ? this.dragTime : this.timestamp
             const percentage = (timeToUse / this.duration) * 100
@@ -49,6 +52,9 @@ export default {
         railStyle() {
             const playerRect = this.playerIframe.getBoundingClientRect()
             return `width: calc(${(playerRect.width / 100) * this.watchedPercentage}px + 0px);`
+        },
+        productsReady() {
+            return this.productsStatus == 'success'
         },
     },
     methods: {

@@ -6,9 +6,13 @@
             </div>
             <div class="product-card" slot="popover">
                 <span class="name">
-                    {{ timing.product.name }}
+                    {{ timing.product ? timing.product.name : 'Not found' }}
                 </span>
-                <BaseVariantImage :variant="timing.product.variants && timing.product.variants[0]" size="sm" />
+                <BaseVariantImage
+                    v-if="timing.product"
+                    :variant="timing.product.variants && timing.product.variants[0]"
+                    size="sm"
+                />
             </div>
         </v-popover>
     </div>

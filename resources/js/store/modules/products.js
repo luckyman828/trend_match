@@ -388,11 +388,11 @@ export default {
             let products
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then(async response => {
                     products = response.data
                     if (addToState) {
                         commit('insertProducts', { products, method: 'set' })
-                        dispatch('initProducts', products)
+                        await dispatch('initProducts', products)
                     }
                     commit('SET_PRODUCTS_STATUS', 'success')
                 })
@@ -457,7 +457,7 @@ export default {
                         method: 'Add',
                         products: products,
                     })
-                    .then(response => {
+                    .then(async response => {
                         // Alert the user
                         commit(
                             'alerts/SHOW_SNACKBAR',
@@ -478,7 +478,7 @@ export default {
 
                         if (addToState) {
                             commit('insertProducts', { products, method: 'add' })
-                            dispatch('initProducts', products)
+                            await dispatch('initProducts', products)
                             commit('SORT_PRODUCTS')
                         }
                         resolve(response)
@@ -1677,6 +1677,7 @@ export default {
 
                 product.selectionInputList.push(selectionInput)
             })
+            console.log('DONE INIT PRODUCTS')
         },
         SET_LAST_SORT(state, { method, key }) {
             state.lastSort = { method, key }

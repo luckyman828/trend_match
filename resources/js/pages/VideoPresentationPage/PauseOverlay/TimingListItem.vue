@@ -5,10 +5,10 @@
         @click="seekTo(timing.start)"
     >
         <div class="name-wrapper">
-            <span class="name">{{ product.name }}</span>
+            <span class="name">{{ product ? product.name : 'Not found' }}</span>
         </div>
         <div class="img-wrapper">
-            <BaseVariantImage :variant="product.variants[0]" size="sm" />
+            <BaseVariantImage v-if="product" :variant="product.variants[0]" size="sm" />
         </div>
         <span class="timestamp">{{ timing.start | timestampify }}</span>
     </div>

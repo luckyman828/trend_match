@@ -71,11 +71,6 @@ const routes = [
         name: 'createLivestream',
         component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/LivestreamPage'),
     },
-    // {
-    //     path: '/workspace/:workspaceId/file/:fileId/selection/:selectionId/join',
-    //     name: 'joinSelection',
-    //     component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
-    // },
     {
         path: '/join/:linkHash',
         name: 'joinSelection',
