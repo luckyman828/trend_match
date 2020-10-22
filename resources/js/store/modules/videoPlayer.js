@@ -9,6 +9,7 @@ export default {
         status: null,
         iframe: null,
         isMuted: false,
+        volume: 0.5,
         isPlaying: false,
         desiredStatus: 'paused',
         isSeeking: false,
@@ -21,6 +22,8 @@ export default {
                 unMute: 'setVolume',
                 seekTo: 'setCurrentTime',
                 getTimestamp: 'getCurrentTime',
+                setVolume: 'setVolume',
+                volumeMultiplier: 1,
             },
             youtube: {
                 play: 'playVideo',
@@ -29,6 +32,8 @@ export default {
                 unMute: 'unMute',
                 seekTo: 'seekTo',
                 getTimestamp: 'getCurrentTime',
+                setVolume: 'setVolume',
+                volumeMultiplier: 100,
             },
         },
     },
@@ -53,6 +58,7 @@ export default {
         getStatus: state => state.status,
         getIframe: state => state.iframe,
         getIsMuted: state => state.isMuted,
+        getVolume: state => state.volume,
         getIsSeeking: state => state.isSeeking,
         getTimelineKnobIsBeingDragged: state => state.timelineKnobIsBeingDragged,
         getCurrentTimingIndex: (state, getters, rootState, rootGetters) => {
@@ -94,6 +100,13 @@ export default {
             } else {
                 await player[providerMap.unMute](1)
             }
+        },
+        async setVolume({ commit, getters }, newVolume) {
+            const player = getters.getPlayer
+            const providerMap = getters.getProviderMap
+            const volumeMultiplier = providerMap.volumeMultiplier
+            commit('SET_PLAYER_VOLUME', newVolume)
+            await player[providerMap.setVolume](newVolume * volumeMultiplier)
         },
         async togglePlaying({ commit, getters }) {
             const player = getters.getPlayer
@@ -155,6 +168,9 @@ export default {
         },
         SET_IS_DRAGGING(state, isDragging) {
             state.timelineKnobIsBeingDragged = isDragging
+        },
+        SET_PLAYER_VOLUME(state, volume) {
+            state.volume = volume
         },
     },
 }

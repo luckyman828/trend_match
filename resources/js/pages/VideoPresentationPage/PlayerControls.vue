@@ -2,13 +2,16 @@
     <div class="player-controls">
         <div class="main">
             <div class="left">
-                <div class="button-list">
+                <div class="button-list flex-list">
+                    <!-- PLAY / PAUSE -->
                     <button class="invisible white circle ghost-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                     </button>
-                    <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted()">
-                        <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume'"></i>
-                    </button>
+
+                    <!-- MUTE / UNMUTE -->
+                    <VolumeControl />
+
+                    <!-- FULLSCREEN MODE -->
                     <button
                         class="invisible white circle ghost-hover"
                         v-tooltip="{
@@ -20,6 +23,8 @@
                     >
                         <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
                     </button>
+
+                    <button class="white circle invisible ghost-hover"></button>
                 </div>
 
                 <div class="time" style="margin-left: 40px;">
@@ -97,12 +102,17 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import VolumeControl from './VolumeControl'
+
 export default {
     name: 'playerControls',
     data: function() {
         return {
             fullscreenModeActive: false,
         }
+    },
+    components: {
+        VolumeControl,
     },
     computed: {
         ...mapGetters('videoPlayer', {
