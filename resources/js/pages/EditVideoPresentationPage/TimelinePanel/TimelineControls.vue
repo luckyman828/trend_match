@@ -2,13 +2,11 @@
     <div class="timeline-controls">
         <div class="main">
             <div class="left">
-                <div class="button-list">
+                <div class="button-list flex-list">
                     <button class="invisible white circle ghost-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
                     </button>
-                    <button class="invisible white circle  ghost-hover" @click="togglePlayerMuted()">
-                        <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume'"></i>
-                    </button>
+                    <VolumeControl />
                 </div>
 
                 <div class="time" style="margin-left: 40px;">
@@ -26,9 +24,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import VolumeControl from './../../VideoPresentationPage/VolumeControl'
 
 export default {
     name: 'timelineControls',
+    components: {
+        VolumeControl,
+    },
     computed: {
         ...mapGetters('videoPlayer', {
             isMuted: 'getIsMuted',
