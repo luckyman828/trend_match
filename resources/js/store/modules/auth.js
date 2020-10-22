@@ -23,7 +23,7 @@ export default {
 
     actions: {
         async login({ commit, state }, { email, password }) {
-            state.status = 'loading'
+            commit('SET_AUTH_STATUS', 'loading')
             let success = false
 
             const apiUrl = `/auth/login`
@@ -33,23 +33,16 @@ export default {
                     password,
                 })
                 .then(response => {
-                    // Save the token to our state
                     const token = response.data.token.access_token
-                    // Store the token in localstorage
-                    localStorage.setItem('user-token', token)
-                    // Add the token to future auth requests
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-                    state.token = token
-                    // Save the authenticated user
-                    commit('setAuthUser', response.data)
-                    // return success
-                    state.status = 'success'
+                    const user = response.data
+                    commit('ON_SUCCESFUL_LOGIN', { token, user })
                     success = true
                 })
                 .catch(err => {
-                    state.status = 'error'
                     success = false
+                    commit('SET_AUTH_STATUS', 'error')
                 })
+
             return success
         },
         async logout({ commit, state }) {
@@ -144,30 +137,32 @@ export default {
             if (error) throw error
             else return response
         },
-        async testCatpcha({ commit }, token) {
-            // const apiUrl = '/verify-captcha'
-            const apiUrl = '/test'
-            const axiosInstance = axios.create({
-                baseURL: 'api',
-            })
-            // axiosInstance.post(apiUrl, {
-            //     token,
-            // })
-            axiosInstance.get(apiUrl, {
-                token,
-            })
-        },
     },
 
     mutations: {
         setAuthUser(state, user) {
             state.user = user
         },
+        SET_AUTH_STATUS(state, status) {
+            state.status = status
+        },
         SET_PASSWORD_RECOVERY_EMAIL(state, email) {
             state.passwordRecoveryEmail = email
         },
         SET_PASSWORD_RECOVERY_SESSION_ID(state, id) {
             state.passwordRecoverySessionId = id
+        },
+        ON_SUCCESFUL_LOGIN(state, { token, user }) {
+            // Set the status of our login to success
+            state.status = 'success'
+            // Store the token in localstorage
+            localStorage.setItem('user-token', token)
+            // Add the token to future auth requests
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            // Save the token to our state
+            state.token = token
+            // Save the authenticated user
+            state.user = user
         },
     },
 }

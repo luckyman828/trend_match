@@ -71,8 +71,13 @@ const routes = [
         name: 'createLivestream',
         component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/LivestreamPage'),
     },
+    // {
+    //     path: '/workspace/:workspaceId/file/:fileId/selection/:selectionId/join',
+    //     name: 'joinSelection',
+    //     component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+    // },
     {
-        path: '/workspace/:workspaceId/file/:fileId/selection/:selectionId/join',
+        path: '/join/:linkHash',
         name: 'joinSelection',
         component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
     },
@@ -85,11 +90,15 @@ const router = new VueRouter({
     // link here: https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     // Reset current folder
     if (!['files', 'editFile', 'selection'].includes(to.name)) {
         // If we are not going to a file related path --> reset the current folder
         store.commit('files/SET_CURRENT_FOLDER', null)
+    }
+
+    if (to.name == 'login' && from && from.name) {
+        store.commit('routes/SET_NEXT_URL', from.fullPath)
     }
 
     if (to.name == 'verificationCode' && !store.getters['auth/getPasswordRecoveryEmail']) {
@@ -99,7 +108,9 @@ router.beforeEach((to, from, next) => {
     }
 
     // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
-    if (to.name == 'joinSelection') {
+    if (to.name == 'joinSelection' && to.params.linkHash) {
+        const selectionId = await store.dispatch('selections/readSelectionLinkHash', to.params.linkHash)
+        store.commit('selections/SET_CURRENT_SELECTION_ID', selectionId)
         next()
     }
 
@@ -107,9 +118,6 @@ router.beforeEach((to, from, next) => {
     else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {
         next({
             name: 'login',
-            params: {
-                nextUrl: to.fullPath,
-            },
         })
     } else {
         next()

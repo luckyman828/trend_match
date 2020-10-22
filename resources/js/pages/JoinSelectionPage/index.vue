@@ -23,54 +23,77 @@ export default {
     },
     data: function() {
         return {
-            status: 'success',
+            status: 'loading',
         }
     },
     computed: {
         ...mapGetters('auth', {
             isAuthenticated: 'isAuthenticated',
-            authUser: 'authUser',
         }),
-        workspaceId() {
-            return this.$route.params.workspaceId
-        },
-        fileId() {
-            return this.$route.params.fileId
-        },
-        selectionId() {
-            return this.$route.params.selectionId
-        },
+        ...mapGetters('selections', {
+            selectionId: 'getCurrentSelectionId',
+        }),
+        ...mapGetters('workspaces', {
+            currentWorkspace: 'currentWorkspace',
+        }),
     },
     methods: {
-        ...mapActions('selections', ['fetchSelection']),
-        fetchData() {},
-        async joinSelection() {
+        ...mapActions('selections', ['fetchSelection', 'joinSelection']),
+        ...mapActions('files', ['fetchFile']),
+        ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        async init() {
+            await this.handleLink()
+            this.status = 'success'
+        },
+        async handleLink() {
+            console.log('loader handling link')
             // A. Check if the user is logged in
             if (this.isAuthenticated) {
                 // A. 1. Check if the user has access to the selection
-                const selection = await this.fetchSelection({ selectionId: this.selectionId })
-                if (selection) {
-                    // If we have the selection, then we have access to it and will simply direct there
-                    this.$router.push({
-                        name: 'selection',
-                        params: { fileId: this.fileId, selectionId: this.selectionId },
-                    })
-                    return
+                let selection = await this.fetchSelection({ selectionId: this.selectionId })
+
+                if (!selection || !selection.your_role) {
+                    // If we didn't get any selection, join it.
+                    const joinResponse = await this.joinSelection(this.selectionId)
+
+                    // Check that we are on the workspace that the new selection belongs to
+                    if (!this.currentWorkspace || this.currentWorkspace.id != joinResponse.workspace_id) {
+                        const workspaces = await this.fetchWorkspaces()
+                        console.log('workspaces', workspaces, joinResponse, joinResponse.workspace_id)
+                        const newWorkspaceIndex = workspaces.findIndex(x => x.id == joinResponse.workspace_id)
+                        await this.setCurrentWorkspaceIndex(newWorkspaceIndex)
+                    }
+
+                    // Fetch workspaces again to check if we have been added to a new one
+
+                    // Now fetch the selection again
+                    selection = await this.fetchSelection({ selectionId: this.selectionId })
                 }
 
-                // Call API to let the user join
-                // if the user does not have access to the selection, send an API requst to have the user join
-                this.joinSelectionViaLink()
+                // Navigate to the selection
+                let routeName = 'selection'
+                // If the file has a video, then navigate to the video
+                const file = await this.fetchFile(selection.file_id)
+                if (file.video_count > 0) {
+                    routeName = 'watchVideoPresentation'
+                }
+
+                console.log('route change from loader')
+                this.$router.push({
+                    name: routeName,
+                    params: { fileId: selection.file_id, selectionId: this.selectionId },
+                })
+                return
             }
 
-            // The user is not authenticated. Let the user create a user
-        },
-        joinSelectionViaLink() {
-            console.log('JOIN VIA LINK')
+            // The user is not authenticated do nothing.
+            // The user will be shown the join selection page
+            console.log('done handling link')
         },
     },
     created() {
-        this.joinSelection()
+        console.log('loader created')
+        this.init()
     },
 }
 </script>

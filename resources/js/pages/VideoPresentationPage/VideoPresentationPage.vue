@@ -13,7 +13,7 @@
                     <div class="actions" v-if="!isPlaying">
                         <router-link class="button pill ghost white" :to="{ name: 'selection' }">
                             <i class="far fa-arrow-left"></i>
-                            <span>Back to selection</span>
+                            <span>View results / Back to selection</span>
                         </router-link>
                     </div>
                     <ProductDetailsSidebar v-if="playerStarted" />

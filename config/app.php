@@ -134,6 +134,10 @@ return [
     |
     */
 
+    'captcha_secret' => env('CAPTCHA_SECRET'),
+    'api_base_url' => env('API_BASE_URL'),
+    'api_token' => env('API_TOKEN'),
+
     'providers' => [
 
         /*

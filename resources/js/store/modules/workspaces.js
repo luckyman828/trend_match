@@ -39,12 +39,14 @@ export default {
 
             let tryCount = 3
             let success = false
+            let workspaces = []
             while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
                     commit('setWorkspaces', response.data)
                     commit('setLoading', false)
                     success = true
+                    workspaces = response.data
                 } catch (err) {
                     console.log('API error in workspaces.js :')
                     console.log(err)
@@ -52,6 +54,7 @@ export default {
                     if (tryCount <= 0) throw err
                 }
             }
+            return workspaces
         },
         async setCurrentWorkspaceIndex({ commit }, index) {
             // Reset the current folder ID

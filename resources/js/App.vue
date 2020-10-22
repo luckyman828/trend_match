@@ -1,6 +1,6 @@
 <template>
     <!-- PUBLIC ROUTES -->
-    <div class="public" id="app-component" v-if="!isAuthenticated">
+    <!-- <div class="public" id="app-component" v-if="!isAuthenticated">
         <LoginPage v-if="$route.path.startsWith('/login')" />
         <div class="main" id="main" ref="main" v-else>
             <div class="public-page">
@@ -16,39 +16,54 @@
                 </div>
             </div>
         </div>
+        <TheSnackbarSpawner />
+    </div> -->
+    <div class="loading-wrapper" v-if="isAuthenticated && !currentWorkspace">
+        <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
+        <BaseLoader />
     </div>
 
-    <!-- PRIVATE ROUTES -->
     <div
         class="app"
         id="app-component"
-        v-else-if="authUser && currentWorkspace"
-        :class="[{ 'hide-nav': hideNav, 'drag-active': dragActive }, { 'full-screen': fullScreenContent }]"
+        v-else-if="!error"
+        :class="[
+            { 'hide-nav': hideNav, 'drag-active': dragActive },
+            { 'full-screen': fullScreenContent },
+            { public: !isAuthenticated },
+        ]"
     >
-        <TheNavbar v-if="!fullScreenContent" />
-        <TheSidebar v-if="!fullScreenContent" />
+        <template v-if="!fullScreenContent && isAuthenticated">
+            <TheNavbar />
+            <TheSidebar />
+        </template>
         <div class="main" id="main" ref="main">
-            <!-- <div class="main" id="main" ref="main" @scroll.passive="scrollHandler"> -->
-            <!-- <div class="container"> -->
-            <transition name="fade">
-                <router-view :key="$route.path"></router-view>
-            </transition>
-            <!-- </div> -->
+            <template v-if="!isAuthenticated">
+                <img src="/images/graphs.svg" class="bg-left" />
+                <img src="/images/graphs.svg" class="bg-right" />
+            </template>
+            <div class="inner">
+                <img class="logo" src="/images/kollekt-logo.svg" v-if="!isAuthenticated" />
+
+                <transition name="fade">
+                    <router-view :key="$route.path"></router-view>
+                </transition>
+            </div>
         </div>
         <TheImageLightbox v-if="getLightboxIsVisible" />
         <TheSnackbarSpawner />
         <TheChangelogModal v-if="getShowChangelog" />
     </div>
-    <div class="error-wrapper" v-else-if="error">
+    <!-- <div class="loading-wrapper" v-else>
+        <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
+        <BaseLoader />
+    </div> -->
+    <div class="error-wrapper" v-else>
         <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
         <i class="xl far fa-exclamation-triangle"></i>
         <h3>There was an error connecting Kollekt.</h3>
         <p>Please try refreshing the page, or checking your connection.</p>
         <p>Contact Kollekt Support if the error persists.</p>
-    </div>
-    <div class="loading-wrapper" v-else>
-        <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
-        <BaseLoader />
     </div>
 </template>
 
@@ -101,6 +116,7 @@ export default {
     watch: {
         // Watch for changes to the authStatus
         authStatus: function(newVal) {
+            console.log('authStatus changed!', newVal)
             // When our auth status changes to success
             // -> initialize the workspace
             if (newVal == 'success') {
@@ -130,15 +146,25 @@ export default {
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
-        initWorkspace() {
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        async initWorkspace() {
             // Get workspaces
-            this.fetchWorkspaces().then(() => {
-                // Set the current workspace
-                // If we don't have a current workspace saved, then set index to 0
-                if (this.currentWorkspaceIndex == null) {
-                    this.setCurrentWorkspaceIndex(0)
-                }
-            })
+            const fetchedWorkspaces = await this.fetchWorkspaces()
+            if (fetchedWorkspaces.length <= 0) {
+                this.SHOW_SNACKBAR({
+                    msg: `You dont have access to any workspaces.`,
+                    type: 'warning',
+                    iconClass: 'fa-exclamation-triangle',
+                    duration: 10000, // 10 seconds
+                })
+                this.logout()
+            }
+            // Set the current workspace
+            // If we don't have a current workspace saved, then set index to 0
+            if (!this.currentWorkspaceIndex || this.currentWorkspaceIndex < 0) {
+                console.log('no current workspace id')
+                this.setCurrentWorkspaceIndex(0)
+            }
         },
         async initSignalR() {
             // Connect to SignalR
@@ -278,33 +304,6 @@ body,
 #app {
     color: $dark;
 }
-.public {
-    scroll-behavior: smooth;
-    min-height: 100vh;
-    min-width: 100vw;
-    max-height: 100vh;
-    overflow: hidden;
-    transition: 0.3s;
-    &.drag-active {
-        cursor: grabbing;
-    }
-    &.full-screen {
-        .main {
-            max-height: 100vh;
-            height: 100vh;
-            overflow: auto;
-        }
-    }
-    .main {
-        // box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
-        overflow-y: auto;
-        overflow-x: hidden;
-        background: $bg;
-        position: relative;
-        min-height: 100vh;
-        height: 100vh;
-    }
-}
 .app {
     scroll-behavior: smooth;
     min-height: 100vh;
@@ -340,6 +339,53 @@ body,
             height: 100vh;
             overflow: auto;
         }
+    }
+
+    &.public {
+        display: block;
+        background: $dark05;
+        min-height: 100vh;
+        position: relative;
+        scroll-behavior: smooth;
+        min-width: 100vw;
+        max-height: 100vh;
+        overflow: hidden;
+        transition: 0.3s;
+        .main {
+            // box-shadow: 0 3px 6px rgba(0,0,0,.05) inset, 5px 0 6px rgba(0,0,0,.02) inset;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: $dark;
+            position: relative;
+            min-height: 100vh;
+            height: 100vh;
+        }
+        .bg-left,
+        .bg-right {
+            position: fixed;
+            bottom: 0;
+            width: 50%;
+            &.bg-left {
+                left: 0;
+            }
+            &.bg-right {
+                right: 0;
+            }
+        }
+        .inner {
+            position: absolute;
+            margin: auto;
+            left: 0;
+            right: 0;
+            max-width: 800px;
+            background: white;
+            z-index: 1;
+            padding: 60px 200px;
+            text-align: center;
+        }
+    }
+    .inner {
+        height: 100%;
     }
 }
 .main {
@@ -408,40 +454,6 @@ body {
     &.disabled {
         &::after {
             display: block;
-        }
-    }
-}
-.public-page {
-    background: $dark05;
-    min-height: 100vh;
-    position: relative;
-    .bg-left,
-    .bg-right {
-        position: fixed;
-        bottom: 0;
-        width: 50%;
-        &.bg-left {
-            left: 0;
-        }
-        &.bg-right {
-            right: 0;
-        }
-    }
-    .container {
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        height: 100%;
-        max-width: 800px;
-        background: white;
-        z-index: 1;
-        padding: 60px 0;
-        .inner {
-            max-width: 400px;
-            width: 100%;
-            margin: auto;
-            text-align: center;
         }
     }
 }

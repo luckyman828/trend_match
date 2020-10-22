@@ -11,6 +11,7 @@ export default {
         usersStatus: null,
         teamsStatus: null,
         currentSelection: null,
+        currentSelectionId: null,
         currentSelectionUsers: null,
         currentPDPSelection: null,
         selections: [],
@@ -56,6 +57,7 @@ export default {
         getSelectionUsersStatus: state => state.usersStatus,
         getSelectionTeamsStatus: state => state.teamsStatus,
         currentSelection: state => state.currentSelections[0],
+        getCurrentSelectionId: state => state.currentSelectionId,
         getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
         getDisplayUnreadBullets: (state, getters) => {
@@ -1092,6 +1094,53 @@ export default {
                     )
                 })
         },
+        async joinSelectionViaLink({ commit }, { captchaToken, selectionId, email }) {
+            const apiUrl = '/join-selection-via-link'
+            const axiosInstance = axios.create({
+                baseURL: 'api',
+            })
+
+            let joinResponse = false
+            await axiosInstance.post(apiUrl, { captchaToken, selectionId, email }).then(response => {
+                joinResponse = response.data
+            })
+
+            return joinResponse
+        },
+        async getSelectionLink({}, selectionId) {
+            const apiUrl = `selections/${selectionId}/get-link`
+            const axiosInstance = axios.create({
+                baseURL: 'api',
+            })
+
+            let linkId
+            await axiosInstance.get(apiUrl).then(response => {
+                linkId = response.data
+            })
+
+            const linkBase = `${location.origin}/#/join/`
+            return linkBase + linkId
+        },
+        async readSelectionLinkHash({}, linkHash) {
+            const apiUrl = `selections/read-link/${linkHash}`
+            const axiosInstance = axios.create({
+                baseURL: 'api',
+            })
+
+            let selectionId
+            await axiosInstance.get(apiUrl).then(response => {
+                selectionId = response.data.selection_id
+            })
+            return selectionId
+        },
+        async joinSelection({}, selectionId) {
+            const apiUrl = `selections/join/${selectionId}`
+            let joinResponse
+            await axios.post(apiUrl).then(response => {
+                joinResponse = response.data
+            })
+            return joinResponse
+        },
     },
 
     mutations: {
@@ -1273,6 +1322,9 @@ export default {
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {
             // Vue.set(selection, 'is_presenting', isActive)
             selection.is_presenting = isActive
+        },
+        SET_CURRENT_SELECTION_ID(state, selectionId) {
+            state.currentSelectionId = selectionId
         },
     },
 }
