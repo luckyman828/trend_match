@@ -13,7 +13,7 @@
                                     :key="index"
                                     :style="intervalMarkStyle"
                                 >
-                                    <span class="interval-number">{{ interval.timestamp }}</span>
+                                    <span class="interval-number">{{ interval.timestamp | timestampify }}</span>
                                     <div class="sub-marks" :style="intervalSubmarkStyle"></div>
                                 </div>
                                 <!-- <div class="interval-sub-markers" :style="intervalSubmarkStyle"></div> -->
@@ -450,7 +450,8 @@ export default {
         width: 100%;
         display: flex;
         overflow: hidden;
-        padding-left: 2px;
+        padding-left: 6px;
+        margin-left: -6px;
         .interval-mark {
             color: white;
             border-left: solid $grey800 1px;
