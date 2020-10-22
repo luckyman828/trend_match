@@ -1,22 +1,21 @@
 <template>
-    <BaseModal classes="dialog"
-    :show="visible" @close="hide">
+    <BaseModal classes="dialog" :show="visible" @close="hide">
         <div class="body">
-            <slot/>
+            <slot />
         </div>
         <div class="actions">
             <!-- Confirm -->
             <template v-if="type == 'confirm'">
                 <button class="ghost lg" @click="onCancel">
-                    <span>{{cancelText || 'Cancel'}}</span>
+                    <span>{{ cancelText || 'Cancel' }}</span>
                 </button>
                 <button class="lg" :class="confirmColor" @click="onConfirm">
-                    <span>{{confirmText || 'Confirm'}}</span>
+                    <span>{{ confirmText || 'Confirm' }}</span>
                 </button>
             </template>
             <template v-else>
                 <button class="lg" :class="confirmColor" @click="onCancel">
-                    <span>{{confirmText || 'Okay'}}</span>
+                    <span>{{ confirmText || 'Okay' }}</span>
                 </button>
             </template>
         </div>
@@ -26,17 +25,14 @@
 <script>
 export default {
     name: 'baseDialog',
-    props: [
-        'confirmColor',
-        'confirmText',
-        'cancelText',
-        'type'
-    ],
-    data: function() { return {
-        visible: false,
-        resolve: null,
-        reject: null,
-    }},
+    props: ['confirmColor', 'confirmText', 'cancelText', 'type'],
+    data: function() {
+        return {
+            visible: false,
+            resolve: null,
+            reject: null,
+        }
+    },
     watch: {
         visible(newVal) {
             if (newVal) {
@@ -44,7 +40,7 @@ export default {
             } else {
                 document.removeEventListener('keydown', this.hotkeyHandler)
             }
-        }
+        },
     },
     methods: {
         onConfirm() {
@@ -77,37 +73,39 @@ export default {
             if (e.key == 'Enter' && this.type == 'confirm') {
                 this.onConfirm()
             }
-        }
+        },
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
-    }
+    },
 }
 </script>
 
 <style lang="scss">
-    .dialog.modal-wrapper {
-        .modal {
-            background: white;
-            width: 524px;
-            > .body {
-                max-width: none;
-                text-align: center;
-                padding: 88px 16px 32px;
-            }
-        }
-        .icon-graphic {
-            display: flex;
-            width: 188px;
-            justify-content: space-between;
-            margin-bottom: 32px;
-            margin: auto;
+.dialog.modal-wrapper {
+    .modal {
+        background: white;
+        width: 524px;
+        > .body {
+            max-width: none;
+            text-align: center;
+            padding: 88px 16px 32px;
         }
     }
+    .icon-graphic {
+        display: flex;
+        width: 188px;
+        justify-content: center;
+        margin-bottom: 32px;
+        margin: auto;
+        > * {
+            flex: 1;
+        }
+    }
+}
 </style>
 
 <style lang="scss" scoped>
-
 .body {
     max-width: 400px;
     margin: auto;

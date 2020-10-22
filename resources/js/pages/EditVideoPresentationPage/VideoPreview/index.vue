@@ -41,11 +41,27 @@
                 </template>
             </button>
         </div>
+
+        <BaseDialog
+            ref="confirmChangeURL"
+            type="confirm"
+            confirmColor="primary"
+            confirmText="Yes, change video"
+            cancelText="No, keep it"
+        >
+            <div class="icon-graphic">
+                <!-- <i class="lg primary far fa-presentation"></i> -->
+                <i class="xl far fa-exclamation-triangle red"></i>
+                <!-- <i class="lg dark far fa-times"></i> -->
+            </div>
+            <h3>All your product timings will be deleted.</h3>
+            <p>Are you sure you want to change the video?</p>
+        </BaseDialog>
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPreview',
@@ -58,6 +74,7 @@ export default {
     computed: {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
+            videoTimings: 'getVideoTimings',
         }),
         ...mapGetters('files', {
             currentFile: 'currentFile',
@@ -73,9 +90,14 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPresentation', ['setVideoByURL']),
-        onSetVideoByURL() {
-            this.setVideoByURL({ file: this.currentFile, url: this.videoUrl })
+        ...mapActions('videoPresentation', ['setVideoByURL', 'updateCurrentVideo']),
+        ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS']),
+        async onSetVideoByURL() {
+            // Confirm first
+            if (this.videoTimings.length > 0 && !(await this.$refs.confirmChangeURL.confirm())) return
+            await this.setVideoByURL({ file: this.currentFile, url: this.videoUrl })
+            this.SET_VIDEO_TIMINGS([])
+            await this.updateCurrentVideo()
             this.editModeActive = false
         },
     },

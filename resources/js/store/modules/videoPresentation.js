@@ -289,7 +289,8 @@ export default {
             state.currentVideo = video
         },
         SET_VIDEO_TIMINGS(state, timings) {
-            state.videoTimings = timings
+            if (!state.currentVideo) return
+            state.currentVideo.timings = timings
         },
         ADD_TIMING(state, { timing, index }) {
             if (index != null) {
