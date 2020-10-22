@@ -47,15 +47,19 @@ export default {
             const fileId = this.$route.params.fileId
             this.fetchProducts({ fileId })
             const file = await this.fetchFile(fileId)
+            let fileVideo = null
             if (file.video_count > 0) {
-                const fileVideo = await this.fetchFileVideo(fileId)
-                this.SET_CURRENT_VIDEO(fileVideo)
+                fileVideo = await this.fetchFileVideo(fileId)
             }
+            this.SET_CURRENT_VIDEO(fileVideo)
             this.dataReady = true
         },
     },
     created() {
         this.fetchData()
+    },
+    destroyed() {
+        this.SET_CURRENT_VIDEO(null)
     },
 }
 </script>
