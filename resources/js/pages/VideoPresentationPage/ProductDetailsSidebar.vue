@@ -36,12 +36,12 @@
                 </BaseDisplayField>
             </div>
 
-            <div class="variant-list flex-list">
+            <div class="variant-list flex-list" v-dragscroll>
                 <div class="list-item" v-for="(variant, index) in product.variants" :key="index">
                     <div class="flex-list flex-v sm">
                         <span class="name">{{ variant.name }}</span>
                         <div class="img-wrapper">
-                            <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                            <BaseVariantImage :variant="variant" size="sm" />
                         </div>
                     </div>
                 </div>
@@ -202,6 +202,8 @@ label {
 .variant-list {
     margin-top: 20px;
     margin-bottom: 40px;
+    overflow: auto;
+    padding-bottom: 8px;
     .name {
         font-size: 10px;
         font-weight: 500;

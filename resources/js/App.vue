@@ -116,7 +116,6 @@ export default {
     watch: {
         // Watch for changes to the authStatus
         authStatus: function(newVal) {
-            console.log('authStatus changed!', newVal)
             // When our auth status changes to success
             // -> initialize the workspace
             if (newVal == 'success') {

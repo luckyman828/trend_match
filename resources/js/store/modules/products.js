@@ -1677,7 +1677,6 @@ export default {
 
                 product.selectionInputList.push(selectionInput)
             })
-            console.log('DONE INIT PRODUCTS')
         },
         SET_LAST_SORT(state, { method, key }) {
             state.lastSort = { method, key }
