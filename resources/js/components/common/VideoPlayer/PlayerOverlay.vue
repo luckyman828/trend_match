@@ -1,5 +1,5 @@
 <template>
-    <div class="player-overlay" :class="{ paused: playerStatus == 'paused' }">
+    <div class="player-overlay" :class="playerStatus">
         <div class="over-player" @click="onTogglePlay" />
         <div class="custom-overlay">
             <slot />

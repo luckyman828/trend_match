@@ -127,7 +127,7 @@ export default {
         opacity: 0;
     }
     &.show {
-        z-index: 1;
+        z-index: 2;
         .background {
             transform: none;
             opacity: 1;

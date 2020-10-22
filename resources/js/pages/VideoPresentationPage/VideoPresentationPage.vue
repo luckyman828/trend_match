@@ -16,8 +16,15 @@
                             <span>View results / Back to selection</span>
                         </router-link>
                     </div>
+                    <EndedOverlay
+                        v-if="playerStatus == 'ended'"
+                        @view-cart-ins="
+                            $refs.cartSidebar.show = true
+                            $refs.cartSidebar.cartView = 'ins'
+                        "
+                    />
                     <ProductDetailsSidebar v-if="playerStarted" />
-                    <CartSidebar v-if="playerStarted" />
+                    <CartSidebar v-if="playerStarted" ref="cartSidebar" />
                     <PauseOverlay />
                     <PlayerControls />
                 </div>
@@ -33,6 +40,7 @@ import PlayerControls from './PlayerControls'
 import ProductDetailsSidebar from './ProductDetailsSidebar'
 import CartSidebar from './CartSidebar/'
 import PauseOverlay from './PauseOverlay/'
+import EndedOverlay from './EndedOverlay'
 
 export default {
     name: 'watchVideoPresentationPage',
@@ -42,6 +50,7 @@ export default {
         ProductDetailsSidebar,
         CartSidebar,
         PauseOverlay,
+        EndedOverlay,
     },
     data: function() {
         return {
@@ -56,6 +65,7 @@ export default {
             isPlaying: 'getIsPlaying',
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
+            playerStatus: 'getStatus',
         }),
     },
     methods: {
@@ -115,6 +125,7 @@ export default {
         top: 16px;
         left: 50%;
         transform: translateX(-50%);
+        z-index: 2;
     }
 }
 .play-overlay {

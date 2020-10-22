@@ -37,7 +37,7 @@ export default {
     background: $dark100;
     color: white;
     width: 100%;
-    z-index: 0;
+    z-index: 1;
     transition: 0.1s ease-out;
     transform: translateY(100%);
     box-shadow: $shadowModule;
@@ -45,7 +45,8 @@ export default {
     height: $heightPauseOverlay;
     bottom: calc(#{$heightPlayerControls} + 8px);
     pointer-events: all;
-    .paused & {
+    .paused &,
+    .ended & {
         transform: none;
     }
     .rail {
