@@ -265,11 +265,13 @@ export default {
 }
 .price-list {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-top: -12px;
     width: 100%;
     .price-list-item {
-        margin-left: auto;
+        &:not(:first-child) {
+            margin-left: 40px;
+        }
         &.hidden {
             visibility: hidden;
         }
@@ -280,6 +282,7 @@ export default {
         display: block;
         margin-bottom: 4px;
         margin-left: 7px;
+        color: $grey500;
     }
     .pill {
         width: 112px;

@@ -25,13 +25,13 @@
         </div>
         <div class="body">
             <div class="price-list flex-list md">
-                <BaseDisplayField label="WHS">
+                <BaseDisplayField label="WHS" v-if="product.yourPrice.wholesale_price">
                     <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
                 </BaseDisplayField>
-                <BaseDisplayField label="Minimum">
+                <BaseDisplayField label="Minimum" v-if="product.min_order">
                     <span>{{ product.min_order }} PCS</span>
                 </BaseDisplayField>
-                <BaseDisplayField label="Delivery">
+                <BaseDisplayField label="Delivery" v-if="product.delivery_dates[0]">
                     <span>{{ getPrettyDate(product.delivery_dates[0]) }}</span>
                 </BaseDisplayField>
             </div>
@@ -57,13 +57,15 @@
                 <BaseDisplayField label="Sizes">
                     <span v-if="product.variants[0]">{{ product.variants[0].sizes.join(', ') }}</span>
                 </BaseDisplayField>
-                <div class="list-item">
+
+                <!-- ATTACHMENTS -->
+                <!-- <div class="list-item">
                     <label>Documentation</label>
                     <button class="full-width align-left primary md">
                         <i class="far fa-file-download"></i>
                         <span>Sustanability report</span>
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
