@@ -28,7 +28,7 @@ export default {
         font-weight: 700;
         font-size: 12px;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         &.sm {
             font-size: 8px;
             color: $fontSoft;

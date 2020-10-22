@@ -3,8 +3,8 @@
         <div class="background"></div>
         <div class="trigger">
             <button v-if="!show" class="primary" @click="show = true">
-                <i class="far fa-shopping-cart"></i>
-                <span>{{ cartTotal }} {{ cartCurrency }}</span>
+                <i class="far fa-heart"></i>
+                <span>{{ actionGroups.ins.length }}</span>
             </button>
             <button v-else class="primary" @click="show = false">
                 <span>Close</span>

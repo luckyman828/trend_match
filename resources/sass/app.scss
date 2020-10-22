@@ -1471,6 +1471,9 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
+    &.col-2 > * {
+        width: 50%;
+    }
     &.space-between {
         justify-content: space-between;
     }

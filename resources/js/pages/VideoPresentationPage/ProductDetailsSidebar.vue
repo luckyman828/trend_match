@@ -24,12 +24,21 @@
             </div>
         </div>
         <div class="body">
-            <div class="price-list flex-list md">
+            <div class="price-list flex-list md col-2">
                 <BaseDisplayField label="WHS" v-if="product.yourPrice.wholesale_price">
                     <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
                 </BaseDisplayField>
+                <BaseDisplayField label="RRP" v-if="product.yourPrice.recommended_retail_price">
+                    <span>{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span>
+                </BaseDisplayField>
+            </div>
+
+            <div class="flex-list md col-2">
                 <BaseDisplayField label="Minimum" v-if="product.min_order">
-                    <span>{{ product.min_order }} PCS</span>
+                    <span
+                        >{{ product.min_variant_order ? product.min_variant_order + '/' : ''
+                        }}{{ product.min_order }} PCS</span
+                    >
                 </BaseDisplayField>
                 <BaseDisplayField label="Delivery" v-if="product.delivery_dates[0]">
                     <span>{{ getPrettyDate(product.delivery_dates[0]) }}</span>
@@ -41,6 +50,11 @@
                     <div class="flex-list flex-v sm">
                         <span class="name">{{ variant.name }}</span>
                         <div class="img-wrapper">
+                            <div class="controls">
+                                <button class="white" @click="onShowLargeImage(index)">
+                                    <i class="far fa-search-plus"></i>
+                                </button>
+                            </div>
                             <BaseVariantImage :variant="variant" size="sm" />
                         </div>
                     </div>
@@ -72,7 +86,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'productDetailsSidebar',
     computed: {
@@ -102,6 +116,20 @@ export default {
                     })
                 }
             }
+        },
+    },
+    methods: {
+        ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        onShowLargeImage(index) {
+            const images = []
+            this.product.variants.map((variant, variantIndex) => {
+                if (variantIndex == index) {
+                    this.SET_LIGHTBOX_IMAGE_INDEX(images.length)
+                }
+                images.push(...variant.pictures.map(picture => picture.url))
+            })
+            this.SET_LIGHTBOX_IMAGES(images)
+            this.SET_LIGHTBOX_VISIBLE(true)
         },
     },
 }
@@ -201,6 +229,9 @@ label {
     flex: 1;
     padding: 0 16px 240px 20px;
 }
+.price-list {
+    margin-bottom: 16px;
+}
 .variant-list {
     margin-top: 20px;
     margin-bottom: 40px;
@@ -217,10 +248,31 @@ label {
         overflow: hidden;
         border-radius: $borderRadiusEl;
         border: $borderEl;
+        position: relative;
         img {
             height: 100%;
             width: 100%;
             object-fit: cover;
+            // Make not draggable
+            user-drag: none;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        .controls {
+            opacity: 0;
+            transition: 0.1s ease-out;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            z-index: 1;
+        }
+        &:hover {
+            .controls {
+                opacity: 1;
+            }
         }
     }
 }
