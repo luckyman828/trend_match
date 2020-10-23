@@ -94,7 +94,7 @@ export default {
         ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS']),
         async onSetVideoByURL() {
             // Confirm first
-            if (this.videoTimings && this.videoTimings.length > 0 && !(await this.$refs.confirmChangeURL.confirm()))
+            if (!this.videoTimings || (this.videoTimings.length > 0 && !(await this.$refs.confirmChangeURL.confirm())))
                 return
             await this.setVideoByURL({ file: this.currentFile, url: this.videoUrl })
             this.SET_VIDEO_TIMINGS([])
