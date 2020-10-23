@@ -35,7 +35,11 @@
 
             <div
                 class="quick-actions"
-                v-if="currentSelections.length <= 1 && (productsNoOutNoComment.length > 0 || productsNoIn.length > 0)"
+                v-if="
+                    currentSelectionMode == 'Alignment' &&
+                        currentSelections.length <= 1 &&
+                        (productsNoOutNoComment.length > 0 || productsNoIn.length > 0)
+                "
             >
                 <p>Quick actions</p>
                 <button
