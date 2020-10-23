@@ -1,6 +1,5 @@
 <template>
     <form class="map-fields-screen" @submit.prevent>
-
         <div class="map-fields" v-if="!uploadInProgress">
             <div class="tables">
                 <div class="form-element" style="text-align: center;">
@@ -9,10 +8,18 @@
 
                 <!-- MAP KEYS -->
                 <div class="form-section">
-                    <h3>Link IDs <i v-tooltip.right="'Select the ID field for each file to link them'" class="far fa-info-circle"></i></h3>
+                    <h3>
+                        Link IDs
+                        <i
+                            v-tooltip.right="'Select the ID field for each file to link them'"
+                            class="far fa-info-circle"
+                        ></i>
+                    </h3>
                     <BaseMapFieldsTable>
-                        <MapKeysTableHeader/>
-                        <MapKeysTableRow v-for="(file, index) in availableFiles" :key="index"
+                        <MapKeysTableHeader />
+                        <MapKeysTableRow
+                            v-for="(file, index) in availableFiles"
+                            :key="index"
                             :mappedFile="file"
                             :mappedField="file.mappedKey"
                             @show-field-context="showSelectFieldContext($event, file.mappedKey, file)"
@@ -21,7 +28,8 @@
                 </div>
 
                 <!-- MAP MAIN FIELDS -->
-                <MapProductFieldsForm class="form-section"
+                <MapProductFieldsForm
+                    class="form-section"
                     v-if="!uploadOptions || uploadOptions.fields.find(x => !!x.enabled)"
                     :uploadOptions="uploadOptions"
                     :fieldsToMap="fieldsToMap"
@@ -30,16 +38,18 @@
                 />
 
                 <!-- MAP VARIANTS -->
-                <MapVariantsForm class="form-section"
+                <MapVariantsForm
+                    class="form-section"
                     v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'variants').enabled"
                     :fieldsToMap="fieldsToMap"
                     :uploadOptions="uploadOptions"
                     :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                 />
-                
+
                 <!-- MAP PRICES -->
-                <MapPricesForm class="form-section"
+                <MapPricesForm
+                    class="form-section"
                     v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'prices').enabled"
                     :fieldsToMap="fieldsToMap"
                     :availableFiles="availableFiles"
@@ -47,36 +57,32 @@
                 />
 
                 <!-- MAP ASSORTMENTS -->
-                <MapAssortmentsForm class="form-section"
+                <MapAssortmentsForm
+                    class="form-section"
                     v-if="!uploadOptions || uploadOptions.scopes.find(x => x.name == 'assortments').enabled"
                     :fieldsToMap="fieldsToMap"
                     :availableFiles="availableFiles"
                     @show-field-context="showSelectFieldContext"
                     @show-file-context="showSelectFileContext"
                 />
-
             </div>
         </div>
 
-        <BaseLoader v-else :msg="submitStatus"/>
+        <BaseLoader v-else :msg="submitStatus" />
 
         <div class="form-controls">
-            <slot name="actions"
-                :submit="onSubmit"
-                :disabled="!!submitDisabled"
-                :disabledTooltip="submitDisabled"
-            />
+            <slot name="actions" :submit="onSubmit" :disabled="!!submitDisabled" :disabledTooltip="submitDisabled" />
         </div>
 
         <!-- START CONTEXT MENUS -->
-        <SelectFieldToMapContextMenu ref="contextSelectField"
-        :fieldToMap="contextField" :availableFiles="filesToChooseFrom"/>
+        <SelectFieldToMapContextMenu
+            ref="contextSelectField"
+            :fieldToMap="contextField"
+            :availableFiles="filesToChooseFrom"
+        />
 
-        <SelectFileToMapContextMenu ref="contextSelectFile"
-        :fileToMap="contextFile" :availableFiles="availableFiles"/>
+        <SelectFileToMapContextMenu ref="contextSelectFile" :fileToMap="contextFile" :availableFiles="availableFiles" />
         <!-- END CONTEXT MENUS -->
-
-
     </form>
 </template>
 
@@ -108,22 +114,19 @@ export default {
         MapFieldsTableHeader,
         MapKeysTableHeader,
     },
-    mixins: [
-        workbookUtils,
-    ],
-    props: [
-        'availableFiles',
-        'uploadOptions',
-    ],
-    data: function() { return {
-        fieldsToMap: [],
-        filesToChooseFrom: this.availableFiles,
-        contextField: null,
-        contextFile: null,
-        // STATUS
-        submitStatus: null,
-        uploadInProgress: false,
-    }},
+    mixins: [workbookUtils],
+    props: ['availableFiles', 'uploadOptions'],
+    data: function() {
+        return {
+            fieldsToMap: [],
+            filesToChooseFrom: this.availableFiles,
+            contextField: null,
+            contextFile: null,
+            // STATUS
+            submitStatus: null,
+            uploadInProgress: false,
+        }
+    },
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFolder']),
@@ -137,7 +140,10 @@ export default {
                 if (!file.mappedKey.fieldName) return 'A file  has no product key mapped'
 
                 // If we are mapping variants
-                if (!this.uploadOptions || this.uploadOptions.scopes.find(scope => scope.name == 'variants' && !!scope.enabled)) {
+                if (
+                    !this.uploadOptions ||
+                    this.uploadOptions.scopes.find(scope => scope.name == 'variants' && !!scope.enabled)
+                ) {
                     for (let i = 0; i < file.variantKeyList.length; i++) {
                         const variantKey = file.variantKeyList[i]
                         if (!variantKey.fieldName) return 'A file has no variant key mapped'
@@ -150,9 +156,7 @@ export default {
                 const field = this.fieldsToMap[i]
 
                 // Check that the field is in our scope
-                if (this.uploadOptions && 
-                    (!this.uploadOptions.fields.find(x => x.name == field.name && x.enabled))
-                ) {
+                if (this.uploadOptions && !this.uploadOptions.fields.find(x => x.name == field.name && x.enabled)) {
                     continue
                 }
 
@@ -205,10 +209,18 @@ export default {
                 const field = this.fieldsToMap[i]
 
                 // Only check enabled and mapped fields
-                if (field.enabled && !!field.fieldName && (!this.uploadOptions || this.uploadOptions.fields.find(x => x.name == field.name && x.enabled))) {
-                    const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows, depth)
+                if (
+                    field.enabled &&
+                    !!field.fieldName &&
+                    (!this.uploadOptions || this.uploadOptions.fields.find(x => x.name == field.name && x.enabled))
+                ) {
+                    const fieldIsValid = this.validateMappedField(
+                        field,
+                        field.customEntry ? [] : field.file.rows,
+                        depth
+                    )
                     if (!fieldIsValid) {
-                        console.log('error in this field!', field)
+                        console.log('error in this field!', field, field.error)
                         return false
                     }
                 }
@@ -222,19 +234,23 @@ export default {
             // Loop through the fields and look for errors
             // assume no errors
             const valid = this.validateAllFields()
-            
+
             if (!valid) {
-                this.SHOW_SNACKBAR({ 
+                this.SHOW_SNACKBAR({
                     msg: `One or more fields have an error`,
-                    type: 'info', 
-                    iconClass: 'fa-exclamation-circle', 
+                    type: 'info',
+                    iconClass: 'fa-exclamation-circle',
                 })
                 return
             }
 
             // Instantiate products now, so we know that the method won't throw any errors after we have created a new file
             // Filter the fields to map by our uploadOptions
-            const newProducts = this.instantiateProductsFromMappedFields(this.fieldsToMap, this.availableFiles, this.uploadOptions) 
+            const newProducts = this.instantiateProductsFromMappedFields(
+                this.fieldsToMap,
+                this.availableFiles,
+                this.uploadOptions
+            )
             this.$emit('submit', newProducts)
         },
         reset() {
@@ -243,7 +259,7 @@ export default {
     },
     created() {
         this.instantiateFields()
-    }
+    },
 }
 </script>
 
@@ -274,7 +290,7 @@ export default {
         tr {
             &.disabled {
                 .input-field {
-                    opacity: .5;
+                    opacity: 0.5;
                 }
             }
             .input-field {
@@ -286,7 +302,7 @@ export default {
         .single-currency-file-table {
             margin-bottom: 32px;
             td {
-                padding-right: 4px
+                padding-right: 4px;
             }
         }
         .currency-wrapper {
@@ -300,7 +316,7 @@ export default {
                 justify-content: space-between;
                 margin-bottom: 8px;
                 align-items: flex-end;
-                    p {
+                p {
                     .small {
                         font-size: 12px;
                     }
@@ -352,7 +368,7 @@ export default {
     justify-content: space-between;
     margin-bottom: 8px;
     align-items: flex-end;
-        p {
+    p {
         padding-left: 24px;
         .small {
             font-size: 12px;
