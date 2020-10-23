@@ -1,12 +1,18 @@
 <template>
-    <BaseModal :classes="['upload-to-file-modal', currentScreen.class]" :show="show" @close="$emit('close')"
-    ref="modal" :header="currentScreen.header" :goBack="currentScreenIndex > 0" @goBack="currentScreenIndex--">
-
-        <BaseLoader v-if="uploadInProgress"
-        :msg="submitStatus"/>
+    <BaseModal
+        :classes="['upload-to-file-modal', currentScreen.class]"
+        :show="show"
+        @close="$emit('close')"
+        ref="modal"
+        :header="currentScreen.header"
+        :goBack="currentScreenIndex > 0"
+        @goBack="currentScreenIndex--"
+    >
+        <BaseLoader v-if="uploadInProgress" :msg="submitStatus" />
 
         <template v-else>
-            <UploadWorkbooksScreen v-if="currentScreenIndex == 0"
+            <UploadWorkbooksScreen
+                v-if="currentScreenIndex == 0"
                 :fileList.sync="uploadedFiles"
                 :availableFiles.sync="availableFiles"
                 @go-to-next-screen="currentScreenIndex++"
@@ -18,25 +24,31 @@
                 </template>
 
                 <template v-slot:actions="slotProps">
-                    <button type="button" class="lg primary full-width" 
-                    :disabled="slotProps.fileList.length <= 0"
-                    @click="slotProps.submit()">
+                    <button
+                        type="button"
+                        class="lg primary full-width"
+                        :disabled="slotProps.fileList.length <= 0"
+                        @click="slotProps.submit()"
+                    >
                         <span>Next: Upload strategy</span>
                     </button>
                 </template>
             </UploadWorkbooksScreen>
 
-            <UploadStrategyScreen v-if="currentScreenIndex == 1"
+            <UploadStrategyScreen
+                v-if="currentScreenIndex == 1"
                 :uploadStrategy.sync="uploadStrategy"
                 @go-to-next-screen="currentScreenIndex++"
             />
 
-            <SelectFieldsScreen v-if="currentScreenIndex == 2"
+            <SelectFieldsScreen
+                v-if="currentScreenIndex == 2"
                 :uploadOptions.sync="uploadOptions"
                 @go-to-next-screen="currentScreenIndex++"
             />
 
-            <MapFieldsScreen v-if="currentScreenIndex == 3"
+            <MapFieldsScreen
+                v-if="currentScreenIndex == 3"
                 :availableFiles="availableFiles"
                 :uploadOptions="uploadOptions"
                 @close="onClose"
@@ -44,19 +56,19 @@
                 @submit="onSubmit"
             >
                 <template v-slot:actions="slotProps">
-                    <BaseButton :type="'submit'" 
-                    buttonClass="lg primary full-width"
-                    :disabled="!!slotProps.disabled"
-                    :disabledTooltip="slotProps.disabledTooltip"
-                    style="width: 100%"
-                    @click="slotProps.submit()">
+                    <BaseButton
+                        :type="'submit'"
+                        buttonClass="lg primary full-width"
+                        :disabled="!!slotProps.disabled"
+                        :disabledTooltip="slotProps.disabledTooltip"
+                        style="width: 100%"
+                        @click="slotProps.submit()"
+                    >
                         <span>Update data</span>
                     </BaseButton>
                 </template>
-
             </MapFieldsScreen>
         </template>
-
     </BaseModal>
 </template>
 
@@ -70,45 +82,43 @@ import workbookUtils from '../../mixins/workbookUtils'
 
 export default {
     name: 'uploadToFileModal',
-    mixins: [
-        workbookUtils
-    ],
-    props: [
-        'show',
-    ],
+    mixins: [workbookUtils],
+    props: ['show'],
     components: {
         UploadWorkbooksScreen,
         SelectFieldsScreen,
         UploadStrategyScreen,
-        MapFieldsScreen
+        MapFieldsScreen,
     },
-    data: function () { return {
-        currentScreenIndex: 0,
-        screens: [
-            {
-                header: 'Choose files to upload',
-                class: 'index'
-            },
-            {
-                header: 'Upload strategy',
-                class: 'upload-strategy'
-            },
-            {
-                header: 'Upload options',
-                class: 'upload-options'
-            },
-            {
-                header: 'Map fields',
-                class: 'map-fields'
-            }
-        ],
-        uploadedFiles: [],
-        availableFiles: [],
-        uploadInProgress: false,
-        submitStatus: null,
-        uploadOptions: null,
-        uploadStrategy: null,
-    }},
+    data: function() {
+        return {
+            currentScreenIndex: 0,
+            screens: [
+                {
+                    header: 'Choose files to upload',
+                    class: 'index',
+                },
+                {
+                    header: 'Upload strategy',
+                    class: 'upload-strategy',
+                },
+                {
+                    header: 'Upload options',
+                    class: 'upload-options',
+                },
+                {
+                    header: 'Map fields',
+                    class: 'map-fields',
+                },
+            ],
+            uploadedFiles: [],
+            availableFiles: [],
+            uploadInProgress: false,
+            submitStatus: null,
+            uploadOptions: null,
+            uploadStrategy: null,
+        }
+    },
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFile']),
@@ -132,7 +142,9 @@ export default {
             this.submitStatus = 'Applying update strategy'
 
             const productsToCreate = []
-            const productsToDelete = this.uploadStrategy.removeExtraProducts ? JSON.parse(JSON.stringify(this.products)) : []
+            const productsToDelete = this.uploadStrategy.removeExtraProducts
+                ? JSON.parse(JSON.stringify(this.products))
+                : []
             // Loop through the new products
             newProducts.map(newProduct => {
                 // Find the matching existing product
@@ -145,8 +157,12 @@ export default {
 
                 // If we have the setting the delete extra products, remove this product form the list of products to delete
                 if (this.uploadStrategy.removeExtraProducts) {
-                    const productToDeleteIndex = productsToDelete.findIndex(x => x.datasource_id == newProduct.datasource_id)
-                    productsToDelete.splice(productToDeleteIndex, 1)
+                    const productToDeleteIndex = productsToDelete.findIndex(
+                        x => x.datasource_id == newProduct.datasource_id
+                    )
+                    if (productToDeleteIndex >= 0) {
+                        productsToDelete.splice(productToDeleteIndex, 1)
+                    }
                 }
                 // Update the existing product as per the data update strategy
                 const strategy = this.uploadStrategy.dataReplacementStrategy
@@ -169,12 +185,12 @@ export default {
             // Delete products to delete
             if (productsToDelete.length > 0) {
                 this.submitStatus = 'Deleting extra products'
-                await this.deleteProducts({file: this.currentFile, products: productsToDelete})
+                await this.deleteProducts({ file: this.currentFile, products: productsToDelete })
             }
             // Update all existing products
             if (this.products.length > 0) {
                 this.submitStatus = 'Updating products'
-                await this.updateManyProducts({file: this.currentFile, products: this.products})
+                await this.updateManyProducts({ file: this.currentFile, products: this.products })
             }
 
             // Create products to create
@@ -188,15 +204,17 @@ export default {
             // Test that we actually have new images to upload
             this.submitStatus = 'Uploading images. This may take a while'
             await this.syncExternalImages({
-                file: this.currentFile, products: this.products, progressCallback: this.uploadImagesProgressCalback
+                file: this.currentFile,
+                products: this.products,
+                progressCallback: this.uploadImagesProgressCalback,
             }).catch(err => {
-                this.SHOW_SNACKBAR({ 
+                this.SHOW_SNACKBAR({
                     msg: `<p><strong>Hey you!</strong><br></p>
                     <p>We will display your images from your provided URLs.</p>
                     <p>This will most likely not be a problem, but it means that we are not hosting the images, and can't guarantee that they will always be available.</p>
                     <p>if you see this icon <i class="far fa-heart-broken primary"></i> it means that we cant fetch the image.</p>`,
-                    type: 'info', 
-                    iconClass: 'fa-exclamation-circle', 
+                    type: 'info',
+                    iconClass: 'fa-exclamation-circle',
                 })
                 this.uploadInProgress = false
             })
@@ -220,8 +238,11 @@ export default {
                     // If the arrayitem is an object
                     if (typeof newArrayItem == 'object') {
                         // Test if our array item matches an existing array item
-                        const existingArrayItem = productArray.find(existingArrayItem => 
-                            Object.keys(existingArrayItem).find(itemKey => existingArrayItem[itemKey] == newArrayItem[itemKey]))
+                        const existingArrayItem = productArray.find(existingArrayItem =>
+                            Object.keys(existingArrayItem).find(
+                                itemKey => existingArrayItem[itemKey] == newArrayItem[itemKey]
+                            )
+                        )
 
                         // If we found an existing match, we want to update that match
                         if (existingArrayItem) {
@@ -234,7 +255,7 @@ export default {
                         }
                         // If we have no existing array item, but we have a new one - push it!
                         productArray.push(newArrayItem)
-                    } 
+                    }
 
                     // ArrayItem is NOT an OBJECT --> check if it is included in the current array
                     const existsInArray = productArray.includes(newArrayItem)
@@ -283,12 +304,12 @@ export default {
                 .input-field {
                     &.auto-match {
                         .input-wrapper {
-                            border-color: $primary
+                            border-color: $primary;
                         }
                     }
                     &.custom-entry {
                         .input-wrapper {
-                            border-color: $orange
+                            border-color: $orange;
                         }
                     }
                 }

@@ -763,7 +763,6 @@ export default {
                 )
 
                 const sendRequest = async () => {
-                    commit('DELETE_PRODUCTS', products)
                     const apiUrl = `/files/${file.id}/products`
                     axios
                         .post(apiUrl, {
@@ -803,6 +802,7 @@ export default {
                 }
 
                 const restoreProducts = async () => {
+                    console.log('restore prodcts')
                     // await dispatch('insertProducts', { file, products, addToState: true })
                     commit('insertProducts', { products, method: 'add' })
                     commit('SORT_PRODUCTS')
