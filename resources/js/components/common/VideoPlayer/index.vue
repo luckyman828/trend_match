@@ -72,6 +72,7 @@ export default {
             isPlaying: 'getIsPlaying',
             duration: 'getDuration',
             isDragging: 'getTimelineKnobIsBeingDragged',
+            videoType: 'getVideoType',
         }),
     },
     methods: {
@@ -136,8 +137,11 @@ export default {
                 const diff = newTime - this.lastTimestamp
                 const timestamp = this.currentTimestamp + diff / 1000
 
-                // const timestamp = await this.player.getCurrentTime()
                 this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
+                // Update duration if we are live
+                if (this.videoType == 'live') {
+                    this.SET_PLAYER_DURATION(timestamp)
+                }
             }
             this.lastTimestamp = Date.now()
         },
@@ -149,6 +153,11 @@ export default {
             if (!this.isDragging) {
                 this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
                 this.lastTimestamp = Date.now()
+
+                // Update duration if we are live
+                if (this.videoType == 'live') {
+                    this.SET_PLAYER_DURATION(timestamp)
+                }
             }
         },
         async getVideoDuration() {

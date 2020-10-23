@@ -140,14 +140,25 @@ export default {
                 })
         },
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
-            dispatch('initTimings', [newTiming])
+            console.log('add new timing', JSON.parse(JSON.stringify(newTiming)))
+            await dispatch('initTimings', [newTiming])
             const allTimings = getters.getVideoTimings
             // First find out what index to give the new timing, so we insert it at it's correct spot
             // We will insert the new timing at the current timestamp
             let index = 0
             const timestamp = rootGetters['videoPlayer/getTimestamp']
             // Set the desired `start` time equal to the timestamp
-            const desiredDuration = (newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom)
+            // const desiredDuration = (newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom)
+            console.log(
+                'desired duration',
+                newTiming,
+                (newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom),
+                newTiming.end,
+                newTiming.start,
+                1 / getters.getTimelineZoom,
+                getters.getTimelineZoom
+            )
+            const desiredDuration = 5
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
 
@@ -293,6 +304,7 @@ export default {
             state.currentVideo.timings = timings
         },
         ADD_TIMING(state, { timing, index }) {
+            console.log('ADD_TIMING', timing, timing.end)
             if (index != null) {
                 state.currentVideo.timings.splice(index, 0, timing)
             } else {

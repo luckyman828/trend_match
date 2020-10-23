@@ -26,6 +26,13 @@
         </div> -->
 
         <div class="items-right">
+            <router-link
+                class="button ghost primary"
+                :to="{ name: 'createLivestream', params: { fileId: currentFile.id } }"
+            >
+                <i class="far fa-presentation"></i>
+                <span>Start LIVE presentation</span>
+            </router-link>
             <div class="pill ghost sm" :class="[status]">
                 <i class="far" :class="statusIconClasss"></i>
                 <span>{{ statusText }}</span>

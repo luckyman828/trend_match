@@ -48,19 +48,20 @@ export default {
     methods: {
         ...mapMutations('videoPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('videoPresentation', ['addTiming']),
-        onAddTiming() {
+        async onAddTiming() {
+            console.log('add new timing', this.videoDuration)
             this.onStopCurrent()
             const newTiming = {
                 start: 0,
-                end: Math.max(this.videoDuration / 12, 0.0001),
+                end: 10,
                 product_id: this.product.id,
             }
-            this.addTiming({ newTiming })
+            await this.addTiming({ newTiming })
         },
         onStopCurrent() {
             // Set the end of the current timing if any
             if (this.currentTiming) {
-                this.currentTiming.end = this.videoDuration
+                this.currentTiming.end = Math.ceil(this.videoDuration)
             }
         },
     },

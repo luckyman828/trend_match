@@ -39,6 +39,7 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
+        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         fetchData() {
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
@@ -48,6 +49,7 @@ export default {
     },
     created() {
         this.fetchData()
+        this.SET_VIDEO_TYPE('live')
     },
 }
 </script>

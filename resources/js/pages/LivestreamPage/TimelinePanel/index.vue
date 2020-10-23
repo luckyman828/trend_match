@@ -6,24 +6,23 @@
                 <div class="rail" v-horizontal-scroll ref="rail" v-on:wheel.alt="onZoomWheel">
                     <div class="timeline-wrapper">
                         <div class="interval-wrapper">
-                            <div class="interval-inner" :style="timelineStyle">
-                                <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle">
-                                    <div class="cursor-time">{{ cursorTimestamp | timestampify }}</div>
+                            <div class="timeline-interval-markers" :style="timelineStyle">
+                                <div
+                                    class="interval-mark"
+                                    v-for="(interval, index) in timelineIntervals"
+                                    :key="index"
+                                    :style="intervalMarkStyle"
+                                >
+                                    <span class="interval-number">{{ interval.timestamp | timestampify }}</span>
+                                    <div class="sub-marks" :style="intervalSubmarkStyle"></div>
                                 </div>
-                                <div class="timeline-interval-markers">
-                                    <div
-                                        class="interval-mark"
-                                        v-for="(interval, index) in timelineIntervals"
-                                        :key="index"
-                                        :style="intervalMarkStyle"
-                                    >
-                                        <span class="interval-number">{{ interval.timestamp }}</span>
-                                        <div class="sub-marks" :style="intervalSubmarkStyle"></div>
-                                    </div>
-                                </div>
+                                <!-- <div class="interval-sub-markers" :style="intervalSubmarkStyle"></div> -->
                             </div>
                         </div>
                         <div class="timeline" ref="timeline" :style="timelineStyle">
+                            <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle">
+                                <div class="cursor-time">{{ cursorTimestamp | timestampify }}</div>
+                            </div>
                             <TimelineItem
                                 v-for="(timing, index) in videoTimings"
                                 :key="timing.id"
@@ -52,7 +51,17 @@ export default {
         TimelineControls,
     },
     data: function() {
-        return {}
+        return {
+            dragStartPos: null,
+            draggedTiming: null,
+            draggedEl: null,
+            isDragging: false,
+            draggedElStartX: null,
+            draggedElWidth: null,
+            newDragPosValid: true,
+            draggedElEndDist: null,
+            timelineClickOrigin: false,
+        }
     },
     computed: {
         ...mapGetters('videoPresentation', {
@@ -82,7 +91,7 @@ export default {
         cursorStyle() {
             const percX = (this.cursorTimestamp / this.videoDuration) * 100
             return {
-                left: `calc(${percX}% + 18px - ${(percX / 100) * 18}px)`,
+                left: `${percX}%`,
             }
         },
         timelineIntervals() {
@@ -133,7 +142,8 @@ export default {
             'SET_TIMELINE_EL',
             'SET_TIMELINE_ZOOM',
         ]),
-        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent']),
+        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent', 'updateCurrentVideo']),
+        ...mapActions('videoPlayer', ['seekTo']),
         onZoomWheel(e) {
             const zoomLevels = this.zoomLevels
             const zoomIndex = zoomLevels.findIndex(x => x == this.zoom)
@@ -207,29 +217,18 @@ export default {
         left: 0;
         top: 0;
         height: calc(100% - 8px - 36px);
+        margin-top: 36px;
         width: 100%;
         pointer-events: none;
         padding: 0 16px 0;
-        .interval-inner {
-            height: 100%;
-            position: relative;
-            &::after {
-                content: '';
-                height: 1px;
-                position: absolute;
-                right: -16px;
-                width: 16px;
-                top: 0;
-            }
-        }
     }
     .timeline-interval-markers {
-        margin-top: 36px;
         height: 100%;
         width: 100%;
         display: flex;
         overflow: hidden;
-        padding-left: 2px;
+        padding-left: 6px;
+        margin-left: -6px;
         .interval-mark {
             color: white;
             border-left: solid $grey800 1px;
@@ -264,7 +263,6 @@ export default {
         display: flex;
         padding: 16px 0 0;
         z-index: 1;
-        overflow: hidden;
         &::after {
             content: '';
             display: block;
@@ -273,33 +271,33 @@ export default {
             right: -16px;
             height: 1px;
         }
+        .timeline-cursor {
+            position: absolute;
+            height: calc(100% - 8px);
+            width: 2px;
+            background: $primary;
+            left: 0;
+            top: 8px;
+            transition: 0.05s;
+            z-index: 1;
+            .cursor-time {
+                position: absolute;
+                top: 0;
+                left: 0;
+                transform: translateX(-50%);
+                background: $primary;
+                color: white;
+                line-height: 1;
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+        }
         .draggable {
             width: 100%;
             height: 100%;
             display: flex;
             position: relative;
             pointer-events: none;
-        }
-    }
-    .timeline-cursor {
-        position: absolute;
-        height: calc(100% - 8px);
-        width: 2px;
-        background: $primary;
-        left: 2px;
-        top: -16px;
-        transition: 0.05s;
-        z-index: 1;
-        .cursor-time {
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform: translateX(-50%);
-            background: $primary;
-            color: white;
-            line-height: 1;
-            font-size: 10px;
-            padding: 2px 4px;
         }
     }
 }

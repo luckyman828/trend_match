@@ -4,6 +4,7 @@ export default {
     state: {
         playerProvider: null,
         player: null,
+        videoType: 'static',
         timestamp: 0,
         duration: 0,
         status: null,
@@ -49,6 +50,7 @@ export default {
             if (!currentVideo) return
             return currentVideo.identifier
         },
+        getVideoType: state => state.videoType,
         getProviderMap: (state, getters) => state.providerMap[getters.getProvider],
         getPlayer: state => state.player,
         getIsPlaying: state => state.status == 'playing',
@@ -79,6 +81,7 @@ export default {
         },
         getCurrentTiming: (state, getters, rootState, rootGetters) => {
             const timings = rootGetters['videoPresentation/getVideoTimings']
+            if (!timings) return
             const timestamp = getters.getTimestamp
             return timings.find(x => x.start <= timestamp && x.end > timestamp)
         },
@@ -92,6 +95,7 @@ export default {
     actions: {
         async togglePlayerMuted({ commit, getters }, muteOverride) {
             const player = getters.getPlayer
+            if (!player) return
             const providerMap = getters.getProviderMap
             const shouldBeMuted = !getters.getIsMuted || muteOverride
             commit('SET_PLAYER_MUTED', shouldBeMuted)
@@ -103,6 +107,7 @@ export default {
         },
         async setVolume({ commit, getters }, newVolume) {
             const player = getters.getPlayer
+            if (!player) return
             const providerMap = getters.getProviderMap
             const volumeMultiplier = providerMap.volumeMultiplier
             commit('SET_PLAYER_VOLUME', newVolume)
@@ -110,6 +115,7 @@ export default {
         },
         async togglePlaying({ commit, getters }) {
             const player = getters.getPlayer
+            if (!player) return
             const providerMap = getters.getProviderMap
             if (getters.getStatus == 'playing') {
                 commit('SET_DESIRED_STATUS', 'paused')
@@ -121,9 +127,10 @@ export default {
             }
         },
         async seekTo({ commit, getters }, timestamp) {
+            const player = getters.getPlayer
+            if (!player) return
             const duration = getters.getDuration
             timestamp = Math.min(timestamp, duration)
-            const player = getters.getPlayer
             const providerMap = getters.getProviderMap
             commit('SET_IS_SEEKING', true)
             commit('SET_CURRENT_PLAYER_TIMESTAMP', timestamp)
@@ -132,6 +139,7 @@ export default {
         },
         async getCurrentTimestamp({ commit, getters }) {
             const player = getters.getPlayer
+            if (!player) return
             const providerMap = getters.getProviderMap
             const timestamp = await player[providerMap.getTimestamp]()
             return timestamp
@@ -171,6 +179,9 @@ export default {
         },
         SET_PLAYER_VOLUME(state, volume) {
             state.volume = volume
+        },
+        SET_VIDEO_TYPE(state, type) {
+            state.videoType = type
         },
     },
 }

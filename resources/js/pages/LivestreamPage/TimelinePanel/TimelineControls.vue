@@ -2,10 +2,11 @@
     <div class="timeline-controls">
         <div class="main">
             <div class="left">
-                <div class="button-list">
-                    <button class="invisible white circle ghost-hover" @click="toggleRecording">
-                        <i class="fas fa-circle" :class="isRecording ? 'red' : ''"></i>
-                    </button>
+                <div class="button-list flex-list">
+                    <span class="circle invisible ghost-hover">
+                        <i class="fas fa-circle" :class="isLive ? 'red' : ''"></i>
+                    </span>
+                    <VolumeControl />
                 </div>
 
                 <div class="time" style="margin-left: 40px;">
@@ -23,9 +24,13 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import VolumeControl from './../../VideoPresentationPage/VolumeControl'
 
 export default {
     name: 'timelineControls',
+    components: {
+        VolumeControl,
+    },
     data: function() {
         return {
             desiredStatus: 'ready',
@@ -39,6 +44,7 @@ export default {
             timestamp: 'getTimestamp',
             duration: 'getDuration',
             currentTiming: 'getCurrentTiming',
+            isLive: 'getIsPlaying',
         }),
         ...mapGetters('videoPresentation', {
             zoom: 'getTimelineZoom',
@@ -46,6 +52,15 @@ export default {
             zoomLevels: 'getZoomLevels',
             timelineRail: 'getTimelineRail',
         }),
+    },
+    watch: {
+        isLive(newVal) {
+            if (newVal) {
+                this.onStartRecording()
+            } else {
+                this.onStopRecording()
+            }
+        },
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
@@ -83,13 +98,13 @@ export default {
             this.isRecording = true
             const interval = 100
             this.intervalTimer = setInterval(() => {
-                const newTimestamp = this.duration + interval / 1000
-                this.SET_PLAYER_DURATION(newTimestamp)
+                // const newTimestamp = this.duration + interval / 1000
+                // this.SET_PLAYER_DURATION(newTimestamp)
                 const currentTiming = this.currentTiming
-                if (currentTiming) {
-                    currentTiming.end = newTimestamp + 0.001
-                }
-                this.SET_CURRENT_PLAYER_TIMESTAMP(newTimestamp)
+                // if (currentTiming) {
+                //     currentTiming.end = Math.round(newTimestamp + 1)
+                // }
+                // this.SET_CURRENT_PLAYER_TIMESTAMP(newTimestamp)
             }, interval)
         },
         onStopRecording() {
@@ -97,7 +112,7 @@ export default {
             clearInterval(this.intervalTimer)
             // Set the end of the current timing if any
             if (this.currentTiming) {
-                this.currentTiming.end = this.duration + 0.001
+                this.currentTiming.end = Math.round(this.duration + 1)
             }
         },
     },

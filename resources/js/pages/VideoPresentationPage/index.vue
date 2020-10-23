@@ -51,6 +51,7 @@ export default {
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
         ...mapActions('videoPresentation', ['fetchFileVideo']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
+        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
@@ -79,6 +80,7 @@ export default {
     },
     created() {
         this.fetchData()
+        this.SET_VIDEO_TYPE('static')
     },
 }
 </script>

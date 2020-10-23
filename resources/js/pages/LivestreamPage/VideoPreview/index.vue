@@ -29,7 +29,7 @@
                 </div>
             </div>
         </form>
-        <div class="video-controls">
+        <div class="video-controls" v-if="playerReady">
             <button class="white" @click="editModeActive = !editModeActive">
                 <template v-if="!editModeActive">
                     <i class="far fa-pen"></i>
@@ -56,14 +56,19 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('files', {
+            file: 'currentFile',
+        }),
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
         }),
         ...mapGetters('videoPlayer', {
             isDragging: 'getTimelineKnobIsBeingDragged',
+            provider: 'getProvider',
+            videoId: 'getProviderVideoId',
         }),
         playerReady() {
-            return this.currentVideo.providerVideoId && this.currentVideo.provider
+            return this.provider && this.videoId
         },
         submitDisabled() {
             return this.videoUrl.length < 5
@@ -72,7 +77,7 @@ export default {
     methods: {
         ...mapActions('videoPresentation', ['setVideoByURL']),
         onSetVideoByURL() {
-            this.setVideoByURL({ video: this.currentVideo, url: this.videoUrl })
+            this.setVideoByURL({ file: this.file, url: this.videoUrl })
             this.editModeActive = false
         },
     },
@@ -87,7 +92,6 @@ export default {
     width: 100%;
     top: 0;
     left: 0;
-    pointer-events: none;
     &.drag-active {
         cursor: grabbing;
     }
@@ -106,6 +110,7 @@ export default {
 .url-input {
     background: white;
     height: 100%;
+    pointer-events: all;
     .container {
         margin: auto;
         height: 100%;

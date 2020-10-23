@@ -1,5 +1,11 @@
 <template>
-    <div class="timeline-item" :style="style" :id="`timeline-item-${timing.id}`" :class="[{ current: isCurrent }]">
+    <div
+        v-if="videoDuration"
+        class="timeline-item"
+        :style="style"
+        :id="`timeline-item-${timing.id}`"
+        :class="{ current: isCurrent }"
+    >
         <div class="inner">
             <div class="img-wrapper">
                 <div class="img-sizer">
@@ -36,7 +42,6 @@ export default {
         ...mapGetters('videoPresentation', {
             zoom: 'getTimelineZoom',
             rail: 'getTimelineRail',
-            snapThreshold: 'getSnapThreshold',
         }),
         product() {
             return this.timing.product
@@ -56,7 +61,7 @@ export default {
             }
         },
         isCurrent() {
-            return this.currentTiming && this.currentTiming.id == this.timing.id
+            return this.timing.isCurrent
         },
     },
     methods: {},
@@ -93,10 +98,29 @@ export default {
         transition: 0.1s ease-out;
         z-index: 2;
     }
+    &:focus,
+    &:focus-within {
+        // background: $primary;
+        // color: white;
+        border-color: $primary;
+        &:not(.dragged):not(.drag-caps) {
+            .controls {
+                opacity: 1;
+                pointer-events: all;
+            }
+            &.current {
+                border-color: white;
+            }
+        }
+    }
     &.current {
         background: $primary;
-        border-color: $primary;
         color: white;
+        border-color: $primary;
+    }
+    &.dragged {
+        background: $yellow;
+        z-index: 1;
     }
     &.error {
         opacity: 0.8;
@@ -152,6 +176,40 @@ export default {
             .end {
                 margin-left: 8px;
             }
+        }
+    }
+    .edge-drag-controls {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+        pointer-events: none;
+        .cursor-icon {
+            display: none;
+            height: 20px;
+            width: 20px;
+            pointer-events: none;
+            position: fixed;
+            z-index: 2;
+        }
+        .drag-left,
+        .drag-right {
+            position: absolute;
+            height: 100%;
+            width: 20px;
+            pointer-events: all;
+            &:hover {
+                cursor: none;
+                background: rgba(0, 0, 0, 0.2);
+            }
+        }
+        .drag-left {
+            left: 0;
+        }
+        .drag-right {
+            right: 0;
         }
     }
 }
