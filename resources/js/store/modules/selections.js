@@ -795,7 +795,7 @@ export default {
                         { root: true }
                     )
                 })
-            dispatch('calculateSelectionUsers', selection)
+            await dispatch('calculateSelectionUsers', selection)
         },
         async removeTeamsFromSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
