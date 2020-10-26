@@ -25,5 +25,7 @@ export default {
     width: 100%;
     left: 0;
     // z-index: 1;
+    height: 20px;
+    overflow: hidden;
 }
 </style>

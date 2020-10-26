@@ -6,6 +6,7 @@ export default {
     state: {
         currentVideo: null,
         status: 'success',
+        timingStatus: 'success',
         // currentVideo: {
         //     name: 'Test Video',
         //     id: 1,
@@ -43,13 +44,14 @@ export default {
         timelineRail: null,
         timelineEl: null,
         snapThreshold: 12, // In seconds
-        zoomLevels: [1, 2, 4, 8, 16, 32],
+        zoomLevels: [1, 2, 4, 8, 16, 32, 64],
     },
 
     getters: {
         getCurrentVideoRootobject: state => state.currentVideo,
         getCurrentVideo: state => state.currentVideo && state.currentVideo.video,
         getStatus: state => state.status,
+        getTimingStatus: state => state.timingStatus,
         getSearchItemDragActive: state => state.searchItemDragActive,
         getVideoTimings: state => state.currentVideo && state.currentVideo.timings,
         getTimelineZoom: state => state.timelineZoom,
@@ -58,7 +60,17 @@ export default {
         // getSnapThreshold: (state, getters) => state.snapThreshold / getters.getTimelineZoom, // Manually set snap threshold
         getSnapThreshold: (state, getters, rootState, rootGetters) =>
             rootGetters['videoPlayer/getDuration'] / 32 / getters.getTimelineZoom, // Threshold relative to video length
-        getZoomLevels: state => state.zoomLevels,
+        getZoomLevels: (state, getters, rootState, rootGetters) => {
+            // const arr = [1]
+            // const duration = rootGetters['videoPlayer/getDuration']
+            // if (!duration) return arr
+            // const levelCount = Math.ceil(Math.pow(duration, 1 / 4))
+            // for (let i = 1; i < levelCount; i++) {
+            //     arr.push(Math.pow(2, i))
+            // }
+            // return arr
+            return state.zoomLevels
+        },
     },
 
     actions: {
@@ -140,7 +152,7 @@ export default {
                 })
         },
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
-            console.log('add new timing', JSON.parse(JSON.stringify(newTiming)))
+            commit('SET_TIMING_STATUS', 'adding')
             await dispatch('initTimings', [newTiming])
             const allTimings = getters.getVideoTimings
             // First find out what index to give the new timing, so we insert it at it's correct spot
@@ -148,17 +160,7 @@ export default {
             let index = 0
             const timestamp = rootGetters['videoPlayer/getTimestamp']
             // Set the desired `start` time equal to the timestamp
-            // const desiredDuration = (newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom)
-            console.log(
-                'desired duration',
-                newTiming,
-                (newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom),
-                newTiming.end,
-                newTiming.start,
-                1 / getters.getTimelineZoom,
-                getters.getTimelineZoom
-            )
-            const desiredDuration = 5
+            const desiredDuration = Math.ceil((newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom))
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
 
@@ -180,7 +182,8 @@ export default {
             commit('ADD_TIMING', { timing: newTiming, index })
             await dispatch('bumpConflictingTimings', newTiming)
             // Done bumping
-            dispatch('updateCurrentVideo')
+            await dispatch('updateCurrentVideo')
+            commit('SET_TIMING_STATUS', 'success')
         },
         bumpConflictingTimings({ getters, dispatch }, newTiming) {
             // This function recursively bumps timings until there is space for all of them
@@ -304,7 +307,6 @@ export default {
             state.currentVideo.timings = timings
         },
         ADD_TIMING(state, { timing, index }) {
-            console.log('ADD_TIMING', timing, timing.end)
             if (index != null) {
                 state.currentVideo.timings.splice(index, 0, timing)
             } else {
@@ -325,6 +327,9 @@ export default {
         },
         SET_STATUS(state, newStatus) {
             state.status = newStatus
+        },
+        SET_TIMING_STATUS(state, status) {
+            state.timingStatus = status
         },
     },
 }

@@ -23,12 +23,14 @@
                             <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle">
                                 <div class="cursor-time">{{ cursorTimestamp | timestampify }}</div>
                             </div>
-                            <TimelineItem
-                                v-for="(timing, index) in videoTimings"
-                                :key="timing.id"
-                                :timing="timing"
-                                :index="index"
-                            />
+                            <div class="cut-off">
+                                <TimelineItem
+                                    v-for="(timing, index) in videoTimings"
+                                    :key="timing.id"
+                                    :timing="timing"
+                                    :index="index"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -263,6 +265,12 @@ export default {
         display: flex;
         padding: 16px 0 0;
         z-index: 1;
+        .cut-off {
+            overflow: hidden;
+            width: 100%;
+            display: flex;
+            pointer-events: none;
+        }
         &::after {
             content: '';
             display: block;

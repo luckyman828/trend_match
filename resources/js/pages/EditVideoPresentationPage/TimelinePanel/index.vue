@@ -29,24 +29,26 @@
                             <div class="timeline-cursor" ref="timelineCursor" :style="cursorStyle">
                                 <div class="cursor-time">{{ cursorTimestamp | timestampify }}</div>
                             </div>
-                            <TimelineItem
-                                v-for="(timing, index) in videoTimings"
-                                :class="[
-                                    { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
-                                    {
-                                        error:
-                                            isDragging &&
-                                            draggedTiming &&
-                                            draggedTiming.id == timing.id &&
-                                            !newDragPosValid,
-                                    },
-                                ]"
-                                :key="timing.id"
-                                :timing="timing"
-                                :index="index"
-                                :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
-                                @mousedown.native="onDragStart($event, timing)"
-                            />
+                            <div class="cut-off">
+                                <TimelineItem
+                                    v-for="(timing, index) in videoTimings"
+                                    :class="[
+                                        { dragged: isDragging && draggedTiming && draggedTiming.id == timing.id },
+                                        {
+                                            error:
+                                                isDragging &&
+                                                draggedTiming &&
+                                                draggedTiming.id == timing.id &&
+                                                !newDragPosValid,
+                                        },
+                                    ]"
+                                    :key="timing.id"
+                                    :timing="timing"
+                                    :index="index"
+                                    :dragActive="isDragging && draggedTiming && draggedTiming.id == timing.id"
+                                    @mousedown.native="onDragStart($event, timing)"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -486,6 +488,12 @@ export default {
         display: flex;
         padding: 16px 0 0;
         z-index: 1;
+        .cut-off {
+            overflow: hidden;
+            width: 100%;
+            display: flex;
+            pointer-events: none;
+        }
         &::after {
             content: '';
             display: block;

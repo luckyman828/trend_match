@@ -51,6 +51,7 @@ export default {
             timings: 'getVideoTimings',
             zoomLevels: 'getZoomLevels',
             timelineRail: 'getTimelineRail',
+            timingStatus: 'getTimingStatus',
         }),
     },
     watch: {
@@ -98,12 +99,12 @@ export default {
             this.isRecording = true
             const interval = 100
             this.intervalTimer = setInterval(() => {
-                // const newTimestamp = this.duration + interval / 1000
+                const newTimestamp = this.duration + interval / 1000
                 // this.SET_PLAYER_DURATION(newTimestamp)
                 const currentTiming = this.currentTiming
-                // if (currentTiming) {
-                //     currentTiming.end = Math.round(newTimestamp + 1)
-                // }
+                if (currentTiming) {
+                    currentTiming.end = Math.ceil(newTimestamp + 5)
+                }
                 // this.SET_CURRENT_PLAYER_TIMESTAMP(newTimestamp)
             }, interval)
         },
