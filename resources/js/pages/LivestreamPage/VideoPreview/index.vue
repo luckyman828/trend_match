@@ -66,14 +66,14 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPreview',
     data: function() {
         return {
             videoUrl: '',
-            editModeActive: false,
+            editModeActive: true,
         }
     },
     computed: {
@@ -100,14 +100,19 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['startPresentation']),
-        ...mapActions('videoPresentation', ['setVideoByURL']),
+        ...mapActions('videoPresentation', ['setVideoByURL', 'updateCurrentVideo']),
+        ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS']),
         async onSetVideoByURL() {
             if (await this.$refs.confirmGoLiveDialog.confirm()) {
                 // Start a presentation with all the selections of the file
                 await this.startPresentation({ selections: this.selections })
+
+                this.SET_VIDEO_TIMINGS([])
+                this.setVideoByURL({ file: this.file, url: this.videoUrl })
+
+                await this.updateCurrentVideo()
+                this.editModeActive = false
             }
-            this.setVideoByURL({ file: this.file, url: this.videoUrl })
-            this.editModeActive = false
         },
     },
 }

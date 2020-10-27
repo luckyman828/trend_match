@@ -4,9 +4,12 @@
             <div class="left">
                 <div class="button-list flex-list">
                     <!-- PLAY / PAUSE -->
-                    <button class="invisible white circle ghost-hover" @click="togglePlaying">
+                    <!-- <button class="invisible white circle ghost-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
-                    </button>
+                    </button> -->
+                    <span class="circle invisible ghost-hover">
+                        <i class="fas fa-circle" :class="isLive ? 'red' : ''"></i>
+                    </span>
 
                     <!-- MUTE / UNMUTE -->
                     <VolumeControl />
@@ -122,6 +125,7 @@ export default {
             currentTimingIndex: 'getCurrentTimingIndex',
             product: 'getCurrentProduct',
             desiredStatus: 'getDesiredStatus',
+            isLive: 'getIsPlaying',
         }),
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',

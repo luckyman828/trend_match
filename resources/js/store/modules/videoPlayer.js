@@ -113,7 +113,7 @@ export default {
             commit('SET_PLAYER_VOLUME', newVolume)
             await player[providerMap.setVolume](newVolume * volumeMultiplier)
         },
-        async togglePlaying({ commit, getters }) {
+        async togglePlaying({ commit, getters, dispatch }) {
             const player = getters.getPlayer
             if (!player) return
             const providerMap = getters.getProviderMap
@@ -124,6 +124,11 @@ export default {
                 if (getters.getTimestamp == getters.getDuration) commit('SET_CURRENT_PLAYER_TIMESTAMP', 0)
                 commit('SET_DESIRED_STATUS', 'playing')
                 player[providerMap.play]()
+
+                // If we are watching a livestream, seek to the end
+                if (getters.getVideoType == 'live') {
+                    dispatch('seekTo', getters.getDuration)
+                }
             }
         },
         async seekTo({ commit, getters }, timestamp) {

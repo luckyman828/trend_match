@@ -133,17 +133,20 @@ export default {
             }
         },
         async getVideoTimeStamp() {
+            console.log('get ideo timestamp')
+            const newTime = Date.now()
+            const diff = newTime - this.lastTimestamp
+            const timestamp = this.currentTimestamp + diff / 1000
+            // Update duration if we are live
+            if (this.videoType == 'live') {
+                const newDuration = this.duration + diff / 1000
+                console.log('we are live', newDuration)
+                this.SET_PLAYER_DURATION(newDuration)
+            }
             if (!this.isSeeking && this.isPlaying && !this.isDragging) {
                 // Get the duration since last we read a timestamp
-                const newTime = Date.now()
-                const diff = newTime - this.lastTimestamp
-                const timestamp = this.currentTimestamp + diff / 1000
 
                 this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
-                // Update duration if we are live
-                if (this.videoType == 'live') {
-                    this.SET_PLAYER_DURATION(timestamp)
-                }
             }
             this.lastTimestamp = Date.now()
         },

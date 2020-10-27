@@ -4,7 +4,7 @@
         <div class="custom-overlay">
             <slot />
         </div>
-        <VideoTimeline v-if="playerReady" />
+        <VideoTimeline v-if="playerReady && videoType != 'live'" />
     </div>
 </template>
 
@@ -24,11 +24,13 @@ export default {
             player: 'getPlayer',
             iframe: 'getIframe',
             isPlaying: 'getIsPlaying',
+            videoType: 'getVideoType',
         }),
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlaying']),
         async onTogglePlay() {
+            if (this.videoType == 'live') return
             this.togglePlaying()
         },
     },
