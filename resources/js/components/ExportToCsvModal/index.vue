@@ -145,6 +145,7 @@ export default {
                 'WHS',
                 'RRP',
                 'MU',
+                'Product EANs',
             ],
         }
     },
@@ -200,7 +201,7 @@ export default {
             const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
 
             if (this.exportVariants) {
-                headers.push('Variant Name')
+                headers.push('Variant Name', 'Variant EANs')
             }
 
             // Add additional headers based on settings
@@ -333,6 +334,8 @@ export default {
                 if (this.exportVariants) {
                     // Insert a blank column space for variant names
                     currentRow.push('')
+                    // Insert a blank space for variant EANS
+                    currentRow.push('')
                 }
 
                 // START QUANTITY DATA
@@ -440,6 +443,15 @@ export default {
                         // Push the variant name
                         variantRow.push(variant.name)
 
+                        // Push the variant EANS
+                        const allVariantEans = []
+                        if (variant.ean) allVariantEans.push(variant.ean)
+                        variant.ean_sizes.map(size => {
+                            const existsInArr = allVariantEans.find(x => x == size.ean)
+                            if (!existsInArr) allVariantEans.push(size.ean)
+                        })
+                        variantRow.push(allVariantEans.join(', '))
+
                         // START QUANTITY DATA
                         if (this.exportQuantity) {
                             const quantity = variant.quantity ? variant.quantity : 0
@@ -540,6 +552,7 @@ export default {
                 priceToReturn.wholesale_price || '',
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
+                product.eans.join(', '),
             ]
         },
         getProductPrice(product) {

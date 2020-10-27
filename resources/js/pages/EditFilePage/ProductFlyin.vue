@@ -1147,7 +1147,7 @@ export default {
                 return
             }
 
-            variant.image = imageURL
+            // variant.image = imageURL
             if (picture) {
                 picture.url = imageURL
             } else {

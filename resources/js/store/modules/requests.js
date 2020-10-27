@@ -46,6 +46,7 @@ export default {
         },
         async insertOrUpdateRequest({ commit, dispatch }, { selectionInput, request }) {
             // Update our state
+            dispatch('initRequests', [request])
             commit('INSERT_OR_UPDATE_REQUEST', { selectionInput, request })
             let requestMethod
             let apiUrl
@@ -199,6 +200,44 @@ export default {
                 })
                 .then(response => {})
         },
+        initRequests({ rootGetters }, requests) {
+            requests.map(request => {
+                if (request.hasBeenInitialized) return
+
+                if (!request.discussions) Vue.set(request, 'discussions', [])
+
+                Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
+                Object.defineProperty(request, 'product', {
+                    get: function() {
+                        return rootGetters['products/products'].find(x => x.id == request.product_id)
+                    },
+                })
+                Object.defineProperty(request, 'hasUnreadAlignerComment', {
+                    get: function() {
+                        if (request.status != 'Open' || request.type != 'Ticket') return false
+                        return (
+                            request.discussions.length <= 0 ||
+                            request.discussions[request.discussions.length - 1].role != 'Approver'
+                        )
+                    },
+                })
+                Object.defineProperty(request, 'hasUnreadApproverComment', {
+                    get: function() {
+                        return (
+                            (request.status != 'Open' &&
+                                (!request.lastReadAt ||
+                                    DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
+                                        DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
+                            (request.status == 'Open' &&
+                                request.discussions.length > 0 &&
+                                request.discussions[request.discussions.length - 1].role == 'Approver')
+                        )
+                    },
+                })
+
+                request.hasBeenInitialized = true
+            })
+        },
     },
 
     mutations: {
@@ -226,35 +265,6 @@ export default {
             }
             // Else insert the request
             else {
-                Object.defineProperty(request, 'isResolved', {
-                    get: function() {
-                        return !!request.completed_at
-                    },
-                })
-                Object.defineProperty(request, 'hasUnreadAlignerComment', {
-                    get: function() {
-                        if (request.status != 'Open' || request.selection.type != 'Master') return false
-                        return (
-                            request.discussions.length <= 0 ||
-                            request.discussions[request.discussions.length - 1].role != 'Approver'
-                        )
-                    },
-                })
-                Object.defineProperty(request, 'hasUnreadApproverComment', {
-                    get: function() {
-                        return (
-                            (request.status != 'Open' &&
-                                (!request.lastReadAt ||
-                                    DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
-                                        DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
-                            (request.status == 'Open' &&
-                                request.discussions.length > 0 &&
-                                request.discussions[request.discussions.length - 1].role == 'Approver')
-                        )
-                    },
-                })
-
-                if (!request.discussions) Vue.set(request, 'discussions', [])
                 selectionInput.rawSelectionInput.requests.push(request)
             }
         },

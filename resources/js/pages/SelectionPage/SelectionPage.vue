@@ -144,6 +144,8 @@
             <p>To join the presentation login to the Kollekt mobile app.</p>
             <p><strong>You will now be redirected to the files overview</strong></p>
         </BaseDialog>
+
+        <ScannerModeControls />
     </div>
 </template>
 
@@ -153,6 +155,7 @@ import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import ProductsTable from './ProductsTable'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 import ProductFlyin from './ProductFlyin'
+import ScannerModeControls from './ScannerModeControls'
 
 export default {
     name: 'selectionPage',
@@ -160,6 +163,7 @@ export default {
         ProductsTable,
         ThePageHeader,
         ProductFlyin,
+        ScannerModeControls,
     },
     data: function() {
         return {
@@ -178,6 +182,7 @@ export default {
             'selections',
         ]),
         ...mapGetters('auth', ['authUser', 'getAuthUserToken']),
+        ...mapGetters('scanner', ['getScannerModeActive']),
         selection() {
             return this.currentSelection
         },
@@ -225,6 +230,7 @@ export default {
             'DELETE_REQUEST_COMMENT',
         ]),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
+        ...mapActions('requests', ['initRequests']),
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
                 if (this.currentSelectionMode == 'Feedback') {
@@ -337,10 +343,11 @@ export default {
                 this.DELETE_COMMENT({ selectionInput: this.getActiveSelectionInput(product), comment })
             }
         },
-        requestArrivedHandler(selectionId, request) {
+        async requestArrivedHandler(selectionId, request) {
             // if (request.author_id != this.authUser.id) {
             // console.log("OnRequestArrived", selectionId, request)
             const product = this.products.find(x => x.id == request.product_id)
+            await this.initRequests([request])
             this.INSERT_OR_UPDATE_REQUEST({ selectionInput: this.getActiveSelectionInput(product), request })
             // }
         },

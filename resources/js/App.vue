@@ -74,7 +74,6 @@ import TheNavbar from './components/layout/TheNavbar'
 // import TheNavbarLogo from './components/layout/TheNavbarLogo'
 import TheImageLightbox from './components/layout/TheImageLightbox'
 import TheSnackbarSpawner from './components/layout/TheSnackbarSpawner'
-import TheChangelogModal from './components/layout/TheChangelogModal/index'
 import LoginPage from './pages/LoginPage/'
 
 export default {
@@ -85,7 +84,7 @@ export default {
         LoginPage,
         TheImageLightbox,
         TheSnackbarSpawner,
-        TheChangelogModal,
+        TheChangelogModal: () => import('./components/layout/TheChangelogModal/index'),
     },
     data: function() {
         return {
@@ -110,7 +109,7 @@ export default {
             return this.isDragging
         },
         fullScreenContent() {
-            return this.$route.name == 'watchVideoPresentation'
+            return ['watchVideoPresentation', 'watchLivestream'].includes(this.$route.name)
         },
     },
     watch: {
@@ -186,26 +185,41 @@ export default {
 
             connection.on('AuthenticatedSuccess', message => {})
 
-            connection.on('OnSelectionPresentationChanged', (eventName, selectionIds) => {
-                selectionIds.selection_ids.map(id => {
+            connection.on('OnSelectionPresentationChanged', (eventName, args) => {
+                // console.log('on selection oresentqito', eventName, args)
+                args.selection_ids.map(id => {
                     const selection = this.getSelectionById(id)
+                    const presentationGroupId = args.detail.find(x => x.selection_id == id).presentation_group_id
                     if (selection) {
                         if (eventName == 'Begin') {
-                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({ selection, isActive: true })
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({
+                                selection,
+                                isActive: true,
+                                presentationGroupId,
+                            })
                         }
                         if (eventName == 'Terminate') {
-                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({ selection, isActive: false })
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({
+                                selection,
+                                isActive: false,
+                                presentationGroupId,
+                            })
                         }
                     }
                     const currentSelection = this.getCurrentSelectionById(id)
                     if (currentSelection) {
                         if (eventName == 'Begin') {
-                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({ selection: currentSelection, isActive: true })
+                            this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({
+                                selection: currentSelection,
+                                isActive: true,
+                                presentationGroupId,
+                            })
                         }
                         if (eventName == 'Terminate') {
                             this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({
                                 selection: currentSelection,
                                 isActive: false,
+                                presentationGroupId,
                             })
                         }
                     }

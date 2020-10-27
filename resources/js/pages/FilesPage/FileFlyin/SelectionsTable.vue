@@ -1722,8 +1722,8 @@ export default {
                 }
                 &.title {
                     // Title
-                    min-width: 300px;
-                    max-width: 300px;
+                    min-width: 220px;
+                    max-width: 220px;
                 }
                 &.teams {
                     margin-left: auto;
@@ -1762,8 +1762,8 @@ export default {
                     // }
                 }
                 &.presentation {
-                    min-width: 72px;
-                    max-width: 72px;
+                    min-width: 116px;
+                    max-width: 116px;
                     margin-left: auto;
                 }
                 // &.items, &.in, &.out, &.nd {

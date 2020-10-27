@@ -13,7 +13,7 @@
         <template v-slot>
             <div class="inner">
                 <div class="request">
-                    <Request :request="request" :disableControls="true"/>
+                    <Request :request="request" :disableControls="true" :selectionInput="selectionInput"/>
 
                     <div class="resolve-actions" v-if="request.type == 'Ticket' && hasTicketControl">
                         <BaseButton
@@ -105,6 +105,9 @@ export default {
         Request,
         RequestComment,
     },
+    props: [
+        'selectionInput'
+    ],
     data: function () { return {
         newComment: {
             content: '',
@@ -134,20 +137,22 @@ export default {
         }
     },
     watch: {
-        // request() {
-        //     this.$nextTick(() => {
-        //         // this.activateWrite()
-        //     })
-        // },
+        request() {
+            this.onReadRequest()
+        },
         currentProduct() {
             this.close()
         }
     },
     methods: {
         ...mapMutations('requests', {
-            close: 'SET_CURRENT_REQUEST_THREAD'
+            close: 'SET_CURRENT_REQUEST_THREAD',
+            SET_REQUEST_READ: 'SET_REQUEST_READ',
         }),
         ...mapActions('requests', ['insertOrUpdateRequestComment', 'updateRequestStatus']),
+        onReadRequest() {
+            this.SET_REQUEST_READ(this.request)
+        },
         activateWrite() {
             if (this.request.type != 'Ticket' || !this.hasTicketControl) return
             this.$refs.commentField.focus()
@@ -223,6 +228,7 @@ export default {
     },
     mounted() {
         // this.activateWrite()
+        this.onReadRequest()
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)

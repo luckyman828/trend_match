@@ -21,6 +21,10 @@ export default {
                 description:
                     'The owner aligns selections and can make requests. Also manages the team and can add/remove users',
             },
+            {
+                role: 'Approver',
+                description: 'Replies to requests',
+            },
         ],
         workspaceFetchedFromId: null,
     },
@@ -359,7 +363,10 @@ export default {
         },
         INSERT_OR_UPDATE_TEAM(state, team) {
             if (team.id && state.teams.find(x => x.id == team.id)) {
-                Object.assign(state.teams.find(x => x.id == team.id), team)
+                Object.assign(
+                    state.teams.find(x => x.id == team.id),
+                    team
+                )
             } else {
                 state.teams.push(team)
             }

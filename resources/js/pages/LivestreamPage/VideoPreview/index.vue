@@ -20,7 +20,7 @@
                     :disabled="submitDisabled"
                     disabledTooltip="Please enter a valid URL"
                 >
-                    <span>Get video by URL</span>
+                    <span>Go LIVE</span>
                 </button>
                 <div class="controls" v-if="playerReady">
                     <button v-tooltip="'Cancel'" @click="editModeActive = false">
@@ -41,6 +41,27 @@
                 </template>
             </button>
         </div>
+
+        <BaseDialog
+            ref="confirmGoLiveDialog"
+            type="confirm"
+            confirmColor="primary"
+            confirmText="Yes, go live!"
+            cancelText="No, i'm not ready yet"
+        >
+            <div class="icon-graphic">
+                <i class="lg primary far fa-file"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-presentation"></i>
+            </div>
+            <h3>Really go live?</h3>
+            <p>
+                <strong>Any existing video presentation on the file will be DELETED.</strong>
+            </p>
+            <p>
+                All sub-selections will enter presentation mode.
+            </p>
+        </BaseDialog>
     </div>
 </template>
 
@@ -67,6 +88,9 @@ export default {
             provider: 'getProvider',
             videoId: 'getProviderVideoId',
         }),
+        ...mapGetters('selections', {
+            selections: 'getSelections',
+        }),
         playerReady() {
             return this.provider && this.videoId
         },
@@ -75,8 +99,13 @@ export default {
         },
     },
     methods: {
+        ...mapActions('selections', ['startPresentation']),
         ...mapActions('videoPresentation', ['setVideoByURL']),
-        onSetVideoByURL() {
+        async onSetVideoByURL() {
+            if (await this.$refs.confirmGoLiveDialog.confirm()) {
+                // Start a presentation with all the selections of the file
+                await this.startPresentation({ selections: this.selections })
+            }
             this.setVideoByURL({ file: this.file, url: this.videoUrl })
             this.editModeActive = false
         },

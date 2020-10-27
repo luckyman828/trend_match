@@ -9,7 +9,6 @@
                 <i class="fas fa-arrow-left"></i>
                 <span>Back to files</span>
             </router-link>
-
             <div class="breadcrumbs">
                 <router-link class="text-link" :to="{ name: 'files', params: { folderId: currentFile.parent_id } }"
                     >Files</router-link
@@ -26,30 +25,21 @@
         <!-- <div class="items-center">
         </div> -->
 
-        <div class="items-right">
-            <!-- <SelectionSelector />
-            <SelectionPresenterModeButton :selection="currentSelection" /> -->
-        </div>
+        <div class="items-right"></div>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
-import SelectionSelector from './SelectionSelector'
 export default {
-    name: 'livestreamPageNavbar',
-    components: {
-        SelectionPresenterModeButton,
-        SelectionSelector,
-    },
+    name: 'watchVideoPresentationNavbar',
+    components: {},
     data: function() {
         return {}
     },
     computed: {
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('selections', ['currentSelection']),
         ...mapGetters('products', ['products']),
     },
     methods: {},

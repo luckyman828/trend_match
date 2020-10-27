@@ -271,7 +271,7 @@
                 @hotkeyEnter="hotkeyEnterHandler"
             />
 
-            <RequestThreadSection v-else @onTab="onTabRequestThread" />
+            <RequestThreadSection v-else :selectionInput="selectionInput" @onTab="onTabRequestThread" />
 
             <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show" />
 
@@ -345,7 +345,6 @@ export default {
     },
     data: function() {
         return {
-            currentImgIndex: 0,
             lastBroadcastProductId: null,
             tooltipVariant: null,
             actionDistributionTooltipTab: 'Feedback',
@@ -390,6 +389,7 @@ export default {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
         ...mapGetters('products', {
             availableProducts: 'getAvailableProducts',
+            currentVariantIndex: 'getPdpVariantIndex',
         }),
         ...mapGetters('selections', [
             'getCurrentPDPSelection',
@@ -414,6 +414,14 @@ export default {
         },
         currentVariant() {
             return this.selectionInput.variants[this.currentImgIndex]
+        },
+        currentImgIndex: {
+            get() {
+                return this.currentVariantIndex
+            },
+            set(value) {
+                this.SET_CURRENT_PDP_VARIANT_INDEX(value)
+            },
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -442,6 +450,7 @@ export default {
         ...mapActions('presenterQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
+        ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
@@ -503,14 +512,21 @@ export default {
             }
         },
         onTabRequestThread(cycleForward) {
-            const requests = this.product.requests.filter(x => x.type == 'Ticket')
+            const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+            const tickets = []
+            const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+            const otherTickets = allTickets
+                .filter(x => x.selection_id != this.selection.id)
+                .sort((a, b) => (a.selection.type == 'Master' ? -1 : 1))
+            tickets.push(...ownTickets)
+            tickets.push(...otherTickets)
 
             // Find the index of our current request thread
-            const index = requests.findIndex(x => x.id == this.currentRequestThread.id)
-            if (cycleForward && index + 1 <= requests.length) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index + 1])
+            const index = tickets.findIndex(x => x.id == this.currentRequestThread.id)
+            if (cycleForward && index + 1 <= tickets.length) {
+                this.SET_CURRENT_REQUEST_THREAD(tickets[index + 1])
             } else if (!cycleForward && index > 0) {
-                this.SET_CURRENT_REQUEST_THREAD(requests[index - 1])
+                this.SET_CURRENT_REQUEST_THREAD(tickets[index - 1])
             }
         },
         hotkeyHandler(event) {
@@ -535,12 +551,14 @@ export default {
             if (key == 'Tab') {
                 event.preventDefault()
                 // Find requests with threads
-                const requestsWithTickets = this.product.requests.filter(x => x.type == 'Ticket')
-                if (requestsWithTickets.length <= 0) return
+                const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                if (allTickets.length <= 0) return
 
                 // // Else, show the first reqeust thread
                 if (!this.currentRequestThread) {
-                    this.SET_CURRENT_REQUEST_THREAD(requestsWithTickets[0])
+                    const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
+                    this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
                 }
             }
         },

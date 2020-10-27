@@ -72,6 +72,11 @@ const routes = [
         component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/LivestreamPage'),
     },
     {
+        path: '/file/:fileId/selection/:selectionId/livestream/watch',
+        name: 'watchLivestream',
+        component: () => import(/* webpackChunkName: "watchLivestreamPage" */ './pages/WatchLivestreamPage'),
+    },
+    {
         path: '/join/:linkHash',
         name: 'joinSelection',
         component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),

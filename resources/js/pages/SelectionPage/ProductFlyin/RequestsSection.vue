@@ -93,6 +93,11 @@ export default {
         selectionRequest: function(newVal, oldVal) {
             this.update()
         },
+        currentRequestThread(newVal) {
+            if (newVal) {
+                this.deactivateWrite()
+            }
+        }
     },
     computed: {
         ...mapGetters('requests', {
@@ -117,7 +122,9 @@ export default {
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
+        ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         activateWrite() {
+            this.SET_CURRENT_REQUEST_THREAD(null)
             this.$refs.requestField.focus()
             this.$refs.requestField.select()
             this.writeActive = true
@@ -207,7 +214,7 @@ export default {
                 if (key == 'Enter') {
                     this.$emit('hotkeyEnter', e)
                 }
-                if (key == 'Tab' && this.writeActive) {
+                if (key == 'Tab' && this.writeActive && !this.currentRequestThread) {
                     this.deactivateWrite()
                     this.$emit('activateCommentWrite')
                 }

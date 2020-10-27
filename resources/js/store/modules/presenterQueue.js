@@ -33,7 +33,6 @@ export default {
             }
         },
         getSearchItemDragActive: state => state.searchItemDragActive,
-        getPresentationActive: state,
     },
 
     actions: {

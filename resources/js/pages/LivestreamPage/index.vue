@@ -51,8 +51,9 @@ export default {
             this.fetchProducts({ fileId })
             this.fetchSelections({ fileId })
 
-            const fileVideo = await this.fetchFileVideo(fileId)
-            this.SET_CURRENT_VIDEO(fileVideo)
+            // const fileVideo = await this.fetchFileVideo(fileId)
+            // this.SET_CURRENT_VIDEO(fileVideo)
+            this.SET_CURRENT_VIDEO(null)
 
             this.loadingData = false
         },

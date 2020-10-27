@@ -95,14 +95,7 @@ export default {
                 .catch(err => {
                     console.log('eror', err, err.response)
                     actions.forEach((action, index) => {
-                        commit(
-                            'products/SET_ACTIONS',
-                            {
-                                actions: oldActions,
-                                products: rootGetters['products/products'],
-                            },
-                            { root: true }
-                        )
+                        commit('products/SET_ACTIONS', oldActions, { root: true })
                     })
 
                     commit(
@@ -122,7 +115,7 @@ export default {
         },
         async setActions({ commit, dispatch, rootGetters }, actions) {
             // Update the action
-            commit('products/SET_ACTIONS', { actions, products: rootGetters['products/products'] }, { root: true })
+            commit('products/SET_ACTIONS', actions, { root: true })
 
             const apiUrl = `/selections/${actions[0].selection_id}/actions`
             const requestBody = {

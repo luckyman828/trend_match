@@ -26,18 +26,36 @@
         </div> -->
 
         <div class="items-right">
-            <router-link
-                class="button ghost primary"
-                :to="{ name: 'createLivestream', params: { fileId: currentFile.id } }"
-            >
+            <button class="ghost primary" @click="onGoLive">
                 <i class="far fa-presentation"></i>
-                <span>Start LIVE presentation</span>
-            </router-link>
+                <span>Start new LIVE presentation</span>
+            </button>
             <div class="pill ghost sm" :class="[status]">
                 <i class="far" :class="statusIconClasss"></i>
                 <span>{{ statusText }}</span>
             </div>
         </div>
+
+        <BaseDialog
+            ref="confirmGoLiveDialog"
+            type="confirm"
+            confirmColor="primary"
+            confirmText="Yes, go live!"
+            cancelText="No, i'm not ready yet"
+        >
+            <div class="icon-graphic">
+                <i class="lg primary far fa-file"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-presentation"></i>
+            </div>
+            <h3>Really go live?</h3>
+            <p>
+                <strong
+                    >The current video presentation will be DELETED, and all sub-selections will enter presentation
+                    mode.</strong
+                >
+            </p>
+        </BaseDialog>
     </div>
 </template>
 
@@ -84,7 +102,19 @@ export default {
             }
         },
     },
-    methods: {},
+    methods: {
+        ...mapActions('selections', ['fetchSelections', 'startPresentation']),
+        async onGoLive() {
+            this.$router.push({ name: 'createLivestream', params: { fileId: this.currentFile.id } })
+            // if (await this.$refs.confirmGoLiveDialog.confirm()) {
+            //     // Start a presentation with all the selections of the file
+            //     // Get file selections
+            //     const selections = await this.fetchSelections({ fileId: this.currentFile.id })
+            //     await this.startPresentation({ selections })
+            //     this.$router.push({ name: 'createLivestream', params: { fileId: this.currentFile.id } })
+            // }
+        },
+    },
     created() {
         this.currentStatus = this.status
     },

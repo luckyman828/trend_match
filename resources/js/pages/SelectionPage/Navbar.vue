@@ -18,6 +18,13 @@
         </div>
 
         <div class="items-right">
+            <div class="scanner-mode-toggle">
+                <BaseToggle
+                label='Scanner Mode' sizeClass="xs"
+                :isActive="scannerModeActive"
+                @toggle="onToggleScannerMode"/>
+            </div>
+
             <SelectionPresenterModeButton :selection="currentSelection"/>
 
             <button class="button primary wide" @click="onExport"><span>Export PDF</span></button>
@@ -38,7 +45,7 @@ import SelectionPresenterModeButton from '../../components/SelectionPresenterMod
 import BudgetCounter from './BudgetCounter'
 
 export default {
-    name: "editFilePageNavbar",
+    name: "selectionPageNavbar",
     components: {
         ExportProductsModal,
         ExportToCsvModal,
@@ -56,14 +63,22 @@ export default {
             exportModalVisible: 'getPDFModalVisible',
             exportCsvModalVisible: 'getCSVModalVisisble',
         }),
+        ...mapGetters('scanner', {
+            scannerModeActive: 'getScannerModeActive'
+        }),
     },
     methods: {
         ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL']),
+        ...mapMutations('scanner', ['SET_SCANNER_MODE']),
         onExport() {
             this.SET_SHOW_PDF_MODAL(true)
         },
         onExportCsv() {
             this.SET_SHOW_CSV_MODAL(true)
+        },
+        onToggleScannerMode() {
+            const modeToSet = this.scannerModeActive ? null : 'product'
+            this.SET_SCANNER_MODE(modeToSet)
         }
     },
 };

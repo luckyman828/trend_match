@@ -29,10 +29,12 @@ export default {
         showPDFModal: false,
         showCSVModal: false,
         openTicketsOnly: false,
+        pdpVariantIndex: 0,
     },
 
     getters: {
         loadingProducts: state => state.loading,
+        getPdpVariantIndex: state => state.pdpVariantIndex,
         productsStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
@@ -428,7 +430,7 @@ export default {
             const selectionProductInput = await dispatch('fetchSelectionProductInput', selection)
 
             // Process the selection products
-            commit('MERGE_PRODUCTS_WITH_SELECTION_INPUT', {
+            dispatch('mergeProductsWithSelectionInput', {
                 selectionProductInput,
                 authUser,
             })
@@ -761,7 +763,6 @@ export default {
                 )
 
                 const sendRequest = async () => {
-                    commit('DELETE_PRODUCTS', products)
                     const apiUrl = `/files/${file.id}/products`
                     axios
                         .post(apiUrl, {
@@ -801,6 +802,7 @@ export default {
                 }
 
                 const restoreProducts = async () => {
+                    console.log('restore prodcts')
                     // await dispatch('insertProducts', { file, products, addToState: true })
                     commit('insertProducts', { products, method: 'add' })
                     commit('SORT_PRODUCTS')
@@ -1056,6 +1058,7 @@ export default {
                         Vue.set(variant, 'imageIndex', 0)
                     }
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
 
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {
@@ -1065,93 +1068,7 @@ export default {
                 })
             })
         },
-    },
-
-    mutations: {
-        //Set the loading status of the app
-        setLoading(state, bool) {
-            state.loading = bool
-        },
-        SORT_PRODUCTS(state) {
-            if (state.lastSort) {
-                sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
-            }
-        },
-        SET_PRODUCTS_STATUS(state, status) {
-            state.status = status
-        },
-        SET_PRODUCTS(state, products) {
-            state.products = products
-        },
-        insertProducts(state, { products, method }) {
-            if (method == 'add') {
-                // Add to existing products
-                state.products = state.products.concat(products)
-            } else {
-                state.products = products
-            }
-        },
-        DELETE_PRODUCTS(state, products) {
-            for (let i = products.length; i--; ) {
-                const index = state.products.findIndex(x => x.id == products[i].id)
-                state.products.splice(index, 1)
-            }
-        },
-        SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
-            state.productsFilteredBySearch = products
-        },
-        setCurrentProduct(state, product) {
-            state.currentProduct = product
-        },
-        setCurrentFocusRowIndex(state, index) {
-            state.currentFocusRowIndex = index
-        },
-        SET_AVAILABLE_PRODUCTS(state, products) {
-            state.availableProducts = products
-        },
-        updateSelectedCategories(state, payload) {
-            state.selectedCategories = payload
-        },
-        updateSelectedDeliveryDates(state, payload) {
-            state.selectedDeliveryDates = payload
-        },
-        updateSelectedBuyerGroups(state, payload) {
-            state.selectedBuyerGroups = payload
-        },
-        SET_SELECTED_SELECTION_IDS(state, payload) {
-            state.selectedSelectionIds = payload
-        },
-        SET_ADVANCED_FILTER(state, payload) {
-            state.advancedFilter = payload
-        },
-        setUnreadOnly(state, payload) {
-            state.unreadOnly = payload
-        },
-        SET_HIDE_COMPLETED(state, payload) {
-            state.hideCompleted = payload
-        },
-        SET_OPEN_TICKETS_ONLY(state, payload) {
-            state.openTicketsOnly = payload
-        },
-        setCurrentProductFilter(state, payload) {
-            state.currentProductFilter = payload
-        },
-        setSingleVisisble(state, bool) {
-            state.singleVisible = bool
-        },
-        updateProduct(state, product) {
-            // Replace the product with the new
-            let stateProduct = state.products.find(x => x.id == product.id)
-            if (stateProduct) Object.assign(stateProduct, product)
-            // Check if we also need to update the current product
-            if (state.currentProduct && state.currentProduct.id == product.id) {
-                Object.assign(state.currentProduct, product)
-            }
-        },
-        alertError: state => {
-            window.alert('Network error. Please check your connection')
-        },
-        MERGE_PRODUCTS_WITH_SELECTION_INPUT(state, { selectionProductInput, authUser }) {
+        mergeProductsWithSelectionInput({ state, dispatch }, { selectionProductInput, authUser }) {
             const products = state.products
             products.map(product => {
                 const rawSelectionInput = selectionProductInput.products.find(x => x.id == product.id)
@@ -1400,50 +1317,14 @@ export default {
                 })
 
                 // PROCESS REQUESTS
-                selectionInput.requests.forEach(request => {
-                    Vue.set(request, 'lastReadAt', localStorage.getItem(`request-${request.id}-readAt`))
-                    // Object.defineProperty(request, 'lastReadAt', {
-                    //     get: function() {
-                    //         return localStorage.getItem(`request-${request.id}-readAt`)
-                    //     },
-                    //     set: function(value) {
-                    //         localStorage.setItem(`request-${request.id}-readAt`, value)
-                    //     },
-                    // })
-                    Object.defineProperty(request, 'isResolved', {
-                        get: function() {
-                            return !!request.completed_at
-                        },
-                    })
-                    Object.defineProperty(request, 'hasUnreadAlignerComment', {
-                        get: function() {
-                            if (request.status != 'Open' || request.type != 'Ticket') return false
-                            return (
-                                request.discussions.length <= 0 ||
-                                request.discussions[request.discussions.length - 1].role != 'Approver'
-                            )
-                        },
-                    })
-                    Object.defineProperty(request, 'hasUnreadApproverComment', {
-                        get: function() {
-                            return (
-                                (request.status != 'Open' &&
-                                    (!request.lastReadAt ||
-                                        DateTime.fromISO(request.lastReadAt, { zone: 'utc' }).ts <
-                                            DateTime.fromISO(request.status_updated_at, { zone: 'utc' }).ts)) ||
-                                (request.status == 'Open' &&
-                                    request.discussions.length > 0 &&
-                                    request.discussions[request.discussions.length - 1].role == 'Approver')
-                            )
-                        },
-                    })
-                })
+                dispatch('requests/initRequests', selectionInput.requests, { root: 'true' })
 
                 // PROCESS VARIANTS
                 selectionInput.variants.forEach(variant => {
                     // VARIANTS
                     Vue.set(variant, 'imageIndex', 0)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
 
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {
@@ -1678,6 +1559,92 @@ export default {
                 product.selectionInputList.push(selectionInput)
             })
         },
+    },
+
+    mutations: {
+        //Set the loading status of the app
+        setLoading(state, bool) {
+            state.loading = bool
+        },
+        SORT_PRODUCTS(state) {
+            if (state.lastSort) {
+                sortArray.methods.sortArray(state.products, state.lastSort.method, state.lastSort.key)
+            }
+        },
+        SET_PRODUCTS_STATUS(state, status) {
+            state.status = status
+        },
+        SET_PRODUCTS(state, products) {
+            state.products = products
+        },
+        insertProducts(state, { products, method }) {
+            if (method == 'add') {
+                // Add to existing products
+                state.products = state.products.concat(products)
+            } else {
+                state.products = products
+            }
+        },
+        DELETE_PRODUCTS(state, products) {
+            for (let i = products.length; i--; ) {
+                const index = state.products.findIndex(x => x.id == products[i].id)
+                state.products.splice(index, 1)
+            }
+        },
+        SET_PRODUCTS_FILTERED_BY_SEARCH(state, products) {
+            state.productsFilteredBySearch = products
+        },
+        setCurrentProduct(state, product) {
+            state.currentProduct = product
+        },
+        setCurrentFocusRowIndex(state, index) {
+            state.currentFocusRowIndex = index
+        },
+        SET_AVAILABLE_PRODUCTS(state, products) {
+            state.availableProducts = products
+        },
+        updateSelectedCategories(state, payload) {
+            state.selectedCategories = payload
+        },
+        updateSelectedDeliveryDates(state, payload) {
+            state.selectedDeliveryDates = payload
+        },
+        updateSelectedBuyerGroups(state, payload) {
+            state.selectedBuyerGroups = payload
+        },
+        SET_SELECTED_SELECTION_IDS(state, payload) {
+            state.selectedSelectionIds = payload
+        },
+        SET_ADVANCED_FILTER(state, payload) {
+            state.advancedFilter = payload
+        },
+        setUnreadOnly(state, payload) {
+            state.unreadOnly = payload
+        },
+        SET_HIDE_COMPLETED(state, payload) {
+            state.hideCompleted = payload
+        },
+        SET_OPEN_TICKETS_ONLY(state, payload) {
+            state.openTicketsOnly = payload
+        },
+        setCurrentProductFilter(state, payload) {
+            state.currentProductFilter = payload
+        },
+        setSingleVisisble(state, bool) {
+            state.singleVisible = bool
+        },
+        updateProduct(state, product) {
+            // Replace the product with the new
+            let stateProduct = state.products.find(x => x.id == product.id)
+            if (stateProduct) Object.assign(stateProduct, product)
+            // Check if we also need to update the current product
+            if (state.currentProduct && state.currentProduct.id == product.id) {
+                Object.assign(state.currentProduct, product)
+            }
+        },
+        alertError: state => {
+            window.alert('Network error. Please check your connection')
+        },
         SET_LAST_SORT(state, { method, key }) {
             state.lastSort = { method, key }
         },
@@ -1698,10 +1665,15 @@ export default {
                     if (selectionAction) {
                         selectionAction.action = newAction
                         selectionAction.user = user
+
+                        const allVariantsOut = !selectionInput.variants.find(variant =>
+                            ['In', 'Focus'].includes(variant.action)
+                        )
+
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (variant.action == 'None') {
+                            if (allVariantsOut || variant.action == 'None') {
                                 variant.action = newAction
                             }
                             if (['Out', 'None'].includes(newAction)) {
@@ -1745,10 +1717,14 @@ export default {
                     if (selectionAction) {
                         selectionAction.action = newAction
                         selectionAction.user = user
+
+                        const allVariantsOut = !selectionInput.variants.find(variant =>
+                            ['In', 'Focus'].includes(variant.your_feedback)
+                        )
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (variant.your_feedback == 'None') {
+                            if (variant.your_feedback == 'None' || allVariantsOut) {
                                 variant.your_feedback = newAction
                             }
                             // variant.action = newAction
@@ -1799,6 +1775,9 @@ export default {
         },
         SET_NO_IMAGES_ONLY(state, boolean) {
             state.noImagesOnly = boolean
+        },
+        SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
+            state.pdpVariantIndex = index
         },
     },
 }

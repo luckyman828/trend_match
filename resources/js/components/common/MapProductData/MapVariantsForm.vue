@@ -41,12 +41,14 @@
             <!-- MAP FIELDS -->
             <BaseMapFieldsTable>
                 <MapFieldsTableHeader/>
-                <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'variants' && x.name != 'name')" 
-                    :key="field.id"
-                    :mappedFile="field.file"
-                    :mappedField="field"
-                    @show-field-context="$emit('show-field-context', $event, field)"
-                />
+                <template v-if="!this.imagesOnly">
+                    <MapFieldsTableRow  v-for="field in fieldsToMap.filter(x => x.scope == 'variants' && x.name != 'name')" 
+                        :key="field.id"
+                        :mappedFile="field.file"
+                        :mappedField="field"
+                        @show-field-context="$emit('show-field-context', $event, field)"
+                    />
+                </template>
                 <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => x.scope == 'images')" 
                     :key="field.id"
                     :mappedFile="field.file"
@@ -91,6 +93,7 @@ export default {
     props: [
         'fieldsToMap',
         'availableFiles',
+        'uploadOptions',
     ],
     computed: {
         // mappedFiles() {
@@ -103,18 +106,27 @@ export default {
         //     })
         //     return files
         // }
+        imagesOnly() {
+            return this.uploadOptions && this.uploadOptions.scopes.find(x => x.name == 'variants' && x.imagesOnly)
+        }
     },
     methods: {
         ...mapActions('mapProductData', ['getProductFields']),
         async initVariantMap() {
-            const newFields = await this.getProductFields({scope: 'variants'})
-            this.fieldsToMap.push(...newFields)
+            let newFields
+            if (!this.imagesOnly) {
+                newFields = await this.getProductFields({scope: 'variants'})
+                this.fieldsToMap.push(...newFields)
+            }
+
             await this.onAddVariantImageMap()
 
             // Automap fields
-            newFields.map(field => {
-                this.autoMapField(field, this.availableFiles)
-            })
+            if (!this.imagesOnly) {
+                newFields.map(field => {
+                    this.autoMapField(field, this.availableFiles)
+                })
+            }
 
             // Attemp to determine how many image-maps we need
             // Get our first variant image map

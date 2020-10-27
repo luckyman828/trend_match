@@ -61,13 +61,14 @@ export default {
         getCurrentSelection: state => state.currentSelections[0],
         getCurrentSelections: state => state.currentSelections,
         getDisplayUnreadBullets: (state, getters) => {
-            return getters.getCurrentSelection.type == 'Master' && getters.getCurrentSelectionMode != 'Feedback'
+            return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
+        // getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
+        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_role == 'Owner'),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
             return (
@@ -269,6 +270,15 @@ export default {
                 })
             })
             return availableSelections
+        },
+        getSelectionPresentationGroups: state => {
+            const groupIds = []
+            state.selections.map(selection => {
+                if (!groupIds.find(x => x == selection.presentation_id)) {
+                    groupIds.push(selection.presentation_id)
+                }
+            })
+            return groupIds
         },
     },
 
@@ -797,7 +807,7 @@ export default {
                         { root: true }
                     )
                 })
-            dispatch('calculateSelectionUsers', selection)
+            await dispatch('calculateSelectionUsers', selection)
         },
         async removeTeamsFromSelection({ commit, dispatch }, { selection, teams }) {
             // Commit mutation to state
@@ -956,7 +966,37 @@ export default {
                 })
             })
         },
-        async togglePresenterMode({ getters, dispatch, commit }, { selection, subSelectionList = [] }) {
+        async startPresentation({ commit }, { selections }) {
+            // console.log('start presentation', selections)
+            const apiUrl = `/presentation`
+            await axios
+                .post(apiUrl, {
+                    selection_ids: selections.map(selection => selection.id),
+                })
+                .then(response => {
+                    console.log('presentation started', response.data)
+                    commit('presentation/SET_CURRENT_PRESENTATION_ID', response.data.presentation_id, { root: true })
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Presentation started for ${selections.length} selection${
+                                selections.length > 1 ? 's' : ''
+                            }`,
+                            iconClass: 'fa-presentation',
+                            type: 'info',
+                        },
+                        { root: true }
+                    )
+                })
+        },
+        async stopPresentation({}, { presentationId }) {
+            // console.log('stop presentation', presentationId)
+            const apiUrl = `/presentation/${presentationId}`
+            await axios.delete(apiUrl).then(response => {
+                commit('presentation/SET_CURRENT_PRESENTATION_ID', null, { root: true })
+            })
+        },
+        async togglePresenterMode({ getters, dispatch, commit }, selection) {
             const apiUrl = `/selections/${selection.id}/presentation`
             const selectionTree = getters.getSelectionTree(selection)
             // Assunme success
@@ -1321,9 +1361,10 @@ export default {
                 // End process users
             })
         },
-        SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {
+        SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive, presentationGroupId }) {
             // Vue.set(selection, 'is_presenting', isActive)
             selection.is_presenting = isActive
+            selection.presentation_id = presentationGroupId
         },
         SET_CURRENT_SELECTION_ID(state, selectionId) {
             state.currentSelectionId = selectionId

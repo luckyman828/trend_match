@@ -106,6 +106,8 @@ $brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white
     ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount)),
     ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
 
+$groupColors: (#3366ff), (#26abd6), (#20a720), (#b51f26), (#905b15);
+
 // BUTTON SIZES ($name, $height, $font-size, $padding, $icon-size, $icon-spacing)
 $button-sizes: ('xxs', 12px, 8px, 1px, 8px, 2px), ('xs', 20px, 12px, 6px, 12px, 2px), ('sm', 24px, 12px, 8px, 14px, 2px),
     ('md', 36px, 14px, 16px, 16px, 0), ('lg', 48px, 14px, 20px, 16px, 0), ('xl', 60px, 18px, 24px, 20px, 0);

@@ -1,21 +1,21 @@
 <template>
     <div class="changelog-post">
         <div class="featured-img-wrapper" v-if="featuredImgUrl">
-            <img :src="featuredImgUrl" alt="featured-image">
+            <img :src="featuredImgUrl" alt="featured-image" />
         </div>
         <div class="body">
-            <h2 class="title" v-html="title"/>
-            <span class="date" v-html="date"/>
+            <h2 class="title" v-html="title" />
+            <span class="date" v-html="date" />
 
             <div class="lead">
-                <slot name="lead"/>
+                <slot name="lead" />
             </div>
-            <slot name="body"/>
+            <slot name="body" />
 
             <div v-if="$scopedSlots.signoff" class="signoff">
                 <p class="author">Kind regards:</p>
                 <div class="portrait-list">
-                    <slot name="signoff"/>
+                    <slot name="signoff" />
                 </div>
             </div>
         </div>
@@ -25,11 +25,7 @@
 <script>
 export default {
     name: 'changelogPost',
-    props: [
-        'featuredImgUrl',
-        'title',
-        'date',
-    ]
+    props: ['featuredImgUrl', 'title', 'date'],
 }
 </script>
 
@@ -40,17 +36,20 @@ export default {
     background: white;
     border: $borderModule;
     border-radius: $borderRadiusModule;
+    box-shadow: $shadowModule;
     overflow: hidden;
     max-width: 680px;
     margin: auto;
     margin-bottom: 60px;
     .featured-img-wrapper {
         // background: $grey400;
-        background: $primary;
+        // background: $primary;
         height: 300px;
         display: flex;
         justify-content: center;
         align-items: center;
+        border-bottom: $borderModule;
+        border-width: 2px;
         img {
             height: 80%;
             width: 80%;
@@ -59,7 +58,7 @@ export default {
         }
     }
     .body {
-        padding: 32px 68px 60px 40px;
+        padding: 0 68px 60px 40px;
         .title {
             font-size: 52px;
             font-weight: 500;
@@ -112,5 +111,4 @@ export default {
         }
     }
 }
-
 </style>

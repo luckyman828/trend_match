@@ -307,9 +307,11 @@ export default {
             state.currentVideo.timings = timings
         },
         ADD_TIMING(state, { timing, index }) {
+            console.log('ADD_TIMING', timing, index)
             if (index != null) {
                 state.currentVideo.timings.splice(index, 0, timing)
             } else {
+                console.log('push timing', timing)
                 state.currentVideo.timings.push(timing)
             }
         },

@@ -23,6 +23,8 @@ import mapProductData from './modules/mapProductData'
 import videoPresentation from './modules/videoPresentation'
 import videoPlayer from './modules/videoPlayer'
 import routes from './modules/routes'
+import scanner from './modules/scanner'
+import presentation from './modules/presentation'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -53,6 +55,8 @@ const store = new Vuex.Store({
         videoPresentation,
         videoPlayer,
         routes,
+        scanner,
+        presentation,
     },
 })
 
