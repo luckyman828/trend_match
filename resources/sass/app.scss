@@ -449,6 +449,11 @@ input[type='submit'] {
                 }
             }
         }
+        &.#{nth($color,1)}-hover:hover {
+            border-color: nth($color, 2) !important;
+            background: nth($color, 2) !important;
+            color: nth($color, 4) !important;
+        }
         &.#{nth($color,1)}:hover {
             background: nth($color, 3);
         }

@@ -1,6 +1,11 @@
 <template>
     <div class="selections-table-row">
-        <tr class="selection" :class="{ 'is-hidden': isHidden }" @contextmenu="emitShowContext" @click="onClick">
+        <tr
+            class="selection"
+            :class="[{ 'is-hidden': isHidden }, `presentation-group-${presentationGroupIndex}`]"
+            @contextmenu="emitShowContext"
+            @click="onClick"
+        >
             <td class="select">
                 <BaseCheckbox
                     ref="selectBox"
@@ -154,21 +159,28 @@
             </td>
             <td class="presentation">
                 <SelectionPresenterModeButton
-                    v-if="selection.presentation_inherit_from == 0 && selection.your_job == 'Alignment'"
+                    v-if="selection.your_job == 'Alignment'"
                     :selection="selection"
                     :showLabel="false"
                 />
                 <div
                     v-else-if="selection.is_presenting"
-                    class="pill primary sm"
+                    class="pill primary sm presentation-button"
+                    :class="[`group-${presentationGroupIndex}`, { 'red-hover': selection.your_role == 'Owner' }]"
+                    @click="
+                        selection.your_role == 'Owner' &&
+                            stopPresentation({ presentationId: selection.presentation_id })
+                    "
                     v-tooltip="
                         'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'
                     "
                 >
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" class="far fa-presentation"></i>
                     <span>In presentation</span>
+
+                    <i class="far fa-times hover-only"></i>
+                    <span class="hover-only">Stop presentation</span>
                 </div>
-                <!-- <SelectionPresenterModeButton v-if="userHasEditAccess && isMaster" :selection="selection" :showLabel="false"/> -->
             </td>
             <td class="action">
                 <button
@@ -252,7 +264,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess']),
+        ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'getSelectionPresentationGroups']),
         localSelectedSelections: {
             get() {
                 return this.selectedSelections
@@ -273,7 +285,7 @@ export default {
             }
         },
         selectionWidth() {
-            const baseWidth = 300
+            const baseWidth = 220
             const indentAmount = 24
             return {
                 maxWidth: `${baseWidth - this.depth * indentAmount}px`,
@@ -294,6 +306,9 @@ export default {
         budgetSpendPercentage() {
             return ((this.selection.budget_spend / this.selection.budget) * 100).toFixed(1)
         },
+        presentationGroupIndex() {
+            return this.getSelectionPresentationGroups.findIndex(x => x == this.selection.presentation_id)
+        },
     },
     methods: {
         ...mapActions('selections', [
@@ -301,6 +316,7 @@ export default {
             'updateSelection',
             'togglePresenterMode',
             'updateSelectionBudget',
+            'stopPresentation',
         ]),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
@@ -458,6 +474,29 @@ export default {
     &.over {
         font-weight: 700;
         color: $red;
+    }
+}
+.presentation-button {
+    @for $i from 1 through length($groupColors) {
+        $color: nth($groupColors, $i);
+        &.group-#{$i} {
+            background: nth($color, 1);
+            border-color: nth($color, 1);
+        }
+    }
+    &.red-hover {
+        cursor: pointer;
+        .hover-only {
+            display: none;
+        }
+        &:hover {
+            .hover-only {
+                display: block;
+            }
+            :not(.hover-only) {
+                display: none;
+            }
+        }
     }
 }
 </style>

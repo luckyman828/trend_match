@@ -65,7 +65,8 @@ export default {
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
+        // getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
+        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_role == 'Owner'),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
             return (
@@ -267,6 +268,15 @@ export default {
                 })
             })
             return availableSelections
+        },
+        getSelectionPresentationGroups: state => {
+            const groupIds = []
+            state.selections.map(selection => {
+                if (!groupIds.find(x => x == selection.presentation_id)) {
+                    groupIds.push(selection.presentation_id)
+                }
+            })
+            return groupIds
         },
     },
 
@@ -954,6 +964,18 @@ export default {
                 })
             })
         },
+        async startPresentation({}, { selections }) {
+            // console.log('start presentation', selections)
+            const apiUrl = `/presentation`
+            await axios.post(apiUrl, {
+                selection_ids: selections.map(selection => selection.id),
+            })
+        },
+        async stopPresentation({}, { presentationId }) {
+            // console.log('stop presentation', presentationId)
+            const apiUrl = `/presentation/${presentationId}`
+            await axios.delete(apiUrl)
+        },
         async togglePresenterMode({ getters, dispatch, commit }, selection) {
             const apiUrl = `/selections/${selection.id}/presentation`
             const selectionTree = getters.getSelectionTree(selection)
@@ -1270,9 +1292,10 @@ export default {
                 // End process users
             })
         },
-        SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive }) {
+        SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive, presentationGroupId }) {
             // Vue.set(selection, 'is_presenting', isActive)
             selection.is_presenting = isActive
+            selection.presentation_id = presentationGroupId
         },
     },
 }
