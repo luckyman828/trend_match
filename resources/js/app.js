@@ -127,6 +127,11 @@ Vue.filter('thousandSeparated', function(value) {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 })
 Vue.filter('timestampify', function(value) {
+    // Only include hours if we have any
+    if (value >= 3600) {
+        return new Date(value * 1000).toISOString().substr(11, 8)
+    }
+
     return new Date(value * 1000).toISOString().substr(14, 5)
 })
 Vue.filter('rounded', function(value, decimalCount) {

@@ -956,7 +956,7 @@ export default {
                 })
             })
         },
-        async togglePresenterMode({ getters, dispatch, commit }, selection) {
+        async togglePresenterMode({ getters, dispatch, commit }, { selection, subSelectionList = [] }) {
             const apiUrl = `/selections/${selection.id}/presentation`
             const selectionTree = getters.getSelectionTree(selection)
             // Assunme success
@@ -964,7 +964,9 @@ export default {
             if (!selection.is_presenting) {
                 // START PRESENTATION
                 await axios
-                    .post(apiUrl)
+                    .post(apiUrl, {
+                        sub_selection_ids: subSelectionList,
+                    })
                     .then(() => {
                         // On successful presentation start, unlock / unhide the selection and all of its children
                         if (!selection.is_visible) {

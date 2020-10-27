@@ -10,6 +10,7 @@
         <NavbarEditFile v-if="$route.name == 'editFile' && currentFile" />
         <NavbarEditVideoPresentation v-if="$route.name == 'editVideoPresentation' && currentFile" />
         <NavbarWatchVideoPresentation v-if="$route.name == 'watchVideoPresentation' && currentFile" />
+        <NavbarLivestreamPage v-if="$route.name == 'createLivestream' && currentFile" />
         <NavbarTeams v-if="$route.name == 'teams'" />
         <NavbarUsers v-if="$route.name == 'users'" />
     </nav>
@@ -24,6 +25,7 @@ import NavbarUsers from '../../pages/UsersPage/Navbar'
 import NavbarEditFile from '../../pages/EditFilePage/Navbar'
 import NavbarEditVideoPresentation from '../../pages/EditVideoPresentationPage/Navbar'
 import NavbarWatchVideoPresentation from '../../pages/VideoPresentationPage/Navbar'
+import NavbarLivestreamPage from '../../pages/LivestreamPage/Navbar'
 
 export default {
     name: 'navbar',
@@ -35,6 +37,7 @@ export default {
         NavbarEditFile,
         NavbarEditVideoPresentation,
         NavbarWatchVideoPresentation,
+        NavbarLivestreamPage,
     },
     computed: {
         ...mapGetters('files', ['currentFile']),

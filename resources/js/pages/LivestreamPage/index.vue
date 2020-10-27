@@ -22,15 +22,15 @@ export default {
         LivestreamPage,
     },
     data: function() {
-        return {}
+        return {
+            loadingData: true,
+        }
     },
     computed: {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('files', ['currentFile', 'filesStatus']),
-        loading() {
-            return this.productsStatus != 'success' || !this.currentFile
-        },
         status() {
+            if (this.loadingData) return 'loading'
             if (this.productsStatus == 'error' || this.filesStatus == 'error') return 'error'
             if (this.productsStatus == 'loading' || this.filesStatus == 'loading' || !this.currentFile) return 'loading'
             return 'success'
@@ -39,12 +39,22 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
+        ...mapActions('selections', ['fetchSelections']),
+        ...mapActions('videoPresentation', ['fetchFileVideo']),
         ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
-        fetchData() {
+        ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
+        async fetchData() {
+            this.loadingData = true
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
             this.fetchFile(fileId)
             this.fetchProducts({ fileId })
+            this.fetchSelections({ fileId })
+
+            const fileVideo = await this.fetchFileVideo(fileId)
+            this.SET_CURRENT_VIDEO(fileVideo)
+
+            this.loadingData = false
         },
     },
     created() {

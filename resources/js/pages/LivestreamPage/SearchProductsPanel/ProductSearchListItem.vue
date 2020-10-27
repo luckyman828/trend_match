@@ -17,7 +17,7 @@
                     class="stop-current"
                     buttonClass="square primary"
                     targetAreaPadding="20px"
-                    @click="onStopCurrent"
+                    @click="onStopCurrent()"
                 >
                     <i class="far fa-check"></i>
                 </BaseButton>
@@ -57,10 +57,32 @@ export default {
                 product_id: this.product.id,
             }
             await this.addTiming({ newTiming })
+            this.presentProduct()
         },
         onStopCurrent(newEnd) {
             if (this.currentTiming) {
-                this.currentTiming.end = newEnd - 1
+                this.currentTiming.end_at_ms = newEnd ? newEnd - 1 : Math.ceil(this.videoDuration - 1)
+            }
+        },
+    },
+    methods: {
+        ...mapMutations('videoPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
+        ...mapActions('videoPresentation', ['addTiming']),
+        ...mapActions('presenterQueue', ['broadcastProduct']),
+        async onAddTiming() {
+            const newStart = Math.round(this.videoDuration)
+            this.onStopCurrent(newStart)
+            const newTiming = {
+                start_at_ms: newStart,
+                end_at_ms: Math.ceil(this.videoDuration + 5),
+                product_id: this.product.id,
+            }
+            await this.addTiming({ newTiming })
+            this.broadcastProduct(this.product)
+        },
+        onStopCurrent(newEnd) {
+            if (this.currentTiming) {
+                this.currentTiming.end_at_ms = newEnd ? newEnd - 1 : Math.ceil(this.videoDuration - 1)
             }
         },
     },
