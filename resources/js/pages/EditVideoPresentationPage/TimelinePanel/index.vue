@@ -493,6 +493,8 @@ export default {
             width: 100%;
             display: flex;
             pointer-events: none;
+            height: 100%;
+    align-items: center;
         }
         &::after {
             content: '';
