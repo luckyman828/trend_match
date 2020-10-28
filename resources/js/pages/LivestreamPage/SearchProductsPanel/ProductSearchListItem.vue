@@ -1,6 +1,11 @@
 <template>
     <div class="drag-wrapper" :key="product.id">
-        <div class="product-search-list-item drag-item" :class="{ current: isCurrent }">
+        <div
+            class="product-search-list-item drag-item"
+            :class="{ current: isCurrent }"
+            tabindex="0"
+            @keydown.enter="isCurrent ? onStopCurrent() : onAddTiming()"
+        >
             <div class="image">
                 <BaseVariantImage :key="product.id" :variant="product.variants[0]" size="sm" />
             </div>
@@ -9,7 +14,13 @@
                 <strong class="name">{{ product.title }}</strong>
             </div>
             <div class="actions">
-                <BaseButton v-if="!isCurrent" buttonClass="ghost" targetAreaPadding="20px" @click="onAddTiming">
+                <BaseButton
+                    v-if="!isCurrent"
+                    buttonClass="ghost"
+                    targetAreaPadding="20px"
+                    tabindex="-1"
+                    @click="onAddTiming"
+                >
                     <i class="fas fa-plus"></i>
                 </BaseButton>
                 <BaseButton
@@ -17,6 +28,7 @@
                     class="stop-current"
                     buttonClass="square primary"
                     targetAreaPadding="20px"
+                    tabindex="-1"
                     @click="onStopCurrent()"
                 >
                     <i class="far fa-check"></i>

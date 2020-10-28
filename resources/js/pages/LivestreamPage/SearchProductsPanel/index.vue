@@ -55,6 +55,24 @@ export default {
             products: 'getProducts',
         }),
     },
+    methods: {
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
+
+            // Focus search
+            if (key == 'KeyS') {
+                e.preventDefault()
+                this.$refs.searchField.setFocus()
+            }
+        },
+    },
+    created() {
+        document.addEventListener('keydown', this.hotkeyHandler)
+    },
+    destroyed() {
+        document.removeEventListener('keydown', this.hotkeyHandler)
+    },
 }
 </script>
 

@@ -13,7 +13,7 @@
         :clone="onClone"
     > -->
     <div class="drag-wrapper" :key="product.id">
-        <div class="product-search-list-item drag-item">
+        <div class="product-search-list-item drag-item" tabindex="0" @keydown.enter="onAddTiming">
             <div class="image">
                 <BaseVariantImage :key="product.id" :variant="product.variants[0]" size="sm" />
             </div>
@@ -23,7 +23,7 @@
             </div>
             <div class="actions">
                 <!-- If the product is not already in the queue -->
-                <BaseButton buttonClass="ghost" targetAreaPadding="20px" @click="onAddTiming">
+                <BaseButton buttonClass="ghost" targetAreaPadding="20px" @click="onAddTiming" tabindex="-1">
                     <i class="fas fa-plus"></i>
                 </BaseButton>
             </div>
@@ -41,7 +41,7 @@ export default {
     components: {
         Draggable,
     },
-    props: ['product'],
+    props: ['product', 'focusIndex'],
     computed: {
         ...mapGetters('videoPlayer', {
             videoDuration: 'getDuration',
