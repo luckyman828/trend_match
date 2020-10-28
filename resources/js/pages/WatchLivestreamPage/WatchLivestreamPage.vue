@@ -23,10 +23,12 @@
                             $refs.cartSidebar.cartView = 'ins'
                         "
                     />
-                    <ProductDetailsSidebar v-if="playerStarted" />
-                    <CartSidebar v-if="playerStarted" ref="cartSidebar" />
-                    <PauseOverlay />
-                    <PlayerControls />
+                    <template v-if="playerStarted">
+                        <ProductDetailsSidebar />
+                        <CartSidebar ref="cartSidebar" />
+                        <PauseOverlay />
+                        <PlayerControls />
+                    </template>
                 </div>
             </VideoPlayer>
         </div>

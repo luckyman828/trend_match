@@ -218,13 +218,32 @@ export default {
             document.removeEventListener('MSFullscreenChange', this.fullscreenChangeHandler, false)
             document.removeEventListener('webkitfullscreenchange', this.fullscreenChangeHandler, false)
         },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
+
+            // IN/OUT/FOCUS/NONE
+            if (this.userWriteAccess.actions.hasAccess) {
+                if (key == 'KeyF' || key == 'KeyU') {
+                    this.onUpdateAction('Focus')
+                }
+                if (key == 'KeyI') {
+                    this.onUpdateAction('In')
+                }
+                if (key == 'KeyO') {
+                    this.onUpdateAction('Out')
+                }
+            }
+        },
     },
     created() {
         this.addFullscreenListeners()
+        document.addEventListener('keydown', this.hotkeyHandler)
     },
     destroyed() {
         this.removeFullscreenListeners()
         if (this.fullscreenModeActive) this.onExitFullscreen()
+        document.removeEventListener('keydown', this.hotkeyHandler)
     },
 }
 </script>

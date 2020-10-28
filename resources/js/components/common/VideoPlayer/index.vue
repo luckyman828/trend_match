@@ -175,6 +175,7 @@ export default {
 
             // PLAY/PAUSE
             if (key == 'Space' && this.videoType != 'live') {
+                e.preventDefault()
                 this.togglePlaying()
             }
             // MUTE / UNMUTE
