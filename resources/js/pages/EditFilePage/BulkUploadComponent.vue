@@ -113,7 +113,7 @@ export default {
                     // Find the variant name
                     const underscoreIndex = image.name.indexOf('_')
                     const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
-                    const variantName = variantNameMatches.length > 1 ? variantNameMatches[1] : null
+                    const variantName = variantNameMatches.length > 1 ? variantNameMatches[1].trim() : 'null'
 
                     // Check if we should place the image first
                     const shouldBeFirst = image.name.toLowerCase().search('front') >= 0
@@ -147,7 +147,10 @@ export default {
 
                     // Find the variant on our product
                     // Check if there is a variant that contains the image variant name
-                    const existingVariant = product.variants.find(x => x.name == variantName)
+                    const existingVariant = product.variants.find(x => {
+                        return x.name.trim().toLowerCase() == variantName.trim().toLowerCase()
+                    })
+                    // console.log('variant to update', variantName, existingVariant, product)
 
                     if (existingVariant) {
                         variantToUpdate = existingVariant
