@@ -37,7 +37,7 @@
             <TheNavbar />
             <TheSidebar />
         </template>
-        <div class="main" id="main" ref="main">
+        <div class="main" id="main" ref="main" :class="{ 'hide-crisp': hideCrisp }">
             <template v-if="!isAuthenticated">
                 <img src="/images/graphs.svg" class="bg-left" />
                 <img src="/images/graphs.svg" class="bg-right" />
@@ -110,6 +110,11 @@ export default {
         },
         fullScreenContent() {
             return ['watchVideoPresentation', 'watchLivestream'].includes(this.$route.name)
+        },
+        hideCrisp() {
+            return ['watchLivestream', 'createLivestream', 'watchVideoPresentation', 'editVideoPresentation'].includes(
+                this.$route.name
+            )
         },
     },
     watch: {
@@ -408,6 +413,9 @@ body,
     background: $bg;
     position: relative;
     max-height: calc(100vh - #{$navbarHeight});
+    &.hide-crisp {
+        z-index: 2;
+    }
 }
 h1 {
     margin-bottom: 30px;
