@@ -76,7 +76,7 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('videoPlayer', ['togglePlayerMuted', 'getCurrentTimestamp']),
+        ...mapActions('videoPlayer', ['togglePlayerMuted', 'getCurrentTimestamp', 'togglePlaying']),
         ...mapMutations('videoPlayer', [
             'SET_PLAYER_REFERENCE',
             'SET_CURRENT_PLAYER_TIMESTAMP',
@@ -102,6 +102,8 @@ export default {
             // Save a timestamp
             this.lastTimestamp = Date.now()
             this.getVideoDuration()
+
+            this.addEventListeners()
         },
         onPlayingStatus(e) {
             if (this.provider == 'vimeo') {
@@ -167,11 +169,31 @@ export default {
             const duration = await this.player.getDuration()
             this.SET_PLAYER_DURATION(duration)
         },
+        hotkeyHandler(e) {
+            const key = e.code
+            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
+
+            // PLAY/PAUSE
+            if (key == 'Space' && this.videoType != 'live') {
+                this.togglePlaying()
+            }
+            // MUTE / UNMUTE
+            if (key == 'KeyM') {
+                this.togglePlayerMuted()
+            }
+        },
+        addEventListeners() {
+            document.addEventListener('keydown', this.hotkeyHandler)
+        },
+        removeEventListeners() {
+            document.removeEventListener('keydown', this.hotkeyHandler)
+        },
     },
     destroyed() {
         this.clearTimerListener()
         this.SET_CURRENT_PLAYER_TIMESTAMP(0)
         this.SET_PLAYER_STATUS(null)
+        this.removeEventListeners()
     },
 }
 </script>
