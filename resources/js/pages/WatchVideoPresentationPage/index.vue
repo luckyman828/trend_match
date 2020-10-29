@@ -30,6 +30,9 @@ export default {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('selections', ['currentSelectionStatus']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('presentation', {
+            presentationIsActive: 'getPresentationIsActive',
+        }),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('files', ['filesStatus']),
         status() {
@@ -50,7 +53,9 @@ export default {
         ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
         ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
+        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
@@ -73,6 +78,12 @@ export default {
 
             const fileVideo = await this.fetchFileVideo(fileId)
             this.SET_CURRENT_VIDEO(fileVideo)
+
+            if (this.presentationIsActive) {
+                this.SET_VIDEO_TYPE('live')
+                // Fetch the currently presented product
+                await this.fetchPresentationDetails(selection.presentation_id)
+            }
 
             this.loadingData = false
         },

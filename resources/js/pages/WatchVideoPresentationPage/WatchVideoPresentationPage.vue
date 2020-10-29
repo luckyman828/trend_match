@@ -73,18 +73,32 @@ export default {
             playerStatus: 'getStatus',
             videoType: 'getVideoType',
             videoDuration: 'getDuration',
-        }),
-        ...mapGetters('presentation', {
-            presentationIsActive: 'getPresentationIsActive',
+            isLive: 'getIsLive',
         }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
         }),
+        ...mapGetters('presentation', {
+            presentedProductId: 'getCurrentProductId',
+        }),
+    },
+    watch: {
+        playerStatus(newVal) {
+            if (newVal == 'playing' && this.isLive && this.videoTimings.length > 0) {
+                // Wait a little, so we have fetched the correct duration in case of a livestream
+                setTimeout(() => {
+                    // Check if a product is currently being presented. If so, make sure we make it our current
+                    const lastTiming = this.videoTimings[this.videoTimings.length - 1]
+                    if (lastTiming.product_id == this.presentedProductId) {
+                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 5000)
+                    }
+                }, 200)
+            }
+        },
     },
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
-        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         ...mapMutations('videoPresentation', ['ADD_TIMING']),
         onEnterFullscreen() {
             const elem = document.documentElement
@@ -157,9 +171,8 @@ export default {
         },
     },
     created() {
-        // Check if we are in a presentation. If yes, set the video type to live.
-        if (this.presentationIsActive) {
-            this.SET_VIDEO_TYPE('live')
+        // Check if we are in a presentation
+        if (this.isLive) {
             this.connectToLiveUpdates()
         }
     },
