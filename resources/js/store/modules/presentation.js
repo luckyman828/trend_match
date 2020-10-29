@@ -7,8 +7,13 @@ export default {
     },
 
     getters: {
-        getCurrentPresentationId: state => state.presentationId,
-        getPresentationIsActive: state => !!state.presentationId,
+        getCurrentPresentationId: (state, getters, rootState, rootGetters) => {
+            // Check if we currently have any active selection
+            const selection = rootGetters['selections/getCurrentSelection']
+            if (!selection) return
+            return selection.presentation_id
+        },
+        getPresentationIsActive: (state, getters) => !!getters.getCurrentPresentationId,
         getCurrentProduct: state => !!state.currentProduct,
     },
 
@@ -28,9 +33,9 @@ export default {
                 return
             }
 
-            const apiUrl = `/presentation/${presentationId}?product_id=${product.id}`
+            const apiUrl = `/presentation/${presentationId}/present?product_id=${product.id}`
 
-            await axios.put(apiUrl).then(response => {
+            await axios.post(apiUrl).then(response => {
                 commit('SET_CURRENT_PRODUCT', product.id)
             })
         },

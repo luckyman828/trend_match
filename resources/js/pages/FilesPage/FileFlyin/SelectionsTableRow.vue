@@ -328,7 +328,7 @@ export default {
             if (!this.moveSelectionActive) {
                 if (this.selection.is_presenting) {
                     this.$router.push({
-                        name: 'watchLivestream',
+                        name: 'watchVideoPresentation',
                         params: { fileId: this.selection.file_id, selectionId: this.selection.id },
                     })
                     return

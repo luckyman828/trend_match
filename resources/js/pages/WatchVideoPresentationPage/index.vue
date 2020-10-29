@@ -6,20 +6,20 @@
         :fitPage="true"
         :errorCallback="() => fetchData()"
     >
-        <VideoPresentationPage />
+        <WatchVideoPresentationPage />
     </PageLoader>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import VideoPresentationPage from './VideoPresentationPage'
+import WatchVideoPresentationPage from './WatchVideoPresentationPage'
 import PageLoader from '../../components/common/PageLoader'
 
 export default {
-    name: 'watchVideoPresentationLoader',
+    name: 'watchVideoPresentationPageLoader',
     components: {
         PageLoader,
-        VideoPresentationPage,
+        WatchVideoPresentationPage,
     },
     data: function() {
         return {
@@ -51,7 +51,6 @@ export default {
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
         ...mapActions('videoPresentation', ['fetchFileVideo']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
-        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
@@ -80,7 +79,6 @@ export default {
     },
     created() {
         this.fetchData()
-        this.SET_VIDEO_TYPE('static')
     },
 }
 </script>

@@ -1,6 +1,14 @@
 <template>
     <div class="edit-video-presentation">
-        <SearchProductsPanel />
+        <SearchItemsPanel
+            class="search-products-panel"
+            :items="products"
+            :searchKey="['datasource_id', 'title', 'eans']"
+            :item-size="144"
+            v-slot="slotProps"
+        >
+            <ProductSearchListItem :product="slotProps.item" />
+        </SearchItemsPanel>
         <VideoPlayer :providerVideoId="providerVideoId" :provider="provider" :autoplay="true">
             <VideoPreview />
         </VideoPlayer>
@@ -11,18 +19,20 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import SearchProductsPanel from './SearchProductsPanel/'
+import SearchItemsPanel from '../../components/common/SearchItemsPanel/'
 import VideoPreview from './VideoPreview/'
 import VideoPlayer from '../../components/common/VideoPlayer/'
 import TimelinePanel from './TimelinePanel/'
+import ProductSearchListItem from './ProductSearchListItem'
 
 export default {
     name: 'editVideoPresentationPage',
     components: {
-        SearchProductsPanel,
+        SearchItemsPanel,
         VideoPreview,
         TimelinePanel,
         VideoPlayer,
+        ProductSearchListItem,
     },
     data: function() {
         return {
@@ -37,6 +47,9 @@ export default {
         ...mapGetters('videoPlayer', {
             provider: 'getProvider',
             providerVideoId: 'getProviderVideoId',
+        }),
+        ...mapGetters('products', {
+            products: 'getProducts',
         }),
     },
     methods: {
@@ -80,5 +93,9 @@ export default {
     grid-template-areas:
         'sidebar main'
         'sidebar timeline';
+    .search-products-panel {
+        height: calc(100vh - #{$navbarHeight});
+        grid-area: sidebar;
+    }
 }
 </style>

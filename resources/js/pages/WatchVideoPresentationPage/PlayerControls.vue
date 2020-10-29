@@ -4,11 +4,15 @@
             <div class="left">
                 <div class="button-list flex-list">
                     <!-- PLAY / PAUSE -->
-                    <!-- <button class="invisible white circle ghost-hover" @click="togglePlaying">
+                    <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
                         <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
-                    </button> -->
-                    <span class="circle invisible ghost-hover">
-                        <i class="fas fa-circle" :class="isLive ? 'red' : ''"></i>
+                    </button>
+                    <span
+                        v-else
+                        class="circle invisible ghost-hover"
+                        v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
+                    >
+                        <i class="fas fa-circle red"></i>
                     </span>
 
                     <!-- MUTE / UNMUTE -->
@@ -26,8 +30,6 @@
                     >
                         <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
                     </button>
-
-                    <button class="white circle invisible ghost-hover"></button>
                 </div>
 
                 <div class="time" style="margin-left: 40px;">
@@ -105,7 +107,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import VolumeControl from './VolumeControl'
+import VolumeControl from '../../components/common/VideoPlayer/VolumeControl'
 
 export default {
     name: 'playerControls',
@@ -125,7 +127,7 @@ export default {
             currentTimingIndex: 'getCurrentTimingIndex',
             product: 'getCurrentProduct',
             desiredStatus: 'getDesiredStatus',
-            isLive: 'getIsPlaying',
+            isLive: 'getIsLive',
         }),
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',

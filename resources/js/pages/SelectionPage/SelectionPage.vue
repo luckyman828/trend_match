@@ -477,14 +477,14 @@ export default {
         this.connectToLiveUpdates()
     },
     async mounted() {
-        // Route the user away if the current selection is live and your role is not Owner
-        if (this.selection.is_presenting && this.selection.your_role != 'Owner') {
-            await this.$refs.presentationModeDialog.show()
-            this.$router.push({ name: 'files' })
-        } else if (this.selection.is_presenting && this.selection.presentation_inherit_from != 0) {
-            await this.$refs.parentPresentationStartedDialog.show()
-            this.$router.push({ name: 'files' })
-        }
+        // // Route the user away if the current selection is live and your role is not Owner
+        // if (this.selection.is_presenting && this.selection.your_role != 'Owner') {
+        //     await this.$refs.presentationModeDialog.show()
+        //     this.$router.push({ name: 'files' })
+        // } else if (this.selection.is_presenting && this.selection.your_role != 0) {
+        //     await this.$refs.parentPresentationStartedDialog.show()
+        //     this.$router.push({ name: 'files' })
+        // }
     },
     destroyed() {
         this.disconnectSignalR()

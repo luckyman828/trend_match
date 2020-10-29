@@ -1,20 +1,22 @@
 <template>
-    <div class="video-presentation-page">
+    <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }]">
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
-                <div class="play-overlay" v-if="!playerStarted" @click="onStartPlaying">
-                    <h3>Welcome to the live presentation</h3>
-                    <button class="xl white">
+                <div class="play-overlay" v-if="!playerStarted">
+                    <h3>Welcome to the video presentation</h3>
+                    <button class="xl white" @click="onStartPlaying">
                         <i class="far fa-play"></i>
-                        <span>Join livestream</span>
+                        <span>Play in full-screen</span>
                     </button>
                 </div>
                 <div class="watch-overlay">
-                    <div class="actions" v-if="!isPlaying">
-                        <router-link class="button pill ghost white" :to="{ name: 'selection' }">
-                            <i class="far fa-arrow-left"></i>
-                            <span>View results / Back to selection</span>
-                        </router-link>
+                    <div class="actions-wrapper" :class="{ show: !isPlaying }">
+                        <div class="actions">
+                            <router-link class="button pill ghost white" :to="{ name: 'selection' }">
+                                <i class="far fa-arrow-left"></i>
+                                <span>View results / Back to selection</span>
+                            </router-link>
+                        </div>
                     </div>
                     <EndedOverlay
                         v-if="playerStatus == 'ended'"
@@ -57,6 +59,7 @@ export default {
     data: function() {
         return {
             playerStarted: false,
+            isConnectedToLiveUpdates: false,
         }
     },
     computed: {
@@ -68,16 +71,20 @@ export default {
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
             playerStatus: 'getStatus',
+            videoType: 'getVideoType',
             videoDuration: 'getDuration',
-            currentTiming: 'getCurrentTiming',
+        }),
+        ...mapGetters('presentation', {
+            presentationIsActive: 'getPresentationIsActive',
         }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
         }),
     },
     methods: {
-        ...mapActions('videoPlayer', ['togglePlaying']),
         ...mapActions('videoPresentation', ['initTimings']),
+        ...mapActions('videoPlayer', ['togglePlaying']),
+        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         ...mapMutations('videoPresentation', ['ADD_TIMING']),
         onEnterFullscreen() {
             const elem = document.documentElement
@@ -98,14 +105,12 @@ export default {
             this.togglePlaying()
             this.onEnterFullscreen()
             this.playerStarted = true
-
-            // Keep the current timing, current
-            const interval = 100
-            setInterval(() => {
-                const newTimestamp = this.videoDuration + interval / 1000
-                const currentTiming = this.currentTiming
-                if (currentTiming) {
-                    currentTiming.end = Math.ceil(newTimestamp + 5)
+            const interval = 1000
+            const playerStartedTester = setInterval(() => {
+                if (!this.isPlaying) {
+                    this.togglePlaying()
+                } else {
+                    clearInterval(playerStartedTester)
                 }
             }, interval)
         },
@@ -128,7 +133,6 @@ export default {
             this.ADD_TIMING({ timing: newTiming, index: null })
         },
         presentationChangeHandler(eventName, args) {
-            console.log('selection presentation change', eventName, args)
             if (eventName == 'ProductChanged') {
                 const productId = args.detail[0].product_id
                 this.onNewProduct(productId)
@@ -140,19 +144,29 @@ export default {
             // Subscribe to our selections
             connection.invoke('Subscribe', this.selection.id)
             connection.on('OnSelectionPresentationChanged', this.presentationChangeHandler)
+
+            this.isConnectedToLiveUpdates = true
         },
-        disconnectSignalR() {
+        disconnectLiveUpdates() {
             const connection = this.$connection
 
             this.$connection.invoke('UnSubscribeAll')
             connection.off('OnSelectionPresentationChanged', this.presentationChangeHandler)
+
+            this.isConnectedToLiveUpdates = false
         },
     },
     created() {
-        this.connectToLiveUpdates()
+        // Check if we are in a presentation. If yes, set the video type to live.
+        if (this.presentationIsActive) {
+            this.SET_VIDEO_TYPE('live')
+            this.connectToLiveUpdates()
+        }
     },
     destroyed() {
-        this.disconnectSignalR()
+        if (this.isConnectedToLiveUpdates) {
+            this.disconnectLiveUpdates()
+        }
     },
 }
 </script>
@@ -167,6 +181,13 @@ export default {
         display: flex;
         flex-direction: column;
     }
+    &:not(.started) {
+        ::v-deep {
+            .timeline {
+                display: none;
+            }
+        }
+    }
     ::v-deep {
         .timeline {
             bottom: $heightPlayerControls;
@@ -179,16 +200,31 @@ export default {
     top: 0;
     height: 100%;
     width: 100%;
-    z-index: 1;
+    z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    .actions {
-        pointer-events: all;
+    .actions-wrapper {
+        pointer-events: auto;
         position: absolute;
-        top: 16px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2;
+        top: 0;
+        left: 0;
+        width: 100%;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        z-index: 1;
+        .actions {
+            pointer-events: all;
+            transition: transform 0.1s ease-out;
+            transform: translateY(-100%);
+            padding: 32px 0 16px;
+        }
+        &:hover,
+        &.show {
+            .actions {
+                transform: none;
+            }
+        }
     }
 }
 .play-overlay {

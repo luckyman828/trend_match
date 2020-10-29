@@ -72,7 +72,8 @@ export default {
             isPlaying: 'getIsPlaying',
             duration: 'getDuration',
             isDragging: 'getTimelineKnobIsBeingDragged',
-            videoType: 'getVideoType',
+            isLive: 'getIsLive',
+            currentTiming: 'getCurrentTiming',
         }),
     },
     methods: {
@@ -140,7 +141,7 @@ export default {
             const diff = newTime - this.lastTimestamp
             const timestamp = this.currentTimestamp + diff / 1000
             // Update duration if we are live
-            if (this.videoType == 'live') {
+            if (this.isLive) {
                 const newDuration = this.duration + diff / 1000
                 this.SET_PLAYER_DURATION(newDuration)
             }
@@ -148,6 +149,12 @@ export default {
                 // Get the duration since last we read a timestamp
 
                 this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
+
+                // Check if we have a current timing. If so extend its end time
+                const currentTiming = this.currentTiming
+                if (currentTiming) {
+                    currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
+                }
             }
             this.lastTimestamp = Date.now()
         },
@@ -161,8 +168,13 @@ export default {
                 this.lastTimestamp = Date.now()
 
                 // Update duration if we are live
-                if (this.videoType == 'live') {
+                if (this.isLive) {
                     this.SET_PLAYER_DURATION(timestamp)
+                    // Check if we have a current timing. If so extend its end time
+                    const currentTiming = this.currentTiming
+                    if (currentTiming) {
+                        currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
+                    }
                 }
             }
         },
@@ -175,7 +187,7 @@ export default {
             if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
 
             // PLAY/PAUSE
-            if (key == 'Space' && this.videoType != 'live') {
+            if (key == 'Space' && !this.isLive) {
                 e.preventDefault()
                 this.togglePlaying()
             }

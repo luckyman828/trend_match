@@ -24,7 +24,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import VolumeControl from './../../VideoPresentationPage/VolumeControl'
+import VolumeControl from '../../../components/common/VideoPlayer/VolumeControl'
 
 export default {
     name: 'timelineControls',

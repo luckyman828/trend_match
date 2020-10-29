@@ -51,6 +51,7 @@ export default {
             return currentVideo.identifier
         },
         getVideoType: state => state.videoType,
+        getIsLive: state => state.videoType == 'live',
         getProviderMap: (state, getters) => state.providerMap[getters.getProvider],
         getPlayer: state => state.player,
         getIsPlaying: state => state.status == 'playing',

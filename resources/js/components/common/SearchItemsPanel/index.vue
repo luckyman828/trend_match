@@ -1,59 +1,48 @@
 <template>
-    <div class="search-products-panel">
-        <div class="header">
-            <div class="search-field">
-                <BaseSearchField
-                    ref="searchField"
-                    :searchKey="['datasource_id', 'title']"
-                    placeholderText="Search Product name, ID"
-                    :inputClasses="''"
-                    :arrayToSearch="products"
-                    v-model="productsFilteredBySearch"
-                />
-            </div>
-        </div>
-        <div class="body">
+    <div class="search-items-panel">
+        <template v-if="items">
             <div class="header">
-                <strong>Results {{ productsFilteredBySearch.length }}</strong>
+                <div class="search-field">
+                    <BaseSearchField
+                        ref="searchField"
+                        :searchKey="searchKey"
+                        :placeholderText="searchPlaceholder ? searchPlaceholder : 'Search..'"
+                        :inputClasses="''"
+                        :arrayToSearch="items"
+                        v-model="itemsFilteredBySearch"
+                    />
+                </div>
             </div>
+            <div class="body">
+                <div class="header">
+                    <strong>Results {{ itemsFilteredBySearch.length }}</strong>
+                </div>
 
-            <RecycleScroller
-                class="result-list"
-                :items="productsFilteredBySearch"
-                :item-size="144"
-                key-field="id"
-                v-slot="{ item }"
-            >
-                <ProductSearchListItem class="product-result" :product="item" />
-            </RecycleScroller>
-
-            <!-- <div class="footer">
-                <button class="primary full-width md" @click="show = false">
-                    <span>Done</span>
-                </button>
-            </div> -->
-        </div>
+                <RecycleScroller
+                    class="result-list"
+                    :items="itemsFilteredBySearch"
+                    :item-size="itemSize ? itemSize : 100"
+                    key-field="id"
+                    v-slot="{ item }"
+                >
+                    <slot :item="item" />
+                </RecycleScroller>
+            </div>
+        </template>
+        <BaseLoader v-else />
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import ProductSearchListItem from './ProductSearchListItem'
 
 export default {
-    name: 'searchProductsPanel',
-    components: {
-        ProductSearchListItem,
-    },
+    name: 'searchItemsPanel',
+    props: ['items', 'itemSize', 'searchPlaceholder', 'searchKey'],
     data: function() {
         return {
-            productsFilteredBySearch: [],
+            itemsFilteredBySearch: [],
         }
-    },
-    computed: {
-        ...mapGetters('products', {
-            products: 'getProducts',
-        }),
     },
     methods: {
         hotkeyHandler(e) {
@@ -79,17 +68,12 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-.search-products-panel {
+.search-items-panel {
     width: 300px;
     background: white;
-    // position: absolute;
-    // left: 0;
-    // top: 0;
-
-    grid-area: sidebar;
     border-right: $borderModule;
     box-shadow: $shadowModule;
-    height: calc(100vh - #{$navbarHeight});
+    height: 100%;
     display: flex;
     flex-direction: column;
     .header {

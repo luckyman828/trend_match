@@ -61,20 +61,26 @@ const routes = [
         component: () =>
             import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
     },
-    {
-        path: '/file/:fileId/selection/:selectionId/video/watch',
-        name: 'watchVideoPresentation',
-        component: () => import(/* webpackChunkName: "WatchVideoPresentationPage" */ './pages/VideoPresentationPage'),
-    },
+    // {
+    //     path: '/file/:fileId/selection/:selectionId/video/watch',
+    //     name: 'watchVideoPresentation',
+    //     component: () => import(/* webpackChunkName: "WatchVideoPresentationPage" */ './pages/VideoPresentationPage'),
+    // },
     {
         path: '/file/:fileId/livestream/create',
         name: 'createLivestream',
         component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/LivestreamPage'),
     },
+    // {
+    //     path: '/file/:fileId/selection/:selectionId/livestream/watch',
+    //     name: 'watchLivestream',
+    //     component: () => import(/* webpackChunkName: "watchLivestreamPage" */ './pages/WatchLivestreamPage'),
+    // },
     {
-        path: '/file/:fileId/selection/:selectionId/livestream/watch',
-        name: 'watchLivestream',
-        component: () => import(/* webpackChunkName: "watchLivestreamPage" */ './pages/WatchLivestreamPage'),
+        path: '/file/:fileId/selection/:selectionId/video/watch',
+        name: 'watchVideoPresentation',
+        component: () =>
+            import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/WatchVideoPresentationPage'),
     },
     {
         path: '/join/:linkHash',

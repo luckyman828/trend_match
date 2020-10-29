@@ -100,12 +100,14 @@ export default {
     },
     methods: {
         ...mapActions('selections', ['startPresentation']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapActions('videoPresentation', ['setVideoByURL', 'updateCurrentVideo']),
         ...mapMutations('videoPresentation', ['SET_VIDEO_TIMINGS']),
         async onSetVideoByURL() {
             if (await this.$refs.confirmGoLiveDialog.confirm()) {
                 // Start a presentation with all the selections of the file
                 await this.startPresentation({ selections: this.selections })
+                this.SET_CURRENT_SELECTIONS([this.selections[0]])
 
                 this.SET_VIDEO_TIMINGS([])
                 this.setVideoByURL({ file: this.file, url: this.videoUrl })
