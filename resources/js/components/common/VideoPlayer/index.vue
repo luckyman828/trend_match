@@ -85,6 +85,7 @@ export default {
             'SET_IFRAME_REFERENCE',
             'SET_DESIRED_STATUS',
         ]),
+        ...mapMutations('videoPresentation', ['SET_TIMELINE_ZOOM']),
         onPlayerReady(e, a) {
             this.playerReady = true
             const player = this.$refs.player.player
@@ -195,6 +196,7 @@ export default {
         this.SET_CURRENT_PLAYER_TIMESTAMP(0)
         this.SET_PLAYER_STATUS(null)
         this.removeEventListeners()
+        this.SET_TIMELINE_ZOOM(1)
     },
 }
 </script>

@@ -1,35 +1,50 @@
 <template>
-    <BaseFlyin ref="fileSingleFlyin" :show="show" :disableKeyHandler="SelectionUsersFlyinVisible"
-    @close="$emit('close')">
+    <BaseFlyin
+        ref="fileSingleFlyin"
+        :show="show"
+        :disableKeyHandler="SelectionUsersFlyinVisible"
+        @close="$emit('close')"
+    >
         <template v-slot:header v-if="file && show">
-            <BaseFlyinHeader :next="nextFile" :prev="prevFile"
-            :disableNavigation="SelectionUsersFlyinVisible"
-            @close="$emit('close')" @next="showNext" @prev="showPrev">
+            <BaseFlyinHeader
+                :next="nextFile"
+                :prev="prevFile"
+                :disableNavigation="SelectionUsersFlyinVisible"
+                @close="$emit('close')"
+                @next="showNext"
+                @prev="showPrev"
+            >
                 <template v-slot:left>
-                    <h3>File Overview: {{file.name}}</h3>
+                    <h3>File Overview: {{ file.name }}</h3>
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
-
-                        <BaseButton buttonClass="ghost" 
-                        :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
-                        disabledTooltip="Only admins and editors can manage video presentations"
-                        @click="$router.push({name: 'editVideoPresentation', params: {fileId: file.id}})">
+                        <BaseButton
+                            buttonClass="ghost"
+                            :disabled="authUserWorkspaceRole != 'Admin'"
+                            disabledTooltip="Only admins can manage video presentations"
+                            @click="$router.push({ name: 'editVideoPresentation', params: { fileId: file.id } })"
+                        >
                             <i class="far fa-video"></i>
                             <span>Add/Edit Video Presentation</span>
                         </BaseButton>
 
-                        <BaseButton buttonClass="ghost" 
-                        :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can manage file editors"
-                        @click="showEditorsFlyin">
+                        <BaseButton
+                            buttonClass="ghost"
+                            :disabled="authUserWorkspaceRole != 'Admin'"
+                            disabledTooltip="Only admins can manage file editors"
+                            @click="showEditorsFlyin"
+                        >
                             <i class="far fa-user-cog"></i>
                             <span>Manage editors</span>
                         </BaseButton>
 
-                        <BaseButton buttonClass="ghost" :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
-                        disabledTooltip="Only admins and editors can edit files"
-                        @click="goToEditSingle">
+                        <BaseButton
+                            buttonClass="ghost"
+                            :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
+                            disabledTooltip="Only admins and editors can edit files"
+                            @click="goToEditSingle"
+                        >
                             <span>Edit products</span>
                         </BaseButton>
                     </div>
@@ -38,16 +53,21 @@
         </template>
         <template v-if="file && show" v-slot>
             <div class="file-single">
-                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin"/>
+                <SelectionsTable @showSelectionUsersFlyin="showSelectionUsersFlyin" />
 
-                <SelectionUsersFlyin :selection="currentSelection" :show="SelectionUsersFlyinVisible"
-                @close="SelectionUsersFlyinVisible = false"/>
+                <SelectionUsersFlyin
+                    :selection="currentSelection"
+                    :show="SelectionUsersFlyinVisible"
+                    @close="SelectionUsersFlyinVisible = false"
+                />
             </div>
 
-            <FileEditorsFlyin v-if="show"
-            :show="showFileEditorsFlyin" @close="showFileEditorsFlyin = false"
-            :file="file"/>
-
+            <FileEditorsFlyin
+                v-if="show"
+                :show="showFileEditorsFlyin"
+                @close="showFileEditorsFlyin = false"
+                :file="file"
+            />
         </template>
     </BaseFlyin>
 </template>
@@ -60,18 +80,17 @@ import SelectionUsersFlyin from '../../../components/SelectionUsersFlyin'
 
 export default {
     name: 'fileFlyin',
-    props: [
-        'file',
-        'show'
-    ],
+    props: ['file', 'show'],
     components: {
         SelectionsTable,
         SelectionUsersFlyin,
         FileEditorsFlyin,
     },
-    data: function() { return {
-        showFileEditorsFlyin: false,
-    }},
+    data: function() {
+        return {
+            showFileEditorsFlyin: false,
+        }
+    },
     // watch: {
     //     currentFile(newVal) {
     //         console.log('new file', newVal)
@@ -79,7 +98,12 @@ export default {
     // },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
-        ...mapGetters('selections', ['selectionsStatus', 'currentSelection', 'getSelectionUsersFlyinIsVisible', 'getSelections']),
+        ...mapGetters('selections', [
+            'selectionsStatus',
+            'currentSelection',
+            'getSelectionUsersFlyinIsVisible',
+            'getSelections',
+        ]),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         SelectionUsersFlyinVisible: {
             get() {
@@ -87,8 +111,8 @@ export default {
             },
             set(value) {
                 this.SET_SELECTION_USERS_FLYIN_VISIBLE(value)
-            }
-        }
+            },
+        },
     },
     methods: {
         ...mapActions('selections', ['updateSelection']),
@@ -102,12 +126,10 @@ export default {
             this.showFileEditorsFlyin = true
         },
         showNext() {
-            if (this.nextFile)
-                this.SET_CURRENT_FILE(this.nextFile)
+            if (this.nextFile) this.SET_CURRENT_FILE(this.nextFile)
         },
         showPrev() {
-            if (this.prevFile)
-                this.SET_CURRENT_FILE(this.prevFile)
+            if (this.prevFile) this.SET_CURRENT_FILE(this.prevFile)
         },
         goToEditSingle() {
             this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
@@ -119,11 +141,11 @@ export default {
                 let hasChange = false
                 if (makeLocked == null) makeLocked = selection.is_open
                 // Check if the selection is locked
-                if (makeLocked && !selection.is_open) return 
-                if (!makeLocked && selection.is_open) return 
+                if (makeLocked && !selection.is_open) return
+                if (!makeLocked && selection.is_open) return
 
                 if (makeLocked) {
-                    selection.open_from = new Date("9999")
+                    selection.open_from = new Date('9999')
                     selection.open_to = null
                     hasChange = true
                 } else {
@@ -147,7 +169,7 @@ export default {
                 // Check if the selection is visible
                 if (makeHidden) {
                     // Set To to now
-                    selection.visible_from = new Date("9999")
+                    selection.visible_from = new Date('9999')
                     selection.visible_to = null
                     hasChange = true
                 } else {
@@ -164,5 +186,4 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-
 </style>
