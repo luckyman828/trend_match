@@ -66,7 +66,7 @@ export default {
                 // data: request,
                 data: {
                     content: request.content,
-                    is_important: false,
+                    type: request.type,
                 },
             })
                 .then(response => {
