@@ -1,14 +1,23 @@
 <template>
     <div class="presenter-mode-button-wrapper">
-        <BaseToggle
-            v-if="selection"
-            :disabled="selection.your_job != 'Alignment'"
-            disabledTooltip="Only Selection Owners can activate Presentation Mode"
-            :label="showLabel ? 'Presentation' : ''"
-            sizeClass="xs"
-            :isActive="selection && selection.is_presenting"
-            @toggle="onTogglePresenterMode(selection)"
-        />
+        <!-- <v-popover :disabled="selection.your_job != 'Alignment' || !selection.is_presenting"> -->
+        <v-popover :disabled="true">
+            <BaseToggle
+                v-if="selection"
+                :disabled="selection.your_job != 'Alignment'"
+                disabledTooltip="Only Selection Owners can activate Presentation Mode"
+                :label="showLabel ? 'Presentation' : ''"
+                sizeClass="xs"
+                :isActive="selection && selection.is_presenting"
+                @toggle="onTogglePresenterMode(selection)"
+            />
+            <!-- <div class="selection-list" slot="popover">
+                <div class="selection-list-item" v-for="selection in currentPresentation.selections">
+                    <i class="far fa-poll"></i>
+                    <span>{{selection.name}}</span>
+                </div>
+            </div> -->
+        </v-popover>
 
         <!-- Confirm dialog -->
         <BaseDialog

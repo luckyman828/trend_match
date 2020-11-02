@@ -55,7 +55,8 @@ export default {
             'fetchSelectionSettings',
         ]),
         ...mapActions('teams', ['fetchTeamUsers']),
-        ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
+        ...mapActions('presentation', ['fetchPresentationDetails']),
+        ...mapMutations('presentationQueue', ['SET_PRESENTER_QUEUE']),
         async fetchSelectionTeamsUsers(teams) {
             // Use of promise and map to fetch users for all teams in parallel
             await Promise.all(
@@ -82,7 +83,7 @@ export default {
                 this.fetchSelections({ fileId }),
             ]
 
-            if (selection.presentation_id) {
+            if (selection.is_presenting) {
                 promisesToResolve.push(this.fetchPresentationDetails(selection.presentation_id))
             }
 

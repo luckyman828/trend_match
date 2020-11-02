@@ -17,6 +17,8 @@ export default {
             return selection.presentation_id
         },
         getPresentationIsActive: (state, getters) => !!getters.getCurrentPresentationId,
+        getCurrentPresentationDetails: (state, getters) =>
+            state.presentations.find(x => x.id == getters.getCurrentPresentationId),
         getCurrentProductId: state => state.activePresentationDetails.product.id,
         getCurrentProduct: (state, getters, rootState, rootGetters) => {
             const products = rootGetters['products/getProducts']
@@ -27,6 +29,15 @@ export default {
     },
 
     actions: {
+        async fetchFilePresentations({ commit }, fileId) {
+            const apiUrl = `files/${fileId}/presentations`
+            let presentations = []
+            await axios.get(apiUrl).then(response => {
+                presentations = response.data
+                commit('SET_PRESENTATIONS', presentations)
+            })
+            return presentations
+        },
         async broadcastProduct({ getters, commit }, { product }) {
             const presentationId = getters.getCurrentPresentationId
             if (!presentationId) {
@@ -55,6 +66,7 @@ export default {
                 presentationDetails = response.data
                 commit('SET_ACTIVE_PRESENTATION_DETAILS', presentationDetails)
                 commit('SET_CURRENT_PRESENTATION_ID', presentationDetails.id)
+                commit('INSERT_PRESENTATION', presentationDetails)
             })
             return presentationDetails
         },
@@ -71,7 +83,12 @@ export default {
             state.activePresentationDetails = details
         },
         INSERT_PRESENTATION(state, presentation) {
-            // if (state.presentations.find(x => ))
+            if (!state.presentations.find(x => x.id == presentation.id)) {
+                state.presentations.push(presentation)
+            }
+        },
+        SET_PRESENTATIONS(state, presentations) {
+            state.presentations = presentations
         },
     },
 }

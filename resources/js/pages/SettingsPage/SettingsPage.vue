@@ -13,6 +13,7 @@ export default {
             yourRole: 'authUserWorkspaceRole',
         }),
     },
+    created() {},
 }
 </script>
 

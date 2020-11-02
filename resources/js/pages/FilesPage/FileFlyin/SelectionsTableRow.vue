@@ -155,22 +155,14 @@
                 />
                 <div
                     v-else-if="selection.is_presenting"
-                    class="pill primary sm"
+                    class="pill primary sm presentation-button"
                     :class="[`group-${presentationGroupIndex}`]"
-                    @click="
-                        selection.your_role == 'Owner' &&
-                            stopPresentation({ presentationId: selection.presentation_id })
-                    "
                     v-tooltip="
                         'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'
                     "
                 >
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" class="far fa-presentation"></i>
                     <span>In presentation</span>
-                    <!-- <template v-if="selection.your_role == 'Owner'">
-                        <i class="far fa-times hover-only"></i>
-                        <span class="hover-only">Stop presentation</span>
-                    </template> -->
                 </div>
             </td>
             <td class="action">
@@ -299,7 +291,8 @@ export default {
         isClickable() {
             if (this.selection.your_job == 'None') return false
             if (!this.selection.is_presenting) return true
-            return this.selection.presentation.owner_id == this.authUser.id
+            if (!this.selection.presentation) return false
+            return this.selection.presentation.presenter.id == this.authUser.id
         },
     },
     methods: {
@@ -483,19 +476,9 @@ export default {
             border-color: nth($color, 1);
         }
     }
-    .hover-only {
-        display: none;
-    }
-    &.red-hover {
-        cursor: pointer;
-        &:hover {
-            .hover-only {
-                display: block;
-            }
-            :not(.hover-only) {
-                display: none;
-            }
-        }
-    }
+}
+.clickable {
+    font-weight: 500;
+    color: $primary;
 }
 </style>

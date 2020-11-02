@@ -1,16 +1,18 @@
 <template>
     <BaseFlyin class="presenter-queue-search-flyin" :show="show" @close="show = false" placement="left">
         <template v-slot:header v-if="show">
-            <BaseFlyinHeader v-if="show" :disableNavigation="true"
-            @close="show = false" placement="left">
+            <BaseFlyinHeader v-if="show" :disableNavigation="true" @close="show = false" placement="left">
                 <template v-slot:left>
-
                     <div class="search-field">
-                        <BaseSearchField ref="searchField" :searchKey="['datasource_id', 'title']"
-                        placeholderText="Search Product name, ID" :inputClasses="''"
-                        :arrayToSearch="products" v-model="productsFilteredBySearch"/>
+                        <BaseSearchField
+                            ref="searchField"
+                            :searchKey="['datasource_id', 'title']"
+                            placeholderText="Search Product name, ID"
+                            :inputClasses="''"
+                            :arrayToSearch="products"
+                            v-model="productsFilteredBySearch"
+                        />
                     </div>
-
                 </template>
             </BaseFlyinHeader>
         </template>
@@ -18,58 +20,55 @@
         <template v-slot:default>
             <div class="inner">
                 <div class="header">
-                    <strong>Results {{productsFilteredBySearch.length}}</strong>
-                    <button class="primary sm" 
-                        @click="onAddAllResultsToQueue">
+                    <strong>Results {{ productsFilteredBySearch.length }}</strong>
+                    <button class="primary sm" @click="onAddAllResultsToQueue">
                         <i class="far fa-plus" style="margin-right: 2px"></i>
                         <span>Add all results to queue</span>
                     </button>
                 </div>
 
                 <RecycleScroller
-                class="result-list"
+                    class="result-list"
                     :items="productsFilteredBySearch"
                     :item-size="176"
                     key-field="id"
                     v-slot="{ item }"
                 >
-                    <SearchResult class="product-result" :product="item"/>
-                    
+                    <SearchResult class="product-result" :product="item" />
                 </RecycleScroller>
 
                 <div class="footer">
-                    <button class="primary full-width md"
-                    @click="show = false">
+                    <button class="primary full-width md" @click="show = false">
                         <span>Done</span>
                     </button>
                 </div>
             </div>
-
         </template>
 
         <template v-slot:alwaysVisible>
             <!-- Will always be visible to the right of the flyin -->
-            <PresenterQueue @showSearchFlyin="onShow" :flyinVisible="show"/>
+            <PresentationQueue @showSearchFlyin="onShow" :flyinVisible="show" />
         </template>
-        
     </BaseFlyin>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SearchResult from './SearchResult'
-import PresenterQueue from './PresenterQueue'
+import PresentationQueue from './PresentationQueue'
 
 export default {
     name: 'searchFlyin',
     components: {
         SearchResult,
-        PresenterQueue,
+        PresentationQueue,
     },
-    data: function() { return {
-        productsFilteredBySearch: [],
-        show: false,
-    }},
+    data: function() {
+        return {
+            productsFilteredBySearch: [],
+            show: false,
+        }
+    },
     watch: {
         show(newVal) {
             // const chatIcon = document.getElementById('crisp-chat-icon')
@@ -81,24 +80,26 @@ export default {
             //     // Adjust the placement of the chatbox
             //     if (chatIcon) chatIcon.style.setProperty('right', `${Math.min(1500 + 24, window.innerWidth - 242 + 24)}px`, 'important');
             // }
-        }
+        },
     },
     computed: {
-        ...mapGetters('products', ['products'])
+        ...mapGetters('products', ['products']),
     },
     methods: {
-        ...mapActions('presenterQueue', ['addMultipleProductsToPresenterQueue']),
+        ...mapActions('presentationQueue', ['addMultipleProductsTopresentationQueue']),
         onShow() {
             this.show = true
             // Wait for the flyin to become visible
-            this.$nextTick(() => { this.$nextTick(() => {
-                this.$refs.searchField.setFocus()
-            })})
+            this.$nextTick(() => {
+                this.$nextTick(() => {
+                    this.$refs.searchField.setFocus()
+                })
+            })
         },
         onAddAllResultsToQueue() {
-            this.addMultipleProductsToPresenterQueue(this.productsFilteredBySearch)
-        }
-    }
+            this.addMultipleProductsTopresentationQueue(this.productsFilteredBySearch)
+        },
+    },
 }
 </script>
 
@@ -127,7 +128,7 @@ export default {
             }
         }
         .flyin-header {
-            .left{
+            .left {
                 width: 100%;
             }
         }
@@ -162,5 +163,4 @@ export default {
         }
     }
 }
-
 </style>

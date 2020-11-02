@@ -1,14 +1,18 @@
 <template>
-    <div class="presenter-queue" :class="[{'flyin-visible': flyinVisible}, {'drag-active': getSearchItemDragActive}]">
+    <div
+        class="presenter-queue"
+        :class="[{ 'flyin-visible': flyinVisible }, { 'drag-active': getSearchItemDragActive }]"
+    >
         <!-- Header -->
         <div class="header">
             <div class="left">
                 <span>QUEUE</span>
-                <span class="pill primary xs" style="margin-left: 4px"><span>{{presenterQueue.length}}</span></span>
+                <span class="pill primary xs" style="margin-left: 4px"
+                    ><span>{{ presentationQueue.length }}</span></span
+                >
             </div>
             <div class="right">
-                <button class="primary invisible ghost-hover sm"
-                @click="onShowSearchFlyin">
+                <button class="primary invisible ghost-hover sm" @click="onShowSearchFlyin">
                     <i class="far fa-plus"></i>
                     <span>Add</span>
                 </button>
@@ -17,11 +21,17 @@
 
         <!-- Body -->
         <div class="body">
-            <Draggable class="draggable" v-model="presenterQueue" tag="div" :forceFallback="true"
-            group="presenterQueue" draggable=".queue-item-wrapper"
-            fallbackClass="sortable-drag" :fallbackTolerance="10">
-                <QueueItem v-for="product in presenterQueue" :key="product.id"
-                :product="product"/>
+            <Draggable
+                class="draggable"
+                v-model="presentationQueue"
+                tag="div"
+                :forceFallback="true"
+                group="presentationQueue"
+                draggable=".queue-item-wrapper"
+                fallbackClass="sortable-drag"
+                :fallbackTolerance="10"
+            >
+                <QueueItem v-for="product in presentationQueue" :key="product.id" :product="product" />
             </Draggable>
 
             <div class="queue-item add-new" @click="onShowSearchFlyin" v-if="!getSearchItemDragActive">
@@ -34,12 +44,10 @@
             </div>
         </div>
 
-        <button class="red clear-queue" @click="SET_PRESENTER_QUEUE([])"
-        v-if="presenterQueue.length > 0">
+        <button class="red clear-queue" @click="SET_PRESENTER_QUEUE([])" v-if="presentationQueue.length > 0">
             <i class="far fa-trash-alt"></i>
             <span>Clear queue</span>
         </button>
-
     </div>
 </template>
 
@@ -49,34 +57,34 @@ import QueueItem from './QueueItem'
 import Draggable from 'vuedraggable'
 
 export default {
-    name: 'presenterQueue',
+    name: 'presentationQueue',
     components: {
         QueueItem,
         Draggable,
     },
-    props: [
-        'flyinVisible'
-    ],
-    data: function () { return {
-        testList: [],
-    }},
+    props: ['flyinVisible'],
+    data: function() {
+        return {
+            testList: [],
+        }
+    },
     computed: {
-        ...mapGetters('presenterQueue', ['getPresenterQueue', 'getSearchItemDragActive']),
-        presenterQueue: {
+        ...mapGetters('presentationQueue', ['getpresentationQueue', 'getSearchItemDragActive']),
+        presentationQueue: {
             get() {
-                return this.getPresenterQueue
+                return this.getpresentationQueue
             },
             set(newQueue) {
                 this.SET_PRESENTER_QUEUE(newQueue)
-            }
+            },
         },
     },
     methods: {
-        ...mapMutations('presenterQueue', ['SET_PRESENTER_QUEUE']),
+        ...mapMutations('presentationQueue', ['SET_PRESENTER_QUEUE']),
         onShowSearchFlyin() {
             this.$emit('showSearchFlyin')
         },
-    }
+    },
 }
 </script>
 
@@ -172,5 +180,4 @@ export default {
         bottom: -48px;
     }
 }
-
 </style>

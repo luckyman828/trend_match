@@ -4,60 +4,60 @@ export default {
     namespaced: true,
 
     state: {
-        presenterQueue: [],
-        presenterQueueCurrentProductId: null,
+        presentationQueue: [],
+        presentationQueueCurrentProductId: null,
         searchItemDragActive: false,
     },
 
     getters: {
-        getPresenterQueue: state => state.presenterQueue,
-        getPresenterQueueCurrentProductId: state => state.presenterQueueCurrentProductId,
-        getPresenterQueueCurrentProduct: state =>
-            state.presenterQueue.find(x => x.id == state.presenterQueueCurrentProductId),
-        getPresenterQueueCurrentProductIndex: state =>
-            state.presenterQueue.findIndex(x => x.id == state.presenterQueueCurrentProductId),
+        getpresentationQueue: state => state.presentationQueue,
+        getpresentationQueueCurrentProductId: state => state.presentationQueueCurrentProductId,
+        getpresentationQueueCurrentProduct: state =>
+            state.presentationQueue.find(x => x.id == state.presentationQueueCurrentProductId),
+        getpresentationQueueCurrentProductIndex: state =>
+            state.presentationQueue.findIndex(x => x.id == state.presentationQueueCurrentProductId),
         getNextProduct: (state, getters) => {
             // Find the index of the current product
-            const index = getters.getPresenterQueueCurrentProductIndex
+            const index = getters.getpresentationQueueCurrentProductIndex
             // Check that the current is not the last in the array
-            if (index + 1 < state.presenterQueue.length) {
-                return state.presenterQueue[index + 1]
+            if (index + 1 < state.presentationQueue.length) {
+                return state.presentationQueue[index + 1]
             }
         },
         getPrevProduct: (state, getters) => {
             // Find the index of the current product
-            const index = getters.getPresenterQueueCurrentProductIndex
+            const index = getters.getpresentationQueueCurrentProductIndex
             // Check that the current is not the first in the array
             if (index > 0) {
-                return state.presenterQueue[index - 1]
+                return state.presentationQueue[index - 1]
             }
         },
         getSearchItemDragActive: state => state.searchItemDragActive,
     },
 
     actions: {
-        async addProductToPresenterQueue({ getters, commit }, { product, index }) {
+        async addProductTopresentationQueue({ getters, commit }, { product, index }) {
             commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index })
 
             // If no product is currently being broadcast, broadcast this product
-            const currentProduct = getters.getPresenterQueueCurrentProduct
+            const currentProduct = getters.getpresentationQueueCurrentProduct
             if (!currentProduct) {
                 commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', product.id)
             }
         },
-        async addMultipleProductsToPresenterQueue({ getters, state, commit }, products) {
+        async addMultipleProductsTopresentationQueue({ getters, state, commit }, products) {
             // Filter the products to not add products that are already in the queue
-            const productsFiltered = products.filter(product => !state.presenterQueue.find(x => x.id == product.id))
+            const productsFiltered = products.filter(product => !state.presentationQueue.find(x => x.id == product.id))
             commit('ADD_MULTIPLE_PRODUCTs_TO_PRESENTER_QUEUE', productsFiltered)
 
             // If no product is currently being broadcast, broadcast the first product product
-            const currentProduct = getters.getPresenterQueueCurrentProduct
+            const currentProduct = getters.getpresentationQueueCurrentProduct
             if (!currentProduct) {
                 commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', productsFiltered[0].id)
             }
         },
-        async removeProductFromPresenterQueue({ getters, commit, dispatch }, product) {
-            const currentProduct = getters.getPresenterQueueCurrentProduct
+        async removeProductFrompresentationQueue({ getters, commit, dispatch }, product) {
+            const currentProduct = getters.getpresentationQueueCurrentProduct
             // Disallow removing the current product
             if (currentProduct.id == product.id) {
                 commit(
@@ -97,8 +97,8 @@ export default {
             if (!success) return
 
             // If the product is not currently in our queue, add it right after the current product
-            const newProductIndex = getters.getPresenterQueue.findIndex(x => x.id == product.id)
-            const currentProductIndex = getters.getPresenterQueueCurrentProductIndex
+            const newProductIndex = getters.getpresentationQueue.findIndex(x => x.id == product.id)
+            const currentProductIndex = getters.getpresentationQueueCurrentProductIndex
             if (newProductIndex < 0) {
                 commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index: currentProductIndex + 1 })
             }
@@ -110,23 +110,23 @@ export default {
         ADD_PRODUCT_TO_PRESENTER_QUEUE(state, { product, index }) {
             // If we have been provided an index, then insert at that position
             if (index) {
-                state.presenterQueue.splice(index, 0, product)
+                state.presentationQueue.splice(index, 0, product)
             } else {
-                state.presenterQueue.push(product)
+                state.presentationQueue.push(product)
             }
         },
         ADD_MULTIPLE_PRODUCTs_TO_PRESENTER_QUEUE(state, products) {
-            state.presenterQueue.push(...products)
+            state.presentationQueue.push(...products)
         },
         REMOVE_PRODUCT_FROM_PRESENTER_QUEUE(state, product) {
-            const index = state.presenterQueue.findIndex(x => x.id == product.id)
-            state.presenterQueue.splice(index, 1)
+            const index = state.presentationQueue.findIndex(x => x.id == product.id)
+            state.presentationQueue.splice(index, 1)
         },
         SET_PRESENTER_QUEUE(state, newQueue) {
-            state.presenterQueue = newQueue
+            state.presentationQueue = newQueue
         },
         SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID(state, id) {
-            state.presenterQueueCurrentProductId = id
+            state.presentationQueueCurrentProductId = id
         },
         SET_SEARCH_ITEM_DRAG_ACTIVE(state, bool) {
             state.searchItemDragActive = bool
