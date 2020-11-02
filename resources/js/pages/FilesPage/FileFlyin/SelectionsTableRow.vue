@@ -52,19 +52,9 @@
                 v-else
                 class="title"
                 :class="{
-                    clickable:
-                        !selection.is_presenting ||
-                        (selection.is_presenting &&
-                            selection.presentation_inherit_from == 0 &&
-                            selection.your_job == 'Alignment'),
+                    clickable: isClickable,
                 }"
-                @click="
-                    ;(!selection.is_presenting ||
-                        (selection.is_presenting &&
-                            selection.presentation_inherit_from == 0 &&
-                            selection.your_job == 'Alignment')) &&
-                        onGoToSelection()
-                "
+                @click="isClickable && onGoToSelection()"
                 :style="selectionWidth"
             >
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"
@@ -261,6 +251,7 @@ export default {
     },
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'getSelectionPresentationGroups']),
+        ...mapGetters('auth', ['authUser']),
         localSelectedSelections: {
             get() {
                 return this.selectedSelections
@@ -304,6 +295,11 @@ export default {
         },
         presentationGroupIndex() {
             return this.getSelectionPresentationGroups.findIndex(x => x == this.selection.presentation_id)
+        },
+        isClickable() {
+            if (this.selection.your_job == 'None') return false
+            if (!this.selection.is_presenting) return true
+            return this.selection.presentation.owner_id == this.authUser.id
         },
     },
     methods: {

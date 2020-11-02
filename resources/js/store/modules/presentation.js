@@ -70,5 +70,8 @@ export default {
         SET_ACTIVE_PRESENTATION_DETAILS(state, details) {
             state.activePresentationDetails = details
         },
+        INSERT_PRESENTATION(state, presentation) {
+            // if (state.presentations.find(x => ))
+        },
     },
 }

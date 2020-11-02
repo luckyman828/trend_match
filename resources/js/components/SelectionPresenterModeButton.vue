@@ -85,7 +85,6 @@ export default {
         ...mapGetters('selections', {
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess}',
             availableSelections: 'getSelectionsAvailableForAlignment',
-            getSelectionTree: 'getSelectionTree',
         }),
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection)
@@ -109,8 +108,6 @@ export default {
                     const tree = await this.createSelectionTree(selections)
                     const theSelection = selections.find(x => x.id == selection.id)
                     await this.UPDATE_SELECTION(theSelection)
-                    // console.log('fetched selections', selections, tree)
-                    // await this.fetchSelection({ selectionId: selection.id, addToState: false })
                 }
 
                 // Pre-select the selection and all descendants
