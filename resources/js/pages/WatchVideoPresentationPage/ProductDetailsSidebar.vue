@@ -1,87 +1,98 @@
 <template>
-    <div class="product-details-sidebar" v-if="product">
-        <div class="background"></div>
-        <div id="sneakpeak-spawner">
-            <div class="sneakpeak" ref="sneakpeak">
-                <div class="name-block">
-                    <span class="name">{{ product.name }}</span>
-                    <span class="id">#{{ product.datasource_id }}</span>
-                </div>
-                <div class="flex-list">
-                    <div class="pill dark xs" v-if="product.min_order">
-                        <i class="fas fa-box"></i>
-                        <span>{{ product.min_order }}</span>
+    <div class="product-details-sidebar" v-if="product" :class="{ mobile: isMobile }">
+        <!-- DESKTOP -->
+        <template v-if="!isMobile">
+            <div class="background"></div>
+            <div id="sneakpeak-spawner">
+                <div class="sneakpeak" ref="sneakpeak">
+                    <div class="name-block">
+                        <span class="name">{{ product.name }}</span>
+                        <span class="id">#{{ product.datasource_id }}</span>
                     </div>
-                    <div class="pill dark xs" v-if="product.min_variant_order">
-                        <i class="fas fa-tshirt"></i>
-                        <span>{{ product.min_variant_order }}</span>
-                    </div>
-                    <div class="pill dark xs" v-if="product.is_sustainable">
-                        <i class="fas fa-seedling"></i>
-                        <span>sustainable</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="body">
-            <div class="price-list flex-list md col-2">
-                <BaseDisplayField label="WHS" v-if="product.yourPrice.wholesale_price">
-                    <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
-                </BaseDisplayField>
-                <BaseDisplayField label="RRP" v-if="product.yourPrice.recommended_retail_price">
-                    <span>{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span>
-                </BaseDisplayField>
-            </div>
-
-            <div class="flex-list md col-2">
-                <BaseDisplayField label="Minimum" v-if="product.min_order">
-                    <span
-                        >{{ product.min_variant_order ? product.min_variant_order + '/' : ''
-                        }}{{ product.min_order }} PCS</span
-                    >
-                </BaseDisplayField>
-                <BaseDisplayField label="Delivery" v-if="product.delivery_dates[0]">
-                    <span>{{ getPrettyDate(product.delivery_dates[0]) }}</span>
-                </BaseDisplayField>
-            </div>
-
-            <div class="variant-list flex-list" v-dragscroll>
-                <div class="list-item" v-for="(variant, index) in product.variants" :key="index">
-                    <div class="flex-list flex-v sm">
-                        <span class="name">{{ variant.name }}</span>
-                        <div class="img-wrapper">
-                            <div class="controls">
-                                <button class="white" @click="onShowLargeImage(index)">
-                                    <i class="far fa-search-plus"></i>
-                                </button>
-                            </div>
-                            <BaseVariantImage :variant="variant" size="sm" />
+                    <div class="flex-list">
+                        <div class="pill dark xs" v-if="product.min_order">
+                            <i class="fas fa-box"></i>
+                            <span>{{ product.min_order }}</span>
+                        </div>
+                        <div class="pill dark xs" v-if="product.min_variant_order">
+                            <i class="fas fa-tshirt"></i>
+                            <span>{{ product.min_variant_order }}</span>
+                        </div>
+                        <div class="pill dark xs" v-if="product.is_sustainable">
+                            <i class="fas fa-seedling"></i>
+                            <span>sustainable</span>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="body">
+                <div class="price-list flex-list md col-2">
+                    <BaseDisplayField label="WHS" v-if="product.yourPrice.wholesale_price">
+                        <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+                    </BaseDisplayField>
+                    <BaseDisplayField label="RRP" v-if="product.yourPrice.recommended_retail_price">
+                        <span>{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span>
+                    </BaseDisplayField>
+                </div>
 
-            <div class="flex-list flex-v md">
-                <BaseDisplayField label="Description">
-                    <span v-if="product.sale_description">{{ product.sale_description }}</span>
-                </BaseDisplayField>
-                <BaseDisplayField label="Composition">
-                    <span v-if="product.composition">{{ product.composition.split(', ').join('\n') }}</span>
-                </BaseDisplayField>
-                <BaseDisplayField label="Sizes">
-                    <span v-if="product.variants[0]">{{ product.variants[0].sizes.join(', ') }}</span>
-                </BaseDisplayField>
+                <div class="flex-list md col-2">
+                    <BaseDisplayField label="Minimum" v-if="product.min_order">
+                        <span
+                            >{{ product.min_variant_order ? product.min_variant_order + '/' : ''
+                            }}{{ product.min_order }} PCS</span
+                        >
+                    </BaseDisplayField>
+                    <BaseDisplayField label="Delivery" v-if="product.delivery_dates[0]">
+                        <span>{{ getPrettyDate(product.delivery_dates[0]) }}</span>
+                    </BaseDisplayField>
+                </div>
 
-                <!-- ATTACHMENTS -->
-                <!-- <div class="list-item">
-                    <label>Documentation</label>
-                    <button class="full-width align-left primary md">
-                        <i class="far fa-file-download"></i>
-                        <span>Sustanability report</span>
-                    </button>
-                </div> -->
+                <div class="variant-list flex-list" v-dragscroll>
+                    <div class="list-item" v-for="(variant, index) in product.variants" :key="index">
+                        <div class="flex-list flex-v sm">
+                            <span class="name">{{ variant.name }}</span>
+                            <div class="img-wrapper">
+                                <div class="controls">
+                                    <button class="white" @click="onShowLargeImage(index)">
+                                        <i class="far fa-search-plus"></i>
+                                    </button>
+                                </div>
+                                <BaseVariantImage :variant="variant" size="sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-list flex-v md">
+                    <BaseDisplayField label="Description">
+                        <span v-if="product.sale_description">{{ product.sale_description }}</span>
+                    </BaseDisplayField>
+                    <BaseDisplayField label="Composition">
+                        <span v-if="product.composition">{{ product.composition.split(', ').join('\n') }}</span>
+                    </BaseDisplayField>
+                    <BaseDisplayField label="Sizes">
+                        <span v-if="product.variants[0]">{{ product.variants[0].sizes.join(', ') }}</span>
+                    </BaseDisplayField>
+                </div>
             </div>
-        </div>
+        </template>
+
+        <!-- MOBILE -->
+        <template v-else>
+            <div id="sneakpeak-spawner">
+                <div class="sneakpeak" ref="sneakpeak">
+                    <div class="img-wrapper">
+                        <div class="controls">
+                            <button class="white" @click="onShowLargeImage(index)">
+                                <i class="far fa-search-plus"></i>
+                            </button>
+                        </div>
+                        <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                    </div>
+                    <span class="price">{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+                </div>
+            </div>
+        </template>
     </div>
 </template>
 
@@ -92,6 +103,9 @@ export default {
     computed: {
         ...mapGetters('videoPlayer', {
             product: 'getCurrentProduct',
+        }),
+        ...mapGetters('responsive', {
+            isMobile: 'getIsMobile',
         }),
     },
     watch: {
@@ -282,6 +296,61 @@ label {
     }
     to {
         transform: none;
+    }
+}
+
+.product-details-sidebar.mobile {
+    #sneakpeak-spawner {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        .sneakpeak {
+            background: white;
+            border-radius: 4px;
+            position: absolute;
+            right: 12px;
+            bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            width: 80px;
+            .img-wrapper {
+                padding-top: 133.33%;
+                height: 0;
+                position: relative;
+                img {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    width: 100%;
+                    -o-object-fit: cover;
+                    object-fit: cover;
+                    user-drag: none;
+                    user-select: none;
+                    -moz-user-select: none;
+                    -webkit-user-drag: none;
+                    -webkit-user-select: none;
+                    -ms-user-select: none;
+                }
+            }
+            .price {
+                font-weight: 700;
+            }
+            .controls {
+                opacity: 0;
+                transition: 0.1s ease-out;
+                position: absolute;
+                right: 4px;
+                top: 4px;
+                z-index: 1;
+            }
+            &:focus {
+                .controls {
+                    opacity: 1;
+                }
+            }
+        }
     }
 }
 </style>

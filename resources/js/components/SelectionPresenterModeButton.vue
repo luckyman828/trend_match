@@ -15,7 +15,7 @@
             ref="confirmStart"
             type="confirm"
             confirmColor="primary"
-            confirmText="Yes, go live!"
+            :confirmText="`Yes, go live (${selectionsToPresent.length})`"
             cancelText="No, i'm not ready yet"
         >
             <div class="icon-graphic">
@@ -24,12 +24,12 @@
                 <i class="lg dark far fa-presentation"></i>
             </div>
             <h3>You are about to enter Presentation Mode</h3>
-            <p>In Presentation Mode, You decide what product is shown in the mobile app.</p>
-            <p>
+            <p>In Presentation Mode, You decide what product is shown in the app.</p>
+            <!-- <p>
                 When a selection is in Presentation Mode, noone can access the selection or any of its sub-selections
                 outside of Presentation Mode.
-            </p>
-            <p><strong>This selection and all sub-selections will be unlocked and made visible</strong></p>
+            </p> -->
+            <!-- <p><strong>The selected selection will be unlocked and made visible.</strong></p> -->
 
             <div class="available-selection-list">
                 <h4>Choose selections to present for:</h4>
@@ -39,7 +39,11 @@
                     optionNameKey="name"
                     :options="availableSelections"
                     v-model="selectionsToPresent"
-                />
+                >
+                    <template v-slot:before="slotProps">
+                        <span><i class="far fa-info-circle"></i></span>
+                    </template>
+                </BaseSelectButtons>
                 <!-- <div class="form-element" v-for="selection in availableSelections" :key="selection.id">
                     <BaseCheckboxInputField v-model="selectionsToPresent">
                         <span>{{ selection.name }}</span>
@@ -130,10 +134,15 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+::v-deep {
+    .modal {
+        width: 560px;
+    }
+}
 .available-selection-list {
     text-align: left;
-    max-width: 320px;
-    margin: auto;
+    // max-width: 320px;
+    // margin: auto;
     margin-top: 20px;
     h4 {
         margin: 4px 0;

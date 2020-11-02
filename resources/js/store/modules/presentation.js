@@ -14,7 +14,9 @@ export default {
             if (!selection) return
             return selection.presentation_id
         },
-        getPresentationIsActive: (state, getters) => !!getters.getCurrentPresentationId,
+        getPresentationIsActive: (state, getters) => {
+            return getters.getCurrentPresentationId > 0
+        },
         getCurrentProductId: state => state.activePresentationDetails.product.id,
         getCurrentProduct: (state, getters, rootState, rootGetters) => {
             const products = rootGetters['products/getProducts']

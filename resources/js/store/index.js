@@ -25,6 +25,7 @@ import videoPlayer from './modules/videoPlayer'
 import routes from './modules/routes'
 import scanner from './modules/scanner'
 import presentation from './modules/presentation'
+import responsive from './modules/responsive'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -57,6 +58,7 @@ const store = new Vuex.Store({
         routes,
         scanner,
         presentation,
+        responsive,
     },
 })
 

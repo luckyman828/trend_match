@@ -1,7 +1,8 @@
 <template>
     <div class="users-table">
-
-        <BaseTable v-if="currentTab == 'Users'" stickyHeader="true"
+        <BaseTable
+            v-if="currentTab == 'Users'"
+            stickyHeader="true"
             ref="tableComp"
             :contentStatus="readyStatus"
             loadingMsg="loading users"
@@ -13,32 +14,52 @@
             :selected.sync="selectedUsers"
             :contextItem.sync="contextUser"
             :contextMouseEvent.sync="contextMouseEvent"
-            :searchKey="['name','email']"
+            :searchKey="['name', 'email']"
             :searchResult.sync="usersFilteredBySearch"
             itemType="user"
             @show-contextmenu="showUserContext"
         >
             <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
-                <BaseTableTabs :tabs="['Teams','Users']" v-model="currentTab" :activeTab="currentTab"/>
+                <BaseTableTabs :tabs="['Teams', 'Users']" v-model="currentTab" :activeTab="currentTab" />
             </template>
             <template v-slot:header>
-                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
-                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Workspace Role</BaseTableHeader>
-                <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Currency</BaseTableHeader>
+                <BaseTableHeader
+                    class="title"
+                    :sortKey="'name'"
+                    :currentSortKey="sortKey"
+                    :sortAsc="sortAsc"
+                    @sort="sortUsers"
+                    >Name</BaseTableHeader
+                >
+                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers"
+                    >E-mail</BaseTableHeader
+                >
+                <BaseTableHeader :sortKey="'role'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers"
+                    >Workspace Role</BaseTableHeader
+                >
+                <BaseTableHeader :sortKey="'currency'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers"
+                    >Currency</BaseTableHeader
+                >
             </template>
             <template v-slot:row="rowProps">
-                <UsersTableRow :user="rowProps.item"
-                @editCurrency="onEditUserCurrency"
-                @editRole="onEditUserRole" :selectedUsers.sync="selectedUsers"
-                @show-contextmenu="showUserContext"/>
+                <UsersTableRow
+                    :user="rowProps.item"
+                    @editCurrency="onEditUserCurrency"
+                    @editRole="onEditUserRole"
+                    :selectedUsers.sync="selectedUsers"
+                    @show-contextmenu="showUserContext"
+                />
             </template>
             <template v-slot:footer>
                 <td>
-                    <BaseButton buttonClass="primary invisible" 
-                    :disabled="authUserWorkspaceRole != 'Admin'" 
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'"
-                        @click="onNewUser">
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        v-tooltip="
+                            authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'
+                        "
+                        @click="onNewUser"
+                    >
                         <span>Add new: User</span>
                     </BaseButton>
                 </td>
@@ -48,14 +69,14 @@
         <BaseContextMenu ref="contextMenuUser" class="context-user">
             <!-- <div class="item-group"> -->
 
-                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+            <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only change own name. Only admins can change the name of others.'"
                 @click="$refs['userRow-'+contextUser.id][0].editName = true">
                     <span><u>R</u>ename User</span>
                 </BaseContextMenuItem> -->
 
-                <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
+            <!-- <BaseContextMenuItem iconClass="far fa-pen" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
                 v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
                 && 'Can only change own e-mail. Only admins can change the e-mail of others.'"
                 @click="$refs['userRow-'+contextUser.id][0].editEmail = true">
@@ -63,27 +84,33 @@
                 </BaseContextMenuItem> -->
             <!-- </div> -->
             <div class="item-group" v-if="contextUser">
-                <BaseContextMenuItem iconClass="far fa-usd-circle" 
-                :disabled="authUserWorkspaceRole != 'Admin'" 
-                disabledTooltip="Only admins can change currency of others."
-                hotkey="KeyC"
-                @click="onEditUserCurrency(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem
+                    iconClass="far fa-usd-circle"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    disabledTooltip="Only admins can change currency of others."
+                    hotkey="KeyC"
+                    @click="onEditUserCurrency(contextMouseEvent, contextUser)"
+                >
                     <span><u>C</u>hange <u>C</u>urrency</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-key" 
-                :disabled="authUserWorkspaceRole != 'Admin'" 
-                disabledTooltip="Only admins can change workspace role"
-                hotkey="KeyR"
-                @click="onEditUserRole(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem
+                    iconClass="far fa-key"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    disabledTooltip="Only admins can change workspace role"
+                    hotkey="KeyR"
+                    @click="onEditUserRole(contextMouseEvent, contextUser)"
+                >
                     <span>Change Workspace <u>R</u>ole</span>
                 </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-lock" 
-                :disabled="contextUser.id != authUser.id" 
-                disabledTooltip="Can only set password of self"
-                hotkey="KeyP"
-                @click="onSetUserPassword(contextMouseEvent, contextUser)">
+                <BaseContextMenuItem
+                    iconClass="far fa-lock"
+                    :disabled="contextUser.id != authUser.id"
+                    disabledTooltip="Can only set password of self"
+                    hotkey="KeyP"
+                    @click="onSetUserPassword(contextMouseEvent, contextUser)"
+                >
                     <span>Change <u>P</u>assword</span>
                 </BaseContextMenuItem>
                 <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
@@ -94,11 +121,13 @@
                 </BaseContextMenuItem> -->
             </div>
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-trash-alt"
-                :disabled="authUserWorkspaceRole != 'Admin'"
-                disabledTooltip="Only admins can remove users"
-                hotkey="KeyD"
-                @click="onDeleteUser(contextUser)">
+                <BaseContextMenuItem
+                    iconClass="far fa-trash-alt"
+                    :disabled="authUserWorkspaceRole != 'Admin'"
+                    disabledTooltip="Only admins can remove users"
+                    hotkey="KeyD"
+                    @click="onDeleteUser(contextUser)"
+                >
                     <span><u>D</u>elete User from Workspace</span>
                 </BaseContextMenuItem>
             </div>
@@ -106,47 +135,60 @@
 
         <BaseContextMenu ref="contextMenuSelectedUsers">
             <template v-slot:header>
-                <span>Choose action for {{selectedUsers.length}} users</span>
+                <span>Choose action for {{ selectedUsers.length }} users</span>
             </template>
             <template v-slot>
                 <div class="item-group">
-                    <BaseContextMenuItem iconClass="far fa-times" 
-                    hotkey="KeyL"
-                    @click="selectedUsers = []">
+                    <BaseContextMenuItem iconClass="far fa-times" hotkey="KeyL" @click="selectedUsers = []">
                         <span>C<u>l</u>ear Selection</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <BaseContextMenuItem iconClass="far fa-usd-circle" 
-                    :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
-                    disabledTooltip="Can only set own currency. Only admins can change currency of others."
-                    hotkey="KeyC"
-                    @click="onEditUserCurrency(contextMouseEvent, contextUser)">
+                    <BaseContextMenuItem
+                        iconClass="far fa-usd-circle"
+                        :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id"
+                        disabledTooltip="Can only set own currency. Only admins can change currency of others."
+                        hotkey="KeyC"
+                        @click="onEditUserCurrency(contextMouseEvent, contextUser)"
+                    >
                         <span><u>C</u>hange <u>C</u>urrency</span>
                     </BaseContextMenuItem>
 
-                    <BaseContextMenuItem iconClass="far fa-key" 
-                    :disabled="authUserWorkspaceRole != 'Admin'" 
-                    disabledTooltip="Only admins can change workspace role"
-                    hotkey="KeyR"
-                    @click="onEditUserRole(contextMouseEvent, contextUser)">
+                    <BaseContextMenuItem
+                        iconClass="far fa-key"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can change workspace role"
+                        hotkey="KeyR"
+                        @click="onEditUserRole(contextMouseEvent, contextUser)"
+                    >
                         <span>Change Workspace <u>R</u>ole</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
-                    <BaseContextMenuItem :disabled="authUserWorkspaceRole != 'Admin'" iconClass="far fa-trash-alt"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
-                    @click="onDeleteUsers">
+                    <BaseContextMenuItem
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        iconClass="far fa-trash-alt"
+                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can remove users'"
+                        @click="onDeleteUsers"
+                    >
                         <span><u>D</u>elete Users from Workspace</span>
                     </BaseContextMenuItem>
                 </div>
             </template>
         </BaseContextMenu>
 
-        <BaseSelectButtonsContextMenu ref="contextMenuUserCurrency" v-if="userToEdit"
-        header="Change User Currency" v-model="userToEdit.currency" type="radio"
-        :options="availableCurrencies" :search="true" unsetOption="Clear" :unsetValue="null"
-        @submit="onUpdateUsersCurrency"/>
+        <BaseSelectButtonsContextMenu
+            ref="contextMenuUserCurrency"
+            v-if="userToEdit"
+            header="Change User Currency"
+            v-model="userToEdit.currency"
+            type="radio"
+            :options="availableCurrencies"
+            :search="true"
+            unsetOption="Clear"
+            :unsetValue="null"
+            @submit="onUpdateUsersCurrency"
+        />
 
         <BaseContextMenu ref="contextMenuWorkspaceRole" class="context-role">
             <template v-slot:header>
@@ -154,18 +196,37 @@
             </template>
             <template v-slot="slotProps">
                 <div class="item-group">
-                    <BaseSelectButtons type="radio" :options="availableWorkspaceRoles"
-                    v-model="userToEdit.role" :submitOnChange="true" :optionDescriptionKey="'description'"
-                    :optionNameKey="'role'" :optionValueKey="'role'"/>
+                    <BaseSelectButtons
+                        type="radio"
+                        :options="availableWorkspaceRoles"
+                        v-model="userToEdit.role"
+                        :submitOnChange="true"
+                        :optionDescriptionKey="'description'"
+                        :optionNameKey="'role'"
+                        :optionValueKey="'role'"
+                    />
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <button class="primary" 
-                        @click="onUpdateUsersRole(); slotProps.hide()">
+                        <button
+                            class="primary"
+                            @click="
+                                onUpdateUsersRole()
+                                slotProps.hide()
+                            "
+                        >
                             <span>Save</span>
                         </button>
-                        <button class="invisible ghost-hover" style="margin-left: 8px;"
-                        @click="slotProps.hide(); userToEdit.role = originalUser.role"><span>Cancel</span></button>
+                        <button
+                            class="invisible ghost-hover"
+                            style="margin-left: 8px;"
+                            @click="
+                                slotProps.hide()
+                                userToEdit.role = originalUser.role
+                            "
+                        >
+                            <span>Cancel</span>
+                        </button>
                     </div>
                 </div>
             </template>
@@ -181,40 +242,62 @@
                     <div class="item-wrapper">
                         <div>
                             <label>New password</label>
-                            <BaseInputField type="text" ref="userPasswordInput" 
-                            placeholder="New password" v-model="newUserPassword"/>
+                            <BaseInputField
+                                type="text"
+                                ref="userPasswordInput"
+                                placeholder="New password"
+                                v-model="newUserPassword"
+                            />
                         </div>
                     </div>
                     <div class="item-wrapper">
                         <div>
                             <label>Old password</label>
-                            <BaseInputField type="text" placeholder="Old password" v-model="oldUserPassword"/>
+                            <BaseInputField type="text" placeholder="Old password" v-model="oldUserPassword" />
                         </div>
                     </div>
                 </div>
                 <div class="item-group">
                     <div class="item-wrapper">
-                        <button class="primary" :class="{disabled: passwordSubmitDisabled}" style="margin-right: 8px;"
-                        @click="setUserPassword(contextUser);slotProps.hide()">
-                            <span>Save</span></button>
+                        <button
+                            class="primary"
+                            :class="{ disabled: passwordSubmitDisabled }"
+                            style="margin-right: 8px;"
+                            @click="
+                                setUserPassword(contextUser)
+                                slotProps.hide()
+                            "
+                        >
+                            <span>Save</span>
+                        </button>
                         <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
                     </div>
                 </div>
             </template>
         </BaseContextMenu>
 
-        <BaseDialog ref="confirmDeleteMultipleUsers" type="confirm"
-        confirmColor="red" confirmText="Yes, delete them" cancelText="No, keep them">
+        <BaseDialog
+            ref="confirmDeleteMultipleUsers"
+            type="confirm"
+            confirmColor="red"
+            confirmText="Yes, delete them"
+            cancelText="No, keep them"
+        >
             <div class="icon-graphic">
                 <i class="lg primary far fa-user"></i>
                 <i class="lg far fa-arrow-right"></i>
                 <i class="lg dark far fa-trash"></i>
             </div>
-            <h3>Really delete {{selectedUsers.length}} users from your workspace??</h3>
+            <h3>Really delete {{ selectedUsers.length }} users from your workspace??</h3>
         </BaseDialog>
 
-        <BaseDialog ref="confirmDeleteUser" type="confirm"
-        confirmColor="red" confirmText="Yes, delete this user" cancelText="No, keep this user">
+        <BaseDialog
+            ref="confirmDeleteUser"
+            type="confirm"
+            confirmColor="red"
+            confirmText="Yes, delete this user"
+            cancelText="No, keep this user"
+        >
             <div class="icon-graphic">
                 <i class="lg primary far fa-user"></i>
                 <i class="lg far fa-arrow-right"></i>
@@ -222,7 +305,6 @@
             </div>
             <h3>Really delete this user from your workspace?</h3>
         </BaseDialog>
-
     </div>
 </template>
 
@@ -236,27 +318,27 @@ export default {
     props: [
         // 'users',
     ],
-    mixins: [
-        sortArray
-    ],
+    mixins: [sortArray],
     components: {
         UsersTableRow,
     },
-    data: function() { return {
-        sortKey: 'id',
-        sortAsc: true,
-        editUser: {
-            permission_level: '',
-        },
-        userToEdit: null,
-        originalUser: null,
-        usersFilteredBySearch: [],
-        newUserPassword: '',
-        oldUserPassword: '',
-        selectedUsers: [],
-        contextUser: null,
-        contextMouseEvent: null,
-    }},
+    data: function() {
+        return {
+            sortKey: 'id',
+            sortAsc: true,
+            editUser: {
+                permission_level: '',
+            },
+            userToEdit: null,
+            originalUser: null,
+            usersFilteredBySearch: [],
+            newUserPassword: '',
+            oldUserPassword: '',
+            selectedUsers: [],
+            contextUser: null,
+            contextMouseEvent: null,
+        }
+    },
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
@@ -264,18 +346,21 @@ export default {
         ...mapGetters('users', ['getUsers', 'getUsersStatus']),
         ...mapGetters('tables', ['getUsersTable']),
         passwordSubmitDisabled() {
-            return this.newUserPassword.length < 8 || (this.authUserWorkspaceRole != 'Admin' && this.oldUserPassword.length < 8)
+            return (
+                this.newUserPassword.length < 8 ||
+                (this.authUserWorkspaceRole != 'Admin' && this.oldUserPassword.length < 8)
+            )
         },
         currentTab: {
-            get () {
+            get() {
                 const routeName = this.$route.name
                 if (routeName == 'teams') return 'Teams'
                 if (routeName == 'users') return 'Users'
             },
-            set (newVal) {
-                if (newVal == 'Teams') this.$router.push({name: 'teams'})
-                if (newVal == 'Users') this.$router.push({name: 'users'})
-            }
+            set(newVal) {
+                if (newVal == 'Teams') this.$router.push({ name: 'teams' })
+                if (newVal == 'Users') this.$router.push({ name: 'users' })
+            },
         },
         readyStatus() {
             return this.getUsersStatus
@@ -289,8 +374,8 @@ export default {
             return users
         },
         usersSorted() {
-            return this.usersFilteredBySearch.sort((a,b) => a.id == this.authUser.id ? -1 : 0)
-        }
+            return this.usersFilteredBySearch.sort((a, b) => (a.id == this.authUser.id ? -1 : 0))
+        },
     },
     watch: {
         getUsersStatus: function(newVal, oldVal) {
@@ -298,21 +383,28 @@ export default {
         },
         currentWorkspace(newVal, oldVal) {
             this.initData(true)
-        }
+        },
     },
     methods: {
-        ...mapActions('users', ['fetchUsers', 'updateWorkspaceUsers', 'updateUser', 'updateUserPassword', 'removeUsersFromWorkspace']),
+        ...mapActions('users', [
+            'fetchUsers',
+            'updateWorkspaceUsers',
+            'updateUser',
+            'updateUserPassword',
+            'removeUsersFromWorkspace',
+        ]),
         ...mapMutations('tables', ['SET_TABLE_PROPERTY']),
         async initData(forceRefresh) {
             // If we have not and are not fetching the users then fetch them
-            if (forceRefresh || (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading')) await this.fetchUsers()
+            if (forceRefresh || (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading'))
+                await this.fetchUsers()
             // Initially set the filteredbySearch arrays
             if (this.getUsersStatus == 'success') this.usersFilteredBySearch = this.users
             this.SET_TABLE_PROPERTY('usersTable', 'workspaceId', this.currentWorkspace.id)
         },
         onSetUserPassword(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
-            contextMenu.item = user;
+            contextMenu.item = user
             contextMenu.show(mouseEvent)
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
@@ -330,21 +422,21 @@ export default {
         },
         onEditUserCurrency(mouseEvent, user) {
             this.contextUser = user
-            this.userToEdit = JSON.parse(JSON.stringify(user));
-            this.originalUser = user;
+            this.userToEdit = JSON.parse(JSON.stringify(user))
+            this.originalUser = user
             // Wait for the context menu to show in the DOM
             this.$nextTick(() => {
                 const contextMenu = this.$refs.contextMenuUserCurrency
-                contextMenu.item = user;
+                contextMenu.item = user
                 contextMenu.show(mouseEvent)
             })
         },
         onEditUserRole(mouseEvent, user) {
-            this.userToEdit = JSON.parse(JSON.stringify(user));
-            this.originalUser = user;
+            this.userToEdit = JSON.parse(JSON.stringify(user))
+            this.originalUser = user
             this.contextUser = user
             const contextMenu = this.$refs.contextMenuWorkspaceRole
-            contextMenu.item = user;
+            contextMenu.item = user
             contextMenu.show(mouseEvent)
         },
         onUpdateUsersCurrency() {
@@ -396,13 +488,13 @@ export default {
         },
         async onDeleteUser(user) {
             if (await this.$refs.confirmDeleteUser.confirm()) {
-                this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: [user]})
+                this.removeUsersFromWorkspace({ workspaceId: this.currentWorkspace.id, users: [user] })
                 this.selectedUsers = []
             }
         },
         async onDeleteUsers() {
             if (await this.$refs.confirmDeleteMultipleUsers.confirm()) {
-                this.removeUsersFromWorkspace({workspaceId: this.currentWorkspace.id, users: this.selectedUsers})
+                this.removeUsersFromWorkspace({ workspaceId: this.currentWorkspace.id, users: this.selectedUsers })
                 this.selectedUsers = []
             }
         },
@@ -413,8 +505,7 @@ export default {
             // If if we are already sorting by the given key, flip the sort order
             if (this.sortKey == key) {
                 this.sortAsc = !this.sortAsc
-            }
-            else {
+            } else {
                 this.sortKey = key
                 this.sortAsc = method
             }
@@ -424,9 +515,7 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (e.target.type == 'textarea' 
-                || e.target.tagName.toUpperCase() == 'INPUT'
-                || this.singleVisible) return // Don't mess with user input
+            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT' || this.singleVisible) return // Don't mess with user input
 
             if (key == 'KeyS') {
                 this.$refs.tableComp.focusSearch()
@@ -442,26 +531,28 @@ export default {
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
-    }
+    },
 }
 </script>
 
 <style scoped lang="scss">
-    @import '~@/_variables.scss';
+@import '~@/_variables.scss';
 
-    .users-table {
-        ::v-deep {
-            td, th {
-                &.title {
-                    min-width: 264px;
-                    max-width: 264px;
-                    display: flex;
-                    align-items: center;
-                }
-            }
-            tr:not(.table-top-bar) th.email, td.email {
-                flex: 2;
+.users-table {
+    ::v-deep {
+        td,
+        th {
+            &.title {
+                min-width: 264px;
+                max-width: 264px;
+                display: flex;
+                align-items: center;
             }
         }
+        tr:not(.table-top-bar) th.email,
+        td.email {
+            flex: 2;
+        }
     }
+}
 </style>

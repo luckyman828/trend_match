@@ -85,7 +85,7 @@ export default {
 .dialog.modal-wrapper {
     .modal {
         background: white;
-        width: 524px;
+        width: 560px;
         > .body {
             max-width: none;
             text-align: center;
@@ -107,7 +107,7 @@ export default {
 
 <style lang="scss" scoped>
 .body {
-    max-width: 400px;
+    max-width: 432px;
     margin: auto;
 }
 

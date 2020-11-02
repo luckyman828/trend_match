@@ -152,7 +152,7 @@ export default {
 
                 // Check if we have a current timing. If so extend its end time
                 const currentTiming = this.currentTiming
-                if (currentTiming) {
+                if (currentTiming && this.isLive) {
                     currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
                 }
             }
@@ -172,7 +172,7 @@ export default {
                     this.SET_PLAYER_DURATION(timestamp)
                     // Check if we have a current timing. If so extend its end time
                     const currentTiming = this.currentTiming
-                    if (currentTiming) {
+                    if (currentTiming && this.isLive) {
                         currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
                     }
                 }
