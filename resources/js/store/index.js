@@ -14,7 +14,7 @@ import alerts from './modules/alerts'
 import comments from './modules/comments'
 import requests from './modules/requests'
 import contextMenu from './modules/contextMenu'
-import presenterQueue from './modules/presenterQueue'
+import presentationQueue from './modules/presentationQueue'
 import lightbox from './modules/lightbox'
 import tables from './modules/tables'
 import changelog from './modules/changelog'
@@ -47,7 +47,7 @@ const store = new Vuex.Store({
         comments,
         requests,
         contextMenu,
-        presenterQueue,
+        presentationQueue,
         lightbox,
         tables,
         changelog,

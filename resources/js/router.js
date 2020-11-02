@@ -87,6 +87,11 @@ const routes = [
         name: 'joinSelection',
         component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
     },
+    {
+        path: '/settings',
+        name: 'settings',
+        component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SettingsPage'),
+    },
     { path: '*', redirect: '/files' },
 ]
 

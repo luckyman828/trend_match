@@ -134,17 +134,6 @@
             <p><strong>You will now be redirected to the files overview</strong></p>
         </BaseDialog>
 
-        <BaseDialog ref="parentPresentationStartedDialog">
-            <div class="icon-graphic">
-                <i class="far fa-file lg primary"></i>
-                <i class="far fa-arrow-right lg"></i>
-                <i class="far fa-presentation dark lg"></i>
-            </div>
-            <h3>An ancestor of this selection has entered Presentation Mode</h3>
-            <p>To join the presentation login to the Kollekt mobile app.</p>
-            <p><strong>You will now be redirected to the files overview</strong></p>
-        </BaseDialog>
-
         <ScannerModeControls />
     </div>
 </template>
@@ -297,25 +286,16 @@ export default {
             //
         },
         async selectionPresentationChangedHandler(eventName, selectionIds) {
-            // if (eventName == 'Begin'
-            //     && this.currentSelection.your_role != 'Owner'
-            //     && selectionIds.selection_ids.includes(this.currentSelection.id)
-            // ) {
-            //     await this.$refs.presentationModeDialog.show()
-            //     this.$router.push({name: 'files'})
-            // }
-
             const selectionDetail = selectionIds.detail.find(detail => detail.selection_id == this.currentSelection.id)
             // If a presentation has started for this selection and the user is not an owner, kick them
-            if (eventName == 'Begin' && this.currentSelection.your_role != 'Owner' && !!selectionDetail) {
-                await this.$refs.presentationModeDialog.show()
-                this.$router.push({ name: 'files' })
-            }
-
-            // If an ancestor selection started a presentation
-            if (eventName == 'Begin' && !!selectionDetail && selectionDetail.inherit_from != 0) {
-                await this.$refs.parentPresentationStartedDialog.show()
-                this.$router.push({ name: 'files' })
+            if (eventName == 'Begin') {
+                // Wait for us to set the new presentation data
+                setTimeout(async () => {
+                    if (!this.selection.presentation.presenter.id == this.authUser.id) {
+                        await this.$refs.presentationModeDialog.show()
+                        this.$router.push({ name: 'files' })
+                    }
+                }, 1000)
             }
         },
 
@@ -477,14 +457,11 @@ export default {
         this.connectToLiveUpdates()
     },
     async mounted() {
-        // // Route the user away if the current selection is live and your role is not Owner
-        // if (this.selection.is_presenting && this.selection.your_role != 'Owner') {
-        //     await this.$refs.presentationModeDialog.show()
-        //     this.$router.push({ name: 'files' })
-        // } else if (this.selection.is_presenting && this.selection.your_role != 0) {
-        //     await this.$refs.parentPresentationStartedDialog.show()
-        //     this.$router.push({ name: 'files' })
-        // }
+        // Route the user away if the current selection is live and your role is not Owner
+        if (this.selection.is_presenting && !this.selection.presentation.presenter.id == this.authUser.id) {
+            await this.$refs.presentationModeDialog.show()
+            this.$router.push({ name: 'files' })
+        }
     },
     destroyed() {
         this.disconnectSignalR()

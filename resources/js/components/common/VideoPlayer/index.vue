@@ -144,17 +144,12 @@ export default {
             if (this.isLive) {
                 const newDuration = this.duration + diff / 1000
                 this.SET_PLAYER_DURATION(newDuration)
+                this.extendCurrentTiming()
             }
             if (!this.isSeeking && this.isPlaying && !this.isDragging) {
                 // Get the duration since last we read a timestamp
 
                 this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
-
-                // Check if we have a current timing. If so extend its end time
-                const currentTiming = this.currentTiming
-                if (currentTiming && this.isLive) {
-                    currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
-                }
             }
             this.lastTimestamp = Date.now()
         },
@@ -170,12 +165,15 @@ export default {
                 // Update duration if we are live
                 if (this.isLive) {
                     this.SET_PLAYER_DURATION(timestamp)
-                    // Check if we have a current timing. If so extend its end time
-                    const currentTiming = this.currentTiming
-                    if (currentTiming && this.isLive) {
-                        currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
-                    }
+                    this.extendCurrentTiming()
                 }
+            }
+        },
+        extendCurrentTiming() {
+            // Check if we have a current timing. If so extend its end time
+            const currentTiming = this.currentTiming
+            if (currentTiming) {
+                currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
             }
         },
         async getVideoDuration() {

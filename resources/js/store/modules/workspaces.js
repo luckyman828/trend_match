@@ -16,6 +16,10 @@ export default {
                 role: 'Admin',
                 description: 'Can do some special move and rewoke powers.',
             },
+            // {
+            //     role: 'Owner',
+            //     description: 'The owner.',
+            // },
         ],
     },
 
@@ -26,6 +30,8 @@ export default {
         currentWorkspaceIndex: state => state.currentWorkspaceIndex,
         currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
         authUserWorkspaceRole: (state, getters) => {
+            if (!getters.currentWorkspace) return 'Undefined'
+            if (getters.currentWorkspace.role == 'Owner') return 'Admin'
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
         },
     },
@@ -61,6 +67,7 @@ export default {
             commit('files/SET_CURRENT_FOLDER', null, { root: true })
             commit('setCurrentWorkspaceIndex', index)
         },
+        async uploadWorkspaceCoverImage({}, image) {},
     },
 
     mutations: {

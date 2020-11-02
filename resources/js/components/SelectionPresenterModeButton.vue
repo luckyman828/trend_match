@@ -1,14 +1,23 @@
 <template>
     <div class="presenter-mode-button-wrapper">
-        <BaseToggle
-            v-if="selection"
-            :disabled="selection.your_job != 'Alignment'"
-            disabledTooltip="Only Selection Owners can activate Presentation Mode"
-            :label="showLabel ? 'Presentation' : ''"
-            sizeClass="xs"
-            :isActive="selection && selection.is_presenting"
-            @toggle="onTogglePresenterMode(selection)"
-        />
+        <!-- <v-popover :disabled="selection.your_job != 'Alignment' || !selection.is_presenting"> -->
+        <v-popover :disabled="true">
+            <BaseToggle
+                v-if="selection"
+                :disabled="selection.your_job != 'Alignment'"
+                disabledTooltip="Only Selection Owners can activate Presentation Mode"
+                :label="showLabel ? 'Presentation' : ''"
+                sizeClass="xs"
+                :isActive="selection && selection.is_presenting"
+                @toggle="onTogglePresenterMode(selection)"
+            />
+            <!-- <div class="selection-list" slot="popover">
+                <div class="selection-list-item" v-for="selection in currentPresentation.selections">
+                    <i class="far fa-poll"></i>
+                    <span>{{selection.name}}</span>
+                </div>
+            </div> -->
+        </v-popover>
 
         <!-- Confirm dialog -->
         <BaseDialog
@@ -71,7 +80,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'selectionPresenterModeButton',
     props: {
@@ -89,16 +98,31 @@ export default {
         ...mapGetters('selections', {
             getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess}',
             availableSelections: 'getSelectionsAvailableForAlignment',
-            getSelectionTree: 'getSelectionTree',
         }),
         userHasEditAccess() {
             return this.getAuthUserHasSelectionEditAccess(this.selection)
         },
     },
     methods: {
-        ...mapActions('selections', ['togglePresenterMode', 'startPresentation', 'stopPresentation']),
+        ...mapActions('selections', [
+            'togglePresenterMode',
+            'startPresentation',
+            'stopPresentation',
+            'fetchSelection',
+            'fetchSelections',
+            'createSelectionTree',
+        ]),
+        ...mapMutations('selections', ['UPDATE_SELECTION']),
         async onTogglePresenterMode(selection) {
             if (!this.selection.is_presenting) {
+                // Make sure we have fethed the selections children
+                if (!selection.children) {
+                    const selections = await this.fetchSelections({ fileId: selection.file_id })
+                    const tree = await this.createSelectionTree(selections)
+                    const theSelection = selections.find(x => x.id == selection.id)
+                    await this.UPDATE_SELECTION(theSelection)
+                }
+
                 // Pre-select the selection and all descendants
                 this.presetSelectionAndDescendants(selection)
 

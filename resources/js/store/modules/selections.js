@@ -283,9 +283,9 @@ export default {
     },
 
     actions: {
-        async fetchSelections({ commit }, { fileId, addToState = true }) {
+        async fetchSelections({ commit, dispatch }, { fileId, addToState = true }) {
             return new Promise(async (resolve, reject) => {
-                commit('setLoading', true)
+                commit('SET_LOADING', true)
                 commit('SET_STATUS', 'loading')
                 const apiUrl = `/files/${fileId}/selections/flat`
                 let selections
@@ -294,7 +294,7 @@ export default {
                     .then(response => {
                         selections = response.data
                         // Process the selections
-                        commit('PROCESS_SELECTIONS', selections)
+                        dispatch('initSelections', selections)
                         if (addToState) {
                             commit('insertSelections', { selections, method: 'set' })
                         }
@@ -303,11 +303,11 @@ export default {
                     .catch(err => {
                         commit('SET_STATUS', 'error')
                     })
-                commit('setLoading', false)
+                commit('SET_LOADING', false)
                 resolve(selections)
             })
         },
-        async fetchSelection({ commit }, { selectionId, addToState = true }) {
+        async fetchSelection({ commit, dispatch }, { selectionId, addToState = true }) {
             commit('SET_CURRENT_SELECTIONS_STATUS', 'loading')
             commit('SET_SELECTION_USERS_STATUS', 'loading')
             commit('SET_SELECTION_TEAMS_STATUS', 'loading')
@@ -318,7 +318,7 @@ export default {
                 .get(apiUrl)
                 .then(response => {
                     selection = response.data
-                    commit('PROCESS_SELECTIONS', [selection])
+                    dispatch('initSelections', [selection])
                     commit('UPDATE_SELECTION', selection)
                     if (addToState) {
                         commit('SET_CURRENT_SELECTIONS', [selection])
@@ -357,7 +357,7 @@ export default {
                 .post(apiUrl, selection)
                 .then(async response => {
                     selection.id = response.data.id
-                    commit('PROCESS_SELECTIONS', [selection])
+                    dispatch('initSelections', [selection])
                     if (addToState) {
                         commit('insertSelections', { file, selections: [selection] })
                     }
@@ -921,24 +921,6 @@ export default {
                 commit('DELETE_SELECTION', child)
             })
         },
-        // async unlockAllSelectionDescendants({ commit, dispatch }, selection) {
-        //     selection.open_from = null
-        //     selection.open_to = null
-        //     dispatch('updateSelection', selection)
-
-        //     selection.children.forEach(childSelection => {
-        //         dispatch('unlockAllSelectionDescendants', childSelection)
-        //     })
-        // },
-        // async unhidellSelectionDescendants({ commit, dispatch }, selection) {
-        //     selection.visible_from = null
-        //     selection.visible_to = null
-        //     dispatch('updateSelection', selection)
-
-        //     selection.children.forEach(childSelection => {
-        //         dispatch('unlockAllSelectionDescendants', childSelection)
-        //     })
-        // },
         async openAllSelectionDescendants({ commit, dispatch }, selection) {
             const hasChanged = !selection.is_visible || !selection.is_open
             if (!selection.is_visible) {
@@ -969,12 +951,13 @@ export default {
         async startPresentation({ commit }, { selections }) {
             // console.log('start presentation', selections)
             const apiUrl = `/presentation`
+            let presentation
             await axios
                 .post(apiUrl, {
                     selection_ids: selections.map(selection => selection.id),
                 })
                 .then(response => {
-                    console.log('presentation started', response.data)
+                    presentation = response.data
                     commit('presentation/SET_CURRENT_PRESENTATION_ID', response.data.presentation_id, { root: true })
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -987,9 +970,11 @@ export default {
                         },
                         { root: true }
                     )
+                    commit('presentation/INSERT_PRESENTATION', presentation, { root: true })
                 })
+            return presentation
         },
-        async stopPresentation({}, { presentationId }) {
+        async stopPresentation({ commit }, { presentationId }) {
             // console.log('stop presentation', presentationId)
             const apiUrl = `/presentation/${presentationId}`
             await axios.delete(apiUrl).then(response => {
@@ -1066,7 +1051,7 @@ export default {
 
             // Clear the current presentation queue if we just exited presentation mode
             if (!selection.is_presenting) {
-                commit('presenterQueue/SET_PRESENTER_QUEUE', [], { root: true })
+                commit('presentationQueue/SET_PRESENTER_QUEUE', [], { root: true })
             }
         },
         async sendSelectionLink({ commit, dispatch }, { selectionList }) {
@@ -1183,10 +1168,53 @@ export default {
             })
             return joinResponse
         },
+        async initSelections({ rootGetters }, selections) {
+            selections.map(selection => {
+                // Visible
+                Object.defineProperty(selection, 'is_visible', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.visible_from && new Date(selection.visible_from)
+                        const to = selection.visible_to && new Date(selection.visible_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
+                    },
+                })
+                // Locked
+                Object.defineProperty(selection, 'is_open', {
+                    get: () => {
+                        const now = new Date()
+                        const from = selection.open_from && new Date(selection.open_from)
+                        const to = selection.open_to && new Date(selection.open_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
+                    },
+                })
+                // Completed
+                Object.defineProperty(selection, 'is_completed', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.completed_at
+                        return !!from && now > from
+                    },
+                })
+
+                // Visible
+                Object.defineProperty(selection, 'presentation', {
+                    get: () => {
+                        if (!selection.presentation_id) return
+                        const presentations = rootGetters['presentation/getPresentations']
+                        return presentations.find(x => x.id == selection.presentation_id)
+                    },
+                })
+            })
+        },
     },
 
     mutations: {
-        setLoading(state, bool) {
+        SET_LOADING(state, bool) {
             state.loading = bool
         },
         SET_STATUS(state, status) {
@@ -1232,13 +1260,20 @@ export default {
             state.selections.splice(index, 1)
         },
         UPDATE_SELECTION(state, selection) {
-            const stateSelection = state.selections.find(x => x.id == selection.id)
-            if (stateSelection) {
-                // Make users, teams and denied_users reactive
-                if (selection.users) Vue.set(stateSelection, 'users', selection.users)
-                if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
-                if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
-                Object.assign(stateSelection, selection)
+            const stateSelections = []
+            const selectionsArraySelection = state.selections.find(x => x.id == selection.id)
+            if (selectionsArraySelection) stateSelections.push(selectionsArraySelection)
+            const currentSelection = state.currentSelections.find(x => x.id == selection.id)
+            if (currentSelection) stateSelections.push(currentSelection)
+            if (stateSelections.length > 0) {
+                stateSelections.map(stateSelection => {
+                    // Make users, teams and denied_users reactive
+                    if (selection.users) Vue.set(stateSelection, 'users', selection.users)
+                    if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
+                    if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
+                    if (selection.children) Vue.set(stateSelection, 'children', selection.children)
+                    Object.assign(stateSelection, selection)
+                })
             }
         },
         setSelectionSettings(state, { selection, settings }) {
@@ -1302,64 +1337,6 @@ export default {
                 Vue.set(stateSelection, 'users', users)
                 Vue.set(stateSelection, 'user_count', users.length)
             }
-        },
-        PROCESS_SELECTIONS(state, selections) {
-            selections.map(selection => {
-                // Visible
-                Object.defineProperty(selection, 'is_visible', {
-                    get: () => {
-                        // Return true if we are after visible_from, or it isn't set
-                        // And before visible_to or it isn't set¨
-                        const now = new Date()
-                        const from = selection.visible_from && new Date(selection.visible_from)
-                        const to = selection.visible_to && new Date(selection.visible_to)
-                        return (!from || now > from) && (!to || now < to) // True if no from is set
-                    },
-                })
-                // Locked
-                Object.defineProperty(selection, 'is_open', {
-                    get: () => {
-                        const now = new Date()
-                        const from = selection.open_from && new Date(selection.open_from)
-                        const to = selection.open_to && new Date(selection.open_to)
-                        return (!from || now > from) && (!to || now < to) // True if no from is set
-                    },
-                })
-                // Completed
-                Object.defineProperty(selection, 'is_completed', {
-                    get: () => {
-                        // Return true if we are after visible_from, or it isn't set
-                        // And before visible_to or it isn't set¨
-                        const now = new Date()
-                        const from = selection.completed_at
-                        return !!from && now > from
-                    },
-                })
-
-                // Start process users
-                // if (selection.users) {
-                //     selection.users.map(user => {
-                //         Object.defineProperty(user, 'job', {
-                //             get: () => {
-                //                 return user.roles.filter(x => !['Owner', 'Member'].includes(x))[0]
-                //             },
-                //             set: function(value) {
-                //                 console.log('set user job', value)
-                //                 // Find the existing value
-                //                 const currentJobIndex = user.roles.findIndex(job => !['Owner', 'Member'].includes(job))
-                //                 if (currentJobIndex >= 0) {
-                //                     user.roles.splice(currentJobIndex, 1, value)
-                //                 } else {
-                //                     user.roles.push(value)
-                //                 }
-                //                 console.log(user.roles)
-                //             },
-                //         })
-                //     })
-                // }
-
-                // End process users
-            })
         },
         SET_SELECTION_PRESENTATION_MODE_ACTIVE(state, { selection, isActive, presentationGroupId }) {
             // Vue.set(selection, 'is_presenting', isActive)

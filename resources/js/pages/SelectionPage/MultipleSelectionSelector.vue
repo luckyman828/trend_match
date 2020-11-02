@@ -4,25 +4,51 @@
             <button class="white">
                 <!-- <i class="fas primary" :class="currentSelections.length > 1 ? 'fa-users-class' : 'fa-user'"></i> -->
                 <i class="fas primary fa-users-class"></i>
-                <span>{{currentSelections[0].name}} {{`${currentSelections.length > 1 ? '+ ' + Math.abs(currentSelections.length - 1) : ''}`}}</span>
+                <span
+                    >{{ currentSelections[0].name }}
+                    {{ `${currentSelections.length > 1 ? '+ ' + Math.abs(currentSelections.length - 1) : ''}` }}</span
+                >
                 <i class="fas fa-caret-down"></i>
             </button>
             <template slot="popover">
-                <BaseSelectButton v-for="theSelection in availableSelections" :key="theSelection.id"
-                :modelValue="theSelection" v-model="selectedSelections">
-                    <i v-if="theSelection.type == 'Master'" class="far fa-crown" style="margin-right: 4px;"
-                    v-tooltip="'<strong>Master</strong> selection'"></i>
-                    <i v-if="!theSelection.is_visible" class="far fa-eye-slash" style="margin-right: 4px;"
-                    v-tooltip="'Selection is <strong>Hidden</strong>. You can still make new input, even though the selection is hidden'"></i>
-                    <i v-if="!theSelection.is_open" class="far fa-lock" style="margin-right: 4px;"
-                    v-tooltip="'Selection is <strong>Locked</strong>. You can view input from a locked selection, but not make any new'"></i>
-                    {{theSelection.name}}
+                <BaseSelectButton
+                    v-for="theSelection in availableSelections"
+                    :key="theSelection.id"
+                    :modelValue="theSelection"
+                    v-model="selectedSelections"
+                >
+                    <i
+                        v-if="theSelection.type == 'Master'"
+                        class="far fa-crown"
+                        style="margin-right: 4px;"
+                        v-tooltip="'<strong>Master</strong> selection'"
+                    ></i>
+                    <i
+                        v-if="!theSelection.is_visible"
+                        class="far fa-eye-slash"
+                        style="margin-right: 4px;"
+                        v-tooltip="
+                            'Selection is <strong>Hidden</strong>. You can still make new input, even though the selection is hidden'
+                        "
+                    ></i>
+                    <i
+                        v-if="!theSelection.is_open"
+                        class="far fa-lock"
+                        style="margin-right: 4px;"
+                        v-tooltip="
+                            'Selection is <strong>Locked</strong>. You can view input from a locked selection, but not make any new'
+                        "
+                    ></i>
+                    {{ theSelection.name }}
                 </BaseSelectButton>
                 <div class="item-group actions">
-                    <BaseButton buttonClass="primary" v-close-popover="selectedSelections.length >= 1"
-                    :disabled="selectedSelections.length < 1"
-                    v-tooltip="selectedSelections.length < 1 && 'At least 1 selection must be selected'"
-                    @click="onSetCurrentSelections">
+                    <BaseButton
+                        buttonClass="primary"
+                        v-close-popover="selectedSelections.length >= 1"
+                        :disabled="selectedSelections.length < 1"
+                        v-tooltip="selectedSelections.length < 1 && 'At least 1 selection must be selected'"
+                        @click="onSetCurrentSelections"
+                    >
                         <span>Apply</span>
                     </BaseButton>
                     <button class="invisible ghost-hover" v-close-popover><span>Cancel</span></button>
@@ -36,13 +62,19 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 export default {
     name: 'multipleSelectionSelector',
-    data: function() { return {
-        selectedSelections: [],
-    }},
+    data: function() {
+        return {
+            selectedSelections: [],
+        }
+    },
     computed: {
         ...mapGetters('products', ['products']),
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['getCurrentSelections', 'getSelectionsAvailableForAlignment', 'currentSelectionMode']),
+        ...mapGetters('selections', [
+            'getCurrentSelections',
+            'getSelectionsAvailableForAlignment',
+            'currentSelectionMode',
+        ]),
         currentSelections() {
             return this.getCurrentSelections
         },
@@ -58,16 +90,18 @@ export default {
         async onSetCurrentSelections() {
             const selections = this.selectedSelections
             this.SET_CURRENT_SELECTIONS(selections)
-            // Find the newly added selections that we haven't already fethed input for
-            const newSelections = selections.filter(selection => !this.products[0].selectionInputList.find(x => x.selection_id == selection.id))
-            // Fetch data for all the selections
-            if (newSelections.length > 0) {
-                await Promise.all(newSelections.map(async selection => {
-                    await this.fetchSelectionProducts(selection)
-                    await this.fetchSelectionSettings(selection)
-                }))
-            }
-
+            await Promise.all(
+                selections.map(async selection => {
+                    // Fetch selection input if not fetched
+                    if (!this.products[0].selectionInputList.find(x => x.selection_id == selection.id)) {
+                        await this.fetchSelectionProducts(selection)
+                    }
+                    // Fetch selection settings if not fetched
+                    if (!selection.settings) {
+                        await this.fetchSelectionSettings(selection)
+                    }
+                })
+            )
             // Set the current tab to `Overview` if we are entering multi-selection mode
             if (selections.length > 1) {
                 this.setCurrentProductFilter('overview')
@@ -80,7 +114,7 @@ export default {
             const selectionToPush = this.availableSelections.find(x => x.id == selection.id)
             if (selectionToPush) this.selectedSelections.push(selectionToPush)
         })
-    }
+    },
 }
 </script>
 
@@ -90,5 +124,4 @@ export default {
 button {
     border: $borderEl;
 }
-
 </style>

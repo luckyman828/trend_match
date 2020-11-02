@@ -52,19 +52,9 @@
                 v-else
                 class="title"
                 :class="{
-                    clickable:
-                        !selection.is_presenting ||
-                        (selection.is_presenting &&
-                            selection.presentation_inherit_from == 0 &&
-                            selection.your_job == 'Alignment'),
+                    clickable: isClickable,
                 }"
-                @click="
-                    ;(!selection.is_presenting ||
-                        (selection.is_presenting &&
-                            selection.presentation_inherit_from == 0 &&
-                            selection.your_job == 'Alignment')) &&
-                        onGoToSelection()
-                "
+                @click="isClickable && onGoToSelection()"
                 :style="selectionWidth"
             >
                 <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"
@@ -166,21 +156,13 @@
                 <div
                     v-else-if="selection.is_presenting"
                     class="pill primary sm presentation-button"
-                    :class="[`group-${presentationGroupIndex}`, { 'red-hover': selection.your_role == 'Owner' }]"
-                    @click="
-                        selection.your_role == 'Owner' &&
-                            stopPresentation({ presentationId: selection.presentation_id })
-                    "
+                    :class="[`group-${presentationGroupIndex}`]"
                     v-tooltip="
                         'Selection is currently in presentation mode. Join the presentation from the Kollekt mobile app.'
                     "
                 >
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" class="far fa-presentation"></i>
                     <span>In presentation</span>
-                    <template v-if="selection.your_role == 'Owner'">
-                        <i class="far fa-times hover-only"></i>
-                        <span class="hover-only">Stop presentation</span>
-                    </template>
                 </div>
             </td>
             <td class="action">
@@ -261,6 +243,7 @@ export default {
     },
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'getSelectionPresentationGroups']),
+        ...mapGetters('auth', ['authUser']),
         localSelectedSelections: {
             get() {
                 return this.selectedSelections
@@ -304,6 +287,12 @@ export default {
         },
         presentationGroupIndex() {
             return this.getSelectionPresentationGroups.findIndex(x => x == this.selection.presentation_id)
+        },
+        isClickable() {
+            if (this.selection.your_job == 'None') return false
+            if (!this.selection.is_presenting) return true
+            if (!this.selection.presentation) return false
+            return this.selection.presentation.presenter.id == this.authUser.id
         },
     },
     methods: {
@@ -487,19 +476,9 @@ export default {
             border-color: nth($color, 1);
         }
     }
-    .hover-only {
-        display: none;
-    }
-    &.red-hover {
-        cursor: pointer;
-        &:hover {
-            .hover-only {
-                display: block;
-            }
-            :not(.hover-only) {
-                display: none;
-            }
-        }
-    }
+}
+.clickable {
+    font-weight: 500;
+    color: $primary;
 }
 </style>

@@ -20,6 +20,9 @@ export default {
             return rows
         },
         validateMappedField(field, rows, depth) {
+            if (field.type == 'date') {
+                console.log('validate mapped date', field)
+            }
             // Assume no error
             let isValid = true
             field.error = false
@@ -65,6 +68,7 @@ export default {
                         const isNumber = typeof valueToTest == 'number'
                         const dateValue = new Date(valueToTest)
                         if (!dateValue instanceof Date || isNaN(dateValue) || isNumber) {
+                            console.log('error in date', field, field.error)
                             field.error = `Invalid <strong>Date format</strong>.
                             <br>Found value: <i>${fieldValue}</i> on <strong>line ${i + 2}</strong>
                             <br>Make sure that values only contain <strong>English</strong> month names`

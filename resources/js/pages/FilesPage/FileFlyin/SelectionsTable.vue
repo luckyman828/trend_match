@@ -1100,6 +1100,7 @@ export default {
     mixins: [sortArray],
     data: function() {
         return {
+            loadingData: false,
             fileSelectionMagicLinkSent: false,
             selectedSelections: [],
             sortKey: null,
@@ -1203,7 +1204,7 @@ export default {
         },
         readyStatus() {
             if (this.getSelectionsStatus == 'error') return 'error'
-            if (this.getSelectionsStatus == 'loading' || this.cloningSetup) return 'loading'
+            if (this.getSelectionsStatus == 'loading' || this.cloningSetup || this.loadingData) return 'loading'
             return 'success'
         },
         loadingMsg() {
@@ -1232,17 +1233,23 @@ export default {
             'getSelectionLink',
         ]),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
+        ...mapActions('presentation', ['fetchFilePresentations']),
         ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
-        initData(forceRefresh) {
+        async initData(forceRefresh) {
             if (
                 forceRefresh ||
                 this.getCurrentFileChanged ||
                 (this.getSelectionsStatus != 'success' && this.getSelectionsStatus != 'loading')
             ) {
-                this.fetchSelections({ fileId: this.currentFile.id })
+                this.loadingData = true
+                await Promise.all([
+                    this.fetchSelections({ fileId: this.currentFile.id }),
+                    this.fetchFilePresentations(this.currentFile.id),
+                ])
                 this.SET_CURRENT_FILE_CHANGED(false)
+                this.loadingData = false
             }
         },
         async onGetSelectionLink(selectionId) {
