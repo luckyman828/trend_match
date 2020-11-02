@@ -54,8 +54,8 @@ export default {
         },
         getSelectedProducts: state => state.selectedProducts,
         nextProduct: (state, getters, rootState, rootGetters) => {
-            // If we have a nextProduct in our presenterQueue, then use that instead
-            const nextPresentationQueueProduct = rootGetters['presenterQueue/getNextProduct']
+            // If we have a nextProduct in our presentationQueue, then use that instead
+            const nextPresentationQueueProduct = rootGetters['presentationQueue/getNextProduct']
             if (nextPresentationQueueProduct) {
                 return nextPresentationQueueProduct
             }
@@ -69,8 +69,8 @@ export default {
             }
         },
         prevProduct: (state, getters, rootState, rootGetters) => {
-            // If we have a prevProduct in our presenterQueue, then use that instead
-            const prevPresentationQueueProduct = rootGetters['presenterQueue/getPrevProduct']
+            // If we have a prevProduct in our presentationQueue, then use that instead
+            const prevPresentationQueueProduct = rootGetters['presentationQueue/getPrevProduct']
             if (prevPresentationQueueProduct) {
                 return prevPresentationQueueProduct
             }

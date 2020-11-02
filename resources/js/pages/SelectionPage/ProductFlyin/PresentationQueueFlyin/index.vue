@@ -1,8 +1,6 @@
 <template>
     <div class="presenter-queue-wrapper">
-
-        <SearchFlyin/>
-
+        <SearchFlyin />
     </div>
 </template>
 
@@ -10,9 +8,9 @@
 import SearchFlyin from './SearchFlyin'
 
 export default {
-    name: 'presenterQueueWrapper',
+    name: 'PresentationQueueFlyin',
     components: {
-        SearchFlyin
-    }
+        SearchFlyin,
+    },
 }
 </script>

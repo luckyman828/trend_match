@@ -26,6 +26,8 @@ export default {
         currentWorkspaceIndex: state => state.currentWorkspaceIndex,
         currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
         authUserWorkspaceRole: (state, getters) => {
+            if (!getters.currentWorkspace) return 'Undefined'
+            if (getters.currentWorkspace.role == 'Owner') return 'Admin'
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
         },
     },

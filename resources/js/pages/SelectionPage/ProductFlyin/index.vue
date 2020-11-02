@@ -273,7 +273,7 @@
 
             <RequestThreadSection v-else :selectionInput="selectionInput" @onTab="onTabRequestThread" />
 
-            <PresenterQueueFlyin :product="product" v-if="selection.is_presenting && show" />
+            <PresentationQueueFlyin :product="product" v-if="selection.is_presenting && show" />
 
             <!-- <RequestThreadFlyin/> -->
 
@@ -316,7 +316,7 @@ import DistributionSection from './DistributionSection'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
 import VariantListItem from './VariantListItem'
-import PresenterQueueFlyin from './PresenterQueueFlyin/'
+import PresentationQueueFlyin from './PresentationQueueFlyin/'
 import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
@@ -335,7 +335,7 @@ export default {
         RequestsSection,
         SelectionSelector,
         SelectionPresenterModeButton,
-        PresenterQueueFlyin,
+        PresentationQueueFlyin,
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
@@ -447,7 +447,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
-        ...mapActions('presenterQueue', ['broadcastProduct']),
+        ...mapActions('presentationQueue', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
