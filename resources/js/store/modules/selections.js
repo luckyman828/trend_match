@@ -989,7 +989,7 @@ export default {
                     )
                 })
         },
-        async stopPresentation({}, { presentationId }) {
+        async stopPresentation({ commit }, { presentationId }) {
             // console.log('stop presentation', presentationId)
             const apiUrl = `/presentation/${presentationId}`
             await axios.delete(apiUrl).then(response => {
@@ -1232,13 +1232,20 @@ export default {
             state.selections.splice(index, 1)
         },
         UPDATE_SELECTION(state, selection) {
-            const stateSelection = state.selections.find(x => x.id == selection.id)
-            if (stateSelection) {
-                // Make users, teams and denied_users reactive
-                if (selection.users) Vue.set(stateSelection, 'users', selection.users)
-                if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
-                if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
-                Object.assign(stateSelection, selection)
+            const stateSelections = []
+            const selectionsArraySelection = state.selections.find(x => x.id == selection.id)
+            if (selectionsArraySelection) stateSelections.push(selectionsArraySelection)
+            const currentSelection = state.currentSelections.find(x => x.id == selection.id)
+            if (currentSelection) stateSelections.push(currentSelection)
+            if (stateSelections.length > 0) {
+                stateSelections.map(stateSelection => {
+                    // Make users, teams and denied_users reactive
+                    if (selection.users) Vue.set(stateSelection, 'users', selection.users)
+                    if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
+                    if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
+                    if (selection.children) Vue.set(stateSelection, 'children', selection.children)
+                    Object.assign(stateSelection, selection)
+                })
             }
         },
         setSelectionSettings(state, { selection, settings }) {

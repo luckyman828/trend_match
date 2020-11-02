@@ -2,12 +2,14 @@ export default {
     namespaced: true,
 
     state: {
+        presentations: [],
         activePresentationDetails: null,
         presentationId: null,
         currentProductId: null,
     },
 
     getters: {
+        getPresentations: state => state.presentations,
         getCurrentPresentationId: (state, getters, rootState, rootGetters) => {
             // Check if we currently have any active selection
             const selection = rootGetters['selections/getCurrentSelection']

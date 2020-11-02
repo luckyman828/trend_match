@@ -1235,13 +1235,13 @@ export default {
         ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
-        initData(forceRefresh) {
+        async initData(forceRefresh) {
             if (
                 forceRefresh ||
                 this.getCurrentFileChanged ||
                 (this.getSelectionsStatus != 'success' && this.getSelectionsStatus != 'loading')
             ) {
-                this.fetchSelections({ fileId: this.currentFile.id })
+                const selections = await this.fetchSelections({ fileId: this.currentFile.id })
                 this.SET_CURRENT_FILE_CHANGED(false)
             }
         },

@@ -165,8 +165,8 @@
                 />
                 <div
                     v-else-if="selection.is_presenting"
-                    class="pill primary sm presentation-button"
-                    :class="[`group-${presentationGroupIndex}`, { 'red-hover': selection.your_role == 'Owner' }]"
+                    class="pill primary sm"
+                    :class="[`group-${presentationGroupIndex}`]"
                     @click="
                         selection.your_role == 'Owner' &&
                             stopPresentation({ presentationId: selection.presentation_id })
@@ -177,10 +177,10 @@
                 >
                     <i style="font-size: 12px; margin: 0 0px 0 4px; font-weight: 400;" class="far fa-presentation"></i>
                     <span>In presentation</span>
-                    <template v-if="selection.your_role == 'Owner'">
+                    <!-- <template v-if="selection.your_role == 'Owner'">
                         <i class="far fa-times hover-only"></i>
                         <span class="hover-only">Stop presentation</span>
-                    </template>
+                    </template> -->
                 </div>
             </td>
             <td class="action">

@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'selectionPresenterModeButton',
     props: {
@@ -92,9 +92,27 @@ export default {
         },
     },
     methods: {
-        ...mapActions('selections', ['togglePresenterMode', 'startPresentation', 'stopPresentation']),
+        ...mapActions('selections', [
+            'togglePresenterMode',
+            'startPresentation',
+            'stopPresentation',
+            'fetchSelection',
+            'fetchSelections',
+            'createSelectionTree',
+        ]),
+        ...mapMutations('selections', ['UPDATE_SELECTION']),
         async onTogglePresenterMode(selection) {
             if (!this.selection.is_presenting) {
+                // Make sure we have fethed the selections children
+                if (!selection.children) {
+                    const selections = await this.fetchSelections({ fileId: selection.file_id })
+                    const tree = await this.createSelectionTree(selections)
+                    const theSelection = selections.find(x => x.id == selection.id)
+                    await this.UPDATE_SELECTION(theSelection)
+                    // console.log('fetched selections', selections, tree)
+                    // await this.fetchSelection({ selectionId: selection.id, addToState: false })
+                }
+
                 // Pre-select the selection and all descendants
                 this.presetSelectionAndDescendants(selection)
 
