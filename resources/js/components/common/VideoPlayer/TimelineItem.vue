@@ -1,6 +1,6 @@
 <template>
     <div class="timeline-item" :style="itemStyle" :class="{ current: timing.isCurrent }" @click="onSeekTo">
-        <v-popover placement="top" popoverClass="min" :container="$el">
+        <v-popover placement="top" popoverClass="min">
             <div class="timeline-marker">
                 <div class="inner"></div>
             </div>
