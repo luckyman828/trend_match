@@ -27,7 +27,7 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['productsStatus']),
-        ...mapGetters('selections', ['currentSelectionStatus']),
+        ...mapGetters('selections', ['currentSelectionStatus', 'getCurrentSelections']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('files', ['filesStatus']),
