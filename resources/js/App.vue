@@ -44,13 +44,22 @@
                     v-if="getLoginBackgroundImage"
                     :style="`background-image: url(${getLoginBackgroundImage})`"
                 ></div>
-                <template v-else>
+                <div
+                    class="background-cover"
+                    v-else
+                    :style="`background-image: url(/images/pexels-andrew-neel-3178875.jpg); filter: brightness(0.5);`"
+                ></div>
+                <!-- <template v-else>
                     <img src="/images/graphs.svg" class="bg-left" />
                     <img src="/images/graphs.svg" class="bg-right" />
-                </template>
+                </template> -->
             </template>
             <div class="inner">
-                <img class="logo" src="/images/kollekt-logo.svg" v-if="!isAuthenticated" />
+                <img
+                    class="logo"
+                    :src="getLoginLogo ? getLoginLogo : '/images/kollekt-logo.svg'"
+                    v-if="!isAuthenticated"
+                />
 
                 <transition name="fade">
                     <router-view :key="$route.path"></router-view>
@@ -111,6 +120,8 @@ export default {
             'authStatus',
             'getAuthUserToken',
             'getLoginBackgroundImage',
+            'getLoginLogo',
+            'getLoginWorkspaceName',
         ]),
         ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
@@ -498,5 +509,10 @@ body {
     width: 100%;
     height: 100%;
     background-size: cover;
+}
+.logo {
+    max-height: 40px;
+    max-width: 200px;
+    object-fit: contain;
 }
 </style>

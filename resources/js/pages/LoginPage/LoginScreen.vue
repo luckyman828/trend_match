@@ -1,7 +1,7 @@
 <template>
-    <div class="login-screen">
-        <h2>Welcome to Kollekt</h2>
-        <h3>Please login to your account.</h3>
+    <div class="login-form">
+        <!-- <h3>Welcome to Kollekt</h3>
+        <p>Login to get started</p> -->
         <div class="notice-box">
             <strong>
                 First time visiting?
@@ -49,7 +49,7 @@
             </div>
 
             <div class="form-element">
-                <button type="submit" class="button dark full-width xl">
+                <button type="submit" class="button primary full-width lg">
                     <span>Login</span>
                 </button>
             </div>
@@ -106,14 +106,18 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-.login-screen {
+.login-form {
+    width: 302px;
+    > * {
+        width: 100%;
+    }
     .notice-box {
         border-radius: 4px;
         padding: 16px;
-        margin-bottom: -32px;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
         background: $primary;
         color: white;
+        margin-top: 28px;
         strong {
             color: white;
             display: block;
@@ -125,14 +129,14 @@ export default {
             color: white;
         }
     }
-    h2 {
-        margin-top: 10vh;
+    h3 {
+        margin-top: 28px;
     }
     form {
         text-align: left;
-        margin-top: 10vh;
+        margin-top: 32px;
         button {
-            margin-top: 20px;
+            // margin-top: 20px;
         }
         .error-wrapper {
             color: $fail;

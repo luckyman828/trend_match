@@ -12,6 +12,7 @@ export default {
         passwordRecoverySessionId: null,
         backgroundImage: null,
         logo: null,
+        workspaceName: null,
     },
 
     getters: {
@@ -22,7 +23,8 @@ export default {
         getPasswordRecoveryEmail: state => state.passwordRecoveryEmail,
         getPasswordRecoverySessionId: state => state.passwordRecoverySessionId,
         getLoginBackgroundImage: state => state.backgroundImage,
-        getLogo: state => state.logo,
+        getLoginLogo: state => state.logo,
+        getLoginWorkspaceName: state => state.workspaceName,
     },
 
     actions: {
@@ -173,6 +175,9 @@ export default {
         },
         SET_LOGO(state, imageUrl) {
             state.logo = imageUrl
+        },
+        SET_WORKSPACE_NAME(state, name) {
+            state.workspaceName = name
         },
     },
 }

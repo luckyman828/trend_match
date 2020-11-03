@@ -42,7 +42,7 @@ export default {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTION_ID']),
-        ...mapMutations('auth', ['SET_BACKGROUND_IMAGE']),
+        ...mapMutations('auth', ['SET_BACKGROUND_IMAGE', 'SET_LOGO', 'SET_WORKSPACE_NAME']),
         async init() {
             await this.handleLink()
             this.status = 'success'
@@ -51,10 +51,16 @@ export default {
             const linkHash = this.$route.params.linkHash
             const selectionInfo = await this.fetchPublicSelectionInfo(linkHash)
             // await store.dispatch('selections/readSelectionLinkHash', this.$route.params.linkHash)
-            // this.SET_CURRENT_SELECTION_ID(selectionInfo.selection_id)
+            this.SET_CURRENT_SELECTION_ID(selectionInfo.selection_id)
             const videoThumbnail = selectionInfo.video.thumbnail
             const coverImage = videoThumbnail ? videoThumbnail : selectionInfo.workspace_cover
             this.SET_BACKGROUND_IMAGE(coverImage)
+            if (selectionInfo.workspace_logo) {
+                this.SET_LOGO(selectionInfo.workspace_logo)
+            }
+            if (selectionInfo.workspace_name) {
+                this.SET_WORKSPACE_NAME(selectionInfo.workspace_name)
+            }
 
             // A. Check if the user is logged in
             if (this.isAuthenticated) {
