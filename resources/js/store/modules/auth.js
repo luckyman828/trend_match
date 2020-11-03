@@ -11,6 +11,7 @@ export default {
         passwordRecoveryEmail: null,
         passwordRecoverySessionId: null,
         backgroundImage: null,
+        logo: null,
     },
 
     getters: {
@@ -21,6 +22,7 @@ export default {
         getPasswordRecoveryEmail: state => state.passwordRecoveryEmail,
         getPasswordRecoverySessionId: state => state.passwordRecoverySessionId,
         getLoginBackgroundImage: state => state.backgroundImage,
+        getLogo: state => state.logo,
     },
 
     actions: {
@@ -168,6 +170,9 @@ export default {
         },
         SET_BACKGROUND_IMAGE(state, imageUrl) {
             state.backgroundImage = imageUrl
+        },
+        SET_LOGO(state, imageUrl) {
+            state.logo = imageUrl
         },
     },
 }

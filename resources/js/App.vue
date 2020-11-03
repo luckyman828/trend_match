@@ -39,8 +39,15 @@
         </template>
         <div class="main" id="main" ref="main" :class="{ 'hide-crisp': hideCrisp }">
             <template v-if="!isAuthenticated">
-                <img src="/images/graphs.svg" class="bg-left" />
-                <img src="/images/graphs.svg" class="bg-right" />
+                <div
+                    class="background-cover"
+                    v-if="getLoginBackgroundImage"
+                    :style="`background-image: url(${getLoginBackgroundImage})`"
+                ></div>
+                <template v-else>
+                    <img src="/images/graphs.svg" class="bg-left" />
+                    <img src="/images/graphs.svg" class="bg-right" />
+                </template>
             </template>
             <div class="inner">
                 <img class="logo" src="/images/kollekt-logo.svg" v-if="!isAuthenticated" />
@@ -98,7 +105,13 @@ export default {
     },
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
-        ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
+        ...mapGetters('auth', [
+            'isAuthenticated',
+            'authUser',
+            'authStatus',
+            'getAuthUserToken',
+            'getLoginBackgroundImage',
+        ]),
         ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
         ...mapGetters('changelog', ['getShowChangelog']),
@@ -377,6 +390,20 @@ body,
             position: relative;
             min-height: 100vh;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .inner {
+                max-width: 800px;
+                background: white;
+                z-index: 1;
+                padding: 32px 60px 60px;
+                text-align: center;
+                box-shadow: $shadowModule;
+                border-radius: $borderRadiusModule;
+                border: $borderModule;
+            }
         }
         .bg-left,
         .bg-right {
@@ -390,20 +417,6 @@ body,
                 right: 0;
             }
         }
-        .inner {
-            position: absolute;
-            margin: auto;
-            left: 0;
-            right: 0;
-            max-width: 800px;
-            background: white;
-            z-index: 1;
-            padding: 60px 200px;
-            text-align: center;
-        }
-    }
-    .inner {
-        height: 100%;
     }
 }
 .main {
@@ -477,5 +490,13 @@ body {
             display: block;
         }
     }
+}
+.background-cover {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
 }
 </style>

@@ -1145,7 +1145,7 @@ export default {
             const linkBase = `${location.origin}/#/join/`
             return linkBase + linkCode
         },
-        async readSelectionLinkHash({}, linkHash) {
+        async fetchPublicSelectionInfo({}, linkHash) {
             const apiUrl = `selections/public-info?code=${linkHash}`
             let selectionInfo
             await axios.get(apiUrl).then(response => {

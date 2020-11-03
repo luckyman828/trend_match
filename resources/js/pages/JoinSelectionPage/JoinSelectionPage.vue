@@ -148,7 +148,7 @@ export default {
 
 <style lang="scss" scoped>
 .join-selection-page {
-    padding-top: 10vh;
+    padding-top: 32px;
 }
 .join-form {
     text-align: left;

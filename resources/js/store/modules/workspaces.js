@@ -42,7 +42,7 @@ export default {
     },
 
     actions: {
-        async fetchWorkspaces({ commit }) {
+        async fetchWorkspaces({ commit, dispatch }) {
             // Set the state to loading
             commit('setLoading', true)
 
@@ -58,6 +58,7 @@ export default {
                     commit('setLoading', false)
                     success = true
                     workspaces = response.data
+                    // dispatch('initWorkspaces', workspaces)
                 } catch (err) {
                     console.log('API error in workspaces.js :')
                     console.log(err)
@@ -72,11 +73,12 @@ export default {
             commit('files/SET_CURRENT_FOLDER', null, { root: true })
             commit('setCurrentWorkspaceIndex', index)
         },
-        async fetchWorkspace({ state }, workspaceId) {
+        async fetchWorkspace({ state, dispatch }, workspaceId) {
             const apiUrl = `/workspaces/${workspaceId}`
             let workspace
             await axios.get(apiUrl).then(response => {
                 workspace = response.data
+                // dispatch('initWorkspaces', [workspace])
                 const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
                 if (stateWorkspace) {
                     Vue.set(stateWorkspace, workspace)
@@ -86,7 +88,6 @@ export default {
         },
         async uploadWorkspaceCoverImage({ getters, dispatch }, image) {
             const workspace = getters.currentWorkspace
-            console.log('upload cover image', image)
             // First generate presigned URL we can put the image to from the API
             const apiUrl = `/workspaces/${workspace.id}/generate-presigned-cover`
             let presignedUrl
@@ -100,7 +101,7 @@ export default {
                 new Compressor(image, {
                     quality: 0.8,
                     checkOrientation: true,
-                    maxHeight: 1080,
+                    maxHeight: 800,
                     success(result) {
                         compressedImage = result
                         resolve()
@@ -139,6 +140,114 @@ export default {
                     console.log('err', err)
                 })
         },
+        async uploadWorkspaceLogo({ getters, dispatch }, image) {
+            const workspace = getters.currentWorkspace
+            // First generate presigned URL we can put the image to from the API
+            const apiUrl = `/workspaces/${workspace.id}/generate-presigned-logo-url`
+            let presignedUrl
+            await axios.get(apiUrl).then(response => {
+                presignedUrl = response.data
+            })
+
+            // PRE-COMPRESS THE IMAGE
+            let compressedImage = image
+            await new Promise((resolve, reject) => {
+                new Compressor(image, {
+                    quality: 1,
+                    checkOrientation: true,
+                    maxHeight: 60,
+                    success(result) {
+                        compressedImage = result
+                        resolve()
+                    },
+                    error(err) {
+                        console.log(err.message)
+                        reject()
+                    },
+                })
+            })
+
+            // Next configure a request to the presigned URL
+            const uploadUrl = presignedUrl.presigned_url
+
+            let blob = new Blob([compressedImage], { type: compressedImage.type })
+            let xhr = new XMLHttpRequest()
+            await new Promise((resolve, reject) => {
+                xhr.open('PUT', uploadUrl)
+                xhr.setRequestHeader('x-amz-acl', 'public-read')
+                xhr.setRequestHeader('Content-Type', 'image/jpeg')
+                xhr.onload = () => resolve(xhr)
+                xhr.onerror = () => reject(xhr)
+                xhr.send(blob)
+            })
+                .then(response => {
+                    // On success, set the image on the picture
+                    let newUrl = presignedUrl.url
+                    // Change the URL from https to https
+                    if (newUrl.indexOf('https') < 0) {
+                        newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
+                    }
+                    workspace.logo = newUrl
+                    dispatch('updateWorkspaceDetails', workspace)
+                })
+                .catch(err => {
+                    console.log('err', err)
+                })
+        },
+        async uploadImageToWorkspace({ getters, dispatch }, image) {
+            const workspace = getters.currentWorkspace
+            // First generate presigned URL we can put the image to from the API
+            const apiUrl = `/workspaces/${workspace.id}/generate-presigned-cover`
+            let presignedUrl
+            await axios.get(apiUrl).then(response => {
+                presignedUrl = response.data
+            })
+
+            // PRE-COMPRESS THE IMAGE
+            let compressedImage = image
+            await new Promise((resolve, reject) => {
+                new Compressor(image, {
+                    quality: 0.8,
+                    checkOrientation: true,
+                    maxHeight: 800,
+                    success(result) {
+                        compressedImage = result
+                        resolve()
+                    },
+                    error(err) {
+                        console.log(err.message)
+                        reject()
+                    },
+                })
+            })
+
+            // Next configure a request to the presigned URL
+            const uploadUrl = presignedUrl.presigned_url
+            let imageUrl
+
+            let blob = new Blob([compressedImage], { type: compressedImage.type })
+            let xhr = new XMLHttpRequest()
+            await new Promise((resolve, reject) => {
+                xhr.open('PUT', uploadUrl)
+                xhr.setRequestHeader('x-amz-acl', 'public-read')
+                xhr.setRequestHeader('Content-Type', 'image/jpeg')
+                xhr.onload = () => resolve(xhr)
+                xhr.onerror = () => reject(xhr)
+                xhr.send(blob)
+            })
+                .then(response => {
+                    // On success, set the image on the picture
+                    imageUrl = presignedUrl.url
+                    // Change the URL from https to https
+                    if (imageUrl.indexOf('https') < 0) {
+                        imageUrl = imageUrl.slice(0, 4) + 's' + imageUrl.slice(4)
+                    }
+                })
+                .catch(err => {
+                    console.log('err', err)
+                })
+            return imageUrl
+        },
         async updateWorkspaceDetails({ commit }, workspace) {
             const apiUrl = `workspaces/workspaces/${workspace.id}`
             await axios.put(apiUrl, workspace).then(response => {
@@ -152,6 +261,15 @@ export default {
                     { root: true }
                 )
             })
+        },
+        async initWorkspaces({}, workspaces) {
+            // workspaces.map(workspace => {
+            //     Object.defineProperty(workspace, 'logoUrl', {
+            //         get: function() {
+            //             return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`
+            //         },
+            //     })
+            // })
         },
     },
 

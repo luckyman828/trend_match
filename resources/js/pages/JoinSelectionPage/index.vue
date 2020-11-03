@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import PageLoader from '../../components/common/PageLoader'
 import JoinSelectionPage from './JoinSelectionPage'
 
@@ -38,15 +38,24 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('selections', ['fetchSelection', 'joinSelection']),
+        ...mapActions('selections', ['fetchSelection', 'joinSelection', 'fetchPublicSelectionInfo']),
         ...mapActions('files', ['fetchFile']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTION_ID']),
+        ...mapMutations('auth', ['SET_BACKGROUND_IMAGE']),
         async init() {
             await this.handleLink()
             this.status = 'success'
         },
         async handleLink() {
-            console.log('loader handling link')
+            const linkHash = this.$route.params.linkHash
+            const selectionInfo = await this.fetchPublicSelectionInfo(linkHash)
+            // await store.dispatch('selections/readSelectionLinkHash', this.$route.params.linkHash)
+            // this.SET_CURRENT_SELECTION_ID(selectionInfo.selection_id)
+            const videoThumbnail = selectionInfo.video.thumbnail
+            const coverImage = videoThumbnail ? videoThumbnail : selectionInfo.workspace_cover
+            this.SET_BACKGROUND_IMAGE(coverImage)
+
             // A. Check if the user is logged in
             if (this.isAuthenticated) {
                 // A. 1. Check if the user has access to the selection
@@ -88,11 +97,9 @@ export default {
 
             // The user is not authenticated do nothing.
             // The user will be shown the join selection page
-            console.log('done handling link')
         },
     },
     created() {
-        console.log('loader created')
         this.init()
     },
 }

@@ -26,6 +26,10 @@
         </div> -->
 
         <div class="items-right">
+            <button class="ghost" @click="showThumbnailModal = true">
+                <i class="far fa-image"></i>
+                <span>Change video thumbnail</span>
+            </button>
             <button class="ghost" @click="toggleScanner">
                 <i class="far fa-search"></i>
                 <span v-if="scanModeActive">Deactivate scanner</span>
@@ -61,15 +65,21 @@
                 >
             </p>
         </BaseDialog>
+
+        <VideoThumbnailModal v-if="currentVideo" :show="showThumbnailModal" @close="showThumbnailModal = false" />
     </div>
 </template>
 
 <script>
 import axios from 'axios'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import VideoThumbnailModal from './VideoThumbnailModal'
+
 export default {
     name: 'editVideoPresentationNavbar',
-    components: {},
+    components: {
+        VideoThumbnailModal,
+    },
     data: function() {
         return {
             currentStatus: this.status,
@@ -77,6 +87,7 @@ export default {
             scanModeActive: false,
             scanStarted: false,
             scanStr: '',
+            showThumbnailModal: false,
         }
     },
     computed: {
@@ -84,6 +95,7 @@ export default {
         ...mapGetters('products', ['products']),
         ...mapGetters('videoPresentation', {
             status: 'getStatus',
+            currentVideo: 'getCurrentVideo',
         }),
         ...mapGetters('videoPlayer', {
             videoDuration: 'getDuration',

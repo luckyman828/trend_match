@@ -3,7 +3,36 @@
         <h1>Settings</h1>
         <div class="form-wrapper">
             <div class="form-section">
-                <h3>Workspace Cover Image</h3>
+                <h3>Workspace logo</h3>
+                <div class="img-wrapper logo-wrapper">
+                    <BaseLoader v-if="uploadingLogo" msg="Uploading image" />
+                    <template v-else-if="workspace.logo && !editLogoActive">
+                        <img :src="workspace.logo" />
+                        <div class="hover flex-list flex-v center-h center-v">
+                            <button class="white" @click="editLogoActive = true">
+                                <i class="far fa-pen"></i>
+                                <span>Change logo</span>
+                            </button>
+                        </div>
+                    </template>
+                    <BaseDroparea v-else accept="image/*" ref="droparea" v-slot="slotProps" @input="onLogoFilesChange">
+                        <div class="flex-list flex-v center-h" @click="slotProps.activate()">
+                            <i class="far fa-image lg grey"></i>
+                            <span>Drag files here or</span>
+                            <button class="primary">
+                                <span>Click to browse</span>
+                            </button>
+                        </div>
+                        <button v-if="workspace.logo" class="ghost cancel-button" @click="editLogoActive = false">
+                            <i class="far fa-times"></i>
+                            <span>Cancel</span>
+                        </button>
+                    </BaseDroparea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Workspace cover image</h3>
                 <p>
                     <i class="far fa-info-circle"></i>
                     This image will be shown on the login screen, when users are trying to join your selections, if no
@@ -16,11 +45,11 @@
                         <div class="hover flex-list flex-v center-h center-v">
                             <button class="white" @click="editImageActive = true">
                                 <i class="far fa-pen"></i>
-                                <span>Replace cover image</span>
+                                <span>Change cover image</span>
                             </button>
                         </div>
                     </template>
-                    <BaseDroparea v-else accept="image/*" ref="droparea" v-slot="slotProps" @input="onFilesChange">
+                    <BaseDroparea v-else accept="image/*" ref="droparea" v-slot="slotProps" @input="onCoverFilesChange">
                         <div class="flex-list flex-v center-h" @click="slotProps.activate()">
                             <i class="far fa-image lg grey"></i>
                             <span>Drag files here or</span>
@@ -49,9 +78,10 @@ export default {
     name: 'settingsPage',
     data: function() {
         return {
-            coverImageToUpload: null,
             editImageActive: false,
+            editLogoActive: false,
             uploadingCoverImage: false,
+            uploadingLogo: false,
         }
     },
     computed: {
@@ -61,13 +91,20 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('workspaces', ['uploadWorkspaceCoverImage']),
-        async onFilesChange(fileList) {
+        ...mapActions('workspaces', ['uploadWorkspaceCoverImage', 'uploadWorkspaceLogo']),
+        async onCoverFilesChange(fileList) {
             this.uploadingCoverImage = true
             const file = fileList[0]
             this.editImageActive = false
             await this.uploadWorkspaceCoverImage(file)
             this.uploadingCoverImage = false
+        },
+        async onLogoFilesChange(fileList) {
+            this.uploadingLogo = true
+            const file = fileList[0]
+            this.editLogoActive = false
+            await this.uploadWorkspaceLogo(file)
+            this.uploadingLogo = false
         },
     },
     created() {
@@ -109,6 +146,9 @@ export default {
             display: flex;
         }
     }
+}
+.logo-wrapper {
+    height: 160px;
 }
 .cancel-button {
     position: absolute;
