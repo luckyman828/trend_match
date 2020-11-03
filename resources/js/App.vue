@@ -380,6 +380,9 @@ body,
             max-height: 100vh;
             height: 100vh;
             overflow: auto;
+            .inner {
+                height: 100%;
+            }
         }
     }
 
@@ -406,6 +409,7 @@ body,
             justify-content: center;
             align-items: center;
             .inner {
+                height: auto;
                 max-width: 800px;
                 background: white;
                 z-index: 1;
