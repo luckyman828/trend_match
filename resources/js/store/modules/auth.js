@@ -10,6 +10,7 @@ export default {
         user: null,
         passwordRecoveryEmail: null,
         passwordRecoverySessionId: null,
+        backgroundImage: null,
     },
 
     getters: {
@@ -19,6 +20,7 @@ export default {
         getAuthUserToken: state => state.token,
         getPasswordRecoveryEmail: state => state.passwordRecoveryEmail,
         getPasswordRecoverySessionId: state => state.passwordRecoverySessionId,
+        getLoginBackgroundImage: state => state.backgroundImage,
     },
 
     actions: {
@@ -163,6 +165,9 @@ export default {
             state.token = token
             // Save the authenticated user
             state.user = user
+        },
+        SET_BACKGROUND_IMAGE(state, imageUrl) {
+            state.backgroundImage = imageUrl
         },
     },
 }

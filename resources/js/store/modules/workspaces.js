@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Compressor from 'compressorjs'
 
 export default {
     namespaced: true,
@@ -34,6 +35,10 @@ export default {
             if (getters.currentWorkspace.role == 'Owner') return 'Admin'
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
         },
+        getRealWorkspaceRole: (state, getters) => {
+            if (!getters.currentWorkspace) return 'Undefined'
+            return getters.currentWorkspace.role
+        },
     },
 
     actions: {
@@ -67,7 +72,87 @@ export default {
             commit('files/SET_CURRENT_FOLDER', null, { root: true })
             commit('setCurrentWorkspaceIndex', index)
         },
-        async uploadWorkspaceCoverImage({}, image) {},
+        async fetchWorkspace({ state }, workspaceId) {
+            const apiUrl = `/workspaces/${workspaceId}`
+            let workspace
+            await axios.get(apiUrl).then(response => {
+                workspace = response.data
+                const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
+                if (stateWorkspace) {
+                    Vue.set(stateWorkspace, workspace)
+                }
+            })
+            return workspace
+        },
+        async uploadWorkspaceCoverImage({ getters, dispatch }, image) {
+            const workspace = getters.currentWorkspace
+            console.log('upload cover image', image)
+            // First generate presigned URL we can put the image to from the API
+            const apiUrl = `/workspaces/${workspace.id}/generate-presigned-cover`
+            let presignedUrl
+            await axios.get(apiUrl).then(response => {
+                presignedUrl = response.data
+            })
+
+            // PRE-COMPRESS THE IMAGE
+            let compressedImage = image
+            await new Promise((resolve, reject) => {
+                new Compressor(image, {
+                    quality: 0.8,
+                    checkOrientation: true,
+                    maxHeight: 1080,
+                    success(result) {
+                        compressedImage = result
+                        resolve()
+                    },
+                    error(err) {
+                        console.log(err.message)
+                        reject()
+                    },
+                })
+            })
+
+            // Next configure a request to the presigned URL
+            const uploadUrl = presignedUrl.presigned_url
+
+            let blob = new Blob([compressedImage], { type: compressedImage.type })
+            let xhr = new XMLHttpRequest()
+            await new Promise((resolve, reject) => {
+                xhr.open('PUT', uploadUrl)
+                xhr.setRequestHeader('x-amz-acl', 'public-read')
+                xhr.setRequestHeader('Content-Type', 'image/jpeg')
+                xhr.onload = () => resolve(xhr)
+                xhr.onerror = () => reject(xhr)
+                xhr.send(blob)
+            })
+                .then(response => {
+                    // On success, set the image on the picture
+                    let newUrl = presignedUrl.url
+                    // Change the URL from https to https
+                    if (newUrl.indexOf('https') < 0) {
+                        newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
+                    }
+                    workspace.cover_image = newUrl
+                    dispatch('updateWorkspaceDetails', workspace)
+                })
+                .catch(err => {
+                    console.log('err', err)
+                })
+        },
+        async updateWorkspaceDetails({ commit }, workspace) {
+            const apiUrl = `workspaces/workspaces/${workspace.id}`
+            await axios.put(apiUrl, workspace).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Workspace details saved',
+                        iconClass: 'fa-check',
+                        type: 'success',
+                    },
+                    { root: true }
+                )
+            })
+        },
     },
 
     mutations: {

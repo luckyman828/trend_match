@@ -121,6 +121,7 @@ router.beforeEach(async (to, from, next) => {
     // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
     if (to.name == 'joinSelection' && to.params.linkHash) {
         const selectionId = await store.dispatch('selections/readSelectionLinkHash', to.params.linkHash)
+        console.log('joni selection read hash', selectionId)
         store.commit('selections/SET_CURRENT_SELECTION_ID', selectionId)
         next()
     }

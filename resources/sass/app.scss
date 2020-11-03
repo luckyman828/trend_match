@@ -1477,6 +1477,12 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
+    &.center-h:not(.flex-v) {
+        justify-content: center;
+    }
+    &.center-v:not(.flex-v) {
+        align-items: center;
+    }
     &.col-2 > * {
         width: 50%;
     }
@@ -1498,6 +1504,12 @@ input::placeholder {
     }
     &.flex-v {
         flex-direction: column;
+        &.center-h {
+            align-items: center;
+        }
+        &.center-v {
+            justify-content: center;
+        }
         > *:not(:first-child) {
             margin-left: 0;
             margin-top: 8px;

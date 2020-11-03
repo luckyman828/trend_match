@@ -1135,30 +1135,23 @@ export default {
             return joinResponse
         },
         async getSelectionLink({}, selectionId) {
-            const apiUrl = `selections/${selectionId}/get-link`
-            const axiosInstance = axios.create({
-                baseURL: 'api',
-            })
-
-            let linkId
-            await axiosInstance.get(apiUrl).then(response => {
-                linkId = response.data
+            const apiUrl = `selections/${selectionId}/shorten_code`
+            let linkCode
+            await axios.get(apiUrl).then(response => {
+                linkCode = response.data.message
+                console.log('response code', linkCode)
             })
 
             const linkBase = `${location.origin}/#/join/`
-            return linkBase + linkId
+            return linkBase + linkCode
         },
         async readSelectionLinkHash({}, linkHash) {
-            const apiUrl = `selections/read-link/${linkHash}`
-            const axiosInstance = axios.create({
-                baseURL: 'api',
+            const apiUrl = `selections/public-info?code=${linkHash}`
+            let selectionInfo
+            await axios.get(apiUrl).then(response => {
+                selectionInfo = response.data
             })
-
-            let selectionId
-            await axiosInstance.get(apiUrl).then(response => {
-                selectionId = response.data.selection_id
-            })
-            return selectionId
+            return selectionInfo
         },
         async joinSelection({}, selectionId) {
             const apiUrl = `selections/join/${selectionId}`
