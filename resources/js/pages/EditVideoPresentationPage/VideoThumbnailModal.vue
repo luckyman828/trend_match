@@ -46,6 +46,7 @@ export default {
         return {
             uploadingMsg: null,
             uploadingImage: false,
+            editImageActive: false,
         }
     },
     props: ['show'],
@@ -56,7 +57,7 @@ export default {
     },
     methods: {
         ...mapActions('workspaces', ['uploadImageToWorkspace']),
-        ...mapActions('videoPresentation', ['updateCurrentVideo']),
+        ...mapActions('videoPresentation', ['updateVideoThumbnail']),
         async onFilesChange(fileList) {
             this.uploadingImage = true
             this.uploadingMsg = 'Uploading image'
@@ -68,7 +69,7 @@ export default {
             console.log('uploaded thumbnail', newUrl)
             this.currentVideo.thumbnail = newUrl
             this.uploadingMsg = 'Saving video changes'
-            await this.updateCurrentVideo()
+            await this.updateVideoThumbnail(this.currentVideo)
 
             this.uploadingImage = false
         },

@@ -156,6 +156,12 @@ export default {
                     commit('SET_STATUS', 'error')
                 })
         },
+        async updateVideoThumbnail({}, video) {
+            const apiUrl = `/videos/${video.id}`
+            await axios.put(apiUrl, {
+                thumbnail: video.thumbnail,
+            })
+        },
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
             commit('SET_TIMING_STATUS', 'adding')
             await dispatch('initTimings', [newTiming])
