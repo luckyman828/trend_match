@@ -60,5 +60,8 @@ export default {
         width: 100%;
         overflow-x: auto;
     }
+    @media screen and (max-width: $screenXs) {
+        display: none;
+    }
 }
 </style>

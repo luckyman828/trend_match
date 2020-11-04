@@ -133,7 +133,7 @@ export default {
             return this.isDragging
         },
         fullScreenContent() {
-            return ['watchVideoPresentation', 'watchLivestream'].includes(this.$route.name)
+            return ['watchVideoPresentation', 'watchLivestream', 'mobileVideoPresentation'].includes(this.$route.name)
         },
         hideCrisp() {
             return ['watchLivestream', 'createLivestream', 'watchVideoPresentation', 'editVideoPresentation'].includes(

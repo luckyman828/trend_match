@@ -83,6 +83,12 @@ const routes = [
             import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/WatchVideoPresentationPage'),
     },
     {
+        path: '/file/:fileId/selection/:selectionId/video/watch/mobile',
+        name: 'mobileVideoPresentation',
+        component: () =>
+            import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage'),
+    },
+    {
         path: '/join/:linkHash',
         name: 'joinSelection',
         component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
@@ -121,6 +127,13 @@ router.beforeEach(async (to, from, next) => {
     // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
     if (to.name == 'joinSelection' && to.params.linkHash) {
         next()
+    }
+
+    if (to.name == 'watchVideoPresentation' && window.innerWidth < 1000) {
+        next({ name: 'mobileVideoPresentation', params: to.params })
+    }
+    if (to.name == 'mobileVideoPresentation' && window.innerWidth >= 1000) {
+        next({ name: 'watchVideoPresentation', params: to.params })
     }
 
     // Check that the user is not going to the login page already

@@ -142,6 +142,11 @@ export default {
                 timing.end = Math.round(timing.end)
             })
 
+            // Sort the timings by start
+            video.timings.sort((a, b) => {
+                return a.start > b.start ? 1 : -1
+            })
+
             await axios
                 .post(apiUrl, video)
                 .then(response => {
