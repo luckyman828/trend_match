@@ -519,4 +519,16 @@ body {
     max-width: 200px;
     object-fit: contain;
 }
+@media screen and (max-width: $screenXs) {
+    .app {
+        &.public {
+            .main {
+                .inner {
+                    width: calc(100% - 16px);
+                    padding: 32px 32px 60px;
+                }
+            }
+        }
+    }
+}
 </style>
