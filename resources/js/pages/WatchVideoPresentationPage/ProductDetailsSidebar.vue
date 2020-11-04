@@ -162,6 +162,7 @@ export default {
     display: flex;
     flex-direction: column;
     pointer-events: all;
+    z-index: 1;
     .background {
         height: calc(100%);
         width: 100%;
