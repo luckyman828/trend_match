@@ -43,7 +43,7 @@
                 >
             </div>
 
-            <div class="error-wrapper" v-if="error">
+            <div class="error-wrapper form-element" v-if="error">
                 <i class="far fa-exclamation-triangle"></i>
                 <span>{{ error }}</span>
             </div>
@@ -144,8 +144,8 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: -14px;
-            margin-bottom: -10px;
+            // margin-top: -14px;
+            // margin-bottom: -10px;
             i {
                 color: $fail;
                 margin-right: 8px;

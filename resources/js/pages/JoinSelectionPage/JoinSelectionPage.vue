@@ -98,7 +98,7 @@ export default {
             // Existing Account
             if (joinReponse.status == 'AccountExisted') {
                 this.SHOW_SNACKBAR({
-                    msg: `A user with that e-mail already exists. Redirecting you to login.`,
+                    msg: `A user with that e-mail already exists. Please login.`,
                     type: 'info',
                     iconClass: 'fa-info-circle',
                     duration: 10000, // 10 seconds
