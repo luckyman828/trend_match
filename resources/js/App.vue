@@ -136,9 +136,13 @@ export default {
             return ['watchVideoPresentation', 'watchLivestream', 'mobileVideoPresentation'].includes(this.$route.name)
         },
         hideCrisp() {
-            return ['watchLivestream', 'createLivestream', 'watchVideoPresentation', 'editVideoPresentation'].includes(
-                this.$route.name
-            )
+            return [
+                'watchLivestream',
+                'createLivestream',
+                'watchVideoPresentation',
+                'editVideoPresentation',
+                'mobileVideoPresentation',
+            ].includes(this.$route.name)
         },
     },
     watch: {

@@ -3,19 +3,18 @@
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
                 <div class="play-overlay" v-if="!playerStarted">
-                    <h3>Welcome to the video presentation</h3>
-                    <button class="xl white" @click="onStartPlaying">
+                    <button class="xxl circle black blur" @click="onStartPlaying">
                         <i class="far fa-play"></i>
-                        <span>Play in full-screen</span>
                     </button>
                 </div>
                 <div class="watch-overlay">
-                    <div class="actions-wrapper" :class="{ show: !isPlaying }">
-                        <div class="actions">
-                            <router-link class="button pill ghost white" :to="{ name: 'selection' }">
-                                <i class="far fa-arrow-left"></i>
-                                <span>View results / Back to selection</span>
-                            </router-link>
+                    <div class="top-info flex-list md">
+                        <button class="dark blur circle">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="flex-list flex-v xs">
+                            <span class="selection-name">{{ selection.name }}</span>
+                            <span class="brand-name">{{ workspace.title }}</span>
                         </div>
                     </div>
                     <EndedOverlay
@@ -26,8 +25,9 @@
                         "
                     />
                     <template v-if="playerStarted">
-                        <!-- <ProductDetailsSidebar />
-                        <CartSidebar ref="cartSidebar" />
+                        <ProductPreview @click.native="showProductDrawer = true" />
+                        <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
+                        <!-- <CartSidebar ref="cartSidebar" />
                         <PauseOverlay />
                         <PlayerControls /> -->
                     </template>
@@ -41,7 +41,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../components/common/VideoPlayer/'
 // import PlayerControls from './PlayerControls'
-// import ProductDetailsSidebar from './ProductDetailsSidebar'
+import ProductDetailsDrawer from './ProductDetailsDrawer'
+import ProductPreview from './ProductPreview'
 // import CartSidebar from './CartSidebar/'
 // import PauseOverlay from './PauseOverlay/'
 // import EndedOverlay from './EndedOverlay'
@@ -50,6 +51,8 @@ export default {
     name: 'mobileVideoPresentationPage',
     components: {
         VideoPlayer,
+        ProductDetailsDrawer,
+        ProductPreview,
         // PlayerControls,
         // ProductDetailsSidebar,
         // CartSidebar,
@@ -60,6 +63,8 @@ export default {
         return {
             playerStarted: false,
             isConnectedToLiveUpdates: false,
+            showControls: true,
+            showProductDrawer: false,
         }
     },
     computed: {
@@ -80,6 +85,9 @@ export default {
         }),
         ...mapGetters('presentation', {
             presentedProductId: 'getCurrentProductId',
+        }),
+        ...mapGetters('workspaces', {
+            workspace: 'currentWorkspace',
         }),
     },
     watch: {
@@ -203,8 +211,28 @@ export default {
     }
     ::v-deep {
         .timeline {
-            bottom: $heightPlayerControls;
+            bottom: 4px;
         }
+    }
+}
+.top-info {
+    padding: 12px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    color: white;
+    line-height: 1;
+    pointer-events: all;
+    background: linear-gradient(180deg, black, transparent);
+    padding-bottom: 32px;
+    .selection-name {
+        font-size: 20px;
+        font-weight: 700;
+    }
+    .brand-name {
+        font-size: 12px;
+        font-weight: 500;
     }
 }
 .watch-overlay {
@@ -216,6 +244,7 @@ export default {
     z-index: 2;
     overflow: hidden;
     pointer-events: none;
+
     .actions-wrapper {
         pointer-events: auto;
         position: absolute;
@@ -253,18 +282,21 @@ export default {
     align-items: center;
     flex-direction: column;
     display: flex;
-    background: rgba(black, 0.85);
+    background: rgba(black, 0.55);
     color: white;
     pointer-events: all;
     h3 {
         color: white;
     }
     button {
-        // cursor: pointer;
-        margin-bottom: 92px;
-        transition: 0.1s ease-out;
-        &:hover {
-            opacity: 0.9;
+        background: rgba(black, 0.8);
+        backdrop-filter: blur(5px);
+        border: none;
+        width: 72px;
+        height: 72px;
+        i {
+            color: white;
+            margin-left: 6px;
         }
     }
 }

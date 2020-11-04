@@ -143,7 +143,8 @@ export default {
         async uploadWorkspaceLogo({ getters, dispatch }, image) {
             const workspace = getters.currentWorkspace
             // First generate presigned URL we can put the image to from the API
-            const apiUrl = `/workspaces/${workspace.id}/generate-presigned-logo-url`
+            // const apiUrl = `/workspaces/${workspace.id}/generate-presigned-logo-url`
+            const apiUrl = `/workspaces/${workspace.id}/generate-presigned-cover`
             let presignedUrl
             await axios.get(apiUrl).then(response => {
                 presignedUrl = response.data
@@ -188,6 +189,7 @@ export default {
                         newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
                     }
                     workspace.logo = newUrl
+                    console.log('new workspace logo:', newUrl, workspace)
                     dispatch('updateWorkspaceDetails', workspace)
                 })
                 .catch(err => {

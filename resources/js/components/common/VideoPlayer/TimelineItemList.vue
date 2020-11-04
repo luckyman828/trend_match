@@ -27,5 +27,8 @@ export default {
     // z-index: 1;
     height: 20px;
     overflow: hidden;
+    @include mobile {
+        display: none;
+    }
 }
 </style>

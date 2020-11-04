@@ -127,16 +127,18 @@ export default {
             cursor: grabbing;
         }
     }
-    &:hover {
-        .rail {
-            height: 12px;
-        }
-        .knob {
-            height: 18px;
-            width: 18px;
-        }
-        & + .timing-list {
-            transform: translateY(-4px);
+    @include desktop {
+        &:hover {
+            .rail {
+                height: 12px;
+            }
+            .knob {
+                height: 18px;
+                width: 18px;
+            }
+            & + .timing-list {
+                transform: translateY(-4px);
+            }
         }
     }
     .rail {
@@ -146,6 +148,9 @@ export default {
         margin-right: 14px;
         background: $primary;
         transition: width 0.05s, height 0.1s;
+        @include mobile {
+            height: 4px;
+        }
     }
     .knob {
         cursor: pointer;
@@ -165,6 +170,11 @@ export default {
         -webkit-user-drag: none;
         -webkit-user-select: none;
         -ms-user-select: none;
+        @include mobile {
+            height: 8px;
+            width: 8px;
+            top: -2px;
+        }
     }
 }
 </style>

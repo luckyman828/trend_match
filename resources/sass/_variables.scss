@@ -98,33 +98,35 @@ $borderDivider: solid $dividerWidth $dividerColor;
 $darkenAmount: 10%;
 $lightenAmount: 10%;
 
-// BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state)
-$brand-colors: ('primary', $primary, mix(white, $primary, $lightenAmount), white, mix($dark05, $primary, $darkenAmount)),
-    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark), ('green', $green500, $green400, white, $green600),
-    ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount)),
-    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount)),
-    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount)),
-    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount));
+// BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state, $bgOpacity)
+$brand-colors: (
+        'primary',
+        $primary,
+        mix(white, $primary, $lightenAmount),
+        white,
+        mix($dark05, $primary, $darkenAmount),
+        1
+    ),
+    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark, 1),
+    ('green', $green500, $green400, white, $green600, 1),
+    ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount), 1),
+    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount), 1),
+    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount), 1),
+    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
+    ('black', black, mix(white, black, $lightenAmount), white, black, 0.8);
 
 $groupColors: (#3366ff), (#26abd6), (#20a720), (#b51f26), (#905b15);
 
 // BUTTON SIZES ($name, $height, $font-size, $padding, $icon-size, $icon-spacing)
 $button-sizes: ('xxs', 12px, 8px, 1px, 8px, 2px), ('xs', 20px, 12px, 6px, 12px, 2px), ('sm', 24px, 12px, 8px, 14px, 2px),
-    ('md', 36px, 14px, 16px, 16px, 0), ('lg', 48px, 14px, 20px, 16px, 0), ('xl', 60px, 18px, 24px, 20px, 0);
+    ('md', 36px, 14px, 16px, 16px, 0), ('lg', 48px, 14px, 20px, 16px, 0), ('xl', 60px, 18px, 24px, 20px, 0),
+    ('xxl', 72px, 20px, 24px, 20px, 0);
 
 // Sidebar
 $sidebarWidth: 260px;
 
 // Navbar
 $navbarHeight: 52px;
-
-// Screen sizes / Breakpoints
-$screenMd: 1600px;
-$screenSm: 1400px;
-$screenXs: 1260px;
-
-// Media Queries
-// $mq-small: "(min-width:)"
 
 // ------- DEFINE COLORS
 
@@ -219,3 +221,32 @@ $heightPlayerControls: 80px;
 $heightPauseOverlay: 170px;
 // $heightEditVideoTimeline: 108px;
 $heightEditVideoTimeline: 168px;
+
+// MIXINS
+
+// RESPONSIVE
+// Screen sizes / Breakpoints
+$screenMd: 1600px;
+$screenSm: 1400px;
+$screenXs: 1260px;
+
+$tablet-width: 768px;
+$desktop-width: 1024px;
+
+@mixin mobile {
+    @media (max-width: #{$tablet-width}) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (min-width: #{$tablet-width}) and (max-width: #{$desktop-width - 1px}) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (min-width: #{$desktop-width}) {
+        @content;
+    }
+}
