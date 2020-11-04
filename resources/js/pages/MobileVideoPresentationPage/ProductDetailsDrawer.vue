@@ -51,13 +51,19 @@ export default {
     .variant-list {
         .image-rail {
             display: flex;
-            padding-left: 16px;
+            margin-left: 16px;
             overflow: auto;
             .variant-image {
                 width: 270px;
                 height: 360px;
                 object-fit: cover;
                 margin-right: 12px;
+            }
+            &::after {
+                content: '';
+                height: 1px;
+                width: 16px;
+                display: block;
             }
         }
     }

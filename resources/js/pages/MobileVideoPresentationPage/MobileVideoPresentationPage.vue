@@ -2,14 +2,23 @@
     <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }]">
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
-                <div class="play-overlay" v-if="!playerStarted">
+                <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
+                    <div class="overlay"></div>
                     <button class="xxl circle black blur" @click="onStartPlaying">
                         <i class="far fa-play"></i>
                     </button>
                 </div>
                 <div class="watch-overlay">
                     <div class="top-items flex-list md">
-                        <button class="dark blur circle">
+                        <button
+                            class="dark blur circle"
+                            @click="
+                                $router.push({
+                                    name: 'selection',
+                                    params: { fileId: selection.file_id, selectionId: selection.id },
+                                })
+                            "
+                        >
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <div class="flex-list flex-v xs">
@@ -27,11 +36,25 @@
                     <template v-if="playerStarted">
                         <div class="bottom-items">
                             <ProductActionSelector />
+
+                            <CartSidebar :show="showCart" @close="showCart = false" v-slot="slotProps">
+                                <button class="pill white sm" @click="showCart = true">
+                                    <span
+                                        >{{
+                                            slotProps.ins
+                                                .reduce((acc, curr) => {
+                                                    return (acc += curr.yourPrice.wholesale_price)
+                                                }, 0)
+                                                .toFixed(2)
+                                        }}
+                                        {{ products[0].yourPrice.currency }}</span
+                                    >
+                                </button>
+                            </CartSidebar>
                         </div>
                         <ProductPreview @click.native="showProductDrawer = true" />
                         <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
-                        <!-- <CartSidebar ref="cartSidebar" />
-                        <PauseOverlay />
+                        <!-- <PauseOverlay />
                         <PlayerControls /> -->
                     </template>
                 </div>
@@ -47,7 +70,7 @@ import VideoPlayer from '../../components/common/VideoPlayer/'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
 import ProductActionSelector from './ProductActionSelector'
-// import CartSidebar from './CartSidebar/'
+import CartSidebar from './CartSidebar/'
 // import PauseOverlay from './PauseOverlay/'
 // import EndedOverlay from './EndedOverlay'
 
@@ -60,7 +83,7 @@ export default {
         ProductActionSelector,
         // PlayerControls,
         // ProductDetailsSidebar,
-        // CartSidebar,
+        CartSidebar,
         // PauseOverlay,
         // EndedOverlay,
     },
@@ -70,11 +93,13 @@ export default {
             isConnectedToLiveUpdates: false,
             showControls: true,
             showProductDrawer: false,
+            showCart: false,
         }
     },
     computed: {
         ...mapGetters('videoPresentation', {
             videoTimings: 'getVideoTimings',
+            video: 'getCurrentVideo',
         }),
         ...mapGetters('videoPlayer', {
             isPlaying: 'getIsPlaying',
@@ -93,6 +118,9 @@ export default {
         }),
         ...mapGetters('workspaces', {
             workspace: 'currentWorkspace',
+        }),
+        ...mapGetters('products', {
+            products: 'products',
         }),
     },
     watch: {
@@ -229,8 +257,8 @@ export default {
     color: white;
     line-height: 1;
     pointer-events: all;
-    background: linear-gradient(180deg, black, transparent);
-    padding-bottom: 32px;
+    background: linear-gradient(180deg, rgba(black, 0.5), transparent);
+    padding-bottom: 40px;
     .selection-name {
         font-size: 20px;
         font-weight: 700;
@@ -246,9 +274,11 @@ export default {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
     left: 0;
     padding: 12px;
     background: linear-gradient(0deg, black, transparent);
+    pointer-events: all;
 }
 .watch-overlay {
     position: absolute;
@@ -300,6 +330,13 @@ export default {
     background: rgba(black, 0.55);
     color: white;
     pointer-events: all;
+    background-size: cover;
+    background-position: center;
+    .overlay {
+        display: block;
+        z-index: 0;
+        background: rgba(black, 0.5);
+    }
     h3 {
         color: white;
     }
