@@ -21,14 +21,15 @@ export default {
 
 <style scoped lang="scss">
 .drawer-wrapper {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    z-index: -1;
+    // position: absolute;
+    // width: 100%;
+    // height: 100%;
+    // left: 0;
+    // top: 0;
+    // z-index: -1;
     .overlay {
         display: none;
+        z-index: 1;
     }
     .drawer {
         height: 548px;
@@ -36,6 +37,7 @@ export default {
         position: absolute;
         background: white;
         transition: transform 0.1s ease-out;
+        z-index: 2;
         .header {
             padding: 20px 16px;
             min-height: 80px;

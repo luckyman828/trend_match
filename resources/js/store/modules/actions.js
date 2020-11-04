@@ -251,6 +251,13 @@ export default {
                 )
             })
         },
+        async updateCurrentProductAction({}, product) {
+            const actionObject = product.yourActionObject
+            const apiUrl = `/selections/${actionObject.selection_id}/actions`
+            axios.post(apiUrl, {
+                actions: [actionObject],
+            })
+        },
     },
 
     mutations: {

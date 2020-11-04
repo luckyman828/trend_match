@@ -106,6 +106,7 @@ export default {
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
+        getCurrentSelectionModeAction: (state, getters) => getters.currentSelectionModeAction,
         getCurrentSelectionModeQty: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_quantity' : 'quantity',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),

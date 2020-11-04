@@ -887,6 +887,45 @@ export default {
                 // Instantiate the selectionInputList on the product
                 Vue.set(product, 'selectionInputList', [])
 
+                Object.defineProperty(product, 'getActiveSelectionInput', {
+                    get: function() {
+                        if (product.selectionInputList.length <= 0) return
+                        if (product.selectionInputList.length == 1) return product.selectionInputList[0]
+                        const currentSelection = rootGetters['selections/currentSelection']
+                        return product.selectionInputList.find(x => x.selection_id == currentSelection.id)
+                    },
+                })
+
+                Object.defineProperty(product, 'yourAction', {
+                    get: function() {
+                        if (!product.getActiveSelectionInput) return
+                        const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                        const selectionInput = product.getActiveSelectionInput
+                        return selectionInput[actionKey]
+                    },
+                    set: function(value) {
+                        const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                        const selectionInput = product.getActiveSelectionInput
+                        return (selectionInput[actionKey] = value)
+                    },
+                })
+
+                Object.defineProperty(product, 'yourActionObject', {
+                    get: function() {
+                        if (!product.getActiveSelectionInput) return
+                        const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+                        const acitonObjectKey =
+                            selectionMode == 'Feedback' ? 'yourSelectionFeedback' : 'selectionAction'
+                        const selectionInput = product.getActiveSelectionInput
+                        return selectionInput[acitonObjectKey]
+                    },
+                    set: function(value) {
+                        const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                        const selectionInput = product.getActiveSelectionInput
+                        return (selectionInput[actionKey] = value)
+                    },
+                })
+
                 Object.defineProperty(product, 'is_completed', {
                     get: function() {
                         return product.selectionInputList.length > 0 && product.selectionInputList[0].is_completed
@@ -1188,6 +1227,7 @@ export default {
                         ).action = value
                     },
                 })
+
                 // Set the current action for the user
                 Object.defineProperty(selectionInput, 'yourSelectionFeedback', {
                     get: function() {

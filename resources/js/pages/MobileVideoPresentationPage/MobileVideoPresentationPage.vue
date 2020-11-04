@@ -8,7 +8,7 @@
                     </button>
                 </div>
                 <div class="watch-overlay">
-                    <div class="top-info flex-list md">
+                    <div class="top-items flex-list md">
                         <button class="dark blur circle">
                             <i class="fas fa-arrow-left"></i>
                         </button>
@@ -25,6 +25,9 @@
                         "
                     />
                     <template v-if="playerStarted">
+                        <div class="bottom-items">
+                            <ProductActionSelector />
+                        </div>
                         <ProductPreview @click.native="showProductDrawer = true" />
                         <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
                         <!-- <CartSidebar ref="cartSidebar" />
@@ -43,6 +46,7 @@ import VideoPlayer from '../../components/common/VideoPlayer/'
 // import PlayerControls from './PlayerControls'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
+import ProductActionSelector from './ProductActionSelector'
 // import CartSidebar from './CartSidebar/'
 // import PauseOverlay from './PauseOverlay/'
 // import EndedOverlay from './EndedOverlay'
@@ -53,6 +57,7 @@ export default {
         VideoPlayer,
         ProductDetailsDrawer,
         ProductPreview,
+        ProductActionSelector,
         // PlayerControls,
         // ProductDetailsSidebar,
         // CartSidebar,
@@ -215,7 +220,7 @@ export default {
         }
     }
 }
-.top-info {
+.top-items {
     padding: 12px;
     position: absolute;
     left: 0;
@@ -234,6 +239,16 @@ export default {
         font-size: 12px;
         font-weight: 500;
     }
+}
+.bottom-items {
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    left: 0;
+    padding: 12px;
+    background: linear-gradient(0deg, black, transparent);
 }
 .watch-overlay {
     position: absolute;

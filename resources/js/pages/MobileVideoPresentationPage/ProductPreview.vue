@@ -32,6 +32,7 @@ export default {
     box-shadow: $shadowEl;
     overflow: hidden;
     pointer-events: all;
+    padding: 4px;
     .img-wrapper {
         width: 100%;
         height: 102px;
@@ -44,7 +45,7 @@ export default {
     .price {
         font-size: 12px;
         font-weight: 500;
-        padding: 2px 6px;
+        padding: 0 4px;
         font-weight: 700;
     }
 }
