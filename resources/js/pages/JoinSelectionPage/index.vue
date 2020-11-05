@@ -50,11 +50,16 @@ export default {
         async handleLink() {
             const linkHash = this.$route.params.linkHash
             const selectionInfo = await this.fetchPublicSelectionInfo(linkHash)
+            console.log('selection info', selectionInfo)
             // await store.dispatch('selections/readSelectionLinkHash', this.$route.params.linkHash)
             this.SET_CURRENT_SELECTION_ID(selectionInfo.selection_id)
-            const videoThumbnail = selectionInfo.video.thumbnail
-            const coverImage = videoThumbnail ? videoThumbnail : selectionInfo.workspace_cover
-            this.SET_BACKGROUND_IMAGE(coverImage)
+            let coverImage = selectionInfo.workspace_cover
+            if (selectionInfo.video && selectionInfo.video.thumbnail) {
+                coverImage = selectionInfo.video.thumbnail
+            }
+            if (coverImage) {
+                this.SET_BACKGROUND_IMAGE(coverImage)
+            }
             if (selectionInfo.workspace_logo) {
                 this.SET_LOGO(selectionInfo.workspace_logo)
             }
@@ -87,11 +92,13 @@ export default {
 
                 // Navigate to the selection
                 let routeName = 'selection'
-                // If the file has a video, then navigate to the video
-                const file = await this.fetchFile(selection.file_id)
-                if (file.video_count > 0) {
+                if (!!selectionInfo.video) {
                     routeName = 'watchVideoPresentation'
                 }
+                // // If the file has a video, then navigate to the video
+                // const file = await this.fetchFile(selection.file_id)
+                // if (file.video_count > 0) {
+                // }
 
                 console.log('route change from loader')
                 this.$router.push({

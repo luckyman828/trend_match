@@ -140,9 +140,6 @@ export default {
             }
         },
     },
-    created() {
-        console.log('I was created')
-    },
 }
 </script>
 
