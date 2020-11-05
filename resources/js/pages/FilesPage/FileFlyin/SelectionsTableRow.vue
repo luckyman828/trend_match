@@ -182,7 +182,7 @@
                     @click="onGoToSelection"
                 >
                     <span v-if="!selection.is_presenting">Go to Selection</span>
-                    <span v-else>Join Presentation</span>
+                    <!-- <span v-else>Join Presentation</span> -->
                 </BaseButton>
             </td>
         </tr>
@@ -290,9 +290,10 @@ export default {
         },
         isClickable() {
             if (this.selection.your_job == 'None') return false
-            if (!this.selection.is_presenting) {
+            if (this.selection.is_presenting) {
                 return this.selection.presentation.presenter.id == this.authUser.id
             }
+            return true
         },
     },
     methods: {
