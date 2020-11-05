@@ -55,7 +55,7 @@
                         <ProductPreview @click.native="showProductDrawer = true" />
                         <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
                         <!-- <PauseOverlay /> -->
-                        <PlayerControls class="player-controls" />
+                        <!-- <PlayerControls class="player-controls" /> -->
                     </template>
                 </div>
             </VideoPlayer>

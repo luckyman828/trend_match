@@ -42,7 +42,7 @@
                 <div
                     class="background-cover"
                     v-if="getLoginBackgroundImage"
-                    :style="`background-image: url(${getLoginBackgroundImage})`"
+                    :style="`background-image: url(${getLoginBackgroundImage}); filter: brightness(0.8);`"
                 ></div>
                 <div
                     class="background-cover"
