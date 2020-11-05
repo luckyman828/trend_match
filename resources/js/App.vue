@@ -129,6 +129,9 @@ export default {
         ...mapGetters('videoPlayer', {
             isDragging: 'getTimelineKnobIsBeingDragged',
         }),
+        ...mapGetters('presentation', {
+            presentations: 'getPresentations',
+        }),
         dragActive() {
             return this.isDragging
         },
@@ -176,6 +179,7 @@ export default {
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async initWorkspace() {
@@ -193,7 +197,6 @@ export default {
             // Set the current workspace
             // If we don't have a current workspace saved, then set index to 0
             if (!this.currentWorkspaceIndex || this.currentWorkspaceIndex < 0) {
-                console.log('no current workspace id')
                 this.setCurrentWorkspaceIndex(0)
             }
         },
@@ -220,11 +223,15 @@ export default {
 
             connection.on('OnSelectionPresentationChanged', (eventName, args) => {
                 // console.log('on selection oresentqito', eventName, args)
-                args.selection_ids.map(id => {
+                args.selection_ids.map(async id => {
                     const selection = this.getSelectionById(id)
                     const presentationGroupId = args.detail.find(x => x.selection_id == id).presentation_group_id
                     if (selection) {
                         if (eventName == 'Begin') {
+                            // Fetch the presentation details
+                            if (!this.presentations.find(x => x.id == presentationGroupId)) {
+                                await this.fetchPresentationDetails(presentationGroupId)
+                            }
                             this.SET_SELECTION_PRESENTATION_MODE_ACTIVE({
                                 selection,
                                 isActive: true,
