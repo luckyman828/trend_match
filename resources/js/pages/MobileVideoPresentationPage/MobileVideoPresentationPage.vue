@@ -54,8 +54,8 @@
                         </div>
                         <ProductPreview @click.native="showProductDrawer = true" />
                         <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
-                        <!-- <PauseOverlay />
-                        <PlayerControls /> -->
+                        <!-- <PauseOverlay /> -->
+                        <PlayerControls />
                     </template>
                 </div>
             </VideoPlayer>
@@ -66,7 +66,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../components/common/VideoPlayer/'
-// import PlayerControls from './PlayerControls'
+import PlayerControls from '../WatchVideoPresentationPage/PlayerControls'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
 import ProductActionSelector from './ProductActionSelector'
@@ -81,7 +81,7 @@ export default {
         ProductDetailsDrawer,
         ProductPreview,
         ProductActionSelector,
-        // PlayerControls,
+        PlayerControls,
         // ProductDetailsSidebar,
         CartSidebar,
         // PauseOverlay,
