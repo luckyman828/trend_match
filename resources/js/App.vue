@@ -535,8 +535,14 @@ body {
     max-width: 200px;
     object-fit: contain;
 }
-@media screen and (max-width: $screenXs) {
+@include mobile {
+    html {
+        height: -webkit-fill-available;
+    }
     .app {
+        min-height: 100vh;
+        /* mobile viewport bug fix */
+        min-height: -webkit-fill-available;
         &.public {
             .main {
                 .inner {
