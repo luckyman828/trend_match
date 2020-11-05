@@ -539,10 +539,15 @@ body {
     html {
         height: -webkit-fill-available;
     }
-    .app {
-        min-height: 100vh;
+    .app,
+    .app.public {
+        min-height: calc(100vh - 60px);
+        height: calc(100vh - 60px);
         /* mobile viewport bug fix */
         min-height: -webkit-fill-available;
+        height: -webkit-fill-available;
+        max-height: -webkit-fill-available;
+        overflow: hidden;
         &.public {
             .main {
                 .inner {
