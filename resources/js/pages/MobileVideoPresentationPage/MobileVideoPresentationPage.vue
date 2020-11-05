@@ -228,7 +228,7 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .video-presentation-page {
-    height: 50%;
+    height: 100%;
     .video-presentation-wrapper {
         height: 100%;
         position: relative;

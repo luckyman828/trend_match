@@ -43,6 +43,9 @@ export default {
     height: 500px;
     &.fit-page {
         height: 100%;
+        @include mobile {
+            overflow: hidden;
+        }
         .page-wrapper {
             padding: 0;
             height: 100%;
