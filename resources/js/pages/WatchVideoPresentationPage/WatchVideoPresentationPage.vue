@@ -2,7 +2,7 @@
     <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }]">
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
-                <div class="play-overlay" v-if="!playerStarted">
+                <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
                     <h3>Welcome to the video presentation</h3>
                     <button class="xl white" @click="onStartPlaying">
                         <i class="far fa-play"></i>
@@ -65,6 +65,7 @@ export default {
     computed: {
         ...mapGetters('videoPresentation', {
             videoTimings: 'getVideoTimings',
+            video: 'getCurrentVideo',
         }),
         ...mapGetters('videoPlayer', {
             isPlaying: 'getIsPlaying',
@@ -256,6 +257,8 @@ export default {
     background: rgba(black, 0.85);
     color: white;
     pointer-events: all;
+    background-size: cover;
+    background-position: center;
     h3 {
         color: white;
     }

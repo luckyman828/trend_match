@@ -10,7 +10,6 @@ export default {
 
     getters: {
         getIsMobile: state => {
-            console.log('get is mobile', window.innerWidth < 800)
             return window.innerWidth < state.mobileBreakpoint
         },
     },
