@@ -50,7 +50,12 @@
                     v-model="selectionsToPresent"
                 >
                     <template v-slot:before="slotProps">
-                        <span><i class="far fa-info-circle"></i></span>
+                        <!-- <span ><i class="far fa-info-circle"></i></span> -->
+                        <i
+                            class="far fa-presentation primary"
+                            v-if="slotProps.option.is_presenting"
+                            v-tooltip="'In presentation'"
+                        ></i>
                     </template>
                 </BaseSelectButtons>
                 <!-- <div class="form-element" v-for="selection in availableSelections" :key="selection.id">

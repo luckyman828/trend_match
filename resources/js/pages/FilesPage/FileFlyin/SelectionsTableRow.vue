@@ -290,9 +290,9 @@ export default {
         },
         isClickable() {
             if (this.selection.your_job == 'None') return false
-            if (!this.selection.is_presenting) return true
-            if (!this.selection.presentation) return false
-            return this.selection.presentation.presenter.id == this.authUser.id
+            if (!this.selection.is_presenting) {
+                return this.selection.presentation.presenter.id == this.authUser.id
+            }
         },
     },
     methods: {
@@ -315,7 +315,7 @@ export default {
         },
         onGoToSelection() {
             if (!this.moveSelectionActive) {
-                if (this.selection.is_presenting) {
+                if (this.selection.is_presenting && !this.selection.presentation.presenter.id == this.authUser.id) {
                     this.$router.push({
                         name: 'watchVideoPresentation',
                         params: { fileId: this.selection.file_id, selectionId: this.selection.id },
