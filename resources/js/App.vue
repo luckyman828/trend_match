@@ -537,7 +537,24 @@ body {
 }
 @include mobile {
     html {
+        // min-height: 100vh;
+        // max-height: 100vh;
         height: -webkit-fill-available;
+        body {
+            height: 100vh;
+            min-height: 100vh;
+            max-height: 100vh;
+            min-height: -webkit-fill-available;
+            height: -webkit-fill-available;
+            max-height: -webkit-fill-available;
+            overflow: hidden;
+            #app,
+            .main {
+                height: 100%;
+                min-height: 100%;
+                max-height: 100%;
+            }
+        }
     }
     .app,
     .app.public,
@@ -545,13 +562,13 @@ body {
         // min-height: calc(100vh - 60px);
         // height: calc(100vh - 60px);
         /* mobile viewport bug fix */
-        height: 100vh;
-        min-height: 100vh;
-        max-height: 100vh;
-        min-height: -webkit-fill-available;
-        height: -webkit-fill-available;
-        max-height: -webkit-fill-available;
-        overflow: hidden;
+        // height: 100vh;
+        // min-height: 100vh;
+        // max-height: 100vh;
+        // min-height: -webkit-fill-available;
+        // height: -webkit-fill-available;
+        // max-height: -webkit-fill-available;
+        // overflow: hidden;
         &.public {
             .main {
                 .inner {
