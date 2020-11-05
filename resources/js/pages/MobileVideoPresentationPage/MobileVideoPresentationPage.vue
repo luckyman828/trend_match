@@ -55,7 +55,7 @@
                         <ProductPreview @click.native="showProductDrawer = true" />
                         <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
                         <!-- <PauseOverlay /> -->
-                        <PlayerControls />
+                        <PlayerControls class="player-controls" />
                     </template>
                 </div>
             </VideoPlayer>
@@ -247,6 +247,11 @@ export default {
             bottom: 4px;
         }
     }
+}
+.player-controls {
+    z-index: 999;
+    bottom: 50%;
+    height: 120px;
 }
 .top-items {
     padding: 12px;
