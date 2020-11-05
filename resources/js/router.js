@@ -89,14 +89,6 @@ const routes = [
             import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage'),
     },
     {
-        path: '/file/:fileId/selection/:selectionId/video/watch/mobile/use-viewer',
-        name: 'mobileVideoViewer',
-        component: () =>
-            import(
-                /* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage/VideoViewer'
-            ),
-    },
-    {
         path: '/join/:linkHash',
         name: 'joinSelection',
         component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
