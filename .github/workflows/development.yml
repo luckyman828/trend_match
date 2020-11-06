@@ -1,80 +1,80 @@
 name: Development
 
 on:
-  push:
-    branches:
-      - new_release
+    push:
+        branches:
+            - new_release
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v1
-    
-    - name: Install php library
-      uses: MilesChou/composer-action@v1.0.1
-      with:
-        args: install --no-dev
-    
-    - run: echo '${{ secrets.DEV_ENV }}' > .env
-    - name: Build vuejs
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-    - run: npm install
-    - run: npm run production
-    - run: rm -rf node_modules
+        steps:
+            - uses: actions/checkout@v1
 
-    - uses: azure/docker-login@v1
-      with:
-        login-server: reg.trendmatch.dk
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+            - name: Install php library
+              uses: MilesChou/composer-action@v1.0.1
+              with:
+                  args: install --no-dev
 
-    - name: Build the Docker
-      run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
+            - run: echo '${{ secrets.DEV_ENV }}' > .env
+            - name: Build vuejs
+              uses: actions/setup-node@v1
+              with:
+                  node-version: '12.x'
+            - run: npm install
+            - run: npm run production
+            - run: rm -rf node_modules
 
-    - name: Push docker image
-      run: docker push reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
-  
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v1
+            - uses: azure/docker-login@v1
+              with:
+                  login-server: reg.trendmatch.dk
+                  username: ${{ secrets.REGISTRY_USERNAME }}
+                  password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - uses: Azure/k8s-set-context@v1
-      with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+            - name: Build the Docker
+              run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
 
-    - uses: Azure/k8s-create-secret@v1
-      with:
-        namespace: ${{ secrets.DEV_NAMESPACE }}
-        container-registry-url: reg.trendmatch.dk
-        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
-        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-        secret-name: dashboard-regcred
+            - name: Push docker image
+              run: docker push reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
 
-    - uses: cschleiden/replace-tokens@v1
-      with:
-        tokenPrefix: '${'
-        tokenSuffix: '}'
-        files: '["deploy/k8s/*.yaml"]'
-      env:
-        CONTAINER_IMAGE: ${{ secrets.DEV_CONTAINER_IMAGE }}
-        IMAGE_TAG: ${{ github.sha }}
-        HOST_NAME: ${{ secrets.DEV_HOST_NAME }}
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
 
-    - uses: Azure/k8s-deploy@v1
-      with:
-        namespace: ${{ secrets.DEV_NAMESPACE }}
-        manifests: |
-          deploy/k8s/2-deployment.yaml
-          deploy/k8s/3-service.yaml
-          deploy/k8s/4-gateway.yaml
-        images: |
-          reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
-        imagePullSecrets: |
-          dashboard-regcred
+        steps:
+            - uses: actions/checkout@v1
+
+            - uses: Azure/k8s-set-context@v1
+              with:
+                  kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+            - uses: Azure/k8s-create-secret@v1
+              with:
+                  namespace: ${{ secrets.DEV_NAMESPACE }}
+                  container-registry-url: reg.trendmatch.dk
+                  container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+                  container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+                  secret-name: dashboard-regcred
+
+            - uses: cschleiden/replace-tokens@v1
+              with:
+                  tokenPrefix: '${'
+                  tokenSuffix: '}'
+                  files: '["deploy/k8s/*.yaml"]'
+              env:
+                  CONTAINER_IMAGE: ${{ secrets.DEV_CONTAINER_IMAGE }}
+                  IMAGE_TAG: ${{ github.sha }}
+                  HOST_NAME: ${{ secrets.DEV_HOST_NAME }}
+
+            - uses: Azure/k8s-deploy@v1
+              with:
+                  namespace: ${{ secrets.DEV_NAMESPACE }}
+                  manifests: |
+                      deploy/k8s/2-deployment.yaml
+                      deploy/k8s/3-service.yaml
+                      deploy/k8s/4-gateway.yaml
+                  images: |
+                      reg.trendmatch.dk/kollekt/${{ secrets.DEV_CONTAINER_IMAGE }}:${{ github.sha }}
+                  imagePullSecrets: |
+                      dashboard-regcred
