@@ -219,7 +219,18 @@ export default {
             'DELETE_REQUEST_COMMENT',
         ]),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
-        ...mapActions('requests', ['initRequests']),
+        ...mapActions('requests', ['initRequests', 'insertOrUpdateRequest']),
+        // async fixRequests() {
+        //     const requests = []
+        //     const selectionInput = this.getActiveSelectionInput(this.products[0])
+        //     this.products.map(product => {
+        //         requests.push(...product.requests.filter(x => x.selection_id == '767450407874215936'))
+        //     })
+        //     requests.map(async request => {
+        //         request.type = 'Ticket'
+        //         await this.insertOrUpdateRequest({ selectionInput, request })
+        //     })
+        // },
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
                 if (this.currentSelectionMode == 'Feedback') {
