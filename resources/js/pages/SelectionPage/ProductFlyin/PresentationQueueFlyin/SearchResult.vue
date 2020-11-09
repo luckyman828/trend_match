@@ -77,11 +77,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('presentationQueue', [
-            'addProductTopresentationQueue',
-            'broadcastProduct',
-            'removeProductFrompresentationQueue',
-        ]),
+        ...mapActions('presentationQueue', ['addProductTopresentationQueue', 'removeProductFrompresentationQueue']),
+        ...mapActions('presentation', ['broadcastProduct']),
         ...mapMutations('presentationQueue', ['SET_SEARCH_ITEM_DRAG_ACTIVE']),
         onAddToQueue(product) {
             // If the presentationQueue is empty, then set this product as the current

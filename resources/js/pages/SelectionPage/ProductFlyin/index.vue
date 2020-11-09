@@ -447,7 +447,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
-        ...mapActions('presentationQueue', ['broadcastProduct']),
+        ...mapActions('presentation', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),

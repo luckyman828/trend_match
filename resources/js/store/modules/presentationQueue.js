@@ -74,36 +74,36 @@ export default {
             // If the current product is getting removed, set the next product as active if any
             commit('REMOVE_PRODUCT_FROM_PRESENTER_QUEUE', product)
         },
-        async broadcastProduct({ getters, rootGetters, dispatch, commit }, product) {
-            const selection = rootGetters['selections/getCurrentSelection']
-            const apiUrl = `/selections/${selection.id}/presentation/${product.id}`
+        // async broadcastProduct({ getters, rootGetters, dispatch, commit }, product) {
+        //     const selection = rootGetters['selections/getCurrentSelection']
+        //     const apiUrl = `/selections/${selection.id}/presentation/${product.id}`
 
-            let success = true
-            await axios.put(apiUrl).catch(err => {
-                commit(
-                    'alerts/SHOW_SNACKBAR',
-                    {
-                        msg: 'Something went wrong trying to broadcast product. Please try again.',
-                        type: 'warning',
-                        iconClass: 'fa-exclamation-triangle',
-                        callback: () => dispatch('broadcastProduct', product),
-                        callbackLabel: 'Retry',
-                        duration: 0,
-                    },
-                    { root: true }
-                )
-                success = false
-            })
-            if (!success) return
+        //     let success = true
+        //     await axios.put(apiUrl).catch(err => {
+        //         commit(
+        //             'alerts/SHOW_SNACKBAR',
+        //             {
+        //                 msg: 'Something went wrong trying to broadcast product. Please try again.',
+        //                 type: 'warning',
+        //                 iconClass: 'fa-exclamation-triangle',
+        //                 callback: () => dispatch('broadcastProduct', product),
+        //                 callbackLabel: 'Retry',
+        //                 duration: 0,
+        //             },
+        //             { root: true }
+        //         )
+        //         success = false
+        //     })
+        //     if (!success) return
 
-            // If the product is not currently in our queue, add it right after the current product
-            const newProductIndex = getters.getpresentationQueue.findIndex(x => x.id == product.id)
-            const currentProductIndex = getters.getpresentationQueueCurrentProductIndex
-            if (newProductIndex < 0) {
-                commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index: currentProductIndex + 1 })
-            }
-            commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', product.id)
-        },
+        //     // If the product is not currently in our queue, add it right after the current product
+        //     const newProductIndex = getters.getpresentationQueue.findIndex(x => x.id == product.id)
+        //     const currentProductIndex = getters.getpresentationQueueCurrentProductIndex
+        //     if (newProductIndex < 0) {
+        //         commit('ADD_PRODUCT_TO_PRESENTER_QUEUE', { product, index: currentProductIndex + 1 })
+        //     }
+        //     commit('SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID', product.id)
+        // },
     },
 
     mutations: {
