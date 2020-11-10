@@ -20,9 +20,6 @@ export default {
             return rows
         },
         validateMappedField(field, rows, depth) {
-            if (field.type == 'date') {
-                console.log('validate mapped date', field)
-            }
             // Assume no error
             let isValid = true
             field.error = false
@@ -95,7 +92,7 @@ export default {
             }
             return isValid
         },
-        autoMapField(field, availableFiles, matchesToAvoid) {
+        autoMapField(field, availableFiles, matchesToAvoid, mustInclude) {
             // console.log('automap', field)
             let foundMatch = false
             let allMatches = []
@@ -115,14 +112,19 @@ export default {
                 if (matches.length > 0) {
                     let match = matches[0]
 
-                    if (matchesToAvoid) {
+                    if (matchesToAvoid || mustInclude) {
                         // Find a match that is not included in the matched to avoid array
-                        match = matches.find(
-                            theMatch =>
+                        match = matches.find(theMatch => {
+                            // Check that the match is not included in our avoid array, and that the match includes the string that it must include
+                            const passesMustInclude =
+                                !mustInclude || theMatch.toLowerCase().search(mustInclude.toLowerCase()) >= 0
+                            const passesMatchesToAvoid =
+                                !matchesToAvoid ||
                                 !matchesToAvoid.find(
                                     x => x.fieldName == theMatch && x.fileName == fieldCollection.fileName
                                 )
-                        )
+                            return passesMustInclude && passesMatchesToAvoid
+                        })
                     }
                     if (match) {
                         foundMatch = true
