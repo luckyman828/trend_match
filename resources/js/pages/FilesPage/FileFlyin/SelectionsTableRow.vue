@@ -289,7 +289,7 @@ export default {
             return this.getSelectionPresentationGroups.findIndex(x => x == this.selection.presentation_id)
         },
         isClickable() {
-            if (this.selection.your_job == 'None') return false
+            if (this.selection.your_role == 'None') return false
             if (this.selection.is_presenting) {
                 return this.selection.presentation.presenter.id == this.authUser.id
             }
