@@ -370,9 +370,6 @@ export default {
                     product.assortments = product.assortments.filter(x => !!x.name)
                 }
             })
-
-            console.log('instantiated products', products)
-
             // Remove products with no ID
             return products.filter(x => !!x.datasource_id)
         },
