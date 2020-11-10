@@ -1,10 +1,7 @@
 <template>
     <BaseFlyinColumn class="request-thread-section">
-
         <template v-slot:header>
-            <button class="circle" 
-            style="margin-left: -8px"
-            @click="close(null)">
+            <button class="circle" style="margin-left: -8px" @click="close(null)">
                 <i class="far fa-times"></i>
             </button>
             <h3 style="margin-left: 8px">Request thread</h3>
@@ -13,7 +10,7 @@
         <template v-slot>
             <div class="inner">
                 <div class="request">
-                    <Request :request="request" :disableControls="true" :selectionInput="selectionInput"/>
+                    <Request :request="request" :disableControls="true" :selectionInput="selectionInput" />
 
                     <div class="resolve-actions" v-if="request.type == 'Ticket' && hasTicketControl">
                         <BaseButton
@@ -35,30 +32,42 @@
                             <span>Reject</span>
                         </BaseButton>
                     </div>
-                    
+
                     <div class="divider">
                         <span>Request comments</span>
                     </div>
                 </div>
 
-
                 <div class="comment-section">
-                    <RequestComment v-for="(comment, index) in request.discussions" :key="comment.id"
-                    :comment="comment"
-                    :request="request"
-                    :displayAuthor="!request.discussions[index+1] || request.discussions[index+1].role != request.discussions[index].role"/>
+                    <RequestComment
+                        v-for="(comment, index) in request.discussions"
+                        :key="comment.id"
+                        :comment="comment"
+                        :request="request"
+                        :displayAuthor="
+                            !request.discussions[index + 1] ||
+                                request.discussions[index + 1].role != request.discussions[index].role
+                        "
+                    />
 
-                    <div class="divider" v-if="request.status == 'Open' && !hasNewComment && !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)">
-                        <span>Awaiting reply from {{request.hasUnreadApproverComment ? 'Aligner' : 'Approver'}}</span>
+                    <div
+                        class="divider"
+                        v-if="
+                            request.status == 'Open' &&
+                                !hasNewComment &&
+                                !(getCurrentSelectionMode == 'Approval' && request.discussions.length <= 0)
+                        "
+                    >
+                        <span>Awaiting reply from {{ request.hasUnreadApproverComment ? 'Aligner' : 'Approver' }}</span>
                     </div>
 
                     <div class="divider" v-if="request.status != 'Open'">
                         <span>
-                            Request 
+                            Request
                             <span class="status" :class="request.status">
-                                {{request.status == 'Resolved' ? 'Accepted' : 'Rejected'}}
+                                {{ request.status == 'Resolved' ? 'Accepted' : 'Rejected' }}
                             </span>
-                            by {{request.status_updated_by_user ? request.status_updated_by_user.name : 'Anonymous'}}
+                            by {{ request.status_updated_by_user ? request.status_updated_by_user.name : 'Anonymous' }}
                         </span>
                     </div>
                 </div>
@@ -66,13 +75,17 @@
                 <div class="form-wrapper" v-if="request.type == 'Ticket' && hasTicketControl">
                     <strong class="form-header">Write comment</strong>
 
-                    <form @submit="onSubmit" :class="[{active: writeActive}]">
+                    <form @submit="onSubmit" :class="[{ active: writeActive }]">
                         <div class="input-parent comment">
-                            <BaseInputTextArea ref="commentField"
-                            placeholder="Write your comment here..."
-                            v-model="newComment.content" 
-                            @click.native="activateWrite()" @keydown.native.enter.exact.prevent  
-                            @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"/>
+                            <BaseInputTextArea
+                                ref="commentField"
+                                placeholder="Write your comment here..."
+                                v-model="newComment.content"
+                                @click.native="activateWrite()"
+                                @keydown.native.enter.exact.prevent
+                                @keyup.native.esc="deactivateWrite"
+                                @keyup.native.enter.exact="onSubmit"
+                            />
                         </div>
                         <div class="flex-wrapper" v-if="writeActive">
                             <div class="left">
@@ -82,13 +95,21 @@
                                 </div>
                             </div>
                             <div class="right">
-                                <button type="button" class="invisible" @click="writeActive = false"><span>Cancel</span></button>
-                                <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
+                                <button type="button" class="invisible" @click="writeActive = false">
+                                    <span>Cancel</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="primary"
+                                    :class="{ disabled: submitDisabled }"
+                                    @click="onSubmit"
+                                >
+                                    <span>Submit</span>
+                                </button>
                             </div>
                         </div>
                     </form>
                 </div>
-
             </div>
         </template>
     </BaseFlyinColumn>
@@ -105,36 +126,42 @@ export default {
         Request,
         RequestComment,
     },
-    props: [
-        'selectionInput'
-    ],
-    data: function () { return {
-        newComment: {
-            content: '',
-            important: false,
-        },
-        writeActive: false,
-        submitting: false,
-    }},
+    props: ['selectionInput'],
+    data: function() {
+        return {
+            newComment: {
+                content: '',
+                important: false,
+            },
+            writeActive: false,
+            submitting: false,
+        }
+    },
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('products', ['currentProduct']),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('requests', {
             show: 'getRequestThreadVisible',
-            request: 'getCurrentRequestThread'
+            request: 'getCurrentRequestThread',
         }),
         ...mapGetters('selections', ['getCurrentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
-        submitDisabled () {
+        submitDisabled() {
             return this.newComment.content.length < 1 || this.submitting
         },
         hasNewComment() {
-            return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment || 
-            this.getCurrentSelectionMode == 'Approval' && this.request.hasUnreadAlignerComment
+            return (
+                (this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment) ||
+                (this.getCurrentSelectionMode == 'Approval' && this.request.hasUnreadAlignerComment)
+            )
         },
         hasTicketControl() {
-            return ['Owner', 'Approver'].includes(this.request.selection.your_role) || this.getCurrentSelection.your_role == 'Approver'
-        }
+            return (
+                ['Owner', 'Approver'].includes(this.request.selection.your_role) ||
+                this.getCurrentSelection.your_role == 'Approver' ||
+                (this.getCurrentSelection.type == 'Master' && this.getCurrentSelection.your_role == 'Owner')
+            )
+        },
     },
     watch: {
         request() {
@@ -142,7 +169,7 @@ export default {
         },
         currentProduct() {
             this.close()
-        }
+        },
     },
     methods: {
         ...mapMutations('requests', {
@@ -166,10 +193,9 @@ export default {
         },
         onSetStatus(status) {
             const statusToSet = this.request.status == status ? 'Open' : status
-            this.updateRequestStatus({request: this.request, status: statusToSet})
+            this.updateRequestStatus({ request: this.request, status: statusToSet })
         },
         async onSubmit() {
-
             if (this.submitDisabled) return
 
             // Set submitting to true
@@ -187,13 +213,11 @@ export default {
             }
 
             // dispatch action
-            await this.insertOrUpdateRequestComment({request: this.request, comment: commentToPost})
+            await this.insertOrUpdateRequestComment({ request: this.request, comment: commentToPost })
             this.submitting = false
 
             // Reset comment
             this.newComment.content = ''
-            
-
         },
         hotkeyHandler(e) {
             const key = e.code
@@ -232,7 +256,7 @@ export default {
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)
-    }
+    },
 }
 </script>
 
@@ -257,7 +281,8 @@ export default {
     h3 {
         margin: 0;
     }
-    .resolve-button, .resolved-banner {
+    .resolve-button,
+    .resolved-banner {
         border-top: $borderEl;
         border-bottom: $borderEl;
         ::v-deep {
@@ -291,7 +316,6 @@ export default {
         justify-content: center;
         font-size: 14px;
         font-weight: 700;
-
     }
     .inner {
         height: 100%;
@@ -319,7 +343,7 @@ export default {
                 white-space: nowrap;
             }
         }
-        input[type=submit] {
+        input[type='submit'] {
             margin-top: 12px;
         }
     }
@@ -361,8 +385,9 @@ export default {
             color: $red;
         }
     }
-    &::before, &::after {
-        content: "";
+    &::before,
+    &::after {
+        content: '';
         height: 1px;
         background: $borderColorEl;
         flex: 1;
@@ -376,5 +401,4 @@ export default {
         margin-left: 8px;
     }
 }
-
 </style>

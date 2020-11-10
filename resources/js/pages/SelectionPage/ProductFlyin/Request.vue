@@ -196,7 +196,8 @@ export default {
         hasTicketControl() {
             return (
                 ['Owner', 'Approver'].includes(this.request.selection.your_role) ||
-                this.currentSelection.your_role == 'Approver'
+                this.currentSelection.your_role == 'Approver' ||
+                (this.currentSelection.type == 'Master' && this.currentSelection.your_role == 'Owner')
             )
         },
     },
@@ -365,7 +366,7 @@ export default {
     }
     &:hover {
         .thread-controls .resolve-actions {
-            display: block;
+            display: flex;
         }
     }
     // &.Open .inner {
