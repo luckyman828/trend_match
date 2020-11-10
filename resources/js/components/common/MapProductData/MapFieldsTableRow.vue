@@ -57,6 +57,9 @@ export default {
     mixins: [workbookUtils],
     props: ['mappedFile', 'mappedField', 'removeEnabled'],
     computed: {
+        mappedFieldName() {
+            return `${this.mappedField.fieldName} - ${this.mappedFile && this.mappedFile.fileName}`
+        },
         previewValue() {
             // If custom enrtry, simply display the custom entry
             let valueToReturn = 'Not mapped'
@@ -85,7 +88,12 @@ export default {
         },
     },
     watch: {
-        previewValue(newVal) {
+        mappedFieldName(newVal) {
+            this.validateField()
+        },
+    },
+    methods: {
+        validateField() {
             if ((!this.mappedFile || !this.mappedField.fieldName) && !this.mappedField.customEntry) return
             const rows = this.mappedField.customEntry ? [] : this.mappedFile.rows
             const valid = this.validateMappedField(this.mappedField, rows, 10)
