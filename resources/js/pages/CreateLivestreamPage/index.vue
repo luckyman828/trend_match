@@ -6,20 +6,20 @@
         :fitPage="true"
         :errorCallback="() => fetchData()"
     >
-        <LivestreamPage />
+        <CreateLivestreamPage />
     </PageLoader>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import LivestreamPage from './LivestreamPage'
+import CreateLivestreamPage from './CreateLivestreamPage'
 import PageLoader from '../../components/common/PageLoader'
 
 export default {
-    name: 'livestreamPage',
+    name: 'createLivestreamPageLoader',
     components: {
         PageLoader,
-        LivestreamPage,
+        CreateLivestreamPage,
     },
     data: function() {
         return {
@@ -51,9 +51,7 @@ export default {
             this.fetchProducts({ fileId })
             this.fetchSelections({ fileId })
 
-            const fileVideo = await this.fetchFileVideo(fileId)
-            this.SET_CURRENT_VIDEO(fileVideo)
-            // this.SET_CURRENT_VIDEO(null)
+            this.SET_CURRENT_VIDEO(null)
 
             this.loadingData = false
         },

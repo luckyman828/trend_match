@@ -26,7 +26,7 @@ import TimelinePanel from './TimelinePanel/'
 import ProductSearchListItem from './ProductSearchListItem'
 
 export default {
-    name: 'livestreamPage',
+    name: 'createLivestreamPage',
     components: {
         SearchItemsPanel,
         VideoPreview,

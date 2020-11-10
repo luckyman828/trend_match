@@ -69,7 +69,7 @@ const routes = [
     {
         path: '/file/:fileId/livestream/create',
         name: 'createLivestream',
-        component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/LivestreamPage'),
+        component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/CreateLivestreamPage'),
     },
     // {
     //     path: '/file/:fileId/selection/:selectionId/livestream/watch',

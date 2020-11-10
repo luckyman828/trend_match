@@ -28,7 +28,7 @@
                     <template v-if="playerStarted">
                         <ProductDetailsSidebar />
                         <CartSidebar ref="cartSidebar" />
-                        <PauseOverlay />
+                        <PauseOverlay v-if="videoType != 'live'" />
                         <PlayerControls />
                     </template>
                 </div>
@@ -75,6 +75,7 @@ export default {
             videoType: 'getVideoType',
             videoDuration: 'getDuration',
             isLive: 'getIsLive',
+            currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
@@ -131,12 +132,8 @@ export default {
         },
         async onNewProduct(productId) {
             // Find the new start
+            console.log('on new product')
             const newStart = Math.round(this.videoDuration)
-
-            // Stop the current timing if any
-            if (this.currentTiming) {
-                this.currentTiming.end_at_ms = newStart - 1
-            }
 
             // Add the new timing
             const newTiming = {
@@ -145,6 +142,10 @@ export default {
                 product_id: productId,
             }
             await this.initTimings([newTiming])
+            // Stop the current timing if any
+            if (this.currentTiming) {
+                this.currentTiming.end_at_ms = newStart - 5
+            }
             this.ADD_TIMING({ timing: newTiming, index: null })
         },
         presentationChangeHandler(eventName, args) {

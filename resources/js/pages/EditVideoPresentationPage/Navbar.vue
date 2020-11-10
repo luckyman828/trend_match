@@ -35,10 +35,10 @@
                 <span v-if="scanModeActive">Deactivate scanner</span>
                 <span v-else>Activate scanner</span>
             </button>
-            <!-- <button class="ghost primary" @click="onGoLive">
+            <button class="ghost primary" @click="onGoLive">
                 <i class="far fa-presentation"></i>
                 <span>Start new LIVE presentation</span>
-            </button> -->
+            </button>
             <div class="pill ghost sm" :class="[status]">
                 <i class="far" :class="statusIconClasss"></i>
                 <span>{{ statusText }}</span>
