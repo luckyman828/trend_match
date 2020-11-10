@@ -874,7 +874,7 @@ export default {
             }
             for (i = 0; i < list.length; i += 1) {
                 node = list[i]
-                if (node.parent_id != 0 && map[node.parentId]) {
+                if (node.parent_id != 0 && map[node.parent_id] != null) {
                     // if you have dangling branches check that map[node.parentId] exists
                     list[map[node.parent_id]].children.push(node)
                 } else {
