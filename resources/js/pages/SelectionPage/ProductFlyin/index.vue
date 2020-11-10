@@ -403,9 +403,6 @@ export default {
             activeSelectionList: 'getCurrentSelections',
         }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
-        ...mapGetters('files', {
-            approvalEnabled: 'getApprovalEnabled',
-        }),
         ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)

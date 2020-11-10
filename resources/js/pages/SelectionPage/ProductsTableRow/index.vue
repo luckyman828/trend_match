@@ -195,10 +195,10 @@
                     <button
                         class="requests-button ghost xs"
                         @click="onViewSingle"
-                        v-tooltip="getApprovalEnabled ? 'Requests (open)' : 'Requests'"
+                        v-tooltip="'Requests (open)'"
                     >
                         <span>{{ selectionInput.requests.length }}</span>
-                        <span v-if="getApprovalEnabled && selectionInput.hasOpenTicket">
+                        <span v-if="selectionInput.hasOpenTicket">
                             ({{
                                 selectionInput.requests.filter(x => x.type == 'Ticket' && x.status == 'Open').length
                             }})</span
@@ -364,7 +364,6 @@ export default {
             'getAuthUserSelectionWriteAccess',
         ]),
         ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
-        ...mapGetters('files', ['getApprovalEnabled']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',

@@ -158,9 +158,6 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('files', {
-            approvalEnabled: 'getApprovalEnabled',
-        }),
         ...mapGetters('requests', ['getCurrentRequestThread']),
         ...mapGetters('selections', ['currentSelection', 'getCurrentSelectionMode', 'getCurrentPDPSelection']),
         ...mapGetters('selections', {
