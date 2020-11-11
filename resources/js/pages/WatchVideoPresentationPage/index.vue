@@ -83,6 +83,8 @@ export default {
                 // Fetch the currently presented product
                 this.SET_VIDEO_TYPE('live')
                 await this.fetchPresentationDetails(selection.presentation_id)
+            } else {
+                this.SET_VIDEO_TYPE('static')
             }
 
             this.loadingData = false
