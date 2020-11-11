@@ -101,12 +101,8 @@ export default {
     },
     computed: {
         ...mapGetters('selections', {
-            getAuthUserHasSelectionEditAccess: 'getAuthUserHasSelectionEditAccess}',
             availableSelections: 'getSelectionsAvailableForAlignment',
         }),
-        userHasEditAccess() {
-            return this.getAuthUserHasSelectionEditAccess(this.selection)
-        },
     },
     methods: {
         ...mapActions('selections', [
@@ -121,10 +117,11 @@ export default {
         async onTogglePresenterMode(selection) {
             if (!this.selection.is_presenting) {
                 // Make sure we have fethed the selections children
-                if (!selection.children) {
+                if (!selection.children || selection.children.length <= 0) {
                     const selections = await this.fetchSelections({ fileId: selection.file_id })
                     const tree = await this.createSelectionTree(selections)
                     const theSelection = selections.find(x => x.id == selection.id)
+                    console.log('fetched selectin', theSelection, tree)
                     await this.UPDATE_SELECTION(theSelection)
                 }
 

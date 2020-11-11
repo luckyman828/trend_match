@@ -228,6 +228,13 @@ export default {
             if (srcProduct[key] == null || key == 'id') return // Don't do anything if we don't have a value
 
             // Handle arrays first
+            // console.log(
+            //     'set key value',
+            //     JSON.parse(JSON.stringify(srcProduct)),
+            //     JSON.parse(JSON.stringify(targetProduct)),
+            //     key,
+            //     strategy
+            // )
             // If the product key value is an array (variants, prices, assortments, eans)
             if (Array.isArray(targetProduct[key])) {
                 const productArray = targetProduct[key]
@@ -239,14 +246,16 @@ export default {
                     if (typeof newArrayItem == 'object') {
                         // Test if our array item matches an existing array item
                         const existingArrayItem = productArray.find(existingArrayItem =>
-                            Object.keys(existingArrayItem).find(
-                                itemKey => existingArrayItem[itemKey] == newArrayItem[itemKey]
-                            )
+                            Object.keys(existingArrayItem).find(itemKey => {
+                                const isMatching =
+                                    existingArrayItem[itemKey] != null &&
+                                    existingArrayItem[itemKey] == newArrayItem[itemKey]
+                                return isMatching
+                            })
                         )
 
                         // If we found an existing match, we want to update that match
                         if (existingArrayItem) {
-                            // Check if we have any keys that don't currently have a value set
                             Object.keys(existingArrayItem).map(itemKey => {
                                 // Call this function recursively (it doens't matter that it isnt actually a product)
                                 this.setKeyValue(newArrayItem, existingArrayItem, itemKey, strategy)

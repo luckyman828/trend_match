@@ -452,6 +452,26 @@ export default {
             commit('setSingleVisisble', true)
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
+            // If we have many products. Bundle them
+            const chunkSize = 500
+            if (products.length > chunkSize) {
+                const array = products
+                const chunkedArr = []
+                const size = chunkSize
+                for (let i = 0; i < array.length; i++) {
+                    const last = chunkedArr[chunkedArr.length - 1]
+                    if (!last || last.length === size) {
+                        chunkedArr.push([array[i]])
+                    } else {
+                        last.push(array[i])
+                    }
+                }
+                chunkedArr.map(async productChunk => {
+                    await dispatch('insertProducts', { file, products: productChunk, addToState })
+                })
+                return
+            }
+
             return new Promise((resolve, reject) => {
                 const apiUrl = `/files/${file.id}/products`
                 axios
@@ -618,6 +638,26 @@ export default {
             })
         },
         async updateManyProducts({ commit, dispatch }, { file, products }) {
+            // If we have many products. Bundle them
+            const chunkSize = 500
+            if (products.length > chunkSize) {
+                const array = products
+                const chunkedArr = []
+                const size = chunkSize
+                for (let i = 0; i < array.length; i++) {
+                    const last = chunkedArr[chunkedArr.length - 1]
+                    if (!last || last.length === size) {
+                        chunkedArr.push([array[i]])
+                    } else {
+                        last.push(array[i])
+                    }
+                }
+                chunkedArr.map(async productChunk => {
+                    await dispatch('updateManyProducts', { file, products: productChunk })
+                })
+                return
+            }
+
             return new Promise((resolve, reject) => {
                 const apiUrl = `/products?file_id=${file.id}`
                 axios

@@ -403,9 +403,7 @@ export default {
             activeSelectionList: 'getCurrentSelections',
         }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
-        ...mapGetters('files', {
-            approvalEnabled: 'getApprovalEnabled',
-        }),
+        ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
         },
@@ -447,10 +445,14 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
-        ...mapActions('presentationQueue', ['broadcastProduct']),
+        ...mapActions('presentation', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
+        ...mapMutations('presentationQueue', [
+            'ADD_PRODUCT_TO_PRESENTER_QUEUE',
+            'SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID',
+        ]),
         onTogglePresenterMode(gotActivated) {
             if (gotActivated) {
                 this.onBroadcastProduct(this.product)
@@ -461,7 +463,15 @@ export default {
         },
         onBroadcastProduct(product) {
             this.lastBroadcastProductId = product.id
-            this.broadcastProduct(product)
+            // Add the product to our queue
+            // If the product is not currently in our queue, add it right after the current product
+            const newProductIndex = this.getpresentationQueue.findIndex(x => x.id == product.id)
+            const currentProductIndex = this.getpresentationQueueCurrentProductIndex
+            if (newProductIndex < 0) {
+                this.ADD_PRODUCT_TO_PRESENTER_QUEUE({ product, index: currentProductIndex + 1 })
+            }
+            this.SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID(product.id)
+            this.broadcastProduct({ product })
         },
         onUpdateAction(action) {
             this.$emit('updateAction', action, this.selectionInput)

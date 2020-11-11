@@ -57,7 +57,7 @@
                         modelValue="nds"
                     />
                     <BaseTableTab
-                        v-if="selection.settings.ticket_level != 'None' && approvalEnabled"
+                        v-if="selection.settings.ticket_level != 'None'"
                         :label="`Tickets`"
                         :count="
                             !hideCompleted
@@ -656,9 +656,6 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('files', {
-            approvalEnabled: 'getApprovalEnabled',
-        }),
         ...mapGetters('products', [
             'availableCategories',
             'availableDeliveryDates',
