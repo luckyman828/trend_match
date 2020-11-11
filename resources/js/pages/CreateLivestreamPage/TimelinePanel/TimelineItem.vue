@@ -17,8 +17,8 @@
                     {{ product.title }}
                 </span>
                 <div class="time">
-                    <span class="start">{{ timing.start | timestampify }}</span>
-                    <span class="end">{{ timing.end | timestampify }}</span>
+                    <span class="start">{{ timing.start | timestampify }} -</span>
+                    <span class="end" v-if="!isCurrent">{{ timing.end | timestampify }}</span>
                 </div>
             </div>
         </div>
