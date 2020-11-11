@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchItemsPanel from '../../components/common/SearchItemsPanel/'
 import VideoPreview from './VideoPreview/'
 import VideoPlayer from '../../components/common/VideoPlayer/'
@@ -39,9 +39,23 @@ export default {
             provider: 'getProvider',
             videoId: 'getProviderVideoId',
         }),
+        ...mapGetters('videoPresentation', {
+            currentVideo: 'getCurrentVideo',
+        }),
         ...mapGetters('products', {
             products: 'getProducts',
         }),
+    },
+    methods: {
+        ...mapActions('videoPresentation', ['updateCurrentVideo']),
+        ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
+    },
+    destroyed() {
+        this.SET_VIDEO_TYPE('static')
+        // Update the current video if any
+        if (this.currentVideo) {
+            this.updateCurrentVideo()
+        }
     },
 }
 </script>
