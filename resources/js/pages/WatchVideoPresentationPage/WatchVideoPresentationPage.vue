@@ -34,6 +34,28 @@
                 </div>
             </VideoPlayer>
         </div>
+
+        <BaseDialog
+            ref="streamEndedDialog"
+            type="dialog"
+            confirmColor="primary"
+            confirmText="Okay, take me to my results"
+        >
+            <div class="icon-graphic">
+                <i class="lg dark far fa-presentation"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg red far fa-times"></i>
+            </div>
+            <h3>Stream has ended</h3>
+        </BaseDialog>
+        <BaseDialog ref="streamStartedDialog" type="dialog" confirmColor="primary" confirmText="Join stream">
+            <div class="icon-graphic">
+                <i class="lg dark far fa-file"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg primary far fa-presentation"></i>
+            </div>
+            <h3>Livestream started</h3>
+        </BaseDialog>
     </div>
 </template>
 
@@ -148,10 +170,21 @@ export default {
             }
             this.ADD_TIMING({ timing: newTiming, index: null })
         },
-        presentationChangeHandler(eventName, args) {
-            if (eventName == 'ProductChanged') {
+        async presentationChangeHandler(eventName, args) {
+            console.log('presentation chagned', eventName)
+            if (eventName == 'ProductChanged' && this.isLive) {
                 const productId = args.detail[0].product_id
                 this.onNewProduct(productId)
+            }
+            if (eventName == 'Terminate') {
+                // Alert the user and then send them to their results
+                await this.$refs.streamEndedDialog.confirm()
+                this.$router.push({ name: 'selection', params: this.$route.params })
+            }
+            if (eventName == 'Begin') {
+                // Alert the user and then send them to their results
+                await this.$refs.streamStartedDialog.confirm()
+                this.$router.go()
             }
         },
         connectToLiveUpdates() {
@@ -174,9 +207,9 @@ export default {
     },
     created() {
         // Check if we are in a presentation
-        if (this.isLive) {
-            this.connectToLiveUpdates()
-        }
+        // if (this.isLive) {
+        this.connectToLiveUpdates()
+        // }
     },
     destroyed() {
         if (this.isConnectedToLiveUpdates) {
