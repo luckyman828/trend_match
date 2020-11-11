@@ -172,7 +172,7 @@ export default {
         },
         extendCurrentTiming() {
             // Check if we have a current timing. If so extend its end time
-            const currentTiming = this.extendCurrentTiming
+            const currentTiming = this.currentTiming
             if (currentTiming) {
                 currentTiming.end_at_ms = Math.ceil(this.duration + 5000)
             }
