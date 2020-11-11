@@ -127,11 +127,25 @@ export default {
         },
     },
     methods: {
-        ...mapActions('selections', ['fetchSelections', 'startPresentation']),
+        ...mapActions('selections', ['fetchSelections', 'startPresentation', 'stopPresentation']),
         ...mapActions('videoPresentation', ['addTiming']),
+        ...mapActions('presentation', ['fetchFilePresentations']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async onGoLive() {
+            // if (await this.$refs.confirmGoLiveDialog.confirm()) {
+            // // End all current presentations on live and add all selections to new presentation
+            // const presentations = await this.fetchFilePresentations(this.currentFile.id)
+            // await Promise.all(
+            //     presentations.map(async presentation => {
+            //         await this.stopPresentation({ presentationId: presentation.id })
+            //     })
+            // )
+            // // Fetch all file selections
+            // const selections = await this.fetchSelections({ fileId: this.currentFile.id })
+            // await this.startPresentation({ selections })
+
             this.$router.push({ name: 'createLivestream', params: { fileId: this.currentFile.id } })
+            // }
         },
         toggleScanner() {
             if (!this.scanModeActive) {
