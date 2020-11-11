@@ -78,6 +78,7 @@ export default {
                         'error???'
                     })
                     files = response.data
+                    await dispatch('initFiles', files)
                     if (addToState) {
                         state.files = files
                         commit('setLoading', false)
@@ -99,19 +100,20 @@ export default {
             return files
         },
         // Fetch all the files of the workspace in a flat structure
-        async fetchAllFiles({ commit, state, rootGetters }) {
+        async fetchAllFiles({ commit, state, rootGetters, dispatch }) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
 
             const apiUrl = `/workspaces/${workspaceId}/files/flat`
 
             let files
-            await axios.get(`${apiUrl}`).then(response => {
-                state.allFiles = response.data
+            await axios.get(`${apiUrl}`).then(async response => {
                 files = response.data
+                await dispatch('initFiles', files)
+                state.allFiles = files
             })
             return files
         },
-        async fetchFile({ commit, state, rootGetters }, fileId) {
+        async fetchFile({ commit, state, rootGetters, dispatch }, fileId) {
             // Set the state to loading
             commit('SET_FILES_STATUS', 'loading')
 
@@ -119,8 +121,9 @@ export default {
             let file
             await axios
                 .get(apiUrl)
-                .then(response => {
+                .then(async response => {
                     file = response.data
+                    await dispatch('initFiles', [file])
                     commit('SET_CURRENT_FILE', file)
                     commit('SET_FILES_STATUS', 'success')
                 })
@@ -628,6 +631,23 @@ export default {
                 .catch(err => {
                     commit('ADD_USERS_TO_FILE', { file, users })
                 })
+        },
+        initFiles({ state }, files) {
+            files.map(file => {
+                Object.defineProperty(file, 'parent', {
+                    get: function() {
+                        if (!file.parent_id || !state.allFiles) return
+                        const parent = state.allFiles.find(parent => parent.id == file.parent_id)
+                        return parent
+                    },
+                })
+                Object.defineProperty(file, 'parentName', {
+                    get: function() {
+                        if (!file.parent) return
+                        return file.parent.name
+                    },
+                })
+            })
         },
     },
 

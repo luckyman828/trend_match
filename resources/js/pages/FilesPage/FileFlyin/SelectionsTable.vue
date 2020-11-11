@@ -1026,8 +1026,9 @@
                     <BaseSelectButtons
                         type="radio"
                         search="true"
-                        :options="allFiles.filter(x => x.type == 'File')"
+                        :options="allFiles.filter(x => x.type == 'File' && x.id != currentFile.id)"
                         optionNameKey="name"
+                        optionDescriptionKey="parentName"
                         v-model="fileToClone"
                         :submitOnChange="true"
                     />

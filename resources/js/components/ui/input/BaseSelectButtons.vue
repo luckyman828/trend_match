@@ -120,6 +120,7 @@
                             />
 
                             <div class="label">
+                                <slot name="before" :option="option" />
                                 <template v-if="optionNameKey">
                                     {{
                                         displayFunction ? displayFunction(option[optionNameKey]) : option[optionNameKey]
@@ -131,6 +132,7 @@
                                 <p class="description" v-if="optionDescriptionKey">
                                     {{ optionGroup[optionDescriptionKey] }}
                                 </p>
+                                <slot name="after" :option="option" />
                             </div>
                         </label>
                     </div>
