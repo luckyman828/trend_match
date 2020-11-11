@@ -1266,7 +1266,7 @@ export default {
                     if (selection.denied_users) Vue.set(stateSelection, 'denied_users', selection.denied_users)
                     if (selection.teams) Vue.set(stateSelection, 'teams', selection.teams)
                     if (selection.children) Vue.set(stateSelection, 'children', selection.children)
-                    Object.assign(stateSelection, selection)
+                    // Object.assign(stateSelection, selection)
                 })
             }
         },
