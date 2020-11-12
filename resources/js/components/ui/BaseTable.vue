@@ -1,45 +1,60 @@
 <template>
     <div class="table-wrapper" ref="tableWrapper">
-        <table class="base-table" ref="table" 
-        :class="[{'sticky': sticky}, {'has-tabs': $slots.tabs}, {'has-context-button': !hideContextButton}]">
+        <table
+            class="base-table"
+            ref="table"
+            :class="[{ sticky: sticky }, { 'has-tabs': $slots.tabs }, { 'has-context-button': !hideContextButton }]"
+        >
             <div ref="stickyHeader" class="sticky-header">
-                <div ref="stickyBg" class="sticky-bg" :style="{width: tableWidth + 32+'px'}"></div>
+                <div ref="stickyBg" class="sticky-bg" :style="{ width: tableWidth + 32 + 'px' }"></div>
                 <div ref="stickyInner" class="inner">
                     <div class="tabs-wrapper" v-if="$slots.tabs">
-                        <slot name="tabs"/>
+                        <slot name="tabs" />
                     </div>
                     <div class="rounded-top">
-
                         <BaseTableTopBar v-if="!hideTopBar">
-
                             <template v-slot:left>
-                                <BaseSearchField v-if="searchEnabled && !isDraggable"
-                                ref="searchField"
-                                :searchKey="searchKey"
-                                :arrayToSearch="items"
-                                @input="$emit('update:searchResult', $event)"
-                                @keydown.enter.native="$emit('search-enter')"/>
-                                <slot name="topBar"/>
-                                <slot name="topBarLeft"/>
+                                <BaseSearchField
+                                    v-if="searchEnabled && !isDraggable"
+                                    ref="searchField"
+                                    :searchKey="searchKey"
+                                    :arrayToSearch="items"
+                                    @input="$emit('update:searchResult', $event)"
+                                    @keydown.enter.native="$emit('search-enter')"
+                                />
+                                <slot name="topBar" />
+                                <slot name="topBarLeft" />
                             </template>
 
                             <template v-slot:right>
-                                <slot name="topBarRight"/>
+                                <slot name="topBarRight" />
                                 <div class="records" v-if="!!items">
-                                    <span v-if="selected && selected.length > 0"><strong>{{selected.length}}</strong> selected</span>
-                                    <span v-if="searchEnabled">showing <strong>{{searchResult.length}}</strong> of 
-                                    <strong>{{itemsTotalCount != null ? itemsTotalCount : items.length}}</strong> records</span>
+                                    <span v-if="selected && selected.length > 0"
+                                        ><strong>{{ selected.length }}</strong> selected</span
+                                    >
+                                    <span v-if="searchEnabled"
+                                        >showing <strong>{{ searchResult.length }}</strong> of
+                                        <strong>{{ itemsTotalCount != null ? itemsTotalCount : items.length }}</strong>
+                                        records</span
+                                    >
                                 </div>
                             </template>
-
                         </BaseTableTopBar>
 
                         <tr class="header">
                             <BaseTableHeader class="select" v-if="showSelect">
-                                <BaseCheckbox :value="selected.length > 0" :modelValue="true" 
-                                @change="(checked) => checked ? $emit('update:selected', itemsSorted) :  $emit('update:selected', [])"/>
+                                <BaseCheckbox
+                                    :value="selected.length > 0"
+                                    :modelValue="true"
+                                    @change="
+                                        checked =>
+                                            checked
+                                                ? $emit('update:selected', itemsSorted)
+                                                : $emit('update:selected', [])
+                                    "
+                                />
                             </BaseTableHeader>
-                            <slot name="header"/>
+                            <slot name="header" />
                             <BaseTableHeader v-if="!hideContextButton" class="context-button">Action</BaseTableHeader>
                         </tr>
                     </div>
@@ -50,17 +65,19 @@
                 <!-- Content -->
 
                 <template v-if="isReady">
-
-                    <Draggable v-if="isDraggable"
+                    <Draggable
+                        v-if="isDraggable"
                         v-model="localItemsReOrdered"
                         :forceFallback="true"
-                        fallbackClass="sortable-drag" 
+                        fallbackClass="sortable-drag"
                         :fallbackTolerance="10"
                     >
-                        <BaseTableRow v-for="(item, index) in localItemsReOrdered"
+                        <BaseTableRow
+                            v-for="(item, index) in localItemsReOrdered"
                             ref="tableRow"
                             :key="itemKey ? item[itemKey] : index"
-                            :item="item" :index="index"
+                            :item="item"
+                            :index="index"
                             :showSelect="showSelect"
                             :selected.sync="localSelected"
                             :items="items"
@@ -73,11 +90,12 @@
                             @select-range="selectRange(index, items, selected)"
                             @show-contextmenu="onContextMenu($event, item)"
                         >
-                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
+                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
                         </BaseTableRow>
                     </Draggable>
-                    
-                    <RecycleScroller v-else-if="useVirtualScroller"
+
+                    <RecycleScroller
+                        v-else-if="useVirtualScroller"
                         :items="itemsSorted"
                         :item-size="itemSize"
                         :buffer="1000"
@@ -85,10 +103,12 @@
                         :key-field="itemKey"
                         v-slot="{ item, index }"
                     >
-                        <BaseTableRow ref="tableRow"
+                        <BaseTableRow
+                            ref="tableRow"
                             class="draggable-row"
                             :key="itemKey ? item[itemKey] : index"
-                            :item="item" :index="index"
+                            :item="item"
+                            :index="index"
                             :showSelect="showSelect"
                             :selected.sync="localSelected"
                             :items="items"
@@ -101,14 +121,17 @@
                             @select-range="selectRange(index, items, selected)"
                             @show-contextmenu="onContextMenu($event, item)"
                         >
-                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
+                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
                         </BaseTableRow>
                     </RecycleScroller>
 
-                    <BaseTableRow ref="tableRow" v-else
+                    <BaseTableRow
+                        ref="tableRow"
+                        v-else
                         v-for="(item, index) in itemsSorted"
                         :key="itemKey ? item[itemKey] : index"
-                        :item="item" :index="index"
+                        :item="item"
+                        :index="index"
                         :showSelect="showSelect"
                         :selected.sync="localSelected"
                         :items="items"
@@ -121,7 +144,7 @@
                         @select-range="selectRange(index, items, selected)"
                         @show-contextmenu="onContextMenu($event, item)"
                     >
-                        <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow"/>
+                        <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
                     </BaseTableRow>
                 </template>
                 <!-- End content -->
@@ -129,16 +152,17 @@
                 <!-- Loading / Error -->
                 <tr class="load-wrapper" v-else>
                     <!-- Loading -->
-                    <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'"/>
+                    <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'" />
 
                     <!-- Error  -->
-                    <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+                    <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback" />
                 </tr>
                 <!-- End Loading / Error -->
             </div>
+
             <tr class="footer">
                 <td class="select"></td>
-                <slot name="footer"/>
+                <slot name="footer" />
             </tr>
         </table>
     </div>
@@ -152,11 +176,9 @@ import Draggable from 'vuedraggable'
 export default {
     name: 'baseTable',
     components: {
-        Draggable
+        Draggable,
     },
-    mixins: [
-        selectRange,
-    ],
+    mixins: [selectRange],
     props: [
         'stickyHeader',
         'contentStatus',
@@ -200,25 +222,28 @@ export default {
         itemsTotalCount: {},
         isDraggable: {},
         itemsReOrdered: {},
-        useVirtualScroller: {default: true}
+        useVirtualScroller: { default: true },
     },
-    data: function() { return {
-        sticky: false,
-        distToTop: null,
-        scrollParent: null,
-        scrollTable: null,
-        scrollHeaderInitialized: false,
-        tableWidth: null,
-        statusTimeout: null,
-        isReady: true,
-    }},
+    data: function() {
+        return {
+            sticky: false,
+            distToTop: 0,
+            desiredOffset: 16,
+            scrollParent: null,
+            scrollTable: null,
+            scrollHeaderInitialized: false,
+            tableWidth: null,
+            statusTimeout: null,
+            isReady: true,
+            resizeHeaderTimeout: null,
+        }
+    },
     watch: {
         contentStatus: function(newVal, oldVal) {
             if (newVal == 'loading') {
                 // Wait before setting the current folder status as loading
-                this.statusTimeout = setTimeout(() => this.isReady = false, 100)
-            } 
-            else if (this.statusTimeout) {
+                this.statusTimeout = setTimeout(() => (this.isReady = false), 100)
+            } else if (this.statusTimeout) {
                 clearTimeout(this.statusTimeout)
             }
 
@@ -247,12 +272,20 @@ export default {
             return !this.hideSelect && this.items != null && this.selected != null
         },
         localSelected: {
-            get() { return this.selected },
-            set(localSelected) {this.$emit('update:selected', localSelected)}
+            get() {
+                return this.selected
+            },
+            set(localSelected) {
+                this.$emit('update:selected', localSelected)
+            },
         },
         localItemsReOrdered: {
-            get() { return this.itemsReOrdered },
-            set(localItemsReOrdered) {this.$emit('update:itemsReOrdered', localItemsReOrdered)}
+            get() {
+                return this.itemsReOrdered
+            },
+            set(localItemsReOrdered) {
+                this.$emit('update:itemsReOrdered', localItemsReOrdered)
+            },
         },
         searchEnabled() {
             return this.searchKey && this.searchResult && this.items
@@ -262,7 +295,7 @@ export default {
             if (this.itemType != 'user') {
                 return items
             }
-            return items.concat().sort((a,b) => a.id == this.authUser.id ? -1 : 0)
+            return items.concat().sort((a, b) => (a.id == this.authUser.id ? -1 : 0))
         },
     },
     methods: {
@@ -276,92 +309,105 @@ export default {
             this.$refs.searchField.setFocus()
         },
         getYPos(element) {
-            var yPosition = 0;
+            var yPosition = 0
 
-            while(element) {
-                yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-                element = element.offsetParent;
+            while (element) {
+                yPosition += element.offsetTop - element.scrollTop + element.clientTop
+                element = element.offsetParent
             }
 
-            return yPosition;
+            return yPosition
         },
         getScrollParent(element, includeHidden) {
             // Helper function to find the nearest parent that can be scrolled
-            var style = getComputedStyle(element);
-            var excludeStaticParent = style.position === "absolute";
-            var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
+            var style = getComputedStyle(element)
+            var excludeStaticParent = style.position === 'absolute'
+            var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/
 
-            if (style.position === "fixed") return document.body;
-            for (var parent = element; (parent = parent.parentElement);) {
-                style = getComputedStyle(parent);
-                if (excludeStaticParent && style.position === "static") {
-                    continue;
+            if (style.position === 'fixed') return document.body
+            for (var parent = element; (parent = parent.parentElement); ) {
+                style = getComputedStyle(parent)
+                if (excludeStaticParent && style.position === 'static') {
+                    continue
                 }
-                if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent;
+                if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent
             }
 
-            return document.body;
+            return document.body
         },
-        handleScroll (event) {
-            // Fix table header to screen
-            // Initialize the header
-            this.initScrollHeader()
-            const stickyThis = this.$refs.stickyHeader
-            const desiredOffset = 16
-            // Get scrollparent offset from top
+        handleScroll(event) {
+            // Save a reference to the element we are scrolling in (the scroll parent)
             const scrollParent = this.scrollParent
-            // const parentTopDist = this.getYPos(scrollParent)
-            const parentTopDist = scrollParent.getBoundingClientRect().top
-            const tabsHeight = this.$slots.tabs ? 40 : 0
-            let scrollDist = scrollParent.scrollTop
-            const threshold = this.distToTop - parentTopDist - desiredOffset - tabsHeight
+
+            // Figure out how far it is to our scroll threshold
+            // If we are not already sticky, save a reference to how far the sticky header is from the top of the page
+            if (!this.sticky) {
+                // The threshold consists of 4 measures
+                // The distance from the top of the parent to the top of the document
+                const parentTop = scrollParent.getBoundingClientRect().top
+                // The distance we have scrolled in the parent
+                const parentScrollDist = scrollParent.scrollTop
+                // The distance from the top of the element we want to make sticky when we meet and the top of the window
+                const stickyElTopDist = this.$refs.stickyHeader.getBoundingClientRect().top
+                // The offset we want to keep between the top and the sticky element
+                const desiredOffset = this.desiredOffset
+
+                this.distToTop = parentScrollDist + stickyElTopDist - parentTop - desiredOffset
+            }
+            const threshold = this.distToTop
+
+            // Figure out if we have scrolled past out threshold
+            const scrollDist = scrollParent.scrollTop
+
             if (scrollDist > threshold) {
-                // // Set width of sticky elements
-                if (this.sticky == false) {
-                    stickyThis.style.top = `${desiredOffset + parentTopDist + tabsHeight}px`
-                    this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
-                    // Set the position and size of the scroll bg
-                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset + tabsHeight}px`
-                    this.$refs.stickyBg.style.top = `${parentTopDist}px`
-
-                    const tableWidth = this.scrollTable.getBoundingClientRect().width
-                    stickyThis.style.width = tableWidth+'px'
-                    this.tableWidth = tableWidth
-                }
-                this.sticky = true
-            } else if (this.sticky == true) {
-                stickyThis.style.width = ''
-                this.sticky = false
+                if (this.sticky) return
+                // Make header sticky
+                this.makeHeaderSticky()
+            } else {
+                if (!this.sticky) return
+                this.makeHeaderUnsticky()
             }
         },
-        resizeHeader() {
-            // Fix table header to screen
-            // Initialize the header
-            this.initScrollHeader()
-            const desiredOffset = 16
-            // Get scrollparent offset from top
-            const scrollParent = this.scrollParent
-            const parentTopDist = scrollParent.getBoundingClientRect().top
-            let scrollDist = scrollParent.scrollTop
-            const threshold = this.distToTop - parentTopDist - desiredOffset
+        makeHeaderSticky() {
+            this.sticky = true
+
+            const stickyThis = this.$refs.stickyHeader
+            const desiredOffset = this.desiredOffset // Offset from top of the window
+            const parentTopDist = this.scrollParent.getBoundingClientRect().top // Distance from parent to top of page (take navbar into consideration)
+            stickyThis.style.top = `${desiredOffset + parentTopDist}px`
+            this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
+            // Set the position and size of the scroll bg
+            this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset}px`
+            this.$refs.stickyBg.style.top = `${parentTopDist}px`
+
             const tableWidth = this.scrollTable.getBoundingClientRect().width
+            stickyThis.style.width = tableWidth + 'px'
             this.tableWidth = tableWidth
         },
-        initScrollHeader() {
-            // if (this.stickyHeader && !this.scrollHeaderInitialized) {
-            if (this.stickyHeader && !this.sticky) {
-                this.distToTop =  this.getYPos(this.$refs.stickyHeader)
-                this.scrollHeaderInitialized = true
-            }
-        }
+        makeHeaderUnsticky() {
+            console.log('make header unsticky')
+            this.sticky = false
+
+            const stickyThis = this.$refs.stickyHeader
+            stickyThis.style.width = ''
+        },
+        resizeHeader() {
+            if (this.resizeHeaderTimeout) clearTimeout(this.resizeHeaderTimeout)
+            this.resizeHeaderTimeout = setTimeout(() => {
+                // Fix table header to screen
+                const tableWidth = this.scrollTable.getBoundingClientRect().width
+                this.$refs.stickyHeader.style.width = tableWidth + 'px'
+                this.tableWidth = tableWidth
+            }, 300)
+        },
     },
-    created () {
+    created() {
         if (this.stickyHeader) {
-            window.addEventListener('resize', this.resizeHeader)
+            window.addEventListener('resize', this.resizeHeader, { passive: true })
         }
         if (this.contentStatus && this.contentStatus != 'success') this.isReady = false
     },
-    destroyed () {
+    destroyed() {
         if (this.stickyHeader) {
             this.scrollParent.removeEventListener('scroll', this.handleScroll)
             window.removeEventListener('resize', this.handleScroll)
@@ -371,9 +417,9 @@ export default {
         if (this.stickyHeader) {
             this.scrollParent = this.getScrollParent(this.$el, false)
             this.scrollTable = this.$refs.table
-            this.scrollParent.addEventListener('scroll', this.handleScroll)
+            this.scrollParent.addEventListener('scroll', this.handleScroll, { passive: true })
         }
-    }
+    },
 }
 </script>
 
@@ -386,26 +432,30 @@ export default {
     white-space: nowrap;
     display: flex;
     flex-direction: column;
-    border: $borderModule;
-    border-radius: $borderRadiusModule;
-    box-shadow: $shadowModule;
     position: relative;
     &.has-tabs {
         margin-top: $heightTableTab;
     }
     &.has-context-button {
-        th, td {
+        th,
+        td {
             &.action {
                 margin-right: -4px;
             }
         }
     }
+    .body {
+        border: $borderModule;
+        border-radius: $borderRadiusModule;
+        border-top: none;
+        box-shadow: $shadowModule;
+    }
+    .footer {
+        box-shadow: $shadowModule;
+    }
     .tabs-wrapper {
         display: flex;
         margin-bottom: -$borderRadiusModule;
-        position: absolute;
-        top: -$heightTableTab;
-        left: -1px;
         width: 100%;
     }
     .sticky-bg {
@@ -422,12 +472,9 @@ export default {
         .sticky-header {
             position: fixed;
             z-index: 1;
-            margin-left: -1px;
-            .inner {
-                box-shadow: $shadowModule;
-                border: $borderModule;
-                border-radius: $borderRadiusModule $borderRadiusModule 0 0;
-            }
+        }
+        .rounded-top {
+            box-shadow: $shadowModule;
         }
         .sticky-placeholder {
             display: block;
@@ -435,18 +482,16 @@ export default {
         .tabs-wrapper {
             display: flex;
             margin-bottom: -$borderRadiusModule;
-            position: absolute;
-            top: -$heightTableTab;
-            left: 0;
         }
     }
     .sticky-placeholder {
         display: none;
     }
     .rounded-top {
-        > :first-child {
-            border-radius: $borderRadiusModule $borderRadiusModule 0 0;
-        }
+        border: $borderModule;
+        border-radius: $borderRadiusModule $borderRadiusModule 0 0;
+        overflow: hidden;
+        box-shadow: $shadowModule;
     }
     tr {
         background: $bgModule;
@@ -457,8 +502,8 @@ export default {
         position: relative;
         &:not(.table-top-bar) {
             border-bottom: $borderModule;
-            // margin-bottom: 2px;
-            th, td {
+            th,
+            td {
                 flex: 1;
             }
         }
@@ -476,14 +521,13 @@ export default {
             }
         }
         &.active {
-            // outline: solid 1px $primary;
-            // outline-offset: -1px;
             background: #d3daff !important;
             &:not(.table-top-bar) {
                 border-color: $primary300;
             }
         }
-        &.header, &.footer {
+        &.header,
+        &.footer {
             color: $fontTableHeader;
         }
         &.header {
@@ -496,14 +540,9 @@ export default {
             height: auto;
         }
     }
+    th,
     td {
-        // overflow: hidden;
-    }
-    th, td {
         padding: 0 4px;
-        // &:first-child:not(.select) {
-        //     margin-left: 8px;
-        // }
         > i {
             &:last-child {
                 margin-left: 12px;
@@ -518,7 +557,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            >*:not(:last-child) {
+            > *:not(:last-child) {
                 margin-right: 4px;
             }
         }
@@ -551,15 +590,5 @@ export default {
         justify-content: center;
         min-height: 200px;
     }
-    .sortable-drag {
-        // display: none;
-        // position: absolute;
-        // left: 0 !important;
-        // transform-origin: 0% 0% !important;
-    }
-    // .sortable-ghost {
-    //     opacity: .5;
-    // }
 }
-
 </style>
