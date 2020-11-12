@@ -433,9 +433,6 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
-    &.has-tabs {
-        margin-top: $heightTableTab;
-    }
     &.has-context-button {
         th,
         td {
