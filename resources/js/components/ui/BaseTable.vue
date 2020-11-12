@@ -448,10 +448,14 @@ export default {
         border: $borderModule;
         border-radius: $borderRadiusModule;
         border-top: none;
+        border-bottom: none;
         box-shadow: $shadowModule;
     }
     .footer {
         box-shadow: $shadowModule;
+        border: $borderModule;
+        border-radius: $borderRadiusModule;
+        border-top: none;
     }
     .tabs-wrapper {
         display: flex;
@@ -475,6 +479,7 @@ export default {
         }
         .rounded-top {
             box-shadow: $shadowModule;
+            border-bottom: $borderModule;
         }
         .sticky-placeholder {
             display: block;
@@ -489,6 +494,7 @@ export default {
     }
     .rounded-top {
         border: $borderModule;
+        border-bottom: none;
         border-radius: $borderRadiusModule $borderRadiusModule 0 0;
         overflow: hidden;
         box-shadow: $shadowModule;
