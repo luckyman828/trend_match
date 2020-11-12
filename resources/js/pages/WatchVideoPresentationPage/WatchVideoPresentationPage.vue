@@ -1,5 +1,8 @@
 <template>
-    <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }]">
+    <div
+        class="video-presentation-page"
+        :class="[{ started: playerStarted }, { playing: isPlaying }, { 'controls-hidden': controlsHidden }]"
+    >
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
                 <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
@@ -75,6 +78,7 @@ export default {
             videoType: 'getVideoType',
             videoDuration: 'getDuration',
             isLive: 'getIsLive',
+            controlsHidden: 'getControlsHidden',
         }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
@@ -204,7 +208,18 @@ export default {
     }
     ::v-deep {
         .timeline {
+            // transition: transform 0.1s ease-out;
+            // transform: translateY(-$heightPlayerControls);
+            transition: bottom 0.1s ease-out;
             bottom: $heightPlayerControls;
+        }
+    }
+    &.controls-hidden {
+        ::v-deep {
+            .timeline {
+                // transform: none;
+                bottom: 0;
+            }
         }
     }
 }

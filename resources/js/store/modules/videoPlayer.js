@@ -37,6 +37,7 @@ export default {
                 volumeMultiplier: 100,
             },
         },
+        controlsHidden: false,
     },
 
     getters: {
@@ -91,6 +92,7 @@ export default {
             if (!currentTiming) return
             return currentTiming.product
         },
+        getControlsHidden: (state, getters) => state.controlsHidden && !!getters.getIsPlaying,
     },
 
     actions: {
@@ -188,6 +190,9 @@ export default {
         },
         SET_VIDEO_TYPE(state, type) {
             state.videoType = type
+        },
+        SET_CONTROLS_HIDDEN(state, isHidden) {
+            state.controlsHidden = isHidden
         },
     },
 }

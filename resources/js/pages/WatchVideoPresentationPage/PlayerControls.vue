@@ -1,5 +1,5 @@
 <template>
-    <div class="player-controls">
+    <div class="player-controls" :class="{ hide: hideControls }">
         <div class="main">
             <div class="left">
                 <div class="button-list flex-list">
@@ -106,7 +106,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VolumeControl from '../../components/common/VideoPlayer/VolumeControl'
 
 export default {
@@ -114,6 +114,7 @@ export default {
     data: function() {
         return {
             fullscreenModeActive: false,
+            mouseMoveTimeout: null,
         }
     },
     components: {
@@ -128,6 +129,8 @@ export default {
             product: 'getCurrentProduct',
             desiredStatus: 'getDesiredStatus',
             isLive: 'getIsLive',
+            isPlaying: 'getIsPlaying',
+            hideControls: 'getControlsHidden',
         }),
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',
@@ -156,6 +159,7 @@ export default {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
         ...mapActions('products', ['setProductAction']),
         ...mapActions('actions', ['updateFeedbacks', 'updateActions']),
+        ...mapMutations('videoPlayer', ['SET_CONTROLS_HIDDEN']),
         onUpdateAction(action) {
             const selectionInput = this.selectionInput
             if (this.currentSelectionMode == 'Feedback') {
@@ -212,6 +216,21 @@ export default {
                 this.fullscreenModeActive = true
             }
         },
+        mouseMoveHandler(e) {
+            // If the player controls are hidden, show them
+            if (this.hideControls) this.SET_CONTROLS_HIDDEN(false)
+
+            // Start a timeout to check if we should hide the controls
+            if (this.mouseMoveTimeout) clearTimeout(this.mouseMoveTimeout)
+            const delay = 1000
+            this.mouseMoveTimeout = setTimeout(() => {
+                // Check if the target of the mouse is not the player controls.
+                // If not, hide the player controls
+                if (e.target != this.$el && !this.$el.contains(e.target)) {
+                    this.SET_CONTROLS_HIDDEN(true)
+                }
+            }, delay)
+        },
         addFullscreenListeners() {
             document.addEventListener('fullscreenchange', this.fullscreenChangeHandler, false)
             document.addEventListener('mozfullscreenchange', this.fullscreenChangeHandler, false)
@@ -245,11 +264,13 @@ export default {
     created() {
         this.addFullscreenListeners()
         document.addEventListener('keydown', this.hotkeyHandler)
+        document.addEventListener('mousemove', this.mouseMoveHandler)
     },
     destroyed() {
         this.removeFullscreenListeners()
         if (this.fullscreenModeActive) this.onExitFullscreen()
         document.removeEventListener('keydown', this.hotkeyHandler)
+        document.removeEventListener('mousemove', this.mouseMoveHandler)
     },
 }
 </script>
@@ -268,6 +289,8 @@ export default {
     position: absolute;
     left: 0;
     bottom: 0;
+    transform: none;
+    transition: transform 0.1s ease-out;
     .main {
         display: flex;
         align-items: center;
@@ -283,6 +306,9 @@ export default {
         .right {
             justify-content: flex-end;
         }
+    }
+    &.hide {
+        transform: translateY(100%);
     }
 }
 .pill span {

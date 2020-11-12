@@ -395,7 +395,8 @@ body,
         .main {
             max-height: 100vh;
             height: 100vh;
-            overflow: auto;
+            // overflow: auto;
+            overflow: hidden;
             .inner {
                 height: 100%;
             }

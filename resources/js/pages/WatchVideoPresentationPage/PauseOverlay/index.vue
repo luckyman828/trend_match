@@ -1,5 +1,5 @@
 <template>
-    <div class="pause-overlay">
+    <div class="pause-overlay" :class="{ 'controls-hidden': controlsHidden }">
         <div class="rail">
             <div class="product-timing-list" v-horizontal-scroll v-dragscroll>
                 <TimingListItem
@@ -26,6 +26,9 @@ export default {
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',
         }),
+        ...mapGetters('videoPlayer', {
+            controlsHidden: 'getControlsHidden',
+        }),
     },
 }
 </script>
@@ -45,6 +48,9 @@ export default {
     height: $heightPauseOverlay;
     bottom: calc(#{$heightPlayerControls} + 8px);
     pointer-events: all;
+    &.controls-hidden {
+        bottom: 0;
+    }
     .paused &,
     .ended & {
         transform: none;
