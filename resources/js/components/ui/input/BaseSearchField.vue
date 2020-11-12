@@ -95,6 +95,7 @@ export default {
             const oldVal = e.target.value
             const newVal = oldVal.slice(0, selectionStart) + newStr + oldVal.slice(selectionEnd)
             this.searchString = newVal
+            this.$emit('input', this.getResult(), this.searchString)
         },
         getResult() {
             const array = this.arrayToSearch
