@@ -472,7 +472,7 @@
                         <span><u>F</u>oc<u>u</u>s</span>
                     </BaseContextMenuItem>
                 </div>
-                <div class="item-group">
+                <div class="item-group" v-if="completeAvailable">
                     <BaseContextMenuItem
                         :iconClass="!contextProduct.is_completed ? 'far fa-check-circle' : 'far fa-times-circle'"
                         hotkey="KeyC"
@@ -557,7 +557,7 @@
                 </div>
             </template>
 
-            <div class="item-group">
+            <div class="item-group" v-if="completeAvailable">
                 <BaseContextMenuItem
                     iconClass="far fa-check-circle"
                     hotkey="KeyC"
@@ -803,6 +803,12 @@ export default {
                 this.selectedDeliveryDates.length +
                 advancedFilterCount
             )
+        },
+        ticketsEnabled() {
+            return this.selection.settings.ticket_level != 'None'
+        },
+        completeAvailable() {
+            return this.selection.type == 'Master' && this.ticketsEnabled && this.currentSelectionMode == 'Alignment'
         },
     },
     methods: {
