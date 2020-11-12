@@ -137,6 +137,7 @@ export default {
             return allMatches
         },
         instantiateProductsFromMappedFields(mappedFields, files, options) {
+            console.log('instantiate products', mappedFields, files, options)
             // Obey options if provided
             const fieldsToInstantiateFrom = !options
                 ? mappedFields
@@ -190,6 +191,37 @@ export default {
                         products.push(product)
                     }
 
+                    // INSTANTIATE VARIANTS
+                    if (product.variants) {
+                        // Loop through our variant keys
+                        file.variantKeyList.map(variantKey => {
+                            // Find the variant key
+                            const variantKeyField = variantKey.fieldName
+                            const variantKeyValue = variantKey.customEntry ? variantKey.fieldName : row[variantKeyField]
+                            // If we don't have any variant key, just give up
+                            if (!variantKeyValue) return
+
+                            // Check if the variant already exists
+                            const existingVariant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
+                            // console.log('found an existing variant', variant)
+                            if (!existingVariant) {
+                                const newVariant = {
+                                    id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
+                                    name: variantKeyValue,
+                                    sizes: [],
+                                    pictures: [],
+                                    image: null,
+                                    images: [],
+                                    ean: null,
+                                    ean_sizes: [{ size: null, ean: null }],
+                                    mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
+                                    // This actually allows us to link variants by a key that is not included on the variant object itself
+                                }
+                                product.variants.push(newVariant)
+                            }
+                        })
+                    }
+
                     fieldsToInstantiateFrom.map(field => {
                         if (
                             !field.enabled ||
@@ -211,12 +243,10 @@ export default {
                         }
 
                         // START MAP VARIANTS
-                        // console.log('at least try try map variants?')
                         if (product.variants) {
                             // Loop through our variant keys
                             file.variantKeyList.map(variantKey => {
                                 if (!variantKey.customEntry && !field.file && !field.fileName) return
-                                // console.log('instantiate variant')
 
                                 // Find the variant key
                                 const variantKeyField = variantKey.fieldName
@@ -225,28 +255,11 @@ export default {
                                     : row[variantKeyField]
                                 // If we don't have any variant key, just give up
                                 if (!variantKeyValue) return
-                                // console.log('variantKeyValue', variantKeyValue)
 
                                 // Check if the variant already exists
                                 let variant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
-                                if (!variant) {
-                                    variant = {
-                                        id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
-                                        name: variantKeyValue,
-                                        sizes: [],
-                                        pictures: [],
-                                        image: null,
-                                        images: [],
-                                        ean: null,
-                                        ean_sizes: [{ size: null, ean: null }],
-                                        mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
-                                        // This actually allows us to link variants by a key that is not included on the variant object itself
-                                    }
-                                    product.variants.push(variant)
-                                }
 
-                                // console.log('product variants', product.variants)
-                                if (!(field.scope == 'variants' || field.scope == 'images')) return
+                                if (!variant || !(field.scope == 'variants' || field.scope == 'images')) return
 
                                 // Now that we have our variant, it's just a question of setting the values
                                 const variantField = variant[field.name]
@@ -356,7 +369,8 @@ export default {
                         const productField = product[field.name]
                         if (Array.isArray(productField)) {
                             const valueExistsInArray = productField.includes(fieldValue)
-                            if (!valueExistsInArray && fieldValue != null) productField.push(fieldValue)
+                            // Only push if we actually have a fieldValue
+                            if (!valueExistsInArray && !!fieldValue) productField.push(fieldValue)
                             return
                         }
                         product[field.name] = fieldValue
@@ -370,6 +384,7 @@ export default {
                     product.assortments = product.assortments.filter(x => !!x.name)
                 }
             })
+            console.log('instantiated products', products)
             // Remove products with no ID
             return products.filter(x => !!x.datasource_id)
         },
