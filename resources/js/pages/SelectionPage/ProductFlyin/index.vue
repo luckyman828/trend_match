@@ -371,12 +371,12 @@ export default {
                     this.onBroadcastProduct(this.product)
                 }
                 document.activeElement.blur()
-                document.body.addEventListener('keyup', this.hotkeyHandler)
-                document.body.addEventListener('keydown', this.keydownHandler)
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+                // document.body.addEventListener('keydown', this.keydownHandler)
             } else {
                 // On close
-                document.body.removeEventListener('keyup', this.hotkeyHandler)
-                document.body.removeEventListener('keydown', this.keydownHandler)
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+                // document.body.removeEventListener('keydown', this.keydownHandler)
                 this.SET_CURRENT_REQUEST_THREAD(null)
             }
         },
@@ -540,11 +540,12 @@ export default {
             }
         },
         hotkeyHandler(event) {
+            this.keydownHandler(event)
             const key = event.code
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (
-                    !event.ctrlKey &&
+                    event.altKey &&
                     key == 'KeyC' &&
                     this.selection.type == 'Master' &&
                     this.currentSelectionMode == 'Alignment'
@@ -594,8 +595,8 @@ export default {
         },
     },
     destroyed() {
-        document.body.removeEventListener('keyup', this.hotkeyHandler)
-        document.body.removeEventListener('keydown', this.keydownHandler)
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        // document.body.removeEventListener('keydown', this.keydownHandler)
     },
 }
 </script>
