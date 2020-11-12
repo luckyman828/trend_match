@@ -77,10 +77,10 @@ export default {
 
             // This works because vuex actions are always promises
             let promisesToResolve = [
-                this.fetchProducts({ fileId }),
-                this.fetchSelectionProducts(selection),
-                this.fetchSelectionSettings(selection),
-                this.fetchSelections({ fileId }),
+                await this.fetchProducts({ fileId }),
+                await this.fetchSelectionProducts(selection),
+                await this.fetchSelectionSettings(selection),
+                await this.fetchSelections({ fileId }),
             ]
 
             if (selection.is_presenting) {
