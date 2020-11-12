@@ -101,7 +101,7 @@ export default {
     },
     computed: {
         ...mapGetters('selections', {
-            availableSelections: 'getSelectionsAvailableForAlignment',
+            availableSelections: 'getSelectionsAvailableForPresentation',
         }),
     },
     methods: {
