@@ -1142,7 +1142,7 @@ export default {
             await axios.get(apiUrl).then(response => {
                 // linkCode = response.data.message
                 // console.log('response code', linkCode)
-                link = response.data.message
+                link = response.data.magic_link
             })
 
             // const linkBase = `${location.origin}/#/join/`
