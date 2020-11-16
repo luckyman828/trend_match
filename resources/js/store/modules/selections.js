@@ -1136,15 +1136,18 @@ export default {
             return joinResponse
         },
         async getSelectionLink({}, selectionId) {
-            const apiUrl = `selections/${selectionId}/shorten_code`
-            let linkCode
+            const apiUrl = `selections/${selectionId}/shorten-code`
+            // let linkCode
+            let link
             await axios.get(apiUrl).then(response => {
-                linkCode = response.data.message
-                console.log('response code', linkCode)
+                // linkCode = response.data.message
+                // console.log('response code', linkCode)
+                link = response.data.message
             })
 
-            const linkBase = `${location.origin}/#/join/`
-            return linkBase + linkCode
+            // const linkBase = `${location.origin}/#/join/`
+            // return linkBase + linkCode
+            return link
         },
         async fetchPublicSelectionInfo({}, linkHash) {
             const apiUrl = `selections/public-info?code=${linkHash}`

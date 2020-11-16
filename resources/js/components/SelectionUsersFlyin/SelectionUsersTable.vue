@@ -2,7 +2,7 @@
     <div class="selection-users-table">
         <h3>Selection Members</h3>
         <BaseTable
-            :stickyHeader="false"
+            :stickyHeader="true"
             :contentStatus="readyStatus"
             loadingMsg="loading users"
             errorMsg="error loading users"

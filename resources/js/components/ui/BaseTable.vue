@@ -3,7 +3,12 @@
         <table
             class="base-table"
             ref="table"
-            :class="[{ sticky: sticky }, { 'has-tabs': $slots.tabs }, { 'has-context-button': !hideContextButton }]"
+            :class="[
+                { sticky: sticky },
+                { 'has-tabs': $slots.tabs },
+                { 'has-context-button': !hideContextButton },
+                { fixed: headerFixed },
+            ]"
         >
             <div ref="stickyHeader" class="sticky-header">
                 <div ref="stickyBg" class="sticky-bg" :style="{ width: tableWidth + 32 + 'px' }"></div>
@@ -227,6 +232,7 @@ export default {
     data: function() {
         return {
             sticky: false,
+            headerFixed: false,
             distToTop: 0,
             desiredOffset: 16,
             scrollParent: null,
@@ -341,7 +347,7 @@ export default {
 
             // Figure out how far it is to our scroll threshold
             // If we are not already sticky, save a reference to how far the sticky header is from the top of the page
-            if (!this.sticky) {
+            if (!this.sticky && !this.headerFixed) {
                 // The threshold consists of 4 measures
                 // The distance from the top of the parent to the top of the document
                 const parentTop = scrollParent.getBoundingClientRect().top
@@ -358,8 +364,16 @@ export default {
 
             // Figure out if we have scrolled past out threshold
             const scrollDist = scrollParent.scrollTop
-
             if (scrollDist > threshold) {
+                // The distance from the top of the parent to the top of the document
+                const parentTop = scrollParent.getBoundingClientRect().top
+                // Figure out if we have also scrolled past the bottom of the table
+                const bottomOffset = 200
+                const tableBottomDist = this.$refs.table.getBoundingClientRect().bottom - parentTop - bottomOffset
+                if (tableBottomDist <= 0) {
+                    this.makeHeaderFixed()
+                    return
+                }
                 if (this.sticky) return
                 // Make header sticky
                 this.makeHeaderSticky()
@@ -370,6 +384,7 @@ export default {
         },
         makeHeaderSticky() {
             this.sticky = true
+            this.headerFixed = false
 
             const stickyThis = this.$refs.stickyHeader
             const desiredOffset = this.desiredOffset // Offset from top of the window
@@ -378,15 +393,34 @@ export default {
             this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
             // Set the position and size of the scroll bg
             this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset}px`
-            this.$refs.stickyBg.style.top = `${parentTopDist}px`
+            // this.$refs.stickyBg.style.top = `${parentTopDist}px`
 
             const tableWidth = this.scrollTable.getBoundingClientRect().width
             stickyThis.style.width = tableWidth + 'px'
             this.tableWidth = tableWidth
         },
-        makeHeaderUnsticky() {
-            console.log('make header unsticky')
+        makeHeaderFixed() {
             this.sticky = false
+            this.headerFixed = true
+
+            const stickyThis = this.$refs.stickyHeader
+            const scrollParent = this.scrollParent
+            const parentTop = scrollParent.getBoundingClientRect().top
+            const parentScrollDist = scrollParent.scrollTop
+            const bottomOffset = 200
+            const desiredOffset = this.desiredOffset // Offset from top of the window
+            const tableEl = this.$refs.table
+            const tableBottomDist =
+                parentScrollDist +
+                tableEl.getBoundingClientRect().bottom -
+                bottomOffset -
+                this.getYPos(tableEl)
+            // Set the absolute top
+            stickyThis.style.top = `${tableBottomDist}px`
+        },
+        makeHeaderUnsticky() {
+            this.sticky = false
+            this.headerFixed = false
 
             const stickyThis = this.$refs.stickyHeader
             stickyThis.style.width = ''
@@ -462,10 +496,12 @@ export default {
     .sticky-bg {
         display: none;
     }
-    &.sticky {
+    &.sticky,
+    &.fixed {
         .sticky-bg {
             background: $bg;
-            position: fixed;
+            position: absolute;
+            top: -16px;
             z-index: -1;
             display: block;
             margin-left: -16px;
@@ -484,6 +520,11 @@ export default {
         .tabs-wrapper {
             display: flex;
             margin-bottom: -$borderRadiusModule;
+        }
+    }
+    &.fixed {
+        .sticky-header {
+            position: absolute;
         }
     }
     .sticky-placeholder {

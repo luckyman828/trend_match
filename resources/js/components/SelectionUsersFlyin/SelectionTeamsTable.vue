@@ -2,7 +2,7 @@
     <div class="selection-teams-table">
         <h3>Selection Teams</h3>
         <BaseTable
-            :stickyHeader="false"
+            :stickyHeader="true"
             :contentStatus="readyStatus"
             loadingMsg="loading teams"
             errorMsg="error loading teams"
