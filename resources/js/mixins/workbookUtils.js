@@ -236,8 +236,10 @@ export default {
 
                         // Format date values
                         if (field.type == 'date') {
+                            // console.log('field is is date', fieldValue)
                             // If the field value is not null, format it as a date
                             if (fieldValue instanceof Date) {
+                                // console.log('is instance of date')
                                 fieldValue = DateTime.fromJSDate(fieldValue).toISODate()
                             }
                         }
