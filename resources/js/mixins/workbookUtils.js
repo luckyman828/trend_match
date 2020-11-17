@@ -236,10 +236,17 @@ export default {
 
                         // Format date values
                         if (field.type == 'date') {
-                            // console.log('field is is date', fieldValue)
+                            if (!(fieldValue instanceof Date)) {
+                                const date = new Date(fieldValue)
+                                // Check if the date is a valid date
+                                if (!isNaN(date)) {
+                                    // Add a few days to make sure we stay in the same month no matter timezone..
+                                    date.setDate(date.getDate() + 3)
+                                    fieldValue = date
+                                }
+                            }
                             // If the field value is not null, format it as a date
                             if (fieldValue instanceof Date) {
-                                // console.log('is instance of date')
                                 fieldValue = DateTime.fromJSDate(fieldValue).toISODate()
                             }
                         }
