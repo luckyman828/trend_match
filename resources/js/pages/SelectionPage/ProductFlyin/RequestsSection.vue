@@ -1,41 +1,81 @@
 <template>
-    <BaseFlyinColumn class="requests" :class="{'thread-open': !!currentRequestThread}">
-
+    <BaseFlyinColumn class="requests" :class="{ 'thread-open': !!currentRequestThread }">
         <template v-slot:header class="random">
-            <h3><span>Requests</span>
-                <span class="pill primary sm"><span>{{requests.length}}</span></span>
+            <h3>
+                <span>Requests</span>
+                <span class="pill primary sm"
+                    ><span>{{ requests.length }}</span></span
+                >
             </h3>
         </template>
 
         <template v-slot>
             <div class="requests-wrapper">
-                <div class="selection-request" 
-                v-for="request in requests.filter(x => x.selection_id == currentSelection.id)" 
-                :key="request.id">
-                    <request :request="request" :selectionInput="selectionInput"
-                    :class="{'thread-open': currentRequestThread && currentRequestThread.id == request.id}"/>
+                <div
+                    class="selection-request"
+                    v-for="request in requests.filter(x => x.selection_id == currentSelection.id)"
+                    :key="request.id"
+                >
+                    <request
+                        :request="request"
+                        :selectionInput="selectionInput"
+                        :class="{ 'thread-open': currentRequestThread && currentRequestThread.id == request.id }"
+                    />
                 </div>
-                <div v-if="requests.find(x => x.selection_id != selectionInput.selection_id)" class="break-line">Showing requests from other selections(s)</div>
-                <request :request="request" :key="request.id" :selectionInput="selectionInput"
-                :class="{'thread-open': currentRequestThread && currentRequestThread.id == request.id}"
-                v-for="request in requests
-                .filter(x => x.selection_id != selectionInput.selection_id)
-                .sort((a, b) => a.selection.type == 'Master' ? -1 : 1)"/>
+                <div v-if="requests.find(x => x.selection_id != selectionInput.selection_id)" class="break-line">
+                    Showing requests from other selections(s)
+                </div>
+                <request
+                    :request="request"
+                    :key="request.id"
+                    :selectionInput="selectionInput"
+                    :class="{ 'thread-open': currentRequestThread && currentRequestThread.id == request.id }"
+                    v-for="request in requests
+                        .filter(x => x.selection_id != selectionInput.selection_id)
+                        .sort((a, b) => (a.selection.type == 'Master' ? -1 : 1))"
+                />
             </div>
 
             <!-- Deny access for feedback -->
             <div class="form-wrapper" v-if="currentSelectionMode == 'Alignment'">
-                <strong class="form-header">{{ticketModeActive ? 'Open ticket' : 'Your Request'}}</strong>
+                <strong class="form-header">{{ ticketModeActive ? 'Open ticket' : 'Your Request' }}</strong>
 
-                <form @submit="onSubmit" :class="[{active: writeActive}]">
+                <div class="label-template-list">
+                    <button
+                        class="label-template-item sm ghost"
+                        v-for="(label, index) in availableTicketLabels"
+                        :key="index"
+                        :class="
+                            newRequest.label == label
+                                ? `group-bg-color-${index + 1}`
+                                : `group-color-${index + 1} group-border-color-${index + 1}`
+                        "
+                        @click="onStartTicketFromLabel(label)"
+                    >
+                        <span>{{ label }}</span>
+                    </button>
+                </div>
 
+                <form @submit="onSubmit" :class="[{ active: writeActive }]">
                     <div class="input-parent request">
-                        <BaseInputTextArea ref="requestField" :disabled="!userWriteAccess.requests.hasAccess"
-                        v-tooltip="!userWriteAccess.requests.hasAccess && userWriteAccess.requests.msg"
-                        :placeholder="userWriteAccess.comments.hasAccess ? 'Write your request here...' : userWriteAccess.requests.msg"
-                        v-model="newRequest.content" 
-                        @keydown.native.enter.exact.prevent @click.native="userWriteAccess.requests.hasAccess && activateWrite()"
-                        @keyup.native.esc="deactivateWrite(); cancelRequest()" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
+                        <BaseInputTextArea
+                            ref="requestField"
+                            :disabled="!userWriteAccess.requests.hasAccess"
+                            v-tooltip="!userWriteAccess.requests.hasAccess && userWriteAccess.requests.msg"
+                            :placeholder="
+                                userWriteAccess.comments.hasAccess
+                                    ? 'Write your request here...'
+                                    : userWriteAccess.requests.msg
+                            "
+                            v-model="newRequest.content"
+                            @keydown.native.enter.exact.prevent
+                            @click.native="userWriteAccess.requests.hasAccess && activateWrite()"
+                            @keyup.native.esc="
+                                deactivateWrite()
+                                cancelRequest()
+                            "
+                            @keyup.native.enter.exact="onSubmit"
+                        ></BaseInputTextArea>
                     </div>
                     <div class="flex-wrapper" v-if="writeActive">
                         <div class="left">
@@ -45,10 +85,22 @@
                             </div>
                         </div>
                         <div class="right">
-                            <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"><small class="request-success">Request saved <i class="fas fa-clipboard-check green"></i></small></BaseTempAlert>
+                            <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"
+                                ><small class="request-success"
+                                    >Request saved <i class="fas fa-clipboard-check green"></i></small
+                            ></BaseTempAlert>
                             <template>
-                                <button type="button" class="invisible" @click="cancelRequest"><span>Cancel</span></button>
-                                <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Save</span></button>
+                                <button type="button" class="invisible" @click="cancelRequest">
+                                    <span>Cancel</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="primary"
+                                    :class="{ disabled: submitDisabled }"
+                                    @click="onSubmit"
+                                >
+                                    <span>Save</span>
+                                </button>
                             </template>
                         </div>
                     </div>
@@ -65,24 +117,24 @@ import BaseTempAlert from '../../../components/ui/BaseTempAlert'
 
 export default {
     name: 'requestsSection',
-    props: [
-        'requests',
-        'selectionInput',
-    ],
+    props: ['requests', 'selectionInput'],
     components: {
         Request,
-        BaseTempAlert
+        BaseTempAlert,
     },
-    data: function () { return {
-        newRequest: {
-            content: '',
-            important: false,
-        },
-        writeScope: 'comment',
-        writeActive: false,
-        submitting: false,
-        // selectionRequest: null,
-    }},
+    data: function() {
+        return {
+            newRequest: {
+                content: '',
+                important: false,
+            },
+            writeScope: 'comment',
+            writeActive: false,
+            submitting: false,
+            availableTicketLabels: ['Color Added', 'Color Removed', 'Price Wish'],
+            // selectionRequest: null,
+        }
+    },
     watch: {
         // selectionInput: function(newVal, oldVal) {
         //     this.update()
@@ -97,7 +149,7 @@ export default {
             if (newVal) {
                 this.deactivateWrite()
             }
-        }
+        },
     },
     computed: {
         ...mapGetters('requests', {
@@ -109,41 +161,49 @@ export default {
             ticketModeActive: 'getTicketModeActive',
             currentTicketMode: 'getCurrentTicketMode',
         }),
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
-        submitDisabled () {
-            return this.newRequest.content.length < 1 
+        currentSelectionMode() {
+            return this.getSelectionCurrentMode(this.selectionInput.selection)
         },
-        userWriteAccess () {
+        submitDisabled() {
+            return this.newRequest.content.length < 1
+        },
+        userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
         },
-        selectionRequest () {
+        selectionRequest() {
             return this.selectionInput.selectionRequest
         },
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
+        onStartTicketFromLabel(label) {
+            if (!this.writeActive) this.activateWrite()
+            this.newRequest.label = label
+        },
         activateWrite() {
             this.SET_CURRENT_REQUEST_THREAD(null)
             this.$refs.requestField.focus()
             this.$refs.requestField.select()
             this.writeActive = true
+            Vue.set(this.newRequest, 'label')
         },
         deactivateWrite() {
             // Unset the focus
             this.writeActive = false
             document.activeElement.blur()
             this.resizeTextareas()
+            this.newRequest.label = null
         },
         cancelRequest() {
             this.deactivateWrite()
-            this.newRequest.content = this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
+            this.newRequest.content =
+                this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
         },
         onDeleteRequest() {
-            this.deleteRequest({selectionInput: this.selectionInput, request: this.selectionRequest})
+            this.deleteRequest({ selectionInput: this.selectionInput, request: this.selectionRequest })
         },
         async onSubmit(e) {
-
             if (e) e.preventDefault()
             if (this.submitDisabled) return
 
@@ -172,7 +232,7 @@ export default {
                 lastReadAt: new Date().toISOString(),
             }
             // dispatch action
-            this.insertOrUpdateRequest({selectionInput: this.selectionInput, request: requestToPost})
+            this.insertOrUpdateRequest({ selectionInput: this.selectionInput, request: requestToPost })
             this.submitting = false
 
             // Update the selection request
@@ -180,13 +240,16 @@ export default {
 
             // Reset comment
             this.deactivateWrite()
-            this.newRequest.content = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.content : ''
+            this.newRequest.content = this.ticketModeActive
+                ? ''
+                : this.selectionRequest
+                ? this.selectionRequest.content
+                : ''
             // Set the id of the new request if one exists
             this.newRequest.id = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.id : null
-            
+
             // Reset request
             this.resizeTextareas()
-
         },
         update() {
             // Find the existing selection request if any
@@ -219,6 +282,51 @@ export default {
                     this.$emit('activateCommentWrite')
                 }
             }
+
+            // We are writing in the field
+            if (event.target.type == 'textarea' && this.writeActive) {
+                if (this.availableTicketLabels.length > 0) {
+                    if (key.startsWith('Digit') && e.altKey) {
+                        const newIndex = parseInt(key.substring(5)) - 1
+                        if (
+                            this.newRequest.label &&
+                            this.availableTicketLabels.findIndex(x => x == this.newRequest.label) == newIndex
+                        ) {
+                            this.newRequest.label = null
+                        } else {
+                            this.newRequest.label = this.availableTicketLabels[newIndex]
+                        }
+                    }
+
+                    if (key == 'ArrowDown' && e.altKey) {
+                        e.preventDefault()
+                        if (this.newRequest.label) {
+                            const index = this.availableTicketLabels.findIndex(x => x == this.newRequest.label)
+                            if (index < this.availableTicketLabels.length - 1) {
+                                this.newRequest.label = this.availableTicketLabels[index + 1]
+                            } else {
+                                this.newRequest.label = null
+                            }
+                        } else {
+                            this.newRequest.label = this.availableTicketLabels[0]
+                        }
+                    }
+
+                    if (key == 'ArrowUp' && e.altKey) {
+                        e.preventDefault()
+                        if (this.newRequest.label) {
+                            const index = this.availableTicketLabels.findIndex(x => x == this.newRequest.label)
+                            if (index > 0) {
+                                this.newRequest.label = this.availableTicketLabels[index - 1]
+                            } else {
+                                this.newRequest.label = null
+                            }
+                        } else {
+                            this.newRequest.label = this.availableTicketLabels[this.availableTicketLabels.length - 1]
+                        }
+                    }
+                }
+            }
         },
     },
     mounted() {
@@ -227,218 +335,224 @@ export default {
     created() {
         // Insert small delay before we add our event listener to stop the same event that showed this section, do things inside the component
         setTimeout(() => {
-            document.body.addEventListener('keyup', this.hotkeyHandler)
+            document.body.addEventListener('keydown', this.hotkeyHandler)
         }, 10)
     },
     destroyed() {
-        document.body.removeEventListener('keyup', this.hotkeyHandler)
-    }
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
+    },
 }
 </script>
 
 <style <style lang="scss" scoped>
 @import '~@/_variables.scss';
-    ::v-deep {
-        &.flyin-column {
-            .header {
-                display: flex;
-                align-items: center;
-            }
-            .body {
-                display: flex;
-                flex-direction: column;
-                padding: 0;
-            }
-        }
-    }
-    h3 {
-        display: flex;
-        align-items: center;
-        .pill {
-            margin-left: 12px;
-        }
-    }
-    .requests {
-        background: $bg;
-        ::v-deep {
-            .request-wrapper:not(.edit-active) {
-                .request {
-                    transition: opacity .2s, box-shadow .2s, transform .2s;
-                }
-            }
-        }
-        &.thread-open {
-            ::v-deep {
-                .request {
-                    opacity: .5;
-                }
-                .request-wrapper.thread-open {
-                    .request {
-                        opacity: 1;
-                        box-shadow: $shadowElHard;
-                        transform: translateY(2px);
-                    }
-                }
-            }
-        }
-    }
-    .requests-wrapper {
-        height: 100%;
-        overflow-y: auto;
-        padding: 16px 16px 64px;
-        .sender {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: $dark2;
-        }
-    }
-    .form-wrapper {
-        padding: 20px 16px 28px;
-        .form-header {
-            margin-left: 4px;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .controls {
+::v-deep {
+    &.flyin-column {
+        .header {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            .left {
-                > :first-child {
-                    margin-left: -12px;
-                }
-                // > :not(:last-child) {
-                //     margin-right: 8px;
-                // }
-            }
+            align-items: center;
         }
-        form {
-            position: relative;
-            .delete-request {
-                position: absolute;
-                right: 0;
-                top: -6px;
-                transform: translateY(-100%)
-            }
-            .id {
-                font-size: 12px;
-                color: $dark2;
-                display: block;
-                margin-top: -2px;
-            }
-            .edit-request {
-                position: absolute;
-                right: 12px;
-                font-size: 10px;
-                color: $dark;
-                font-weight: 500;
-                top: 50%;
-                transform: translateY(-50%);
-                cursor: pointer;
-                .circle {
-                    height: 24px;
-                    width: 24px;
-                    margin-left: 4px;
-                }
-            }
-            .flex-wrapper {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 8px;
-                // align-items: center;
-                .right {
-                    white-space: nowrap;
-                }
-            }
-        }
-        .checkmark {
-            height: 32px;
-            width: 32px;
-            line-height: 32px;
-            text-align: center;
-            border-radius: 16px;
-            background: $light1;
-            color: $dark2;
-            position: absolute;
-            right: 16px;
-            top: 4px;
-            cursor: pointer;
-            &.active {
-                color: $primary;
-            }
-        }
-        input[type=submit] {
-            margin-top: 12px;
+        .body {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
         }
     }
-
-
-
-    .hotkey-tip {
-        .square {
-            border-width: 1px;
-            height: auto;
-            padding: 2px 4px;
-            min-width: 0;
-            font-weight: 400;
-            border-radius: 2px;
-            font-size: 9px;
-            margin-right: 2px;
-        }
-        font-size: 10px;
-        color: $dark2;
+}
+h3 {
+    display: flex;
+    align-items: center;
+    .pill {
+        margin-left: 12px;
     }
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+}
+.label-template-list {
+    // margin-bottom: 8px;
+    > * {
         margin-bottom: 8px;
+        display: block;
     }
-    .tab-headers {
-        .tab {
-            justify-content: space-between;
+}
+.requests {
+    background: $bg;
+    ::v-deep {
+        .request-wrapper:not(.edit-active) {
+            .request {
+                transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+            }
         }
     }
-    .request-wrapper {
-        margin-bottom: 16px;
-    }
-    .sender-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 4px;
-        &.own {
-            align-items: flex-end
+    &.thread-open {
+        ::v-deep {
+            .request {
+                opacity: 0.5;
+            }
+            .request-wrapper.thread-open {
+                .request {
+                    opacity: 1;
+                    box-shadow: $shadowElHard;
+                    transform: translateY(2px);
+                }
+            }
         }
     }
+}
+.requests-wrapper {
+    height: 100%;
+    overflow-y: auto;
+    padding: 16px 16px 64px;
     .sender {
-        margin-bottom: 20px;
-    }
-    .break-line {
-        &::after, &::before {
-            content: '';
-            display: block;
-            height: 2px;
-            background: $dark2;
-            flex: 1;
-        }
-        &::after {
-            margin-left: 12px;
-        }
-        &::before {
-            margin-right: 12px;
-        }
-        color: $font;
+        display: block;
         font-size: 12px;
         font-weight: 500;
+        color: $dark2;
+    }
+}
+.form-wrapper {
+    padding: 20px 16px 28px;
+    .form-header {
+        margin-left: 4px;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .controls {
         display: flex;
-        align-items: center;
-        margin-top: 20px;
-        margin-bottom: 12px;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        .left {
+            > :first-child {
+                margin-left: -12px;
+            }
+            // > :not(:last-child) {
+            //     margin-right: 8px;
+            // }
+        }
     }
-    .request-success {
-        margin-right: 8px;
-        font-weight: 500;
+    form {
+        position: relative;
+        .delete-request {
+            position: absolute;
+            right: 0;
+            top: -6px;
+            transform: translateY(-100%);
+        }
+        .id {
+            font-size: 12px;
+            color: $dark2;
+            display: block;
+            margin-top: -2px;
+        }
+        .edit-request {
+            position: absolute;
+            right: 12px;
+            font-size: 10px;
+            color: $dark;
+            font-weight: 500;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            .circle {
+                height: 24px;
+                width: 24px;
+                margin-left: 4px;
+            }
+        }
+        .flex-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            // align-items: center;
+            .right {
+                white-space: nowrap;
+            }
+        }
     }
+    .checkmark {
+        height: 32px;
+        width: 32px;
+        line-height: 32px;
+        text-align: center;
+        border-radius: 16px;
+        background: $light1;
+        color: $dark2;
+        position: absolute;
+        right: 16px;
+        top: 4px;
+        cursor: pointer;
+        &.active {
+            color: $primary;
+        }
+    }
+    input[type='submit'] {
+        margin-top: 12px;
+    }
+}
+
+.hotkey-tip {
+    .square {
+        border-width: 1px;
+        height: auto;
+        padding: 2px 4px;
+        min-width: 0;
+        font-weight: 400;
+        border-radius: 2px;
+        font-size: 9px;
+        margin-right: 2px;
+    }
+    font-size: 10px;
+    color: $dark2;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.tab-headers {
+    .tab {
+        justify-content: space-between;
+    }
+}
+.request-wrapper {
+    margin-bottom: 16px;
+}
+.sender-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 4px;
+    &.own {
+        align-items: flex-end;
+    }
+}
+.sender {
+    margin-bottom: 20px;
+}
+.break-line {
+    &::after,
+    &::before {
+        content: '';
+        display: block;
+        height: 2px;
+        background: $dark2;
+        flex: 1;
+    }
+    &::after {
+        margin-left: 12px;
+    }
+    &::before {
+        margin-right: 12px;
+    }
+    color: $font;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+.request-success {
+    margin-right: 8px;
+    font-weight: 500;
+}
 </style>

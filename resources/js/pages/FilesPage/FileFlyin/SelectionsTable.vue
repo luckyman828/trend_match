@@ -1377,10 +1377,10 @@ export default {
                     // Set the selection settings of this selection to a copy of the context selection's
                     // Use Vue.set to instantiate 'settings' as a reactive property on the selection
                     Vue.set(selection, 'settings', JSON.parse(JSON.stringify(this.contextSelection.settings)))
-                    this.updateSelectionSettings(selection)
                 })
+                this.updateSelectionSettings({ selections: this.settingsSelections })
             } else {
-                this.updateSelectionSettings(this.contextSelection)
+                this.updateSelectionSettings({ selections: [this.contextSelection] })
             }
         },
         showContextMenuSelection(e, selection, component, parent) {
@@ -1603,7 +1603,6 @@ export default {
             await this.fetchSelectionSettings(selection)
             // Save selection settings to the new selection
             newSelection.settings = selection.settings
-            // this.updateSelectionSettings(newSelection)
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0)
                 this.addUsersToSelection({
@@ -1633,7 +1632,7 @@ export default {
         },
         syncSelectionTreeSettings(selection) {
             // Update the selections settings and loop through its tree and do the same
-            this.updateSelectionSettings(selection)
+            this.updateSelectionSettings({ selections: [selection] })
             for (const childSelection of selection.children) {
                 this.syncSelectionTreeSettings(childSelection)
             }

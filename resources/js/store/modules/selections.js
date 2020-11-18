@@ -571,16 +571,25 @@ export default {
         //     })
         //     dispatch('calculateSelectionUsers', selection)
         // },
-        async updateSelectionSettings({ commit, dispatch }, selection) {
+        async updateSelectionSettings({ commit, dispatch }, { selections }) {
             // Send request to API
-            const apiUrl = `/selections/${selection.id}/metadata`
+            const apiUrl = `/selections/update-metadata`
             await axios
-                .put(apiUrl, selection.settings)
+                .post(apiUrl, {
+                    update_requests: selections.map(selection => {
+                        return {
+                            selection_id: selection.id,
+                            metadata: selection.settings,
+                        }
+                    }),
+                })
                 .then(() => {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: 'Settings updated',
+                            msg: `Settings updated for ${
+                                selections.length > 1 ? `${selections.length} selections` : 'selection'
+                            }`,
                             iconClass: 'fa-check',
                             type: 'success',
                         },
