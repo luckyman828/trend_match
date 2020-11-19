@@ -1,10 +1,12 @@
 export default {
     methods: {
         exportToCsv(filename, rows) {
+            // console.log('export rows', rows.length)
             var processRow = function(row) {
                 var finalVal = ''
                 for (var j = 0; j < row.length; j++) {
-                    var innerValue = row[j] === null ? '' : row[j].toString()
+                    // console.log('get row cell value', j, row)
+                    var innerValue = row[j] == null ? '' : row[j].toString()
                     if (row[j] instanceof Date) {
                         innerValue = row[j].toLocaleString()
                     }

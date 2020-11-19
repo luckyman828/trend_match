@@ -2,7 +2,10 @@
     <BaseModal
         ref="exportModal"
         :header="'Export <strong>' + currentFile.name + '</strong> to CSV(Excel)'"
-        @close="SET_SHOW_CSV_MODAL(false)"
+        @close="
+            SET_SHOW_CSV_MODAL(false)
+            $emit('close')
+        "
         :show="show"
     >
         <template v-slot v-if="show">
@@ -14,7 +17,24 @@
                             Export selected products only
                         </BaseCheckboxInputField>
                     </div>
+                </div>
 
+                <div class="form-section" v-if="$route.name != 'editFile'">
+                    <h4>Choose export type</h4>
+                    <BaseRadioInputField class="form-element" v-model="exportType" value="results">
+                        Export results
+                    </BaseRadioInputField>
+                    <BaseRadioInputField class="form-element" v-model="exportType" value="dump">
+                        <span>Export CSV dump</span>
+                        <i
+                            class="far fa-info-circle"
+                            v-tooltip="'Can be used to upload a new file to Kollekt, based on the results'"
+                        ></i>
+                    </BaseRadioInputField>
+                </div>
+
+                <!-- START Export results only -->
+                <template v-if="exportType == 'results'">
                     <div class="form-element">
                         <label for="currency-selector">Choose Currency to export</label>
                         <BaseInputField
@@ -27,59 +47,55 @@
                             <i class="far fa-chevron-down"></i>
                         </BaseInputField>
                     </div>
-                </div>
 
-                <div class="form-section">
-                    <h4>Choose what to export</h4>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="exportAlignment">
-                            <span>Alignment</span>
-                        </BaseCheckboxInputField>
-                    </div>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="exportFeedback">
-                            <span>Feedback</span>
-                        </BaseCheckboxInputField>
-                    </div>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="exportRequests">
-                            <span>Requests</span>
-                        </BaseCheckboxInputField>
-                    </div>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="exportComments">
-                            <span>Comments</span>
-                        </BaseCheckboxInputField>
-                    </div>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="exportQuantity">
-                            <span>Quantity</span>
-                        </BaseCheckboxInputField>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h4>Export variants?</h4>
-                    <div class="form-element">
-                        <BaseCheckboxInputField v-model="exportVariants">
-                            <span>Export variants</span>
-                        </BaseCheckboxInputField>
+                    <div class="form-section">
+                        <h4>Choose what to export</h4>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="exportAlignment">
+                                <span>Alignment</span>
+                            </BaseCheckboxInputField>
+                        </div>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="exportFeedback">
+                                <span>Feedback</span>
+                            </BaseCheckboxInputField>
+                        </div>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="exportRequests">
+                                <span>Requests</span>
+                            </BaseCheckboxInputField>
+                        </div>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="exportComments">
+                                <span>Comments</span>
+                            </BaseCheckboxInputField>
+                        </div>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="exportQuantity">
+                                <span>Quantity</span>
+                            </BaseCheckboxInputField>
+                        </div>
                     </div>
 
-                    <!-- <div class="form-element">
-                        <BaseCheckboxInputField v-if="exportVariants"
-                            v-model="excludeProductRows">
-                            <span>Variant rows only</span>
-                        </BaseCheckboxInputField>
-                    </div> -->
-                </div>
+                    <div class="form-section">
+                        <h4>Export variants?</h4>
+                        <div class="form-element">
+                            <BaseCheckboxInputField v-model="exportVariants">
+                                <span>Export variants</span>
+                            </BaseCheckboxInputField>
+                        </div>
 
-                <BaseButton
-                    style="width: 100%"
-                    buttonClass="dark full-width lg"
-                    v-tooltip="!exportOption && 'Please choose an export option'"
-                    @click="onExport"
-                >
+                        <!-- <div class="form-element">
+                            <BaseCheckboxInputField v-if="exportVariants"
+                                v-model="excludeProductRows">
+                                <span>Variant rows only</span>
+                            </BaseCheckboxInputField>
+                        </div> -->
+                    </div>
+                </template>
+                <!-- END Export results only -->
+
+                <BaseButton style="width: 100%" buttonClass="dark full-width lg" @click="onExport">
                     <span>Export</span>
                 </BaseButton>
             </form>
@@ -124,6 +140,8 @@ export default {
             exportSelected: false,
             currencyToExport: null,
 
+            exportType: this.$route.name == 'editFile' ? 'dump' : 'results',
+
             exportAlignment: true,
             exportFeedback: true,
             exportRequests: true,
@@ -133,7 +151,6 @@ export default {
 
             excludeProductRows: false,
 
-            exportOption: null,
             defaultCsvHeaders: [
                 'Product ID',
                 'Product Name',
@@ -146,6 +163,18 @@ export default {
                 'RRP',
                 'MU',
                 'Product EANs',
+            ],
+            defaultCsvDumpHeaders: [
+                'Product ID',
+                'Product Name',
+                'Brand',
+                'Category',
+                'Buying Gruop',
+                'Product Minimum',
+                'Variant Minimum',
+                'Composition',
+                'Description',
+                'EANs',
             ],
         }
     },
@@ -196,6 +225,10 @@ export default {
             this.$refs.currencyContext.show(e)
         },
         onExport() {
+            if (this.exportType == 'dump') {
+                this.exportCsvDump()
+                return
+            }
             // START HEADERS
             // Instantiate default headers
             const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
@@ -539,6 +572,112 @@ export default {
                 [headers].concat(rows)
             )
         },
+        exportCsvDump() {
+            // Instantiate headers
+            const headers = JSON.parse(JSON.stringify(this.defaultCsvDumpHeaders))
+
+            const currencies = []
+            // Find out how many different currencies we have
+            this.productsToExport.map(product => {
+                product.prices.map(price => {
+                    const alreadyAdded = currencies.find(x => x == price.currency)
+                    if (!alreadyAdded && !!price.currency) currencies.push(price.currency)
+                })
+            })
+            console.log('currencies', currencies)
+            // Split currencies into columns
+            currencies.map(currency => {
+                headers.push(...[`WHS ${currency}`, `RRP ${currency}`, `MU ${currency}`])
+            })
+
+            // Add variant headers
+            headers.push(...['Delivery', 'Variant Name', 'Variant Sizes', 'Variant EAN', 'Image URL'])
+
+            const rows = []
+
+            // MAP PRODUCTS
+            this.productsToExport.map(product => {
+                const productRow = this.getDefaultProductRowDumpData(product)
+                // Add prices
+                currencies.map(currency => {
+                    const productPrice = product.prices.find(x => x.currency == currency)
+                    if (!productPrice) {
+                        productRow.push(...[, , ,])
+                    } else {
+                        productRow.push(
+                            ...[
+                                productPrice.wholesale_price,
+                                productPrice.recommended_retail_price,
+                                productPrice.mark_up,
+                            ]
+                        )
+                    }
+                })
+
+                // Create a map of the variants
+                const productVariantMap = product.variants.map((variant, variantIndex) => {
+                    if (variant.pictures.length <= 1) return { variantIndex, pictureIndex: 0 }
+                    return variant.pictures.map((picture, pictureIndex) => {
+                        return { variantIndex, pictureIndex }
+                    })
+                })
+                const rowCount = Math.max(productVariantMap.length, product.delivery_dates.length)
+
+                // Add a row for each row we need to add
+                for (let i = 0; i < rowCount; i++) {
+                    const extraRow = JSON.parse(JSON.stringify(productRow))
+                    // Add delivery date
+                    extraRow.push(product.delivery_dates ? product.delivery_dates[i] : '')
+
+                    // Add variant
+                    const variantIndex = productVariantMap[i] ? productVariantMap[i].variantIndex : null
+                    const variant = product.variants[variantIndex]
+
+                    if (!variant) {
+                        extraRow.push(...['', '', '', ''])
+                    } else {
+                        // Figure out what variant we are at
+                        extraRow.push(...[variant.name, variant.sizes ? variant.sizes.join(', ') : '', variant.ean])
+                        const pictureIndex = productVariantMap[i] ? productVariantMap[i].pictureIndex : null
+                        const picture = variant.pictures[pictureIndex]
+                        if (!picture) {
+                            extraRow.push('')
+                        } else {
+                            extraRow.push(picture.url)
+                        }
+                    }
+
+                    rows.push(extraRow)
+                }
+
+                // // Add variants
+                // product.variants.map(variant => {
+                //     // Use the productRow as basis for our variant row
+                //     const variantRow = JSON.parse(JSON.stringify(productRow))
+                //     variantRow.push(...[variant.name, variant.sizes ? variant.sizes.join(', ') : '', 'ean'])
+                //     if (variant.pictures.length <= 0) {
+                //         variantRow.push('')
+                //         rows.push(variantRow)
+                //         return
+                //     }
+
+                //     // Add images
+                //     variant.pictures.map(picture => {
+                //         const pictureRow = JSON.parse(JSON.stringify(variantRow))
+                //         pictureRow.push(picture.url ? picture.url : '')
+                //         rows.push(pictureRow)
+                //     })
+                // })
+            })
+
+            let dateStr = DateTime.local().toLocaleString()
+            // Replace slashes with dashes in date
+            dateStr = dateStr.replace('/', '-')
+
+            // console.log('rows', rows)
+
+            this.exportToCsv(`Kollekt File Dump - ${this.currentFile.name} - ${dateStr}.csv`, [headers].concat(rows))
+        },
         getDefaultProductRowData(product) {
             const priceToReturn = this.getProductPrice(product)
             return [
@@ -552,6 +691,21 @@ export default {
                 priceToReturn.wholesale_price || '',
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
+                product.eans.join(', '),
+            ]
+        },
+        getDefaultProductRowDumpData(product) {
+            const priceToReturn = this.getProductPrice(product)
+            return [
+                product.datasource_id,
+                product.title,
+                product.brand,
+                product.category,
+                product.buying_group,
+                product.min_order,
+                product.min_variant_order,
+                product.composition,
+                product.sale_description,
                 product.eans.join(', '),
             ]
         },
