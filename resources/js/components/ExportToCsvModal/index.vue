@@ -625,10 +625,14 @@ export default {
                 })
 
                 // Create a map of the variants
-                const productVariantMap = product.variants.map((variant, variantIndex) => {
-                    if (variant.pictures.length <= 1) return { variantIndex, pictureIndex: 0 }
-                    return variant.pictures.map((picture, pictureIndex) => {
-                        return { variantIndex, pictureIndex }
+                const productVariantMap = []
+                product.variants.map((variant, variantIndex) => {
+                    if (variant.pictures.length <= 1) {
+                        productVariantMap.push({ variantIndex, pictureIndex: 0 })
+                        return
+                    }
+                    variant.pictures.map((picture, pictureIndex) => {
+                        productVariantMap.push({ variantIndex, pictureIndex })
                     })
                 })
                 const extraRowCount = Math.max(
@@ -637,6 +641,8 @@ export default {
                     product.assortments.length,
                     1
                 )
+
+                console.log('variant map', productVariantMap)
 
                 // Add a row for each row we need to add
                 for (let i = 0; i < extraRowCount; i++) {
