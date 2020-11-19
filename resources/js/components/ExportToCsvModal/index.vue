@@ -584,14 +584,24 @@ export default {
                     if (!alreadyAdded && !!price.currency) currencies.push(price.currency)
                 })
             })
-            console.log('currencies', currencies)
             // Split currencies into columns
             currencies.map(currency => {
                 headers.push(...[`WHS ${currency}`, `RRP ${currency}`, `MU ${currency}`])
             })
 
             // Add variant headers
-            headers.push(...['Delivery', 'Variant Name', 'Variant Sizes', 'Variant EAN', 'Image URL'])
+            headers.push(
+                ...[
+                    'Delivery',
+                    'Variant Name',
+                    'Variant Sizes',
+                    'Variant EAN',
+                    'Image URL',
+                    'Assortment Name',
+                    'Assortment EAN',
+                    'Assortment Size',
+                ]
+            )
 
             const rows = []
 
@@ -621,10 +631,15 @@ export default {
                         return { variantIndex, pictureIndex }
                     })
                 })
-                const rowCount = Math.max(productVariantMap.length, product.delivery_dates.length)
+                const extraRowCount = Math.max(
+                    productVariantMap.length,
+                    product.delivery_dates.length,
+                    product.assortments.length,
+                    1
+                )
 
                 // Add a row for each row we need to add
-                for (let i = 0; i < rowCount; i++) {
+                for (let i = 0; i < extraRowCount; i++) {
                     const extraRow = JSON.parse(JSON.stringify(productRow))
                     // Add delivery date
                     extraRow.push(product.delivery_dates ? product.delivery_dates[i] : '')
@@ -645,6 +660,14 @@ export default {
                         } else {
                             extraRow.push(picture.url)
                         }
+                    }
+
+                    // Add assortments
+                    const assortment = product.assortments[i]
+                    if (!assortment) {
+                        extraRow.push(...['', '', ''])
+                    } else {
+                        extraRow.push(...[assortment.name, assortment.box_ean, assortment.box_size])
                     }
 
                     rows.push(extraRow)

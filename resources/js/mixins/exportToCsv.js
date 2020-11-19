@@ -1,27 +1,33 @@
 export default {
     methods: {
         exportToCsv(filename, rows) {
-            // console.log('export rows', rows.length)
-            var processRow = function(row) {
-                var finalVal = ''
-                for (var j = 0; j < row.length; j++) {
-                    // console.log('get row cell value', j, row)
-                    var innerValue = row[j] == null ? '' : row[j].toString()
-                    if (row[j] instanceof Date) {
-                        innerValue = row[j].toLocaleString()
-                    }
-                    var result = innerValue.replace(/"/g, '""')
-                    if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"'
-                    if (j > 0) finalVal += ';'
-                    finalVal += result
-                }
-                return finalVal + '\n'
-            }
+            console.log('export rows', rows)
 
-            var csvFile = ''
-            for (var i = 0; i < rows.length; i++) {
-                csvFile += processRow(rows[i])
-            }
+            // CUSTOM CSV PARSER
+            // var processRow = function(row) {
+            //     var finalVal = ''
+            //     for (var j = 0; j < row.length; j++) {
+            //         // console.log('get row cell value', j, row)
+            //         var innerValue = row[j] == null ? '' : row[j].toString()
+            //         if (row[j] instanceof Date) {
+            //             innerValue = row[j].toLocaleString()
+            //         }
+            //         var result = innerValue.replace(/"/g, '""')
+            //         if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"'
+            //         if (j > 0) finalVal += ';'
+            //         finalVal += result
+            //     }
+            //     return finalVal + '\n'
+            // }
+
+            // var csvFile = ''
+            // for (var i = 0; i < rows.length; i++) {
+            //     csvFile += processRow(rows[i])
+            // }
+
+            // SheetJS
+            const worksheet = XLSX.utils.json_to_sheet(rows, { skipHeader: true })
+            const csvFile = XLSX.utils.sheet_to_csv(worksheet)
 
             var BOM = '\uFEFF'
             var blob = new Blob([BOM + csvFile], { type: 'text/csv;charset=utf-8;' })
