@@ -58,7 +58,7 @@
         <p v-if="uploadingCount > 0" style="text-align: center;">
             <span
                 >Uploading images: <strong>{{ uploadingCount }}</strong> of
-                <strong>{{ imagesToUpload.length }}</strong> left.</span
+                <strong>{{ imageMatches.length }}</strong> left.</span
             >
         </p>
         <p v-if="updatingCount > 0" style="text-align: center;">
@@ -81,6 +81,7 @@ export default {
             uploadingCount: 0,
             updatingCount: 0,
             toalUpdateCount: 0,
+            imageMatches: [],
             createVariants: false,
         }
     },
@@ -91,7 +92,7 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('products', ['updateProduct', 'uploadImage']),
+        ...mapActions('products', ['updateManyProducts', 'uploadImage']),
         onFilesChange(fileList) {
             for (let i = 0; i < fileList.length; i++) {
                 const file = fileList[i]
@@ -104,87 +105,103 @@ export default {
             // Use FileReader to get the blob data of the images to upload
             const productsToUpdate = []
             let imageUploadError = false
-            await Promise.all(
-                this.imagesToUpload.map(async image => {
-                    // Check that the image actually belongs to a variant of one of our products
-                    const productId = image.name.slice(0, 8)
-                    if (!productId) return
 
-                    // Find the variant name
-                    const underscoreIndex = image.name.indexOf('_')
-                    const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
-                    const variantName = variantNameMatches.length > 1 ? variantNameMatches[1].trim() : 'null'
+            // First, find images that match a variant --> Our, imageMatches
+            this.imagesToUpload.map(image => {
+                // Check that the image actually belongs to a variant of one of our products
+                const productId = image.name.slice(0, 8)
+                if (!productId) return
 
-                    // Check if we should place the image first
-                    const shouldBeFirst = image.name.toLowerCase().search('front') >= 0
+                // Find the variant name
+                const underscoreIndex = image.name.indexOf('_')
+                const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
+                const variantName = variantNameMatches.length > 1 ? variantNameMatches[1].trim() : 'null'
 
-                    // console.log('product id', productId, ', variantName:', variantName, ', should be first', shouldBeFirst)
+                // Check if we should place the image first
+                const shouldBeFirst = image.name.toLowerCase().search('front') >= 0
 
-                    // Find the product the image belongs to
-                    const product = this.products.find(x => x.datasource_id == productId)
-                    if (!product) return
+                // console.log('product id', productId, ', variantName:', variantName, ', should be first', shouldBeFirst)
 
-                    this.uploadingCount++
-                    productsToUpdate.push(product)
+                // Find the product the image belongs to
+                const product = this.products.find(x => x.datasource_id == productId)
+                if (!product) return
 
-                    const basePicture = {
-                        name: image.name,
-                        url: null,
-                    }
+                const basePicture = {
+                    name: image.name,
+                    url: null,
+                }
 
-                    let pictureToUpload = basePicture
+                let pictureToUpload = basePicture
 
-                    // Asume we are adding a new variant
-                    let variantToUpdate = {
-                        id: this.$uuid.v4(),
-                        name: variantName,
-                        image: null,
-                        images: [],
-                        pictures: [basePicture],
-                        sizes: [],
-                        thumbnail: null,
-                    }
+                // Asume we are adding a new variant
+                let variantToUpdate = {
+                    id: this.$uuid.v4(),
+                    name: variantName,
+                    image: null,
+                    images: [],
+                    pictures: [basePicture],
+                    sizes: [],
+                    thumbnail: null,
+                }
 
-                    // Find the variant on our product
-                    // Check if there is a variant that contains the image variant name
-                    const existingVariant = product.variants.find(x => {
-                        return x.name.trim().toLowerCase() == variantName.trim().toLowerCase()
-                    })
-                    // console.log('variant to update', variantName, existingVariant, product)
-
-                    if (existingVariant) {
-                        variantToUpdate = existingVariant
-
-                        // Check for existing picture
-                        const existingPicture = existingVariant.pictures.find(x => x.name == image.name)
-
-                        if (existingPicture) {
-                            if (existingPicture.name == image.name && !!existingPicture.url) return // don't reupload an existing image
-                            pictureToUpload = existingPicture
-                        } else {
-                            if (shouldBeFirst) {
-                                variantToUpdate.pictures.unshift(basePicture)
-                            } else {
-                                variantToUpdate.pictures.push(basePicture)
-                            }
-                        }
-                    } else if (this.createVariants) {
-                        product.variants.push(variantToUpdate)
-                    }
-
-                    // Upload the image
-                    await this.uploadImage({
-                        file: this.file,
-                        product,
-                        picture: pictureToUpload,
-                        image,
-                    })
-                    this.uploadingCount--
+                // Find the variant on our product
+                // Check if there is a variant that contains the image variant name
+                const existingVariant = product.variants.find(x => {
+                    return (
+                        x.name
+                            .trim()
+                            .toLowerCase()
+                            .search(variantName.trim().toLowerCase()) >= 0
+                    )
                 })
-            ).catch(err => {
-                // console.log('error in bulk image upload', err)
-                this.imageUploadError = true
+                // console.log('variant to update', variantName, existingVariant, product)
+
+                if (existingVariant) {
+                    variantToUpdate = existingVariant
+
+                    // Check for existing picture
+                    const existingPicture = existingVariant.pictures.find(x => x.name == image.name)
+
+                    if (existingPicture) {
+                        if (existingPicture.name == image.name && !!existingPicture.url) return // don't reupload an existing image
+                        pictureToUpload = existingPicture
+                    } else {
+                        if (shouldBeFirst) {
+                            variantToUpdate.pictures.unshift(basePicture)
+                        } else {
+                            variantToUpdate.pictures.push(basePicture)
+                        }
+                    }
+                } else if (this.createVariants) {
+                    product.variants.push(variantToUpdate)
+                }
+
+                // Increment the match count
+                this.imageMatches.push({ product, image, picture: pictureToUpload })
+                this.uploadingCount++
+                productsToUpdate.push(product)
             })
+
+            // Chunk the images to upload to avoid overloading the API -- which can happen...
+            const imageMatchChunks = this.chunkArray(this.imageMatches, 64)
+            // imageMatchChunks.map(async imageMatches => {
+            for (const imageMatches of imageMatchChunks) {
+                await Promise.all(
+                    imageMatches.map(async ({ product, image, picture }) => {
+                        // Upload the image
+                        await this.uploadImage({
+                            file: this.file,
+                            product,
+                            picture,
+                            image,
+                        })
+                        this.uploadingCount--
+                    })
+                ).catch(err => {
+                    console.log('error in bulk image upload', err)
+                    this.imageUploadError = true
+                })
+            }
 
             // Return early if uploading images failed
             if (imageUploadError) return
@@ -192,25 +209,13 @@ export default {
             this.toalUpdateCount = productsToUpdate.length
 
             // Update all products --> This cannot be done earlier since we cannot be sure if we are in the process of uploading some of the images on the product
-            await Promise.all(
-                productsToUpdate.map(async product => {
-                    this.updatingCount++
+            this.updatingCount = productsToUpdate.length
+            await this.updateManyProducts({ file: this.file, products: productsToUpdate })
 
-                    await this.updateProduct(product)
-                    this.updatingCount--
-                })
-            )
-                .catch(err => {
-                    // console.log('error when updating products', err)
-                })
-                .then(response => {
-                    // Reset the component
-                    // console.log('Success!')
-                    this.imagesToUpload = []
-                })
-
+            this.imagesToUpload = []
             this.updatingCount = 0
             this.uploadingCount = 0
+            this.imagesMatches = []
         },
     },
 }
