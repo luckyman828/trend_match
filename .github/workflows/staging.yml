@@ -33,10 +33,10 @@ jobs:
                   password: ${{ secrets.REGISTRY_PASSWORD }}
 
             - name: Build the Docker
-              run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
+              run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/stag-${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
 
             - name: Push docker image
-              run: docker push reg.trendmatch.dk/kollekt/${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
+              run: docker push reg.trendmatch.dk/kollekt/stag-${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
 
     deploy:
         needs: build
@@ -63,7 +63,7 @@ jobs:
                   tokenSuffix: '}'
                   files: '["deploy/k8s/*.yaml"]'
               env:
-                  CONTAINER_IMAGE: ${{ secrets.PRD_CONTAINER_IMAGE }}
+                  CONTAINER_IMAGE: stag-${{ secrets.PRD_CONTAINER_IMAGE }}
                   IMAGE_TAG: ${{ github.sha }}
                   HOST_NAME: ${{ secrets.STAGING_HOST_NAME }}
 
@@ -75,6 +75,6 @@ jobs:
                       deploy/k8s/3-service.yaml
                       deploy/k8s/4-gateway.yaml
                   images: |
-                      reg.trendmatch.dk/kollekt/${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
+                      reg.trendmatch.dk/kollekt/stag-${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
                   imagePullSecrets: |
                       dashboard-regcred
