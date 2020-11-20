@@ -15,6 +15,16 @@
         <!-- Access denied -->
         <template v-if="!selection.your_role">
             <p>You don't have access to this selection</p>
+            <div class="admin-action-list flex-list" v-if="authUserWorkspaceRole == 'Admin'">
+                <button class="primary ghost" @click="onJoinSelection('Owner')">
+                    <i class="far fa-user-shield"></i>
+                    <span>Join as Owner</span>
+                </button>
+                <button class="primary ghost" @click="onJoinSelection('Member')">
+                    <i class="far fa-user-plus"></i>
+                    <span>Join as Member</span>
+                </button>
+            </div>
         </template>
 
         <!-- Access granted -->
@@ -172,6 +182,7 @@ export default {
         ]),
         ...mapGetters('auth', ['authUser', 'getAuthUserToken']),
         ...mapGetters('scanner', ['getScannerModeActive']),
+        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         selection() {
             return this.currentSelection
         },
@@ -220,6 +231,7 @@ export default {
         ]),
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         ...mapActions('requests', ['initRequests', 'insertOrUpdateRequest']),
+        ...mapActions('selections', ['addUsersToSelection']),
         // async fixRequests() {
         //     const requests = []
         //     const selectionInput = this.getActiveSelectionInput(this.products[0])
@@ -231,6 +243,12 @@ export default {
         //         await this.insertOrUpdateRequest({ selectionInput, request })
         //     })
         // },
+        async onJoinSelection(role) {
+            const user = JSON.parse(JSON.stringify(this.authUser))
+            user.role = role
+            await this.addUsersToSelection({ selection: this.selection, users: [user], ignoreRole: false })
+            this.$router.go()
+        },
         async InNoOutNoCommentStyles() {
             if (await this.$refs.quickInDialog.confirm()) {
                 if (this.currentSelectionMode == 'Feedback') {
