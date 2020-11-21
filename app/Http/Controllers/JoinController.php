@@ -73,16 +73,16 @@ class JoinController extends Controller
         }
         // catch(\GuzzleHttp\Exception\ClientException $err) {
         catch(\GuzzleHttp\Exception\RequestException $e) {
-            throw new \Exception($e);
-            // return [
-            //     'response' => \GuzzleHttp\Psr7\str($e->getResponse()),
-            //     'request' => \GuzzleHttp\Psr7\str($e->getRequest()),
+            // throw new \Exception($e);
+            return [
+                // 'response' => \GuzzleHttp\Psr7\str($e->getResponse()),
+                'request' => \GuzzleHttp\Psr7\str($e->getRequest()),
                 
-            //     // 'request' => json_encode($e->getRequest()),
-            //     // 'response' => json_encode(\GuzzleHttp\Psr7\str($e->getResponse())),
-            //     // 'request' => json_encode(\GuzzleHttp\Psr7\str($e->getRequest())),
+                // 'request' => json_encode($e->getRequest()),
+                // 'response' => json_encode(\GuzzleHttp\Psr7\str($e->getResponse())),
+                // 'request' => json_encode(\GuzzleHttp\Psr7\str($e->getRequest())),
         
-            // ];
+            ];
         }
 
         // return 'response and status code: ' . $joinResponse->getStatusCode();
