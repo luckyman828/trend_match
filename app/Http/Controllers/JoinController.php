@@ -61,7 +61,7 @@ class JoinController extends Controller
         $joinClient = new Client();
         try {
             // $joinResponse = $joinClient->request('POST', $apiBaseUrl . '/public-internal/join-selection', [
-            $joinResponse = $joinClient->request('POST', 'http://kollekt-api-prod.kollekt-prod:16969/internal/join-selection', [
+            $joinResponse = $joinClient->request('POST', 'http://kollekt-api-prod.kollekt-prod:16969/v1/internal/join-selection', [
                 \GuzzleHttp\RequestOptions::JSON => $joinSelectionBody,
                 'headers' => ['X-Auth-Token' => $apiToken]
             ]);
