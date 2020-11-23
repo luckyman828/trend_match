@@ -236,7 +236,6 @@ export default {
 
                         // Format date values
                         if (field.type == 'date' && fieldValue != null) {
-                            console.log('field is date', fieldValue)
                             if (!(fieldValue instanceof Date)) {
                                 const date = new Date(fieldValue)
                                 // Check if the date is a valid date
@@ -250,7 +249,6 @@ export default {
                             if (fieldValue instanceof Date) {
                                 fieldValue = DateTime.fromJSDate(fieldValue).toISODate()
                             }
-                            console.log('field is still date', fieldValue)
                         }
 
                         // START MAP VARIANTS

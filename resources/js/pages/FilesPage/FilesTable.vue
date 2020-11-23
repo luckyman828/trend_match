@@ -62,7 +62,7 @@
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <span v-if="destinationFolder.id != null">{{destinationFolder.name}}</span>
-                        <span v-else><span class="square true-square"><i class="far fa-building"></i></span> {{currentWorkspace.name}}</span>
+                        <span v-else><span class="square true-square"><i class="far fa-building"></i></span> {{currentWorkspace.title}}</span>
                     </div>
                     <div class="folders-wrapper">
                         <template v-for="thisFolder in destinationFolderContent.filter(x => x.type == 'Folder')">
