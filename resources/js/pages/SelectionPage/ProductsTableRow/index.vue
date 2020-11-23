@@ -94,7 +94,7 @@
             <td class="minimum">
                 <div
                     class="square ghost xs"
-                    v-if="product.min_variant_order != null || product.min"
+                    v-if="product.min_variant_order != null || product.min_order != null"
                     v-tooltip="
                         `
                     ${
@@ -192,11 +192,7 @@
                 <!-- End Distribution -->
 
                 <td class="requests">
-                    <button
-                        class="requests-button ghost xs"
-                        @click="onViewSingle"
-                        v-tooltip="'Requests (open)'"
-                    >
+                    <button class="requests-button ghost xs" @click="onViewSingle" v-tooltip="'Requests (open)'">
                         <span>{{ selectionInput.requests.length }}</span>
                         <span v-if="selectionInput.hasOpenTicket">
                             ({{
