@@ -1331,9 +1331,12 @@ export default {
                     get: function() {
                         let totalQty = 0
                         selectionInput.variants.map(variant => {
-                            variant.actions.map(action => {
-                                totalQty += action.quantity
-                            })
+                            // Return the childrens quantity if no quantity has been set for this selection
+                            const quantity =
+                                variant.action == 'None'
+                                    ? variant.totalChildrenQuantity
+                                    : variant.totalExChildrenQuantity
+                            totalQty += quantity
                         })
                         return totalQty
                     },
@@ -1608,7 +1611,16 @@ export default {
                     // Get the selection's quantity
                     Object.defineProperty(variant, 'totalQuantity', {
                         get: function() {
-                            return variant.actions.reduce((total, x) => (total += x.quantity), 0)
+                            // Return the childrens quantity if no quantity has been set for this selection
+                            const actionsFiltered =
+                                variant.action == 'None'
+                                    ? variant.actions.filter(
+                                          action => action.selection.parent_id == selectionInput.selection_id
+                                      )
+                                    : variant.actions.filter(
+                                          action => action.selection.parent_id != selectionInput.selection_id
+                                      )
+                            return actionsFiltered.reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
                     // Get total from children
@@ -1799,6 +1811,7 @@ export default {
                             // Check if an action for the variant already exists
                             if (allVariantsOut || variant.action == 'None') {
                                 variant.action = newAction
+                                variant.quantity = variant.totalChildrenQuantity
                             }
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction

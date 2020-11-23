@@ -109,9 +109,7 @@
                         <span v-if="showQty"
                             >{{
                                 distributionScope == 'Alignment'
-                                    ? selectionInput.totalExChildrenQuantity
-                                        ? selectionInput.totalExChildrenQuantity
-                                        : selectionInput.totalChildrenQuantity
+                                    ? selectionInput.totalQuantity
                                     : selectionInput.totalFeedbackQuantity
                             }}
                             /</span

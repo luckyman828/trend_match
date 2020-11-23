@@ -66,9 +66,7 @@
                     <span
                         >{{
                             actionDistributionTooltipTab == 'Alignment'
-                                ? variant.totalExChildrenQuantity
-                                    ? variant.totalExChildrenQuantity
-                                    : variant.totalChildrenQuantity
+                                ? variant.totalQuantity
                                 : variant.totalFeedbackQuantity
                         }}
                         / {{ product.min_variant_order }}</span
