@@ -89,14 +89,15 @@ export default {
             if (this.submitDisabled) return
 
             // Veirify catpcha and send API request
-            const joinReponse = await this.joinSelectionViaLink({
+            const joinResponse = await this.joinSelectionViaLink({
                 captchaToken: this.captchaToken,
                 selectionId: this.selectionId,
                 email: this.newEmail,
             })
+            console.log('join response is here! ', joinResponse)
 
             // Existing Account
-            if (joinReponse.status == 'AccountExisted') {
+            if (joinResponse.status == 'AccountExisted') {
                 this.SHOW_SNACKBAR({
                     msg: `A user with that e-mail already exists. Please login.`,
                     type: 'info',
@@ -116,10 +117,10 @@ export default {
             }
 
             // Succesfully joined
-            if (joinReponse.status == 'Success') {
+            if (joinResponse.status == 'Success') {
                 // Set the corrent workspace and have the user logged in
-                const token = joinReponse.user.token.access_token
-                const user = joinReponse.user
+                const token = joinResponse.user.token.access_token
+                const user = joinResponse.user
                 this.ON_SUCCESFUL_LOGIN({ token, user })
 
                 // // Route the user to the selection

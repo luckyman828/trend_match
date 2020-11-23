@@ -1333,9 +1333,7 @@ export default {
                         selectionInput.variants.map(variant => {
                             // Return the childrens quantity if no quantity has been set for this selection
                             const quantity =
-                                variant.action == 'None'
-                                    ? variant.totalChildrenQuantity
-                                    : variant.totalExChildrenQuantity
+                                variant.action == 'None' ? variant.totalChildrenQuantity : variant.totalSiblingQuantity
                             totalQty += quantity
                         })
                         return totalQty
@@ -1356,12 +1354,12 @@ export default {
                     },
                 })
                 // Get total from ex children
-                Object.defineProperty(selectionInput, 'totalExChildrenQuantity', {
+                Object.defineProperty(selectionInput, 'totalSiblingQuantity', {
                     get: function() {
                         let totalQty = 0
                         selectionInput.variants.map(variant => {
                             variant.actions
-                                .filter(action => action.selection.parent_id != selectionInput.selection_id)
+                                .filter(action => action.selection.parent_id == selectionInput.selection.parent_id)
                                 .map(action => {
                                     totalQty += action.quantity
                                 })
@@ -1632,10 +1630,10 @@ export default {
                         },
                     })
                     // Get total from ex children
-                    Object.defineProperty(variant, 'totalExChildrenQuantity', {
+                    Object.defineProperty(variant, 'totalSiblingQuantity', {
                         get: function() {
                             return variant.actions
-                                .filter(action => action.selection.parent_id != selectionInput.selection_id)
+                                .filter(action => action.selection.parent_id == selectionInput.selection.parent_id)
                                 .reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
