@@ -16,8 +16,9 @@ export default {
     actions: {
         async updateActions({ commit, dispatch, rootGetters }, { actions, newAction }) {
             // Complete the product if it was IN but now is OUT
+            const selection = rootGetters['selections/getCurrentSelection']
             let productsToComplete = []
-            if (newAction == 'Out' && rootGetters['selections/getCurrentSelection'].type == 'Master') {
+            if (newAction == 'Out' && selection.settings.ticket_level != 'None' && selection.type == 'Master') {
                 actions.map(action => {
                     if (['In', 'Focus'].includes(action.action)) {
                         const product = rootGetters['products/products'].find(x => x.id == action.product_id)
