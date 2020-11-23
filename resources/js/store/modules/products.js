@@ -1338,6 +1338,34 @@ export default {
                         return totalQty
                     },
                 })
+                // Get total from children
+                Object.defineProperty(selectionInput, 'totalChildrenQuantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            variant.actions
+                                .filter(action => action.selection.parent_id == selectionInput.selection_id)
+                                .map(action => {
+                                    totalQty += action.quantity
+                                })
+                        })
+                        return totalQty
+                    },
+                })
+                // Get total from ex children
+                Object.defineProperty(selectionInput, 'totalExChildrenQuantity', {
+                    get: function() {
+                        let totalQty = 0
+                        selectionInput.variants.map(variant => {
+                            variant.actions
+                                .filter(action => action.selection.parent_id != selectionInput.selection_id)
+                                .map(action => {
+                                    totalQty += action.quantity
+                                })
+                        })
+                        return totalQty
+                    },
+                })
 
                 Object.defineProperty(selectionInput, 'totalFeedbackQuantity', {
                     get: function() {
@@ -1581,6 +1609,22 @@ export default {
                     Object.defineProperty(variant, 'totalQuantity', {
                         get: function() {
                             return variant.actions.reduce((total, x) => (total += x.quantity), 0)
+                        },
+                    })
+                    // Get total from children
+                    Object.defineProperty(variant, 'totalChildrenQuantity', {
+                        get: function() {
+                            return variant.actions
+                                .filter(action => action.selection.parent_id == selectionInput.selection_id)
+                                .reduce((total, x) => (total += x.quantity), 0)
+                        },
+                    })
+                    // Get total from ex children
+                    Object.defineProperty(variant, 'totalExChildrenQuantity', {
+                        get: function() {
+                            return variant.actions
+                                .filter(action => action.selection.parent_id != selectionInput.selection_id)
+                                .reduce((total, x) => (total += x.quantity), 0)
                         },
                     })
                     // Get the selection's quantity
