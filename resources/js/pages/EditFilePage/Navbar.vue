@@ -28,6 +28,9 @@
             <button class="button primary" @click="onExportCsv">
                 <span>Export CSV</span>
             </button>
+            <button class="button primary wide" @click="exportToFileModalVisible = true">
+                <span>Export to File</span>
+            </button>
 
             <button class="button primary" @click="onUploadToFile">
                 <i class="far fa-upload"></i>
@@ -41,6 +44,12 @@
 
         <!-- <ExportProductsModal v-if="currentFile" :show="exportModalVisible" @close="exportModalVisible = false"/> -->
         <ExportToCsvModal v-if="currentFile" :show="exportCsvModalVisible" @close="exportCsvModalVisible = false" />
+
+        <ExportToFileModal
+            v-if="exportToFileModalVisible"
+            :show="exportToFileModalVisible"
+            @close="exportToFileModalVisible = false"
+        />
 
         <UploadToFileModal
             v-if="currentFile"
@@ -57,6 +66,7 @@ import axios from 'axios'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
+import ExportToFileModal from '../../components/common/ExportToFileModal'
 import UploadToFileModal from '../../components/UploadToFileModal'
 
 export default {
@@ -65,6 +75,7 @@ export default {
         ExportProductsModal,
         ExportToCsvModal,
         UploadToFileModal,
+        ExportToFileModal,
     },
     data: function() {
         return {
@@ -72,6 +83,7 @@ export default {
             exportCsvModalVisible: false,
             uploadToFileModalVisible: false,
             uploadToFileKey: 0,
+            exportToFileModalVisible: false,
         }
     },
     computed: {
