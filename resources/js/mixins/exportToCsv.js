@@ -3,7 +3,7 @@ export default {
         exportToCsv(filename, rows) {
             // SheetJS
             const worksheet = XLSX.utils.json_to_sheet(rows, { skipHeader: true })
-            const csvFile = XLSX.utils.sheet_to_csv(worksheet)
+            const csvFile = XLSX.utils.sheet_to_csv(worksheet, { FS: ';' })
 
             var BOM = '\uFEFF'
             var blob = new Blob([BOM + csvFile], { type: 'text/csv;charset=utf-8;' })
