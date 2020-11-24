@@ -1187,12 +1187,24 @@ export default {
                         return allFeedback
                     },
                 })
+                Object.defineProperty(selectionInput, 'feedbacksRaw', {
+                    get: function() {
+                        const allFeedback = rawSelectionInput.feedbacks
+                        return allFeedback
+                    },
+                })
                 Object.defineProperty(selectionInput, 'actions', {
                     get: function() {
                         const allActions = rawSelectionInput.actions
                         if (state.selectedSelectionIds.length > 0) {
                             return allActions.filter(x => state.selectedSelectionIds.includes(x.selection_id))
                         }
+                        return allActions
+                    },
+                })
+                Object.defineProperty(selectionInput, 'actionsRaw', {
+                    get: function() {
+                        const allActions = rawSelectionInput.actions
                         return allActions
                     },
                 })
@@ -1461,17 +1473,37 @@ export default {
                             return feedbacks.filter(x => x.action != 'None')
                         },
                     })
+                    Object.defineProperty(variant, 'feedbacksRaw', {
+                        get: function() {
+                            const feedbacks = []
+                            selectionInput.feedbacksRaw.map(feedback => {
+                                const variantFeedbacks = feedback.variants.filter(x => x.id == variant.id)
+                                variantFeedbacks.map(variantFeedback => {
+                                    feedbacks.push({
+                                        id: variantFeedback.id,
+                                        action: variantFeedback.feedback,
+                                        quantity: variantFeedback.quantity,
+                                        user_id: feedback.user_id,
+                                        user: feedback.user,
+                                        selection_id: feedback.selection_id,
+                                        selection: feedback.selection,
+                                    })
+                                })
+                            })
+                            return feedbacks.filter(x => x.action != 'None')
+                        },
+                    })
                     // Get the user's feedback
                     Object.defineProperty(variant, 'your_feedback', {
                         get: function() {
-                            const userFeedback = variant.feedbacks.find(
+                            const userFeedback = variant.feedbacksRaw.find(
                                 x => x.user_id == authUser.id && x.selection_id == selectionInput.selection_id
                             )
                             return userFeedback ? userFeedback.action : 'None'
                         },
                         set: function(newAction) {
                             // Find the user feedback for the variant input for this feedback action
-                            const userFeedback = selectionInput.feedbacks.find(
+                            const userFeedback = selectionInput.feedbacksRaw.find(
                                 feedback =>
                                     feedback.user_id == authUser.id &&
                                     feedback.selection_id == selectionInput.selection_id
@@ -1514,17 +1546,37 @@ export default {
                             return actions.filter(x => x.action != 'None')
                         },
                     })
+                    Object.defineProperty(variant, 'actionsRaw', {
+                        get: function() {
+                            const actions = []
+                            selectionInput.actionsRaw.map(action => {
+                                const variantActions = action.variants.filter(x => x.id == variant.id)
+                                variantActions.map(variantAction => {
+                                    actions.push({
+                                        id: variantAction.id,
+                                        action: variantAction.feedback,
+                                        quantity: variantAction.quantity,
+                                        user_id: action.user_id,
+                                        user: action.user,
+                                        selection_id: action.selection_id,
+                                        selection: action.selection,
+                                    })
+                                })
+                            })
+                            return actions.filter(x => x.action != 'None')
+                        },
+                    })
                     // Get the selection's action
                     Object.defineProperty(variant, 'action', {
                         get: function() {
-                            const selectionAction = variant.actions.find(
+                            const selectionAction = variant.actionsRaw.find(
                                 x => x.selection_id == selectionInput.selection_id
                             )
                             return selectionAction ? selectionAction.action : 'None'
                         },
                         set: function(newAction) {
                             // Find the current action for the variant input for this action action
-                            const currentAction = selectionInput.actions.find(
+                            const currentAction = selectionInput.actionsRaw.find(
                                 action => action.selection_id == selectionInput.selection_id
                             )
                             // If the user has already made variant input, update the action
@@ -1547,14 +1599,14 @@ export default {
                     // Get the selection's quantity
                     Object.defineProperty(variant, 'quantity', {
                         get: function() {
-                            const selectionAction = variant.actions.find(
+                            const selectionAction = variant.actionsRaw.find(
                                 x => x.selection_id == selectionInput.selection_id
                             )
                             return selectionAction ? selectionAction.quantity : 0
                         },
                         set: function(newQuantity) {
                             // Find the current action for the variant input for this action action
-                            const currentAction = selectionInput.actions.find(
+                            const currentAction = selectionInput.actionsRaw.find(
                                 action => action.selection_id == selectionInput.selection_id
                             )
                             // If the user has already made variant input, update the action
@@ -1577,14 +1629,14 @@ export default {
                     // Get the user's feedback quantity
                     Object.defineProperty(variant, 'your_quantity', {
                         get: function() {
-                            const userFeedback = variant.feedbacks.find(
+                            const userFeedback = variant.feedbacksRaw.find(
                                 x => x.user_id == authUser.id && x.selection_id == selectionInput.selection_id
                             )
                             return userFeedback ? userFeedback.quantity : 0
                         },
                         set: function(newQuantity) {
                             // Find the current action for the variant input for this action action
-                            const userFeedback = selectionInput.feedbacks.find(
+                            const userFeedback = selectionInput.feedbacksRaw.find(
                                 feedback =>
                                     feedback.user_id == authUser.id &&
                                     feedback.selection_id == selectionInput.selection_id
@@ -1795,7 +1847,7 @@ export default {
                 }
                 // Loop through the products selectionInput and update the action in all of them (sync)
                 product.selectionInputList.forEach(selectionInput => {
-                    const selectionAction = selectionInput.actions.find(x => x.selection_id == action.selection_id)
+                    const selectionAction = selectionInput.actionsRaw.find(x => x.selection_id == action.selection_id)
                     if (selectionAction) {
                         selectionAction.action = newAction
                         selectionAction.user = user
@@ -1827,7 +1879,7 @@ export default {
                 const product = state.products.find(product => product.id == action.product_id)
                 // Loop through the products selectionInput and update the action in all of them (sync)
                 product.selectionInputList.forEach(selectionInput => {
-                    const selectionAction = selectionInput.actions.find(x => x.selection_id == action.selection_id)
+                    const selectionAction = selectionInput.actionsRaw.find(x => x.selection_id == action.selection_id)
                     if (selectionAction) {
                         Object.assign(selectionAction, action)
                     }
@@ -1846,7 +1898,7 @@ export default {
                 }
                 // Loop through the products selectionInput and update the action in all of them (sync)
                 product.selectionInputList.forEach(selectionInput => {
-                    const selectionAction = selectionInput.feedbacks.find(
+                    const selectionAction = selectionInput.feedbacksRaw.find(
                         x => x.selection_id == action.selection_id && x.user_id == action.user_id
                     )
                     if (selectionAction) {
@@ -1879,7 +1931,7 @@ export default {
                 const product = state.products.find(product => product.id == action.product_id)
                 // Loop through the products selectionInput and update the action in all of them (sync)
                 product.selectionInputList.forEach(selectionInput => {
-                    const selectionAction = selectionInput.feedbacks.find(
+                    const selectionAction = selectionInput.feedbacksRaw.find(
                         x => x.selection_id == action.selection_id && x.user_id == action.user_id
                     )
                     if (selectionAction) {
