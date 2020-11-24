@@ -95,8 +95,13 @@
                     <!-- Alignment -->
                     <div class="alignment-wrapper" style="margin-bottom: 20px; border-bottom: solid 1px #E4E4E4;">
                         <strong style="font-size: 11px; margin-bottom: 4px; display: block;"
-                            >Alignment & Requests</strong
-                        >
+                            ><span>Alignment & Requests</span>
+                            <span style="margin-left: 20px;"
+                                >Total: In:
+                                {{ selectionInput.alignmentIns.length + selectionInput.alignmentFocus.length }}; Out:
+                                {{ selectionInput.alignmentOuts.length }}</span
+                            >
+                        </strong>
                         <div
                             class="row"
                             v-for="(action, index) in alignmentListUsers"
@@ -155,8 +160,12 @@
                     <!-- Feedback -->
                     <div class="feedback-wrapper" style="border-bottom: solid 1px #E4E4E4;">
                         <strong style="font-size: 11px; margin-bottom: 4px; display: block;"
-                            >Feedback & Comments</strong
-                        >
+                            ><span>Feedback & Comments</span>
+                            <span style="margin-left: 20px;"
+                                >Total: In: {{ selectionInput.ins.length + selectionInput.focus.length }}; Out:
+                                {{ selectionInput.outs.length }}</span
+                            >
+                        </strong>
                         <div
                             class="row"
                             v-for="(feedback, index) in feedbackListUsers"
