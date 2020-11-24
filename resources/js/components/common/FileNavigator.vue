@@ -25,7 +25,7 @@
                     <span>{{ folderItem.name }}</span>
                 </div>
                 <div v-else class="folder-item file" :key="folderItem.id" @click="setSelectedFile(folderItem)">
-                    <i class="fas fa-file" :class="{ primary: selectedFile && selectedFile.id == folderItem.id }"></i>
+                    <i class="fas fa-file" :class="{ primary: selectedFiles.find(x => x.id == folderItem.id) }"></i>
                     <span>{{ folderItem.name }}</span>
                 </div>
             </template>
@@ -38,12 +38,12 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'fileNavigator',
-    props: ['initialFolderId', 'disabledId'],
+    props: ['initialFolderId', 'disabledId', 'selectFile'],
     data: function() {
         return {
             folder: null,
             folderContents: [],
-            selectedFile: null,
+            selectedFiles: [],
         }
     },
     computed: {
@@ -54,8 +54,20 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFiles', 'fetchFolderContent', 'fetchFolder']),
         setSelectedFile(file) {
-            this.selectedFile = file
-            this.$emit('input', file)
+            if (!this.selectFile) return
+            if (this.selectFile == 'multiple') {
+                const index = this.selectedFiles.findIndex(x => x.id == file.id)
+                if (index >= 0) {
+                    this.selectedFiles.splice(index, 1)
+                } else {
+                    this.selectedFiles.push(file)
+                }
+                this.$emit('input', this.selectedFiles)
+            } else {
+                this.selectedFiles.splice(0, 1)
+                this.selectedFiles.push(file)
+                this.$emit('input', this.selectedFiles[0])
+            }
         },
         async setFolder(folderId) {
             // If there is no folder ID, then set the destination to the workspace

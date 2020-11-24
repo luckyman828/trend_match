@@ -36,6 +36,10 @@
                 <i class="far fa-upload"></i>
                 <span>Upload data to file</span>
             </button>
+            <button class="button primary" @click="importToFileModalVisible = true">
+                <i class="far fa-download"></i>
+                <span>Import products from another file</span>
+            </button>
             <button class="button primary" @click="onNewProduct">
                 <i class="far fa-plus"></i>
                 <span>Create new product</span>
@@ -49,6 +53,12 @@
             v-if="exportToFileModalVisible"
             :show="exportToFileModalVisible"
             @close="exportToFileModalVisible = false"
+        />
+
+        <ImportToFileModal
+            v-if="importToFileModalVisible"
+            :show="importToFileModalVisible"
+            @close="importToFileModalVisible = false"
         />
 
         <UploadToFileModal
@@ -67,6 +77,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import ExportToFileModal from '../../components/common/ExportToFileModal'
+import ImportToFileModal from '../../components/common/ImportToFileModal'
 import UploadToFileModal from '../../components/UploadToFileModal'
 
 export default {
@@ -76,6 +87,7 @@ export default {
         ExportToCsvModal,
         UploadToFileModal,
         ExportToFileModal,
+        ImportToFileModal,
     },
     data: function() {
         return {
@@ -84,6 +96,7 @@ export default {
             uploadToFileModalVisible: false,
             uploadToFileKey: 0,
             exportToFileModalVisible: false,
+            importToFileModalVisible: false,
         }
     },
     computed: {

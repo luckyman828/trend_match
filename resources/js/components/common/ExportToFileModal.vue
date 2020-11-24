@@ -5,6 +5,7 @@
                 <FileNavigator
                     :initialFolderId="currentFile.parent_id"
                     :disabledId="currentFile.id"
+                    selectFile="single"
                     v-model="fileToExportTo"
                     @update:folder="onUpdateFolder"
                 />
