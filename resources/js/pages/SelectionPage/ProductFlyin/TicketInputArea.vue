@@ -11,13 +11,26 @@
                 <span># {{ label }}</span>
             </div>
         </div>
-        <BaseContentEditable
+        <div class="ticket-label square ghost primary xs" v-if="ticketLabel" @click="ticketLabel = null">
+            <span>{{ ticketLabel }}</span>
+            <i class="far fa-times"></i>
+        </div>
+        <!-- <BaseContentEditable
             ref="inputField"
             placeholder="Try adding a label. Type #"
             v-model="ticket.content"
             @input.native="onInput"
             @keydown.native="onKeyDown"
             @mousedown.native="onClick"
+        /> -->
+        <BaseInputTextArea
+            :class="{ 'has-label': ticketLabel }"
+            v-model="ticket.content"
+            ref="inputField"
+            :placeholder="placeholder"
+            :disabled="disabled"
+            @input.native="onInput"
+            @keydown.native="onKeyDown"
         />
     </div>
 </template>
@@ -25,12 +38,13 @@
 <script>
 export default {
     name: 'ticketInputArea',
-    props: ['ticket'],
+    props: ['ticket', 'placeholder', 'disabled'],
     data: function() {
         return {
             showLabelList: false,
             availableTicketLabels: ['color_added', 'color_removed', 'price_wish', 'add_delivery', 'change_delivery'],
             labelListFocusIndex: 0,
+            ticketLabel: null,
         }
     },
     computed: {
@@ -49,20 +63,29 @@ export default {
             this.showLabelList = true
         },
         insertLabel(index) {
-            this.ticket.content = `<div class="label square ghost sm"><span>#${this.labelsFiltered[index]}</span></div> `
+            // Set the new label
+            const newLabel = this.labelsFiltered[index]
+            this.ticketLabel = newLabel
+
+            // Remove the label from the text
+            const ticketContent = this.ticket.content
+            const labelRegex = new RegExp(/#[^ ]*/)
+            const labelStringMatches = labelRegex.exec(ticketContent)
+            const stringStart = ticketContent.slice(0, labelStringMatches.index)
+            const stringEnd = ticketContent.slice(labelStringMatches.index + labelStringMatches[0].length)
+            this.ticket.content = stringStart + stringEnd
+
+            // Hide the label list
             this.showLabelList = false
         },
 
         onInput(e) {
-            console.log('on input', e)
-            if (e.data == '#' && e.target.innerText.length <= 1) {
-                this.showLabelList = true
-            }
             if (this.showLabelList) {
                 if (this.labelListFocusIndex > this.labelsFiltered.length - 1) this.labelListFocusIndex = 0
-                if (e.target.innerText.search('#') < 0) this.showLabelList = false
+                if (e.target.value.search('#') < 0) this.showLabelList = false
             }
-            if (e.inputType == 'deleteContentBackward') {
+            if (e.data == '#') {
+                this.showLabelList = true
             }
         },
         onKeyDown(e) {
@@ -90,13 +113,6 @@ export default {
         setCaretAfterLabel() {
             this.$refs.inputField.setCaret()
         },
-        onClick(e) {
-            // If we click on the label, do nothing
-            const inputEl = this.$refs.inputField.$el
-            if (inputEl.contains(e.target) && inputEl != e.target) {
-                e.preventDefault()
-            }
-        },
     },
 }
 </script>
@@ -110,6 +126,7 @@ export default {
     border-radius: $borderRadiusEl;
     box-shadow: $shadowEl;
     margin-bottom: -4px;
+    position: relative;
     .label-list-item {
         padding: 0 8px;
         height: 32px;
@@ -122,6 +139,27 @@ export default {
         }
         &:hover {
             background: $primary300;
+        }
+    }
+}
+.ticket-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1;
+    i {
+        display: none;
+    }
+    &:hover {
+        i {
+            display: block;
+        }
+    }
+}
+::v-deep {
+    .has-label {
+        .input-wrapper {
+            padding-top: 40px;
         }
     }
 }

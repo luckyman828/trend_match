@@ -12,7 +12,6 @@
             "
             :value="value"
         >
-            <span>label</span> hello hello
         </textarea>
     </div>
 </template>
