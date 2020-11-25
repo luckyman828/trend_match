@@ -221,7 +221,12 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (this.show && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+            if (
+                this.show &&
+                event.target.type != 'textarea' &&
+                event.target.tagName.toUpperCase() != 'INPUT' &&
+                !e.target.contentEditable
+            ) {
                 if (key == 'Escape') {
                     this.close()
                 }

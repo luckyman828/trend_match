@@ -40,24 +40,9 @@
             <div class="form-wrapper" v-if="currentSelectionMode == 'Alignment'">
                 <strong class="form-header">{{ ticketModeActive ? 'Open ticket' : 'Your Request' }}</strong>
 
-                <div class="label-template-list">
-                    <button
-                        class="label-template-item sm ghost"
-                        v-for="(label, index) in availableTicketLabels"
-                        :key="index"
-                        :class="
-                            newRequest.label == label
-                                ? `group-bg-color-${index + 1}`
-                                : `group-color-${index + 1} group-border-color-${index + 1}`
-                        "
-                        @click="onStartTicketFromLabel(label)"
-                    >
-                        <span>{{ label }}</span>
-                    </button>
-                </div>
-
                 <form @submit="onSubmit" :class="[{ active: writeActive }]">
                     <div class="input-parent request">
+                        <TicketInputArea :ticket="newRequest" />
                         <BaseInputTextArea
                             ref="requestField"
                             :disabled="!userWriteAccess.requests.hasAccess"
@@ -113,6 +98,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Request from './Request'
+import TicketInputArea from './TicketInputArea'
 import BaseTempAlert from '../../../components/ui/BaseTempAlert'
 
 export default {
@@ -120,6 +106,7 @@ export default {
     props: ['requests', 'selectionInput'],
     components: {
         Request,
+        TicketInputArea,
         BaseTempAlert,
     },
     data: function() {
@@ -131,7 +118,6 @@ export default {
             writeScope: 'comment',
             writeActive: false,
             submitting: false,
-            availableTicketLabels: ['Color Added', 'Color Removed', 'Price Wish'],
             // selectionRequest: null,
         }
     },
@@ -177,23 +163,18 @@ export default {
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
-        onStartTicketFromLabel(label) {
-            if (!this.writeActive) this.activateWrite()
-            this.newRequest.label = label
-        },
         activateWrite() {
+            console.log('activate write 1')
             this.SET_CURRENT_REQUEST_THREAD(null)
             this.$refs.requestField.focus()
             this.$refs.requestField.select()
             this.writeActive = true
-            Vue.set(this.newRequest, 'label')
         },
         deactivateWrite() {
             // Unset the focus
             this.writeActive = false
             document.activeElement.blur()
             this.resizeTextareas()
-            this.newRequest.label = null
         },
         cancelRequest() {
             this.deactivateWrite()
@@ -273,58 +254,18 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+            if (
+                event.target.type != 'textarea' &&
+                event.target.tagName.toUpperCase() != 'INPUT' &&
+                !e.target.contentEditable
+            ) {
                 if (key == 'Enter') {
+                    console.log('activate write enter')
                     this.$emit('hotkeyEnter', e)
                 }
                 if (key == 'Tab' && this.writeActive && !this.currentRequestThread) {
                     this.deactivateWrite()
                     this.$emit('activateCommentWrite')
-                }
-            }
-
-            // We are writing in the field
-            if (event.target.type == 'textarea' && this.writeActive) {
-                if (this.availableTicketLabels.length > 0) {
-                    if (key.startsWith('Digit') && e.altKey) {
-                        const newIndex = parseInt(key.substring(5)) - 1
-                        if (
-                            this.newRequest.label &&
-                            this.availableTicketLabels.findIndex(x => x == this.newRequest.label) == newIndex
-                        ) {
-                            this.newRequest.label = null
-                        } else {
-                            this.newRequest.label = this.availableTicketLabels[newIndex]
-                        }
-                    }
-
-                    if (key == 'ArrowDown' && e.altKey) {
-                        e.preventDefault()
-                        if (this.newRequest.label) {
-                            const index = this.availableTicketLabels.findIndex(x => x == this.newRequest.label)
-                            if (index < this.availableTicketLabels.length - 1) {
-                                this.newRequest.label = this.availableTicketLabels[index + 1]
-                            } else {
-                                this.newRequest.label = null
-                            }
-                        } else {
-                            this.newRequest.label = this.availableTicketLabels[0]
-                        }
-                    }
-
-                    if (key == 'ArrowUp' && e.altKey) {
-                        e.preventDefault()
-                        if (this.newRequest.label) {
-                            const index = this.availableTicketLabels.findIndex(x => x == this.newRequest.label)
-                            if (index > 0) {
-                                this.newRequest.label = this.availableTicketLabels[index - 1]
-                            } else {
-                                this.newRequest.label = null
-                            }
-                        } else {
-                            this.newRequest.label = this.availableTicketLabels[this.availableTicketLabels.length - 1]
-                        }
-                    }
                 }
             }
         },
@@ -364,13 +305,6 @@ h3 {
     align-items: center;
     .pill {
         margin-left: 12px;
-    }
-}
-.label-template-list {
-    // margin-bottom: 8px;
-    > * {
-        margin-bottom: 8px;
-        display: block;
     }
 }
 .requests {

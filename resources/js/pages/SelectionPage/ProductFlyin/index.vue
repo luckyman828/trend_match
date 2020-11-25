@@ -543,7 +543,12 @@ export default {
             this.keydownHandler(event)
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            if (
+                event.target.type != 'textarea' &&
+                event.target.tagName.toUpperCase() != 'INPUT' &&
+                this.show &&
+                !event.target.contentEditable
+            ) {
                 if (
                     event.altKey &&
                     key == 'KeyC' &&
@@ -575,7 +580,7 @@ export default {
         },
         hotkeyEnterHandler(e) {
             // If the request thread flyin is visible, do nothing
-            if (this.getRequestThreadVisible || !this.selection.is_open) return
+            if (this.getRequestThreadVisible || !this.selection.is_open || e.target.contentEditabl) return
             // If the current mode is Alignment, focus the request field. Else focus comment
             if (this.currentSelectionMode == 'Alignment' && !this.product.is_completed) {
                 this.$refs.requestsSection.activateWrite()
@@ -585,7 +590,12 @@ export default {
         },
         keydownHandler(e) {
             const key = event.code
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            if (
+                event.target.type != 'textarea' &&
+                event.target.tagName.toUpperCase() != 'INPUT' &&
+                this.show &&
+                !event.target.contentEditable
+            ) {
                 if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
                 if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
             }
