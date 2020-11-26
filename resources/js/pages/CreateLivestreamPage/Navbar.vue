@@ -27,6 +27,9 @@
         </div> -->
 
         <div class="items-right">
+            <button class="ghost red" @click="onEndLivestream">
+                <span>End livestream</span>
+            </button>
             <button class="ghost" @click="toggleScanner">
                 <i class="far fa-search"></i>
                 <span v-if="scanModeActive">Deactivate scanner</span>
@@ -61,11 +64,15 @@ export default {
         ...mapGetters('videoPlayer', {
             videoDuration: 'getDuration',
         }),
+        ...mapGetters('presentation', {
+            presentationId: 'getCurrentPresentationId',
+        }),
     },
     methods: {
         ...mapActions('videoPresentation', ['addTiming']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapActions('presentation', ['broadcastProduct']),
+        ...mapActions('selections', ['stopPresentation']),
         toggleScanner() {
             if (!this.scanModeActive) {
                 // Hook up event listeners for scans
@@ -124,6 +131,13 @@ export default {
             if (this.currentTiming) {
                 this.currentTiming.end_at_ms = newEnd ? newEnd - 1 : Math.ceil(this.videoDuration - 1)
             }
+        },
+        async onEndLivestream() {
+            if (this.presentationId) {
+                // End the current presentation
+                await this.stopPresentation({ presentationId: this.presentationId })
+            }
+            this.$router.push({ name: 'files' })
         },
     },
     destroyed() {

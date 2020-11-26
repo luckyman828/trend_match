@@ -73,8 +73,12 @@ export default {
             this.broadcastProduct({ product: this.product })
         },
         onStopCurrent(newEnd) {
-            if (this.currentTiming) {
-                this.currentTiming.end_at_ms = newEnd ? newEnd - 1 : Math.ceil(this.videoDuration - 1)
+            const timing = this.currentTiming
+            if (timing) {
+                timing.end_at_ms = newEnd ? newEnd - 1 : Math.ceil(this.videoDuration - 1)
+                setTimeout(() => {
+                    timing.end_at_ms = newEnd ? newEnd : Math.ceil(this.videoDuration - 1)
+                }, 500)
             }
         },
     },

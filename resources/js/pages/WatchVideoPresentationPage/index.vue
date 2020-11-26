@@ -79,11 +79,13 @@ export default {
             const fileVideo = await this.fetchFileVideo(fileId)
             this.SET_CURRENT_VIDEO(fileVideo)
 
-            // if (this.presentationIsActive) {
-            //     this.SET_VIDEO_TYPE('live')
-            //     // Fetch the currently presented product
-            //     await this.fetchPresentationDetails(selection.presentation_id)
-            // }
+            if (this.presentationIsActive) {
+                // Fetch the currently presented product
+                this.SET_VIDEO_TYPE('live')
+                await this.fetchPresentationDetails(selection.presentation_id)
+            } else {
+                this.SET_VIDEO_TYPE('static')
+            }
 
             this.loadingData = false
         },

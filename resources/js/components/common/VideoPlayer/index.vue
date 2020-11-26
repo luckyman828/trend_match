@@ -174,7 +174,7 @@ export default {
             // Check if we have a current timing. If so extend its end time
             const currentTiming = this.currentTiming
             if (currentTiming) {
-                currentTiming.end_at_ms = Math.ceil(timestamp + 5000)
+                currentTiming.end_at_ms = Math.ceil(this.duration + 5000)
             }
         },
         async getVideoDuration() {

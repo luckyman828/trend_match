@@ -109,10 +109,7 @@ export default {
                 await this.startPresentation({ selections: this.selections })
                 this.SET_CURRENT_SELECTIONS([this.selections[0]])
 
-                this.SET_VIDEO_TIMINGS([])
-                this.setVideoByURL({ file: this.file, url: this.videoUrl })
-
-                await this.updateCurrentVideo()
+                await this.setVideoByURL({ file: this.file, url: this.videoUrl })
                 this.editModeActive = false
             }
         },
