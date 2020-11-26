@@ -102,7 +102,7 @@ export default {
             return {
                 content: '',
                 label: null,
-                type: 'Request',
+                type: this.currentTicketMode != 'None' ? 'Ticket' : 'Request',
                 author_id: this.authUser.id,
                 author: this.authUser,
                 selection_id: this.selectionInput.selection_id,

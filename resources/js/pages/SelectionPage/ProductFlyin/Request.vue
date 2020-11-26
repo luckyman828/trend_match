@@ -8,12 +8,13 @@
             { 'edit-active': editActive },
             { 'no-controls': disableControls },
             { 'has-thread': isTicket },
+            { 'has-label': request.label },
         ]"
     >
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
-        <div class="request" @click="isTicket && !disableControls && onToggleRequestThread($event)">
+        <div class="request" @click="isTicket && !disableControls && !editActive && onToggleRequestThread($event)">
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
                 <strong class="sender">
@@ -32,10 +33,6 @@
                 </strong>
 
                 <div class="content-wrapper" v-if="!editActive">
-                    <div class="request-label square ghost primary xs" v-if="request.label">
-                        <span>{{ request.label }}</span>
-                    </div>
-
                     <span class="content">{{ request.content }}</span>
                 </div>
                 <RequestInputArea
@@ -46,6 +43,12 @@
                     @cancel="onCancel"
                     @submit="onUpdateRequest"
                 />
+
+                <div class="label-wrapper" v-if="request.label">
+                    <div class="request-label ghost dark xs square">
+                        <span>#{{ request.label }}</span>
+                    </div>
+                </div>
 
                 <div class="thread-controls" v-if="isTicket && !disableControls">
                     <div class="resolve-actions" v-if="hasTicketControl">
@@ -168,8 +171,6 @@ export default {
             if (this.getCurrentSelectionMode == 'Alignment') {
                 return request.hasUnreadApproverComment
             }
-            // return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment ||
-            // this.getCurrentSelectionMode == 'Approval' && this.request.status == 'Open' && this.request.hasUnreadAlignerComment
         },
         statusTooltip() {
             if (this.request.status == 'Open') return 'Request awaiting decision'
@@ -236,7 +237,6 @@ export default {
         },
     },
     created() {
-        // this.onReadRequest()
         if (!this.request.label) Vue.set(this.request, 'label', 'test_label')
     },
     destroyed() {
@@ -267,6 +267,11 @@ export default {
             ::v-deep {
                 .input-wrapper {
                     min-height: 160px;
+                    margin-left: -8px;
+                    width: calc(100% + 20px);
+                }
+                .request-label {
+                    left: 4px;
                 }
             }
         }
@@ -275,8 +280,10 @@ export default {
         .request {
             cursor: pointer;
         }
-        .request > .inner {
-            // padding-bottom: 40px;
+        &:not(.no-controls) {
+            .label-wrapper {
+                margin-bottom: -30px;
+            }
         }
     }
     &.no-controls {
@@ -349,15 +356,6 @@ export default {
             display: flex;
         }
     }
-    // &.Open .inner {
-    //     border-left: solid 8px $yellow;
-    // }
-    // &.Rejected .inner {
-    //     border-left: solid 8px $red;
-    // }
-    // &.Resolved .inner {
-    //     border-left: solid 8px $green;
-    // }
     .inner {
         padding: 8px 12px 12px 8px;
         display: flex;
@@ -366,9 +364,6 @@ export default {
         overflow: hidden;
     }
     .thread-controls {
-        // position: absolute;
-        // right: 6px;
-        // bottom: 6px;
         width: 100%;
         display: flex;
         justify-content: flex-end;
@@ -376,6 +371,7 @@ export default {
         .resolve-actions {
             flex: 1;
             display: none;
+            background: white;
         }
     }
     .sender {
@@ -385,21 +381,12 @@ export default {
         font-size: 12px;
         font-weight: 500;
     }
-    // .own:not(.master) & {
-    //     background: $primary;
-    //     color: white;
-    //     strong {
-    //         color: white;
-    //     }
-    // }
-    // .master & {
-    //     background: $yellow;
-    // }
+    .content-wrapper {
+        margin: 8px 0 0;
+    }
     .content {
         white-space: pre-wrap;
         word-wrap: break-word;
-        margin-top: 12px;
-        margin-left: 4px;
     }
 }
 .controls {
@@ -440,24 +427,7 @@ export default {
         width: 10px;
     }
 }
-.label-list {
-    display: flex;
-    flex-wrap: wrap;
-    .label {
-        margin-bottom: 4px;
-        &:not(:last-child) {
-            margin-right: 4px;
-        }
-        // &.selection {
-        //     margin-right: 4px;
-        // }
-        // &.sender {
-        //     color: $fontSoft;
-        //     font-weight: 500;
-        //     &.primary {
-        //         color: $primary;
-        //     }
-        // }
-    }
+.request-label {
+    margin-top: 4px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="request-input-area">
+    <div class="request-input-area" :class="{ 'edit-active': writeActive }">
         <div class="available-label-list" v-if="showLabelList && labelsFiltered.length > 0">
             <div
                 class="label-list-item"
@@ -24,7 +24,7 @@
             :placeholder="'Write your request here...'"
             @input.native="onInput"
             @keydown.native="onKeyDown"
-            @click.native="!disabled && activateWrite()"
+            @click.native="!disabled && !writeActive && activateWrite()"
         />
         <div class="controls" v-if="writeActive">
             <div class="left">
@@ -145,6 +145,7 @@ export default {
                     this.onCancel()
                 }
                 if (e.code == 'Enter' && !(e.altKey || e.shiftKey || e.metaKey || e.ctrlKey)) {
+                    e.preventDefault()
                     this.onSubmit()
                 }
             }
