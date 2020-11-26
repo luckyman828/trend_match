@@ -8,6 +8,7 @@ export default {
         loading: true,
         submitting: false,
         currentRequestThread: null,
+        availableRequestLabels: ['color_added', 'color_removed', 'price_wish', 'add_delivery', 'change_delivery'],
     },
 
     getters: {
@@ -19,6 +20,7 @@ export default {
         },
         getCurrentRequestThread: state => state.currentRequestThread,
         getRequestThreadVisible: state => !!state.currentRequestThread,
+        getAvailableRequestLabels: state => state.availableRequestLabels,
     },
 
     actions: {

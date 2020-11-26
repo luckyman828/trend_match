@@ -221,12 +221,7 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (
-                this.show &&
-                event.target.type != 'textarea' &&
-                event.target.tagName.toUpperCase() != 'INPUT' &&
-                !e.target.contentEditable
-            ) {
+            if (this.show && event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Escape') {
                     this.close()
                 }
@@ -252,7 +247,7 @@ export default {
     created() {
         // Insert small delay before we add our event listener to stop the same event that showed this section, do things inside the component
         setTimeout(() => {
-            document.body.addEventListener('keyup', this.hotkeyHandler)
+            document.body.addEventListener('keydown', this.hotkeyHandler)
         }, 10)
     },
     mounted() {
@@ -260,7 +255,7 @@ export default {
         this.onReadRequest()
     },
     destroyed() {
-        document.body.removeEventListener('keyup', this.hotkeyHandler)
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
     },
 }
 </script>

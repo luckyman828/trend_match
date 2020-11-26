@@ -37,60 +37,11 @@
             </div>
 
             <!-- Deny access for feedback -->
-            <div class="form-wrapper" v-if="currentSelectionMode == 'Alignment'">
-                <strong class="form-header">{{ ticketModeActive ? 'Open ticket' : 'Your Request' }}</strong>
-
-                <form @submit="onSubmit" :class="[{ active: writeActive }]">
-                    <div class="input-parent request">
-                        <TicketInputArea :ticket="newRequest" />
-                        <BaseInputTextArea
-                            ref="requestField"
-                            :disabled="!userWriteAccess.requests.hasAccess"
-                            v-tooltip="!userWriteAccess.requests.hasAccess && userWriteAccess.requests.msg"
-                            :placeholder="
-                                userWriteAccess.comments.hasAccess
-                                    ? 'Write your request here...'
-                                    : userWriteAccess.requests.msg
-                            "
-                            v-model="newRequest.content"
-                            @keydown.native.enter.exact.prevent
-                            @click.native="userWriteAccess.requests.hasAccess && activateWrite()"
-                            @keyup.native.esc="
-                                deactivateWrite()
-                                cancelRequest()
-                            "
-                            @keyup.native.enter.exact="onSubmit"
-                        ></BaseInputTextArea>
-                    </div>
-                    <div class="flex-wrapper" v-if="writeActive">
-                        <div class="left">
-                            <div class="hotkey-tip" v-if="writeActive">
-                                <span class="square ghost">ENTER</span>
-                                <span>To save</span>
-                            </div>
-                        </div>
-                        <div class="right">
-                            <BaseTempAlert :duration="2000" ref="requestSucces" :hidden="writeActive"
-                                ><small class="request-success"
-                                    >Request saved <i class="fas fa-clipboard-check green"></i></small
-                            ></BaseTempAlert>
-                            <template>
-                                <button type="button" class="invisible" @click="cancelRequest">
-                                    <span>Cancel</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    class="primary"
-                                    :class="{ disabled: submitDisabled }"
-                                    @click="onSubmit"
-                                >
-                                    <span>Save</span>
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            <NewRequestForm
+                v-if="currentSelectionMode == 'Alignment'"
+                ref="newRequestForm"
+                :selectionInput="selectionInput"
+            />
         </template>
     </BaseFlyinColumn>
 </template>
@@ -98,7 +49,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Request from './Request'
-import TicketInputArea from './TicketInputArea'
+import NewRequestForm from './NewRequestForm'
 import BaseTempAlert from '../../../components/ui/BaseTempAlert'
 
 export default {
@@ -106,181 +57,27 @@ export default {
     props: ['requests', 'selectionInput'],
     components: {
         Request,
-        TicketInputArea,
+        NewRequestForm,
         BaseTempAlert,
-    },
-    data: function() {
-        return {
-            newRequest: {
-                content: '',
-                important: false,
-            },
-            writeScope: 'comment',
-            writeActive: false,
-            submitting: false,
-            // selectionRequest: null,
-        }
-    },
-    watch: {
-        // selectionInput: function(newVal, oldVal) {
-        //     this.update()
-        // },
-        // requests: function(newVal, oldVal) {
-        //     this.update()
-        // },
-        selectionRequest: function(newVal, oldVal) {
-            this.update()
-        },
-        currentRequestThread(newVal) {
-            if (newVal) {
-                this.deactivateWrite()
-            }
-        },
     },
     computed: {
         ...mapGetters('requests', {
             currentRequestThread: 'getCurrentRequestThread',
         }),
-        ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
-        ...mapGetters('selections', {
-            ticketModeActive: 'getTicketModeActive',
-            currentTicketMode: 'getCurrentTicketMode',
-        }),
+        ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode']),
         currentSelectionMode() {
             return this.getSelectionCurrentMode(this.selectionInput.selection)
-        },
-        submitDisabled() {
-            return this.newRequest.content.length < 1
-        },
-        userWriteAccess() {
-            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
-        },
-        selectionRequest() {
-            return this.selectionInput.selectionRequest
         },
     },
     methods: {
         ...mapActions('requests', ['insertOrUpdateRequest', 'deleteRequest']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
-        activateWrite() {
-            console.log('activate write 1')
-            this.SET_CURRENT_REQUEST_THREAD(null)
-            this.$refs.requestField.focus()
-            this.$refs.requestField.select()
-            this.writeActive = true
-        },
-        deactivateWrite() {
-            // Unset the focus
-            this.writeActive = false
-            document.activeElement.blur()
-            this.resizeTextareas()
-        },
-        cancelRequest() {
-            this.deactivateWrite()
-            this.newRequest.content =
-                this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
-        },
         onDeleteRequest() {
             this.deleteRequest({ selectionInput: this.selectionInput, request: this.selectionRequest })
         },
-        async onSubmit(e) {
-            if (e) e.preventDefault()
-            if (this.submitDisabled) return
-
-            // Set submitting to true
-            this.submitting = true
-
-            this.$set(this.selectionInput.selection, 'your_role', this.currentSelection.your_role)
-            this.$set(this.selectionInput.selection, 'your_job', this.currentSelection.your_job)
-
-            // Instantiate the request to post
-            const requestToPost = {
-                id: this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.id : null,
-                author_id: this.authUser.id,
-                product_id: this.selectionInput.product_id,
-                selection_id: this.selectionInput.selection_id,
-                content: this.newRequest.content,
-                author: this.authUser,
-                selection: this.selectionInput.selection,
-                type: this.currentSelection.settings.ticket_level != 'None' ? 'Ticket' : 'Request',
-                discussions: [],
-                completed_at: null,
-                completed_by_user: null,
-                status: 'Open',
-                status_updated_at: null,
-                status_updated_by_user: null,
-                lastReadAt: new Date().toISOString(),
-            }
-            // dispatch action
-            this.insertOrUpdateRequest({ selectionInput: this.selectionInput, request: requestToPost })
-            this.submitting = false
-
-            // Update the selection request
-            // this.selectionRequest = requestToPost
-
-            // Reset comment
-            this.deactivateWrite()
-            this.newRequest.content = this.ticketModeActive
-                ? ''
-                : this.selectionRequest
-                ? this.selectionRequest.content
-                : ''
-            // Set the id of the new request if one exists
-            this.newRequest.id = this.ticketModeActive ? '' : this.selectionRequest ? this.selectionRequest.id : null
-
-            // Reset request
-            this.resizeTextareas()
+        activateWrite() {
+            this.$refs.newRequestForm.activateWrite()
         },
-        update() {
-            // Find the existing selection request if any
-            // Set the new request equal to the existing if one exists
-            if (this.currentTicketMode == 'None') {
-                this.newRequest.content = this.selectionRequest ? this.selectionRequest.content : ''
-                // Set the id of the new request if one exists
-                this.newRequest.id = this.selectionRequest ? this.selectionRequest.id : null
-                this.deactivateWrite()
-
-                // Preset the height of the request field
-                this.resizeTextareas()
-            }
-        },
-        resizeTextareas() {
-            if (this.currentSelectionMode == 'Alignment') {
-                this.$nextTick(() => {
-                    this.$refs.requestField.resize()
-                })
-            }
-        },
-        hotkeyHandler(e) {
-            const key = e.code
-            if (
-                event.target.type != 'textarea' &&
-                event.target.tagName.toUpperCase() != 'INPUT' &&
-                !e.target.contentEditable
-            ) {
-                if (key == 'Enter') {
-                    console.log('activate write enter')
-                    this.$emit('hotkeyEnter', e)
-                }
-                if (key == 'Tab' && this.writeActive && !this.currentRequestThread) {
-                    this.deactivateWrite()
-                    this.$emit('activateCommentWrite')
-                }
-            }
-        },
-    },
-    mounted() {
-        this.update()
-    },
-    created() {
-        // Insert small delay before we add our event listener to stop the same event that showed this section, do things inside the component
-        setTimeout(() => {
-            document.body.addEventListener('keydown', this.hotkeyHandler)
-        }, 10)
-    },
-    destroyed() {
-        document.body.removeEventListener('keydown', this.hotkeyHandler)
     },
 }
 </script>
@@ -342,126 +139,7 @@ h3 {
         color: $dark2;
     }
 }
-.form-wrapper {
-    padding: 20px 16px 28px;
-    .form-header {
-        margin-left: 4px;
-        margin-bottom: 4px;
-        display: block;
-    }
-    .controls {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 8px;
-        .left {
-            > :first-child {
-                margin-left: -12px;
-            }
-            // > :not(:last-child) {
-            //     margin-right: 8px;
-            // }
-        }
-    }
-    form {
-        position: relative;
-        .delete-request {
-            position: absolute;
-            right: 0;
-            top: -6px;
-            transform: translateY(-100%);
-        }
-        .id {
-            font-size: 12px;
-            color: $dark2;
-            display: block;
-            margin-top: -2px;
-        }
-        .edit-request {
-            position: absolute;
-            right: 12px;
-            font-size: 10px;
-            color: $dark;
-            font-weight: 500;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            .circle {
-                height: 24px;
-                width: 24px;
-                margin-left: 4px;
-            }
-        }
-        .flex-wrapper {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-            // align-items: center;
-            .right {
-                white-space: nowrap;
-            }
-        }
-    }
-    .checkmark {
-        height: 32px;
-        width: 32px;
-        line-height: 32px;
-        text-align: center;
-        border-radius: 16px;
-        background: $light1;
-        color: $dark2;
-        position: absolute;
-        right: 16px;
-        top: 4px;
-        cursor: pointer;
-        &.active {
-            color: $primary;
-        }
-    }
-    input[type='submit'] {
-        margin-top: 12px;
-    }
-}
 
-.hotkey-tip {
-    .square {
-        border-width: 1px;
-        height: auto;
-        padding: 2px 4px;
-        min-width: 0;
-        font-weight: 400;
-        border-radius: 2px;
-        font-size: 9px;
-        margin-right: 2px;
-    }
-    font-size: 10px;
-    color: $dark2;
-}
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-.tab-headers {
-    .tab {
-        justify-content: space-between;
-    }
-}
-.request-wrapper {
-    margin-bottom: 16px;
-}
-.sender-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 4px;
-    &.own {
-        align-items: flex-end;
-    }
-}
-.sender {
-    margin-bottom: 20px;
-}
 .break-line {
     &::after,
     &::before {
@@ -484,9 +162,5 @@ h3 {
     align-items: center;
     margin-top: 20px;
     margin-bottom: 12px;
-}
-.request-success {
-    margin-right: 8px;
-    font-weight: 500;
 }
 </style>

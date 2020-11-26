@@ -24,8 +24,7 @@ export default {
             if (
                 !this.getLightboxIsVisible &&
                 event.target.type != 'textarea' &&
-                event.target.tagName.toUpperCase() != 'INPUT' &&
-                !event.target.contentEditable
+                event.target.tagName.toUpperCase() != 'INPUT'
             ) {
                 if (key == 'ArrowRight' && this.next) {
                     event.preventDefault()

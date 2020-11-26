@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="right">
-                            <button type="button" class="invisible" @click="writeActive = false">
+                            <button type="button" class="invisible ghost-wrapper" @click="writeActive = false">
                                 <span>Cancel</span>
                             </button>
                             <button
@@ -173,11 +173,7 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (
-                event.target.type != 'textarea' &&
-                event.target.tagName.toUpperCase() != 'INPUT' &&
-                !e.target.contentEditable
-            ) {
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Enter') {
                     this.$emit('hotkeyEnter', e)
                 }
@@ -265,10 +261,10 @@ h3 {
             justify-content: space-between;
             margin-top: 8px;
             // align-items: center;
+            .right {
+                white-space: nowrap;
+            }
         }
-    }
-    input[type='submit'] {
-        margin-top: 12px;
     }
 }
 

@@ -16,17 +16,7 @@
         <div class="request" @click="isTicket && !disableControls && onToggleRequestThread($event)">
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
-                <!-- <div class="label-list">
-                    <div class="square xs label selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'primary' : ''">
-                        <span>{{request.selection.name}}</span>
-                    </div>
-                    <div class="label sender ghost square xs" :class="request.author_id == authUser.id ? 'primary' : ''">
-                        <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
-                    </div>
-
-                </div> -->
                 <strong class="sender">
-                    <!-- <span class="selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'square primary xs' : ''"> -->
                     <span>{{ request.selection.name }}</span>
                     <!-- </span> -->
                     <span> | </span>
@@ -41,16 +31,21 @@
                     </span>
                 </strong>
 
-                <span v-if="!editActive" class="content">{{ request.content }}</span>
-                <span v-else class="content">
-                    <BaseInputTextArea
-                        ref="requestInputField"
-                        v-model="requestToEdit.content"
-                        @keyup.enter.exact.native="onUpdateRequest"
-                        @keydown.enter.exact.native.prevent
-                        @keydown.esc.native="onCancel"
-                    />
-                </span>
+                <div class="content-wrapper" v-if="!editActive">
+                    <div class="request-label square ghost primary xs" v-if="request.label">
+                        <span>{{ request.label }}</span>
+                    </div>
+
+                    <span class="content">{{ request.content }}</span>
+                </div>
+                <RequestInputArea
+                    v-else
+                    :request="requestToEdit"
+                    :selectionInput="selectionInput"
+                    ref="requestInput"
+                    @cancel="onCancel"
+                    @submit="onUpdateRequest"
+                />
 
                 <div class="thread-controls" v-if="isTicket && !disableControls">
                     <div class="resolve-actions" v-if="hasTicketControl">
@@ -119,19 +114,6 @@
                 <i class="far fa-pen"></i>
             </button>
         </div>
-        <!-- End Comment Controls -->
-        <div class="save-controls" v-if="editActive">
-            <button class="invisible ghost-hover" style="margin-right: 8px" @click="onCancel">
-                <span>Cancel</span>
-            </button>
-            <BaseButton
-                buttonClass="primary"
-                :hotkey="{ key: 'ENTER', label: 'Save', align: 'right' }"
-                @click="onUpdateRequest"
-            >
-                <span>Save</span>
-            </BaseButton>
-        </div>
 
         <BaseDialog ref="confirmDeleteRequest" type="confirm" confirmColor="red" confirmText="Yes, delete it">
             <div class="icon-graphic">
@@ -146,9 +128,13 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import RequestInputArea from './RequestInputArea'
 
 export default {
     name: 'request',
+    components: {
+        RequestInputArea,
+    },
     props: ['request', 'selectionInput', 'disableControls'],
     data: function() {
         return {
@@ -221,16 +207,14 @@ export default {
             this.editActive = false
         },
         onUpdateRequest() {
-            this.request.content = this.requestToEdit.content
-            this.insertOrUpdateRequest({ selectionInput: this.selectionInput, request: this.request })
+            Object.assign(this.request, this.requestToEdit)
             this.editActive = false
         },
         onEditRequest() {
             this.editActive = true
             this.requestToEdit = JSON.parse(JSON.stringify(this.request))
             this.$nextTick(() => {
-                this.$refs.requestInputField.focus()
-                this.$refs.requestInputField.select()
+                this.$refs.requestInput.activateWrite()
             })
         },
         onSetStatus(status) {
@@ -253,6 +237,7 @@ export default {
     },
     created() {
         // this.onReadRequest()
+        if (!this.request.label) Vue.set(this.request, 'label', 'test_label')
     },
     destroyed() {
         this.onReadRequest()
@@ -277,15 +262,10 @@ export default {
             width: 100%;
             transition: none;
             .sender {
-                margin-left: 10px;
-                margin-top: 10px;
-            }
-            .content {
-                margin-bottom: 0;
+                margin-bottom: 4px;
             }
             ::v-deep {
                 .input-wrapper {
-                    border: none;
                     min-height: 160px;
                 }
             }

@@ -411,10 +411,7 @@ export default {
             const desiredOffset = this.desiredOffset // Offset from top of the window
             const tableEl = this.$refs.table
             const tableBottomDist =
-                parentScrollDist +
-                tableEl.getBoundingClientRect().bottom -
-                bottomOffset -
-                this.getYPos(tableEl)
+                parentScrollDist + tableEl.getBoundingClientRect().bottom - bottomOffset - this.getYPos(tableEl)
             // Set the absolute top
             stickyThis.style.top = `${tableBottomDist}px`
         },
@@ -426,13 +423,15 @@ export default {
             stickyThis.style.width = ''
         },
         resizeHeader() {
-            if (this.resizeHeaderTimeout) clearTimeout(this.resizeHeaderTimeout)
-            this.resizeHeaderTimeout = setTimeout(() => {
-                // Fix table header to screen
-                const tableWidth = this.scrollTable.getBoundingClientRect().width
-                this.$refs.stickyHeader.style.width = tableWidth + 'px'
-                this.tableWidth = tableWidth
-            }, 300)
+            if (this.sticky) {
+                if (this.resizeHeaderTimeout) clearTimeout(this.resizeHeaderTimeout)
+                this.resizeHeaderTimeout = setTimeout(() => {
+                    // Fix table header to screen
+                    const tableWidth = this.scrollTable.getBoundingClientRect().width
+                    this.$refs.stickyHeader.style.width = tableWidth + 'px'
+                    this.tableWidth = tableWidth
+                }, 300)
+            }
         },
     },
     created() {

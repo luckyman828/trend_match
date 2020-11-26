@@ -95,8 +95,7 @@ export default {
                     event.target.tagName.toUpperCase() != 'INPUT' &&
                     !this.contextMenuVisible &&
                     this.getVisibleFlyinCount == this.flyinIndex &&
-                    !this.getRequestThreadVisible &&
-                    !event.target.contentEditable
+                    !this.getRequestThreadVisible
                 ) {
                     if (key == 'Escape') this.close()
                 }

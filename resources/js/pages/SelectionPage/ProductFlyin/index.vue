@@ -543,12 +543,7 @@ export default {
             this.keydownHandler(event)
             const key = event.code
             // Only do these if the current target is not the comment box
-            if (
-                event.target.type != 'textarea' &&
-                event.target.tagName.toUpperCase() != 'INPUT' &&
-                this.show &&
-                !event.target.contentEditable
-            ) {
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (
                     event.altKey &&
                     key == 'KeyC' &&
@@ -563,18 +558,18 @@ export default {
                     if (key == 'KeyO') this.onUpdateAction('Out')
                     if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus')
                 }
-            }
-            if (key == 'Tab') {
-                event.preventDefault()
-                // Find requests with threads
-                const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
-                if (allTickets.length <= 0) return
+                if (key == 'Tab') {
+                    event.preventDefault()
+                    // Find requests with threads
+                    const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                    if (allTickets.length <= 0) return
 
-                // // Else, show the first reqeust thread
-                if (!this.currentRequestThread) {
-                    const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
-                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
-                    this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
+                    // // Else, show the first reqeust thread
+                    if (!this.currentRequestThread) {
+                        const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+                        const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
+                        this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
+                    }
                 }
             }
         },
@@ -590,12 +585,7 @@ export default {
         },
         keydownHandler(e) {
             const key = event.code
-            if (
-                event.target.type != 'textarea' &&
-                event.target.tagName.toUpperCase() != 'INPUT' &&
-                this.show &&
-                !event.target.contentEditable
-            ) {
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
                 if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
             }
