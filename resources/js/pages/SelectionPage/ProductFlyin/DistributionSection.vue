@@ -2,39 +2,52 @@
     <BaseFlyinColumn class="distribution">
         <template v-slot:header>
             <div class="tab-headers">
-                <div :class="{active: currentTab == 'all'}" class="tab" 
-                @click="currentTab = 'all'"> ALL
-                    <span class="count">{{totalInputCount}}</span>
+                <div :class="{ active: currentTab == 'all' }" class="tab" @click="currentTab = 'all'">
+                    ALL
+                    <span class="count">{{ totalInputCount }}</span>
                 </div>
-                <div :class="{active: currentTab == 'ins'}" class="tab" 
-                @click="currentTab = 'ins'"> IN
-                    <span class="count">{{selectionInput.ins.length + selectionInput.focus.length + selectionInput.alignmentIns.length + selectionInput.alignmentFocus.length}}</span>
+                <div :class="{ active: currentTab == 'ins' }" class="tab" @click="currentTab = 'ins'">
+                    IN
+                    <span class="count">{{
+                        selectionInput.ins.length +
+                            selectionInput.focus.length +
+                            selectionInput.alignmentIns.length +
+                            selectionInput.alignmentFocus.length
+                    }}</span>
                 </div>
-                <div :class="{active: currentTab == 'outs'}" class="tab" 
-                @click="currentTab = 'outs'"> OUT
-                    <span class="count">{{selectionInput.outs.length + selectionInput.alignmentOuts.length}}</span>
+                <div :class="{ active: currentTab == 'outs' }" class="tab" @click="currentTab = 'outs'">
+                    OUT
+                    <span class="count">{{ selectionInput.outs.length + selectionInput.alignmentOuts.length }}</span>
                 </div>
-                <div :class="{active: currentTab == 'nds'}" class="tab" 
-                @click="currentTab = 'nds'"> ND
-                    <span class="count">{{selectionInput.nds.length + selectionInput.alignmentNds.length}}</span>
+                <div :class="{ active: currentTab == 'nds' }" class="tab" @click="currentTab = 'nds'">
+                    ND
+                    <span class="count">{{ selectionInput.nds.length + selectionInput.alignmentNds.length }}</span>
                 </div>
             </div>
         </template>
         <template v-slot>
             <div class="tab-body">
-
                 <!-- Quantity / Minimum -->
-                 <template v-if="showQty">
+                <template v-if="showQty">
                     <div class="list-item list-header">
                         <h4>Minimum</h4>
                     </div>
-                    <div class="distribution-bar list-item" v-tooltip="`
-                        <strong>Quantity: </strong> ${selectionInput.quantity}
+                    <div
+                        class="distribution-bar list-item"
+                        v-tooltip="
+                            `
+                        <strong>Quantity: </strong> ${selectionInput.totalQuantity}
                         <br><strong>Minimum: </strong> ${product.min_order}
-                    `">
+                    `
+                        "
+                    >
                         <svg>
-                            <rect class="bg" height="8px" width="100%"/>
-                            <rect :class="minimumPercentage >= 100 ? 'in' : 'progress'" height="8px" :style="{width: `${minimumPercentage}%`}"/>
+                            <rect class="bg" height="8px" width="100%" />
+                            <rect
+                                :class="minimumPercentage >= 100 ? 'in' : 'progress'"
+                                height="8px"
+                                :style="{ width: `${minimumPercentage}%` }"
+                            />
                         </svg>
                     </div>
                 </template>
@@ -46,58 +59,113 @@
                     </div>
                     <div class="distribution-bar list-item">
                         <svg>
-                            <rect class="bg" height="8px" width="100%"/>
-                            <rect class="focus" height="8px" :style="alignmentFocusStyle"/>
-                            <rect class="in" height="8px" :style="alignmentInStyle"/>
-                            <rect class="out" height="8px" :style="alignmentOutStyle"/>
+                            <rect class="bg" height="8px" width="100%" />
+                            <rect class="focus" height="8px" :style="alignmentFocusStyle" />
+                            <rect class="in" height="8px" :style="alignmentInStyle" />
+                            <rect class="out" height="8px" :style="alignmentOutStyle" />
                         </svg>
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in selectionInput.alignmentFocus" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.alignmentFocus"
+                            :key="`alignment-${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="focus inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
                                 </div>
-                                <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                <span class="quantity" v-if="showQty"
+                                    ><i class="fas fa-box"></i>
+                                    {{
+                                        action.variants.reduce((total, variant) => {
+                                            return total + variant.quantity
+                                        }, 0)
+                                    }}</span
+                                >
                                 <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in selectionInput.alignmentIns" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.alignmentIns"
+                            :key="`alignment-${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="in inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
+                                    <span class="quantity" v-if="showQty"
+                                        ><i class="fas fa-box"></i>
+                                        {{
+                                            action.variants.reduce((total, variant) => {
+                                                return total + variant.quantity
+                                            }, 0)
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="list-item" v-for="action in selectionInput.alignmentOuts" :key="`alignment-${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.alignmentOuts"
+                            :key="`alignment-${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="out inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
+                                    <span class="quantity" v-if="showQty"
+                                        ><i class="fas fa-box"></i>
+                                        {{
+                                            action.variants.reduce((total, variant) => {
+                                                return total + variant.quantity
+                                            }, 0)
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="list-item" v-for="action in selectionInput.alignmentNds" :key="`alignment-${action.selection_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.alignmentNds"
+                            :key="`alignment-${action.selection_id}`"
+                        >
                             <div class="nd inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
                                 </div>
                             </div>
                         </div>
@@ -111,61 +179,129 @@
                     </div>
                     <div class="distribution-bar list-item">
                         <svg>
-                            <rect class="bg" height="8px" width="100%"/>
-                            <rect class="focus" height="8px" :style="focusStyle"/>
-                            <rect class="in" height="8px" :style="inStyle"/>
-                            <rect class="out" height="8px" :style="outStyle"/>
+                            <rect class="bg" height="8px" width="100%" />
+                            <rect class="focus" height="8px" :style="focusStyle" />
+                            <rect class="in" height="8px" :style="inStyle" />
+                            <rect class="out" height="8px" :style="outStyle" />
                         </svg>
                     </div>
                     <!-- Focus users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in selectionInput.focus" :key="`${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.focus"
+                            :key="`${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="focus inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
                                 </div>
-                                <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                <span class="quantity" v-if="showQty"
+                                    ><i class="fas fa-box"></i>
+                                    {{
+                                        action.variants.reduce((total, variant) => {
+                                            return total + variant.quantity
+                                        }, 0)
+                                    }}</span
+                                >
                                 <span class="focus">Focus <i class="fas fa-star"></i></span>
                             </div>
                         </div>
                     </template>
                     <!-- In users -->
                     <template v-if="currentTab == 'all' || currentTab == 'ins'">
-                        <div class="list-item" v-for="action in selectionInput.ins" :key="`${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.ins"
+                            :key="`${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="in inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
+                                    <span class="quantity" v-if="showQty"
+                                        ><i class="fas fa-box"></i>
+                                        {{
+                                            action.variants.reduce((total, variant) => {
+                                                return total + variant.quantity
+                                            }, 0)
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
                     </template>
                     <!-- Out users -->
                     <template v-if="currentTab == 'all' || currentTab == 'outs'">
-                        <div class="list-item" v-for="action in selectionInput.outs" :key="`${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.outs"
+                            :key="`${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="out inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
+                                    <span class="quantity" v-if="showQty"
+                                        ><i class="fas fa-box"></i>
+                                        {{
+                                            action.variants.reduce((total, variant) => {
+                                                return total + variant.quantity
+                                            }, 0)
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
                     </template>
                     <!-- Nds -->
                     <template v-if="currentTab == 'all' || currentTab == 'nds'">
-                        <div class="list-item" v-for="action in selectionInput.nds" :key="`${action.selection_id}-${action.user_id}`">
+                        <div
+                            class="list-item"
+                            v-for="action in selectionInput.nds"
+                            :key="`${action.selection_id}-${action.user_id}`"
+                        >
                             <div class="nd inner">
                                 <div>
-                                    <span class="selection">{{action.selection.name}}</span>
-                                    <span class="user">{{action.user_id == authUser.id ? 'You' : action.user ? action.user.name : 'Anonymous'}}</span>
-                                    <span v-if="action.user" class="email">{{action.user.email}}</span>
-                                    <span class="quantity" v-if="showQty"><i class="fas fa-box"></i> {{action.variants.reduce((total, variant) => { return total + variant.quantity}, 0)}}</span>
+                                    <span class="selection">{{ action.selection.name }}</span>
+                                    <span class="user">{{
+                                        action.user_id == authUser.id
+                                            ? 'You'
+                                            : action.user
+                                            ? action.user.name
+                                            : 'Anonymous'
+                                    }}</span>
+                                    <span v-if="action.user" class="email">{{ action.user.email }}</span>
+                                    <span class="quantity" v-if="showQty"
+                                        ><i class="fas fa-box"></i>
+                                        {{
+                                            action.variants.reduce((total, variant) => {
+                                                return total + variant.quantity
+                                            }, 0)
+                                        }}</span
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -180,22 +316,21 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'distibutionSection',
-    props: [
-        'selectionInput',
-        'product'
-    ],
-    data: function () { return {
+    props: ['selectionInput', 'product'],
+    data: function() {
+        return {
             currentTab: 'all',
             currentImgIndex: 0,
             // includeNdsInTotalBar: true,
             // includeNdsInAlignmentBar: true,
             // includeNdsInFeedbackBar: true,
-    }},
+        }
+    },
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['currentSelection']),
         ...mapGetters('selections', {
-            showQty: 'getQuantityModeActive'
+            showQty: 'getQuantityModeActive',
         }),
         totalFeedbackInputCount() {
             return this.selectionInput.feedbacks.length
@@ -207,7 +342,9 @@ export default {
             return this.totalFeedbackInputCount + this.totalActionInputCount
         },
         focusStyle() {
-            const width = this.totalFeedbackInputCount ? this.selectionInput.focus.length / this.totalFeedbackInputCount : 0
+            const width = this.totalFeedbackInputCount
+                ? this.selectionInput.focus.length / this.totalFeedbackInputCount
+                : 0
             return {
                 calcX: 0,
                 calcWidth: width,
@@ -217,7 +354,9 @@ export default {
         },
         inStyle() {
             const x = this.focusStyle.calcX + this.focusStyle.calcWidth
-            const width = this.totalFeedbackInputCount ? this.selectionInput.ins.length / this.totalFeedbackInputCount : 0
+            const width = this.totalFeedbackInputCount
+                ? this.selectionInput.ins.length / this.totalFeedbackInputCount
+                : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -227,7 +366,9 @@ export default {
         },
         outStyle() {
             const x = this.inStyle.calcX + this.inStyle.calcWidth
-            const width = this.totalFeedbackInputCount ? this.selectionInput.outs.length / this.totalFeedbackInputCount : 0
+            const width = this.totalFeedbackInputCount
+                ? this.selectionInput.outs.length / this.totalFeedbackInputCount
+                : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -236,7 +377,9 @@ export default {
             }
         },
         alignmentFocusStyle() {
-            const width = this.totalActionInputCount ? this.selectionInput.alignmentFocus.length / this.totalActionInputCount : 0
+            const width = this.totalActionInputCount
+                ? this.selectionInput.alignmentFocus.length / this.totalActionInputCount
+                : 0
             return {
                 calcX: 0,
                 calcWidth: width,
@@ -246,7 +389,9 @@ export default {
         },
         alignmentInStyle() {
             const x = this.alignmentFocusStyle.calcX + this.alignmentFocusStyle.calcWidth
-            const width = this.totalActionInputCount ? this.selectionInput.alignmentIns.length / this.totalActionInputCount : 0
+            const width = this.totalActionInputCount
+                ? this.selectionInput.alignmentIns.length / this.totalActionInputCount
+                : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -256,7 +401,9 @@ export default {
         },
         alignmentOutStyle() {
             const x = this.alignmentInStyle.calcX + this.alignmentInStyle.calcWidth
-            const width = this.totalActionInputCount ? this.selectionInput.alignmentOuts.length / this.totalActionInputCount : 0
+            const width = this.totalActionInputCount
+                ? this.selectionInput.alignmentOuts.length / this.totalActionInputCount
+                : 0
             return {
                 calcX: x,
                 calcWidth: width,
@@ -265,12 +412,12 @@ export default {
             }
         },
         minimumPercentage() {
-            return this.product.min_order ? Math.min((this.selectionInput.quantity / this.product.min_order * 100), 100).toFixed(0) : 100
-
-        }
+            return this.product.min_order
+                ? Math.min((this.selectionInput.quantity / this.product.min_order) * 100, 100).toFixed(0)
+                : 100
+        },
     },
-    methods: {
-    }
+    methods: {},
 }
 </script>
 
