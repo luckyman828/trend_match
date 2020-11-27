@@ -69,6 +69,7 @@ export default {
                 data: {
                     content: request.content,
                     type: request.type,
+                    labels: request.labels,
                 },
             })
                 .then(response => {

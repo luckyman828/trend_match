@@ -8,7 +8,7 @@
             { 'edit-active': editActive },
             { 'no-controls': disableControls },
             { 'has-thread': isTicket },
-            { 'has-label': request.label },
+            { 'has-label': hasLabel },
         ]"
     >
         <div class="traits">
@@ -44,9 +44,9 @@
                     @submit="onUpdateRequest"
                 />
 
-                <div class="label-wrapper" v-if="request.label">
+                <div class="label-wrapper" v-if="hasLabel">
                     <div class="request-label ghost dark xs square">
-                        <span>#{{ request.label }}</span>
+                        <span>#{{ request.labels[0] }}</span>
                     </div>
                 </div>
 
@@ -162,6 +162,9 @@ export default {
         isTicket() {
             return this.request.type == 'Ticket'
         },
+        hasLabel() {
+            return this.request.labels.length > 0
+        },
         hasNewComment() {
             const request = this.request
             if (this.selectionInput.is_completed) return false
@@ -235,9 +238,6 @@ export default {
                 this.getCurrentRequestThread && this.getCurrentRequestThread.id == this.request.id ? null : this.request
             this.SET_CURRENT_REQUEST_THREAD(requestToSet)
         },
-    },
-    created() {
-        if (!this.request.label) Vue.set(this.request, 'label', 'test_label')
     },
     destroyed() {
         this.onReadRequest()

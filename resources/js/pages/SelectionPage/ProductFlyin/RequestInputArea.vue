@@ -11,12 +11,17 @@
                 <span># {{ label }}</span>
             </div>
         </div>
-        <button class="request-label square ghost primary xs" v-if="request.label" @click="request.label = null">
-            <span>{{ request.label }}</span>
+        <button
+            class="request-label square ghost primary xs"
+            v-for="(label, index) in request.labels"
+            :key="index"
+            @click="removeLabel(index)"
+        >
+            <span>{{ label }}</span>
             <i class="far fa-times"></i>
         </button>
         <BaseInputTextArea
-            :class="{ 'has-label': request.label }"
+            :class="{ 'has-label': request.labels.length > 0 }"
             ref="requestField"
             :disabled="disabled"
             v-tooltip="disabled && disabledTooltip ? disabledTooltip : ''"
@@ -54,7 +59,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'requestInputArea',
-    props: ['request', 'disabled', 'disabledTooltip', 'selectionInput'],
+    props: ['request', 'disabled', 'disabledTooltip', 'selectionInput', 'selectOnActivate'],
     data: function() {
         return {
             showLabelList: false,
@@ -91,7 +96,7 @@ export default {
         insertLabel(index) {
             // Set the new label
             const newLabel = this.labelsFiltered[index]
-            this.request.label = newLabel
+            this.request.labels.splice(0, 1, newLabel)
 
             // Remove the label from the text
             const requestContent = this.request.content
@@ -103,6 +108,9 @@ export default {
 
             // Hide the label list
             this.showLabelList = false
+        },
+        removeLabel(index) {
+            this.request.labels.splice(index, 1)
         },
 
         onInput(e) {
@@ -177,7 +185,9 @@ export default {
         },
         activateWrite() {
             this.$refs.requestField.focus()
-            this.$refs.requestField.select()
+            if (this.selectOnActivate) {
+                this.$refs.requestField.select()
+            }
             this.writeActive = true
         },
         deactivateWrite() {

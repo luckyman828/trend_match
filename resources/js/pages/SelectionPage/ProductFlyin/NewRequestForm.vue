@@ -101,7 +101,7 @@ export default {
         getDefaultRequest() {
             return {
                 content: '',
-                label: null,
+                labels: [],
                 type: this.currentTicketMode != 'None' ? 'Ticket' : 'Request',
                 author_id: this.authUser.id,
                 author: this.authUser,
