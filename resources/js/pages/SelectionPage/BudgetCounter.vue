@@ -2,27 +2,50 @@
     <div class="budget-counter">
         <div class="bar">
             <svg width="100%" height="8px">
-                <rect class="total" width=100% height="8px" rx="4px"/>
+                <rect class="total" width="100%" height="8px" rx="4px" />
 
-                <rect class="remaining" :x="`${spendPercentageCapped - 2}%`" :width="`${100 - spendPercentageCapped + 2}%`" height="8px" rx="4px"
-                v-tooltip.bottom="`            
+                <rect
+                    class="remaining"
+                    :x="`${spendPercentageCapped - 2}%`"
+                    :width="`${100 - spendPercentageCapped + 2}%`"
+                    height="8px"
+                    rx="4px"
+                    v-tooltip.bottom="
+                        `            
                     Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
-                    <br>Remaining: <strong>${seperateThousands(selection.budget - totalSpend)} ${selection.currency}</strong>
-                `"/>
+                    <br>Remaining: <strong>${seperateThousands(selection.budget - totalSpend)} ${
+                            selection.currency
+                        }</strong>
+                `
+                    "
+                />
 
-                <rect class="spend" :width="`${spendPercentageCapped}%`" height="8px" rx="4px"
-                :class="spendPercentage > 100 ? 'over' : 'under'"
-                v-tooltip.bottom="`
+                <rect
+                    class="spend"
+                    :width="`${spendPercentageCapped}%`"
+                    height="8px"
+                    rx="4px"
+                    :class="spendPercentage > 100 ? 'over' : 'under'"
+                    v-tooltip.bottom="
+                        `
                     Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
                     <br>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
-                    ${spendPercentage > 100 ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(selection.budget - totalSpend)} ${selection.currency}</strong>` : ''}`"/>
+                    ${
+                        spendPercentage > 100
+                            ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(
+                                  selection.budget - totalSpend
+                              )} ${selection.currency}</strong>`
+                            : ''
+                    }`
+                    "
+                />
             </svg>
         </div>
         <!-- <div class="indicator circle xs spend primary" :style="{left: `calc(${spendPercentageCapped}% - 4px - ${(76 * spendPercentageCapped) / 100}px)`}"
         v-tooltip="`${seperateThousands(totalSpend)} ${selection.currency}`">
         </div> -->
         <div class="indicator budget" v-if="!hideLabel">
-            <span>{{selection.budget | thousandSeparated}} {{selection.currency}}</span>
+            <span>{{ selection.budget | thousandSeparated }} {{ selection.currency }}</span>
         </div>
     </div>
 </template>
@@ -31,13 +54,12 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'budgetCounter',
-    props: [
-        'hideLabel',
-        'selection'
-    ],
-    data() { return {
-        // spendPercentage: 50
-    }},
+    props: ['hideLabel', 'selection'],
+    data() {
+        return {
+            // spendPercentage: 50
+        }
+    },
     computed: {
         ...mapGetters('products', ['products', 'getActiveSelectionInput']),
         totalSpend() {
@@ -48,24 +70,24 @@ export default {
                 selectionInput.variants.map(variant => {
                     if (!this.selection.currency) return
                     const productPrice = product.prices.find(x => x.currency == this.selection.currency)
-                    if (!productPrice) return 
+                    if (!productPrice) return
                     total += variant.quantity * productPrice.wholesale_price
                 })
             })
             return total
         },
         spendPercentage() {
-            return ((this.totalSpend / this.selection.budget) * 100)
+            return (this.totalSpend / this.selection.budget) * 100
         },
         spendPercentageCapped() {
-            return Math.min(((this.totalSpend / this.selection.budget) * 100), 100)
-        }
+            return Math.min((this.totalSpend / this.selection.budget) * 100, 100)
+        },
     },
     methods: {
         seperateThousands(value) {
             return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        }
-    }
+        },
+    },
 }
 </script>
 
@@ -110,10 +132,10 @@ export default {
         }
     }
     .indicator {
-            font-weight: 500;
-            font-size: 11px;
-            line-height: 1;
-            margin-top: 2px;
+        font-weight: 500;
+        font-size: 11px;
+        line-height: 1;
+        margin-top: 2px;
         &.budget {
             text-align: right;
         }

@@ -413,7 +413,7 @@ export default {
         },
         minimumPercentage() {
             return this.product.min_order
-                ? Math.min((this.selectionInput.quantity / this.product.min_order) * 100, 100).toFixed(0)
+                ? Math.min((this.selectionInput.totalQuantity / this.product.min_order) * 100, 100).toFixed(0)
                 : 100
         },
     },

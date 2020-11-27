@@ -1344,7 +1344,9 @@ export default {
                         selectionInput.variants.map(variant => {
                             // Return the childrens quantity if no quantity has been set for this selection
                             const quantity =
-                                variant.action == 'None' ? variant.totalChildrenQuantity : variant.totalSiblingQuantity
+                                variant.action == 'None'
+                                    ? variant.totalChildrenQuantity + variant.totalSiblingQuantity
+                                    : variant.totalSiblingQuantity
                             totalQty += quantity
                         })
                         return totalQty
@@ -1598,10 +1600,13 @@ export default {
                     // Get the selection's quantity
                     Object.defineProperty(variant, 'quantity', {
                         get: function() {
-                            const selectionAction = variant.actionsRaw.find(
-                                x => x.selection_id == selectionInput.selection_id
+                            const currentAction = selectionInput.actionsRaw.find(
+                                action => action.selection_id == selectionInput.selection_id
                             )
-                            return selectionAction ? selectionAction.quantity : 0
+                            const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
+                            return currentVariantActionIndex >= 0
+                                ? currentAction.variants[currentVariantActionIndex].quantity
+                                : 0
                         },
                         set: function(newQuantity) {
                             // Find the current action for the variant input for this action action
@@ -1611,6 +1616,7 @@ export default {
                             // If the user has already made variant input, update the action
                             const currentVariantActionIndex = currentAction.variants.findIndex(x => x.id == variant.id)
                             if (currentVariantActionIndex >= 0) {
+                                currentAction.variants[currentVariantActionIndex].quantity = newQuantity
                                 currentAction.variants.splice(currentVariantActionIndex, 1, {
                                     id: variant.id,
                                     feedback: variant.action,
