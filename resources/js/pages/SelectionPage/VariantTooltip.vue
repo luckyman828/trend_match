@@ -129,7 +129,7 @@ export default {
                 this.$refs.qtyInput.focus()
             }
         },
-        updateVariantAction(newAction) {
+        async updateVariantAction(newAction) {
             // If the new action to set is the same as the one already set, return
             // if (this.variant[this.currentAction] == newAction) return
 
@@ -137,10 +137,25 @@ export default {
             this.product.variants.forEach(variant => {
                 if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
                     if (newAction == 'Out') variant[this.currentAction] = 'Out'
-                    else variant[this.currentAction] = 'In'
+                    else {
+                        variant[this.currentAction] = 'In'
+                    }
                 }
             })
 
+            // If the old action as None and the variant is set IN, preset it's quantity
+            if (
+                this.variant[this.currentAction] == 'None' &&
+                ['In', 'Focus'].includes(newAction) &&
+                !this.variant[this.currentQty]
+            ) {
+                const newQty =
+                    this.selectionMode == 'Alignment'
+                        ? this.variant.totalChildrenQuantity
+                        : this.variant.totalFeedbackQuantity
+                this.variant[this.currentQty] = newQty
+                this.newQuantity = newQty
+            }
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
             if (newAction == 'Out') {
@@ -170,7 +185,6 @@ export default {
                     ['Focus', 'In', 'None'].includes(variant[this.currentAction])
                 )
             ) {
-                // currentAction.action = 'Out'
                 newProductAction = 'Out'
             }
             // If at least ONE varaint in IN or FOCUS mark the product as IN
@@ -178,27 +192,26 @@ export default {
                 this.selectionInput.variants.find(variant => ['Focus', 'In'].includes(variant[this.currentAction]))
             ) {
                 if (this.selectionInput[this.currentAction] != 'Focus') {
-                    // currentAction.action = 'In'
                     newProductAction = 'In'
                 }
             }
 
             if (this.selectionMode == 'Feedback') {
-                this.updateFeedbacks({ actions: [currentAction], newAction: newProductAction })
+                await this.updateFeedbacks({ actions: [currentAction], newAction: newProductAction })
             }
             if (this.selectionMode == 'Alignment') {
-                this.updateActions({ actions: [currentAction], newAction: newProductAction })
+                await this.updateActions({ actions: [currentAction], newAction: newProductAction })
             }
         },
-        onSubmitQuantity() {
+        async onSubmitQuantity() {
             let actionToSet = this.variant.action
             const newQty = this.newQuantity ? this.newQuantity : 0
             if (newQty <= 0) actionToSet = 'Out'
             else if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
                 actionToSet = 'In'
             }
-            this.updateVariantAction(actionToSet)
             this.variant[this.currentQty] = newQty
+            await this.updateVariantAction(actionToSet)
         },
     },
     mounted() {

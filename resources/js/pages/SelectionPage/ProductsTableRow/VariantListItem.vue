@@ -1,62 +1,24 @@
 <template>
-    <div class="variant-list-item-wrapper" :class="{'has-action': variant[currentAction] != 'None'}">
-        <!-- <v-popover :disabled="multiSelectionMode"> -->
-            <div class="variant-item-wrapper">
-                <BaseShape class="variant-list-item" shapeClass="pill ghost sm"
-                targetAreaPadding="8px 2px">
-                    <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                    <div v-if="showQty" class="bar" :class="{full: minimumPercentage >= 100}" :style="{width: `${minimumPercentage}%`}"></div>
-                </BaseShape>
-                <!-- <div class="variant-list-item pill ghost xs">
-                    <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength())}}</span>
-                </div> -->
-                <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
-                    <div class="pill ghost xs">
-                        <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
-                        <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
-                        <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
-                        <span v-if="showQty">{{variant[currentQty]}}</span>
-                    </div>
+    <div class="variant-list-item-wrapper" :class="{ 'has-action': variant[currentAction] != 'None' }">
+        <div class="variant-item-wrapper">
+            <BaseShape class="variant-list-item" shapeClass="pill ghost sm" targetAreaPadding="8px 2px">
+                <span>{{ variant.name || 'Unnamed' | truncate(variantNameTruncateLength()) }}</span>
+                <div
+                    v-if="showQty"
+                    class="bar"
+                    :class="{ full: minimumPercentage >= 100 }"
+                    :style="{ width: `${minimumPercentage}%` }"
+                ></div>
+            </BaseShape>
+            <div class="your-action" v-if="!multiSelectionMode && variant[currentAction] != 'None'">
+                <div class="pill ghost xs">
+                    <i v-if="variant[currentAction] == 'Focus'" class="fas fa-star primary"></i>
+                    <i v-if="variant[currentAction] == 'In'" class="fas fa-heart green"></i>
+                    <i v-if="variant[currentAction] == 'Out'" class="fas fa-times red"></i>
+                    <span v-if="showQty">{{ variant[currentQty] }}</span>
                 </div>
             </div>
-            <!-- <template slot="popover">
-                <div class="header">
-                    <h4 class="primary">{{variant.name}}</h4>
-                </div>
-                <div class="action-list">
-
-                    <div class="action-list-item">
-                        <button :class="variant[currentAction] == 'Focus' ? 'primary' : 'ghost'"
-                        @click="updateVariantAction('Focus')">
-                            <i class="far fa-star"></i>
-                        </button>
-                        <span class="count">{{variant.allFocus}}</span>
-                    </div>
-
-                    <div class="action-list-item">
-                        <button :class="variant[currentAction] == 'In' ? 'green' : 'ghost'"
-                        @click="updateVariantAction('In')">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <span class="count">{{variant.allIns}}</span>
-                    </div>
-
-                    <div class="action-list-item">
-                        <button :class="variant[currentAction] == 'Out' ? 'red' : 'ghost'"
-                        @click="updateVariantAction('Out')">
-                            <i class="far fa-times"></i>
-                        </button>
-                        <span class="count">{{variant.allOuts}}</span>
-                    </div>
-                </div>
-
-                <ActionDistributionList 
-                :feedbackActions="variant.feedbacks" 
-                :alignmentActions="variant.actions"
-                defaultTab="feedback"/>
-
-            </template>
-        </v-popover> -->
+        </div>
     </div>
 </template>
 
@@ -66,15 +28,9 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'variantListItem',
-    props: [
-        'variant',
-        'product',
-        'selectionInput',
-        'selection',
-        'distributionScope',
-    ],
+    props: ['variant', 'product', 'selectionInput', 'selection', 'distributionScope'],
     components: {
-        ActionDistributionList
+        ActionDistributionList,
     },
     filters: {
         truncate: function(text, length) {
@@ -84,7 +40,7 @@ export default {
             var content = node.textContent
             // return `<span>124</span>`
             return content.length > length ? content.slice(0, length) + clamp : content
-        }
+        },
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
@@ -95,10 +51,11 @@ export default {
             showQty: 'getQuantityModeActive',
         }),
         minimumPercentage() {
-            const totalQty = this.distributionScope == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
+            const totalQty =
+                this.distributionScope == 'Alignment' ? this.variant.totalQuantity : this.variant.totalFeedbackQuantity
             const percentage = Math.min((totalQty / this.product.min_variant_order) * 100, 100)
             return percentage ? percentage.toFixed(0) : 0
-        }
+        },
     },
     methods: {
         ...mapActions('actions', ['insertOrUpdateProductActionPairs']),
@@ -106,8 +63,7 @@ export default {
             const amount = this.product.variants.length
             if (amount > 4) {
                 return window.innerWidth > 1260 ? 12 : 6
-            }
-            else if (amount > 2) {
+            } else if (amount > 2) {
                 return window.innerWidth > 1260 ? 20 : 15
             }
         },
@@ -124,7 +80,7 @@ export default {
 
             // Set the variant feedback
             this.variant[this.currentAction] = newAction
-            
+
             // Find the users feedback action for the product and make sure it is not None
             const authUserFeedback = this.selectionInput.feedbacks.find(x => x.user_id == this.authUser.id)
             if (authUserFeedback.action == 'None') {
@@ -132,14 +88,16 @@ export default {
             }
 
             this.insertOrUpdateProductActionPairs({
-                productActionPairs: [{
-                    product: this.product, 
-                    action: authUserFeedback
-                }], 
-                selection: this.selection
+                productActionPairs: [
+                    {
+                        product: this.product,
+                        action: authUserFeedback,
+                    },
+                ],
+                selection: this.selection,
             })
-        }
-    }
+        },
+    },
 }
 </script>
 
@@ -239,5 +197,4 @@ div.header {
         }
     }
 }
-
 </style>

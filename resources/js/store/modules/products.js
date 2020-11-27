@@ -842,7 +842,6 @@ export default {
                 }
 
                 const restoreProducts = async () => {
-                    console.log('restore prodcts')
                     // await dispatch('insertProducts', { file, products, addToState: true })
                     commit('insertProducts', { products, method: 'add' })
                     commit('SORT_PRODUCTS')
@@ -1585,7 +1584,7 @@ export default {
                                 currentAction.variants.splice(currentVariantActionIndex, 1, {
                                     id: variant.id,
                                     feedback: newAction,
-                                    quantity: variant.quantity,
+                                    quantity: currentAction.variants[currentVariantActionIndex].quantity,
                                 })
                             } else {
                                 currentAction.variants.push({
