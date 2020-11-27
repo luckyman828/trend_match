@@ -57,7 +57,7 @@ export default {
 
     actions: {
         // Fetch the root files of the workspace
-        async fetchFiles({ commit, state, rootGetters }, addToState = true) {
+        async fetchFiles({ commit, state, rootGetters, dispatch }, addToState = true) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             // Set the state to loading
             if (addToState) {
