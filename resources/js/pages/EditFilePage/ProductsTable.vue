@@ -312,7 +312,6 @@ export default {
     mixins: [sortArray],
     data: function() {
         return {
-            selectedProducts: [],
             // productsFilteredBySearch: this.products,
             contextItem: null,
             editOrderModeActive: false,
@@ -333,6 +332,14 @@ export default {
             products: 'productsFiltered',
         }),
         ...mapState('products', { stateProducts: 'products' }),
+        selectedProducts: {
+            get() {
+                return this.$store.getters['products/getSelectedProducts']
+            },
+            set(products) {
+                this.SET_SELECTED_PRODUCTS(products)
+            },
+        },
         productsFilteredBySearch: {
             get() {
                 return this.$store.getters['products/getProductsFilteredBySearch']
@@ -393,6 +400,7 @@ export default {
             'SET_PRODUCTS_FILTERED_BY_SEARCH',
             'SET_AVAILABLE_PRODUCTS',
             'SET_NO_IMAGES_ONLY',
+            'SET_SELECTED_PRODUCTS',
         ]),
         onViewSingle(product) {
             this.setCurrentProduct(product)
