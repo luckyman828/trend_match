@@ -217,19 +217,18 @@ export default {
             }
         },
         mouseMoveHandler(e) {
-            // If the player controls are hidden, show them
-            if (this.hideControls) this.SET_CONTROLS_HIDDEN(false)
-
-            // Start a timeout to check if we should hide the controls
-            if (this.mouseMoveTimeout) clearTimeout(this.mouseMoveTimeout)
-            const delay = 1000
-            this.mouseMoveTimeout = setTimeout(() => {
-                // Check if the target of the mouse is not the player controls.
-                // If not, hide the player controls
-                if (e.target != this.$el && !this.$el.contains(e.target)) {
-                    this.SET_CONTROLS_HIDDEN(true)
-                }
-            }, delay)
+            // // If the player controls are hidden, show them
+            // if (this.hideControls) this.SET_CONTROLS_HIDDEN(false)
+            // // Start a timeout to check if we should hide the controls
+            // if (this.mouseMoveTimeout) clearTimeout(this.mouseMoveTimeout)
+            // const delay = 1000
+            // this.mouseMoveTimeout = setTimeout(() => {
+            //     // Check if the target of the mouse is not the player controls.
+            //     // If not, hide the player controls
+            //     if (e.target != this.$el && !this.$el.contains(e.target)) {
+            //         this.SET_CONTROLS_HIDDEN(true)
+            //     }
+            // }, delay)
         },
         addFullscreenListeners() {
             document.addEventListener('fullscreenchange', this.fullscreenChangeHandler, false)
