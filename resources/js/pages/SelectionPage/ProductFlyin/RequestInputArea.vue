@@ -1,16 +1,5 @@
 <template>
     <div class="request-input-area" :class="{ 'edit-active': writeActive }">
-        <div class="available-label-list" v-if="showLabelList && labelsFiltered.length > 0">
-            <div
-                class="label-list-item"
-                v-for="(label, index) in labelsFiltered"
-                :key="index"
-                :class="{ focus: labelListFocusIndex == index }"
-                @click="insertLabel(index)"
-            >
-                <span># {{ label }}</span>
-            </div>
-        </div>
         <button
             class="request-label square ghost primary xs"
             v-for="(label, index) in request.labels"
@@ -20,17 +9,37 @@
             <span>{{ label }}</span>
             <i class="far fa-times"></i>
         </button>
-        <BaseInputTextArea
-            :class="{ 'has-label': request.labels.length > 0 }"
-            ref="requestField"
-            :disabled="disabled"
-            v-tooltip="disabled && disabledTooltip ? disabledTooltip : ''"
-            v-model="request.content"
-            :placeholder="'Write your request here...'"
-            @input.native="onInput"
-            @keydown.native="onKeyDown"
-            @click.native="!disabled && !writeActive && activateWrite()"
-        />
+
+        <v-popover
+            trigger="manual"
+            :open="showLabelList && labelsFiltered.length > 0"
+            placement="top"
+            :handleResize="true"
+        >
+            <BaseInputTextArea
+                :class="{ 'has-label': request.labels.length > 0 }"
+                ref="requestField"
+                :disabled="disabled"
+                v-tooltip="disabled && disabledTooltip ? disabledTooltip : ''"
+                v-model="request.content"
+                :placeholder="'Write your request here...'"
+                @input.native="onInput"
+                @keydown.native="onKeyDown"
+                @click.native="!disabled && !writeActive && activateWrite()"
+            />
+            <div class="available-label-list" slot="popover">
+                <div
+                    class="label-list-item"
+                    v-for="(label, index) in labelsFiltered"
+                    :key="index"
+                    :class="{ focus: labelListFocusIndex == index }"
+                    @click="insertLabel(index)"
+                >
+                    <span>#{{ label }}</span>
+                </div>
+            </div>
+        </v-popover>
+
         <div class="controls" v-if="writeActive">
             <div class="left">
                 <div class="hotkey-tip" v-if="writeActive">
@@ -94,6 +103,8 @@ export default {
             this.showLabelList = true
         },
         insertLabel(index) {
+            this.labelListFocusIndex = index
+
             // Set the new label
             const newLabel = this.labelsFiltered[index]
             this.request.labels.splice(0, 1, newLabel)
@@ -203,30 +214,6 @@ export default {
 @import '~@/_variables.scss';
 .request-input-area {
     position: relative;
-    .available-label-list {
-        padding: 16px 0;
-        background: white;
-        border: $borderEl;
-        border-radius: $borderRadiusEl;
-        box-shadow: $shadowEl;
-        margin-bottom: -4px;
-        position: relative;
-        z-index: 2;
-        .label-list-item {
-            padding: 0 8px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            &.focus {
-                background: $primary;
-                color: white;
-            }
-            &:hover {
-                background: $primary300;
-            }
-        }
-    }
     .request-label {
         position: absolute;
         top: 8px;
@@ -272,6 +259,34 @@ export default {
         }
         font-size: 10px;
         color: $dark2;
+    }
+}
+</style>
+
+<style lang="scss">
+@import '~@/_variables.scss';
+.available-label-list {
+    padding: 8px 0;
+    // background: white;
+    // border: $borderEl;
+    // border-radius: $borderRadiusEl;
+    // box-shadow: $shadowEl;
+    .label-list-item {
+        padding: 0 8px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 13px;
+        cursor: pointer;
+        &.focus {
+            background: $primary;
+            color: white;
+        }
+        &:hover {
+            background: $primary;
+            color: white;
+        }
     }
 }
 </style>
