@@ -24,22 +24,72 @@
         </div> -->
 
         <div class="items-right">
-            <!-- <button class="button dark" @click="onExport"><span>Export PDF</span></button> -->
-            <button class="button primary" @click="onExportCsv">
-                <span>Export CSV</span>
-            </button>
-            <button class="button primary wide" @click="exportToFileModalVisible = true">
-                <span>Export to File</span>
-            </button>
-
-            <button class="button primary" @click="onUploadToFile">
-                <i class="far fa-upload"></i>
-                <span>Upload data to file</span>
-            </button>
-            <button class="button primary" @click="importToFileModalVisible = true">
-                <i class="far fa-download"></i>
-                <span>Import products from another file</span>
-            </button>
+            <v-popover trigger="click" ref="exportPopover">
+                <button class="button primary">
+                    <i class="far fa-upload"></i>
+                    <span>Export</span>
+                    <i class="far fa-angle-down"></i>
+                </button>
+                <BaseContextMenu slot="popover" :inline="true">
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-csv"
+                            hotkey="KeyC"
+                            @click="
+                                $refs.exportPopover.hide()
+                                onExportCsv()
+                            "
+                        >
+                            <span>Export as <u>C</u>SV</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-import"
+                            hotkey="KeyF"
+                            @click="
+                                $refs.exportPopover.hide()
+                                exportToFileModalVisible = true
+                            "
+                        >
+                            <span>Export to another <u>F</u>ile</span>
+                        </BaseContextMenuItem>
+                    </div>
+                </BaseContextMenu>
+            </v-popover>
+            <v-popover trigger="click" ref="importPopover">
+                <button class="button primary">
+                    <i class="far fa-download"></i>
+                    <span>Import</span>
+                    <i class="far fa-angle-down"></i>
+                </button>
+                <BaseContextMenu slot="popover" :inline="true">
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-csv"
+                            hotkey="KeyC"
+                            @click="
+                                $refs.importPopover.hide()
+                                onUploadToFile()
+                            "
+                        >
+                            <span>Import from <u>C</u>SV</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-import"
+                            hotkey="KeyF"
+                            @click="
+                                $refs.importPopover.hide()
+                                importToFileModalVisible = true
+                            "
+                        >
+                            <span>Import from another <u>F</u>ile</span>
+                        </BaseContextMenuItem>
+                    </div>
+                </BaseContextMenu>
+            </v-popover>
             <button class="button primary" @click="onNewProduct">
                 <i class="far fa-plus"></i>
                 <span>Create new product</span>

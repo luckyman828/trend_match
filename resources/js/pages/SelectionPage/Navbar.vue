@@ -39,11 +39,51 @@
 
             <SelectionPresenterModeButton :selection="currentSelection" />
 
-            <button class="button primary wide" @click="onExport"><span>Export PDF</span></button>
-            <button class="button primary wide" @click="onExportCsv"><span>Export CSV</span></button>
-            <button class="button primary wide" @click="exportToFileModalVisible = true">
-                <span>Export to File</span>
-            </button>
+            <v-popover trigger="click" ref="exportPopover">
+                <button class="button primary">
+                    <i class="far fa-upload"></i>
+                    <span>Export</span>
+                    <i class="far fa-angle-down"></i>
+                </button>
+                <BaseContextMenu slot="popover" :inline="true">
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-pdf"
+                            hotkey="KeyP"
+                            @click="
+                                $refs.exportPopover.hide()
+                                onExport()
+                            "
+                        >
+                            <span>Export as <u>P</u>DF</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-csv"
+                            hotkey="KeyC"
+                            @click="
+                                $refs.exportPopover.hide()
+                                onExportCsv()
+                            "
+                        >
+                            <span>Export as <u>C</u>SV</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-file-import"
+                            hotkey="KeyF"
+                            @click="
+                                $refs.exportPopover.hide()
+                                exportToFileModalVisible = true
+                            "
+                        >
+                            <span>Export to another <u>F</u>ile</span>
+                        </BaseContextMenuItem>
+                    </div>
+                </BaseContextMenu>
+            </v-popover>
         </div>
 
         <ExportProductsModal v-if="exportModalVisible" :show="exportModalVisible" />

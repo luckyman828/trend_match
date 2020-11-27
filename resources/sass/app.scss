@@ -879,7 +879,7 @@ i {
 .v-popover {
     .trigger {
         &:hover {
-            i {
+            i.fa-circle-info {
                 font-weight: 900;
                 color: $font;
             }
