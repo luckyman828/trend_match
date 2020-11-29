@@ -1,6 +1,103 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Crêpe: Apricot"
+            date="Late November 2020 Release"
+            featuredImgUrl="/images/blog/undraw_export_files_re_99ar.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    Before December is upon us, we are squeezing in one last November update.
+                </p>
+                <p>
+                    This one is a huge tweaks and fixes update, also featuring new options for how you can re-use
+                    products already in Kollekt between multiple files.
+                </p>
+            </template>
+
+            <template v-slot:body>
+                <h3>Features, tweaks & fixes</h3>
+
+                <h4>Export/Import products</h4>
+                <ul>
+                    <li>
+                        You can now export the selected products from one file on Kollekt, to a new or existing file in
+                        Kollekt.
+                    </li>
+                    <li>
+                        You can export selected products to a CSV-dump that can be uploaded to Kollekt to create a copy
+                        of the file (essentially a backup).
+                    </li>
+                    <li>You can import products from another file on Kollekt to a file you are editing.</li>
+                    <li>
+                        All Import/Export features can be accessed through the dropdown menus of the same names from the
+                        navbar on the selection or edit products pages.
+                    </li>
+                    <li>
+                        Currently only product data is copied over. We plan to add support for feedback and comments in
+                        the future.
+                    </li>
+                </ul>
+
+                <h4>Upload product data via CSV</h4>
+                <ul>
+                    <li>
+                        Fixed bug where delivery dates including Danish month names, would not always get read correctly
+                        as a date value, when uploading from CSV.
+                    </li>
+                </ul>
+
+                <h4>Quantity input mode</h4>
+                <ul>
+                    <li>
+                        Changed the way selection quantity inputs are summed.<br />
+                        Setting a quantity for a parent selection will now overwrite the total quantity of the
+                        selection's child-selections.
+                    </li>
+                    <li>
+                        Now automatically setting the quantity input for a product when marking it IN. The automated
+                        quantity set will be the summed quantity of the selections' children.
+                    </li>
+                </ul>
+
+                <h4>Export to PDF</h4>
+                <ul>
+                    <li>
+                        The sum total of INs and OUTs for each product have been added to PDF exports.
+                    </li>
+                </ul>
+
+                <h4>Bulk image upload</h4>
+                <ul>
+                    <li>
+                        Bulk image upload name-matching has been improved to match images to the correct varaint, even
+                        though their names might not be exact matches.
+                    </li>
+                    <li>
+                        Fixed bug where you might get thrown off and logged out of Kollekt, when bulk-uploading 200+
+                        images at once.
+                    </li>
+                </ul>
+
+                <h3>Other fixes</h3>
+                <ul>
+                    <li>
+                        Selection settings will now work as they show every time.<br />
+                        Before there was an error, where updating multiple selections' settings at once or cloning a
+                        setup, might cause selections to not be properly aware of each other.
+                    </li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Crêpe"
             date="November 2020 Release"
             featuredImgUrl="/images/blog/undraw_building_websites_i78t.svg"
