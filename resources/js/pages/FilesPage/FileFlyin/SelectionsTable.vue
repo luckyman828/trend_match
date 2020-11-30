@@ -1603,7 +1603,6 @@ export default {
             await this.fetchSelectionSettings(selection)
             // Save selection settings to the new selection
             newSelection.settings = selection.settings
-            // this.updateSelectionSettings(newSelection)
             // Upload the fetched users and teams to our new selection
             if (selectionWithTeamsAndUsers.users.length > 0)
                 this.addUsersToSelection({

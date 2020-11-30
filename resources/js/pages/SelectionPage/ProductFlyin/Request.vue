@@ -8,25 +8,16 @@
             { 'edit-active': editActive },
             { 'no-controls': disableControls },
             { 'has-thread': isTicket },
+            { 'has-label': hasLabel },
         ]"
     >
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
-        <div class="request" @click="isTicket && !disableControls && onToggleRequestThread($event)">
+        <div class="request" @click="isTicket && !disableControls && !editActive && onToggleRequestThread($event)">
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
-                <!-- <div class="label-list">
-                    <div class="square xs label selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'primary' : ''">
-                        <span>{{request.selection.name}}</span>
-                    </div>
-                    <div class="label sender ghost square xs" :class="request.author_id == authUser.id ? 'primary' : ''">
-                        <span>{{request.author_id == authUser.id ? 'You' : request.author ? request.author.name : 'Anonymous'}}</span>
-                    </div>
-
-                </div> -->
                 <strong class="sender">
-                    <!-- <span class="selection" :class="request.selection_id == getCurrentPDPSelection.id ? 'square primary xs' : ''"> -->
                     <span>{{ request.selection.name }}</span>
                     <!-- </span> -->
                     <span> | </span>
@@ -41,16 +32,23 @@
                     </span>
                 </strong>
 
-                <span v-if="!editActive" class="content">{{ request.content }}</span>
-                <span v-else class="content">
-                    <BaseInputTextArea
-                        ref="requestInputField"
-                        v-model="requestToEdit.content"
-                        @keyup.enter.exact.native="onUpdateRequest"
-                        @keydown.enter.exact.native.prevent
-                        @keydown.esc.native="onCancel"
-                    />
-                </span>
+                <div class="content-wrapper" v-if="!editActive">
+                    <span class="content">{{ request.content }}</span>
+                </div>
+                <RequestInputArea
+                    v-else
+                    :request="requestToEdit"
+                    :selectionInput="selectionInput"
+                    ref="requestInput"
+                    @cancel="onCancel"
+                    @submit="onUpdateRequest"
+                />
+
+                <div class="label-wrapper" v-if="hasLabel">
+                    <div class="request-label ghost dark xs square">
+                        <span>#{{ request.labels[0] }}</span>
+                    </div>
+                </div>
 
                 <div class="thread-controls" v-if="isTicket && !disableControls">
                     <div class="resolve-actions" v-if="hasTicketControl">
@@ -119,19 +117,6 @@
                 <i class="far fa-pen"></i>
             </button>
         </div>
-        <!-- End Comment Controls -->
-        <div class="save-controls" v-if="editActive">
-            <button class="invisible ghost-hover" style="margin-right: 8px" @click="onCancel">
-                <span>Cancel</span>
-            </button>
-            <BaseButton
-                buttonClass="primary"
-                :hotkey="{ key: 'ENTER', label: 'Save', align: 'right' }"
-                @click="onUpdateRequest"
-            >
-                <span>Save</span>
-            </BaseButton>
-        </div>
 
         <BaseDialog ref="confirmDeleteRequest" type="confirm" confirmColor="red" confirmText="Yes, delete it">
             <div class="icon-graphic">
@@ -146,9 +131,13 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
+import RequestInputArea from './RequestInputArea'
 
 export default {
     name: 'request',
+    components: {
+        RequestInputArea,
+    },
     props: ['request', 'selectionInput', 'disableControls'],
     data: function() {
         return {
@@ -173,6 +162,9 @@ export default {
         isTicket() {
             return this.request.type == 'Ticket'
         },
+        hasLabel() {
+            return this.request.labels.length > 0
+        },
         hasNewComment() {
             const request = this.request
             if (this.selectionInput.is_completed) return false
@@ -182,8 +174,6 @@ export default {
             if (this.getCurrentSelectionMode == 'Alignment') {
                 return request.hasUnreadApproverComment
             }
-            // return this.getCurrentSelectionMode == 'Alignment' && this.request.hasUnreadApproverComment ||
-            // this.getCurrentSelectionMode == 'Approval' && this.request.status == 'Open' && this.request.hasUnreadAlignerComment
         },
         statusTooltip() {
             if (this.request.status == 'Open') return 'Request awaiting decision'
@@ -221,16 +211,14 @@ export default {
             this.editActive = false
         },
         onUpdateRequest() {
-            this.request.content = this.requestToEdit.content
-            this.insertOrUpdateRequest({ selectionInput: this.selectionInput, request: this.request })
+            Object.assign(this.request, this.requestToEdit)
             this.editActive = false
         },
         onEditRequest() {
             this.editActive = true
             this.requestToEdit = JSON.parse(JSON.stringify(this.request))
             this.$nextTick(() => {
-                this.$refs.requestInputField.focus()
-                this.$refs.requestInputField.select()
+                this.$refs.requestInput.activateWrite()
             })
         },
         onSetStatus(status) {
@@ -250,9 +238,6 @@ export default {
                 this.getCurrentRequestThread && this.getCurrentRequestThread.id == this.request.id ? null : this.request
             this.SET_CURRENT_REQUEST_THREAD(requestToSet)
         },
-    },
-    created() {
-        // this.onReadRequest()
     },
     destroyed() {
         this.onReadRequest()
@@ -277,16 +262,16 @@ export default {
             width: 100%;
             transition: none;
             .sender {
-                margin-left: 10px;
-                margin-top: 10px;
-            }
-            .content {
-                margin-bottom: 0;
+                margin-bottom: 4px;
             }
             ::v-deep {
                 .input-wrapper {
-                    border: none;
                     min-height: 160px;
+                    margin-left: -8px;
+                    width: calc(100% + 20px);
+                }
+                .request-label {
+                    left: 4px;
                 }
             }
         }
@@ -295,8 +280,10 @@ export default {
         .request {
             cursor: pointer;
         }
-        .request > .inner {
-            // padding-bottom: 40px;
+        &:not(.no-controls) {
+            .label-wrapper {
+                margin-bottom: -30px;
+            }
         }
     }
     &.no-controls {
@@ -369,15 +356,6 @@ export default {
             display: flex;
         }
     }
-    // &.Open .inner {
-    //     border-left: solid 8px $yellow;
-    // }
-    // &.Rejected .inner {
-    //     border-left: solid 8px $red;
-    // }
-    // &.Resolved .inner {
-    //     border-left: solid 8px $green;
-    // }
     .inner {
         padding: 8px 12px 12px 8px;
         display: flex;
@@ -386,9 +364,6 @@ export default {
         overflow: hidden;
     }
     .thread-controls {
-        // position: absolute;
-        // right: 6px;
-        // bottom: 6px;
         width: 100%;
         display: flex;
         justify-content: flex-end;
@@ -396,6 +371,7 @@ export default {
         .resolve-actions {
             flex: 1;
             display: none;
+            background: white;
         }
     }
     .sender {
@@ -405,21 +381,12 @@ export default {
         font-size: 12px;
         font-weight: 500;
     }
-    // .own:not(.master) & {
-    //     background: $primary;
-    //     color: white;
-    //     strong {
-    //         color: white;
-    //     }
-    // }
-    // .master & {
-    //     background: $yellow;
-    // }
+    .content-wrapper {
+        margin: 8px 0 0;
+    }
     .content {
         white-space: pre-wrap;
         word-wrap: break-word;
-        margin-top: 12px;
-        margin-left: 4px;
     }
 }
 .controls {
@@ -460,24 +427,7 @@ export default {
         width: 10px;
     }
 }
-.label-list {
-    display: flex;
-    flex-wrap: wrap;
-    .label {
-        margin-bottom: 4px;
-        &:not(:last-child) {
-            margin-right: 4px;
-        }
-        // &.selection {
-        //     margin-right: 4px;
-        // }
-        // &.sender {
-        //     color: $fontSoft;
-        //     font-weight: 500;
-        //     &.primary {
-        //         color: $primary;
-        //     }
-        // }
-    }
+.request-label {
+    margin-top: 4px;
 }
 </style>

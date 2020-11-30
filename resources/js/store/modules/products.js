@@ -14,6 +14,7 @@ export default {
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
         selectedProducts: [],
+        selectedTicketLabels: [],
         advancedFilter: null,
         unreadOnly: false,
         hideCompleted: false,
@@ -83,43 +84,22 @@ export default {
                 return availableProducts[index - 1]
             }
         },
-        selectedCategories: state => {
-            return state.selectedCategories
-        },
-        selectedDeliveryDates: state => {
-            return state.selectedDeliveryDates
-        },
-        selectedBuyerGroups: state => {
-            return state.selectedBuyerGroups
-        },
-        getSelectedSelectionIds: state => {
-            return state.selectedSelectionIds
-        },
-        getHasAdvancedFilter: state => {
-            return !!state.advancedFilter && state.advancedFilter.length > 0
-        },
-        getAdvancedFilter: state => {
-            return state.advancedFilter
-        },
+        selectedCategories: state => state.selectedCategories,
+        selectedDeliveryDates: state => state.selectedDeliveryDates,
+        selectedBuyerGroups: state => state.selectedBuyerGroups,
+        getSelectedSelectionIds: state => state.selectedSelectionIds,
+        getHasAdvancedFilter: state => !!state.advancedFilter && state.advancedFilter.length > 0,
+        getSelectedTicketLabels: state => state.selectedTicketLabels,
+        getAdvancedFilter: state => state.advancedFilter,
         unreadOnly: state => state.unreadOnly,
         openTicketsOnly: state => state.openTicketsOnly,
         hideCompleted: state => state.hideCompleted,
         noImagesOnly: state => state.noImagesOnly,
-        currentProductFilter: state => {
-            return state.currentProductFilter
-        },
-        singleVisible: state => {
-            return state.singleVisible
-        },
-        actionsUpdated: state => {
-            return state.actionsUpdated
-        },
-        commentsUpdated: state => {
-            return state.commentsUpdated
-        },
-        commentsCreated: state => {
-            return state.commentsCreated
-        },
+        currentProductFilter: state => state.currentProductFilter,
+        singleVisible: state => state.singleVisible,
+        actionsUpdated: state => state.actionsUpdated,
+        commentsUpdated: state => state.commentsUpdated,
+        commentsCreated: state => state.commentsCreated,
         products: state => state.products,
         getProducts: state => state.products,
         availableCategories(state, getters) {
@@ -191,6 +171,7 @@ export default {
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
+            const ticketLabels = getters.getSelectedTicketLabels
             const unreadOnly = getters.unreadOnly
             const openTicketsOnly = getters.openTicketsOnly
             const hideCompleted = getters.hideCompleted
@@ -219,6 +200,13 @@ export default {
                     return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
                 })
                 productsToReturn = filteredByBuyerGroups
+            }
+            // Filter by ticket labels
+            if (ticketLabels.length > 0) {
+                const filteredByTicketLabels = productsToReturn.filter(product => {
+                    return product.requests.find(request => request.labels.find(label => ticketLabels.includes(label)))
+                })
+                productsToReturn = filteredByTicketLabels
             }
 
             // Filer by unread
@@ -1950,6 +1938,9 @@ export default {
         },
         SET_SELECTED_PRODUCTS(state, products) {
             state.selectedProducts = products
+        },
+        SET_SELECTED_TICKET_LABELS(state, labels = []) {
+            state.selectedTicketLabels = labels
         },
         SET_SHOW_CSV_MODAL(state, makeVisible) {
             state.showCSVModal = makeVisible

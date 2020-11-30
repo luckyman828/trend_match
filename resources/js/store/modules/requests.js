@@ -8,6 +8,8 @@ export default {
         loading: true,
         submitting: false,
         currentRequestThread: null,
+        availableRequestLabels: ['color_added', 'color_removed', 'price_wish', 'add_delivery', 'change_delivery'],
+        // availableRequestLabels: ['Color added', 'Color removed', 'Price wish', 'Add delivery', 'Change delivery'],
     },
 
     getters: {
@@ -19,6 +21,7 @@ export default {
         },
         getCurrentRequestThread: state => state.currentRequestThread,
         getRequestThreadVisible: state => !!state.currentRequestThread,
+        getAvailableRequestLabels: state => state.availableRequestLabels,
     },
 
     actions: {
@@ -67,6 +70,7 @@ export default {
                 data: {
                     content: request.content,
                     type: request.type,
+                    labels: request.labels,
                 },
             })
                 .then(response => {

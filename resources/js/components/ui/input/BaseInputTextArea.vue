@@ -1,20 +1,25 @@
 <template>
-    <div class="input-textarea" :class="{'read-only': disabled || readOnly}">
-        <textarea class="input-wrapper focus-visible" ref="textarea" :placeholder="placeholder"
-        :class="{disabled: disabled || readOnly}" :disabled="disabled || readOnly"
-        @input="resize(); $emit('input', $event.target.value)" :value="value"/>
+    <div class="input-textarea" :class="{ 'read-only': disabled || readOnly }">
+        <textarea
+            class="input-wrapper focus-visible"
+            ref="textarea"
+            :placeholder="placeholder"
+            :class="{ disabled: disabled || readOnly }"
+            :disabled="disabled || readOnly"
+            @input="
+                resize()
+                $emit('input', $event.target.value)
+            "
+            :value="value"
+        >
+        </textarea>
     </div>
 </template>
 
 <script>
 export default {
     name: 'baseInputTextArea',
-    props: [
-        'placeholder',
-        'value',
-        'disabled',
-        'readOnly',
-    ],
+    props: ['placeholder', 'value', 'disabled', 'readOnly'],
     watch: {
         value(newVal, oldVal) {
             if (newVal != oldVal) {
@@ -22,20 +27,20 @@ export default {
                     this.resize()
                 })
             }
-        }
+        },
     },
     methods: {
         resize() {
             const textarea = this.$refs.textarea
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {
-                textarea.style.height = ''
+            textarea.style.height = ''
 
-                // Avoid making the textarea smaller than default
-                const offset = 4
-                if (textarea.scrollHeight + offset > 42) {
-                    textarea.style.height = textarea.scrollHeight + offset + "px"
-                }
+            // Avoid making the textarea smaller than default
+            const offset = 4
+            if (textarea.scrollHeight + offset > 42) {
+                textarea.style.height = textarea.scrollHeight + offset + 'px'
+            }
             // }
         },
         focus() {
@@ -43,11 +48,11 @@ export default {
         },
         select() {
             this.$refs.textarea.select()
-        }
+        },
     },
     mounted() {
         this.resize()
-    }
+    },
 }
 </script>
 

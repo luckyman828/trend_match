@@ -417,7 +417,9 @@ export default {
                                             : request.status == 'Rejected'
                                             ? 'REJECTED'
                                             : 'OPEN'
-                                    requestContent = `[${requestStatus}] ${requestContent}`
+                                    requestContent = `[${requestStatus}] ${
+                                        request.labels.length > 0 ? `{${request.labels[0]}}` : ''
+                                    } ${requestContent}`
                                 }
                                 return requestContent
                             })

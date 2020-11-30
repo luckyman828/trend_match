@@ -1495,17 +1495,23 @@ input::placeholder {
     &.space-between {
         justify-content: space-between;
     }
-    > *:not(:first-child) {
-        margin-left: 8px;
+    > *:not(:last-child) {
+        margin-right: 8px;
+    }
+    &.wrap {
+        flex-wrap: wrap;
+        > * {
+            margin-bottom: 8px;
+        }
     }
     &.sm {
-        > *:not(:first-child) {
-            margin-left: 4px;
+        > *:not(:last-child) {
+            margin-right: 4px;
         }
     }
     &.md {
-        > *:not(:first-child) {
-            margin-left: 16px;
+        > *:not(:last-child) {
+            margin-right: 16px;
         }
     }
     &.flex-v {
@@ -1520,8 +1526,10 @@ input::placeholder {
             align-items: space-between;
         }
         > *:not(:first-child) {
-            margin-left: 0;
             margin-top: 8px;
+        }
+        > *:not(:last-child) {
+            margin-right: 0;
         }
         &.xs {
             > *:not(:first-child) {
@@ -1538,6 +1546,21 @@ input::placeholder {
                 margin-top: 16px;
             }
         }
+    }
+}
+
+// COLORS
+@for $i from 1 through length($groupColors) {
+    $color: nth($groupColors, $i);
+    .group-bg-color-#{$i} {
+        border-color: nth($color, 1) !important;
+        background: nth($color, 1) !important;
+    }
+    .group-color-#{$i} {
+        color: nth($color, 1) !important;
+    }
+    .group-border-color-#{$i} {
+        border-color: nth($color, 1) !important;
     }
 }
 

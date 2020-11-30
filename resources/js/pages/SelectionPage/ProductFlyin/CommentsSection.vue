@@ -1,33 +1,50 @@
 <template>
     <BaseFlyinColumn class="comments">
-
         <template v-slot:header class="random">
-            <h3><span>Comments</span>
-                <span class="pill primary sm"><span>{{selectionInput.comments.length}}</span></span>
+            <h3>
+                <span>Comments</span>
+                <span class="pill primary sm"
+                    ><span>{{ selectionInput.comments.length }}</span></span
+                >
             </h3>
         </template>
 
         <template v-slot>
             <div class="comments-wrapper">
-                <comment v-for="(comment, index) in commentsSorted" 
-                :key="index" :comment="comment" :selectionInput="selectionInput"
-                :displayAuthor="selectionInput.comments[index+1] ? 
-                (selectionInput.comments[index+1].user_id != comment.user_id || selectionInput.comments[index+1].selection_id != comment.selection_id) 
-                : true"/>
+                <comment
+                    v-for="(comment, index) in commentsSorted"
+                    :key="index"
+                    :comment="comment"
+                    :selectionInput="selectionInput"
+                    :displayAuthor="
+                        selectionInput.comments[index + 1]
+                            ? selectionInput.comments[index + 1].user_id != comment.user_id ||
+                              selectionInput.comments[index + 1].selection_id != comment.selection_id
+                            : true
+                    "
+                />
             </div>
-
 
             <div class="form-wrapper">
                 <strong class="form-header">Write comment</strong>
 
-                <form @submit="onSubmit" :class="[{active: writeActive}]">
+                <form @submit="onSubmit" :class="[{ active: writeActive }]">
                     <div class="input-parent comment">
-                        <BaseInputTextArea ref="commentField" :disabled="!userWriteAccess.comments.hasAccess"
-                        v-tooltip="!userWriteAccess.comments.hasAccess && userWriteAccess.comments.msg"
-                        :placeholder="userWriteAccess.comments.hasAccess ? 'Write your comment here...' : userWriteAccess.comments.msg" 
-                        v-model="newComment.content" 
-                        @click.native="userWriteAccess.comments.hasAccess && activateWrite()" @keydown.native.enter.exact.prevent  
-                        @keyup.native.esc="deactivateWrite" @keyup.native.enter.exact="onSubmit"></BaseInputTextArea>
+                        <BaseInputTextArea
+                            ref="commentField"
+                            :disabled="!userWriteAccess.comments.hasAccess"
+                            v-tooltip="!userWriteAccess.comments.hasAccess && userWriteAccess.comments.msg"
+                            :placeholder="
+                                userWriteAccess.comments.hasAccess
+                                    ? 'Write your comment here...'
+                                    : userWriteAccess.comments.msg
+                            "
+                            v-model="newComment.content"
+                            @click.native="userWriteAccess.comments.hasAccess && activateWrite()"
+                            @keydown.native.enter.exact.prevent
+                            @keyup.native.esc="deactivateWrite"
+                            @keyup.native.enter.exact="onSubmit"
+                        ></BaseInputTextArea>
                     </div>
                     <div class="flex-wrapper" v-if="writeActive">
                         <div class="left">
@@ -37,8 +54,17 @@
                             </div>
                         </div>
                         <div class="right">
-                            <button type="button" class="invisible" @click="writeActive = false"><span>Cancel</span></button>
-                            <button type="button" class="primary" :class="{disabled: submitDisabled}" @click="onSubmit"><span>Submit</span></button>
+                            <button type="button" class="invisible ghost-wrapper" @click="writeActive = false">
+                                <span>Cancel</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="primary"
+                                :class="{ disabled: submitDisabled }"
+                                @click="onSubmit"
+                            >
+                                <span>Submit</span>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -54,39 +80,40 @@ import BaseTempAlert from '../../../components/ui/BaseTempAlert'
 
 export default {
     name: 'commentsSection',
-    props: [
-        'selectionInput',
-    ],
+    props: ['selectionInput'],
     components: {
         Comment,
-        BaseTempAlert
+        BaseTempAlert,
     },
-    data: function () { return {
-        newComment: {
-            content: '',
-            important: false,
-        },
-        writeActive: false,
-        submitting: false,
-    }},
+    data: function() {
+        return {
+            newComment: {
+                content: '',
+                important: false,
+            },
+            writeActive: false,
+            submitting: false,
+        }
+    },
     watch: {
         selectionInput: function(newVal, oldVal) {
-            if (newVal.id != oldVal.id)
-                this.update()
+            if (newVal.id != oldVal.id) this.update()
         },
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('selections', ['getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
-        currentSelectionMode () { return this.getSelectionCurrentMode(this.selectionInput.selection) },
-        submitDisabled () {
+        currentSelectionMode() {
+            return this.getSelectionCurrentMode(this.selectionInput.selection)
+        },
+        submitDisabled() {
             return this.newComment.content.length < 1 || this.submitting
         },
-        userWriteAccess () {
+        userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
         },
         commentsSorted() {
-            return this.selectionInput.comments.sort((a,b) => {
+            return this.selectionInput.comments.sort((a, b) => {
                 return a.id - b.id
             })
         },
@@ -105,7 +132,6 @@ export default {
             this.resizeTextareas()
         },
         async onSubmit(e) {
-
             if (e) e.preventDefault()
             if (this.submitDisabled) return
 
@@ -121,17 +147,16 @@ export default {
                 content: this.newComment.content,
                 user: this.authUser,
                 selection: this.selectionInput.selection,
-                votes: []
+                votes: [],
             }
             // dispatch action
-            this.insertOrUpdateComment({selectionInput: this.selectionInput, comment: commentToPost})
+            this.insertOrUpdateComment({ selectionInput: this.selectionInput, comment: commentToPost })
             this.submitting = false
 
             // Reset comment
             this.newComment.content = ''
-            
-            // this.deactivateWrite()
 
+            // this.deactivateWrite()
         },
         update() {
             // Reset the new comment field
@@ -170,133 +195,132 @@ export default {
     },
     destroyed() {
         document.body.removeEventListener('keyup', this.hotkeyHandler)
-    }
+    },
 }
 </script>
 
 <style <style lang="scss" scoped>
 @import '~@/_variables.scss';
-    ::v-deep {
-        &.flyin-column {
-            .header {
-                display: flex;
-                align-items: center;
-            }
-            .body {
-                display: flex;
-                flex-direction: column;
-                padding: 0;
-            }
-        }
-    }
-    h3 {
-        display: flex;
-        align-items: center;
-        .pill {
-            margin-left: 12px;
-        }
-    }
-    .comments {
-        background: $bg;
-    }
-    .comments-wrapper {
-        height: 100%;
-        overflow-y: auto;
-        padding: 16px 16px 64px;
-    }
-    .form-wrapper {
-        padding: 20px 16px 28px;
-        .form-header {
-            margin-left: 4px;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .controls {
+::v-deep {
+    &.flyin-column {
+        .header {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            .left {
-                > :first-child {
-                    margin-left: -12px;
-                }
-                // > :not(:last-child) {
-                //     margin-right: 8px;
-                // }
-            }
+            align-items: center;
         }
-        form {
-            .id {
-                font-size: 12px;
-                color: $dark2;
-                display: block;
-                margin-top: -2px;
-            }
-            .flex-wrapper {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 8px;
-                // align-items: center;
-            }
-        }
-        input[type=submit] {
-            margin-top: 12px;
+        .body {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
         }
     }
-
-
-
-    .hotkey-tip {
-        .square {
-            border-width: 1px;
-            height: auto;
-            padding: 2px 4px;
-            min-width: 0;
-            font-weight: 400;
-            border-radius: 2px;
-            font-size: 9px;
-            margin-right: 2px;
-        }
-        font-size: 10px;
-        color: $dark2;
+}
+h3 {
+    display: flex;
+    align-items: center;
+    .pill {
+        margin-left: 12px;
     }
-    .header {
+}
+.comments {
+    background: $bg;
+}
+.comments-wrapper {
+    height: 100%;
+    overflow-y: auto;
+    padding: 16px 16px 64px;
+}
+.form-wrapper {
+    padding: 20px 16px 28px;
+    .form-header {
+        margin-left: 4px;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .controls {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         margin-bottom: 8px;
-    }
-    .tab-headers {
-        .tab {
-            justify-content: space-between;
+        .left {
+            > :first-child {
+                margin-left: -12px;
+            }
+            // > :not(:last-child) {
+            //     margin-right: 8px;
+            // }
         }
     }
-    .request-wrapper {
-        margin-bottom: 16px;
-    }
-    .break-line {
-        &::after, &::before {
-            content: '';
+    form {
+        .id {
+            font-size: 12px;
+            color: $dark2;
             display: block;
-            height: 2px;
-            background: $dark2;
-            flex: 1;
+            margin-top: -2px;
         }
-        &::after {
-            margin-left: 12px;
+        .flex-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            // align-items: center;
+            .right {
+                white-space: nowrap;
+            }
         }
-        &::before {
-            margin-right: 12px;
-        }
-        color: $dark2;
-        font-size: 12px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        margin-top: 20px;
-        margin-bottom: 12px;
     }
-    .request-success {
-        margin-right: 8px;
-        font-weight: 500;
+}
+
+.hotkey-tip {
+    .square {
+        border-width: 1px;
+        height: auto;
+        padding: 2px 4px;
+        min-width: 0;
+        font-weight: 400;
+        border-radius: 2px;
+        font-size: 9px;
+        margin-right: 2px;
     }
+    font-size: 10px;
+    color: $dark2;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.tab-headers {
+    .tab {
+        justify-content: space-between;
+    }
+}
+.request-wrapper {
+    margin-bottom: 16px;
+}
+.break-line {
+    &::after,
+    &::before {
+        content: '';
+        display: block;
+        height: 2px;
+        background: $dark2;
+        flex: 1;
+    }
+    &::after {
+        margin-left: 12px;
+    }
+    &::before {
+        margin-right: 12px;
+    }
+    color: $dark2;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+.request-success {
+    margin-right: 8px;
+    font-weight: 500;
+}
 </style>

@@ -558,24 +558,24 @@ export default {
                     if (key == 'KeyO') this.onUpdateAction('Out')
                     if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus')
                 }
-            }
-            if (key == 'Tab') {
-                event.preventDefault()
-                // Find requests with threads
-                const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
-                if (allTickets.length <= 0) return
+                if (key == 'Tab') {
+                    event.preventDefault()
+                    // Find requests with threads
+                    const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                    if (allTickets.length <= 0) return
 
-                // // Else, show the first reqeust thread
-                if (!this.currentRequestThread) {
-                    const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
-                    const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
-                    this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
+                    // // Else, show the first reqeust thread
+                    if (!this.currentRequestThread) {
+                        const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+                        const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
+                        this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
+                    }
                 }
             }
         },
         hotkeyEnterHandler(e) {
             // If the request thread flyin is visible, do nothing
-            if (this.getRequestThreadVisible || !this.selection.is_open) return
+            if (this.getRequestThreadVisible || !this.selection.is_open || e.target.contentEditabl) return
             // If the current mode is Alignment, focus the request field. Else focus comment
             if (this.currentSelectionMode == 'Alignment' && !this.product.is_completed) {
                 this.$refs.requestsSection.activateWrite()
