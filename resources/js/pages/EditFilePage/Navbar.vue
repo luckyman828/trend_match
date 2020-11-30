@@ -24,13 +24,13 @@
         </div> -->
 
         <div class="items-right">
-            <v-popover trigger="click" ref="exportPopover">
+            <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
                 <button class="button primary">
                     <i class="far fa-upload"></i>
                     <span>Export</span>
                     <i class="far fa-angle-down"></i>
                 </button>
-                <BaseContextMenu slot="popover" :inline="true">
+                <BaseContextMenu slot="popover" :inline="true" v-if="exportContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-file-csv"
@@ -57,13 +57,13 @@
                     </div>
                 </BaseContextMenu>
             </v-popover>
-            <v-popover trigger="click" ref="importPopover">
+            <v-popover trigger="click" ref="importPopover" :open.sync="importContextOpen">
                 <button class="button primary">
                     <i class="far fa-download"></i>
                     <span>Import</span>
                     <i class="far fa-angle-down"></i>
                 </button>
-                <BaseContextMenu slot="popover" :inline="true">
+                <BaseContextMenu slot="popover" :inline="true" v-if="importContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-file-csv"
@@ -147,6 +147,8 @@ export default {
             uploadToFileKey: 0,
             exportToFileModalVisible: false,
             importToFileModalVisible: false,
+            exportContextOpen: false,
+            importContextOpen: false,
         }
     },
     computed: {

@@ -39,13 +39,13 @@
 
             <SelectionPresenterModeButton :selection="currentSelection" />
 
-            <v-popover trigger="click" ref="exportPopover">
+            <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
                 <button class="button primary">
                     <i class="far fa-upload"></i>
                     <span>Export</span>
                     <i class="far fa-angle-down"></i>
                 </button>
-                <BaseContextMenu slot="popover" :inline="true">
+                <BaseContextMenu slot="popover" :inline="true" v-if="exportContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-file-pdf"
@@ -117,6 +117,7 @@ export default {
     data: function() {
         return {
             exportToFileModalVisible: false,
+            exportContextOpen: false,
         }
     },
     computed: {
