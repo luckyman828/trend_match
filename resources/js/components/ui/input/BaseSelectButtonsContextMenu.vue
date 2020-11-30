@@ -1,27 +1,56 @@
 <template>
     <BaseContextMenu ref="contextMenu">
         <template v-slot:header>
-            {{header}}
+            {{ header }}
         </template>
         <template v-slot>
             <div class="item-group">
-                <BaseSelectButtons ref="selectButtons" v-model="localValue" :type="type" :options="options" :optionValueKey="optionValueKey"
-                :submitOnChange="submitOnChange" :optionDescriptionKey="optionDescriptionKey" :unsetOption="unsetOption" :unsetValue="unsetValue"
-                :emitOnChange="emitOnChange"
-                :multipleOptionArrays="multipleOptionArrays" :optionGroupNameKey="optionGroupNameKey" :optionGroupOptionsKey="optionGroupOptionsKey"
-                :optionNameKey="optionNameKey" :search="search" @submit="submit" @unset="$emit('unset')"/>
+                <BaseSelectButtons
+                    ref="selectButtons"
+                    v-model="localValue"
+                    :type="type"
+                    :options="options"
+                    :optionValueKey="optionValueKey"
+                    :submitOnChange="submitOnChange"
+                    :optionDescriptionKey="optionDescriptionKey"
+                    :unsetOption="unsetOption"
+                    :unsetValue="unsetValue"
+                    :emitOnChange="emitOnChange"
+                    :multipleOptionArrays="multipleOptionArrays"
+                    :optionGroupNameKey="optionGroupNameKey"
+                    :optionGroupOptionsKey="optionGroupOptionsKey"
+                    :optionNameKey="optionNameKey"
+                    :search="search"
+                    @submit="submit"
+                    @unset="$emit('unset')"
+                />
             </div>
         </template>
         <template v-slot:footer="slotProps" v-if="!submitOnChange">
             <div class="item-wrapper">
-                <button class="primary" :class="{disabled: submitDisabled}" style="margin-right: 8px;" 
-                @click="submit() ;slotProps.hide();">
-                    <span>{{submitText || 'Save'}}</span>
+                <button
+                    class="primary"
+                    :class="{ disabled: submitDisabled }"
+                    style="margin-right: 8px;"
+                    @click="
+                        submit()
+                        slotProps.hide()
+                    "
+                >
+                    <span>{{ submitText || 'Save' }}</span>
                 </button>
-                <button class="invisible ghost-hover" @click="slotProps.hide(); $emit('cancel')"><span>Cancel</span></button>
+                <button
+                    class="invisible ghost-hover"
+                    @click="
+                        slotProps.hide()
+                        $emit('cancel')
+                    "
+                >
+                    <span>Cancel</span>
+                </button>
             </div>
         </template>
-</BaseContextMenu>
+    </BaseContextMenu>
 </template>
 
 <script>
@@ -51,9 +80,13 @@ export default {
     // }},
     computed: {
         localValue: {
-            get() { return this.value },
-            set(localValue) {this.$emit('input', localValue)}
-        }
+            get() {
+                return this.value
+            },
+            set(localValue) {
+                this.$emit('input', localValue)
+            },
+        },
     },
     methods: {
         show(e) {
@@ -66,8 +99,8 @@ export default {
             this.$emit('input', this.$refs.selectButtons.selection)
             this.$emit('submit', this.$refs.selectButtons.selection)
             this.hide()
-        }
-    }
+        },
+    },
 }
 </script>
 
