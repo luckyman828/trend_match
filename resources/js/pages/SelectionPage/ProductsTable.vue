@@ -76,141 +76,7 @@
                 <!-- Selection Selector Ends -->
             </template>
             <template v-slot:topBarLeft>
-                <v-popover trigger="manual" :open="showFilters" :autoHide="false">
-                    <button class="ghost" @click="toggleShowFilters">
-                        <i class="far fa-filter"></i>
-                        <span>Filters</span>
-                        <div class="circle primary xs" v-if="activeFiltersCount > 0">
-                            {{ activeFiltersCount }}
-                        </div>
-                    </button>
-                    <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
-                        <div class="item-group">
-                            <v-popover trigger="click" :disabled="availableCategories.length <= 0" placement="right">
-                                <BaseContextMenuItem
-                                    iconClass="far fa-filter"
-                                    :disabled="availableCategories.length <= 0"
-                                    disabledTooltip="No categories available"
-                                    @click="showAdvancedFilters = false"
-                                >
-                                    <span>Category</span>
-                                    <span v-if="selectedCategories.length > 0" class="filter-counter circle primary xs">
-                                        <span>{{ selectedCategories.length }}</span>
-                                    </span>
-                                </BaseContextMenuItem>
-                                <template slot="popover">
-                                    <BaseSelectButtons
-                                        style="width: 200px; padding-top: 8px;"
-                                        submitOnChange="true"
-                                        :options="availableCategories"
-                                        v-model="selectedCategories"
-                                    />
-                                </template>
-                            </v-popover>
-                        </div>
-
-                        <div class="item-group">
-                            <v-popover trigger="click" :disabled="availableDeliveryDates.length <= 0" placement="right">
-                                <BaseContextMenuItem
-                                    iconClass="far fa-calendar-week"
-                                    :disabled="availableDeliveryDates.length <= 0"
-                                    disabledTooltip="No delivery dates available"
-                                    @click="showAdvancedFilters = false"
-                                >
-                                    <span>Delivery</span>
-                                    <span
-                                        v-if="selectedDeliveryDates.length > 0"
-                                        class="filter-counter circle primary xs"
-                                    >
-                                        <span>{{ selectedDeliveryDates.length }}</span>
-                                    </span>
-                                </BaseContextMenuItem>
-                                <template slot="popover">
-                                    <BaseSelectButtons
-                                        submitOnChange="true"
-                                        :displayFunction="getPrettyDate"
-                                        :options="availableDeliveryDates"
-                                        v-model="selectedDeliveryDates"
-                                    />
-                                </template>
-                            </v-popover>
-                        </div>
-
-                        <div class="item-group">
-                            <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
-                                <BaseContextMenuItem
-                                    iconClass="far fa-box"
-                                    :disabled="availableBuyerGroups.length <= 0"
-                                    disabledTooltip="No buyer groups available"
-                                    @click="showAdvancedFilters = false"
-                                >
-                                    <span>Buyer group</span>
-                                    <span
-                                        v-if="selectedBuyerGroups.length > 0"
-                                        class="filter-counter circle primary xs"
-                                    >
-                                        <span>{{ selectedBuyerGroups.length }}</span>
-                                    </span>
-                                </BaseContextMenuItem>
-                                <template slot="popover">
-                                    <BaseSelectButtons
-                                        submitOnChange="true"
-                                        :options="availableBuyerGroups"
-                                        v-model="selectedBuyerGroups"
-                                    />
-                                </template>
-                            </v-popover>
-                        </div>
-
-                        <div class="item-group">
-                            <v-popover
-                                trigger="click"
-                                placement="right"
-                                popoverInnerClass="tooltip-inner popover-inner"
-                                :open="showAdvancedFilters"
-                                :autoHide="false"
-                            >
-                                <BaseContextMenuItem iconClass="far fa-sliders-v" @click="showAdvancedFilters = true">
-                                    <span>Advanced Filters</span>
-                                    <div v-if="getHasAdvancedFilter" class="filter-counter circle primary xs">
-                                        <span>{{ getAdvancedFilter.length }}</span>
-                                    </div>
-                                </BaseContextMenuItem>
-                                <template slot="popover">
-                                    <ConditionalFilters
-                                        :distributionScope="distributionScope"
-                                        :key="advancedFilterKey"
-                                        @close="showAdvancedFilters = false"
-                                    />
-                                </template>
-                            </v-popover>
-                        </div>
-
-                        <div
-                            class="item-group"
-                            v-if="
-                                selectedCategories.length > 0 ||
-                                    selectedDeliveryDates.length > 0 ||
-                                    selectedBuyerGroups.length > 0 ||
-                                    selectedSelectionIds.length > 0 ||
-                                    unreadOnly ||
-                                    getHasAdvancedFilter
-                            "
-                        >
-                            <BaseContextMenuItem
-                                iconClass="far fa-times"
-                                color="danger"
-                                @click="
-                                    resetFilters()
-                                    showFilters = false
-                                    showAdvancedFilters = false
-                                "
-                            >
-                                <span>Clear filters</span>
-                            </BaseContextMenuItem>
-                        </div>
-                    </BaseContextMenu>
-                </v-popover>
+                <ProductFilters :distributionScope="distributionScope" />
 
                 <!-- Temp. disabled until the functionality gets hooked up -->
                 <BaseCheckboxInputField
@@ -250,6 +116,7 @@
                             selectedBuyerGroups.length > 0 ||
                             selectedSelectionIds.length > 0 ||
                             unreadOnly ||
+                            getSelectedTicketLabels.length > 0 ||
                             getHasAdvancedFilter
                     "
                     @click="resetFilters"
@@ -626,7 +493,8 @@ import MultipleSelectionSelector from './MultipleSelectionSelector'
 import ActionDistributionTooltip from './ActionDistributionTooltip'
 import sortArray from '../../mixins/sortArray'
 import VariantTooltip from './VariantTooltip'
-import ConditionalFilters from './ConditionalFilters'
+
+import ProductFilters from './ProductFilters'
 
 export default {
     name: 'productsTable',
@@ -637,7 +505,7 @@ export default {
         MultipleSelectionSelector,
         ActionDistributionTooltip,
         VariantTooltip,
-        ConditionalFilters,
+        ProductFilters,
     },
     data: function() {
         return {
@@ -649,10 +517,9 @@ export default {
             tooltipProduct: null,
             distributionTooltipType: null,
             actionDistributionTooltipTab: 'Feedback',
-            showAdvancedFilters: false,
+            // showAdvancedFilters: false,
             insTabValue: 'ins',
-            advancedFilterKey: 0,
-            showFilters: false,
+            // showFilters: false,
         }
     },
     computed: {
@@ -666,6 +533,7 @@ export default {
             'getActiveSelectionInput',
             'getHasAdvancedFilter',
             'getAdvancedFilter',
+            'getSelectedTicketLabels',
         ]),
         ...mapGetters('selections', [
             'getCurrentSelections',
@@ -795,15 +663,6 @@ export default {
         tooltipBoundariesEl() {
             return document.getElementById('main')
         },
-        activeFiltersCount() {
-            const advancedFilterCount = this.getAdvancedFilter ? this.getAdvancedFilter.length : 0
-            return (
-                this.selectedBuyerGroups.length +
-                this.selectedCategories.length +
-                this.selectedDeliveryDates.length +
-                advancedFilterCount
-            )
-        },
         ticketsEnabled() {
             return this.selection.settings.ticket_level != 'None'
         },
@@ -830,17 +689,12 @@ export default {
             'SET_SHOW_CSV_MODAL',
             'SET_HIDE_COMPLETED',
             'SET_OPEN_TICKETS_ONLY',
+            'SET_SELECTED_TICKET_LABELS',
         ]),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'setProductsCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
-        toggleShowFilters() {
-            this.showFilters = !this.showFilters
-        },
-        hideFilters() {
-            this.showFilters = false
-        },
         onToggleProductsCompleted(products) {
             products.map(product => {
                 this.toggleProductCompleted({ selectionId: this.selection.id, product })
@@ -860,8 +714,8 @@ export default {
             this.selectedDeliveryDates = []
             this.selectedBuyerGroups = []
             this.selectedSelectionIds = []
+            this.SET_SELECTED_TICKET_LABELS([])
             this.unreadOnly = false
-            this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
         },
         onToggleFocusOnly(focusOnly) {
@@ -1191,8 +1045,5 @@ export default {
             display: none;
         }
     }
-}
-.filter-counter {
-    margin-left: auto;
 }
 </style>
