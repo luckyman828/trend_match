@@ -410,7 +410,7 @@ export default {
                             // Merge the requests with a double line-break
                             const requestContentList = originRequestList.map(request => {
                                 let requestContent = request.content
-                                if (request.selection.type == 'Master') {
+                                if (request.type == 'Ticket') {
                                     const requestStatus =
                                         request.status == 'Resolved'
                                             ? 'ACCEPTED'
