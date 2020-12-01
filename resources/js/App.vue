@@ -322,6 +322,14 @@ export default {
                         this.logout()
                     }
                 }
+                // if (!!error.response && error.response.status === 404) {
+                //     this.SHOW_SNACKBAR({
+                //         msg: `You dont have access to any workspaces.`,
+                //         type: 'warning',
+                //         iconClass: 'fa-exclamation-triangle',
+                //         duration: 10000, // 10 seconds
+                //     })
+                // }
                 return Promise.reject(error.response)
             }
         )

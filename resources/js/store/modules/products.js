@@ -228,7 +228,7 @@ export default {
 
             if (openTicketsOnly) {
                 productsToReturn = productsToReturn.filter(x =>
-                    x.requests.find(request => request.selection.type == 'Master' && request.status == 'Open')
+                    x.requests.find(request => request.type == 'Ticket' && request.status == 'Open')
                 )
             }
 
