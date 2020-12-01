@@ -95,7 +95,7 @@
                     <template slot="popover">
                         <BaseSelectButtons
                             submitOnChange="true"
-                            :options="availableTicketLabels"
+                            :options="ticketLabels"
                             v-model="selectedTicketLabels"
                         />
                     </template>
@@ -172,6 +172,9 @@ export default {
         ...mapGetters('requests', {
             availableTicketLabels: 'getAvailableRequestLabels',
         }),
+        ticketLabels() {
+            return ['no label'].concat(this.availableTicketLabels)
+        },
         ...mapGetters('products', [
             'availableCategories',
             'availableDeliveryDates',
