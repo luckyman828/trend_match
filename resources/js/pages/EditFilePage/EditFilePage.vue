@@ -3,7 +3,12 @@
         <!-- <ThePageHeader :title="`Editing: ${file.name}`"/> -->
         <h1>Editing: {{ file.name }}</h1>
 
-        <button class="primary md" style="margin-bottom: 20px" @click="showBulkUpload = !showBulkUpload">
+        <button
+            v-if="products.length > 0"
+            class="primary md"
+            style="margin-bottom: 20px"
+            @click="showBulkUpload = !showBulkUpload"
+        >
             <template v-if="!showBulkUpload">
                 <i class="far fa-upload"></i>
                 <span>Bulk upload images</span>
