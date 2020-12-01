@@ -1348,7 +1348,8 @@ input::placeholder {
         border-color: $primary;
         outline: none;
     }
-    &.small {
+    &.small,
+    &.sm {
         min-height: 32px;
         padding: 4px 12px;
         font-size: 13px;

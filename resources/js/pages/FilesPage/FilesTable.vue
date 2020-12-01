@@ -46,14 +46,22 @@
                 />
             </template>
             <template v-slot:footer>
-                <td>
+                <td class="flex-list">
                     <BaseButton
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new folders'"
                         buttonClass="primary invisible"
-                        @click="onNewFolder"
+                        @click="onNewFile('Folder')"
                     >
-                        <i class="far fa-plus"></i><span>Add new: Folder</span>
+                        <i class="far fa-folder-plus"></i><span>Add: Folder</span>
+                    </BaseButton>
+                    <BaseButton
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
+                        buttonClass="primary invisible"
+                        @click="onNewFile('File')"
+                    >
+                        <i class="far fa-file-plus"></i><span>Add: File</span>
                     </BaseButton>
                 </td>
             </template>
@@ -76,7 +84,9 @@
                         >
                             <i class="fas fa-arrow-left"></i>
                         </button>
-                        <span v-if="destinationFolder && destinationFolder.id != currentWorkspace.id">{{ destinationFolder.name }}</span>
+                        <span v-if="destinationFolder && destinationFolder.id != currentWorkspace.id">{{
+                            destinationFolder.name
+                        }}</span>
                         <span v-else
                             ><span class="square true-square"><i class="far fa-building"></i></span>
                             {{ currentWorkspace.title }}</span
@@ -460,11 +470,11 @@ export default {
                 this.selected = this.selected.filter(x => x.id != folder.id)
             }
         },
-        onNewFolder() {
+        onNewFile(type) {
             // Check if we already have added a new folder
             const existingNewFolder = this.files.find(x => x.id == null && type == 'Folder')
             // If we already have a new folder, focus the edit title field
-            if (existingNewFolder) {
+            if (existingNewFolder && type == 'folder') {
                 this.fileToEdit = existingNewFolder
                 // Focus the edit field
                 this.$refs['editTitleInput-null'][0].setActive()
@@ -473,14 +483,11 @@ export default {
             else {
                 const newFolder = {
                     id: 0,
-                    name: 'New folder',
-                    type: 'Folder',
+                    name: `New ${type}`,
+                    type,
                     parent_id: this.folder ? this.folder.id : 0,
                     workspace_id: this.currentWorkspace.id,
                     children: [],
-                    owners: [],
-                    children_count: 0,
-                    owner_count: 0,
                 }
                 // Push new folder to the current folder
                 this.files.push(newFolder)

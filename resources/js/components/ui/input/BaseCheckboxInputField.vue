@@ -1,32 +1,34 @@
 <template>
-    <label class="checkbox-input input-wrapper" :class="{'read-only': disabled}"
-    :tabindex="disabled ? -1 : 0">
-        <BaseCheckbox ref="input" class="checkbox" :disabled="disabled"
-        :value="value" :modelValue="true" @change="onChange"/>
-        <span><slot/></span>
+    <label class="checkbox-input input-wrapper" :class="{ 'read-only': disabled }" :tabindex="disabled ? -1 : 0">
+        <BaseCheckbox
+            ref="input"
+            class="checkbox"
+            :disabled="disabled"
+            :value="value"
+            :modelValue="true"
+            @change="onChange"
+        />
+        <span><slot /></span>
     </label>
 </template>
 
 <script>
 export default {
     name: 'baseCheckboxInputField',
-    props: [
-        'value',
-        'disabled'
-    ],
+    props: ['value', 'disabled'],
     methods: {
         onChange(value) {
             this.$emit('input', value)
             this.$emit('check', value)
-        }
-    }
+        },
+    },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .checkbox-input {
-    &.read-only{
+    &.read-only {
         cursor: auto;
     }
     cursor: pointer;
@@ -36,7 +38,8 @@ export default {
         align-items: center;
         height: auto;
         min-height: 40px;
-        &.small {
+        &.small,
+        &.sm {
             min-height: 32px;
             padding-left: 8px;
             width: auto;

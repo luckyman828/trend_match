@@ -29,7 +29,7 @@
                 @keydown.enter="onSubmit"
             />
             <div class="icon-right">
-                <slot />
+                <slot :onCancel="onCancel" :onSubmit="onSubmit" />
             </div>
         </div>
         <div class="error-msg" v-if="error && typeof error == 'string'">
