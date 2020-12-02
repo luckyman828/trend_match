@@ -57,6 +57,7 @@ export default {
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
 
         update() {
+            console.log('update')
             // Find the existing selection request if any
             // Set the new request equal to the existing if one exists
             this.currentSelection.settings.ticket_level != 'None' ? 'Ticket' : 'Request'
@@ -92,11 +93,18 @@ export default {
             this.resetRequest()
         },
         resetRequest() {
-            this.newRequest = this.getDefaultRequest()
-            this.newRequest.content =
-                this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
-            this.newRequest.label =
-                this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.label : ''
+            console.log('reset request', this.selectionRequest, this.currentTicketMode)
+            if (this.selectionRequest && this.currentTicketMode != 'Multiple') {
+                console.log('set new request', this.newRequest)
+                this.newRequest = this.selectionRequest
+                console.log('new reqeust set', this.newRequest)
+            } else {
+                this.newRequest = this.getDefaultRequest()
+            }
+            // this.newRequest.content =
+            //     this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
+            // this.newRequest.label =
+            //     this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.label : ''
         },
         getDefaultRequest() {
             return {
