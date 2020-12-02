@@ -29,7 +29,7 @@
                     <span class="description">Get products from a connected Database</span>
                 </div>
 
-                <div class="card" @click="onImportFromFile">
+                <div class="card" @click="onImportFromKollekt">
                     <i class="fas fa-file-import icon"></i>
                     <h4 class="title">
                         Kollekt
@@ -52,10 +52,12 @@ export default {
     methods: {
         ...mapMutations('display', ['SHOW_COMPONENT', 'HIDE_COMPONENT']),
         onImportFromSpreadsheet() {
-            this.SHOW_COMPONENT('uploadToFileModal')
+            this.SHOW_COMPONENT('importFromSpreadsheetModal')
         },
         onImportFromDatabase() {},
-        onImportFromFile() {},
+        onImportFromKollekt() {
+            this.SHOW_COMPONENT('importFromKollektModal')
+        },
     },
 }
 </script>
@@ -83,6 +85,14 @@ export default {
             background: $primary;
             box-shadow: $shadowEl;
             transform: translateY(-1px);
+            .pill {
+                background: white;
+                color: $font;
+                i {
+                    color: $font;
+                    font-weight: 900;
+                }
+            }
         }
         cursor: pointer;
         > *:not(.pill) {

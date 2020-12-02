@@ -1,5 +1,5 @@
 <template>
-    <BaseModal ref="importModal" :header="'Import products to File'" @close="$emit('close')" :show="show">
+    <BaseModal ref="importModal" :header="'Import products to File'" @close="onClose" :show="show">
         <form @submit.prevent>
             <div class="form-section">
                 <FileNavigator
@@ -31,11 +31,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import FileNavigator from './FileNavigator'
 
 export default {
-    name: 'importToFileModal',
+    name: 'importFromKollektModal',
     components: {
         FileNavigator,
     },
@@ -56,6 +56,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['insertProducts', 'fetchProducts']),
+        ...mapMutations('display', ['HIDE_COMPONENT']),
         onRemoveSelectedFile(index) {
             this.selectedFiles.splice(index, 1)
         },
@@ -81,8 +82,14 @@ export default {
             )
             // Add them to this file
             await this.insertProducts({ file: this.currentFile, products: productsToImport, addToState: true })
-            this.$emit('close')
+            this.onClose()
         },
+        onClose() {
+            this.HIDE_COMPONENT('importFromKollektModal')
+        },
+    },
+    destroyed() {
+        this.onClose()
     },
 }
 </script>

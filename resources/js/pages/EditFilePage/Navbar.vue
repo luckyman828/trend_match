@@ -66,26 +66,26 @@
                 <BaseContextMenu slot="popover" :inline="true" v-if="importContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
-                            iconClass="far fa-file-csv"
-                            hotkey="KeyC"
+                            iconClass="far fa-file-excel"
+                            hotkey="KeyS"
                             @click="
                                 $refs.importPopover.hide()
-                                SHOW_COMPONENT('uploadToFileModal')
+                                SHOW_COMPONENT('importFromSpreadsheetModal')
                             "
                         >
-                            <span>Import from <u>C</u>SV</span>
+                            <span>Import from <u>S</u>preadsheet</span>
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-file-import"
-                            hotkey="KeyF"
+                            hotkey="KeyK"
                             @click="
                                 $refs.importPopover.hide()
-                                importToFileModalVisible = true
+                                SHOW_COMPONENT('importFromKollektModal')
                             "
                         >
-                            <span>Import from another <u>F</u>ile</span>
+                            <span>Import from <u>K</u>ollekt</span>
                         </BaseContextMenuItem>
                     </div>
                 </BaseContextMenu>
@@ -105,12 +105,12 @@
             @close="exportToFileModalVisible = false"
         />
 
-        <ImportToFileModal v-if="importToFileModalVisible" :show="importToFileModalVisible" />
+        <ImportFromKollektModal v-if="importFromKollektModalVisible" :show="importFromKollektModalVisible" />
 
-        <UploadToFileModal
+        <ImportFromSpreadsheetModal
             v-if="currentFile"
-            :show="uploadToFileModalVisible"
-            @close="uploadToFileModalVisible = false"
+            :show="importFromSpreadsheetModalVisible"
+            @close="importFromSpreadsheetModalVisible = false"
             :key="uploadToFileKey"
             @reset="uploadToFileKey++"
         />
@@ -123,17 +123,17 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import ExportToFileModal from '../../components/common/ExportToFileModal'
-import ImportToFileModal from '../../components/common/ImportToFileModal'
-import UploadToFileModal from '../../components/UploadToFileModal'
+import ImportFromKollektModal from '../../components/common/ImportFromKollektModal'
+import ImportFromSpreadsheetModal from '../../components/ImportFromSpreadsheetModal'
 
 export default {
     name: 'editFilePageNavbar',
     components: {
         ExportProductsModal,
         ExportToCsvModal,
-        UploadToFileModal,
+        ImportFromSpreadsheetModal,
         ExportToFileModal,
-        ImportToFileModal,
+        ImportFromKollektModal,
     },
     data: function() {
         return {
@@ -141,7 +141,6 @@ export default {
             exportCsvModalVisible: false,
             uploadToFileKey: 0,
             exportToFileModalVisible: false,
-            importToFileModalVisible: false,
             exportContextOpen: false,
             importContextOpen: false,
         }
@@ -150,8 +149,11 @@ export default {
         ...mapGetters('display', ['getComponentIsVisible']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products']),
-        uploadToFileModalVisible() {
-            return this.getComponentIsVisible('uploadToFileModal')
+        importFromSpreadsheetModalVisible() {
+            return this.getComponentIsVisible('importFromSpreadsheetModal')
+        },
+        importFromKollektModalVisible() {
+            return this.getComponentIsVisible('importFromKollektModal')
         },
     },
     methods: {
@@ -170,7 +172,7 @@ export default {
             this.exportCsvModalVisible = true
         },
         onUploadToFile() {
-            this.uploadToFileModalVisible = true
+            this.importFromSpreadsheetModalVisible = true
         },
     },
 }

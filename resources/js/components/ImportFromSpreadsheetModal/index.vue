@@ -6,7 +6,7 @@
         ref="modal"
         :header="currentScreen.header"
         :goBack="currentScreenIndex > 0"
-        @goBack="currentScreenIndex--"
+        @goBack="products.length > 0 ? currentScreenIndex-- : (currentScreenIndex = 0)"
     >
         <BaseLoader v-if="uploadInProgress" :msg="submitStatus" />
 
@@ -15,7 +15,7 @@
                 v-if="currentScreenIndex == 0"
                 :fileList.sync="uploadedFiles"
                 :availableFiles.sync="availableFiles"
-                @go-to-next-screen="currentScreenIndex++"
+                @go-to-next-screen="onGoToNextScreen"
             >
                 <template v-slot:header>
                     <div class="form-element" style="text-align: center;">
@@ -30,7 +30,8 @@
                         :disabled="slotProps.fileList.length <= 0"
                         @click="slotProps.submit()"
                     >
-                        <span>Next: Upload strategy</span>
+                        <span v-if="products.length > 0">Next: Upload strategy</span>
+                        <span v-else>Next: Map data</span>
                     </button>
                 </template>
             </UploadWorkbooksScreen>
@@ -81,7 +82,7 @@ import MapFieldsScreen from '../common/MapProductData/MapFieldsScreen'
 import workbookUtils from '../../mixins/workbookUtils'
 
 export default {
-    name: 'uploadToFileModal',
+    name: 'importFromSpreadsheetModal',
     mixins: [workbookUtils],
     components: {
         UploadWorkbooksScreen,
@@ -137,7 +138,21 @@ export default {
             this.$emit('reset')
         },
         onClose() {
-            this.HIDE_COMPONENT('uploadToFileModal')
+            this.HIDE_COMPONENT('importFromSpreadsheetModal')
+        },
+        onGoToNextScreen() {
+            if (this.products.length > 0) {
+                this.currentScreenIndex++
+                return
+            }
+
+            // Instantiate stratey and options and go straight to mapping
+            this.uploadStrategy = {
+                dataReplacementStrategy: 'smart',
+                removeExtraProducts: false,
+                addMissingProducts: true,
+            }
+            this.currentScreenIndex = 3
         },
         async onSubmit(newProducts) {
             this.uploadInProgress = true
