@@ -54,7 +54,9 @@ export default {
         onImportFromSpreadsheet() {
             this.SHOW_COMPONENT('importFromSpreadsheetModal')
         },
-        onImportFromDatabase() {},
+        onImportFromDatabase() {
+            this.SHOW_COMPONENT('importFromDatabaseControls')
+        },
         onImportFromKollekt() {
             this.SHOW_COMPONENT('importFromKollektModal')
         },
@@ -83,8 +85,8 @@ export default {
         transition: 0.1s ease-out;
         &:hover {
             background: $primary;
-            box-shadow: $shadowEl;
-            transform: translateY(-1px);
+            box-shadow: 0 3px 6px 0 rgba(117, 134, 156, 0.5);
+            transform: translateY(-4px);
             .pill {
                 background: white;
                 color: $font;

@@ -1,6 +1,6 @@
 <template>
     <div class="navbar-file flex-wrapper">
-        <div class="items-left">
+        <div class="items-left flex-list">
             <router-link
                 :to="{ name: 'files', params: { fileId: currentFile.id, folderId: currentFile.parent_id } }"
                 class="back-link"
@@ -23,7 +23,7 @@
         <!-- <div class="items-center">
         </div> -->
 
-        <div class="items-right">
+        <div class="items-right flex-list">
             <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
                 <button class="button primary">
                     <i class="far fa-upload"></i>
@@ -78,6 +78,18 @@
                     </div>
                     <div class="item-group">
                         <BaseContextMenuItem
+                            iconClass="far fa-database"
+                            hotkey="KeyD"
+                            @click="
+                                $refs.importPopover.hide()
+                                SHOW_COMPONENT('importFromDatabaseControls')
+                            "
+                        >
+                            <span>Import from <u>D</u>atabase</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
                             iconClass="far fa-file-import"
                             hotkey="KeyK"
                             @click="
@@ -105,6 +117,11 @@
             @close="exportToFileModalVisible = false"
         />
 
+        <ImportFromDatabaseControls
+            v-if="importFromDatabaseControlsVisible"
+            :show="importFromDatabaseControlsVisible"
+        />
+
         <ImportFromKollektModal v-if="importFromKollektModalVisible" :show="importFromKollektModalVisible" />
 
         <ImportFromSpreadsheetModal
@@ -125,6 +142,7 @@ import ExportToCsvModal from '../../components/ExportToCsvModal'
 import ExportToFileModal from '../../components/common/ExportToFileModal'
 import ImportFromKollektModal from '../../components/common/ImportFromKollektModal'
 import ImportFromSpreadsheetModal from '../../components/ImportFromSpreadsheetModal'
+import ImportFromDatabaseControls from './ImportFromDatabaseControls'
 
 export default {
     name: 'editFilePageNavbar',
@@ -134,6 +152,7 @@ export default {
         ImportFromSpreadsheetModal,
         ExportToFileModal,
         ImportFromKollektModal,
+        ImportFromDatabaseControls,
     },
     data: function() {
         return {
@@ -151,6 +170,9 @@ export default {
         ...mapGetters('products', ['products']),
         importFromSpreadsheetModalVisible() {
             return this.getComponentIsVisible('importFromSpreadsheetModal')
+        },
+        importFromDatabaseControlsVisible() {
+            return this.getComponentIsVisible('importFromDatabaseControls')
         },
         importFromKollektModalVisible() {
             return this.getComponentIsVisible('importFromKollektModal')
@@ -186,7 +208,6 @@ export default {
     display: flex;
     justify-content: space-between;
     > * {
-        display: flex;
         align-items: center;
     }
 }

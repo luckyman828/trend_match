@@ -1,6 +1,6 @@
 export default {
     methods: {
-        parseWorkbookToRowsAndCells(workbook) {
+        parseWorkbookToRowsAndCells(workbook, noHeaderRow) {
             // Use SheetJS to parse the workbook
             const data = new Uint8Array(workbook)
             var workbook = XLSX.read(data, {
@@ -15,6 +15,7 @@ export default {
                 raw: true,
                 blankrows: false,
                 defval: null,
+                header: noHeaderRow ? 'A' : false,
             })
 
             return rows

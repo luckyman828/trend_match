@@ -1,9 +1,11 @@
 <template>
-    <PageLoader :status="status"
-    loadingMsg="loading file"
-    errorMsg="error loading file"
-    :errorCallback="() => fetchData()">
-        <EditFilePage/>
+    <PageLoader
+        :status="status"
+        loadingMsg="loading file"
+        errorMsg="error loading file"
+        :errorCallback="() => fetchData()"
+    >
+        <EditFilePage />
     </PageLoader>
 </template>
 
@@ -16,17 +18,17 @@ export default {
     name: 'editFileLoader',
     components: {
         PageLoader,
-        EditFilePage
+        EditFilePage,
     },
-    data: function () { return {
-    }},
+    data: function() {
+        return { loading: false }
+    },
     computed: {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('files', ['currentFile', 'filesStatus']),
-        loading () {
-            return (this.productsStatus != 'success' || !this.currentFile)
-        },
-        status () {
+        ...mapGetters('workspaces', ['currentWorkspace']),
+        status() {
+            if (this.loading) return 'loading'
             if (this.productsStatus == 'error' || this.filesStatus == 'error') return 'error'
             if (this.productsStatus == 'loading' || this.filesStatus == 'loading' || !this.currentFile) return 'loading'
             return 'success'
@@ -35,11 +37,18 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
-        fetchData() {
+        ...mapActions('workspaces', ['fetchWorkspaceDatabases']),
+        async fetchData() {
+            this.loading = true
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
-            this.fetchFile(fileId)
-            this.fetchProducts({fileId})
+            await Promise.all([
+                this.fetchFile(fileId),
+                this.fetchProducts({ fileId }),
+                // this.fetchWorkspaceDatabases(this.currentWorkspace),
+            ])
+            // Fetch workspace databases
+            this.loading = false
         },
     },
     created() {
@@ -48,6 +57,4 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>
