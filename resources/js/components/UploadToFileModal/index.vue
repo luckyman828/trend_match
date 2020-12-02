@@ -2,7 +2,7 @@
     <BaseModal
         :classes="['upload-to-file-modal', currentScreen.class]"
         :show="show"
-        @close="$emit('close')"
+        @close="onClose"
         ref="modal"
         :header="currentScreen.header"
         :goBack="currentScreenIndex > 0"
@@ -83,13 +83,13 @@ import workbookUtils from '../../mixins/workbookUtils'
 export default {
     name: 'uploadToFileModal',
     mixins: [workbookUtils],
-    props: ['show'],
     components: {
         UploadWorkbooksScreen,
         SelectFieldsScreen,
         UploadStrategyScreen,
         MapFieldsScreen,
     },
+    props: ['show'],
     data: function() {
         return {
             currentScreenIndex: 0,
@@ -123,6 +123,7 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products']),
+
         currentScreen() {
             return this.screens[this.currentScreenIndex]
         },
@@ -131,11 +132,12 @@ export default {
         ...mapActions('products', ['updateManyProducts', 'insertProducts', 'deleteProducts', 'initProducts']),
         ...mapActions('files', ['syncExternalImages']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        ...mapMutations('display', ['SHOW_COMPONENT', 'HIDE_COMPONENT']),
         onReset() {
             this.$emit('reset')
         },
         onClose() {
-            this.$emit('close')
+            this.HIDE_COMPONENT('uploadToFileModal')
         },
         async onSubmit(newProducts) {
             this.uploadInProgress = true
@@ -297,6 +299,9 @@ export default {
             this.submitStatus = `Uploading images. This may take a while.<br>
             <strong>${progress}%</strong> done.`
         },
+    },
+    destroyed() {
+        this.onClose()
     },
 }
 </script>

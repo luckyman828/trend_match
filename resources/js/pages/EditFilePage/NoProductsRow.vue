@@ -1,32 +1,60 @@
 <template>
     <BaseTableInnerRow>
         <div class="no-products-row">
-            <h2>It looks empty here..</h2>
-            <img src="/images/undraw_empty_xct9.svg" alt="empty image" />
-            <h3>Import products to get started</h3>
+            <h2>Add products</h2>
             <div class="flex-list center-h md">
-                <button class="primary md" @click="onImportFromCSV">
-                    <i class="far fa-file-csv"></i>
-                    <span>from CSV/Excel</span>
-                </button>
-                <button class="primary md" @click="onImportFromFile">
-                    <i class="far fa-file-import"></i>
-                    <span>from Kollekt</span>
-                </button>
-                <button class="primary md">
-                    <i class="far fa-download"></i>
-                    <span>from Database</span>
-                </button>
+                <div class="card" @click="onImportFromSpreadsheet">
+                    <i class="fas fa-file-excel icon"></i>
+                    <h4 class="title">
+                        Spreadsheet
+                    </h4>
+                    <div class="pill white ghost">
+                        <span>Import from file</span>
+                        <i class="far fa-arrow-right"></i>
+                    </div>
+                    <span class="description">
+                        .csv or .xlsx
+                    </span>
+                </div>
+
+                <div class="card" @click="onImportFromDatabase">
+                    <i class="fas fa-database icon"></i>
+                    <h4 class="title">
+                        Database
+                    </h4>
+                    <div class="white ghost pill">
+                        <span>Import from database</span>
+                        <i class="far fa-arrow-right"></i>
+                    </div>
+                    <span class="description">Get products from a connected Database</span>
+                </div>
+
+                <div class="card" @click="onImportFromFile">
+                    <i class="fas fa-file-import icon"></i>
+                    <h4 class="title">
+                        Kollekt
+                    </h4>
+                    <div class="white ghost pill">
+                        <span>Import from Kollekt</span>
+                        <i class="far fa-arrow-right"></i>
+                    </div>
+                    <span class="description">Browse existing files on Kollekt</span>
+                </div>
             </div>
         </div>
     </BaseTableInnerRow>
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'noProductsRow',
     methods: {
-        onImportFromCSV() {},
+        ...mapMutations('display', ['SHOW_COMPONENT', 'HIDE_COMPONENT']),
+        onImportFromSpreadsheet() {
+            this.SHOW_COMPONENT('uploadToFileModal')
+        },
+        onImportFromDatabase() {},
         onImportFromFile() {},
     },
 }
@@ -37,13 +65,43 @@ export default {
 .no-products-row {
     width: 100%;
     text-align: center;
-    padding: 20px 0 32px;
+    padding: 20px 0 40px;
     img {
         margin: 20px 0;
         height: 200px;
     }
-    h3 {
-        margin-top: 0;
+    h2 {
+        margin-bottom: 32px;
+    }
+    .card {
+        background: $dark;
+        border-radius: 16px;
+        padding: 48px 20px 20px;
+        width: 260px;
+        transition: 0.1s ease-out;
+        &:hover {
+            background: $primary;
+            box-shadow: $shadowEl;
+            transform: translateY(-1px);
+        }
+        cursor: pointer;
+        > *:not(.pill) {
+            display: block;
+            color: white;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 28px 0;
+        }
+        .icon {
+            font-size: 28px;
+        }
+        .description {
+            font-size: 12px;
+            margin-top: 8px;
+            white-space: normal;
+        }
     }
 }
 </style>

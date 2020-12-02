@@ -70,7 +70,7 @@
                             hotkey="KeyC"
                             @click="
                                 $refs.importPopover.hide()
-                                onUploadToFile()
+                                SHOW_COMPONENT('uploadToFileModal')
                             "
                         >
                             <span>Import from <u>C</u>SV</span>
@@ -105,11 +105,7 @@
             @close="exportToFileModalVisible = false"
         />
 
-        <ImportToFileModal
-            v-if="importToFileModalVisible"
-            :show="importToFileModalVisible"
-            @close="importToFileModalVisible = false"
-        />
+        <ImportToFileModal v-if="importToFileModalVisible" :show="importToFileModalVisible" />
 
         <UploadToFileModal
             v-if="currentFile"
@@ -143,7 +139,6 @@ export default {
         return {
             exportModalVisible: false,
             exportCsvModalVisible: false,
-            uploadToFileModalVisible: false,
             uploadToFileKey: 0,
             exportToFileModalVisible: false,
             importToFileModalVisible: false,
@@ -152,12 +147,17 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('display', ['getComponentIsVisible']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products']),
+        uploadToFileModalVisible() {
+            return this.getComponentIsVisible('uploadToFileModal')
+        },
     },
     methods: {
         ...mapActions('products', ['instantiateNewProduct']),
         ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble', 'updateProduct']),
+        ...mapMutations('display', ['SHOW_COMPONENT']),
         async onNewProduct() {
             const newProduct = await this.instantiateNewProduct()
             this.setCurrentProduct(newProduct)

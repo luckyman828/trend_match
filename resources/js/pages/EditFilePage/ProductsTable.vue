@@ -584,18 +584,6 @@ export default {
         }
     }
 }
-.no-products-row {
-    width: 100%;
-    text-align: center;
-    padding: 20px 0;
-    img {
-        margin: 20px 0;
-        height: 200px;
-    }
-    h3 {
-        margin-top: 0;
-    }
-}
 
 // SMALL SCREENS AND HIGH DPI
 @media screen and (max-width: $screenMd) {
