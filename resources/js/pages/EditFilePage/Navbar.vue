@@ -80,6 +80,8 @@
                         <BaseContextMenuItem
                             iconClass="far fa-database"
                             hotkey="KeyD"
+                            :disabled="databases.length <= 0"
+                            disabledTooltip="No databases connected. Ask your admin to get an integration with Kollekt"
                             @click="
                                 $refs.importPopover.hide()
                                 SHOW_COMPONENT('importFromDatabaseControls')
@@ -168,6 +170,9 @@ export default {
         ...mapGetters('display', ['getComponentIsVisible']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products']),
+        ...mapGetters('workspaces', {
+            databases: 'getWorkspaceDatabases',
+        }),
         importFromSpreadsheetModalVisible() {
             return this.getComponentIsVisible('importFromSpreadsheetModal')
         },
