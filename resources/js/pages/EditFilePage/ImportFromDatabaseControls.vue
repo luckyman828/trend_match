@@ -9,6 +9,10 @@
                 <i class="far fa-arrow-left"></i>
                 <span>Back</span>
             </button>
+            <button class="white pill back-button sm" v-else @click="onHide">
+                <span>Close</span>
+                <i class="far fa-times"></i>
+            </button>
         </h4>
 
         <!-- UPLOAD FILE -->
@@ -171,9 +175,13 @@ export default {
             // const failAudio = new Audio('/assets/SFX/error.mp3')
             this.fetchProducts([scanCode])
         },
+        onHide() {
+            this.HIDE_COMPONENT('importFromDatabaseControls')
+        },
     },
     destroyed() {
         this.removeScanListener()
+        this.onHide()
     },
 }
 </script>
@@ -199,6 +207,7 @@ export default {
     }
     .back-button {
         margin-left: 20px;
+        min-width: 68px;
     }
     .choose-mode {
         margin-top: 32px;
