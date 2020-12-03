@@ -28,7 +28,8 @@
             :focusOnMount="true"
             :selectOnFocus="true"
             v-slot="slotProps"
-            @submit="fetchProducts([searchString])"
+            @submit="onSubmitSearch"
+            @paste.native="onPaste"
         >
             <button class="circle primary sm" @click="slotProps.onSubmit()">
                 <i class="far fa-arrow-right"></i>
@@ -114,6 +115,26 @@ export default {
             if (productsFiltered.length > 0) {
                 await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
             }
+        },
+        onPaste(e) {
+            e.preventDefault()
+            const clipData = e.clipboardData.getData('text/plain')
+            clipData.trim('\r\n')
+            const rows = clipData.split('\r\n')
+            const allCells = []
+            rows.map(row => {
+                const cells = row.split('\t').filter(cellValue => !!cellValue)
+                allCells.push(...cells)
+            })
+            const newStr = allCells.join(', ')
+            this.searchString = newStr
+        },
+        onSubmitSearch() {
+            const stringArray = this.searchString.split(',')
+            stringArray.map((str, index) => {
+                stringArray[index] = str.trim()
+            })
+            this.fetchProducts(stringArray)
         },
         addScanListener() {
             document.addEventListener('keydown', this.scanHandler)
