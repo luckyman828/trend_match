@@ -84,6 +84,12 @@ export default {
         ...mapGetters('workspaces', {
             databases: 'getWorkspaceDatabases',
         }),
+        ...mapGetters('files', {
+            file: 'currentFile',
+        }),
+        ...mapGetters('products', {
+            products: 'products',
+        }),
     },
     watch: {
         mode(newVal, oldVal) {
@@ -92,7 +98,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['fetchProductsFromDatabase']),
+        ...mapActions('products', ['fetchProductsFromDatabase', 'insertProducts']),
         ...mapMutations('display', ['HIDE_COMPONENT']),
         async fetchProducts(queryValues) {
             const products = await this.fetchProductsFromDatabase({
@@ -101,6 +107,13 @@ export default {
                 columnNameList: ['EAN_NO'],
                 queryValues,
             })
+            // Filter out products that already exist in the file
+            const productsFiltered = products.filter(
+                product => !this.products.find(x => x.datasource_id == product.datasource_id)
+            )
+            if (productsFiltered.length > 0) {
+                await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
+            }
         },
         addScanListener() {
             document.addEventListener('keydown', this.scanHandler)
@@ -110,7 +123,9 @@ export default {
         },
         scanHandler(e) {
             // Prevent default to avoid quirky behaviour from carriage or similar
-            e.preventDefault()
+            if (e.code == 'Enter') {
+                e.preventDefault()
+            }
             // Check if we get at least 12 concecutive inputs with very small interval
             // If that is the case, we have a scan
             const digit = e.code.substr(e.code.length - 1)

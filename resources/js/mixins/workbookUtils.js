@@ -209,6 +209,8 @@ export default {
                                 const newVariant = {
                                     id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
                                     name: variantKeyValue,
+                                    color: null,
+                                    variant: null,
                                     sizes: [],
                                     pictures: [],
                                     image: null,

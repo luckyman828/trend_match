@@ -1,6 +1,7 @@
 import axios from 'axios'
 import sortArray from '../../mixins/sortArray'
 import Compressor from 'compressorjs'
+import { instantiateProductsFromMappedFields, parseCSVStringToRowsAndCells } from '../../helpers/workbookUtils'
 
 export default {
     namespaced: true,
@@ -907,9 +908,11 @@ export default {
                 )
             })
         },
-        async fetchProductsFromDatabase({}, { databaseId, columnNameList, queryValues }) {
+        async fetchProductsFromDatabase({ dispatch }, { databaseId, columnNameList, queryValues }) {
             const apiUrl = `external-databases/${databaseId}/query-products`
-            let products = []
+
+            // Fetch the raw product data from database. Will be returned as CSV
+            let csvString
             await axios
                 .post(apiUrl, {
                     conditions: columnNameList.map(columnName => {
@@ -921,9 +924,92 @@ export default {
                     }),
                 })
                 .then(response => {
-                    products = response.data
-                    console.log('products from database', products)
+                    csvString = response.data
                 })
+
+            // Read the CSV data and parse to object array
+            const rows = parseCSVStringToRowsAndCells(csvString)
+
+            // ------------------------------------------------------- //
+            // START QUIRKY CODE HACKING THE UPLOAD FROM CSV FUNCTIONS //
+            // ------------------------------------------------------- //
+
+            const mappedKey = await dispatch('mapProductData/getProductFields', { scope: 'key' }, { root: true })
+            const variantKey = await dispatch(
+                'mapProductData/getProductFields',
+                { scope: 'variantKey' },
+                { root: true }
+            )
+
+            const file = {
+                mappedKey: mappedKey[0],
+                variantKeyList: variantKey,
+                headers: Object.keys(rows[0]),
+                fileName: 'temp',
+                rows,
+            }
+
+            mappedKey[0].fieldName = 'STYLE_NUMBER'
+            mappedKey[0].file = file
+            variantKey[0].fieldName = 'COLOUR_NAME'
+            variantKey[0].file = file
+
+            // Instantiate products from the row objects
+            // Instantiate fields to map
+            const fieldsToMap = await dispatch('mapProductData/getAllFields', null, { root: true })
+            // Map the fields
+            fieldsToMap.map(field => {
+                field.file = file
+                if (!field.scope) {
+                    if (field.name == 'eans') {
+                        field.fieldName = 'EAN_NO'
+                    }
+                    if (field.name == 'title') {
+                        field.fieldName = 'STYLE_NAME'
+                    }
+                    if (field.name == 'category') {
+                        field.fieldName = 'CATEGORYBI2'
+                    }
+                    if (field.name == 'brand') {
+                        field.fieldName = 'COLLECTION_NAME'
+                    }
+                    if (field.name == 'buying_group') {
+                        field.fieldName = 'PURCHASEDIVISION'
+                    }
+                    if (field.name == 'delivery_dates') {
+                        field.fieldName = 'DELIVERY'
+                    }
+                }
+                if (field.scope == 'variants') {
+                    if (field.name == 'ean') {
+                        field.fieldName = 'EAN_NO'
+                    }
+                    if (field.name == 'sizes') {
+                        field.fieldName = 'SIZE_NAME'
+                    }
+                }
+                if (field.scope == 'prices') {
+                    if (field.name == 'currency') {
+                        field.fieldName = 'CUR'
+                    }
+                    if (field.name == 'wholesale_price') {
+                        field.fieldName = 'WHS_PRICE'
+                    }
+                    if (field.name == 'recommended_retail_price') {
+                        field.fieldName = 'RRP'
+                    }
+                    if (field.name == 'mark_up') {
+                        field.fieldName = 'RTL_MU'
+                    }
+                }
+            })
+
+            // ----------------------------------------------------- //
+            // END QUIRKY CODE HACKING THE UPLOAD FROM CSV FUNCTIONS //
+            // ----------------------------------------------------- //
+
+            const products = instantiateProductsFromMappedFields(fieldsToMap, [file])
+            return products
         },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {

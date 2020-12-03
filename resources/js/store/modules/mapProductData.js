@@ -187,10 +187,24 @@ export default {
             // },
             {
                 scope: 'variants',
-                name: 'ean',
-                displayName: 'Variant EAN',
+                name: 'color',
+                displayName: 'Color',
                 type: 'string',
-                headersToMatch: ['variant ean', 'color ean', 'colour ean'],
+                headersToMatch: [
+                    '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant|color|colour|box).*$',
+                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
+                    'color name',
+                    'colour name',
+                    'main colour name',
+                    'colour_name',
+                ],
+            },
+            {
+                scope: 'variants',
+                name: 'variant',
+                displayName: 'Variant',
+                type: 'string',
+                headersToMatch: ['variant name', 'style variant', 'style variant name'],
             },
             {
                 scope: 'variants',
@@ -293,6 +307,26 @@ export default {
                 // Give each value an id based on its index
                 x.id = state.fieldIndex
                 x.groupId = groupId
+                state.fieldIndex++
+
+                return x
+            })
+        },
+        getAllFields({ state }) {
+            // console.log('getProductFields', scope, groupId, state.productFields)
+            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(
+                x => !['key', 'variantKey'].includes(x.scope)
+            )
+            return fields.map(x => {
+                x.file = null
+                x.fieldName = null
+                x.autoMatched = false
+                x.error = null
+                x.enabled = true
+                x.customEntry = false
+                // Give each value an id based on its index
+                x.id = state.fieldIndex
+                x.groupId = 0
                 state.fieldIndex++
 
                 return x
