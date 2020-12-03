@@ -907,6 +907,24 @@ export default {
                 )
             })
         },
+        async fetchProductsFromDatabase({}, { databaseId, columnNameList, queryValues }) {
+            const apiUrl = `external-databases/${databaseId}/query-products`
+            let products = []
+            await axios
+                .post(apiUrl, {
+                    conditions: columnNameList.map(columnName => {
+                        return {
+                            column: columnName,
+                            values: queryValues,
+                            operator: 'InArray',
+                        }
+                    }),
+                })
+                .then(response => {
+                    products = response.data
+                    console.log('products from database', products)
+                })
+        },
         initProducts({ state, rootGetters }, products) {
             products.map(product => {
                 // Cast datasource_id to a number

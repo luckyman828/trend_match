@@ -12,7 +12,7 @@
         </h4>
 
         <!-- UPLOAD FILE -->
-        <UploadFileSection v-if="mode == 'Upload'" />
+        <UploadFileSection v-if="mode == 'Upload'" @submit="fetchProducts" />
 
         <!-- SCAN BARCODES -->
         <div v-if="mode == 'Scan'" class="flex-list center-h">
@@ -21,8 +21,16 @@
 
         <!-- SCAN BARCODES -->
         <!-- <div v-if="mode == 'Search'" class="flex-list center-h"> -->
-        <BaseInputField v-if="mode == 'Search'" v-model="searchString" placeholder="Id or EAN. Finish with 'ENTER'">
-            <button class="circle primary sm">
+        <BaseInputField
+            v-if="mode == 'Search'"
+            v-model="searchString"
+            placeholder="Id or EAN. Finish with 'ENTER'"
+            :focusOnMount="true"
+            :selectOnFocus="true"
+            v-slot="slotProps"
+            @submit="fetchProducts([searchString])"
+        >
+            <button class="circle primary sm" @click="slotProps.onSubmit()">
                 <i class="far fa-arrow-right"></i>
             </button>
         </BaseInputField>
@@ -56,7 +64,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UploadFileSection from './UploadFileSection'
 export default {
     name: 'importFromDatabaseControls',
@@ -68,10 +76,68 @@ export default {
         return {
             mode: null,
             searchString: '',
+            scanStarted: false,
+            scanStr: '',
         }
     },
+    computed: {
+        ...mapGetters('workspaces', {
+            databases: 'getWorkspaceDatabases',
+        }),
+    },
+    watch: {
+        mode(newVal, oldVal) {
+            if (newVal == 'Scan') this.addScanListener()
+            if (oldVal == 'Scan') this.removeScanListener()
+        },
+    },
     methods: {
+        ...mapActions('products', ['fetchProductsFromDatabase']),
         ...mapMutations('display', ['HIDE_COMPONENT']),
+        async fetchProducts(queryValues) {
+            const products = await this.fetchProductsFromDatabase({
+                databaseId: this.databases[0].id,
+                // columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
+                columnNameList: ['EAN_NO'],
+                queryValues,
+            })
+        },
+        addScanListener() {
+            document.addEventListener('keydown', this.scanHandler)
+        },
+        removeScanListener() {
+            document.removeEventListener('keydown', this.scanHandler)
+        },
+        scanHandler(e) {
+            // Prevent default to avoid quirky behaviour from carriage or similar
+            e.preventDefault()
+            // Check if we get at least 12 concecutive inputs with very small interval
+            // If that is the case, we have a scan
+            const digit = e.code.substr(e.code.length - 1)
+            // Check that the digit is actually a numberc
+            const regex = /[0-9]/
+            const isNumber = !!regex.exec(digit)
+            if (isNumber) this.scanStr += digit
+            if (!this.scanStarted) {
+                this.scanStarted = true
+                setTimeout(() => {
+                    if (this.scanStr.length >= 10) {
+                        this.onScan(this.scanStr)
+                    }
+                    this.scanStr = ''
+
+                    this.scanStarted = false
+                }, 50)
+            }
+        },
+        onScan(scanCode) {
+            // const succesAudio = new Audio('/assets/SFX/pling.mp3')
+            // const failAudio = new Audio('/assets/SFX/error.mp3')
+            this.fetchProducts([scanCode])
+        },
+    },
+    destroyed() {
+        this.removeScanListener()
     },
 }
 </script>

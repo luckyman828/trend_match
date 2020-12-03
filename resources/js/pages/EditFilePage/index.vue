@@ -45,7 +45,7 @@ export default {
             await Promise.all([
                 this.fetchFile(fileId),
                 this.fetchProducts({ fileId }),
-                // this.fetchWorkspaceDatabases(this.currentWorkspace),
+                this.fetchWorkspaceDatabases(this.currentWorkspace),
             ])
             // Fetch workspace databases
             this.loading = false

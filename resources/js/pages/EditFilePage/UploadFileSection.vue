@@ -88,6 +88,7 @@ export default {
             const values = this.fileRows.map(row => row[columnName])
             const uniqueValues = [...new Set(values)]
             this.result = uniqueValues
+            this.$emit('submit', uniqueValues)
             return uniqueValues
         },
     },

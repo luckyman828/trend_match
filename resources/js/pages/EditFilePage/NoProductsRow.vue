@@ -17,12 +17,20 @@
                     </span>
                 </div>
 
-                <div class="card" @click="onImportFromDatabase">
+                <div
+                    class="card"
+                    :class="{ disabled: databases.length <= 0 }"
+                    @click="databases.length > 0 && onImportFromDatabase()"
+                    v-tooltip="
+                        databases.length <= 0 &&
+                            'No databases available. Ask your admin to get an integration to Kollekt.'
+                    "
+                >
                     <i class="fas fa-database icon"></i>
                     <h4 class="title">
                         Database
                     </h4>
-                    <div class="white ghost pill">
+                    <div class="white ghost pill" :class="{ disabled: databases.length <= 0 }">
                         <span>Import from database</span>
                         <i class="far fa-arrow-right"></i>
                     </div>
@@ -49,6 +57,11 @@
 import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'noProductsRow',
+    computed: {
+        ...mapGetters('workspaces', {
+            databases: 'getWorkspaceDatabases',
+        }),
+    },
     methods: {
         ...mapMutations('display', ['SHOW_COMPONENT', 'HIDE_COMPONENT']),
         onImportFromSpreadsheet() {
@@ -83,20 +96,36 @@ export default {
         padding: 48px 20px 20px;
         width: 260px;
         transition: 0.1s ease-out;
-        &:hover {
-            background: $primary;
-            box-shadow: 0 3px 6px 0 rgba(117, 134, 156, 0.5);
-            transform: translateY(-4px);
+        cursor: pointer;
+        &.disabled {
+            background: $bluegrey400;
+            cursor: default;
             .pill {
-                background: white;
-                color: $font;
+                background: none;
+                color: white;
+                border-width: 1px;
+                padding: 0 1px;
                 i {
-                    color: $font;
-                    font-weight: 900;
+                    color: white;
+                    font-weight: 400;
                 }
             }
         }
-        cursor: pointer;
+        &:not(.disabled) {
+            &:hover {
+                background: $primary;
+                box-shadow: 0 3px 6px 0 rgba(117, 134, 156, 0.5);
+                transform: translateY(-4px);
+                .pill {
+                    background: white;
+                    color: $font;
+                    i {
+                        color: $font;
+                        font-weight: 900;
+                    }
+                }
+            }
+        }
         > *:not(.pill) {
             display: block;
             color: white;
