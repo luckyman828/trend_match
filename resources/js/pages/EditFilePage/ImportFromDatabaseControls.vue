@@ -90,6 +90,7 @@ export default {
     left: 50%;
     transform: translateX(-50%);
     width: 424px;
+    color: white;
     .header {
         color: white;
         margin: 0 0 16px;

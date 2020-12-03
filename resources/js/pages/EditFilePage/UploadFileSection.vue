@@ -11,16 +11,28 @@
                 <span>Spreadsheet has header row</span>
             </BaseCheckboxInputField>
         </template>
+        <template v-else-if="fileHeaders.length > 1 && result.length <= 0">
+            <p>Which column holds your ids?</p>
+            <BaseDropdownInputField
+                placeholder="Choose column"
+                :options="fileHeaders"
+                type="radio"
+                :search="true"
+                @input="$event => getColumnValues($event)"
+            />
+        </template>
         <template v-else>
-            <p>Congratulations</p>
+            <p>Congratulations! SUCCESS! {{ result.length }} Unique IDs uploaded</p>
         </template>
     </div>
 </template>
 
 <script>
 import { mapMutations } from 'vuex'
+import BaseSelectButtonsContextMenu from '../../components/ui/input/BaseSelectButtonsContextMenu.vue'
 import workbookUtils from '../../mixins/workbookUtils'
 export default {
+    components: { BaseSelectButtonsContextMenu },
     name: 'uploadFileSection',
     mixins: [workbookUtils],
     data: function() {
@@ -59,11 +71,9 @@ export default {
             this.fileHeaders = Object.keys(this.fileRows[0])
 
             // If there is only 1 hedaer row, simply read that column
-            console.log('file headers', this.fileHeaders)
             if (this.fileHeaders.length == 1) {
-                this.result = this.fileRows.map(row => row[this.fileHeaders[0]])
+                this.getColumnValues(this.fileHeaders[0])
             }
-            console.log('result', this.result, [...new Set(this.result)])
         },
         async readFile(file) {
             return await new Promise((resolve, reject) => {
@@ -74,8 +84,18 @@ export default {
                 }
             })
         },
+        getColumnValues(columnName) {
+            const values = this.fileRows.map(row => row[columnName])
+            const uniqueValues = [...new Set(values)]
+            this.result = uniqueValues
+            return uniqueValues
+        },
     },
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+.upload-file-section {
+}
+</style>

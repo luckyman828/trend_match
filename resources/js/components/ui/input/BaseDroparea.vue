@@ -114,7 +114,8 @@ export default {
         }
     }
 }
-// .placeholder {
-//     pointer-events: none;
-// }
+.placeholder {
+    color: $font;
+    // pointer-events: none;
+}
 </style>

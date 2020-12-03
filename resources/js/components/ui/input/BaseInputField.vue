@@ -9,7 +9,12 @@
             { 'has-icon-right': !!$slots.default },
         ]"
     >
-        <div v-tooltip.top="errorTooltip" :class="[{ 'input-wrapper': type == 'select' }, inputClass]" @click="onClick">
+        <div
+            v-tooltip.top="errorTooltip"
+            :class="[{ 'input-wrapper': type == 'select' }, inputClass]"
+            @click="onClick"
+            :tabindex="type == 'select' ? 0 : -1"
+        >
             <span v-if="label" class="label" v-html="label"></span>
             <input
                 ref="inputField"
