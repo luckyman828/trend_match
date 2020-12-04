@@ -908,7 +908,7 @@ export default {
                 )
             })
         },
-        async fetchProductsFromDatabase({ dispatch }, { databaseId, columnNameList, queryValues }) {
+        async fetchProductsFromDatabase({ dispatch, commit }, { databaseId, columnNameList, queryValues }) {
             const apiUrl = `external-databases/${databaseId}/query-products`
 
             // Fetch the raw product data from database. Will be returned as CSV
@@ -929,6 +929,19 @@ export default {
 
             // Read the CSV data and parse to object array
             const rows = parseCSVStringToRowsAndCells(csvString)
+
+            if (rows.length <= 0) {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'No matches found',
+                        iconClass: 'far fa-info-cirlce',
+                        type: 'info',
+                    },
+                    { root: true }
+                )
+                return
+            }
 
             // ------------------------------------------------------- //
             // START QUIRKY CODE HACKING THE UPLOAD FROM CSV FUNCTIONS //

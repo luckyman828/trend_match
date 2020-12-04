@@ -1,70 +1,73 @@
 <template>
     <div class="import-from-database-controls">
-        <h4 class="header flex-list justify center-v">
-            <span v-if="mode == 'Upload'">Upload a file of IDs</span>
-            <span v-else-if="mode == 'Scan'">Scan barcodes to add products</span>
-            <span v-else-if="mode == 'Search'">Search to add products</span>
-            <span v-else>How would you like to get files from the database</span>
-            <button class="white pill back-button sm" v-if="!!mode" @click="mode = null">
-                <i class="far fa-arrow-left"></i>
-                <span>Back</span>
-            </button>
-            <button class="white pill back-button sm" v-else @click="onHide">
-                <span>Close</span>
-                <i class="far fa-times"></i>
-            </button>
-        </h4>
+        <template v-if="!isFetching">
+            <h4 class="header flex-list justify center-v">
+                <span v-if="mode == 'Upload'">Upload a file of IDs</span>
+                <span v-else-if="mode == 'Scan'">Scan barcodes to add products</span>
+                <span v-else-if="mode == 'Search'">Search to add products</span>
+                <span v-else>How would you like to get files from the database</span>
+                <button class="white pill back-button sm" v-if="!!mode" @click="mode = null">
+                    <i class="far fa-arrow-left"></i>
+                    <span>Back</span>
+                </button>
+                <button class="white pill back-button sm" v-else @click="onHide">
+                    <span>Close</span>
+                    <i class="far fa-times"></i>
+                </button>
+            </h4>
 
-        <!-- UPLOAD FILE -->
-        <UploadFileSection v-if="mode == 'Upload'" @submit="fetchProducts" />
+            <!-- UPLOAD FILE -->
+            <UploadFileSection v-if="mode == 'Upload'" @submit="fetchProducts" />
 
-        <!-- SCAN BARCODES -->
-        <div v-if="mode == 'Scan'" class="flex-list center-h">
-            <i class="fal fa-barcode-read white xl"></i>
-        </div>
+            <!-- SCAN BARCODES -->
+            <div v-if="mode == 'Scan'" class="flex-list center-h">
+                <i class="fal fa-barcode-read white xl"></i>
+            </div>
 
-        <!-- SCAN BARCODES -->
-        <!-- <div v-if="mode == 'Search'" class="flex-list center-h"> -->
-        <BaseInputField
-            v-if="mode == 'Search'"
-            v-model="searchString"
-            placeholder="Id or EAN. Finish with 'ENTER'"
-            :focusOnMount="true"
-            :selectOnFocus="true"
-            v-slot="slotProps"
-            @submit="onSubmitSearch"
-            @paste.native="onPaste"
-        >
-            <button class="circle primary sm" @click="slotProps.onSubmit()">
-                <i class="far fa-arrow-right"></i>
-            </button>
-        </BaseInputField>
-        <!-- </div> -->
-
-        <!-- CHOOSE MODE -->
-        <div class="flex-list md justify choose-mode">
-            <button
-                :class="mode == 'Upload' ? 'primary' : 'white'"
-                @click="mode == 'Upload' ? (mode = null) : (mode = 'Upload')"
+            <!-- SCAN BARCODES -->
+            <!-- <div v-if="mode == 'Search'" class="flex-list center-h"> -->
+            <BaseInputField
+                v-if="mode == 'Search'"
+                v-model="searchString"
+                placeholder="Id or EAN. Finish with 'ENTER'"
+                :focusOnMount="true"
+                :selectOnFocus="true"
+                v-slot="slotProps"
+                @submit="onSubmitSearch"
+                @paste.native="onPaste"
             >
-                <i class="far fa-file-import"></i>
-                <span>Upload IDs</span>
-            </button>
-            <button
-                :class="mode == 'Scan' ? 'primary' : 'white'"
-                @click="mode == 'Scan' ? (mode = null) : (mode = 'Scan')"
-            >
-                <i class="far fa-scanner"></i>
-                <span>Scan Barcodes</span>
-            </button>
-            <button
-                :class="mode == 'Search' ? 'primary' : 'white'"
-                @click="mode == 'Search' ? (mode = null) : (mode = 'Search')"
-            >
-                <i class="far fa-search"></i>
-                <span>Search</span>
-            </button>
-        </div>
+                <button class="circle primary sm" @click="slotProps.onSubmit()">
+                    <i class="far fa-arrow-right"></i>
+                </button>
+            </BaseInputField>
+            <!-- </div> -->
+
+            <!-- CHOOSE MODE -->
+            <div class="flex-list md justify choose-mode">
+                <button
+                    :class="mode == 'Upload' ? 'primary' : 'white'"
+                    @click="mode == 'Upload' ? (mode = null) : (mode = 'Upload')"
+                >
+                    <i class="far fa-file-import"></i>
+                    <span>Upload IDs</span>
+                </button>
+                <button
+                    :class="mode == 'Scan' ? 'primary' : 'white'"
+                    @click="mode == 'Scan' ? (mode = null) : (mode = 'Scan')"
+                >
+                    <i class="far fa-scanner"></i>
+                    <span>Scan Barcodes</span>
+                </button>
+                <button
+                    :class="mode == 'Search' ? 'primary' : 'white'"
+                    @click="mode == 'Search' ? (mode = null) : (mode = 'Search')"
+                >
+                    <i class="far fa-search"></i>
+                    <span>Search</span>
+                </button>
+            </div>
+        </template>
+        <BaseLoader v-else :msg="`Searching for ${queryValueCount} matches`" />
     </div>
 </template>
 
@@ -83,6 +86,8 @@ export default {
             searchString: '',
             scanStarted: false,
             scanStr: '',
+            isFetching: false,
+            queryValueCount: 0,
         }
     },
     computed: {
@@ -105,20 +110,38 @@ export default {
     methods: {
         ...mapActions('products', ['fetchProductsFromDatabase', 'insertProducts']),
         ...mapMutations('display', ['HIDE_COMPONENT']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async fetchProducts(queryValues) {
+            this.isFetching = true
+            this.queryValueCount = queryValues.length
             const products = await this.fetchProductsFromDatabase({
                 databaseId: this.databases[0].id,
                 // columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
                 columnNameList: ['EAN_NO'],
                 queryValues,
             })
+
+            if (!products) {
+                this.isFetching = false
+                this.queryValueCount = 0
+                return
+            }
+
             // Filter out products that already exist in the file
             const productsFiltered = products.filter(
                 product => !this.products.find(x => x.datasource_id == product.datasource_id)
             )
             if (productsFiltered.length > 0) {
                 await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
+            } else {
+                this.SHOW_SNACKBAR({
+                    msg: `No new products found`,
+                    type: 'info',
+                    iconClass: 'far fa-info-circle',
+                })
             }
+            this.isFetching = false
+            this.queryValueCount = 0
         },
         onPaste(e) {
             e.preventDefault()
@@ -132,6 +155,7 @@ export default {
             })
             const newStr = allCells.join(', ')
             this.searchString = newStr
+            this.onSubmitSearch()
         },
         onSubmitSearch() {
             const stringArray = this.searchString.split(',')

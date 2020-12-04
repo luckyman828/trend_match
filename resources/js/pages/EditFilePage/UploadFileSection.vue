@@ -21,9 +21,6 @@
                 @input="$event => getColumnValues($event)"
             />
         </template>
-        <template v-else>
-            <p>Congratulations! SUCCESS! {{ result.length }} Unique IDs uploaded</p>
-        </template>
     </div>
 </template>
 
