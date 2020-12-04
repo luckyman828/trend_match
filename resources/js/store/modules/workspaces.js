@@ -6,6 +6,7 @@ export default {
 
     state: {
         workspaces: [],
+        databases: [],
         currentWorkspaceIndex: localStorage.getItem('workspace-index') || null,
         loading: true,
         availableWorkspaceRoles: [
@@ -39,6 +40,7 @@ export default {
             if (!getters.currentWorkspace) return 'Undefined'
             return getters.currentWorkspace.role
         },
+        getWorkspaceDatabases: state => state.databases,
     },
 
     actions: {
@@ -272,6 +274,12 @@ export default {
             //         },
             //     })
             // })
+        },
+        async fetchWorkspaceDatabases({ state }, workspace) {
+            const apiUrl = `workspaces/${workspace.id}/databases`
+            await axios.get(apiUrl).then(response => {
+                state.databases = response.data
+            })
         },
     },
 

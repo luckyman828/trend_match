@@ -1,5 +1,5 @@
 <template>
-    <BaseContextMenu ref="contextMenu">
+    <BaseContextMenu ref="contextMenu" :inline="inline">
         <template v-slot:header>
             {{ header }}
         </template>
@@ -74,6 +74,7 @@ export default {
         'unsetOption',
         'unsetValue',
         'emitOnChange',
+        'inline',
     ],
     // data: function() {return {
     //     currentValue

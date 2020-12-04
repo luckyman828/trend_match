@@ -130,6 +130,16 @@
                     @view-single-product="onViewSingle"
                 />
             </template>
+            <template v-slot:last v-if="products.length <= 0">
+                <NoProductsRow />
+            </template>
+            <template v-slot:footer>
+                <td class="flex-list">
+                    <BaseButton @click="onNewProduct" buttonClass="primary invisible">
+                        <i class="far fa-plus"></i><span>New Product</span>
+                    </BaseButton>
+                </td>
+            </template>
         </BaseTable>
 
         <BaseContextMenu ref="contextMenu">
@@ -201,6 +211,7 @@
 <script>
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductsTableRow from './ProductsTableRow'
+import NoProductsRow from './NoProductsRow'
 import sortArray from '../../mixins/sortArray'
 import ProductFilters from '../SelectionPage/ProductFilters'
 
@@ -214,6 +225,7 @@ export default {
     components: {
         ProductsTableRow,
         ProductFilters,
+        NoProductsRow,
     },
     mixins: [sortArray],
     data: function() {
@@ -347,6 +359,11 @@ export default {
                 this.onSort(true, 'sequence')
             }
         },
+        async onNewProduct() {
+            const newProduct = await this.instantiateNewProduct()
+            this.setCurrentProduct(newProduct)
+            this.setSingleVisisble(true)
+        },
         onSaveOrder() {
             const products = this.products
             const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.productsFilteredBySearch
@@ -405,7 +422,7 @@ export default {
         }
         tr {
             th,
-            td {
+            .products-table-row td {
                 &.title {
                     min-width: 220px;
                     max-width: 220px;
@@ -459,8 +476,6 @@ export default {
                     flex: 0 1 auto;
                     margin-left: auto;
                 }
-            }
-            td {
                 &:not(.image):not(.select):not(.action):not(.id):not(.context-button) {
                     padding-bottom: 24px;
                 }

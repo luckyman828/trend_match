@@ -91,7 +91,6 @@ export default {
             // Check that the digit is actually a numberc
             const regex = /[0-9]/
             const isNumber = !!regex.exec(digit)
-            console.log('scanhandler', e.code, digit, isNumber)
             if (isNumber) this.scanStr += digit
             if (!this.scanStarted) {
                 this.scanStarted = true

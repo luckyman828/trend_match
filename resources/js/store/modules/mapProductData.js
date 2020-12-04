@@ -298,6 +298,26 @@ export default {
                 return x
             })
         },
+        getAllFields({ state }) {
+            // console.log('getProductFields', scope, groupId, state.productFields)
+            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(
+                x => !['key', 'variantKey'].includes(x.scope)
+            )
+            return fields.map(x => {
+                x.file = null
+                x.fieldName = null
+                x.autoMatched = false
+                x.error = null
+                x.enabled = true
+                x.customEntry = false
+                // Give each value an id based on its index
+                x.id = state.fieldIndex
+                x.groupId = 0
+                state.fieldIndex++
+
+                return x
+            })
+        },
         getUploadOptions({ state }, enabledByDefault = true) {
             const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x => !x.scope)
             const fieldsRefined = fields.map(x => {

@@ -151,6 +151,10 @@
                     >
                         <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
                     </BaseTableRow>
+
+                    <BaseTableRow v-if="$scopedSlots.last" class="last">
+                        <slot name="last" />
+                    </BaseTableRow>
                 </template>
                 <!-- End content -->
 
@@ -550,7 +554,7 @@ export default {
                 flex: 1;
             }
         }
-        &:not(.header):not(.footer):not(.table-top-bar) {
+        &:not(.header):not(.footer):not(.table-top-bar):not(.last) {
             &:hover {
                 background: $bgModuleHover;
                 td {

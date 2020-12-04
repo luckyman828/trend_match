@@ -1,6 +1,6 @@
 <template>
     <div class="navbar-file flex-wrapper">
-        <div class="items-left">
+        <div class="items-left flex-list">
             <router-link
                 :to="{ name: 'files', params: { fileId: currentFile.id, folderId: currentFile.parent_id } }"
                 class="back-link"
@@ -23,7 +23,7 @@
         <!-- <div class="items-center">
         </div> -->
 
-        <div class="items-right">
+        <div class="items-right flex-list">
             <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
                 <button class="button primary">
                     <i class="far fa-upload"></i>
@@ -66,26 +66,40 @@
                 <BaseContextMenu slot="popover" :inline="true" v-if="importContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
-                            iconClass="far fa-file-csv"
-                            hotkey="KeyC"
+                            iconClass="far fa-file-excel"
+                            hotkey="KeyS"
                             @click="
                                 $refs.importPopover.hide()
-                                onUploadToFile()
+                                SHOW_COMPONENT('importFromSpreadsheetModal')
                             "
                         >
-                            <span>Import from <u>C</u>SV</span>
+                            <span>Import from <u>S</u>preadsheet</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-database"
+                            hotkey="KeyD"
+                            :disabled="databases.length <= 0"
+                            disabledTooltip="No databases connected. Ask your admin to get an integration with Kollekt"
+                            @click="
+                                $refs.importPopover.hide()
+                                SHOW_COMPONENT('importFromDatabaseControls')
+                            "
+                        >
+                            <span>Import from <u>D</u>atabase</span>
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-file-import"
-                            hotkey="KeyF"
+                            hotkey="KeyK"
                             @click="
                                 $refs.importPopover.hide()
-                                importToFileModalVisible = true
+                                SHOW_COMPONENT('importFromKollektModal')
                             "
                         >
-                            <span>Import from another <u>F</u>ile</span>
+                            <span>Import from <u>K</u>ollekt</span>
                         </BaseContextMenuItem>
                     </div>
                 </BaseContextMenu>
@@ -105,16 +119,17 @@
             @close="exportToFileModalVisible = false"
         />
 
-        <ImportToFileModal
-            v-if="importToFileModalVisible"
-            :show="importToFileModalVisible"
-            @close="importToFileModalVisible = false"
+        <ImportFromDatabaseControls
+            v-if="importFromDatabaseControlsVisible"
+            :show="importFromDatabaseControlsVisible"
         />
 
-        <UploadToFileModal
+        <ImportFromKollektModal v-if="importFromKollektModalVisible" :show="importFromKollektModalVisible" />
+
+        <ImportFromSpreadsheetModal
             v-if="currentFile"
-            :show="uploadToFileModalVisible"
-            @close="uploadToFileModalVisible = false"
+            :show="importFromSpreadsheetModalVisible"
+            @close="importFromSpreadsheetModalVisible = false"
             :key="uploadToFileKey"
             @reset="uploadToFileKey++"
         />
@@ -127,37 +142,51 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import ExportToFileModal from '../../components/common/ExportToFileModal'
-import ImportToFileModal from '../../components/common/ImportToFileModal'
-import UploadToFileModal from '../../components/UploadToFileModal'
+import ImportFromKollektModal from '../../components/common/ImportFromKollektModal'
+import ImportFromSpreadsheetModal from '../../components/ImportFromSpreadsheetModal'
+import ImportFromDatabaseControls from './ImportFromDatabaseControls'
 
 export default {
     name: 'editFilePageNavbar',
     components: {
         ExportProductsModal,
         ExportToCsvModal,
-        UploadToFileModal,
+        ImportFromSpreadsheetModal,
         ExportToFileModal,
-        ImportToFileModal,
+        ImportFromKollektModal,
+        ImportFromDatabaseControls,
     },
     data: function() {
         return {
             exportModalVisible: false,
             exportCsvModalVisible: false,
-            uploadToFileModalVisible: false,
             uploadToFileKey: 0,
             exportToFileModalVisible: false,
-            importToFileModalVisible: false,
             exportContextOpen: false,
             importContextOpen: false,
         }
     },
     computed: {
+        ...mapGetters('display', ['getComponentIsVisible']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products']),
+        ...mapGetters('workspaces', {
+            databases: 'getWorkspaceDatabases',
+        }),
+        importFromSpreadsheetModalVisible() {
+            return this.getComponentIsVisible('importFromSpreadsheetModal')
+        },
+        importFromDatabaseControlsVisible() {
+            return this.getComponentIsVisible('importFromDatabaseControls')
+        },
+        importFromKollektModalVisible() {
+            return this.getComponentIsVisible('importFromKollektModal')
+        },
     },
     methods: {
         ...mapActions('products', ['instantiateNewProduct']),
         ...mapMutations('products', ['setCurrentProduct', 'setSingleVisisble', 'updateProduct']),
+        ...mapMutations('display', ['SHOW_COMPONENT']),
         async onNewProduct() {
             const newProduct = await this.instantiateNewProduct()
             this.setCurrentProduct(newProduct)
@@ -170,7 +199,7 @@ export default {
             this.exportCsvModalVisible = true
         },
         onUploadToFile() {
-            this.uploadToFileModalVisible = true
+            this.importFromSpreadsheetModalVisible = true
         },
     },
 }
@@ -184,7 +213,6 @@ export default {
     display: flex;
     justify-content: space-between;
     > * {
-        display: flex;
         align-items: center;
     }
 }

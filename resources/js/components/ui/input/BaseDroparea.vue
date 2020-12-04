@@ -10,7 +10,7 @@
         <input type="file" ref="fileInput" :accept="accept" :multiple="multiple" @input="onInput" />
         <div class="body">
             <slot :activate="activate">
-                <span class="placeholder">Drag files here or click to browse</span>
+                <span class="placeholder" @click="activate">Drag files here or click to browse</span>
             </slot>
         </div>
         <div class="drag-display">
@@ -115,6 +115,7 @@ export default {
     }
 }
 .placeholder {
-    pointer-events: none;
+    color: $font;
+    // pointer-events: none;
 }
 </style>

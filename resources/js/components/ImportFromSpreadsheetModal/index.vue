@@ -2,11 +2,11 @@
     <BaseModal
         :classes="['upload-to-file-modal', currentScreen.class]"
         :show="show"
-        @close="$emit('close')"
+        @close="onClose"
         ref="modal"
         :header="currentScreen.header"
         :goBack="currentScreenIndex > 0"
-        @goBack="currentScreenIndex--"
+        @goBack="products.length > 0 ? currentScreenIndex-- : (currentScreenIndex = 0)"
     >
         <BaseLoader v-if="uploadInProgress" :msg="submitStatus" />
 
@@ -15,7 +15,7 @@
                 v-if="currentScreenIndex == 0"
                 :fileList.sync="uploadedFiles"
                 :availableFiles.sync="availableFiles"
-                @go-to-next-screen="currentScreenIndex++"
+                @go-to-next-screen="onGoToNextScreen"
             >
                 <template v-slot:header>
                     <div class="form-element" style="text-align: center;">
@@ -30,7 +30,8 @@
                         :disabled="slotProps.fileList.length <= 0"
                         @click="slotProps.submit()"
                     >
-                        <span>Next: Upload strategy</span>
+                        <span v-if="products.length > 0">Next: Upload strategy</span>
+                        <span v-else>Next: Map data</span>
                     </button>
                 </template>
             </UploadWorkbooksScreen>
@@ -81,15 +82,15 @@ import MapFieldsScreen from '../common/MapProductData/MapFieldsScreen'
 import workbookUtils from '../../mixins/workbookUtils'
 
 export default {
-    name: 'uploadToFileModal',
+    name: 'importFromSpreadsheetModal',
     mixins: [workbookUtils],
-    props: ['show'],
     components: {
         UploadWorkbooksScreen,
         SelectFieldsScreen,
         UploadStrategyScreen,
         MapFieldsScreen,
     },
+    props: ['show'],
     data: function() {
         return {
             currentScreenIndex: 0,
@@ -123,6 +124,7 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('products', ['products']),
+
         currentScreen() {
             return this.screens[this.currentScreenIndex]
         },
@@ -131,11 +133,26 @@ export default {
         ...mapActions('products', ['updateManyProducts', 'insertProducts', 'deleteProducts', 'initProducts']),
         ...mapActions('files', ['syncExternalImages']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        ...mapMutations('display', ['SHOW_COMPONENT', 'HIDE_COMPONENT']),
         onReset() {
             this.$emit('reset')
         },
         onClose() {
-            this.$emit('close')
+            this.HIDE_COMPONENT('importFromSpreadsheetModal')
+        },
+        onGoToNextScreen() {
+            if (this.products.length > 0) {
+                this.currentScreenIndex++
+                return
+            }
+
+            // Instantiate stratey and options and go straight to mapping
+            this.uploadStrategy = {
+                dataReplacementStrategy: 'smart',
+                removeExtraProducts: false,
+                addMissingProducts: true,
+            }
+            this.currentScreenIndex = 3
         },
         async onSubmit(newProducts) {
             this.uploadInProgress = true
@@ -297,6 +314,9 @@ export default {
             this.submitStatus = `Uploading images. This may take a while.<br>
             <strong>${progress}%</strong> done.`
         },
+    },
+    destroyed() {
+        this.onClose()
     },
 }
 </script>

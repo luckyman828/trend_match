@@ -1,6 +1,6 @@
 export default {
     methods: {
-        parseWorkbookToRowsAndCells(workbook) {
+        parseWorkbookToRowsAndCells(workbook, noHeaderRow) {
             // Use SheetJS to parse the workbook
             const data = new Uint8Array(workbook)
             var workbook = XLSX.read(data, {
@@ -15,6 +15,7 @@ export default {
                 raw: true,
                 blankrows: false,
                 defval: null,
+                header: noHeaderRow ? 'A' : false,
             })
 
             return rows
@@ -208,6 +209,8 @@ export default {
                                 const newVariant = {
                                     id: this.$uuid.v4(), // We have to generate a UUID for our variants ourselves
                                     name: variantKeyValue,
+                                    color: null,
+                                    variant: null,
                                     sizes: [],
                                     pictures: [],
                                     image: null,

@@ -1,16 +1,28 @@
 <template>
     <div class="navbar-files flex-wrapper">
         <div class="items-left"></div>
-        <div class="item-right">
+        <div class="item-right flex-list">
+            <BaseButton
+                buttonClass="primary ghost"
+                :disabled="authUserWorkspaceRole != 'Admin'"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
+                @click="showNewFileModal = true"
+            >
+                <i class="far fa-folder-plus"></i>
+                <span>New folder</span>
+            </BaseButton>
             <BaseButton
                 buttonClass="primary"
                 :disabled="authUserWorkspaceRole != 'Admin'"
                 v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
-                @click="createFileModalVisible = true"
+                @click="showNewFileModal = true"
             >
-                <span>Add file</span>
+                <i class="far fa-file-plus"></i>
+                <span>New file</span>
             </BaseButton>
         </div>
+
+        <NewFileModal :show="showNewFileModal" @close="showNewFileModal = false" />
 
         <CreateFileModal
             :show="createFileModalVisible"
@@ -25,14 +37,17 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import CreateFileModal from './CreateFileModal/'
+import NewFileModal from './NewFileModal'
 
 export default {
     name: 'filesPageNavbar',
     components: {
         CreateFileModal,
+        NewFileModal,
     },
     data: function() {
         return {
+            showNewFileModal: false,
             createFileModalVisible: false,
             createFileKey: 0,
         }

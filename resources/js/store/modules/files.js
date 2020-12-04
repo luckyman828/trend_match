@@ -17,6 +17,7 @@ export default {
         path: [],
         flyinVisible: false,
         fileUsersStatus: null,
+        viewNewFile: true,
     },
 
     getters: {
@@ -34,6 +35,7 @@ export default {
         files: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
+        getViewNewFile: state => state.viewNewFile,
         nextFile: state => {
             const files = state.files.filter(x => x.type == 'File')
             // Find the index of the current file and add 1
@@ -697,6 +699,7 @@ export default {
             }
         },
         REMOVE_UNSAVED_FILES(state) {
+            console.log('remoe unsaved fiels')
             state.files = state.files.filter(x => !!x.id)
         },
         setAvailableFileIds(state, fileIds) {
@@ -751,6 +754,9 @@ export default {
         },
         SET_FILE_USERS_STATUS(state, status) {
             state.fileUsersStatus = status
+        },
+        SET_VIEW_NEW_FILE(state, bool) {
+            state.viewNewFile = bool
         },
     },
 }
