@@ -131,14 +131,13 @@ export default {
             const productsFiltered = products.filter(
                 product => !this.products.find(x => x.datasource_id == product.datasource_id)
             )
+            this.SHOW_SNACKBAR({
+                msg: `${queryValues.length} values searched. ${products.length} products found. ${productsFiltered.length} new.`,
+                type: 'info',
+                iconClass: 'far fa-info-circle',
+            })
             if (productsFiltered.length > 0) {
                 await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
-            } else {
-                this.SHOW_SNACKBAR({
-                    msg: `No new products found`,
-                    type: 'info',
-                    iconClass: 'far fa-info-circle',
-                })
             }
             this.isFetching = false
             this.queryValueCount = 0
