@@ -187,24 +187,10 @@ export default {
             // },
             {
                 scope: 'variants',
-                name: 'color',
-                displayName: 'Color',
+                name: 'ean',
+                displayName: 'Variant EAN',
                 type: 'string',
-                headersToMatch: [
-                    '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant|color|colour|box).*$',
-                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
-                    'color name',
-                    'colour name',
-                    'main colour name',
-                    'colour_name',
-                ],
-            },
-            {
-                scope: 'variants',
-                name: 'variant',
-                displayName: 'Variant',
-                type: 'string',
-                headersToMatch: ['variant name', 'style variant', 'style variant name'],
+                headersToMatch: ['variant ean', 'color ean', 'colour ean'],
             },
             {
                 scope: 'variants',
