@@ -85,6 +85,10 @@ export default {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
         scanHandler(e) {
+            // Prevent default to avoid quirky behaviour from carriage or similar
+            if (e.code == 'Enter') {
+                e.preventDefault()
+            }
             // Check if we get at least 12 concecutive inputs with very small interval
             // If that is the case, we have a scan
             const digit = e.code.substr(e.code.length - 1)
