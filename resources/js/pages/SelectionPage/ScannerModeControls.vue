@@ -237,11 +237,11 @@ export default {
     },
     created() {
         // Hook up event listeners for scans
-        document.addEventListener('keyup', this.scanHandler)
+        document.addEventListener('keydown', this.scanHandler)
     },
     destroyed() {
         // Clean up event listeners
-        document.removeEventListener('keyup', this.scanHandler)
+        document.removeEventListener('keydown', this.scanHandler)
     },
 }
 </script>
