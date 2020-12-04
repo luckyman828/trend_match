@@ -116,8 +116,8 @@ export default {
             this.queryValueCount = queryValues.length
             const products = await this.fetchProductsFromDatabase({
                 databaseId: this.databases[0].id,
-                // columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
-                columnNameList: ['EAN_NO'],
+                columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
+                // columnNameList: ['EAN_NO'],
                 queryValues,
             })
 

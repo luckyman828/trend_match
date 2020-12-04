@@ -924,6 +924,7 @@ export default {
                             operator: 'InArray',
                         }
                     }),
+                    relation: 'OR',
                 })
                 .then(response => {
                     csvString = response.data
