@@ -234,7 +234,7 @@ export default {
             const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
 
             if (this.exportVariants) {
-                headers.push('Variant Name', 'Variant EANs')
+                headers.push('Variant Color', 'Variant Variant', 'Variant EANs')
             }
 
             // Add additional headers based on settings
@@ -476,7 +476,8 @@ export default {
                         const variantRow = this.getDefaultProductRowData(product)
 
                         // Push the variant name
-                        variantRow.push(variant.name)
+                        variantRow.push(variant.color)
+                        variantRow.push(variant.variant)
 
                         // Push the variant EANS
                         const allVariantEans = []
@@ -595,7 +596,8 @@ export default {
             headers.push(
                 ...[
                     'Delivery',
-                    'Variant Name',
+                    'Variant Color',
+                    'Variant Variant',
                     'Variant Sizes',
                     'Variant EAN',
                     'Image URL',
@@ -644,8 +646,6 @@ export default {
                     1
                 )
 
-                console.log('variant map', productVariantMap)
-
                 // Add a row for each row we need to add
                 for (let i = 0; i < extraRowCount; i++) {
                     const extraRow = JSON.parse(JSON.stringify(productRow))
@@ -660,7 +660,14 @@ export default {
                         extraRow.push(...['', '', '', ''])
                     } else {
                         // Figure out what variant we are at
-                        extraRow.push(...[variant.name, variant.sizes ? variant.sizes.join(', ') : '', variant.ean])
+                        extraRow.push(
+                            ...[
+                                variant.color,
+                                variant.variant,
+                                variant.sizes ? variant.sizes.join(', ') : '',
+                                variant.ean,
+                            ]
+                        )
                         const pictureIndex = productVariantMap[i] ? productVariantMap[i].pictureIndex : null
                         const picture = variant.pictures[pictureIndex]
                         if (!picture) {
@@ -680,32 +687,11 @@ export default {
 
                     rows.push(extraRow)
                 }
-
-                // // Add variants
-                // product.variants.map(variant => {
-                //     // Use the productRow as basis for our variant row
-                //     const variantRow = JSON.parse(JSON.stringify(productRow))
-                //     variantRow.push(...[variant.name, variant.sizes ? variant.sizes.join(', ') : '', 'ean'])
-                //     if (variant.pictures.length <= 0) {
-                //         variantRow.push('')
-                //         rows.push(variantRow)
-                //         return
-                //     }
-
-                //     // Add images
-                //     variant.pictures.map(picture => {
-                //         const pictureRow = JSON.parse(JSON.stringify(variantRow))
-                //         pictureRow.push(picture.url ? picture.url : '')
-                //         rows.push(pictureRow)
-                //     })
-                // })
             })
 
             let dateStr = DateTime.local().toLocaleString()
             // Replace slashes with dashes in date
             dateStr = dateStr.replace('/', '-')
-
-            // console.log('rows', rows)
 
             this.exportToCsv(`Kollekt File Dump - ${this.currentFile.name} - ${dateStr}.csv`, [headers].concat(rows))
         },
