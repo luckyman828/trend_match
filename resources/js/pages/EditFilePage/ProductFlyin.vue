@@ -183,13 +183,7 @@
                             </div>
                         </div>
                         <!-- Variant Name -->
-                        <BaseEditable
-                            :ref="'nameInput-' + index"
-                            :placeholder="'Untitled variant'"
-                            :type="'text'"
-                            v-model="variant.name"
-                            :truncateLength="15"
-                        />
+                        <VariantNameInput :variant="variant" @submit="onSubmitField"/>
                         <!-- End Variant Name -->
                     </div>
                 </Draggable>
@@ -690,6 +684,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 import axios from 'axios'
 import variantImage from '../../mixins/variantImage'
+import VariantNameInput from './VariantNameInput'
 
 export default {
     name: 'editProductFlyin',
@@ -697,6 +692,7 @@ export default {
     mixins: [variantImage],
     components: {
         Draggable,
+        VariantNameInput,
     },
     data: function() {
         return {
