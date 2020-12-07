@@ -241,7 +241,13 @@ export default {
         searchKey() {
             const nameKey = this.optionNameKey
             const valueKey = this.optionValueKey
-            return [this.optionNameKey, this.optionValueKey, this.optionDescriptionKey]
+            return [
+                this.optionNameKey,
+                this.optionValueKey,
+                this.optionDescriptionKey,
+                this.optionGroupOptionsKey,
+                this.optionGroupNameKey,
+            ]
         },
         optionsFlat() {
             if (!this.multipleOptionArrays || !this.optionGroupOptionsKey) return this.options

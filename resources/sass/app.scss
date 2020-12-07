@@ -414,7 +414,8 @@ input[type='submit'] {
     }
     @each $color in $brand-colors {
         &.#{nth($color,1)},
-        &.#{nth($color,1)}-hover:hover {
+        &.#{nth($color,1)}-hover:hover,
+        .button-hover-trigger:hover &.#{nth($color,1)}-hover {
             border-color: nth($color, 2);
             background: rgba(nth($color, 2), nth($color, 6));
             color: nth($color, 4);
@@ -428,7 +429,8 @@ input[type='submit'] {
                 i {
                     color: nth($color, 2);
                 }
-                &:not(.ghost-hover):hover {
+                &:not(.ghost-hover):hover,
+                .button-hover-trigger:hover &:not(.ghost-hover) {
                     border-color: nth($color, 2);
                     background: rgba(nth($color, 2), nth($color, 6));
                     color: nth($color, 4);
@@ -443,7 +445,8 @@ input[type='submit'] {
             &.ghost {
                 border-color: nth($color, 2);
             }
-            &.ghost-hover:hover {
+            &.ghost-hover:hover,
+            .button-hover-trigger:hover &.ghost-hover {
                 background: transparent;
                 color: nth($color, 2);
                 border-color: nth($color, 2);
@@ -452,16 +455,20 @@ input[type='submit'] {
                 }
             }
         }
-        &.#{nth($color,1)}-hover:hover {
+        &.#{nth($color,1)}-hover:hover,
+        .button-hover-trigger:hover &.#{nth($color,1)}-hover {
             border-color: nth($color, 2) !important;
             background: nth($color, 2) !important;
             color: nth($color, 4) !important;
         }
-        &.#{nth($color,1)}:hover {
+        &.#{nth($color,1)}:hover,
+        .button-hover-trigger:hover &.#{nth($color,1)} {
             background: nth($color, 3);
         }
         &.#{nth($color,1)}:active,
-        &.#{nth($color,1)}-hover:active {
+        &.#{nth($color,1)}-hover:active,
+        .button-hover-trigger:active &.#{nth($color,1)},
+        .button-hover-trigger:active &.#{nth($color,1)}-hover {
             // background: nth($color, 5);
             transform: $transformElActive;
         }
@@ -477,7 +484,8 @@ input[type='submit'] {
     }
     &.ghost,
     &.ghost-hover {
-        &:hover {
+        &:hover,
+        .button-hover-trigger:hover & {
             padding: 0;
             border: solid 2px $primary;
             i:not(.fa-times):not(.fa-ellipsis-h) {
@@ -493,7 +501,8 @@ input[type='submit'] {
         i {
             color: $iconButtonInvisible;
         }
-        &:not(.ghost-hover):hover {
+        &:not(.ghost-hover):hover,
+        .button-hover-trigger:hover &:not(.ghost-hover) {
             background: $light1;
             color: $font;
             i {

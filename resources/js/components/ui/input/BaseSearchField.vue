@@ -133,10 +133,15 @@ export default {
                                 // Assume no match
                                 let isMatch = false
                                 searchKey.forEach(key => {
-                                    // Check that we have a value
-                                    if (!x[key]) return false
+                                    // Check if the value is an object
+                                    let valueToMatch = x
+                                    if (typeof x == 'object') {
+                                        valueToMatch = x[key]
+                                        // Check that we have a value
+                                        if (!valueToMatch) return false
+                                    }
                                     // Convert the value to match to a string so we can search it
-                                    const valueToMatch = x[key].toString().toLowerCase()
+                                    valueToMatch = valueToMatch.toString().toLowerCase()
                                     // If a match is found for any of the keys, return true
                                     searchString.forEach(str => {
                                         if (valueToMatch.search(str) >= 0) isMatch = true

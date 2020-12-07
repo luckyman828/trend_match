@@ -15,11 +15,11 @@
             @click="onClick"
             :tabindex="type == 'select' ? 0 : -1"
         >
-            <span v-if="label" class="label" v-html="label"></span>
+            <label v-if="label" class="label" v-html="label" :for="id ? id : `uid-${_uid}`"></label>
             <input
                 ref="inputField"
                 :type="type"
-                :id="id"
+                :id="id ? id : `uid-${_uid}`"
                 :placeholder="placeholder"
                 :autocomplete="autocomplete"
                 :value="value"

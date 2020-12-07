@@ -210,34 +210,57 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             }
 
             // INSTANTIATE VARIANTS
-            if (product.variants) {
-                // Loop through our variant keys
-                file.variantKeyList.map(variantKey => {
-                    // Find the variant key
-                    const variantKeyField = variantKey.fieldName
-                    const variantKeyValue = variantKey.customEntry ? variantKey.fieldName : row[variantKeyField]
-                    // If we don't have any variant key, just give up
-                    if (!variantKeyValue) return
+            // All variants should be instantiated before we start looping through our fields,
+            // to avoid cases where a value should be set on a variant that is yet to be instantiated.
+            // Product variants are unique by COLOR and VARIANT
+            const colorFields = fieldsToInstantiateFrom.filter(
+                field =>
+                    field.name == 'color' &&
+                    field.file &&
+                    field.file.fileName == file.fileName &&
+                    (!!field.enabled || !!field.customEntry)
+            )
+            const variantFields = fieldsToInstantiateFrom.filter(
+                field =>
+                    field.name == 'variant' &&
+                    field.file &&
+                    field.file.fileName == file.fileName &&
+                    (!!field.enabled || !!field.customEntry)
+            )
 
-                    // Check if the variant already exists
-                    const existingVariant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
-                    // console.log('found an existing variant', variant)
-                    if (!existingVariant) {
-                        const newVariant = {
+            if (product.variants) {
+                if (variantFields.length <= 0 && colorFields.length <= 0) return
+
+                // If we have a new unique combination of color and variant, push those
+
+                for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
+                    const colorField = colorFields[i]
+                    let color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
+                    if (color == 'null') color = null
+                    for (let j = 0; j < Math.max(variantFields.length, 1); j++) {
+                        const variantField = variantFields[j]
+                        let variant = variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
+                        if (variant == 'null') variant = null
+
+                        // Instantiate a basevariant
+                        const baseVariant = {
                             id: uuidv4(), // We have to generate a UUID for our variants ourselves
-                            name: variantKeyValue,
+                            color,
+                            variant,
                             sizes: [],
                             pictures: [],
                             image: null,
                             images: [],
                             ean: null,
                             ean_sizes: [{ size: null, ean: null }],
-                            mappingKeyValue: variantKeyValue, // Save a temporary key property on the variant, that we can use for mapping the same variants together
-                            // This actually allows us to link variants by a key that is not included on the variant object itself
                         }
-                        product.variants.push(newVariant)
+
+                        const existsInArray = !!product.variants.find(
+                            x => (!color || x.color == color) && (!variant || x.variant == variant)
+                        )
+                        if (!existsInArray) product.variants.push(baseVariant)
                     }
-                })
+                }
             }
 
             fieldsToInstantiateFrom.map(field => {
@@ -269,67 +292,76 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 }
 
                 // START MAP VARIANTS
-                if (product.variants) {
-                    // Loop through our variant keys
-                    file.variantKeyList.map(variantKey => {
-                        if (!variantKey.customEntry && !field.file && !field.fileName) return
+                //Don't set name or variant of variants
+                if (product.variants && !['variant', 'color'].includes(field.name)) {
+                    let variantFieldHasBeenProcessed
+                    // Find all variants of this row
+                    for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
+                        const colorField = colorFields[i]
+                        const color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
+                        for (let j = 0; j < Math.max(variantFields.length, 1); j++) {
+                            const theVariantField = variantFields[j]
+                            const variantVariant = theVariantField.customEntry
+                                ? theVariantField.fieldName
+                                : row[theVariantField.fieldName]
 
-                        // Find the variant key
-                        const variantKeyField = variantKey.fieldName
-                        const variantKeyValue = variantKey.customEntry ? variantKey.fieldName : row[variantKeyField]
-                        // If we don't have any variant key, just give up
-                        if (!variantKeyValue) return
+                            const variant = product.variants.find(x => x.color == color && x.variant == variantVariant)
 
-                        // Check if the variant already exists
-                        let variant = product.variants.find(x => x.mappingKeyValue == variantKeyValue)
+                            if (!variant || !(field.scope == 'variants' || field.scope == 'images')) continue
 
-                        if (!variant || !(field.scope == 'variants' || field.scope == 'images')) return
+                            // Now that we have our variant, it's just a question of setting the values
+                            const variantField = variant[field.name]
 
-                        // Now that we have our variant, it's just a question of setting the values
-                        const variantField = variant[field.name]
-
-                        if (field.name == 'image') {
-                            const valueExistsInArray = variant.pictures.find(x => x.url == fieldValue)
-                            if (!valueExistsInArray && fieldValue)
-                                variant.pictures.push({
-                                    name: null,
-                                    url: fieldValue,
-                                })
-                            return
-                        }
-
-                        // Variant Sizes with EANS
-                        // ATT!: This code assumes that every variant size/ean pair comes in a chronological order
-                        if (field.name == 'sizes') {
-                            // Check if the value already exists
-                            const existingSize = variant.ean_sizes.find(x => x.size == fieldValue)
-                            if (!existingSize) {
-                                // Check if we have an object with no size set
-                                const noSizeSet = variant.ean_sizes.find(x => !x.size)
-                                // If we have an object with no size set, set its size
-                                if (noSizeSet) noSizeSet.size = fieldValue
-                                else variant.ean_sizes.push({ size: fieldValue, ean: null })
+                            if (field.name == 'image') {
+                                const valueExistsInArray = variant.pictures.find(x => x.url == fieldValue)
+                                if (!valueExistsInArray && fieldValue)
+                                    variant.pictures.push({
+                                        name: null,
+                                        url: fieldValue,
+                                    })
+                                variantFieldHasBeenProcessed = true
+                                continue
                             }
-                        }
-                        if (field.name == 'ean') {
-                            const existingEan = variant.ean_sizes.find(x => x.ean == fieldValue)
-                            if (!existingEan) {
-                                // Check if we have an object with no size set
-                                const noEanSet = variant.ean_sizes.find(x => !x.ean)
-                                // If we have an object with no size set, set its size
-                                if (noEanSet) noEanSet.ean = fieldValue
-                                else variant.ean_sizes.push({ size: null, ean: fieldValue })
+
+                            // Variant Sizes with EANS
+                            // ATT!: This code assumes that every variant size/ean pair comes in a chronological order
+                            if (field.name == 'sizes') {
+                                // Check if the value already exists
+                                const existingSize = variant.ean_sizes.find(x => x.size == fieldValue)
+                                if (!existingSize) {
+                                    // Check if we have an object with no size set
+                                    const noSizeSet = variant.ean_sizes.find(x => !x.size)
+                                    // If we have an object with no size set, set its size
+                                    if (noSizeSet) noSizeSet.size = fieldValue
+                                    else variant.ean_sizes.push({ size: fieldValue, ean: null })
+                                }
+                                variantFieldHasBeenProcessed = true
+                                continue
                             }
-                        }
+                            if (field.name == 'ean') {
+                                const existingEan = variant.ean_sizes.find(x => x.ean == fieldValue)
+                                if (!existingEan) {
+                                    // Check if we have an object with no size set
+                                    const noEanSet = variant.ean_sizes.find(x => !x.ean)
+                                    // If we have an object with no size set, set its size
+                                    if (noEanSet) noEanSet.ean = fieldValue
+                                    else variant.ean_sizes.push({ size: null, ean: fieldValue })
+                                }
+                                variantFieldHasBeenProcessed = true
+                                continue
+                            }
 
-                        if (Array.isArray(variantField)) {
-                            const valueExistsInArray = variantField.includes(fieldValue)
-                            if (!valueExistsInArray) variantField.push(fieldValue)
-                            return
-                        }
+                            if (Array.isArray(variantField)) {
+                                const valueExistsInArray = variantField.includes(fieldValue)
+                                if (!valueExistsInArray) variantField.push(fieldValue)
+                                variantFieldHasBeenProcessed = true
+                                continue
+                            }
 
-                        variant[field.name] = fieldValue
-                    })
+                            variant[field.name] = fieldValue
+                        }
+                    }
+                    if (variantFieldHasBeenProcessed) return
                 }
                 // END MAP VARIANTS
 
@@ -402,11 +434,21 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         })
     })
 
-    // Remove assortments with no name
+    // CLEANING UP
     products.map(product => {
+        // Remove assortments with no name
         if (product.assortments) {
             product.assortments = product.assortments.filter(x => !!x.name)
         }
+        // Generate the product variant name
+        product.variants.map(variant => {
+            // Calculate the new name
+            const nameComponents = []
+            if (variant.color) nameComponents.push(variant.color)
+            if (variant.variant) nameComponents.push(variant.variant)
+            const newName = nameComponents.join([' - '])
+            variant.name = newName
+        })
     })
     // console.log('instantiated products', products)
     // Remove products with no ID

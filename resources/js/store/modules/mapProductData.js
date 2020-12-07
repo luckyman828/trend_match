@@ -21,21 +21,21 @@ export default {
                     'style_number',
                 ],
             },
-            {
-                scope: 'variantKey',
-                name: 'variant_key',
-                displayName: 'Variant key',
-                type: 'string',
-                headersToMatch: [
-                    '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant|color|colour|box).*$',
-                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
-                    'variant name',
-                    'color name',
-                    'colour name',
-                    'main colour name',
-                    'colour_name',
-                ],
-            },
+            // {
+            //     scope: 'variantKey',
+            //     name: 'variant_key',
+            //     displayName: 'Variant key',
+            //     type: 'string',
+            //     headersToMatch: [
+            //         '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant|color|colour|box).*$',
+            //         // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
+            //         'variant name',
+            //         'color name',
+            //         'colour name',
+            //         'main colour name',
+            //         'colour_name',
+            //     ],
+            // },
             // {
             //     scope: 'assortmentKey',
             //     name: 'assortment_key',
@@ -187,10 +187,29 @@ export default {
             // },
             {
                 scope: 'variants',
-                name: 'ean',
-                displayName: 'Variant EAN',
+                name: 'color',
+                displayName: 'Color',
                 type: 'string',
-                headersToMatch: ['variant ean', 'color ean', 'colour ean'],
+                headersToMatch: [
+                    '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(color|colour|box).*$',
+                    // Match 'variant', 'color' or 'colour', but not if the string contains 'minimum', 'quantity', or 'size'
+                    'color name',
+                    'colour name',
+                    'main colour name',
+                    'colour_name',
+                ],
+            },
+            {
+                scope: 'variants',
+                name: 'variant',
+                displayName: 'Variant',
+                type: 'string',
+                headersToMatch: [
+                    'variant name',
+                    'style variant',
+                    'style variant name',
+                    '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant).*$',
+                ],
             },
             {
                 scope: 'variants',
@@ -297,6 +316,21 @@ export default {
 
                 return x
             })
+        },
+        getField({ state }, { fieldName, groupId = 0 } = {}) {
+            // console.log('getProductFields', scope, groupId, state.productFields)
+            const field = JSON.parse(JSON.stringify(state.productFields)).find(x => x.name == fieldName)
+            field.file = null
+            field.fieldName = null
+            field.autoMatched = false
+            field.error = null
+            field.enabled = true
+            field.customEntry = false
+            // Give each value an id based on its index
+            field.id = state.fieldIndex
+            field.groupId = groupId
+            state.fieldIndex++
+            return field
         },
         getAllFields({ state }) {
             // console.log('getProductFields', scope, groupId, state.productFields)
