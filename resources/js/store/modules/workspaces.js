@@ -41,6 +41,8 @@ export default {
             return getters.currentWorkspace.role
         },
         getWorkspaceDatabases: state => state.databases,
+        getCustomProductFields: (state, getters) =>
+            getters.currentWorkspace && getters.currentWorkspace.custom_product_fields,
     },
 
     actions: {

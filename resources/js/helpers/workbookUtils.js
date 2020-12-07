@@ -443,7 +443,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                 // Set value of an object. This should take care of custom product data
                 if (typeof productField == 'object') {
-                    console.log('uncaught object', productField, field.name)
                     productField[field.displayName] = fieldValue
                     return
                 }

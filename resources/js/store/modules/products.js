@@ -987,6 +987,12 @@ export default {
                     if (field.name == 'delivery_dates') {
                         field.fieldName = 'DELIVERY'
                     }
+                    if (field.displayName == 'Country of Origin') {
+                        field.fieldName = 'COO'
+                    }
+                    if (field.displayName == 'Sample Location Name') {
+                        field.fieldName = 'PURCHASEDIVISION'
+                    }
                 }
                 if (field.scope == 'variants') {
                     if (field.name == 'color') {

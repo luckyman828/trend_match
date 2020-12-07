@@ -183,7 +183,7 @@
                             </div>
                         </div>
                         <!-- Variant Name -->
-                        <VariantNameInput :variant="variant" @submit="onSubmitField"/>
+                        <VariantNameInput :variant="variant" @submit="onSubmitField" />
                         <!-- End Variant Name -->
                     </div>
                 </Draggable>
@@ -278,6 +278,22 @@
                             id="description"
                             :oldValue="originalProduct.sale_description"
                             v-model="product.sale_description"
+                            @submit="onSubmitField"
+                        />
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Custom Data</h3>
+                    <div class="form-element" v-for="(field, index) in customFields" :key="field">
+                        <label for="product-name">{{ field }}</label>
+                        <BaseEditInputWrapper
+                            :id="`extra-data-${index}`"
+                            :type="'text'"
+                            :value="product.extra_data[field]"
+                            :oldValue="originalProduct.extra_data[field]"
+                            v-model="product.extra_data[field]"
+                            :submitOnBlur="true"
                             @submit="onSubmitField"
                         />
                     </div>
@@ -733,6 +749,9 @@ export default {
         ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct', 'products', 'availableProducts']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('persist', ['availableCurrencies']),
+        ...mapGetters('workspaces', {
+            customFields: 'getCustomProductFields',
+        }),
         product() {
             return this.productToEdit
         },
