@@ -950,15 +950,9 @@ export default {
             // ------------------------------------------------------- //
 
             const mappedKey = await dispatch('mapProductData/getProductFields', { scope: 'key' }, { root: true })
-            const variantKey = await dispatch(
-                'mapProductData/getProductFields',
-                { scope: 'variantKey' },
-                { root: true }
-            )
 
             const file = {
                 mappedKey: mappedKey[0],
-                variantKeyList: variantKey,
                 headers: Object.keys(rows[0]),
                 fileName: 'temp',
                 rows,
@@ -966,8 +960,6 @@ export default {
 
             mappedKey[0].fieldName = 'STYLE_NUMBER'
             mappedKey[0].file = file
-            variantKey[0].fieldName = 'COLOUR_NAME'
-            variantKey[0].file = file
 
             // Instantiate products from the row objects
             // Instantiate fields to map
@@ -996,8 +988,14 @@ export default {
                     }
                 }
                 if (field.scope == 'variants') {
-                    if (field.name == 'ean') {
+                    if (field.name == 'color') {
+                        field.fieldName = 'COLOUR_NAME'
+                    }
+                    if (field.name == 'variant') {
                         field.fieldName = 'EAN_NO'
+                    }
+                    if (field.name == 'ean') {
+                        field.fieldName = 'STYLE_VARIANT_NAME'
                     }
                     if (field.name == 'sizes') {
                         field.fieldName = 'SIZE_NAME'

@@ -225,7 +225,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     if (!existingVariant) {
                         const newVariant = {
                             id: uuidv4(), // We have to generate a UUID for our variants ourselves
-                            name: variantKeyValue,
+                            color: variantKeyValue,
+                            variant: null,
                             sizes: [],
                             pictures: [],
                             image: null,
@@ -402,11 +403,21 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         })
     })
 
-    // Remove assortments with no name
+    // CLEANING UP
     products.map(product => {
+        // Remove assortments with no name
         if (product.assortments) {
             product.assortments = product.assortments.filter(x => !!x.name)
         }
+        // Generate the product variant name
+        product.variants.map(variant => {
+            // Calculate the new name
+            const nameComponents = []
+            if (variant.color) nameComponents.push(variant.color)
+            if (variant.variant) nameComponents.push(variant.variant)
+            const newName = nameComponents.join([' - '])
+            variant.name = newName
+        })
     })
     // console.log('instantiated products', products)
     // Remove products with no ID

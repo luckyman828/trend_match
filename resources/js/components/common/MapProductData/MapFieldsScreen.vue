@@ -138,16 +138,20 @@ export default {
             for (let i = 0; i < this.availableFiles.length; i++) {
                 const file = this.availableFiles[i]
                 if (!file.mappedKey.fieldName) return 'A file  has no product key mapped'
+            }
 
-                // If we are mapping variants
+            // If we are mapping variants
+            if (
+                !this.uploadOptions ||
+                this.uploadOptions.scopes.find(scope => scope.name == 'variants' && !!scope.enabled)
+            ) {
                 if (
-                    !this.uploadOptions ||
-                    this.uploadOptions.scopes.find(scope => scope.name == 'variants' && !!scope.enabled)
+                    !this.fieldsToMap.find(
+                        field =>
+                            (field.name == 'color' && field.fieldName) || (field.name == 'variant' && field.fieldName)
+                    )
                 ) {
-                    for (let i = 0; i < file.variantKeyList.length; i++) {
-                        const variantKey = file.variantKeyList[i]
-                        if (!variantKey.fieldName) return 'A file has no variant key mapped'
-                    }
+                    return 'No variant color or variant mapped'
                 }
             }
 
@@ -181,9 +185,6 @@ export default {
             })
             this.availableFiles.map(file => {
                 this.autoMapField(file.mappedKey, [file])
-                file.variantKeyList.map(variantKey => {
-                    this.autoMapField(variantKey, [file])
-                })
             })
 
             // When done automapping, validate all the fields
