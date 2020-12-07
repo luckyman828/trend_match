@@ -235,10 +235,12 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                 for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
                     const colorField = colorFields[i]
-                    const color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
+                    let color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
+                    if (color == 'null') color = null
                     for (let j = 0; j < Math.max(variantFields.length, 1); j++) {
                         const variantField = variantFields[j]
-                        const variant = variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
+                        let variant = variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
+                        if (variant == 'null') variant = null
 
                         // Instantiate a basevariant
                         const baseVariant = {
