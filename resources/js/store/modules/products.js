@@ -992,10 +992,10 @@ export default {
                         field.fieldName = 'COLOUR_NAME'
                     }
                     if (field.name == 'variant') {
-                        field.fieldName = 'EAN_NO'
+                        field.fieldName = 'STYLE_VARIANT_NAME'
                     }
                     if (field.name == 'ean') {
-                        field.fieldName = 'STYLE_VARIANT_NAME'
+                        field.fieldName = 'EAN_NO'
                     }
                     if (field.name == 'sizes') {
                         field.fieldName = 'SIZE_NAME'
