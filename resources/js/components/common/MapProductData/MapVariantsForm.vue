@@ -101,11 +101,11 @@ export default {
         },
     },
     methods: {
-        ...mapActions('mapProductData', ['getProductFields', 'getField']),
+        ...mapActions('mapProductData', ['fetchProductFields', 'getField']),
         async initVariantMap() {
             let newFields
             if (!this.imagesOnly) {
-                newFields = await this.getProductFields({ scope: 'variants' })
+                newFields = await this.fetchProductFields({ scope: 'variants' })
                 this.fieldsToMap.push(...newFields)
             }
 
@@ -136,7 +136,7 @@ export default {
             })
         },
         async onAddVariantImageMap() {
-            const newFields = await this.getProductFields({ scope: 'images' })
+            const newFields = await this.fetchProductFields({ scope: 'images' })
             const newField = newFields[0]
             this.fieldsToMap.push(newField)
             // Attempt to automatch the field

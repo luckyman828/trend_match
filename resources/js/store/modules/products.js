@@ -950,7 +950,7 @@ export default {
             // START QUIRKY CODE HACKING THE UPLOAD FROM CSV FUNCTIONS //
             // ------------------------------------------------------- //
 
-            const mappedKey = await dispatch('mapProductData/getProductFields', { scope: 'key' }, { root: true })
+            const mappedKey = await dispatch('mapProductData/fetchProductFields', { scope: 'key' }, { root: true })
 
             const file = {
                 mappedKey: mappedKey[0],

@@ -183,7 +183,7 @@ export default {
     methods: {
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
-        ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
@@ -204,6 +204,7 @@ export default {
             if (!this.currentWorkspaceIndex || this.currentWorkspaceIndex < 0) {
                 this.setCurrentWorkspaceIndex(0)
             }
+            await this.fetchWorkspace(this.currentWorkspace.id)
         },
         async initSignalR() {
             // Connect to SignalR

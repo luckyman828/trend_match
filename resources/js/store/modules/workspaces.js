@@ -83,7 +83,7 @@ export default {
                 // dispatch('initWorkspaces', [workspace])
                 const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
                 if (stateWorkspace) {
-                    Vue.set(stateWorkspace, workspace)
+                    Object.assign(stateWorkspace, workspace)
                 }
             })
             return workspace

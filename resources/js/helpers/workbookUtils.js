@@ -189,6 +189,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             const baseProduct = {
                 id: null,
                 datasource_id: keyValue,
+                extra_data: {},
             }
 
             // Instantiate arrays based on options if any
@@ -202,6 +203,15 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 baseProduct.assortment_sizes = []
             if (!options || options.fields.find(x => x.name == 'delivery_dates').enabled)
                 baseProduct.delivery_dates = []
+
+            // Add custom product data if we have any
+            mappedFields
+                .filter(x => x.name == 'extra_data')
+                .map(extraField => {
+                    baseProduct.extra_data[extraField.displayName] = null
+                })
+
+            console.log('product', JSON.parse(JSON.stringify(baseProduct)))
 
             const product = existingProduct ? existingProduct : baseProduct
 
@@ -293,7 +303,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                 // START MAP VARIANTS
                 //Don't set name or variant of variants
-                if (product.variants && !['variant', 'color'].includes(field.name)) {
+                if (['variant', 'color'].includes(field.name)) return
+                if (product.variants) {
                     let variantFieldHasBeenProcessed
                     // Find all variants of this row
                     for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
@@ -429,6 +440,14 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     if (!valueExistsInArray && !!fieldValue) productField.push(fieldValue)
                     return
                 }
+
+                // Set value of an object. This should take care of custom product data
+                if (typeof productField == 'object') {
+                    console.log('uncaught object', productField, field.name)
+                    productField[field.displayName] = fieldValue
+                    return
+                }
+
                 product[field.name] = fieldValue
             })
         })

@@ -2,8 +2,11 @@
     <div>
         <h3>Map fields</h3>
         <BaseMapFieldsTable>
-            <MapFieldsTableHeader/>
-            <MapFieldsTableRow v-for="field in fieldsToMap.filter(x => !x.scope && (!uploadOptions || getUploadOptionField(x).enabled))" 
+            <MapFieldsTableHeader />
+            <MapFieldsTableRow
+                v-for="field in fieldsToMap.filter(
+                    x => !x.scope && (!uploadOptions || getUploadOptionField(x).enabled)
+                )"
                 :key="field.id"
                 :mappedFile="field.file"
                 :mappedField="field"
@@ -29,18 +32,12 @@ export default {
         MapFieldsTableHeader,
         MapKeysTableHeader,
     },
-    mixins: [
-        workbookUtils,
-    ],
-    props: [
-        'fieldsToMap',
-        'availableFiles',
-        'uploadOptions',
-    ],
+    mixins: [workbookUtils],
+    props: ['fieldsToMap', 'availableFiles', 'uploadOptions'],
     methods: {
-        ...mapActions('mapProductData', ['getProductFields']),
+        ...mapActions('mapProductData', ['fetchProductFields']),
         async initProductFields() {
-            const newFields = await this.getProductFields({scope: null})
+            const newFields = await this.fetchProductFields({ scope: null })
             this.fieldsToMap.push(...newFields)
 
             // Automap fields
@@ -48,7 +45,7 @@ export default {
                 this.autoMapField(field, this.availableFiles)
                 // And then validate the field
                 if (field.enabled && !!field.fieldName) {
-                    const fieldIsValid =  this.validateMappedField(field, field.customEntry ? [] : field.file.rows, 10)
+                    const fieldIsValid = this.validateMappedField(field, field.customEntry ? [] : field.file.rows, 10)
                     if (!fieldIsValid) {
                         return false
                     }
@@ -58,14 +55,12 @@ export default {
         getUploadOptionField(field) {
             if (!this.uploadOptions) return
             return this.uploadOptions.fields.find(x => x.name == field.name)
-        }
+        },
     },
     created() {
         this.initProductFields()
-    }
+    },
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -81,7 +81,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('mapProductData', ['getProductFields']),
+        ...mapActions('mapProductData', ['fetchProductFields']),
         async instantiatePricemaps() {
             // Add one price map first
             await this.onAddPriceMap()
@@ -127,7 +127,7 @@ export default {
         },
         async onAddPriceMap() {
             this.currencyMapGroupId++
-            const newFields = await this.getProductFields({ scope: 'prices', groupId: this.currencyMapGroupId })
+            const newFields = await this.fetchProductFields({ scope: 'prices', groupId: this.currencyMapGroupId })
 
             this.fieldsToMap.push(...newFields)
 
