@@ -197,6 +197,7 @@ export default {
                     'colour name',
                     'main colour name',
                     'colour_name',
+                    'variant color',
                 ],
             },
             {
@@ -208,6 +209,7 @@ export default {
                     'variant name',
                     'style variant',
                     'style variant name',
+                    'variant variant',
                     '^(?!.*(minimum|quantity|size|qty|ean|min|image|url)).*(variant).*$',
                 ],
             },

@@ -30,7 +30,7 @@ export default {
     props: ['field'],
     computed: {
         ...mapGetters('products', {
-            products: 'productsFiltered',
+            products: 'products',
             getSelectedCustomFieldValues: 'getSelectedCustomFieldValues',
         }),
         selectedCustomFieldValues: {
@@ -45,6 +45,7 @@ export default {
             const unique = []
             this.products.map(product => {
                 const value = product.extra_data[this.field]
+                if (!value) return
                 const alreadyAdded = !!unique.find(x => x == value)
                 if (!alreadyAdded) unique.push(value)
             })

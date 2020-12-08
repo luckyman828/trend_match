@@ -180,6 +180,7 @@ export default {
             const noImagesOnly = getters.noImagesOnly
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
+            const customDataFilters = state.selectedCustomFieldValues
             let productsToReturn = products
 
             // First filter by category
@@ -224,6 +225,15 @@ export default {
                 })
                 productsToReturn = filteredByTicketLabels
             }
+
+            // Filter by custom values
+            Object.keys(customDataFilters).map(filterKey => {
+                const filterValues = customDataFilters[filterKey]
+                if (filterValues.length <= 0) return
+                productsToReturn = productsToReturn.filter(product =>
+                    filterValues.includes(product.extra_data[filterKey])
+                )
+            })
 
             // Filer by unread
             if (unreadOnly) {
@@ -388,6 +398,9 @@ export default {
                 Vue.set(state.selectedCustomFieldValues, key, [])
             }
             return state.selectedCustomFieldValues[key]
+        },
+        getAllCustomValueFilters: state => {
+            return state.selectedCustomFieldValues
         },
     },
 
@@ -596,6 +609,7 @@ export default {
                 assortments: [],
                 eans: [],
                 assortment_sizes: [],
+                extra_data: {},
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -2107,7 +2121,11 @@ export default {
         },
         SET_SELECTED_CUSTOM_FIELD_VALUES(state, { field, value }) {
             Vue.set(state.selectedCustomFieldValues, field, value)
-            // state.selectedCustomFieldValues[field] = value
+        },
+        RESET_CUSTOM_FILTERS(state) {
+            Object.keys(state.selectedCustomFieldValues).map(key => {
+                state.selectedCustomFieldValues[key] = []
+            })
         },
     },
 }

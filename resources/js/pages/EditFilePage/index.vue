@@ -26,7 +26,7 @@ export default {
     computed: {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('files', ['currentFile', 'filesStatus']),
-        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'authUserWorkspaceRole']),
         status() {
             if (this.loading) return 'loading'
             if (this.productsStatus == 'error' || this.filesStatus == 'error') return 'error'
@@ -45,9 +45,8 @@ export default {
             await Promise.all([
                 this.fetchFile(fileId),
                 this.fetchProducts({ fileId }),
-                this.fetchWorkspaceDatabases(this.currentWorkspace),
+                this.authUserWorkspaceRole == 'Admin' && this.fetchWorkspaceDatabases(this.currentWorkspace),
             ])
-            // Fetch workspace databases
             this.loading = false
         },
     },

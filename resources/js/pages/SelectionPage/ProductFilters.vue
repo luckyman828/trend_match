@@ -212,6 +212,7 @@ export default {
             'getHasAdvancedFilter',
             'getAdvancedFilter',
             'getSelectedTicketLabels',
+            'getAllCustomValueFilters',
         ]),
         selectedCategories: {
             get() {
@@ -255,12 +256,16 @@ export default {
         },
         activeFiltersCount() {
             const advancedFilterCount = this.getAdvancedFilter ? this.getAdvancedFilter.length : 0
+            const customValueFilterCount = Object.keys(this.getAllCustomValueFilters).reduce((acc, curr) => {
+                return (acc += this.getAllCustomValueFilters[curr].length)
+            }, 0)
             return (
                 this.selectedBuyerGroups.length +
                 this.selectedCategories.length +
                 this.selectedDeliveryDates.length +
                 this.selectedTicketLabels.length +
-                advancedFilterCount
+                advancedFilterCount +
+                customValueFilterCount
             )
         },
     },
@@ -271,6 +276,7 @@ export default {
             'updateSelectedBuyerGroups',
             'SET_SELECTED_TICKET_LABELS',
             'SET_ADVANCED_FILTER',
+            'RESET_CUSTOM_FILTERS',
         ]),
         resetFilters() {
             this.selectedCategories = []
@@ -279,6 +285,7 @@ export default {
             this.SET_SELECTED_TICKET_LABELS([])
             this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
+            this.RESET_CUSTOM_FILTERS()
         },
         toggleShowFilters() {
             this.showFilters = !this.showFilters
