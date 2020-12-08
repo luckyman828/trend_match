@@ -32,6 +32,7 @@ export default {
         showCSVModal: false,
         openTicketsOnly: false,
         pdpVariantIndex: 0,
+        selectedCustomFieldValues: {},
     },
 
     getters: {
@@ -381,6 +382,12 @@ export default {
             }
 
             return productsToReturn
+        },
+        getSelectedCustomFieldValues: state => key => {
+            if (!state.selectedCustomFieldValues[key]) {
+                Vue.set(state.selectedCustomFieldValues, key, [])
+            }
+            return state.selectedCustomFieldValues[key]
         },
     },
 
@@ -2097,6 +2104,10 @@ export default {
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
+        },
+        SET_SELECTED_CUSTOM_FIELD_VALUES(state, { field, value }) {
+            Vue.set(state.selectedCustomFieldValues, field, value)
+            // state.selectedCustomFieldValues[field] = value
         },
     },
 }
