@@ -45,7 +45,7 @@ export default {
             await Promise.all([
                 this.fetchFile(fileId),
                 this.fetchProducts({ fileId }),
-                this.authUserWorkspaceRole == 'Admin' && this.fetchWorkspaceDatabases(this.currentWorkspace),
+                this.fetchWorkspaceDatabases(this.currentWorkspace),
             ])
             this.loading = false
         },
