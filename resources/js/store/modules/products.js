@@ -609,6 +609,7 @@ export default {
                 assortments: [],
                 eans: [],
                 assortment_sizes: [],
+                extra_data: {},
             }
         },
         setCurrentProduct({ commit }, product) {

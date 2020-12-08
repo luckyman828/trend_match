@@ -890,6 +890,8 @@ export default {
             const newVariant = {
                 id: this.$uuid.v4(),
                 name: 'Unnamed',
+                color: null,
+                variant: null,
                 image: null,
                 blob_id: null,
                 sizes: [],

@@ -179,7 +179,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('workspaces', ['currentWorkspace', 'getCustomProductFields']),
         ...mapGetters('selections', [
             'currentSelection',
             'selections',
@@ -232,6 +232,10 @@ export default {
             // START HEADERS
             // Instantiate default headers
             const headers = JSON.parse(JSON.stringify(this.defaultCsvHeaders))
+
+            // Add extra data headers
+            const extraFields = this.getCustomProductFields
+            headers.push(...extraFields)
 
             if (this.exportVariants) {
                 headers.push('Variant Color', 'Variant Variant', 'Variant EANs')
@@ -579,6 +583,10 @@ export default {
             // Instantiate headers
             const headers = JSON.parse(JSON.stringify(this.defaultCsvDumpHeaders))
 
+            // Add extra data headers
+            const extraFields = this.getCustomProductFields
+            headers.push(...extraFields)
+
             const currencies = []
             // Find out how many different currencies we have
             this.productsToExport.map(product => {
@@ -612,6 +620,7 @@ export default {
             // MAP PRODUCTS
             this.productsToExport.map(product => {
                 const productRow = this.getDefaultProductRowDumpData(product)
+
                 // Add prices
                 currencies.map(currency => {
                     const productPrice = product.prices.find(x => x.currency == currency)
@@ -697,7 +706,7 @@ export default {
         },
         getDefaultProductRowData(product) {
             const priceToReturn = this.getProductPrice(product)
-            return [
+            const arrayToReturn = [
                 product.datasource_id,
                 product.title,
                 product.category,
@@ -710,10 +719,14 @@ export default {
                 priceToReturn.mark_up || '',
                 product.eans.join(', '),
             ]
+            // Get the extra data
+            const extraFields = this.getCustomProductFields
+            arrayToReturn.push(...extraFields.map(field => product.extra_data[field]))
+            return arrayToReturn
         },
         getDefaultProductRowDumpData(product) {
             const priceToReturn = this.getProductPrice(product)
-            return [
+            const arrayToReturn = [
                 product.datasource_id,
                 product.title,
                 product.brand,
@@ -725,6 +738,9 @@ export default {
                 product.sale_description,
                 product.eans.join(', '),
             ]
+            const extraFields = this.getCustomProductFields
+            arrayToReturn.push(...extraFields.map(field => product.extra_data[field]))
+            return arrayToReturn
         },
         getProductPrice(product) {
             let priceToReturn = {}
