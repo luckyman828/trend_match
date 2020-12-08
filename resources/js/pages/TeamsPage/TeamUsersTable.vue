@@ -49,7 +49,7 @@
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add team members'"
                         @click="onAddUser($event)"
                     >
-                        <i class="far fa-plus"></i><span>Add User(s) to Team</span>
+                        <i class="far fa-user-plus"></i><span>Add user(s) to team</span>
                     </BaseButton>
                 </td>
             </template>
@@ -136,7 +136,7 @@
 
         <BaseSelectButtonsContextMenu
             ref="contextMenuAddUsers"
-            header="Add User(s) to Team"
+            header="Add user(s) to team"
             :type="'checkbox'"
             :options="availableUsers"
             v-model="usersToAdd"

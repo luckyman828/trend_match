@@ -49,7 +49,7 @@
                         v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                         @click="onAddTeam($event)"
                     >
-                        <i class="far fa-plus"></i><span>Add Teams(s) to Selection</span>
+                        <i class="far fa-plus"></i><span>Add teams(s) to selection</span>
                     </BaseButton>
                 </td>
             </template>
@@ -68,7 +68,7 @@
 
         <BaseSelectButtonsContextMenu
             ref="contextMenuAddTeams"
-            header="Add Team(s) to Selection"
+            header="Add team(s) to selection"
             v-model="teamsToAdd"
             :options="availableTeams"
             :submitDisabled="teamsToAdd.length < 1"

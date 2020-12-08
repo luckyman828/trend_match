@@ -136,7 +136,7 @@
             <template v-slot:footer>
                 <td class="flex-list">
                     <BaseButton @click="onNewProduct" buttonClass="primary invisible">
-                        <i class="far fa-plus"></i><span>New Product</span>
+                        <i class="far fa-plus"></i><span>Add product</span>
                     </BaseButton>
                 </td>
             </template>

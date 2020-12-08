@@ -106,7 +106,7 @@
             </v-popover>
             <button class="button primary" @click="onNewProduct">
                 <i class="far fa-plus"></i>
-                <span>Create new product</span>
+                <span>Add product</span>
             </button>
         </div>
 

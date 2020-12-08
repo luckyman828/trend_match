@@ -123,7 +123,7 @@
                         v-tooltip="!userHasEditAccess && 'Only admins can add users to selections'"
                         @click="onAddUser($event)"
                     >
-                        <i class="far fa-plus"></i><span>Add Users(s) to Selection</span>
+                        <i class="far fa-plus"></i><span>Add users(s) to selection</span>
                     </BaseButton>
                 </td>
             </template>
@@ -198,7 +198,7 @@
 
         <BaseSelectButtonsContextMenu
             ref="contextMenuAddUsers"
-            header="Add User(s) to Selection"
+            header="Add user(s) to selection"
             v-model="usersToAdd"
             :options="availableUsers"
             :submitDisabled="usersToAdd.length < 1"

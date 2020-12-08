@@ -60,7 +60,8 @@
                         "
                         @click="onNewUser"
                     >
-                        <span>Add new: User</span>
+                        <i class="far fa-user-plus"></i>
+                        <span>Add user</span>
                     </BaseButton>
                 </td>
             </template>

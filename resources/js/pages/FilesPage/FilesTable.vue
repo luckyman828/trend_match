@@ -53,7 +53,7 @@
                         buttonClass="primary invisible"
                         @click="onNewFile('Folder')"
                     >
-                        <i class="far fa-folder-plus"></i><span>Add: Folder</span>
+                        <i class="far fa-folder-plus"></i><span>Add folder</span>
                     </BaseButton>
                     <BaseButton
                         :disabled="authUserWorkspaceRole != 'Admin'"
@@ -61,7 +61,7 @@
                         buttonClass="primary invisible"
                         @click="onNewFile('File')"
                     >
-                        <i class="far fa-file-plus"></i><span>Add: File</span>
+                        <i class="far fa-file-plus"></i><span>Add file</span>
                     </BaseButton>
                 </td>
             </template>

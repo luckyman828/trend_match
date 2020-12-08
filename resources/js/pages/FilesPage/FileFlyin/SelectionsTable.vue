@@ -137,7 +137,7 @@
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
                         @click="onNewSelection({ type: 'Master' })"
                     >
-                        <i class="far fa-plus"></i><span>Add new: Master Selection</span>
+                        <i class="far fa-plus"></i><span>Add master selection</span>
                     </BaseButton>
                 </td>
             </template>

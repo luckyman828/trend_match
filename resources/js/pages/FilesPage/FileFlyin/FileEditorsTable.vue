@@ -1,55 +1,89 @@
 <template>
     <div class="file-users-table">
-        <BaseFlexTable :contentStatus="readyStatus" 
-        loadingMsg="loading users" 
-        errorMsg="error loading users"
-        :errorCallback="() => initData()">
+        <BaseFlexTable
+            :contentStatus="readyStatus"
+            loadingMsg="loading users"
+            errorMsg="error loading users"
+            :errorCallback="() => initData()"
+        >
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:left>
-                        <BaseSearchField ref="searchField" :searchKey="['name','email']" :arrayToSearch="file.users" v-model="usersFilteredBySearch"/>
+                        <BaseSearchField
+                            ref="searchField"
+                            :searchKey="['name', 'email']"
+                            :arrayToSearch="file.users"
+                            v-model="usersFilteredBySearch"
+                        />
                     </template>
                     <template v-slot:right>
-                        <span>{{file.users ? file.users.length : 0}} records</span>
+                        <span>{{ file.users ? file.users.length : 0 }} records</span>
                     </template>
                 </BaseTableTopBar>
             </template>
             <template v-slot:header>
                 <BaseTableHeader class="select">
-                    <BaseCheckbox :value="selectedUsers.length > 0" :modelValue="true" 
-                    @change="(checked) => checked ? selectedUsers = team.users : selectedUsers = []"/>
+                    <BaseCheckbox
+                        :value="selectedUsers.length > 0"
+                        :modelValue="true"
+                        @change="checked => (checked ? (selectedUsers = team.users) : (selectedUsers = []))"
+                    />
                 </BaseTableHeader>
-                <BaseTableHeader class="title" :sortKey="'name'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">Name</BaseTableHeader>
-                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers">E-mail</BaseTableHeader>
+                <BaseTableHeader
+                    class="title"
+                    :sortKey="'name'"
+                    :currentSortKey="sortKey"
+                    :sortAsc="sortAsc"
+                    @sort="sortUsers"
+                    >Name</BaseTableHeader
+                >
+                <BaseTableHeader :sortKey="'email'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers"
+                    >E-mail</BaseTableHeader
+                >
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
             <template v-slot:body>
                 <FileEditorsTableRow
-                v-for="(user, index) in usersFilteredBySearch" 
-                :key="user.id" :user="user" :index="index"
-                :file="file" 
-                v-model="selectedUsers" :selectedUsers="selectedUsers"/>
+                    v-for="(user, index) in usersFilteredBySearch"
+                    :key="user.id"
+                    :user="user"
+                    :index="index"
+                    :file="file"
+                    v-model="selectedUsers"
+                    :selectedUsers="selectedUsers"
+                />
             </template>
             <template v-slot:footer>
                 <td>
-                    <BaseButton buttonClass="primary invisible"
-                    :disabled="authUserWorkspaceRole != 'Admin'"
-                    v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add team members'"
-                    @click="onAddUser($event)">
-                        <i class="far fa-plus"></i><span>Add User(s) to Team</span>
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can add team members'"
+                        @click="onAddUser($event)"
+                    >
+                        <i class="far fa-plus"></i><span>Add edtior(s) to file</span>
                     </BaseButton>
                 </td>
             </template>
         </BaseFlexTable>
 
-        <BaseSelectButtonsContextMenu ref="contextMenuAddUsers" 
-        header="Add User(s) to File"
-        :type="'checkbox'" :options="availableUsers" v-model="usersToAdd" :emitOnChange="true" 
-        :optionDescriptionKey="'email'" :optionNameKey="'name'" :search="true" 
-        :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
-        :submitDisabled="usersToAdd.length < 1"
-        @submit="addUsersToFile({file, users: usersToAdd}); usersToAdd = []"
-        @cancel="usersToAdd = []"
+        <BaseSelectButtonsContextMenu
+            ref="contextMenuAddUsers"
+            header="Add edtior(s) to file"
+            :type="'checkbox'"
+            :options="availableUsers"
+            v-model="usersToAdd"
+            :emitOnChange="true"
+            :optionDescriptionKey="'email'"
+            :optionNameKey="'name'"
+            :search="true"
+            :submitText="`Add ${usersToAdd.length} user${usersToAdd.length > 1 ? 's' : ''}`"
+            :submitDisabled="usersToAdd.length < 1"
+            @submit="
+                addUsersToFile({ file, users: usersToAdd })
+                usersToAdd = []
+            "
+            @cancel="usersToAdd = []"
         />
     </div>
 </template>
@@ -62,23 +96,21 @@ import sortArray from '../../../mixins/sortArray'
 export default {
     name: 'fileEditorsTable',
     components: {
-        FileEditorsTableRow
+        FileEditorsTableRow,
     },
-    mixins: [
-        sortArray
-    ],
-    props: [
-        'file'
-    ],
-    data: function() { return {
-        sortKey: null,
-        sortAsc: true,
-        selectedUsers: [],
-        contextItem: null,
-        contextMouseEvent: null,
-        usersFilteredBySearch: null,
-        usersToAdd: [],
-    }},
+    mixins: [sortArray],
+    props: ['file'],
+    data: function() {
+        return {
+            sortKey: null,
+            sortAsc: true,
+            selectedUsers: [],
+            contextItem: null,
+            contextMouseEvent: null,
+            usersFilteredBySearch: null,
+            usersToAdd: [],
+        }
+    },
     computed: {
         ...mapGetters('users', ['users', 'getUsersStatus']),
         ...mapGetters('auth', ['authUser']),
@@ -93,9 +125,11 @@ export default {
             if (!this.file.users || !this.users) return []
             // Users who are on the workspace and not on the team
             const allUsers = JSON.parse(JSON.stringify(this.users))
-            return allUsers.filter(workspaceUser => !this.file.users.find(fileUser => fileUser.id == workspaceUser.id)).sort((a,b) => {
-                if (a.id == this.authUser.id) return -1
-            })
+            return allUsers
+                .filter(workspaceUser => !this.file.users.find(fileUser => fileUser.id == workspaceUser.id))
+                .sort((a, b) => {
+                    if (a.id == this.authUser.id) return -1
+                })
         },
     },
     methods: {
@@ -103,7 +137,6 @@ export default {
         ...mapActions('users', ['fetchUsers']),
         initData(forceRefresh) {
             if (forceRefresh || this.file.users == null) {
-
                 // Check if we have any workspace users, else fetch them
                 if (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading') this.fetchUsers()
 
@@ -118,15 +151,14 @@ export default {
             contextMenu.show(e)
         },
         onRemoveUsersFromFile(users) {
-            this.removeUsersFromFile({users: JSON.parse(JSON.stringify(this.selectedUsers)), team: this.team})
+            this.removeUsersFromFile({ users: JSON.parse(JSON.stringify(this.selectedUsers)), team: this.team })
             this.selectedUsers = []
         },
         sortUsers(method, key) {
             // If if we are already sorting by the given key, flip the sort order
             if (this.sortKey == key) {
                 this.sortAsc = !this.sortAsc
-            }
-            else {
+            } else {
                 this.sortKey = key
                 this.sortAsc = method
             }
@@ -141,6 +173,4 @@ export default {
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

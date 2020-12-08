@@ -9,7 +9,7 @@
                 @click="showNewFileModal = true"
             >
                 <i class="far fa-folder-plus"></i>
-                <span>New folder</span>
+                <span>Add folder</span>
             </BaseButton>
             <BaseButton
                 buttonClass="primary"
@@ -18,7 +18,7 @@
                 @click="showNewFileModal = true"
             >
                 <i class="far fa-file-plus"></i>
-                <span>New file</span>
+                <span>Add file</span>
             </BaseButton>
         </div>
 
