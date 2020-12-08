@@ -211,8 +211,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     baseProduct.extra_data[extraField.displayName] = null
                 })
 
-            console.log('product', JSON.parse(JSON.stringify(baseProduct)))
-
             const product = existingProduct ? existingProduct : baseProduct
 
             if (!existingProduct) {
@@ -252,7 +250,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                         const variantField = variantFields[j]
                         let variant = null
                         if (variantField)
-                            variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
+                            variant = variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
                         if (variant == 'null') variant = null
 
                         // Instantiate a basevariant
@@ -271,7 +269,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                         const existsInArray = !!product.variants.find(
                             x => (!color || x.color == color) && (!variant || x.variant == variant)
                         )
-                        if (!existsInArray) product.variants.push(baseVariant)
+                        if (existsInArray) continue
+                        product.variants.push(baseVariant)
                     }
                 }
             }
@@ -331,10 +330,12 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             const variantField = variant[field.name]
 
                             if (field.name == 'image') {
-                                const valueExistsInArray = variant.pictures.find(x => x.url == fieldValue)
+                                const valueExistsInArray = variant.pictures.find(
+                                    x => x.url == fieldValue || x.name == fieldValue
+                                )
                                 if (!valueExistsInArray && fieldValue)
                                     variant.pictures.push({
-                                        name: null,
+                                        name: fieldValue,
                                         url: fieldValue,
                                     })
                                 variantFieldHasBeenProcessed = true
@@ -449,7 +450,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 }
 
                 // Set value of an object. This should take care of custom product data
-                if (typeof productField == 'object') {
+                if (field.name == 'extra_data') {
                     productField[field.displayName] = fieldValue
                     return
                 }
@@ -475,7 +476,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             variant.name = newName
         })
     })
-    // console.log('instantiated products', products)
+    console.log('instantiated products', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }
