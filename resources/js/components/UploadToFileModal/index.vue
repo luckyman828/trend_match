@@ -145,6 +145,7 @@ export default {
             const productsToDelete = this.uploadStrategy.removeExtraProducts
                 ? JSON.parse(JSON.stringify(this.products))
                 : []
+
             // Loop through the new products
             newProducts.map(newProduct => {
                 // Find the matching existing product
@@ -225,9 +226,6 @@ export default {
             this.onReset()
         },
         setKeyValue(srcProduct, targetProduct, key, strategy) {
-            if (srcProduct[key] == null || key == 'id') return // Don't do anything if we don't have a value
-
-            // Handle arrays first
             // console.log(
             //     'set key value',
             //     JSON.parse(JSON.stringify(srcProduct)),
@@ -235,10 +233,13 @@ export default {
             //     key,
             //     strategy
             // )
+            if (srcProduct[key] == null || key == 'id') return // Don't do anything if we don't have a value
+
             // If the product key value is an array (variants, prices, assortments, eans)
             if (Array.isArray(targetProduct[key])) {
                 const productArray = targetProduct[key]
                 const newProductArray = srcProduct[key]
+                console.log('its an array', productArray, newProductArray)
                 // Loop through the new products array items to see if we should add anything
                 newProductArray.map(newArrayItem => {
                     // Test if our arrayItem is an object or value
@@ -249,6 +250,7 @@ export default {
                             Object.keys(existingArrayItem).find(itemKey => {
                                 const isMatching =
                                     existingArrayItem[itemKey] != null &&
+                                    typeof existingArrayItem[itemKey] == 'string' &&
                                     existingArrayItem[itemKey] == newArrayItem[itemKey]
                                 return isMatching
                             })

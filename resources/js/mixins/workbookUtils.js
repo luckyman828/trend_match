@@ -137,7 +137,7 @@ export default {
             return allMatches
         },
         instantiateProductsFromMappedFields(mappedFields, files, options) {
-            console.log('instantiate products', mappedFields, files, options)
+            // console.log('instantiate products', mappedFields, files, options)
             // Obey options if provided
             const fieldsToInstantiateFrom = !options
                 ? mappedFields
@@ -393,7 +393,7 @@ export default {
                     product.assortments = product.assortments.filter(x => !!x.name)
                 }
             })
-            console.log('instantiated products', products)
+            // console.log('instantiated products', products)
             // Remove products with no ID
             return products.filter(x => !!x.datasource_id)
         },
