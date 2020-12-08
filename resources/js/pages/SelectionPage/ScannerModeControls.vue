@@ -108,7 +108,6 @@ export default {
             }
         },
         onScan(scanCode) {
-            console.log('scanCode', scanCode)
             const succesAudio = new Audio('/assets/SFX/pling.mp3')
             const failAudio = new Audio('/assets/SFX/error.mp3')
             if (!this.scannerMode) {

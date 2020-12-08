@@ -180,6 +180,7 @@ export default {
             const noImagesOnly = getters.noImagesOnly
             const actionFilter = getters.currentProductFilter
             const getSelectionInput = getters.getActiveSelectionInput
+            const customDataFilters = state.selectedCustomFieldValues
             let productsToReturn = products
 
             // First filter by category
@@ -224,6 +225,15 @@ export default {
                 })
                 productsToReturn = filteredByTicketLabels
             }
+
+            // Filter by custom values
+            Object.keys(customDataFilters).map(filterKey => {
+                const filterValues = customDataFilters[filterKey]
+                if (filterValues.length <= 0) return
+                productsToReturn = productsToReturn.filter(product =>
+                    filterValues.includes(product.extra_data[filterKey])
+                )
+            })
 
             // Filer by unread
             if (unreadOnly) {

@@ -30,7 +30,7 @@ export default {
     props: ['field'],
     computed: {
         ...mapGetters('products', {
-            products: 'productsFiltered',
+            products: 'products',
             getSelectedCustomFieldValues: 'getSelectedCustomFieldValues',
         }),
         selectedCustomFieldValues: {
