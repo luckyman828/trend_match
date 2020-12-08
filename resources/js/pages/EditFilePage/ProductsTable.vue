@@ -244,6 +244,7 @@ export default {
             'availableBuyerGroups',
             'getProductsFilteredBySearch',
             'singleVisible',
+            'getAllCustomValueFilters',
         ]),
         ...mapGetters('products', {
             products: 'productsFiltered',
@@ -290,7 +291,15 @@ export default {
             },
         },
         activeFiltersCount() {
-            return this.selectedBuyerGroups.length + this.selectedCategories.length + this.selectedDeliveryDates.length
+            const customValueFilterCount = Object.keys(this.getAllCustomValueFilters).reduce((acc, curr) => {
+                return (acc += this.getAllCustomValueFilters[curr].length)
+            }, 0)
+            return (
+                this.selectedBuyerGroups.length +
+                this.selectedCategories.length +
+                this.selectedDeliveryDates.length +
+                customValueFilterCount
+            )
         },
         noImagesOnly: {
             get() {
@@ -318,6 +327,7 @@ export default {
             'SET_AVAILABLE_PRODUCTS',
             'SET_NO_IMAGES_ONLY',
             'SET_SELECTED_PRODUCTS',
+            'RESET_CUSTOM_FILTERS',
         ]),
         onViewSingle(product) {
             this.setCurrentProduct(product)
@@ -350,6 +360,7 @@ export default {
             this.selectedCategories = []
             this.selectedDeliveryDates = []
             this.selectedBuyerGroups = []
+            this.RESET_CUSTOM_FILTERS()
         },
         onEnterOrderMode(shouldBeActive) {
             this.editOrderModeActive = shouldBeActive
@@ -476,6 +487,8 @@ export default {
                     flex: 0 1 auto;
                     margin-left: auto;
                 }
+            }
+            .products-table-row td {
                 &:not(.image):not(.select):not(.action):not(.id):not(.context-button) {
                     padding-bottom: 24px;
                 }

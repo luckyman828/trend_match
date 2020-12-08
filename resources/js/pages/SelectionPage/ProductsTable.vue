@@ -690,6 +690,7 @@ export default {
             'SET_HIDE_COMPLETED',
             'SET_OPEN_TICKETS_ONLY',
             'SET_SELECTED_TICKET_LABELS',
+            'RESET_CUSTOM_FILTERS',
         ]),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
@@ -717,6 +718,7 @@ export default {
             this.SET_SELECTED_TICKET_LABELS([])
             this.unreadOnly = false
             this.SET_ADVANCED_FILTER()
+            this.RESET_CUSTOM_FILTERS()
         },
         onToggleFocusOnly(focusOnly) {
             if (this.currentProductFilter == 'ins' && focusOnly) this.currentProductFilter = 'focus'

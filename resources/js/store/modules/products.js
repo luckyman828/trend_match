@@ -399,6 +399,9 @@ export default {
             }
             return state.selectedCustomFieldValues[key]
         },
+        getAllCustomValueFilters: state => {
+            return state.selectedCustomFieldValues
+        },
     },
 
     actions: {
@@ -2117,7 +2120,11 @@ export default {
         },
         SET_SELECTED_CUSTOM_FIELD_VALUES(state, { field, value }) {
             Vue.set(state.selectedCustomFieldValues, field, value)
-            // state.selectedCustomFieldValues[field] = value
+        },
+        RESET_CUSTOM_FILTERS(state) {
+            Object.keys(state.selectedCustomFieldValues).map(key => {
+                state.selectedCustomFieldValues[key] = []
+            })
         },
     },
 }
