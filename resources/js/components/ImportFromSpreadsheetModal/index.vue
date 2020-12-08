@@ -256,7 +256,6 @@ export default {
             if (Array.isArray(targetProduct[key])) {
                 const productArray = targetProduct[key]
                 const newProductArray = srcProduct[key]
-                console.log('its an array', productArray, newProductArray)
                 // Loop through the new products array items to see if we should add anything
                 newProductArray.map(newArrayItem => {
                     // Test if our arrayItem is an object or value

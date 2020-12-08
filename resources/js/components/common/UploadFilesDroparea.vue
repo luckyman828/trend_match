@@ -1,24 +1,19 @@
 <template>
     <div class="upload-drop-area">
-        <BaseDroparea 
-            :multiple="multiple" 
-            :accept="accept"
-            ref="droparea"
-            @input="onFilesChange"
-        >
+        <BaseDroparea :multiple="multiple" :accept="accept" ref="droparea" @input="onFilesChange">
             <template v-slot="slotProps">
-                <strong>{{msg ? msg : 'Drop your file(s) here or click to upload'}}</strong>
+                <strong>{{ msg ? msg : 'Drop your file(s) here or click to upload' }}</strong>
                 <template v-if="!fileList || fileList.length < 1">
                     <i class="big-icon primary" :class="iconClass"></i>
                     <button type="button" class="dark md" @click="slotProps.activate">
-                        <i class="far fa-file-csv"></i>
+                        <i class="far fa-file-excel"></i>
                         <span>Browse files</span>
                     </button>
                 </template>
                 <template v-else>
                     <div class="files-wrapper">
                         <div class="file-to-upload" v-for="(file, index) in fileList" :key="index">
-                            <span>{{file.name}}</span>
+                            <span>{{ file.name }}</span>
                             <button class="ghost" type="button" @click="removeFile(index)">
                                 <i class="remove far fa-trash-alt"></i>
                             </button>
@@ -42,16 +37,10 @@
 import { mapMutations } from 'vuex'
 export default {
     name: 'uploadFilesDroparea',
-    props: [
-        'msg',
-        'accept',
-        'multiple',
-        'iconClass',
-        'fileList',
-        'acceptedExtensions',
-    ],
-    data: function() { return {
-    }},
+    props: ['msg', 'accept', 'multiple', 'iconClass', 'fileList', 'acceptedExtensions'],
+    data: function() {
+        return {}
+    },
     computed: {
         localFileList: {
             get() {
@@ -59,8 +48,8 @@ export default {
             },
             set(value) {
                 this.$emit('update:fileList', value)
-            }
-        }
+            },
+        },
     },
     methods: {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
@@ -68,7 +57,7 @@ export default {
             const files = fileList
             for (let i = 0; i < files.length; i++) {
                 const file = files[i]
-                const extension = file.name.split('.').pop();
+                const extension = file.name.split('.').pop()
 
                 // Check that the file is a csv
                 if (this.acceptedExtensions.includes(extension)) {
@@ -78,19 +67,16 @@ export default {
                 } else {
                     this.SHOW_SNACKBAR({
                         msg: 'Invalid file type',
-                        type: 'warning', 
+                        type: 'warning',
                         iconClass: 'fa-exclamation-triangle',
                     })
-
                 }
             }
         },
-        removeFile(index){
+        removeFile(index) {
             this.localFileList.splice(index, 1)
-        }
-
-    }
-
+        },
+    },
 }
 </script>
 

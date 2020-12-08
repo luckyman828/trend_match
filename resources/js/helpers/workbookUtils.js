@@ -235,11 +235,14 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                 for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
                     const colorField = colorFields[i]
-                    let color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
+                    let color = null
+                    if (colorField) color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
                     if (color == 'null') color = null
                     for (let j = 0; j < Math.max(variantFields.length, 1); j++) {
                         const variantField = variantFields[j]
-                        let variant = variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
+                        let variant = null
+                        if (variantField)
+                            variantField.customEntry ? variantField.fieldName : row[variantField.fieldName]
                         if (variant == 'null') variant = null
 
                         // Instantiate a basevariant
@@ -298,12 +301,16 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     // Find all variants of this row
                     for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
                         const colorField = colorFields[i]
-                        const color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
+                        let color = null
+                        if (colorField)
+                            color = colorField.customEntry ? colorField.fieldName : row[colorField.fieldName]
                         for (let j = 0; j < Math.max(variantFields.length, 1); j++) {
                             const theVariantField = variantFields[j]
-                            const variantVariant = theVariantField.customEntry
-                                ? theVariantField.fieldName
-                                : row[theVariantField.fieldName]
+                            let variantVariant = null
+                            if (theVariantField)
+                                variantVariant = theVariantField.customEntry
+                                    ? theVariantField.fieldName
+                                    : row[theVariantField.fieldName]
 
                             const variant = product.variants.find(x => x.color == color && x.variant == variantVariant)
 
