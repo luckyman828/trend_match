@@ -296,12 +296,29 @@ export default {
         ],
     },
 
-    getters: {},
+    getters: {
+        getProductFields: (state, getters) => {},
+    },
 
     actions: {
-        getProductFields({ state }, { scope, groupId = 0 } = {}) {
-            // console.log('getProductFields', scope, groupId, state.productFields)
-            const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x => x.scope == scope)
+        fetchProductFields({ state, rootGetters }, { scope, groupId = 0 } = {}) {
+            // console.log('fetchProductFields', scope, groupId, state.productFields)
+            const allFields = JSON.parse(JSON.stringify(state.productFields))
+            // Add custom fields defined on the workspace
+            const customFields = rootGetters['workspaces/getCustomProductFields']
+            if (customFields)
+                customFields.map(field => {
+                    allFields.push({
+                        scope: null,
+                        name: 'extra_data',
+                        displayName: field,
+                        type: 'string',
+                        headersToMatch: [field],
+                    })
+                })
+
+            const fields = allFields.filter(x => x.scope == scope)
+
             return fields.map(x => {
                 x.file = null
                 x.fieldName = null
@@ -318,7 +335,7 @@ export default {
             })
         },
         getField({ state }, { fieldName, groupId = 0 } = {}) {
-            // console.log('getProductFields', scope, groupId, state.productFields)
+            // console.log('fetchProductFields', scope, groupId, state.productFields)
             const field = JSON.parse(JSON.stringify(state.productFields)).find(x => x.name == fieldName)
             field.file = null
             field.fieldName = null
@@ -332,11 +349,23 @@ export default {
             state.fieldIndex++
             return field
         },
-        getAllFields({ state }) {
-            // console.log('getProductFields', scope, groupId, state.productFields)
+        getAllFields({ state, rootGetters }) {
+            // console.log('fetchProductFields', scope, groupId, state.productFields)
             const fields = JSON.parse(JSON.stringify(state.productFields)).filter(
                 x => !['key', 'variantKey'].includes(x.scope)
             )
+            // Add custom fields defined on the workspace
+            const customFields = rootGetters['workspaces/getCustomProductFields']
+            if (customFields)
+                customFields.map(field => {
+                    fields.push({
+                        scope: null,
+                        name: 'extra_data',
+                        displayName: field,
+                        type: 'string',
+                        headersToMatch: [field],
+                    })
+                })
             return fields.map(x => {
                 x.file = null
                 x.fieldName = null

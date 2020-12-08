@@ -1,16 +1,21 @@
 <template>
     <div>
         <h3>Map assortments</h3>
-        <div class="form-element assortment-map-group" v-for="(assortmentMap, key, index) in assortmentMapGroups" :key="'group-'+assortmentMap[0].groupId">
+        <div
+            class="form-element assortment-map-group"
+            v-for="(assortmentMap, key, index) in assortmentMapGroups"
+            :key="'group-' + assortmentMap[0].groupId"
+        >
             <h4>
-                <button v-if="index > 0" 
+                <button
+                    v-if="index > 0"
                     class="dark ghost"
                     style="margin-left: -36px; margin-right: 4px"
                     @click="onRemoveAssortmentMap(assortmentMap[0].groupId)"
                 >
                     <i class="far fa-trash"></i>
                 </button>
-                <span>Assortment map {{index+1}}</span>
+                <span>Assortment map {{ index + 1 }}</span>
             </h4>
 
             <!-- Map File -->
@@ -20,11 +25,13 @@
                 </tr>
                 <BaseInputField
                     class="select-file-button"
-                    disabled=true 
-                    :value="getAssortmentMapGroupFileMap(assortmentMap).file 
-                    ? getAssortmentMapGroupFileMap(assortmentMap).file.fileName 
-                    : 'No file mapped'" 
-                    type="select" 
+                    disabled="true"
+                    :value="
+                        getAssortmentMapGroupFileMap(assortmentMap).file
+                            ? getAssortmentMapGroupFileMap(assortmentMap).file.fileName
+                            : 'No file mapped'
+                    "
+                    type="select"
                     @click="$emit('show-file-context', $event, getAssortmentMapGroupFileMap(assortmentMap))"
                     @change="onMappedFileChange(assortmentMap[0].groupId)"
                 >
@@ -33,25 +40,27 @@
             </BaseMapFieldsTable>
 
             <BaseMapFieldsTable class="form-element">
-                <MapFieldsTableHeader/>
-                <MapFieldsTableRow v-for="field in assortmentMap" 
+                <MapFieldsTableHeader />
+                <MapFieldsTableRow
+                    v-for="field in assortmentMap"
                     :key="field.id"
                     :mappedFile="field.file"
                     :mappedField="field"
-                    @show-field-context="$emit('show-field-context', $event, field, getAssortmentMapGroupFileMap(assortmentMap).file)"
+                    @show-field-context="
+                        $emit('show-field-context', $event, field, getAssortmentMapGroupFileMap(assortmentMap).file)
+                    "
                 />
             </BaseMapFieldsTable>
         </div>
 
         <div class="action-list">
-            <button class="dark" 
-                type=button
-                @click="onAddAssortmentMap"
-            >
+            <button class="dark" type="button" @click="onAddAssortmentMap">
                 <i class="fas fa-plus"></i><span>Add assortment map</span>
             </button>
 
-            <i class="far fa-info-circle" style="font-size: 16px;"
+            <i
+                class="far fa-info-circle"
+                style="font-size: 16px;"
                 v-tooltip="'Use this if you have currencies spread between multiple files or columns.'"
             ></i>
         </div>
@@ -74,21 +83,18 @@ export default {
         MapFieldsTableHeader,
         MapKeysTableHeader,
     },
-    mixins: [
-        workbookUtils,
-    ],
-    props: [
-        'fieldsToMap',
-        'availableFiles',
-    ],
-    data: function() { return {
-        assortmentsMapGroupId: 0,
-        assortmentMapGroupFileMaps: []
-    }},
+    mixins: [workbookUtils],
+    props: ['fieldsToMap', 'availableFiles'],
+    data: function() {
+        return {
+            assortmentsMapGroupId: 0,
+            assortmentMapGroupFileMaps: [],
+        }
+    },
     computed: {
         assortmentMapGroups() {
             const assortmentFields = this.fieldsToMap.filter(x => x.scope == 'assortments')
-            return assortmentFields.reduce(function (r, a) {
+            return assortmentFields.reduce(function(r, a) {
                 r[a.groupId] = r[a.groupId] || []
                 r[a.groupId].push(a)
                 return r
@@ -101,20 +107,24 @@ export default {
             let fileGroupPairs = []
             fields.map(field => {
                 if (!field.file) return
-                const existingPair = fileGroupPairs.find(pair => pair.file.fileName == field.file.fileName && pair.groupId == field.groupId)
-                if (!existingPair) fileGroupPairs.push({file: field.file, groupId: field.groupId})
-                if (fileGroupPairs.find(x => x.groupId == field.groupId && x.file.fileName != field.file.fileName) 
-                && !files.find(x => x.fileName == field.file.fileName)) {
+                const existingPair = fileGroupPairs.find(
+                    pair => pair.file.fileName == field.file.fileName && pair.groupId == field.groupId
+                )
+                if (!existingPair) fileGroupPairs.push({ file: field.file, groupId: field.groupId })
+                if (
+                    fileGroupPairs.find(x => x.groupId == field.groupId && x.file.fileName != field.file.fileName) &&
+                    !files.find(x => x.fileName == field.file.fileName)
+                ) {
                     files.push(field.file)
                 }
             })
             return files
-        }
+        },
     },
     methods: {
-        ...mapActions('mapProductData', ['getProductFields']),
+        ...mapActions('mapProductData', ['fetchProductFields']),
         async instantiateAssortmentMaps() {
-            // Add one assortment map first 
+            // Add one assortment map first
             await this.onAddAssortmentMap()
             // Test the amount of matches returned for the assortment name field
             const assortmentNameField = this.fieldsToMap.find(x => x.name == 'name' && x.scope == 'assortments')
@@ -141,8 +151,11 @@ export default {
                 groupId: this.assortmentsMapGroupId,
             }
             this.assortmentMapGroupFileMaps.push(assortmentMapGroupFile)
-            
-            const newFields = await this.getProductFields({scope: 'assortments', groupId: this.assortmentsMapGroupId})
+
+            const newFields = await this.fetchProductFields({
+                scope: 'assortments',
+                groupId: this.assortmentsMapGroupId,
+            })
             this.fieldsToMap.push(...newFields)
 
             // Automap fields
@@ -157,7 +170,7 @@ export default {
             const fileIndex = this.assortmentMapGroupFileMaps.findIndex(x => x.groupId == groupId)
             this.assortmentMapGroupFileMaps.splice(fileIndex, 1)
 
-            for (let i = this.fieldsToMap.length-1; i >= 0; i--) {
+            for (let i = this.fieldsToMap.length - 1; i >= 0; i--) {
                 const field = this.fieldsToMap[i]
                 if (field.scope == 'assortments' && field.groupId == groupId) {
                     this.fieldsToMap.splice(i, 1)
@@ -173,7 +186,11 @@ export default {
                 // Only allow box size to mapped multiple times
                 let existingMatches = null
                 if (field.name != 'box_size') {
-                    existingMatches = this.fieldsToMap.filter(x => x.name == field.name).map(x => {return {fieldName: x.fieldName, fileName: x.file && x.file.fileName}})
+                    existingMatches = this.fieldsToMap
+                        .filter(x => x.name == field.name)
+                        .map(x => {
+                            return { fieldName: x.fieldName, fileName: x.file && x.file.fileName }
+                        })
                 }
                 const availableFiles = fileMatch ? [fileMatch] : this.availableFiles
 
@@ -199,11 +216,11 @@ export default {
         },
         getAssortmentMapGroupFileMap(assortmentMap) {
             return this.assortmentMapGroupFileMaps.find(x => x.groupId == assortmentMap[0].groupId)
-        }
+        },
     },
     created() {
         this.instantiateAssortmentMaps()
-    }
+    },
 }
 </script>
 

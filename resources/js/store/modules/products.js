@@ -32,6 +32,7 @@ export default {
         showCSVModal: false,
         openTicketsOnly: false,
         pdpVariantIndex: 0,
+        selectedCustomFieldValues: {},
     },
 
     getters: {
@@ -381,6 +382,12 @@ export default {
             }
 
             return productsToReturn
+        },
+        getSelectedCustomFieldValues: state => key => {
+            if (!state.selectedCustomFieldValues[key]) {
+                Vue.set(state.selectedCustomFieldValues, key, [])
+            }
+            return state.selectedCustomFieldValues[key]
         },
     },
 
@@ -950,7 +957,7 @@ export default {
             // START QUIRKY CODE HACKING THE UPLOAD FROM CSV FUNCTIONS //
             // ------------------------------------------------------- //
 
-            const mappedKey = await dispatch('mapProductData/getProductFields', { scope: 'key' }, { root: true })
+            const mappedKey = await dispatch('mapProductData/fetchProductFields', { scope: 'key' }, { root: true })
 
             const file = {
                 mappedKey: mappedKey[0],
@@ -986,6 +993,12 @@ export default {
                     }
                     if (field.name == 'delivery_dates') {
                         field.fieldName = 'DELIVERY'
+                    }
+                    if (field.displayName == 'Country of Origin') {
+                        field.fieldName = 'COO'
+                    }
+                    if (field.displayName == 'Sample Location Name') {
+                        field.fieldName = 'PURCHASEDIVISION'
                     }
                 }
                 if (field.scope == 'variants') {
@@ -2091,6 +2104,10 @@ export default {
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
+        },
+        SET_SELECTED_CUSTOM_FIELD_VALUES(state, { field, value }) {
+            Vue.set(state.selectedCustomFieldValues, field, value)
+            // state.selectedCustomFieldValues[field] = value
         },
     },
 }

@@ -173,10 +173,10 @@ export default {
         // }
     },
     methods: {
-        ...mapActions('mapProductData', ['getProductFields']),
+        ...mapActions('mapProductData', ['fetchProductFields']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async instantiateFields() {
-            // const fields = await this.getProductFields()
+            // const fields = await this.fetchProductFields()
             // this.fieldsToMap = fields.filter(x => x.scope != 'key')
 
             // Attempt to autoMap the fields

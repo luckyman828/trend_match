@@ -79,6 +79,31 @@
                 </v-popover>
             </div>
 
+            <CustomProductDataFilter v-for="field in customFields" :key="field" :field="field" />
+
+            <!-- <div class="item-group" v-for="(field, index) in customFields" :key="index">
+                <v-popover trigger="click" :disabled="availableCustomFieldValues[index].length <= 0" placement="right">
+                    <BaseContextMenuItem
+                        iconClass="far fa-box"
+                        :disabled="availableCustomFieldValues[index].length <= 0"
+                        disabledTooltip="No buyer groups available"
+                        @click="showAdvancedFilters = false"
+                    >
+                        <span>{{ field }}</span>
+                        <span v-if="selectedCustomFieldValues[0].length > 0" class="filter-counter circle primary xs">
+                            <span>{{ selectedCustomFieldValues[0].length }}</span>
+                        </span>
+                    </BaseContextMenuItem>
+                    <template slot="popover">
+                        <BaseSelectButtons
+                            submitOnChange="true"
+                            :options="availableCustomFieldValues[index]"
+                            v-model="selectedCustomFieldValues[0]"
+                        />
+                    </template>
+                </v-popover>
+            </div> -->
+
             <div class="item-group" v-if="$route.name == 'selection'">
                 <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
                     <BaseContextMenuItem
@@ -153,12 +178,14 @@
 
 <script>
 import ConditionalFilters from './ConditionalFilters'
+import CustomProductDataFilter from './CustomProductDataFilter'
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'productFilters',
     components: {
         ConditionalFilters,
+        CustomProductDataFilter,
     },
     props: ['distributionScope'],
     data: function() {
@@ -171,6 +198,9 @@ export default {
     computed: {
         ...mapGetters('requests', {
             availableTicketLabels: 'getAvailableRequestLabels',
+        }),
+        ...mapGetters('workspaces', {
+            customFields: 'getCustomProductFields',
         }),
         ticketLabels() {
             return ['no label'].concat(this.availableTicketLabels)
@@ -205,6 +235,14 @@ export default {
             },
             set(value) {
                 this.updateSelectedBuyerGroups(value)
+            },
+        },
+        selectedTicketLabels: {
+            get() {
+                return this.$store.getters['products/getSelectedTicketLabels']
+            },
+            set(value) {
+                this.SET_SELECTED_TICKET_LABELS(value)
             },
         },
         selectedTicketLabels: {

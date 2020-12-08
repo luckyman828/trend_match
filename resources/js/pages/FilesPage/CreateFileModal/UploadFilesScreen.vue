@@ -37,7 +37,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('mapProductData', ['getProductFields']),
+        ...mapActions('mapProductData', ['fetchProductFields']),
         async onSubmit() {
             this.processingFiles = true
             await Promise.all(
@@ -74,7 +74,7 @@ export default {
             if (existingFile) {
                 Object.assign(existingFile, rows)
             } else {
-                const mappedKey = await this.getProductFields({ scope: 'key' })
+                const mappedKey = await this.fetchProductFields({ scope: 'key' })
                 this.availableFiles.push({
                     mappedKey: mappedKey[0],
                     headers: Object.keys(rows[0]),
