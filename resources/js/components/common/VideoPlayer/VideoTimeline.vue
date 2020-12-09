@@ -143,7 +143,7 @@ export default {
     }
     .rail {
         cursor: pointer;
-        height: 8px;
+        height: $heightVideoTimeline;
         position: relative;
         margin-right: 14px;
         background: $primary;

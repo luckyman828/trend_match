@@ -33,6 +33,7 @@
                         <CartSidebar ref="cartSidebar" />
                         <PauseOverlay v-if="videoType != 'live'" />
                         <PlayerControls />
+                        <ChatOverlay v-if="videoType == 'live'" />
                     </template>
                 </div>
             </VideoPlayer>
@@ -70,6 +71,7 @@ import ProductDetailsSidebar from './ProductDetailsSidebar'
 import CartSidebar from './CartSidebar/'
 import PauseOverlay from './PauseOverlay/'
 import EndedOverlay from './EndedOverlay'
+import ChatOverlay from './ChatOverlay'
 
 export default {
     name: 'watchVideoPresentationPage',
@@ -80,6 +82,7 @@ export default {
         CartSidebar,
         PauseOverlay,
         EndedOverlay,
+        ChatOverlay,
     },
     data: function() {
         return {

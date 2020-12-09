@@ -27,6 +27,7 @@ import scanner from './modules/scanner'
 import presentation from './modules/presentation'
 import responsive from './modules/responsive'
 import display from './modules/display'
+import videoComments from './modules/videoComments'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -61,6 +62,7 @@ const store = new Vuex.Store({
         presentation,
         responsive,
         display,
+        videoComments,
     },
 })
 
