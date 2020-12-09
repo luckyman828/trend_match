@@ -30,6 +30,9 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('videoPresentation', {
+            video: 'getCurrentVideo',
+        }),
     },
     methods: {
         ...mapActions('videoComments', ['insertVideoComment']),
@@ -42,7 +45,8 @@ export default {
         },
         async onSubmit() {
             if (this.newComment.content.length <= 0) return
-            await this.insertVideoComment(this.newComment)
+            await this.insertVideoComment({ video: this.video, newComment: this.newComment })
+            this.$emit('submit')
             this.resetNewComment()
         },
         onCancel(e) {

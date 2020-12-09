@@ -1,16 +1,20 @@
 <template>
     <div class="chat-overlay">
-        <div class="chat-message-list">
+        <div class="chat-message-list" ref="messageList">
+            <BaseLoader msg="Loading more" v-if="isFetchingMore" />
+            <button class="white pill sm ghost" v-else-if="nextCursor" @click="onFetchMore">
+                <span>Load more</span>
+            </button>
             <ChatMessage v-for="videoComment in videoComments" :key="videoComment.id" :videoComment="videoComment" />
         </div>
-        <ChatInputForm />
+        <ChatInputForm @submit="onSubmit" />
     </div>
 </template>
 
 <script>
 import ChatMessage from './ChatMessage'
 import ChatInputForm from './ChatInputForm'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'chatOverlay',
     components: {
@@ -18,12 +22,30 @@ export default {
         ChatInputForm,
     },
     data: function() {
-        return {}
+        return {
+            isFetchingMore: false,
+        }
     },
     computed: {
         ...mapGetters('videoComments', {
             videoComments: 'getVideoComments',
+            nextCursor: 'getNextCursor',
         }),
+        ...mapGetters('videoPresentation', {
+            video: 'getCurrentVideo',
+        }),
+    },
+    methods: {
+        ...mapActions('videoComments', ['fetchVideoComments']),
+        async onFetchMore() {
+            this.isFetchingMore = true
+            await this.fetchVideoComments({ video: this.video, cursor: this.nextCursor })
+            this.isFetchingMore = false
+        },
+        onSubmit() {
+            const container = this.$refs.messageList
+            container.scrollTo(0, container.scrollHeight)
+        },
     },
 }
 </script>
@@ -37,6 +59,10 @@ export default {
     right: 16px;
     z-index: 1;
     pointer-events: all;
+    button {
+        margin-left: auto;
+        min-height: 24px;
+    }
     .chat-message-list {
         margin-bottom: 16px;
         display: flex;

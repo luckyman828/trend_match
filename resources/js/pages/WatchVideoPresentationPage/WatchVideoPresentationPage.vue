@@ -33,7 +33,7 @@
                         <CartSidebar ref="cartSidebar" />
                         <PauseOverlay v-if="videoType != 'live'" />
                         <PlayerControls />
-                        <ChatOverlay />
+                        <ChatOverlay v-if="videoType == 'live'" />
                     </template>
                 </div>
             </VideoPlayer>

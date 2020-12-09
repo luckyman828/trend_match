@@ -1,22 +1,51 @@
+import axios from 'axios'
+
 export default {
     namespaced: true,
 
     state: {
         comments: [],
+        nextCursor: null,
     },
 
     getters: {
         getVideoComments: state => state.comments,
+        getMoreCommentsAvailable: state => !!state.nextCursor,
+        getNextCursor: state => state.nextCursor,
     },
 
     actions: {
-        insertVideoComment({ commit }, newComment) {
-            newComment.id = Math.round(Math.random() * 10000000)
-            commit('INSERT_OR_UPDATE_COMMENT', newComment)
+        async insertVideoComment({ commit }, { video, newComment }) {
+            const apiUrl = `videos/${video.id}/chat`
+            await axios
+                .put(apiUrl, {
+                    content: newComment.content,
+                })
+                .then(response => {
+                    console.log('response', response.data)
+                    newComment.id = response.data.id
+                    commit('INSERT_OR_UPDATE_COMMENT', newComment)
+                })
+        },
+        async fetchVideoComments({ commit, state }, { video, cursor = null }) {
+            let apiUrl = `videos/${video.id}/chat?take=10`
+            if (cursor) apiUrl += `&cursor=${cursor}`
+
+            let comments = []
+            await axios.get(apiUrl).then(response => {
+                comments = response.data.data
+                console.log('response', response.data, comments)
+                commit('INSERT_VIDEO_COMMENTS', comments)
+                commit('SET_NEXT_CURSOR', response.data.meta.next)
+            })
+            return comments
         },
     },
 
     mutations: {
+        INSERT_VIDEO_COMMENTS(state, comments) {
+            state.comments.unshift(...comments.reverse())
+        },
         INSERT_OR_UPDATE_COMMENT(state, newComment) {
             // Check if the new comment already exists
             const existingComment = state.comments.find(x => x.id == newComment.id)
@@ -25,6 +54,9 @@ export default {
             } else {
                 state.comments.push(newComment)
             }
+        },
+        SET_NEXT_CURSOR(state, nextCursor) {
+            state.nextCursor = nextCursor
         },
     },
 }
