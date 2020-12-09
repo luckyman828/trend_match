@@ -23,7 +23,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
-    name: 'newFileModal',
+    name: 'newFolderModal',
     props: ['show'],
     data: function() {
         return {
@@ -49,7 +49,7 @@ export default {
         async onNewFile() {
             const newFile = {
                 id: 0,
-                name: this.fileName.length > 0 ? this.fileName : 'New file',
+                name: this.fileName.length > 0 ? this.fileName : 'New folder',
                 type: 'Folder',
                 parent_id: this.folder ? this.folder.id : 0,
                 workspace_id: this.workspace.id,

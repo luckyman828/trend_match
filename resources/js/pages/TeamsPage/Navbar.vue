@@ -5,7 +5,7 @@
             <div class="items-right">
                 <BaseButton
                     :buttonClass="'primary'"
-                    @click="addTeamModalVisible = true"
+                    @click="showTeamModal = true"
                     :disabled="authUserWorkspaceRole != 'Admin'"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'"
                 >
@@ -15,24 +15,24 @@
             </div>
         </div>
 
-        <CreateTeamModal :show="addTeamModalVisible" @close="addTeamModalVisible = false" />
+        <NewTeamModal :show="showTeamModal" @close="showTeamModal = false" />
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import CreateTeamModal from '../../components/CreateTeamModal'
+import NewTeamModal from './NewTeamModal'
 
 export default {
     name: 'teamsPageNavbar',
     data: function() {
         return {
             addTeamName: '',
-            addTeamModalVisible: false,
+            showTeamModal: false,
         }
     },
     components: {
-        CreateTeamModal,
+        NewTeamModal,
     },
     computed: {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
