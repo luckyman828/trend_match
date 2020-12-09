@@ -153,6 +153,9 @@ Vue.mixin({
             if (style == 'short') {
                 return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMM yy')
             }
+            if (style == 'medium') {
+                return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMM yyyy')
+            }
             return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')
         },
         chunkArray(array, chunk_size) {

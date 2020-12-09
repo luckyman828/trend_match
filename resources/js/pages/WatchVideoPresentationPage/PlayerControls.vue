@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="product-totals" style="margin-left: 52px;">
-                    <div class="pill white xs">
+                    <div class="pill dark sm">
                         <span> {{ currentTimingIndex + 1 }} / {{ timings.length }} styles </span>
                     </div>
                 </div>
@@ -75,31 +75,33 @@
             </div>
 
             <div class="right">
-                <div class="price-list">
-                    <template v-if="product">
-                        <div class="price-list-item" :class="{ hidden: !product.delivery_dates[0] }">
-                            <label>Delivery</label>
-                            <div class="pill white xs">
-                                <span>{{ getPrettyDate(product.delivery_dates[0]) }}</span>
-                            </div>
-                        </div>
-                        <div class="price-list-item">
+                <template v-if="product">
+                    <div class="price-list">
+                        <div class="list-item">
                             <label>WHS</label>
-                            <div class="pill white xs">
-                                <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
-                            </div>
+                            <span class="value"
+                                >{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span
+                            >
                         </div>
-                        <div class="price-list-item">
+                        <div class="list-item">
                             <label>RRP</label>
-                            <div class="pill white xs">
-                                <span
-                                    >{{ product.yourPrice.recommended_retail_price }}
-                                    {{ product.yourPrice.currency }}</span
-                                >
-                            </div>
+                            <span class="value"
+                                >{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span
+                            >
                         </div>
-                    </template>
-                </div>
+                        <div class="list-item">
+                            <label>Mark up</label>
+                            <span class="value">{{ product.yourPrice.mark_up }}</span>
+                        </div>
+                    </div>
+
+                    <div class="delivery-list" v-if="product && product.delivery_dates.length > 0">
+                        <div class="list-item" v-for="(delivery, index) in product.delivery_dates" :key="index">
+                            <label>Delivery {{ index + 1 }}</label>
+                            <span class="value">{{ getPrettyDate(delivery, 'medium') }}</span>
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
@@ -310,34 +312,37 @@ export default {
         transform: translateY(100%);
     }
 }
-.pill span {
-    font-weight: 700;
-}
 .price-list {
     display: flex;
     justify-content: flex-end;
-    margin-top: -12px;
-    width: 100%;
-    .price-list-item {
-        &:not(:first-child) {
-            margin-left: 40px;
-        }
-        &.hidden {
-            visibility: hidden;
-        }
+}
+.delivery-list {
+    display: flex;
+    margin-left: 32px;
+}
+.list-item {
+    background: $dark;
+    padding: 8px;
+    border-radius: $borderRadiusEl;
+    &:not(:first-child) {
+        margin-left: 12px;
     }
+    > * {
+        display: block;
+        line-height: 1;
+    }
+
     label {
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 500;
         display: block;
         margin-bottom: 4px;
-        margin-left: 7px;
-        color: $grey500;
+        color: $bluegrey500;
     }
-    .pill {
-        width: 112px;
-        text-align: left;
-        justify-content: flex-start;
+    .value {
+        font-size: 12px;
+        font-weight: 700;
+        color: white;
     }
 }
 </style>

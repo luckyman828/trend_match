@@ -71,7 +71,9 @@
                         <span v-if="product.composition">{{ product.composition.split(', ').join('\n') }}</span>
                     </BaseDisplayField>
                     <BaseDisplayField label="Sizes">
-                        <span v-if="product.variants[0]">{{ product.variants[0].sizes.join(', ') }}</span>
+                        <span v-if="product.variants[0]">{{
+                            product.variants[0].ean_sizes.map(size => size.size).join(', ')
+                        }}</span>
                     </BaseDisplayField>
                 </div>
             </div>

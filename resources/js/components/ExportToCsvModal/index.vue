@@ -673,7 +673,7 @@ export default {
                             ...[
                                 variant.color,
                                 variant.variant,
-                                variant.sizes ? variant.sizes.join(', ') : '',
+                                variant.ean_sizes.map(size => size.size).join(', '),
                                 variant.ean,
                             ]
                         )
