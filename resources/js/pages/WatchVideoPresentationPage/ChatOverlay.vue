@@ -1,11 +1,7 @@
 <template>
     <div class="chat-overlay">
         <div class="chat-message-list">
-            <ChatMessage
-                v-for="videoComment in videoComments.slice().reverse()"
-                :key="videoComment.id"
-                :videoComment="videoComment"
-            />
+            <ChatMessage v-for="videoComment in videoComments" :key="videoComment.id" :videoComment="videoComment" />
         </div>
         <ChatInputForm />
     </div>
@@ -45,7 +41,26 @@ export default {
         margin-bottom: 16px;
         display: flex;
         flex-direction: column;
+        max-height: 400px;
+        min-width: 200px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        padding-right: 8px;
+        margin-right: -8px;
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(white, 0);
+            border-radius: 2px;
+        }
+        &::-webkit-scrollbar-track {
+            background: none;
+        }
         &:hover {
+            &::-webkit-scrollbar-thumb {
+                background: rgba(white, 1);
+            }
             ::v-deep {
                 .chat-message {
                     background: black;

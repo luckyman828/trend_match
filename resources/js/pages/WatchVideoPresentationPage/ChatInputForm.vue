@@ -9,7 +9,7 @@
             :hasFocus.sync="inputHasFocus"
             @keydown.exact.enter.native="onSubmit"
             @keydown.enter.exact.native.prevent
-            @keydown.native.escape="document.getActiveElement().blur()"
+            @keydown.native.escape="onCancel"
         />
         <button class="dark sm pill" @click="onSubmit">
             <i class="far fa-paper-plane"></i>
@@ -44,6 +44,10 @@ export default {
             if (this.newComment.content.length <= 0) return
             await this.insertVideoComment(this.newComment)
             this.resetNewComment()
+        },
+        onCancel(e) {
+            e.preventDefault()
+            document.activeElement.blur()
         },
         keydownHandler(e) {
             if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT') return
@@ -103,7 +107,7 @@ export default {
     .input-wrapper {
         border-radius: 16px;
         min-height: 0;
-        transition: padding-left 0.1s ease-out;
+        transition: padding-left 0.1s ease-out, padding-right 0.1s ease-out;
         padding-left: 40px;
         font-size: 12px;
         font-weight: 500;

@@ -19,7 +19,6 @@ export default {
     props: ['placeholder', 'value', 'disabled', 'readOnly'],
     watch: {
         value(newVal, oldVal) {
-            console.log('value changed', newVal)
             if (newVal != oldVal) {
                 this.$nextTick(() => {
                     this.resize()
@@ -29,7 +28,6 @@ export default {
     },
     methods: {
         resize() {
-            console.log('resize')
             const textarea = this.$refs.textarea
             // Avoid weird resizing when there is only 1 character in the textarea
             // if (event.target.value.length > 1) {
