@@ -5,8 +5,8 @@
             <BaseButton
                 buttonClass="primary ghost"
                 :disabled="authUserWorkspaceRole != 'Admin'"
-                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
-                @click="showNewFileModal = true"
+                v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new folders'"
+                @click="showNewFolderModal = true"
             >
                 <i class="far fa-folder-plus"></i>
                 <span>Add folder</span>
@@ -23,33 +23,25 @@
         </div>
 
         <NewFileModal :show="showNewFileModal" @close="showNewFileModal = false" />
-
-        <CreateFileModal
-            :show="createFileModalVisible"
-            ref="createFileModal"
-            @close="createFileModalVisible = false"
-            :key="createFileKey"
-            @reset="createFileKey++"
-        />
+        <NewFolderModal :show="showNewFolderModal" @close="showNewFolderModal = false" />
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import CreateFileModal from './CreateFileModal/'
 import NewFileModal from './NewFileModal'
+import NewFolderModal from './NewFolderModal'
 
 export default {
     name: 'filesPageNavbar',
     components: {
-        CreateFileModal,
         NewFileModal,
+        NewFolderModal,
     },
     data: function() {
         return {
             showNewFileModal: false,
-            createFileModalVisible: false,
-            createFileKey: 0,
+            showNewFolderModal: false,
         }
     },
     computed: {
