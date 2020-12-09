@@ -118,6 +118,11 @@ router.beforeEach(async (to, from, next) => {
         store.commit('routes/SET_NEXT_URL', from.fullPath)
     }
 
+    if (to.path.startsWith('/login') && store.getters['auth/isAuthenticated']) {
+        next({ name: 'files' })
+        return
+    }
+
     if (to.name == 'verificationCode' && !store.getters['auth/getPasswordRecoveryEmail']) {
         next({ name: 'login' })
     } else if (to.name == 'setNewPassword' && !store.getters['auth/getPasswordRecoverySessionId']) {
@@ -133,7 +138,6 @@ router.beforeEach(async (to, from, next) => {
 
     // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
     if (to.name == 'joinSelection' && to.params.linkHash) {
-        console.log('join selection')
         next()
     }
 
