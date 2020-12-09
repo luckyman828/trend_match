@@ -161,6 +161,12 @@ Vue.mixin({
                 .map((_, index) => index * chunk_size)
                 .map(begin => array.slice(begin, begin + chunk_size))
         },
+        generateVariantName({ colorName, variantName }) {
+            const nameComponents = []
+            if (colorName) nameComponents.push(colorName)
+            if (variantName) nameComponents.push(variantName)
+            return nameComponents.join([' - '])
+        },
     },
 })
 

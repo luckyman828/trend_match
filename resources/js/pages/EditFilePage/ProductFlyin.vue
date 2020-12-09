@@ -899,7 +899,7 @@ export default {
                 pictures: [
                     {
                         url: null,
-                        name: 'New image',
+                        name: null,
                     },
                 ],
                 imageIndex: 0,
@@ -1173,7 +1173,7 @@ export default {
             await this.syncExternalImages({ file: this.currentFile, products: [this.productToEdit] })
         },
         onAddImageToVariant(variant) {
-            variant.pictures.push({ url: null, name: 'New image' })
+            variant.pictures.push({ url: null, name: null })
             variant.imageIndex = variant.pictures.length - 1
         },
         onVariantPictureDragStart(e, variant) {

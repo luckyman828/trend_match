@@ -2279,7 +2279,7 @@
                             onAddImageToVariant: function onAddImageToVariant(variant) {
                                 variant.pictures.push({
                                     url: null,
-                                    name: 'New image',
+                                    name: null,
                                 })
                                 variant.imageIndex = variant.pictures.length - 1
                             },

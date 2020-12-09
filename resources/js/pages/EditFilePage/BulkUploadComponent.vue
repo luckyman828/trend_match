@@ -7,18 +7,18 @@
                 <strong class="primary">ATTENTION</strong><br />
                 <span
                     >Images names must start with this pattern:
-                    <i>"<strong>{PRODUCT ID}</strong>_<strong>{VARIANT NAME}</strong>"</i></span
+                    <i>"<strong>{PRODUCT ID}</strong>_<strong>{COLOR NAME} - {VARIANT NAME}</strong>"</i></span
                 >
             </p>
             <!-- <p>
                 <i>"<strong>{PRODUCT ID}</strong>_<strong>{VARIANT NAME}</strong>"</i>
             </p> -->
             <p style="margin: 16px auto;">
-                <i><strong>Example:</strong> "12345678_Green - Pack Shot-Back-002"</i>
+                <i><strong>Example:</strong> "12345678_Green - detailMelange - Pack Shot-Back-002"</i>
             </p>
             <p>
-                <strong>Explanation:</strong> {Product ID} followed by an underscore(_), followed by the {variant name},
-                followed by nothing, a dash(-), or underscore(_)
+                <strong>Explanation:</strong> {Product ID} followed by an underscore(_), followed by the {color name},
+                followed by nothing or a dash followed by the {variant name}, followed by nothing or underscore(_)
             </p>
 
             <p>
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
     name: 'bulkUploadComponent',
     data() {
@@ -93,6 +93,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['updateManyProducts', 'uploadImage']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onFilesChange(fileList) {
             for (let i = 0; i < fileList.length; i++) {
                 const file = fileList[i]
@@ -114,8 +115,12 @@ export default {
 
                 // Find the variant name
                 const underscoreIndex = image.name.indexOf('_')
-                const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
-                const variantName = variantNameMatches.length > 1 ? variantNameMatches[1].trim() : 'null'
+                // const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
+                // const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^_]*)/)
+                const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)-?([^\.\-\_]*)/)
+
+                const colorName = variantNameMatches[1].trim()
+                const variantName = variantNameMatches[2].trim()
 
                 // Check if we should place the image first
                 const shouldBeFirst = image.name.toLowerCase().search('front') >= 0
@@ -136,14 +141,16 @@ export default {
                 // Asume we are adding a new variant
                 let variantToUpdate = {
                     id: this.$uuid.v4(),
-                    name: variantName,
+                    name: this.generateVariantName({ colorName, variantName }),
+                    color: colorName,
+                    variant: variantName,
                     image: null,
                     images: [],
                     pictures: [basePicture],
                     sizes: [],
                     thumbnail: null,
+                    ean_sizes: [],
                 }
-
                 // Find the variant on our product
                 // Check if there is a variant that contains the image variant name
                 const existingVariant = product.variants.find(x => {
@@ -151,20 +158,32 @@ export default {
                         x.name
                             .trim()
                             .toLowerCase()
-                            .search(variantName.trim().toLowerCase()) >= 0
+                            .search(colorName.trim().toLowerCase()) >= 0
                     )
                 })
+                const emptyVariant = product.variants.find(x => !x.color && !x.variant)
+                if (emptyVariant && this.createVariants && !existingVariant) {
+                    Object.assign(emptyVariant, variantToUpdate)
+                }
                 // console.log('variant to update', variantName, existingVariant, product)
 
-                if (existingVariant) {
-                    variantToUpdate = existingVariant
+                if (existingVariant || (emptyVariant && this.createVariants)) {
+                    variantToUpdate = existingVariant ? existingVariant : emptyVariant
 
                     // Check for existing picture
-                    const existingPicture = existingVariant.pictures.find(x => x.name == image.name)
+                    const existingPicture = variantToUpdate.pictures.find(x => !!x.name && x.name == image.name)
+                    const emptyPicture = variantToUpdate.pictures.find(x => !x.name && !x.url)
+                    if (emptyPicture && !existingPicture) {
+                        Object.assign(emptyPicture, basePicture)
+                    }
 
-                    if (existingPicture) {
-                        if (existingPicture.name == image.name && !!existingPicture.url) return // don't reupload an existing image
-                        pictureToUpload = existingPicture
+                    if (existingPicture || emptyPicture) {
+                        if (existingPicture) {
+                            if (existingPicture.name == image.name && !!existingPicture.url) return // don't reupload an existing image
+                            pictureToUpload = existingPicture
+                        } else {
+                            pictureToUpload = emptyPicture
+                        }
                     } else {
                         if (shouldBeFirst) {
                             variantToUpdate.pictures.unshift(basePicture)
@@ -210,7 +229,15 @@ export default {
 
             // Update all products --> This cannot be done earlier since we cannot be sure if we are in the process of uploading some of the images on the product
             this.updatingCount = productsToUpdate.length
-            await this.updateManyProducts({ file: this.file, products: productsToUpdate })
+            if (productsToUpdate.length > 0) {
+                await this.updateManyProducts({ file: this.file, products: productsToUpdate })
+            } else {
+                this.SHOW_SNACKBAR({
+                    msg: 'No matches found',
+                    iconClass: 'far fa-info-circle',
+                    type: 'info',
+                })
+            }
 
             this.imagesToUpload = []
             this.updatingCount = 0
