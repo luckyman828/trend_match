@@ -7,14 +7,14 @@
             </button>
             <ChatMessage v-for="videoComment in videoComments" :key="videoComment.id" :videoComment="videoComment" />
         </div>
-        <ChatInputForm @submit="onSubmit" />
+        <ChatInputForm @submit="scrollToBottom" />
     </div>
 </template>
 
 <script>
 import ChatMessage from './ChatMessage'
 import ChatInputForm from './ChatInputForm'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'chatOverlay',
     components: {
@@ -34,18 +34,39 @@ export default {
         ...mapGetters('videoPresentation', {
             video: 'getCurrentVideo',
         }),
+        ...mapGetters('auth', {
+            authUser: 'authUser',
+        }),
     },
     methods: {
         ...mapActions('videoComments', ['fetchVideoComments']),
+        ...mapMutations('videoComments', ['INSERT_OR_UPDATE_COMMENT']),
         async onFetchMore() {
             this.isFetchingMore = true
             await this.fetchVideoComments({ video: this.video, cursor: this.nextCursor })
             this.isFetchingMore = false
         },
-        onSubmit() {
+        scrollToBottom() {
             const container = this.$refs.messageList
             container.scrollTo(0, container.scrollHeight)
         },
+        commentArrivedHandler(comment) {
+            if (this.authUser.id == comment.user.id) return
+            // console.log('comment arrived', comment)
+            this.INSERT_OR_UPDATE_COMMENT(comment)
+            this.$nextTick(() => {
+                this.scrollToBottom()
+            })
+        },
+    },
+    created() {
+        const connection = this.$connection
+        connection.invoke('SubscribeVideo', this.video.id)
+        connection.on('OnVideoCommentArrived', this.commentArrivedHandler)
+    },
+    destroyed() {
+        connection.invoke('UnSubscribeVideo')
+        connection.off('OnVideoCommentArrived', this.commentArrivedHandler)
     },
 }
 </script>

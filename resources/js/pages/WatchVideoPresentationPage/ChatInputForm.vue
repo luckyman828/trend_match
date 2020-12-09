@@ -40,7 +40,7 @@ export default {
             this.newComment = {
                 id: null,
                 content: '',
-                author: this.authUser,
+                user: this.authUser,
             }
         },
         async onSubmit() {

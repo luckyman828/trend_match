@@ -22,7 +22,6 @@ export default {
                     content: newComment.content,
                 })
                 .then(response => {
-                    console.log('response', response.data)
                     newComment.id = response.data.id
                     commit('INSERT_OR_UPDATE_COMMENT', newComment)
                 })
@@ -34,7 +33,6 @@ export default {
             let comments = []
             await axios.get(apiUrl).then(response => {
                 comments = response.data.data
-                console.log('response', response.data, comments)
                 commit('INSERT_VIDEO_COMMENTS', comments)
                 commit('SET_NEXT_CURSOR', response.data.meta.next)
             })

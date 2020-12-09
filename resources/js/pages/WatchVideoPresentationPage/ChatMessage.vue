@@ -1,7 +1,7 @@
 <template>
     <div class="chat-message">
         <span class="msg">{{ videoComment.content }}</span>
-        <span class="sender">{{ videoComment.author ? videoComment.author.name : 'Anonymous' }}</span>
+        <span class="sender">{{ videoComment.user ? videoComment.user.name : 'Anonymous' }}</span>
     </div>
 </template>
 
