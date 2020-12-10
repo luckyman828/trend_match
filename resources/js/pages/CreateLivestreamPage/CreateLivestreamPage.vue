@@ -11,6 +11,7 @@
         </SearchItemsPanel>
         <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="true">
             <VideoPreview />
+            <ChatOverlay v-if="!!currentVideo" />
         </VideoPlayer>
 
         <TimelinePanel />
@@ -24,6 +25,7 @@ import VideoPreview from './VideoPreview/'
 import VideoPlayer from '../../components/common/VideoPlayer/'
 import TimelinePanel from './TimelinePanel/'
 import ProductSearchListItem from './ProductSearchListItem'
+import ChatOverlay from '../WatchVideoPresentationPage/ChatOverlay'
 
 export default {
     name: 'createLivestreamPage',
@@ -33,6 +35,7 @@ export default {
         TimelinePanel,
         VideoPlayer,
         ProductSearchListItem,
+        ChatOverlay,
     },
     computed: {
         ...mapGetters('videoPlayer', {
@@ -72,6 +75,9 @@ export default {
     .search-products-panel {
         height: calc(100vh - #{$navbarHeight});
         grid-area: sidebar;
+    }
+    .chat-overlay {
+        bottom: 16px;
     }
 }
 </style>

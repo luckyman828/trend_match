@@ -52,6 +52,7 @@ export default {
         init() {
             // Check if we have already fetched selections
             // console.log('available selections', this.availableSelections)
+            console.log('available selections', this.availableSelections)
             if (this.availableSelections.length >= 0) return
         },
     },

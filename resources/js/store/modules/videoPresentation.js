@@ -111,7 +111,7 @@ export default {
             if (videoIdMatches.length < 2) return false
             const videoId = videoIdMatches[1]
 
-            const newVideo = {
+            let newVideo = {
                 video: {
                     provider,
                     identifier: videoId,
@@ -125,6 +125,7 @@ export default {
             await axios
                 .post(apiUrl, newVideo)
                 .then(response => {
+                    Object.assign(newVideo, response.data)
                     commit('SET_CURRENT_VIDEO', newVideo)
                     commit('SET_STATUS', 'success')
                 })
