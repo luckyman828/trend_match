@@ -18,17 +18,20 @@ export default {
                 role: 'Admin',
                 description: 'Can do some special move and rewoke powers.',
             },
-            // {
-            //     role: 'Owner',
-            //     description: 'The owner.',
-            // },
+            {
+                role: 'Owner',
+                description: 'The owner.',
+            },
         ],
     },
 
     getters: {
         loadingWorkspaces: state => state.loading,
         workspaces: state => state.workspaces,
-        availableWorkspaceRoles: state => state.availableWorkspaceRoles,
+        availableWorkspaceRoles: (state, getters, rootState, rootGetters) =>
+            rootGetters['auth/getIsSystemAdmin']
+                ? state.availableWorkspaceRoles
+                : state.availableWorkspaceRoles.filter(x => x.role != 'Owner'),
         currentWorkspaceIndex: state => state.currentWorkspaceIndex,
         currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
         authUserWorkspaceRole: (state, getters) => {
@@ -281,6 +284,24 @@ export default {
             const apiUrl = `workspaces/${workspace.id}/databases`
             await axios.get(apiUrl).then(response => {
                 state.databases = response.data
+            })
+        },
+        async insertWorkspace({ state, commit }, newWorkspace) {
+            const apiUrl = `admins/workspaces`
+            await axios.post(apiUrl, newWorkspace).then(response => {
+                const workspace = response.data
+                Object.assign(newWorkspace, workspace)
+                state.workspaces.push(newWorkspace)
+                newWorkspace.role = 'Admin'
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Workspace created',
+                        iconClass: 'far fa-building',
+                        type: 'success',
+                    },
+                    { root: true }
+                )
             })
         },
     },

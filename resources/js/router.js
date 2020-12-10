@@ -98,6 +98,11 @@ const routes = [
         name: 'settings',
         component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SettingsPage'),
     },
+    {
+        path: '/system-admin',
+        name: 'systemAdmin',
+        component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SystemAdminPage'),
+    },
     { path: '*', redirect: '/files' },
 ]
 

@@ -89,6 +89,9 @@ export default {
             workspace: 'currentWorkspace',
             realRole: 'getRealWorkspaceRole',
         }),
+        ...mapGetters('auth', {
+            isSystemAdmin: 'getIsSystemAdmin',
+        }),
     },
     methods: {
         ...mapActions('workspaces', ['uploadWorkspaceCoverImage', 'uploadWorkspaceLogo']),
@@ -108,7 +111,7 @@ export default {
         },
     },
     created() {
-        if (this.realRole != 'Owner') this.$router.push({ name: 'files' })
+        if (this.realRole != 'Owner' && !this.isSystemAdmin) this.$router.push({ name: 'files' })
     },
 }
 </script>

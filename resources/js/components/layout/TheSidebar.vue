@@ -64,7 +64,7 @@
                     <div class="unread-circle circle xxs red" v-if="changelogUnread" />
                 </div>
             </div>
-            <div class="sidebar-item" v-if="getRealWorkspaceRole == 'Owner'">
+            <div class="sidebar-item" v-if="getRealWorkspaceRole == 'Owner' || getIsSystemAdmin">
                 <router-link
                     :to="{ name: 'settings' }"
                     class="inner"
@@ -80,7 +80,17 @@
                     <span class="user">{{ authUser.name }}</span>
                 </a>
             </div>
-            <div class="bottom-drawer" :class="{ collapsed: !drawerExpanded }">
+            <div class="bottom-drawer" :class="[{ collapsed: !drawerExpanded }, { 'system-admin': getIsSystemAdmin }]">
+                <div class="sidebar-item" v-if="getIsSystemAdmin">
+                    <router-link
+                        :to="{ name: 'systemAdmin' }"
+                        class="inner"
+                        v-tooltip.right="displayTooltips && `System Admin`"
+                    >
+                        <i class="fas fa-user-secret"></i>
+                        <span>System Admin</span>
+                    </router-link>
+                </div>
                 <div class="sidebar-item">
                     <a class="inner" @click="logout" v-tooltip.right="displayTooltips && 'Log out'">
                         <i class="far fa-sign-out fa-flip-horizontal"></i>
@@ -111,7 +121,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('auth', ['authUser', 'getIsSystemAdmin']),
         ...mapGetters('workspaces', [
             'workspaces',
             'authUserWorkspaceRole',
@@ -237,6 +247,9 @@ export default {
     position: relative;
     overflow: hidden;
     height: 80px;
+    &.system-admin {
+        height: 160px;
+    }
     &.collapsed {
         height: 0;
     }
