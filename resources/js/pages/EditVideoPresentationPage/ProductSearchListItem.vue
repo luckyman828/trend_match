@@ -74,6 +74,9 @@ export default {
     border-radius: 4px;
     background: white;
     margin-bottom: 8px;
+    .name {
+        word-break: break-word;
+    }
     img {
         height: 120px;
         width: 90px;

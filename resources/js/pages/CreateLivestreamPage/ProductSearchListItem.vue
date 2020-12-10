@@ -101,6 +101,9 @@ export default {
         // color: white;
         border: solid 2px $primary;
     }
+    .name {
+        word-break: break-word;
+    }
     img {
         height: 120px;
         width: 90px;
