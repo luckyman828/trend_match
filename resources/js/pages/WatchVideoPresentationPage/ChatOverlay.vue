@@ -59,6 +59,9 @@ export default {
             })
         },
     },
+    mounted() {
+        this.scrollToBottom()
+    },
     created() {
         const connection = this.$connection
         connection.invoke('SubscribeVideo', this.video.id)

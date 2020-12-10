@@ -86,7 +86,7 @@
                         <div class="list-item">
                             <label>RRP</label>
                             <span class="value"
-                                >{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span
+                                >{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span
                             >
                         </div>
                         <div class="list-item">

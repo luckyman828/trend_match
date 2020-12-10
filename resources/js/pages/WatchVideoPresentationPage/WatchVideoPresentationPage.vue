@@ -178,7 +178,6 @@ export default {
             this.ADD_TIMING({ timing: newTiming, index: null })
         },
         async presentationChangeHandler(eventName, args) {
-            console.log('presentation chagned', eventName)
             if (eventName == 'ProductChanged' && this.isLive) {
                 const productId = args.detail[0].product_id
                 this.onNewProduct(productId)

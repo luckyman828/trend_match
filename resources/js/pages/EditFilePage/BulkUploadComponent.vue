@@ -158,7 +158,11 @@ export default {
                         x.name
                             .trim()
                             .toLowerCase()
-                            .search(colorName.trim().toLowerCase()) >= 0
+                            .search(colorName.trim().toLowerCase()) >= 0 ||
+                        colorName
+                            .trim()
+                            .toLowerCase()
+                            .search(x.name.trim().toLowerCase()) >= 0
                     )
                 })
                 const emptyVariant = product.variants.find(x => !x.color && !x.variant)

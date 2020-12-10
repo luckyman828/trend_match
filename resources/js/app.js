@@ -170,6 +170,14 @@ Vue.mixin({
             if (variantName) nameComponents.push(variantName)
             return nameComponents.join([' - '])
         },
+        copyToClipboard(value) {
+            let tempInput = document.createElement('input')
+            tempInput.value = value
+            document.body.appendChild(tempInput)
+            tempInput.select()
+            document.execCommand('copy')
+            document.body.removeChild(tempInput)
+        },
     },
 })
 

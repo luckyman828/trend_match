@@ -27,6 +27,10 @@
         </div> -->
 
         <div class="items-right">
+            <button class="ghost" @click="showCopyLinkModal = true">
+                <i class="far fa-link"></i>
+                <span>Copy link</span>
+            </button>
             <button class="ghost red" @click="onEndLivestream">
                 <span>End livestream</span>
             </button>
@@ -38,6 +42,8 @@
             <!-- <SelectionSelector />
             <SelectionPresenterModeButton :selection="currentSelection" /> -->
         </div>
+
+        <CopyLinkModal :show="showCopyLinkModal" @close="showCopyLinkModal = false" />
     </div>
 </template>
 
@@ -46,15 +52,19 @@ import axios from 'axios'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
 import SelectionSelector from './SelectionSelector'
+import CopyLinkModal from './CopyLinkModal'
+
 export default {
     name: 'livestreamPageNavbar',
     components: {
         SelectionPresenterModeButton,
         SelectionSelector,
+        CopyLinkModal,
     },
     data: function() {
         return {
             scanModeActive: false,
+            showCopyLinkModal: false,
         }
     },
     computed: {

@@ -1263,14 +1263,6 @@ export default {
                 type: 'success',
             })
         },
-        copyToClipboard(value) {
-            let tempInput = document.createElement('input')
-            tempInput.value = value
-            document.body.appendChild(tempInput)
-            tempInput.select()
-            document.execCommand('copy')
-            document.body.removeChild(tempInput)
-        },
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             this.sortArray(this.getSelectionsTree, sortAsc, sortKey)
