@@ -91,7 +91,7 @@ export default {
             const domainRegex = new RegExp(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^.\/\n?]+)/)
             const providerMatches = url.match(domainRegex)
             if (providerMatches.length < 2) return false
-            const provider = providerMatches[1]
+            let provider = providerMatches[1]
 
             let videoIdRegex
             if (provider == 'vimeo') {
@@ -101,6 +101,10 @@ export default {
                 videoIdRegex = new RegExp(
                     /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/watch\?v=(([A-z]|[0-9])*)/
                 )
+            }
+            if (provider == 'youtu') {
+                provider = 'youtube'
+                videoIdRegex = new RegExp(/(?:\.be\/)(.*)/)
             }
 
             const videoIdMatches = url.match(videoIdRegex)
