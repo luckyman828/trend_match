@@ -1,25 +1,37 @@
 <template>
     <div class="product-preview">
         <div id="preview-spawner">
-            <div class="preview" ref="preview">
-                <div class="header">
-                    <span class="name">{{ product.name }}</span>
-                </div>
-                <div class="img-wrapper">
-                    <BaseVariantImage :variant="product.variants[0]" size="sm" />
-                    <div class="square white price sm">
-                        <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+            <v-popover placement="right" popoverClass="action-list-wrapper">
+                <!-- Preview -->
+                <div class="preview" ref="preview">
+                    <div class="header">
+                        <span class="name">{{ product.name }}</span>
+                    </div>
+                    <div class="img-wrapper">
+                        <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                        <div class="square white price sm">
+                            <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Product actions -->
+                <div slot="popover" class="action-list flex-list sm">
+                    <product-action-button action="Focus" :product="product" displayStyle="iconOnly" />
+                    <product-action-button action="In" :product="product" displayStyle="iconOnly" />
+                    <product-action-button action="Out" :product="product" displayStyle="iconOnly" />
+                </div>
+            </v-popover>
         </div>
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import ProductActionButton from '../../../components/common/ProductActionButton.vue'
 export default {
     name: 'productPreview',
+    components: { ProductActionButton },
     computed: {
         ...mapGetters('videoPlayer', {
             product: 'getCurrentProduct',
@@ -55,6 +67,10 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+.product-preview {
+    pointer-events: none;
+    display: inline-block;
+}
 .preview {
     display: inline-flex;
     flex-direction: column;
@@ -70,6 +86,7 @@ export default {
     cursor: pointer;
     overflow: hidden;
     z-index: 1;
+    pointer-events: all;
     &.hide {
         visibility: hidden;
     }
@@ -125,6 +142,25 @@ export default {
     }
     to {
         transform: none;
+    }
+}
+.action-list {
+    background: $dark;
+    padding: 8px;
+}
+</style>
+<style lang="scss">
+@import '~@/_variables.scss';
+
+.action-list-wrapper {
+    .tooltip-inner {
+        border-radius: 8px;
+        border-color: $dark;
+        background-color: $dark;
+    }
+    &[x-placement^='right'] > .wrapper > .tooltip-arrow,
+    &[x-placement^='right'] > .wrapper > .tooltip-arrow::after {
+        border-right-color: $dark;
     }
 }
 </style>

@@ -10,9 +10,6 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'chatMessage',
     props: ['videoComment', 'chatBundle', 'index'],
-    computed: {
-        ...mapGetters('presentation'),
-    },
 }
 </script>
 

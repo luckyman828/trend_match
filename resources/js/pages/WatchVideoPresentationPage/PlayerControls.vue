@@ -166,7 +166,6 @@ export default {
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapActions('products', ['setProductAction']),
         ...mapActions('actions', ['updateFeedbacks', 'updateActions']),
         ...mapMutations('videoPlayer', ['SET_CONTROLS_HIDDEN']),
         onUpdateAction(action) {
