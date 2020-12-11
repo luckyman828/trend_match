@@ -32,5 +32,6 @@ export default {
 @import '~@/_variables.scss';
 .product-details-sidebar {
     pointer-events: all;
+    display: inline-block;
 }
 </style>
