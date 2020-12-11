@@ -5,8 +5,8 @@
         v-tooltip="userWriteAccess.actions.msg"
         @click="onUpdateAction(action)"
     >
-        <i class="far fa-times-circle"></i>
-        <span v-if="displaystyle != 'iconOnly'">{{ action }}</span>
+        <i :class="actionIconClass"></i>
+        <span v-if="displayStyle != 'iconOnly'">{{ action }}</span>
     </BaseButton>
 </template>
 
@@ -14,13 +14,19 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'productActionButton',
-    props: ['action', 'product', 'displaystyle'],
+    props: ['action', 'product', 'displayStyle'],
     computed: {
         actionColor() {
             const action = this.action
             if (action == 'Out') return 'red'
             if (action == 'Focus') return 'primary'
             if (action == 'In') return 'green'
+        },
+        actionIconClass() {
+            const action = this.action
+            if (action == 'Out') return 'far fa-times-circle'
+            if (action == 'Focus') return 'far fa-star'
+            if (action == 'In') return 'far fa-heart'
         },
         ...mapGetters('products', ['getActiveSelectionInput']),
         ...mapGetters('selections', {

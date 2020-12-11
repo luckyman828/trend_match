@@ -12,6 +12,12 @@
                         <div class="square white price sm">
                             <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
                         </div>
+                        <div class="view-overlay flex-list center-v center-h">
+                            <div class="flex-list flex-v center-h sm">
+                                <i class="far fa-eye md dark"></i>
+                                <span>View details</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -23,6 +29,13 @@
                 </div>
             </v-popover>
         </div>
+
+        <BaseCoachmark
+            placement="bottom-start"
+            name="showVideoProductDetails"
+            :targetRef="$refs.preview"
+            msg="Click to view product details"
+        />
     </div>
 </template>
 
@@ -114,6 +127,13 @@ export default {
         white-space: nowrap;
         overflow: hidden;
     }
+    &:hover {
+        .img-wrapper {
+            .view-overlay {
+                opacity: 1;
+            }
+        }
+    }
     .img-wrapper {
         position: relative;
         height: 0;
@@ -134,6 +154,25 @@ export default {
             font-weight: 700;
             opacity: 0.9;
         }
+        .view-overlay {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            z-index: 1;
+            background: rgba(white, 0.5);
+            font-weight: 500;
+        }
+    }
+    .helper {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        padding: 4px;
+        border-radius: 4px;
+        background: $primary;
     }
 }
 @keyframes flyin {
@@ -153,6 +192,7 @@ export default {
 @import '~@/_variables.scss';
 
 .action-list-wrapper {
+    min-width: 0;
     .tooltip-inner {
         border-radius: 8px;
         border-color: $dark;
