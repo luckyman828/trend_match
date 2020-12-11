@@ -1302,25 +1302,22 @@ form,
         }
     }
 }
-form,
-.form-wrapper {
-    .form-element {
-        display: block;
-        width: 100%;
-        &:not(:last-child) {
-            margin-bottom: 24px;
-        }
-        > .label {
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 8px;
-        }
+.form-element {
+    display: block;
+    width: 100%;
+    &:not(:last-child) {
+        margin-bottom: 24px;
     }
-    .form-section {
-        border-bottom: solid 1px $divider;
-        padding-bottom: 32px;
-        margin-bottom: 32px;
+    > .label {
+        cursor: pointer;
+        display: inline-block;
+        margin-top: 8px;
     }
+}
+.form-section {
+    border-bottom: solid 1px $divider;
+    padding-bottom: 32px;
+    margin-bottom: 32px;
 }
 input::placeholder {
     color: $grey700;

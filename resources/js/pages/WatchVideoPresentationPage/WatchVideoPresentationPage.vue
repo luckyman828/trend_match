@@ -4,7 +4,7 @@
         :class="[{ started: playerStarted }, { playing: isPlaying }, { 'controls-hidden': controlsHidden }]"
     >
         <div class="video-presentation-wrapper">
-            <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
+            <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false" :hideTimeline="true">
                 <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
                     <h3>Welcome to the video presentation</h3>
                     <button class="xl white" @click="onStartPlaying">
@@ -32,8 +32,8 @@
                         <ProductDetailsSidebar />
                         <CartSidebar ref="cartSidebar" />
                         <PauseOverlay v-if="videoType != 'live'" />
-                        <PlayerControls />
                         <ChatOverlay v-if="videoType == 'live'" />
+                        <PlayerControls />
                     </template>
                 </div>
             </VideoPlayer>
@@ -67,7 +67,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../components/common/VideoPlayer/'
 import PlayerControls from './PlayerControls'
-import ProductDetailsSidebar from './ProductDetailsSidebar'
+import ProductDetailsSidebar from './ProductDetailsSidebar/'
 import CartSidebar from './CartSidebar/'
 import PauseOverlay from './PauseOverlay/'
 import EndedOverlay from './EndedOverlay'

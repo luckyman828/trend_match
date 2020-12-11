@@ -1,107 +1,111 @@
 <template>
-    <div class="player-controls" :class="{ hide: hideControls }">
-        <div class="main">
-            <div class="left">
-                <div class="button-list flex-list">
-                    <!-- PLAY / PAUSE -->
-                    <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
-                        <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
-                    </button>
-                    <span
-                        v-else
-                        class="circle invisible ghost-hover"
-                        v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
-                    >
-                        <i class="fas fa-circle red"></i>
-                    </span>
+    <div class="player-controls-wrapper">
+        <VideoTimeline v-if="playerReady"/>
+        <div class="player-controls" :class="{ hide: hideControls }">
+            <div class="main">
+                <div class="left">
+                    <div class="button-list flex-list">
+                        <!-- PLAY / PAUSE -->
+                        <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                            <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
+                        </button>
+                        <span
+                            v-else
+                            class="circle invisible ghost-hover"
+                            v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
+                        >
+                            <i class="fas fa-circle red"></i>
+                        </span>
 
-                    <!-- MUTE / UNMUTE -->
-                    <VolumeControl />
+                        <!-- MUTE / UNMUTE -->
+                        <VolumeControl />
 
-                    <!-- FULLSCREEN MODE -->
-                    <button
-                        class="invisible white circle ghost-hover"
-                        v-tooltip="{
-                            content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
-                            delay: { show: 500 },
-                        }"
-                        ref="buttonToClick"
-                        @click="toggleFullscreenMode"
-                    >
-                        <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
-                    </button>
-                </div>
-
-                <div class="time" style="margin-left: 40px;">
-                    <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
-                </div>
-
-                <div class="product-totals" style="margin-left: 52px;">
-                    <div class="pill dark sm">
-                        <span> {{ currentTimingIndex + 1 }} / {{ timings.length }} styles </span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="middle">
-                <div class="button-list" v-if="product">
-                    <BaseButton
-                        :buttonClass="selectionInput[currentAction] != 'Focus' ? 'white' : 'primary'"
-                        :disabled="!userWriteAccess.actions.hasAccess"
-                        v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction('Focus')"
-                    >
-                        <i class="far fa-star"></i>
-                    </BaseButton>
-                    <BaseButton
-                        :buttonClass="selectionInput[currentAction] != 'In' ? 'white' : 'green'"
-                        :disabled="!userWriteAccess.actions.hasAccess"
-                        v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction('In')"
-                    >
-                        <i class="far fa-heart"></i>
-                        <span>In</span>
-                    </BaseButton>
-                    <BaseButton
-                        :buttonClass="selectionInput[currentAction] != 'Out' ? 'white' : 'red'"
-                        :disabled="!userWriteAccess.actions.hasAccess"
-                        v-tooltip="userWriteAccess.actions.msg"
-                        @click="onUpdateAction('Out')"
-                    >
-                        <i class="far fa-times-circle"></i>
-                        <span>out</span>
-                    </BaseButton>
-                </div>
-            </div>
-
-            <div class="right">
-                <template v-if="product">
-                    <div class="price-list">
-                        <div class="list-item">
-                            <label>WHS</label>
-                            <span class="value"
-                                >{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span
-                            >
-                        </div>
-                        <div class="list-item">
-                            <label>RRP</label>
-                            <span class="value"
-                                >{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span
-                            >
-                        </div>
-                        <div class="list-item">
-                            <label>Mark up</label>
-                            <span class="value">{{ product.yourPrice.mark_up }}</span>
-                        </div>
+                        <!-- FULLSCREEN MODE -->
+                        <button
+                            class="invisible white circle ghost-hover"
+                            v-tooltip="{
+                                content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
+                                delay: { show: 500 },
+                            }"
+                            ref="buttonToClick"
+                            @click="toggleFullscreenMode"
+                        >
+                            <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
+                        </button>
                     </div>
 
-                    <div class="delivery-list" v-if="product && product.delivery_dates.length > 0">
-                        <div class="list-item" v-for="(delivery, index) in product.delivery_dates" :key="index">
-                            <label>Delivery {{ index + 1 }}</label>
-                            <span class="value">{{ getPrettyDate(delivery, 'medium') }}</span>
+                    <div class="time" style="margin-left: 40px;">
+                        <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
+                    </div>
+
+                    <div class="product-totals" style="margin-left: 52px;">
+                        <div class="pill dark sm">
+                            <span> {{ currentTimingIndex + 1 }} / {{ timings.length }} styles </span>
                         </div>
                     </div>
-                </template>
+                </div>
+
+                <div class="middle">
+                    <div class="button-list" v-if="product">
+                        <BaseButton
+                            :buttonClass="selectionInput[currentAction] != 'Focus' ? 'white' : 'primary'"
+                            :disabled="!userWriteAccess.actions.hasAccess"
+                            v-tooltip="userWriteAccess.actions.msg"
+                            @click="onUpdateAction('Focus')"
+                        >
+                            <i class="far fa-star"></i>
+                        </BaseButton>
+                        <BaseButton
+                            :buttonClass="selectionInput[currentAction] != 'In' ? 'white' : 'green'"
+                            :disabled="!userWriteAccess.actions.hasAccess"
+                            v-tooltip="userWriteAccess.actions.msg"
+                            @click="onUpdateAction('In')"
+                        >
+                            <i class="far fa-heart"></i>
+                            <span>In</span>
+                        </BaseButton>
+                        <BaseButton
+                            :buttonClass="selectionInput[currentAction] != 'Out' ? 'white' : 'red'"
+                            :disabled="!userWriteAccess.actions.hasAccess"
+                            v-tooltip="userWriteAccess.actions.msg"
+                            @click="onUpdateAction('Out')"
+                        >
+                            <i class="far fa-times-circle"></i>
+                            <span>out</span>
+                        </BaseButton>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <template v-if="product">
+                        <div class="price-list">
+                            <div class="list-item">
+                                <label>WHS</label>
+                                <span class="value"
+                                    >{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span
+                                >
+                            </div>
+                            <div class="list-item">
+                                <label>RRP</label>
+                                <span class="value"
+                                    >{{ product.yourPrice.recommended_retail_price }}
+                                    {{ product.yourPrice.currency }}</span
+                                >
+                            </div>
+                            <div class="list-item">
+                                <label>Mark up</label>
+                                <span class="value">{{ product.yourPrice.mark_up }}</span>
+                            </div>
+                        </div>
+
+                        <div class="delivery-list" v-if="product && product.delivery_dates.length > 0">
+                            <div class="list-item" v-for="(delivery, index) in product.delivery_dates" :key="index">
+                                <label>Delivery {{ index + 1 }}</label>
+                                <span class="value">{{ getPrettyDate(delivery, 'medium') }}</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     </div>
@@ -109,6 +113,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import VideoTimeline from '../../components/common/VideoPlayer/VideoTimeline.vue'
 import VolumeControl from '../../components/common/VideoPlayer/VolumeControl'
 
 export default {
@@ -121,6 +126,7 @@ export default {
     },
     components: {
         VolumeControl,
+        VideoTimeline,
     },
     computed: {
         ...mapGetters('videoPlayer', {
@@ -133,6 +139,7 @@ export default {
             isLive: 'getIsLive',
             isPlaying: 'getIsPlaying',
             hideControls: 'getControlsHidden',
+            playerReady: 'getPlayer',
         }),
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',
@@ -278,6 +285,12 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
+.player-controls-wrapper {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    pointer-events: all;
+}
 .player-controls {
     pointer-events: all;
     background: $dark100;

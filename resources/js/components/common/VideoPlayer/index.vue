@@ -41,7 +41,7 @@
         />
         <!-- </div> -->
 
-        <PlayerOverlay :playerReady="playerReady">
+        <PlayerOverlay :playerReady="playerReady" :hideTimeline="hideTimeline">
             <slot />
         </PlayerOverlay>
     </div>
@@ -56,7 +56,7 @@ export default {
     components: {
         PlayerOverlay,
     },
-    props: ['providerVideoId', 'provider', 'autoplay'],
+    props: ['providerVideoId', 'provider', 'autoplay', 'hideTimeline'],
     data: function() {
         return {
             playerReady: false,

@@ -7,7 +7,7 @@ horizontalSrollDirective.install = Vue => {
                     return
                 }
                 let delta = (e.deltaY || -e.wheelDelta || e.detail) >> 10 || 1
-                delta = delta * -100
+                delta = delta * -(binding ? binding.value : 100)
                 document.documentElement.scrollLeft -= delta
                 // safari needs also this
                 el.scrollLeft -= delta

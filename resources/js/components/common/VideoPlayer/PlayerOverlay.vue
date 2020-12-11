@@ -4,7 +4,7 @@
         <div class="custom-overlay">
             <slot />
         </div>
-        <VideoTimeline v-if="playerReady && videoType != 'live'" />
+        <VideoTimeline v-if="!hideTimeline && playerReady && videoType != 'live'" />
     </div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
     components: {
         VideoTimeline,
     },
-    props: ['playerReady'],
+    props: ['playerReady', 'hideTimeline'],
     computed: {
         ...mapGetters('videoPlayer', {
             playerStatus: 'getStatus',
