@@ -5,7 +5,16 @@
             <button class="white pill sm ghost" v-else-if="nextCursor" @click="onFetchMore">
                 <span>Load more</span>
             </button>
-            <ChatMessage v-for="videoComment in videoComments" :key="videoComment.id" :videoComment="videoComment" />
+            <div class="chat-bundle" v-for="(chatBundle, bundleIndex) in chatBundles" :key="bundleIndex">
+                <ChatMessage
+                    :class="{ 'from-presenter': chatBundle.sender.id == presentation.presenter.id }"
+                    v-for="(videoComment, index) in chatBundle.comments"
+                    :key="videoComment.id"
+                    :videoComment="videoComment"
+                    :index="index"
+                    :chatBundle="chatBundle"
+                />
+            </div>
         </div>
         <ChatInputForm @submit="scrollToBottom" />
     </div>
@@ -37,6 +46,28 @@ export default {
         ...mapGetters('auth', {
             authUser: 'authUser',
         }),
+        ...mapGetters('presentation', {
+            presentation: 'getCurrentPresentationDetails',
+        }),
+        chatBundles() {
+            // Bundle chat messages with the same sender
+            const bundles = []
+            let currentBundle = []
+            this.videoComments.map((comment, index) => {
+                const lastBundle = bundles[bundles.length - 1]
+                // If the sender of the last bundle is the same as the current comment
+                if (lastBundle && lastBundle.sender.id == comment.user.id) {
+                    lastBundle.comments.push(comment)
+                } else {
+                    const newBundle = {
+                        sender: comment.user,
+                        comments: [comment],
+                    }
+                    bundles.push(newBundle)
+                }
+            })
+            return bundles
+        },
     },
     methods: {
         ...mapActions('videoComments', ['fetchVideoComments']),
@@ -115,8 +146,19 @@ export default {
             ::v-deep {
                 .chat-message {
                     background: black;
+                    &.from-presenter {
+                        background: $primary;
+                        .sender {
+                            color: $grey400;
+                        }
+                    }
                 }
             }
+        }
+        .chat-bundle {
+            display: flex;
+            flex-direction: column;
+            margin-top: 8px;
         }
     }
 }
