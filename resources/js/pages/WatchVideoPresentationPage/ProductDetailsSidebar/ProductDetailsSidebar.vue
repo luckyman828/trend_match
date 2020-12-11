@@ -149,6 +149,7 @@ export default {
         }
         .overlay {
             z-index: 0;
+            background: none;
         }
     }
 
