@@ -1,6 +1,157 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Crêpe: Asparagus"
+            date="The Christmas 2020 Release"
+            featuredImgUrl="/images/blog/undraw_christmas_tree_56sw.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    Joy to the world, a new update for Kollekt is here 🎄.
+                </p>
+                <p>
+                    We have put lots of tweaks and features in the Christmas stockings, for both iOS app and dashboard,
+                    so strap in for the sleigh ride and let's unwrap the presents.
+                </p>
+            </template>
+
+            <template v-slot:body>
+                <h2>Dashboard</h2>
+                <h3>Custom product data</h3>
+                <p>Do you need <i>sample location</i> or <i>country of origin</i> data for your styles?</p>
+                <p>
+                    You can now define any number of custom properties for your products.
+                    <br />These properties can be used to filter products by in the dashboard, and will be included in
+                    your exports.
+                </p>
+                <p>
+                    The custom product data can be set just like any other product data: By uploading a spreadsheet, or
+                    manually entering the data.
+                </p>
+                <p>
+                    If you have a column with the same header name as your custom propety in a spreadsheet, Kollekt will
+                    automatically map them, when importing from a spreadsheet.
+                </p>
+                <p><strong>How to get started</strong></p>
+                <p>
+                    Enabling custom properties can currently only be done by a Kollekt developer, but we are more than
+                    happy to do this for you. Don't hesitate to reach out to us, to get started.
+                </p>
+
+                <h3>Variants = Color + Variant</h3>
+                <p>Variant variants? You got it.</p>
+                <p>
+                    Until now we have only been using color to uniquely identify product variants. Now each variant in
+                    Kollekt consists of a <i>color</i> and a <i>variant</i>.
+                </p>
+                <p>
+                    This should help Kollekt better reflect the reality of your data, where one item might come in the
+                    same color but with different details (variants).
+                </p>
+                <p>
+                    When bulk uploading images to a file, colors and variants can automatically be generated on your
+                    products.
+                </p>
+                <p>This change should not affect the way you use Kollekt.</p>
+
+                <h3>Import product data from external database</h3>
+                <p>
+                    If you get an integration between Kollekt and a datasoure of yours that holds your product data, it
+                    is now easier than ever before, to import product data to your files.
+                </p>
+                <p>
+                    All you have to do is provide a list of the product ids you would like added, and the products will
+                    be fetched automatically. This can be done by scanning barcodes, uploading a spreadsheet with the
+                    ids or manually entering them.
+                </p>
+                <p>
+                    No need to map column headers to Kollekt's product properties anymore, as we simply create the
+                    translation map one time at setup.
+                </p>
+                <p><strong>How to get started</strong></p>
+                <p>
+                    Grab a hold of your local IT-person and put them in touch with us. We are ready and more than to
+                    happy to build integrations.
+                </p>
+
+                <h3>Ticket labels</h3>
+                <p>You can now add a label to your product tickets.</p>
+                <p>Labels will be included in your exports, and products can be filtered by them in Kollekt.</p>
+                <p>Currently the available tickets are:</p>
+                <ul>
+                    <li>color_added</li>
+                    <li>color_removed</li>
+                    <li>price_wish</li>
+                    <li>add_delivery</li>
+                    <li>change_delivery</li>
+                </ul>
+                <p>
+                    We plan to allow you to set the available labels yourself in the future. For now just write to us if
+                    there is a label you are missing, and we will add it in no time.
+                </p>
+                <p><strong>How to use</strong></p>
+                <p>
+                    When writing a ticket type <i>#</i> and a list of available tickets will appear for you to choose
+                    from.
+                </p>
+                <p>
+                    Labels are only available for tickets - i.e. not for regular requests, so make sure you enable
+                    tickets in your selection settings if you wish to use it
+                </p>
+                <h3>General Tweaks & Fixes</h3>
+                <ul>
+                    <li>
+                        Both files and folder can now be created from either the navbar or the footer of the files
+                        table.
+                    </li>
+                    <li>
+                        The <i>Create new file</i> flow has been overhauled and (hopefully) simplified. When creating a
+                        new file, you are now taken to the <i>Edit products screen</i>, from where you can import
+                        products to the file file, from one of 3 sources: Existing files in Kollekt, spreadsheets (Excel
+                        / CSV), or a linked external database.
+                    </li>
+                    <li>Updated the name-matching logic of bulk upload images.</li>
+                    <li>
+                        Fixed barcode scanner not working when it had been configured to insert a line carriage after
+                        each scan.
+                    </li>
+                    <li>
+                        When searching for users to add to a team you can now search by either name or e-mail.
+                    </li>
+                    <li>
+                        Fixed a bug when mapping spreadsheet headers that caused searching for header to always return 0
+                        results.
+                    </li>
+                </ul>
+
+                <h2>App</h2>
+                <h3>Alignment in app</h3>
+                <p>It is finally possible to make both feedback and alignment in the iOS app.</p>
+                <p>
+                    This means you can use exactly the platform that fits your needs best at the time, and should
+                    prevent us from needing to convert input from feedback to alignment in the future.
+                </p>
+                <p>
+                    For now, only comments (not tickets/requests) can be made in the app, so you will still need the
+                    dashboard to finish your selections.
+                </p>
+
+                <h3>General Tweaks</h3>
+                <ul>
+                    <li>Hidden selections are now completely hidden in the app, helping you avoid clutter.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+
+        <ChangelogPost
             title="Crêpe: Apricot"
             date="Late November 2020 Release"
             featuredImgUrl="/images/blog/undraw_export_files_re_99ar.svg"

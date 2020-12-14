@@ -159,6 +159,7 @@ export function autoMapField(field, availableFiles, matchesToAvoid, mustInclude)
 }
 
 export function instantiateProductsFromMappedFields(mappedFields, files, options) {
+    console.log('instantie products')
     // Obey options if provided
     const fieldsToInstantiateFrom = !options
         ? mappedFields
@@ -280,6 +281,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     return
                 let fieldValue = field.customEntry ? field.fieldName : row[field.fieldName]
 
+                console.log('Start, set field value', field.name, fieldValue)
+
                 // Limit decimals to 2 places
                 if (typeof fieldValue == 'number') fieldValue = Math.round((fieldValue + Number.EPSILON) * 100) / 100
 
@@ -306,7 +309,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 // START MAP VARIANTS
                 //Don't set name or variant of variants
                 if (['variant', 'color'].includes(field.name)) return
-                if (product.variants) {
+                if (product.variants && (field.scope == 'variants' || field.scope == 'images')) {
                     let variantFieldHasBeenProcessed
                     // Find all variants of this row
                     for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
@@ -439,6 +442,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     return
                 }
                 // END MAP ASSORTMENTS
+                console.log('No scope', field.name, fieldValue)
 
                 // NO SCOPE
                 const productField = product[field.name]
@@ -454,6 +458,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     productField[field.displayName] = fieldValue
                     return
                 }
+                console.log('set uncaught data', field.name, fieldValue)
 
                 product[field.name] = fieldValue
             })
