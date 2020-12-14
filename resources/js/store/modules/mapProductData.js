@@ -383,8 +383,20 @@ export default {
                 return x
             })
         },
-        getUploadOptions({ state }, enabledByDefault = true) {
+        getUploadOptions({ state, rootGetters }, enabledByDefault = true) {
             const fields = JSON.parse(JSON.stringify(state.productFields)).filter(x => !x.scope)
+            // Add custom fields defined on the workspace
+            const customFields = rootGetters['workspaces/getCustomProductFields']
+            if (customFields)
+                customFields.map(field => {
+                    fields.push({
+                        scope: null,
+                        name: 'extra_data',
+                        displayName: field,
+                        type: 'string',
+                        headersToMatch: [field],
+                    })
+                })
             const fieldsRefined = fields.map(x => {
                 x.enabled = enabledByDefault
                 return x

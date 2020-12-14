@@ -108,19 +108,7 @@
                     <span>Open tickets only</span>
                 </BaseCheckboxInputField>
 
-                <button
-                    class="invisible primary"
-                    v-if="
-                        selectedCategories.length > 0 ||
-                            selectedDeliveryDates.length > 0 ||
-                            selectedBuyerGroups.length > 0 ||
-                            selectedSelectionIds.length > 0 ||
-                            unreadOnly ||
-                            getSelectedTicketLabels.length > 0 ||
-                            getHasAdvancedFilter
-                    "
-                    @click="resetFilters"
-                >
+                <button class="invisible primary" v-if="filtersActive" @click="resetFilters">
                     <span>Clear filter</span>
                 </button>
             </template>
@@ -534,6 +522,7 @@ export default {
             'getHasAdvancedFilter',
             'getAdvancedFilter',
             'getSelectedTicketLabels',
+            'getAllCustomValueFilters',
         ]),
         ...mapGetters('selections', [
             'getCurrentSelections',
@@ -668,6 +657,18 @@ export default {
         },
         completeAvailable() {
             return this.selection.type == 'Master' && this.ticketsEnabled && this.currentSelectionMode == 'Alignment'
+        },
+        filtersActive() {
+            return (
+                this.selectedCategories.length > 0 ||
+                this.selectedDeliveryDates.length > 0 ||
+                this.selectedBuyerGroups.length > 0 ||
+                this.selectedSelectionIds.length > 0 ||
+                this.unreadOnly ||
+                this.getSelectedTicketLabels.length > 0 ||
+                this.getHasAdvancedFilter ||
+                this.getAllCustomValueFilters.length > 0
+            )
         },
     },
     methods: {
