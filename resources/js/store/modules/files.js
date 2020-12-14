@@ -231,8 +231,8 @@ export default {
                             msg: successMsg,
                             iconClass: 'fa-check',
                             type: 'success',
-                            callback: file.type == 'File' ? () => showNewFile() : false,
-                            callbackLabel: file.type == 'File' && `View ${file.type}`,
+                            // callback: file.type == 'File' ? () => showNewFile() : false,
+                            // callbackLabel: file.type == 'File' && `View ${file.type}`,
                         },
                         { root: true }
                     )
