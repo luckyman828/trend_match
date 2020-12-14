@@ -87,7 +87,6 @@ export function validateMappedField(field, rows, depth) {
                 const isNumber = typeof valueToTest == 'number'
                 const dateValue = new Date(valueToTest)
                 if (!dateValue instanceof Date || isNaN(dateValue) || isNumber) {
-                    console.log('error in date', field, field.error)
                     field.error = `Invalid <strong>Date format</strong>.
                     <br>Found value: <i>${fieldValue}</i> on <strong>line ${i + 2}</strong>
                     <br>Make sure that values only contain <strong>English</strong> month names`
@@ -159,7 +158,6 @@ export function autoMapField(field, availableFiles, matchesToAvoid, mustInclude)
 }
 
 export function instantiateProductsFromMappedFields(mappedFields, files, options) {
-    console.log('instantie products')
     // Obey options if provided
     const fieldsToInstantiateFrom = !options
         ? mappedFields
@@ -280,8 +278,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 if (!field.enabled || (!field.customEntry && (!field.file || field.file.fileName != file.fileName)))
                     return
                 let fieldValue = field.customEntry ? field.fieldName : row[field.fieldName]
-
-                console.log('Start, set field value', field.name, fieldValue)
 
                 // Limit decimals to 2 places
                 if (typeof fieldValue == 'number') fieldValue = Math.round((fieldValue + Number.EPSILON) * 100) / 100
@@ -442,7 +438,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     return
                 }
                 // END MAP ASSORTMENTS
-                console.log('No scope', field.name, fieldValue)
 
                 // NO SCOPE
                 const productField = product[field.name]
@@ -458,7 +453,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     productField[field.displayName] = fieldValue
                     return
                 }
-                console.log('set uncaught data', field.name, fieldValue)
 
                 product[field.name] = fieldValue
             })
@@ -481,7 +475,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             variant.name = newName
         })
     })
-    console.log('instantiated products', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }

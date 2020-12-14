@@ -1,5 +1,5 @@
 <template>
-    <div class="product-details-sidebar" v-if="product">
+    <div class="product-details-sidebar" v-if="product" tabindex="-1">
         <ProductPreview @click.native="showFlyin = true" />
         <ProductDetailsSidebar v-if="product" :product="product" :show="showFlyin" @close="showFlyin = false" />
     </div>

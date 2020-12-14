@@ -24,12 +24,21 @@
         </div> -->
 
         <div class="items-right flex-list">
-            <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
-                <button class="button primary">
+            <v-popover
+                trigger="click"
+                ref="exportPopover"
+                :open.sync="exportContextOpen"
+                :disabled="products.length <= 0"
+            >
+                <BaseButton
+                    buttonClass="button primary"
+                    :disabled="products.length <= 0"
+                    disabledTooltip="Nothing to export"
+                >
                     <i class="far fa-upload"></i>
                     <span>Export</span>
                     <i class="far fa-angle-down"></i>
-                </button>
+                </BaseButton>
                 <BaseContextMenu slot="popover" :inline="true" v-if="exportContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
