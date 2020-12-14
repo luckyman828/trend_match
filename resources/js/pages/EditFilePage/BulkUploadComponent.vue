@@ -155,21 +155,21 @@ export default {
                 // Check if there is a variant that contains the image variant name
                 const existingVariant = product.variants.find(x => {
                     return (
-                        x.name
+                        !!x.name &&
+                        (x.name
                             .trim()
                             .toLowerCase()
                             .search(colorName.trim().toLowerCase()) >= 0 ||
-                        colorName
-                            .trim()
-                            .toLowerCase()
-                            .search(x.name.trim().toLowerCase()) >= 0
+                            colorName
+                                .trim()
+                                .toLowerCase()
+                                .search(x.name.trim().toLowerCase()) >= 0)
                     )
                 })
                 const emptyVariant = product.variants.find(x => !x.color && !x.variant)
                 if (emptyVariant && this.createVariants && !existingVariant) {
                     Object.assign(emptyVariant, variantToUpdate)
                 }
-                // console.log('variant to update', variantName, existingVariant, product)
 
                 if (existingVariant || (emptyVariant && this.createVariants)) {
                     variantToUpdate = existingVariant ? existingVariant : emptyVariant
