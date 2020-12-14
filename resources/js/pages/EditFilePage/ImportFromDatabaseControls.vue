@@ -138,6 +138,9 @@ export default {
             })
             if (productsFiltered.length > 0) {
                 await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
+                // SCROLL TO THE BOTTOM OF THE PAGE
+                const scrollContainer = document.getElementById('main')
+                scrollContainer.scroll(0, scrollContainer.scrollHeight)
             }
             this.isFetching = false
             this.queryValueCount = 0
