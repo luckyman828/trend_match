@@ -2,6 +2,11 @@
     <BaseModal ref="exportModal" :header="'Export products to File'" @close="$emit('close')" :show="show">
         <form @submit.prevent>
             <div class="form-section">
+                <label>File name</label>
+                <BaseInputField v-model="newFileName" :placeholder="`Ex. ${this.currentFile.name} - Export`" />
+            </div>
+            <div class="form-section">
+                <h4>Where should the file be created?</h4>
                 <FileNavigator
                     :initialFolderId="currentFile.parent_id"
                     :disabledId="currentFile.id"
@@ -44,6 +49,7 @@ export default {
             fileToExportTo: null,
             folderToCreateFileIn: null,
             exportSelectedProducts: false,
+            newFileName: '',
         }
     },
     computed: {
@@ -53,6 +59,9 @@ export default {
         ...mapGetters('products', {
             products: 'productsFiltered',
             selectedProducts: 'getSelectedProducts',
+        }),
+        ...mapGetters('workspaces', {
+            workspace: 'currentWorkspace',
         }),
         productsToExport() {
             const products = this.exportSelectedProducts ? this.selectedProducts : this.products
@@ -72,11 +81,13 @@ export default {
             this.fileToExportTo = null
         },
         async onCreateNewFile() {
+            this.workspace.id
             const file = {
-                name: `${this.currentFile.name} - Export`,
+                name: this.newFileName ? this.newFileName : `${this.currentFile.name} - Export`,
                 id: null,
                 type: 'File',
-                parent_id: this.folderToCreateFileIn.id,
+                parent_id: this.folderToCreateFileIn.id != this.workspace.id ? this.folderToCreateFileIn.id : 0,
+                workspace_id: this.workspace.id,
             }
             await this.insertOrUpdateFile({ file })
             // console.log('insert products', this.productsToExport)
