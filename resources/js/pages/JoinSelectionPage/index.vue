@@ -50,7 +50,6 @@ export default {
         async handleLink() {
             const linkHash = this.$route.params.linkHash
             const selectionInfo = await this.fetchPublicSelectionInfo(linkHash)
-            console.log('selection info', selectionInfo)
             // await store.dispatch('selections/readSelectionLinkHash', this.$route.params.linkHash)
             this.SET_CURRENT_SELECTION_ID(selectionInfo.selection_id)
             let coverImage = selectionInfo.workspace_cover
@@ -79,7 +78,6 @@ export default {
                     // Check that we are on the workspace that the new selection belongs to
                     if (!this.currentWorkspace || this.currentWorkspace.id != joinResponse.workspace_id) {
                         const workspaces = await this.fetchWorkspaces()
-                        console.log('workspaces', workspaces, joinResponse, joinResponse.workspace_id)
                         const newWorkspaceIndex = workspaces.findIndex(x => x.id == joinResponse.workspace_id)
                         await this.setCurrentWorkspaceIndex(newWorkspaceIndex)
                     }
@@ -100,7 +98,6 @@ export default {
                 // if (file.video_count > 0) {
                 // }
 
-                console.log('route change from loader')
                 this.$router.push({
                     name: routeName,
                     params: { fileId: selection.file_id, selectionId: this.selectionId },
