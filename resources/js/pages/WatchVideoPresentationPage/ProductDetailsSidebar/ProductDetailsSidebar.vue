@@ -103,7 +103,7 @@
             <i class="fal fa-palette md"></i>
             <div class="list-item">
                 <label>Assortments</label>
-                <span class="value"> {{ product.assortments.map(x => `${x.name}`).join(',\n') }}</span>
+                <span class="value description"> {{ product.assortments.map(x => `${x.name}`).join(',\n') }}</span>
             </div>
         </div>
 
@@ -261,6 +261,10 @@ export default {
             &.description {
                 white-space: pre-line;
                 word-break: break-word;
+                &:first-line {
+                    line-height: 1.6;
+                    // white-space: normal;
+                }
             }
         }
     }
