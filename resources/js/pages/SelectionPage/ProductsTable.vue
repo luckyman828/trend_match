@@ -811,6 +811,7 @@ export default {
         // Reset all filters
         this.resetFilters()
         this.setCurrentProductFilter('overview')
+        this.selectedProducts = []
     },
 }
 </script>

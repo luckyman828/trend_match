@@ -410,6 +410,7 @@ export default {
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
         this.onClearFilters()
+        this.selectedProducts = []
     },
 }
 </script>
