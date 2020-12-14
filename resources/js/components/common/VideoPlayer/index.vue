@@ -5,6 +5,7 @@
             ref="player"
             class="player"
             :videoId="providerVideoId"
+            :videoUrl="isVimeoPrivateLink ? providerVideoId : null"
             :controls="false"
             :autoplay="autoplay"
             @ready="onPlayerReady"
@@ -76,6 +77,11 @@ export default {
             isLive: 'getIsLive',
             currentTiming: 'getCurrentTiming',
         }),
+        isVimeoPrivateLink() {
+            const url = this.providerVideoId
+            const slashCount = (url.match(/\//g) || []).length
+            return slashCount >= 4
+        },
     },
     methods: {
         ...mapActions('videoPlayer', ['togglePlayerMuted', 'getCurrentTimestamp', 'togglePlaying']),

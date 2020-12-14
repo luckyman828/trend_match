@@ -121,7 +121,11 @@ export default {
                     // Check if a product is currently being presented. If so, make sure we make it our current
                     const lastTiming = this.videoTimings[this.videoTimings.length - 1]
                     if (lastTiming.product_id == this.presentedProductId) {
-                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 500000)
+                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 5000)
+                        // Make sure the last timing is the current timing
+                        if (lastTiming.start_at_ms > this.videoDuration) {
+                            lastTiming.start_at_ms = Math.floor(this.videoDuration - 5000)
+                        }
                     }
                 }, 500)
             }

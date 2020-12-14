@@ -48,6 +48,12 @@ export default {
     &:first-child {
         border-radius: 16px 8px 2px 16px;
     }
+    &.from-presenter {
+        background: rgba($primary, 0.6);
+        .sender {
+            color: $grey500;
+        }
+    }
 }
 @keyframes flyin {
     from {

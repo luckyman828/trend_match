@@ -95,7 +95,12 @@ export default {
 
             let videoIdRegex
             if (provider == 'vimeo') {
-                videoIdRegex = new RegExp(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/([0-9]*)/)
+                // Check if it is a private link.
+                // To test if the link is a private link we can count the number of / (forward slashes) in the URL.
+                const slashCount = (url.match(/\//g) || []).length
+                const isPrivateLink = slashCount >= 4
+                if (isPrivateLink) videoIdRegex = new RegExp(/^(.*)$/)
+                else videoIdRegex = new RegExp(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/([0-9]*)/)
             }
             if (provider == 'youtube') {
                 videoIdRegex = new RegExp(
@@ -127,7 +132,6 @@ export default {
                 .then(response => {
                     Object.assign(newVideo, response.data)
                     commit('SET_CURRENT_VIDEO', newVideo)
-                    commit('SET_STATUS', 'success')
                 })
                 .catch(err => {
                     commit('SET_STATUS', 'error')
