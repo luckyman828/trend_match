@@ -121,9 +121,9 @@ export default {
                     // Check if a product is currently being presented. If so, make sure we make it our current
                     const lastTiming = this.videoTimings[this.videoTimings.length - 1]
                     if (lastTiming.product_id == this.presentedProductId) {
-                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 5000)
+                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 500000)
                     }
-                }, 200)
+                }, 500)
             }
         },
     },
@@ -161,7 +161,6 @@ export default {
         },
         async onNewProduct(productId) {
             // Find the new start
-            console.log('on new product')
             const newStart = Math.round(this.videoDuration)
 
             // Add the new timing
@@ -178,8 +177,15 @@ export default {
             this.ADD_TIMING({ timing: newTiming, index: null })
         },
         async presentationChangeHandler(eventName, args) {
+            console.log(
+                'presentation changed',
+                eventName,
+                args,
+                this.selection.id,
+                args.selection_ids.includes(this.selection.id)
+            )
             // Filter out selection not the current
-            if (!args.selection_ids.includes[this.selection.id]) return
+            if (!args.selection_ids.includes(this.selection.id)) return
             if (eventName == 'ProductChanged' && this.isLive) {
                 const productId = args.detail[0].product_id
                 this.onNewProduct(productId)
@@ -215,9 +221,7 @@ export default {
     },
     created() {
         // Check if we are in a presentation
-        // if (this.isLive) {
         this.connectToLiveUpdates()
-        // }
     },
     destroyed() {
         if (this.isConnectedToLiveUpdates) {

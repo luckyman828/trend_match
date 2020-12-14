@@ -94,7 +94,6 @@ export default {
         this.scrollToBottom()
     },
     created() {
-        console.log('subscribe chat', this.video)
         const connection = this.$connection
         connection.invoke('SubscribeVideo', this.video.id)
         connection.on('OnVideoCommentArrived', this.commentArrivedHandler)

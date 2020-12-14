@@ -1,6 +1,6 @@
 <template>
     <div class="player-controls-wrapper">
-        <VideoTimeline v-if="playerReady"/>
+        <VideoTimeline v-if="playerReady && !isLive" />
         <div class="player-controls" :class="{ hide: hideControls }">
             <div class="main">
                 <div class="left">

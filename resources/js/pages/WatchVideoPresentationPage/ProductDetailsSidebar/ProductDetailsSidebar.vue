@@ -16,12 +16,17 @@
         <span class="id">#{{ product.datasource_id }}</span>
 
         <div class="variant-list form-element flex-list" v-horizontal-scroll="50" v-dragscroll>
-            <div class="variant-list-item" v-for="variant in product.variants" :key="variant.id">
+            <div class="variant-list-item" v-for="(variant, index) in product.variants" :key="variant.id">
                 <div class="header">
                     {{ variant.name }}
                 </div>
                 <div class="img-wrapper">
                     <BaseVariantImage :variant="variant" size="sm" />
+                    <div class="controls">
+                        <button class="white" @click="onShowLargeImage(index)">
+                            <i class="far fa-search-plus"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -206,6 +211,19 @@ export default {
                     position: absolute;
                     left: 0;
                     top: 0;
+                }
+                .controls {
+                    opacity: 0;
+                    transition: 0.1s ease-out;
+                    position: absolute;
+                    right: 4px;
+                    top: 4px;
+                    z-index: 1;
+                }
+                &:hover {
+                    .controls {
+                        opacity: 1;
+                    }
                 }
             }
         }
