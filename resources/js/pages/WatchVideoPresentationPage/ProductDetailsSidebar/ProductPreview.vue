@@ -1,7 +1,7 @@
 <template>
     <div class="product-preview">
         <div id="preview-spawner">
-            <v-popover placement="right" popoverClass="action-list-wrapper">
+            <v-popover placement="right" popoverClass="min dark">
                 <!-- Preview -->
                 <div class="preview" ref="preview">
                     <div class="header">
@@ -21,12 +21,7 @@
                     </div>
                 </div>
 
-                <!-- Product actions -->
-                <div slot="popover" class="action-list flex-list sm">
-                    <product-action-button action="Focus" :product="product" displayStyle="iconOnly" />
-                    <product-action-button action="In" :product="product" displayStyle="iconOnly" />
-                    <product-action-button action="Out" :product="product" displayStyle="iconOnly" />
-                </div>
+                <action-list-popover slot="popover" :product="product" />
             </v-popover>
         </div>
 
@@ -41,10 +36,14 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import ProductActionButton from '../../../components/common/ProductActionButton.vue'
+// import ProductActionButton from '../../../components/common/ProductActionButton.vue'
+import ActionListPopover from '../ActionListPopover.vue'
 export default {
     name: 'productPreview',
-    components: { ProductActionButton },
+    components: {
+        // ProductActionButton,
+        ActionListPopover,
+    },
     computed: {
         ...mapGetters('videoPlayer', {
             product: 'getCurrentProduct',
@@ -181,26 +180,6 @@ export default {
     }
     to {
         transform: none;
-    }
-}
-.action-list {
-    background: $dark;
-    padding: 8px;
-}
-</style>
-<style lang="scss">
-@import '~@/_variables.scss';
-
-.action-list-wrapper {
-    min-width: 0;
-    .tooltip-inner {
-        border-radius: 8px;
-        border-color: $dark;
-        background-color: $dark;
-    }
-    &[x-placement^='right'] > .wrapper > .tooltip-arrow,
-    &[x-placement^='right'] > .wrapper > .tooltip-arrow::after {
-        border-right-color: $dark;
     }
 }
 </style>

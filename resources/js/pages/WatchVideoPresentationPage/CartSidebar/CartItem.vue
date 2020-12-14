@@ -1,51 +1,57 @@
 <template>
-    <div class="cart-item" :class="`action-${selectionInput[currentAction]}`">
-        <div class="action-indicator"></div>
-        <div class="img-wrapper">
-            <BaseVariantImage :variant="product.variants[0]" size="sm" />
-        </div>
-        <div class="details-wrapper flex-list flex-v justify-content">
-            <div class="flex-list space-between">
-                <span class="brand">{{ product.brand }}</span>
-                <span class="delivery">{{ getPrettyDate(product.delivery_dates[0]) }}</span>
+    <v-popover placement="right" popoverClass="min dark">
+        <div class="cart-item" :class="`action-${selectionInput[currentAction]}`">
+            <div class="action-indicator"></div>
+            <div class="img-wrapper">
+                <BaseVariantImage :variant="product.variants[0]" size="sm" />
             </div>
-            <span class="name">{{ product.name }}</span>
-            <div class="prices">
-                <div class="flex-list md">
-                    <div class="list-item">
-                        <label class="sm">WSP</label>
-                        <span class="price" v-if="product.yourPrice.wholesale_price">{{
-                            product.yourPrice.wholesale_price.toFixed(2)
-                        }}</span>
-                    </div>
-                    <div class="list-item">
-                        <label class="sm">RRP</label>
-                        <span class="price" v-if="product.yourPrice.recommended_retail_price">{{
-                            product.yourPrice.recommended_retail_price.toFixed(2)
-                        }}</span>
+            <div class="details-wrapper flex-list flex-v justify-content">
+                <div class="flex-list space-between">
+                    <span class="brand">{{ product.brand }}</span>
+                    <span class="delivery">{{ getPrettyDate(product.delivery_dates[0]) }}</span>
+                </div>
+                <span class="name">{{ product.name }}</span>
+                <div class="prices">
+                    <div class="flex-list md">
+                        <div class="list-item">
+                            <label class="sm">WSP</label>
+                            <span class="price" v-if="product.yourPrice.wholesale_price">{{
+                                product.yourPrice.wholesale_price.toFixed(2)
+                            }}</span>
+                        </div>
+                        <div class="list-item">
+                            <label class="sm">RRP</label>
+                            <span class="price" v-if="product.yourPrice.recommended_retail_price">{{
+                                product.yourPrice.recommended_retail_price.toFixed(2)
+                            }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="variant-list">
-                <div class="pill dark variant-item sm" v-if="product.variants.length > 0">
-                    <i class="fas fa-circle"></i>
-                    <span>
-                        {{ product.variants[0].name
-                        }}<span v-if="product.variants.length > 1"> + {{ product.variants.length - 1 }}</span>
-                    </span>
+                <div class="variant-list">
+                    <div class="pill dark variant-item sm" v-if="product.variants.length > 0">
+                        <i class="fas fa-circle"></i>
+                        <span>
+                            {{ product.variants[0].name
+                            }}<span v-if="product.variants.length > 1"> + {{ product.variants.length - 1 }}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="focus-label" v-if="product.is_editor_choice">
+                    <i class="fas fa-badge-check"></i>
                 </div>
             </div>
-            <div class="focus-label" v-if="product.is_editor_choice">
-                <i class="fas fa-badge-check"></i>
-            </div>
         </div>
-    </div>
+
+        <action-list-popover :product="product" slot="popover" />
+    </v-popover>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import ActionListPopover from '../ActionListPopover.vue'
 export default {
     name: 'cartItem',
+    components: { ActionListPopover },
     props: ['product', 'index', 'currentAction'],
     computed: {
         ...mapGetters('products', {

@@ -962,7 +962,7 @@ i.has-tooltip {
         border: 1px solid $divider;
         background-color: white;
         // box-shadow: 0 10px 10px rgba($dark, 20%);
-        box-shadow: $shadowModuleHard;
+        box-shadow: $shadowElHard;
         max-height: 70vh;
         overflow-y: auto;
         &.allow-overflow {
@@ -1066,6 +1066,58 @@ i.has-tooltip {
                 border-left-color: white;
                 top: -5px;
                 right: 1px;
+            }
+        }
+    }
+
+    // DARK
+    &.dark {
+        .tooltip-inner {
+            background: none;
+        }
+        &[x-placement^='top'],
+        &[data-popper-placement^='top'] {
+            > .wrapper > .tooltip-arrow,
+            > .tooltip-arrow {
+                border-top-color: $dark;
+
+                &::after {
+                    border-top-color: $dark;
+                }
+            }
+        }
+
+        &[x-placement^='bottom'],
+        &[data-popper-placement^='bottom'] {
+            > .wrapper > .tooltip-arrow,
+            > .tooltip-arrow {
+                border-bottom-color: $dark;
+
+                &::after {
+                    border-bottom-color: $dark;
+                }
+            }
+        }
+
+        &[x-placement^='right'],
+        &[data-popper-placement^='right'] {
+            > .wrapper > .tooltip-arrow,
+            > .tooltip-arrow {
+                border-right-color: $dark;
+                &::after {
+                    border-right-color: $dark;
+                }
+            }
+        }
+
+        &[x-placement^='left'],
+        &[data-popper-placement^='left'] {
+            > .wrapper > .tooltip-arrow,
+            > .tooltip-arrow {
+                border-left-color: $dark;
+                &::after {
+                    border-left-color: $dark;
+                }
             }
         }
     }
