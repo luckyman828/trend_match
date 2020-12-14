@@ -61,13 +61,13 @@
             </div>
         </div>
 
-        <div class="form-element flex-list md">
+        <div class="form-element flex-list md" v-if="product.min_order != null || product.min_variant_order != null">
             <i class="fal fa-boxes md"></i>
-            <div class="list-item">
+            <div class="list-item" v-if="product.min_order != null">
                 <label>Order min.</label>
                 <span class="value"> {{ product.min_order }} PCS </span>
             </div>
-            <div class="list-item">
+            <div class="list-item" v-if="product.min_variant_order != null">
                 <label>Variant min.</label>
                 <span class="value"> {{ product.min_variant_order }} PCS </span>
             </div>
