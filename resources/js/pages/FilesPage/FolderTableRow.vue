@@ -8,7 +8,7 @@
                 :focusOnMount="true"
                 :selectOnFocus="true"
                 :type="'text'"
-                :actionOnBlur="!folder.id ? 'Submit' : 'Cancel'"
+                :actionOnBlur="fileToEdit.id ? 'Submit' : 'Cancel'"
                 v-model="fileToEdit.name"
                 @submit="onSubmitEdit"
                 @cancel="onCancelEdit"

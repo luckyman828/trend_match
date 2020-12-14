@@ -8,7 +8,7 @@
                 :focusOnMount="true"
                 :selectOnFocus="true"
                 :type="'text'"
-                actionOnBlur="Cancel"
+                :actionOnBlur="fileToEdit.id ? 'Submit' : 'Cancel'"
                 v-model="fileToEdit.name"
                 @submit="onSubmitEdit"
                 @cancel="onCancelEdit"
@@ -50,6 +50,7 @@ export default {
         ...mapActions('files', ['insertOrUpdateFile']),
         ...mapMutations('files', ['REMOVE_UNSAVED_FILES']),
         onCancelEdit() {
+            console.log('filetablerow on cancel')
             this.REMOVE_UNSAVED_FILES()
             this.$emit('update:fileToEdit', {})
         },
