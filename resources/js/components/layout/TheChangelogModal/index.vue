@@ -1,7 +1,7 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
-            title="Crêpe: Asparagus"
+            title="Damask: Asparagus"
             date="The Christmas 2020 Release"
             featuredImgUrl="/images/blog/undraw_christmas_tree_56sw.svg"
         >

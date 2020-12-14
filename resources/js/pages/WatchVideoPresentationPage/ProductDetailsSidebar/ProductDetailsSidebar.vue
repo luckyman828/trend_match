@@ -18,7 +18,9 @@
         <div class="variant-list form-element flex-list" v-horizontal-scroll="50" v-dragscroll>
             <div class="variant-list-item" v-for="(variant, index) in product.variants" :key="variant.id">
                 <div class="header">
-                    {{ variant.name }}
+                    <span>
+                        {{ variant.name }}
+                    </span>
                 </div>
                 <div class="img-wrapper">
                     <BaseVariantImage :variant="variant" size="sm" />
@@ -191,6 +193,14 @@ export default {
                 font-weight: 500;
                 display: flex;
                 align-items: center;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                span {
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    display: block;
+                    overflow: hidden;
+                }
             }
             .name {
                 font-weight: 700;
