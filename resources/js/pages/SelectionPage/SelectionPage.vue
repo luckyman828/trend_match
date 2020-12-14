@@ -314,8 +314,9 @@ export default {
         subscribeSelectionsChangedHandler(message) {
             //
         },
-        async selectionPresentationChangedHandler(eventName, selectionIds) {
-            const selectionDetail = selectionIds.detail.find(detail => detail.selection_id == this.currentSelection.id)
+        async selectionPresentationChangedHandler(eventName, args) {
+            if (!args.selection_ids.includes[this.selection.id]) return
+            // const selectionDetail = args.detail.find(detail => detail.selection_id == this.currentSelection.id)
             // If a presentation has started for this selection and the user is not an owner, kick them
             if (eventName == 'Begin') {
                 // Wait for us to set the new presentation data

@@ -1,5 +1,5 @@
 <template>
-    <div class="chat-message" :class="{ 'from-presenter': senderIsPresenter }">
+    <div class="chat-message">
         <span class="sender" v-if="index == 0">{{ videoComment.user ? videoComment.user.name : 'Anonymous' }}</span>
         <span class="msg">{{ videoComment.content }}</span>
     </div>
@@ -47,12 +47,6 @@ export default {
     }
     &:first-child {
         border-radius: 16px 8px 2px 16px;
-    }
-    &.from-presenter {
-        background: rgba($primary, 0.6);
-        .sender {
-            color: $grey500;
-        }
     }
 }
 @keyframes flyin {
