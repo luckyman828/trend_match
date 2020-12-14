@@ -100,6 +100,7 @@ export default {
         connection.on('OnVideoCommentArrived', this.commentArrivedHandler)
     },
     destroyed() {
+        const connection = this.$connection
         connection.invoke('UnSubscribeVideo')
         connection.off('OnVideoCommentArrived', this.commentArrivedHandler)
     },
