@@ -80,8 +80,11 @@ export default {
             commit('files/SET_CURRENT_FOLDER', null, { root: true })
             commit('setCurrentWorkspaceIndex', index)
         },
-        async fetchWorkspace({ state, dispatch }, workspaceId) {
-            const apiUrl = `/workspaces/${workspaceId}`
+        async fetchWorkspace({ state, dispatch, rootGetters }, workspaceId) {
+            let apiUrl = `workspaces/${workspaceId}`
+            // If we are super admin, use the admin endpoint
+            const isSystemAdmin = rootGetters['auth/getIsSystemAdmin']
+            if (isSystemAdmin) apiUrl = `admins/workspaces/${workspaceId}`
             let workspace
             await axios.get(apiUrl).then(response => {
                 workspace = response.data
@@ -302,6 +305,24 @@ export default {
                     },
                     { root: true }
                 )
+            })
+        },
+        async deleteWorkspace({ commit, state }, workspace) {
+            const apiUrl = `admins/workspaces/${workspace.id}`
+            axios.delete(apiUrl).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Workspace deleted',
+                        iconClass: 'far fa-trash',
+                        type: 'danger',
+                    },
+                    { root: true }
+                )
+                // Redirect the user to another worksapce.
+                const index = state.workspaces.findIndex(x => x.id == workspace.id)
+                state.workspaces.splice(index, 1)
+                commit('setCurrentWorkspaceIndex', 0)
             })
         },
     },
