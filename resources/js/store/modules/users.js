@@ -287,6 +287,43 @@ export default {
                 })
             return result
         },
+        async setUserPassword({ commit, rootGetters, dispatch }, user) {
+            const authUser = rootGetters['auth/authUser']
+            const apiUrl = `/admins/users/${user.id}/change-password`
+            const isSelf = user.id == authUser.id
+
+            await axios
+                .post(apiUrl, { password: user.password })
+                .then(response => {
+                    // Display message
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Password updated`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                    if (isSelf) router.go()
+                })
+                .catch(err => {
+                    const errMsg = 'Something went wrong. Please try again.'
+
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: errMsg,
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('updateUserPassword', user),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+        },
     },
 
     mutations: {

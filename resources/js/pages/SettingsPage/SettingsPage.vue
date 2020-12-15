@@ -68,7 +68,31 @@
                     </BaseDroparea>
                 </div>
             </div>
+
+            <div class="form-section" v-if="isSystemAdmin">
+                <div class="form-element">
+                    <button class="ghost" @click="showDangerousOptions = !showDangerousOptions">
+                        <i class="far fa-eye"></i>
+                        <span>Show dangerous options</span>
+                    </button>
+                </div>
+                <div class="form-element" v-if="showDangerousOptions">
+                    <BaseButton buttonClass="red" @click="onDeleteWorkspace">
+                        <i class="far fa-trash"></i>
+                        <span>Delete workspace</span>
+                    </BaseButton>
+                </div>
+            </div>
         </div>
+
+        <BaseDialog ref="confirmDeleteWorkspace" type="confirm" confirmColor="red">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-building"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Are you sure you want to delete this workspace?</h3>
+        </BaseDialog>
     </div>
 </template>
 
@@ -82,10 +106,15 @@ export default {
             editLogoActive: false,
             uploadingCoverImage: false,
             uploadingLogo: false,
+            showDangerousOptions: false,
         }
     },
     computed: {
         ...mapGetters('workspaces', {
+            workspace: 'currentWorkspace',
+            realRole: 'getRealWorkspaceRole',
+        }),
+        ...mapGetters('users', {
             workspace: 'currentWorkspace',
             realRole: 'getRealWorkspaceRole',
         }),
@@ -108,6 +137,10 @@ export default {
             this.editLogoActive = false
             await this.uploadWorkspaceLogo(file)
             this.uploadingLogo = false
+        },
+        async onDeleteWorkspace() {
+            // Check if the workspace has users
+            
         },
     },
     created() {

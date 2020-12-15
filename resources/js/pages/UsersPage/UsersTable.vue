@@ -106,20 +106,15 @@
                 </BaseContextMenuItem>
 
                 <BaseContextMenuItem
+                    v-if="isSystemAdmin"
                     iconClass="far fa-lock"
-                    :disabled="contextUser.id != authUser.id"
-                    disabledTooltip="Can only set password of self"
+                    :disabled="!isSystemAdmin"
+                    disabledTooltip="Only system admins can set passwords"
                     hotkey="KeyP"
-                    @click="onSetUserPassword(contextMouseEvent, contextUser)"
+                    @click="onShowSetPasswordContext(contextMouseEvent, contextUser)"
                 >
-                    <span>Change <u>P</u>assword</span>
-                </BaseContextMenuItem>
-                <!-- <BaseContextMenuItem iconClass="far fa-lock" :disabled="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id" 
-                v-tooltip="authUserWorkspaceRole != 'Admin' && contextUser.id != authUser.id 
-                && 'Can only set password of self. Admins can set the password of others'"
-                @click.stop="onSetUserPassword(contextMouseEvent, contextUser)">
                     <span>Set <u>P</u>assword</span>
-                </BaseContextMenuItem> -->
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <BaseContextMenuItem
@@ -163,6 +158,16 @@
                         @click="onEditUserRole(contextMouseEvent, contextUser)"
                     >
                         <span>Change Workspace <u>R</u>ole</span>
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem
+                        v-if="isSystemAdmin"
+                        iconClass="far fa-lock"
+                        :disabled="!isSystemAdmin"
+                        disabledTooltip="Only system admins can set passwords"
+                        hotkey="KeyP"
+                        @click="onShowSetPasswordContext(contextMouseEvent, contextUser)"
+                    >
+                        <span>Set <u>P</u>assword</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
@@ -248,13 +253,15 @@
                                 ref="userPasswordInput"
                                 placeholder="New password"
                                 v-model="newUserPassword"
+                                @submit="
+                                    onSetUserPassword(contextUser)
+                                    slotProps.hide()
+                                "
                             />
-                        </div>
-                    </div>
-                    <div class="item-wrapper">
-                        <div>
-                            <label>Old password</label>
-                            <BaseInputField type="text" placeholder="Old password" v-model="oldUserPassword" />
+                            <span class="help-text">
+                                <i class="far fa-info-circle"></i>
+                                <i>Must be at least 8 characters long.</i>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -265,7 +272,7 @@
                             :class="{ disabled: passwordSubmitDisabled }"
                             style="margin-right: 8px;"
                             @click="
-                                setUserPassword(contextUser)
+                                onSetUserPassword(contextUser)
                                 slotProps.hide()
                             "
                         >
@@ -343,7 +350,10 @@ export default {
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', ['currentWorkspace', 'availableWorkspaceRoles', 'authUserWorkspaceRole']),
-        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('auth', {
+            authUser: 'authUser',
+            isSystemAdmin: 'getIsSystemAdmin',
+        }),
         ...mapGetters('users', ['getUsers', 'getUsersStatus']),
         ...mapGetters('tables', ['getUsersTable']),
         passwordSubmitDisabled() {
@@ -391,7 +401,7 @@ export default {
             'fetchUsers',
             'updateWorkspaceUsers',
             'updateUser',
-            'updateUserPassword',
+            'setUserPassword',
             'removeUsersFromWorkspace',
         ]),
         ...mapMutations('tables', ['SET_TABLE_PROPERTY']),
@@ -403,7 +413,7 @@ export default {
             if (this.getUsersStatus == 'success') this.usersFilteredBySearch = this.users
             this.SET_TABLE_PROPERTY('usersTable', 'workspaceId', this.currentWorkspace.id)
         },
-        onSetUserPassword(mouseEvent, user) {
+        onShowSetPasswordContext(mouseEvent, user) {
             const contextMenu = this.$refs.contextMenuUserPassword
             contextMenu.item = user
             contextMenu.show(mouseEvent)
@@ -415,11 +425,17 @@ export default {
                 input.select()
             })
         },
-        setUserPassword(user) {
+        async onSetUserPassword(user) {
             const password = this.newUserPassword
-            user.password = password
-            user.oldPassword = this.oldUserPassword
-            this.updateUserPassword(user)
+            let usersToUpdate = [user]
+            if (this.selectedUsers.length > 0) {
+                usersToUpdate = this.selectedUsers
+            }
+            for (const userToUpdate of usersToUpdate) {
+                userToUpdate.password = password
+                userToUpdate.oldPassword = this.oldUserPassword
+                await this.setUserPassword(userToUpdate)
+            }
         },
         onEditUserCurrency(mouseEvent, user) {
             this.contextUser = user
@@ -538,6 +554,13 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+.help-text {
+    margin-top: 8px;
+    display: block;
+    font-size: 12px;
+    color: $fontSoft;
+}
 
 .users-table {
     ::v-deep {
