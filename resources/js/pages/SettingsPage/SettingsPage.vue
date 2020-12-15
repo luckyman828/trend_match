@@ -1,8 +1,16 @@
 <template>
     <div class="settings-page">
+        <Breadcrumbs />
         <h1>Settings</h1>
         <div class="form-wrapper">
             <div class="form-section">
+                <h3>Workspace name</h3>
+                <BaseEditInputWrapper
+                    v-model="workspace.title"
+                    :oldValue="workspace.title"
+                    @submit="onUpdateWorkspaceDetails"
+                />
+
                 <h3>Workspace logo</h3>
                 <div class="img-wrapper logo-wrapper">
                     <BaseLoader v-if="uploadingLogo" msg="Uploading image" />
@@ -68,20 +76,54 @@
                     </BaseDroparea>
                 </div>
             </div>
+
+            <div class="form-section" v-if="isSystemAdmin">
+                <div class="form-element">
+                    <button class="ghost" @click="showDangerousOptions = !showDangerousOptions">
+                        <i class="far fa-eye"></i>
+                        <span>Show dangerous options</span>
+                    </button>
+                </div>
+                <div class="form-element" v-if="showDangerousOptions">
+                    <BaseButton
+                        buttonClass="red"
+                        @click="onDeleteWorkspace"
+                        :disabled="!users || users.length > 0"
+                        disabledTooltip="Workspace still has users. You must remove all users before you can delete this workspace."
+                    >
+                        <i class="far fa-trash"></i>
+                        <span>Delete workspace</span>
+                    </BaseButton>
+                </div>
+            </div>
         </div>
+
+        <BaseDialog ref="confirmDeleteWorkspace" type="confirm" confirmColor="red">
+            <div class="icon-graphic">
+                <i class="lg primary far fa-building"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Are you sure you want to delete this workspace?</h3>
+        </BaseDialog>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import Breadcrumbs from '../../components/common/Breadcrumbs'
 export default {
     name: 'settingsPage',
+    components: {
+        Breadcrumbs,
+    },
     data: function() {
         return {
             editImageActive: false,
             editLogoActive: false,
             uploadingCoverImage: false,
             uploadingLogo: false,
+            showDangerousOptions: false,
         }
     },
     computed: {
@@ -89,9 +131,20 @@ export default {
             workspace: 'currentWorkspace',
             realRole: 'getRealWorkspaceRole',
         }),
+        ...mapGetters('users', {
+            users: 'users',
+        }),
+        ...mapGetters('auth', {
+            isSystemAdmin: 'getIsSystemAdmin',
+        }),
     },
     methods: {
-        ...mapActions('workspaces', ['uploadWorkspaceCoverImage', 'uploadWorkspaceLogo']),
+        ...mapActions('workspaces', [
+            'uploadWorkspaceCoverImage',
+            'uploadWorkspaceLogo',
+            'updateWorkspaceDetails',
+            'deleteWorkspace',
+        ]),
         async onCoverFilesChange(fileList) {
             this.uploadingCoverImage = true
             const file = fileList[0]
@@ -106,9 +159,19 @@ export default {
             await this.uploadWorkspaceLogo(file)
             this.uploadingLogo = false
         },
+        async onDeleteWorkspace() {
+            // Check if the workspace has users
+            if ((await this.$refs.confirmDeleteWorkspace.confirm()) && this.users.length <= 0) {
+                console.log('delete workspace', this.users)
+                this.deleteWorkspace(this.workspace)
+            }
+        },
+        async onUpdateWorkspaceDetails() {
+            await this.updateWorkspaceDetails(this.workspace)
+        },
     },
     created() {
-        if (this.realRole != 'Owner') this.$router.push({ name: 'files' })
+        if (this.realRole != 'Owner' && !this.isSystemAdmin) this.$router.push({ name: 'files' })
     },
 }
 </script>

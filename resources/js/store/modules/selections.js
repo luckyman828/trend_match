@@ -46,6 +46,7 @@ export default {
                 description: 'Replies to requests',
             },
         ],
+        currentSelectionRealRole: null,
     },
 
     getters: {
@@ -167,7 +168,7 @@ export default {
             const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
             return authUserWorkspaceRole == 'Admin' || selection.your_role == 'Owner'
         },
-        getAuthUserSelectionWriteAccess: () => (selection, product) => {
+        getAuthUserSelectionWriteAccess: (state, getters) => (selection, product) => {
             let actionAccess = true
             let commentAccess = true
             let requestAccess = true
@@ -175,7 +176,14 @@ export default {
             let commentMsg = ''
             let requestMsg = ''
 
-            if (!selection.is_open) {
+            if (getters.getViewingAsObserver) {
+                actionAccess = false
+                commentAccess = false
+                requestAccess = false
+                actionMsg = 'Viewing as observer'
+                commentMsg = 'Viewing as observer'
+                requestMsg = 'Viewing as observer'
+            } else if (!selection.is_open) {
                 actionAccess = false
                 commentAccess = false
                 requestAccess = false
@@ -281,6 +289,9 @@ export default {
             })
             return groupIds
         },
+        getCurrentSelectionRealRole: state => state.currentSelectionRealRole,
+        getViewingAsObserver: (state, getters) =>
+            !getters.currentSelection || getters.currentSelection.your_role != getters.getCurrentSelectionRealRole,
     },
 
     actions: {
@@ -1351,6 +1362,9 @@ export default {
         },
         SET_CURRENT_SELECTION_ID(state, selectionId) {
             state.currentSelectionId = selectionId
+        },
+        SET_CURRENT_SELECTION_REAL_ROLE(state, role) {
+            state.currentSelectionRealRole = role
         },
     },
 }

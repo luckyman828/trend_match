@@ -25,6 +25,26 @@
                     <span>Join as Member</span>
                 </button>
             </div>
+
+            <h3>System Admin: View as</h3>
+            <div class="admin-action-list flex-list" v-if="getIsSystemAdmin">
+                <button class="primary ghost" @click="onViewSelectionAsRole('Owner')">
+                    <i class="far fa-user-shield"></i>
+                    <span>View as Owner</span>
+                </button>
+                <button class="primary ghost" @click="onViewSelectionAsRole('Member')">
+                    <i class="far fa-user"></i>
+                    <span>View as Member</span>
+                </button>
+                <button
+                    class="primary ghost"
+                    v-if="selection.type == 'Master'"
+                    @click="onViewSelectionAsRole('Member')"
+                >
+                    <i class="far fa-user-clock"></i>
+                    <span>View as Approver</span>
+                </button>
+            </div>
         </template>
 
         <!-- Access granted -->
@@ -179,8 +199,9 @@ export default {
             'currentSelectionMode',
             'currentSelectionModeAction',
             'selections',
+            'getCurrentSelectionRealRole',
         ]),
-        ...mapGetters('auth', ['authUser', 'getAuthUserToken']),
+        ...mapGetters('auth', ['authUser', 'getAuthUserToken', 'getIsSystemAdmin']),
         ...mapGetters('scanner', ['getScannerModeActive']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         selection() {
@@ -232,17 +253,11 @@ export default {
         ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         ...mapActions('requests', ['initRequests', 'insertOrUpdateRequest']),
         ...mapActions('selections', ['addUsersToSelection']),
-        // async fixRequests() {
-        //     const requests = []
-        //     const selectionInput = this.getActiveSelectionInput(this.products[0])
-        //     this.products.map(product => {
-        //         requests.push(...product.requests.filter(x => x.selection_id == '767450407874215936'))
-        //     })
-        //     requests.map(async request => {
-        //         request.type = 'Ticket'
-        //         await this.insertOrUpdateRequest({ selectionInput, request })
-        //     })
-        // },
+        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
+        onViewSelectionAsRole(role) {
+            this.SET_CURRENT_SELECTION_REAL_ROLE(this.selection.your_role)
+            this.selection.your_role = role
+        },
         async onJoinSelection(role) {
             const user = JSON.parse(JSON.stringify(this.authUser))
             user.role = role
@@ -495,6 +510,7 @@ export default {
     },
     destroyed() {
         this.disconnectSignalR()
+        this.onViewSelectionAsRole(this.getCurrentSelectionRealRole)
     },
 }
 </script>

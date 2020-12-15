@@ -276,8 +276,9 @@
                 <!-- Master actions -->
                 <div
                     v-if="
-                        (ticketsEnabled && product.is_completed) ||
-                            (selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment')
+                        !isObserver &&
+                            ((ticketsEnabled && product.is_completed) ||
+                                (selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment'))
                     "
                     class="extra-actions"
                 >
@@ -365,6 +366,7 @@ export default {
             showQty: 'getQuantityModeActive',
             currentQty: 'getCurrentSelectionModeQty',
             displayUnreadBullets: 'getDisplayUnreadBullets',
+            isObserver: 'getViewingAsObserver',
         }),
         selectionInput() {
             return this.getActiveSelectionInput(this.product)

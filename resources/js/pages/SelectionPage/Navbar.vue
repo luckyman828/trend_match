@@ -28,6 +28,71 @@
         </div>
 
         <div class="items-right">
+            <!-- START SYSTEM ADMIN -->
+            <v-popover
+                v-if="isSystemAdmin && !!currentSelection"
+                trigger="click"
+                ref="viewAsPopover"
+                :open.sync="viewAsContextOpen"
+            >
+                <button class="button primary">
+                    <i :class="roleIcon"></i>
+                    <span>View as: {{ currentSelection.your_role || 'No role' }}</span>
+                    <i class="far fa-angle-down"></i>
+                </button>
+                <BaseContextMenu slot="popover" :inline="true" v-if="viewAsContextOpen">
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-user"
+                            hotkey="KeyM"
+                            @click="
+                                $refs.viewAsPopover.hide()
+                                onViewSelectionAsRole('Member')
+                            "
+                        >
+                            <span><u>M</u>ember</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-user-shield"
+                            hotkey="KeyO"
+                            @click="
+                                $refs.viewAsPopover.hide()
+                                onViewSelectionAsRole('Owner')
+                            "
+                        >
+                            <span><u>O</u>wner</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group" v-if="currentSelection.type == 'Master'">
+                        <BaseContextMenuItem
+                            iconClass="far fa-user-clock"
+                            hotkey="KeyA"
+                            @click="
+                                $refs.viewAsPopover.hide()
+                                onViewSelectionAsRole('Approver')
+                            "
+                        >
+                            <span><u>A</u>pprover</span>
+                        </BaseContextMenuItem>
+                    </div>
+                    <div class="item-group">
+                        <BaseContextMenuItem
+                            iconClass="far fa-times"
+                            hotkey="KeyN"
+                            @click="
+                                $refs.viewAsPopover.hide()
+                                onViewSelectionAsRole()
+                            "
+                        >
+                            <span><u>N</u>o role</span>
+                        </BaseContextMenuItem>
+                    </div>
+                </BaseContextMenu>
+            </v-popover>
+            <!-- END SYSTEM ADMIN -->
+
             <div class="scanner-mode-toggle">
                 <BaseToggle
                     label="Scanner Mode"
@@ -118,6 +183,7 @@ export default {
         return {
             exportToFileModalVisible: false,
             exportContextOpen: false,
+            viewAsContextOpen: false,
         }
     },
     computed: {
@@ -134,10 +200,23 @@ export default {
         ...mapGetters('scanner', {
             scannerModeActive: 'getScannerModeActive',
         }),
+        ...mapGetters('auth', {
+            isSystemAdmin: 'getIsSystemAdmin',
+        }),
+        roleIcon() {
+            let roleIcon = 'far fa-shield'
+            if (!this.currentSelection) return roleIcon
+            const role = this.currentSelection.your_role
+            if (role == 'Owner') roleIcon = 'far fa-user-shield'
+            if (role == 'Member') roleIcon = 'far fa-user'
+            if (role == 'Approver') roleIcon = 'far fa-user-clock'
+            return roleIcon
+        },
     },
     methods: {
         ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
         onExport() {
             this.SET_SHOW_PDF_MODAL(true)
         },
@@ -147,6 +226,10 @@ export default {
         onToggleScannerMode() {
             const modeToSet = this.scannerModeActive ? null : 'product'
             this.SET_SCANNER_MODE(modeToSet)
+        },
+        onViewSelectionAsRole(role) {
+            this.SET_CURRENT_SELECTION_REAL_ROLE(this.currentSelection.your_role)
+            this.currentSelection.your_role = role
         },
     },
 }

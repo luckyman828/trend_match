@@ -19,6 +19,7 @@ export default {
         isAuthenticated: state => !!state.token,
         authStatus: state => state.status,
         authUser: state => state.user,
+        getIsSystemAdmin: state => state.user && state.user.role == 'Admin',
         getAuthUserToken: state => state.token,
         getPasswordRecoveryEmail: state => state.passwordRecoveryEmail,
         getPasswordRecoverySessionId: state => state.passwordRecoverySessionId,

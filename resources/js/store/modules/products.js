@@ -1402,9 +1402,10 @@ export default {
                 // Set the current action for the user
                 Object.defineProperty(selectionInput, 'your_feedback', {
                     get: function() {
-                        return rawSelectionInput.feedbacks.find(
+                        const userFeedback = rawSelectionInput.feedbacks.find(
                             x => x.selection_id == selectionInput.selection_id && x.user_id == authUser.id
-                        ).action
+                        )
+                        return userFeedback ? userFeedback.action : 'None'
                     },
                     set: function(value) {
                         rawSelectionInput.feedbacks.find(

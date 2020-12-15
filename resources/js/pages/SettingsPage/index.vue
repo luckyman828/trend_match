@@ -22,15 +22,27 @@ export default {
     },
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('users', ['getUsersStatus']),
         status() {
-            return this.loading ? 'loading' : 'success'
+            return this.isLoading ? 'loading' : 'success'
+        },
+    },
+    watch: {
+        currentWorkspace(newVal, oldVal) {
+            if (!oldVal || newVal.id != oldVal.id) {
+                this.initData(true)
+            }
         },
     },
     methods: {
         ...mapActions('workspaces', ['fetchWorkspace']),
-        async initData() {
+        ...mapActions('users', ['fetchUsers']),
+        async initData(forceRefresh) {
             this.isLoading = true
-            // const workspace = await this.fetchWorkspace(this.currentWorkspace.id)
+            const workspace = await this.fetchWorkspace(this.currentWorkspace.id)
+            if (forceRefresh || (this.getUsersStatus != 'success' && this.getUsersStatus != 'loading')) {
+                await this.fetchUsers()
+            }
             this.isLoading = false
         },
     },
