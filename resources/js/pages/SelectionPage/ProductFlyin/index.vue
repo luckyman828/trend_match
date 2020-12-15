@@ -31,8 +31,11 @@
                     <div
                         class="item-group"
                         v-if="
-                            (ticketsEnabled && product.is_completed) ||
-                                (selection.type == 'Master' && ticketsEnabled && currentSelectionMode == 'Alignment')
+                            !isObserver &&
+                                ((ticketsEnabled && product.is_completed) ||
+                                    (selection.type == 'Master' &&
+                                        ticketsEnabled &&
+                                        currentSelectionMode == 'Alignment'))
                         "
                     >
                         <!-- Master actions -->
@@ -401,6 +404,7 @@ export default {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
             activeSelectionList: 'getCurrentSelections',
+            isObserver: 'getViewingAsObserver',
         }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
         ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
