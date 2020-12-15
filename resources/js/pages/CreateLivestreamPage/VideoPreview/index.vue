@@ -14,6 +14,26 @@
                     />
                     <p class="example">Example: https://vimeo.com/123456789</p>
                 </div>
+
+                <div class="form-element">
+                    <label
+                        >Selection to present from
+                        <i
+                            class="far fa-info-circle"
+                            v-tooltip="
+                                'You will be able to see the feedback and comments that are visible to this selection'
+                            "
+                        ></i
+                    ></label>
+                    <BaseDropdownInputField
+                        :options="availableSelections"
+                        type="radio"
+                        placeholder="Choose selection to present from"
+                        v-model="selectionToPresentFrom"
+                    >
+                    </BaseDropdownInputField>
+                </div>
+
                 <button
                     class="primary full-width lg"
                     @click="onSetVideoByURL"
@@ -74,6 +94,7 @@ export default {
         return {
             videoUrl: '',
             editModeActive: true,
+            selectionToPresentFrom: null,
         }
     },
     computed: {
@@ -90,6 +111,7 @@ export default {
         }),
         ...mapGetters('selections', {
             selections: 'getSelections',
+            availableSelections: 'getSelectionsAvailableForPresentation',
         }),
         playerReady() {
             return this.provider && this.videoId
@@ -113,6 +135,9 @@ export default {
                 this.editModeActive = false
             }
         },
+    },
+    created() {
+        console.log('created', this.selections, this.availableSelections)
     },
 }
 </script>
