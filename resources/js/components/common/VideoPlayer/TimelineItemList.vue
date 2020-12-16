@@ -1,6 +1,27 @@
 <template>
     <div class="video-timing-list">
-        <TimelineItem v-for="timing in timings" :key="timing.id" :timing="timing" />
+        <TimelineItem
+            v-for="timing in timings"
+            :key="timing.id"
+            :timing="timing"
+            v-tooltip-trigger="{
+                tooltipRef: 'timingTooltip',
+                showArg: timing,
+            }"
+        />
+
+        <BaseTooltip ref="timingTooltip" @show="onShowTooltip" class="min">
+            <div class="product-card" v-if="tooltipTiming">
+                <span class="name">
+                    {{ tooltipTiming.product ? tooltipTiming.product.name : 'Not found' }}
+                </span>
+                <BaseVariantImage
+                    v-if="tooltipTiming.product"
+                    :variant="tooltipTiming.product.variants && tooltipTiming.product.variants[0]"
+                    size="sm"
+                />
+            </div>
+        </BaseTooltip>
     </div>
 </template>
 
@@ -13,6 +34,16 @@ export default {
         TimelineItem,
     },
     props: ['timings'],
+    data: function() {
+        return {
+            tooltipTiming: null,
+        }
+    },
+    methods: {
+        onShowTooltip(timing) {
+            this.tooltipTiming = timing
+        },
+    },
 }
 </script>
 
@@ -29,6 +60,26 @@ export default {
     overflow: hidden;
     @include mobile {
         display: none;
+    }
+}
+.product-card {
+    width: 92px;
+    padding: 4px 4px 8px;
+    // background: white;
+    .name {
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+    img {
+        width: 100%;
+        display: block;
+        height: 112px;
+        object-fit: contain;
+        background: $grey;
     }
 }
 </style>

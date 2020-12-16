@@ -22,6 +22,7 @@ export default {
         return {
             dragTime: 0,
             stopDragTimeout: null,
+            // watchedPercentage: 0,
         }
     },
     computed: {
@@ -45,6 +46,7 @@ export default {
             return rounded
         },
         knobStyle() {
+            console.log('get knob style')
             const playerRect = this.playerIframe.getBoundingClientRect()
             return `transform: translateX(calc(${(playerRect.width / 100) * this.watchedPercentage}px - ${14 *
                 (this.watchedPercentage / 100)}px));`
@@ -102,6 +104,15 @@ export default {
             const xPercentage = Math.max(Math.min(mouseX / playerRect.width, 1), 0)
             this.dragTime = this.duration * xPercentage
         },
+        // getWatchedPercentage() {
+        //     const timeToUse = this.isDragging ? this.dragTime : this.timestamp
+        //     const percentage = (timeToUse / this.duration) * 100
+        //     const rounded = Math.round(percentage * 1e2) / 1e2
+        //     this.watchedPercentage = rounded
+        // },
+    },
+    created() {
+        // setInterval(this.getWatchedPercentage(), 1000)
     },
 }
 </script>

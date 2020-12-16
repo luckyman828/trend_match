@@ -20,7 +20,8 @@ export default {
     props: ['playerReady', 'hideTimeline'],
     computed: {
         ...mapGetters('videoPlayer', {
-            playerStatus: 'getStatus',
+            // playerStatus: 'getStatus',
+            playerStatus: 'getDesiredStatus',
             player: 'getPlayer',
             iframe: 'getIframe',
             isPlaying: 'getIsPlaying',

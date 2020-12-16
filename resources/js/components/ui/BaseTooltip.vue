@@ -2,7 +2,7 @@
     <div class="tooltip popover">
         <div class="wrapper">
             <div class="tooltip-inner" v-if="visible">
-                <slot/>
+                <slot />
             </div>
             <div class="tooltip-arrow popover-arrow" data-popper-arrow></div>
         </div>
@@ -12,9 +12,11 @@
 <script>
 export default {
     name: 'baseTooltip',
-    data() { return {
-        visible: false
-    }},
+    data() {
+        return {
+            visible: false,
+        }
+    },
     methods: {
         show(showArg) {
             this.visible = true
@@ -23,8 +25,8 @@ export default {
         hide() {
             this.visible = false
             this.$emit('hide')
-        }
-    }
+        },
+    },
 }
 </script>
 
@@ -41,5 +43,4 @@ export default {
     height: 100%;
     overflow-y: auto;
 }
-
 </style>

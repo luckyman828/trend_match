@@ -4,22 +4,28 @@
         :class="{ current: index == currentTimingIndex }"
         @click="seekTo(timing.start)"
     >
-        <div class="card">
-            <div class="name-wrapper">
-                <span class="name">{{ product ? product.name : 'Not found' }}</span>
+        <v-popover placement="top" popoverClass="min dark">
+            <div class="card">
+                <div class="name-wrapper">
+                    <span class="name">{{ product ? product.name : 'Not found' }}</span>
+                </div>
+                <div class="img-wrapper">
+                    <BaseVariantImage v-if="product" :variant="product.variants[0]" size="sm" :key="timing.id" />
+                </div>
             </div>
-            <div class="img-wrapper">
-                <BaseVariantImage v-if="product" :variant="product.variants[0]" size="sm" />
-            </div>
-        </div>
+
+            <action-list-popover slot="popover" :product="product" />
+        </v-popover>
         <span class="timestamp">{{ timing.start | timestampify }}</span>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import ActionListPopover from '../ActionListPopover.vue'
 export default {
     name: 'timingListItem',
+    components: { ActionListPopover },
     props: ['timing', 'index'],
     computed: {
         ...mapGetters('videoPlayer', {

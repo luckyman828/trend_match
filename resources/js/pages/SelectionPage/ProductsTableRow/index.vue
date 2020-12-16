@@ -44,7 +44,7 @@
                             :product="product"
                             :distributionScope="distributionScope"
                             v-tooltip-trigger="{
-                                tooltipComp: variantTooltipComp,
+                                tooltipRef: variantTooltipRef,
                                 showArg: { variant, product, selectionInput },
                                 disabled: multiSelectionMode,
                             }"
@@ -127,7 +127,7 @@
                         tabindex="-1"
                         class="square ghost xs tooltip-target"
                         v-tooltip-trigger="{
-                            tooltipComp: distributionTooltipComp,
+                            tooltipRef: distributionTooltipRef,
                             showArg: { selectionInput, type: 'Focus' },
                         }"
                     >
@@ -144,7 +144,7 @@
                     <div
                         class="tooltip-target square ghost xs"
                         v-tooltip-trigger="{
-                            tooltipComp: distributionTooltipComp,
+                            tooltipRef: distributionTooltipRef,
                             showArg: { selectionInput, type: 'In' },
                         }"
                     >
@@ -161,7 +161,7 @@
                     <div
                         class="square ghost xs tooltip-target"
                         v-tooltip-trigger="{
-                            tooltipComp: distributionTooltipComp,
+                            tooltipRef: distributionTooltipRef,
                             showArg: { selectionInput, type: 'Out' },
                         }"
                     >
@@ -178,7 +178,7 @@
                     <div
                         class="tooltip-target square ghost xs"
                         v-tooltip-trigger="{
-                            tooltipComp: distributionTooltipComp,
+                            tooltipRef: distributionTooltipRef,
                             showArg: { selectionInput, type: 'None' },
                         }"
                     >
@@ -307,7 +307,7 @@
             :product="product"
             :focusGroupIndex="focusGroupIndex"
             :currentAction="currentAction"
-            :distributionTooltipComp="distributionTooltipComp"
+            :distributionTooltipRef="distributionTooltipRef"
             :distributionScope="distributionScope"
             @updateAction="onUpdateAction"
         />
@@ -329,8 +329,8 @@ export default {
         'selection',
         'currentAction',
         'index',
-        'distributionTooltipComp',
-        'variantTooltipComp',
+        'distributionTooltipRef',
+        'variantTooltipRef',
         'distributionScope',
     ],
     components: {

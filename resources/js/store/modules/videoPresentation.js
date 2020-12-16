@@ -79,6 +79,8 @@ export default {
             let video
             await axios.get(apiUrl).then(response => {
                 video = response.data
+                // Sort the timings
+                video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
                 // Init the videos timings
                 dispatch('initTimings', video.timings)
             })
