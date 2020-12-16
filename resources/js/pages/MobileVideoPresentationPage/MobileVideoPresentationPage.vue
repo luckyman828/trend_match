@@ -94,6 +94,7 @@ export default {
             showControls: true,
             showProductDrawer: false,
             showCart: false,
+            playerStartedTester: null,
         }
     },
     computed: {
@@ -161,11 +162,11 @@ export default {
             this.onEnterFullscreen()
             this.playerStarted = true
             const interval = 1000
-            const playerStartedTester = setInterval(() => {
+            this.playerStartedTester = setInterval(() => {
                 if (!this.isPlaying) {
                     this.togglePlaying()
                 } else {
-                    clearInterval(playerStartedTester)
+                    clearInterval(this.playerStartedTester)
                 }
             }, interval)
         },
@@ -221,6 +222,7 @@ export default {
         if (this.isConnectedToLiveUpdates) {
             this.disconnectLiveUpdates()
         }
+        if (this.playerStartedTester) clearInterval(this.playerStartedTester)
     },
 }
 </script>
