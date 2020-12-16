@@ -56,7 +56,7 @@ export default {
     &.paused {
         .over-player {
             // z-index: -1;
-            background: rgba(black, 0.4);
+            background: rgba(black, 0.2);
         }
     }
 }

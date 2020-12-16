@@ -48,6 +48,10 @@ export default {
     height: $heightPauseOverlay;
     bottom: calc(#{$heightPlayerControls} + 8px);
     pointer-events: all;
+    border-radius: 20px 20px 0 0;
+    backdrop-filter: blur(20px);
+    background: rgba(black, 0.6);
+    padding-top: 12px;
     &.controls-hidden {
         bottom: 0;
     }

@@ -4,11 +4,13 @@
         :class="{ current: index == currentTimingIndex }"
         @click="seekTo(timing.start)"
     >
-        <div class="name-wrapper">
-            <span class="name">{{ product ? product.name : 'Not found' }}</span>
-        </div>
-        <div class="img-wrapper">
-            <BaseVariantImage v-if="product" :variant="product.variants[0]" size="sm" />
+        <div class="card">
+            <div class="name-wrapper">
+                <span class="name">{{ product ? product.name : 'Not found' }}</span>
+            </div>
+            <div class="img-wrapper">
+                <BaseVariantImage v-if="product" :variant="product.variants[0]" size="sm" />
+            </div>
         </div>
         <span class="timestamp">{{ timing.start | timestampify }}</span>
     </div>
@@ -36,37 +38,51 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .product-timing-list-item {
-    width: 100px;
-    min-width: 100px;
-    overflow: hidden;
+    width: 84px;
+    min-width: 84px;
+    .card {
+        box-shadow: $shadowEl;
+        transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 2px;
+    }
+    &:hover {
+        .card {
+            box-shadow: $shadowElHard;
+            transform: translateY(-1px);
+        }
+    }
     &:not(:first-child) {
-        margin-left: 32px;
+        margin-left: 12px;
     }
     &:not(.current) {
         cursor: pointer;
+    }
+    .timestamp {
+        display: block;
+        font-size: 11px;
+        text-align: center;
     }
 }
 .name-wrapper {
     font-size: 11px;
     font-weight: 400;
-    max-width: 75px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     display: inline-flex;
-    padding: 4px;
-    padding-right: 8px;
-    background: $borderColorEl;
+    padding: 3px 6px;
+    background: white;
     color: $font;
-    border-radius: 2px 2px 0 0;
-    margin-bottom: -6px;
-    max-width: calc(100% - 12px);
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 500;
+
+    width: 100%;
     .current & {
         background: $primary;
         color: white;
-        font-weight: 500;
     }
     .name {
         overflow: hidden;
@@ -74,12 +90,8 @@ export default {
     }
 }
 .img-wrapper {
-    height: 100px;
-    width: 75px;
-    border: $borderElHard;
-    box-shadow: $shadowEl;
-    margin-bottom: 4px;
-    border-radius: 2px;
+    height: 112px;
+    width: 84px;
     overflow: hidden;
     .current & {
         border-color: $primary;
