@@ -36,8 +36,8 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .product-timing-list-item {
-    width: 75px;
-    min-width: 75px;
+    width: 100px;
+    min-width: 100px;
     overflow: hidden;
     &:not(:first-child) {
         margin-left: 32px;
