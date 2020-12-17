@@ -10,7 +10,7 @@
                 <span>Close</span>
             </button>
         </div>
-        <div class="body">
+        <div class="body" v-if="show">
             <!-- <div class="main"> -->
             <RecycleScroller
                 class="main"

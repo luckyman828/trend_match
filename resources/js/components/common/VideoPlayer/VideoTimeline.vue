@@ -46,7 +46,6 @@ export default {
             return rounded
         },
         knobStyle() {
-            console.log('get knob style')
             const playerRect = this.playerIframe.getBoundingClientRect()
             return `transform: translateX(calc(${(playerRect.width / 100) * this.watchedPercentage}px - ${14 *
                 (this.watchedPercentage / 100)}px));`
