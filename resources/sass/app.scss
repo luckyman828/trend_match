@@ -1356,7 +1356,7 @@ form,
 }
 .form-element {
     display: block;
-    width: 100%;
+    // width: 100%;
     &:not(:last-child) {
         margin-bottom: 24px;
     }
@@ -1370,6 +1370,9 @@ form,
     border-bottom: solid 1px $divider;
     padding-bottom: 32px;
     margin-bottom: 32px;
+    .form-element {
+        display: block;
+    }
 }
 input::placeholder {
     color: $grey700;

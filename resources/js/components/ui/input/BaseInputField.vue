@@ -178,9 +178,12 @@ export default {
         width: 100%;
         text-overflow: ellipsis;
     }
-    &.small {
+    &.small,
+    &.sm {
         + .icon-left,
-        + .icon-right {
+        .icon-left,
+        + .icon-right,
+        .icon-right {
             width: 32px;
             height: 32px;
         }
