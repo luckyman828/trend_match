@@ -46,9 +46,11 @@
                             <span>Hide/Show all</span>
                         </BaseButton>
 
-                        <span
-                            ><strong>{{ getSelectionsTree.length }}</strong> records</span
-                        >
+                        <div class="pill sm">
+                            <span
+                                ><strong>{{ getSelectionsTree.length }}</strong> selections</span
+                            >
+                        </div>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -137,7 +139,27 @@
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
                         @click="onNewSelection({ type: 'Master' })"
                     >
-                        <i class="far fa-plus"></i><span>Add master selection</span>
+                        <i class="far fa-crown"></i><span>Add Master</span>
+                    </BaseButton>
+                </td>
+                <td>
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        @click="onNewSelection({ type: 'Normal' })"
+                    >
+                        <i class="far fa-poll"></i><span>Add Selection</span>
+                    </BaseButton>
+                </td>
+                <td>
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        @click="onNewSelection({ type: 'Chapter' })"
+                    >
+                        <i class="far fa-project-diagram"></i><span>Add Chapters</span>
                     </BaseButton>
                 </td>
             </template>
@@ -203,7 +225,7 @@
 
                 <BaseContextMenuItem iconClass="far fa-plus" hotkey="KeyC">
                     <template>
-                        <span><u>C</u>reate sub-selection</span>
+                        <span><u>C</u>reate</span>
                     </template>
 
                     <template v-slot:submenu>
@@ -224,6 +246,16 @@
                                 @click="onNewSelection({ parent: contextSelection, type: 'Master' })"
                             >
                                 <span><u>M</u>aster</span>
+                            </BaseContextMenuItem>
+
+                            <BaseContextMenuItem
+                                iconClass="far fa-project-diagram"
+                                hotkey="KeyC"
+                                :disabled="contextSelection.type != 'Master'"
+                                disabledTooltip="Can only create Master sub-selections on another Master selection"
+                                @click="onNewSelection({ parent: contextSelection, type: 'Chapter' })"
+                            >
+                                <span><u>C</u>hapter</span>
                             </BaseContextMenuItem>
                         </div>
                     </template>
