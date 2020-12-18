@@ -8,6 +8,7 @@
                 :arrayToSearch="options"
                 :searchMultipleArrays="multipleOptionArrays"
                 :multipleArrayKey="optionGroupOptionsKey"
+                :focusOnMount="focusSearchOnMount"
                 v-model="optionsFilteredBySearch"
                 @input="onSearch"
                 @keydown.enter.exact.native="onSearchEnterKeypress"
@@ -225,6 +226,8 @@ export default {
         'labelPrefix',
         'allowManualEntry',
         'displayFunction',
+        'focusSearchOnMount',
+        'cloneOptionOnSubmit',
     ],
     data: function() {
         return {
@@ -286,7 +289,9 @@ export default {
     },
     methods: {
         submit(customValue) {
-            const valueToEmit = customValue ? customValue : this.selection
+            let valueToEmit = customValue ? customValue : this.selection
+            if (this.cloneOptionOnSubmit) valueToEmit = JSON.parse(JSON.stringify(valueToEmit))
+
             this.$emit('input', valueToEmit, this.optionGroup)
             this.$emit('submit', valueToEmit, this.optionGroup)
             if (customValue) {
@@ -296,9 +301,11 @@ export default {
         change(option, optionGroup, optionGroupIndex) {
             if (optionGroup) this.optionGroup = optionGroup
             if (optionGroupIndex) this.selectedGroupIndex = optionGroupIndex
-            this.$emit('change', this.selection)
+            let valueToEmit = this.selection
+            if (this.cloneOptionOnSubmit) valueToEmit = JSON.parse(JSON.stringify(valueToEmit))
+            this.$emit('change', valueToEmit)
             if (this.emitOnChange) {
-                this.$emit('input', this.selection)
+                this.$emit('input', valueToEmit)
             }
             if (this.submitOnChange) {
                 this.submit()

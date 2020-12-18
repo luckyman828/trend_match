@@ -1356,7 +1356,7 @@ form,
 }
 .form-element {
     display: block;
-    width: 100%;
+    // width: 100%;
     &:not(:last-child) {
         margin-bottom: 24px;
     }

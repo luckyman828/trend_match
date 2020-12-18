@@ -169,6 +169,9 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                   return this.uploadOptions.scopes.find(x => x.name == field.scope).enabled
               }
+              if (field.name == 'extra_data')
+                  return this.uploadOptions.fields.find(x => x.name == field.name && x.displayName == field.displayName)
+                      .enabled
               return this.uploadOptions.fields.find(x => x.name == field.name).enabled
           })
 
@@ -305,7 +308,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 // START MAP VARIANTS
                 //Don't set name or variant of variants
                 if (['variant', 'color'].includes(field.name)) return
-                if (product.variants && (field.scope == 'variants' || field.scope == 'images')) {
+                if (
+                    product.variants &&
+                    (field.scope == 'variants' || field.scope == 'images' || field.name == 'eans')
+                ) {
                     let variantFieldHasBeenProcessed
                     // Find all variants of this row
                     for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
@@ -323,7 +329,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                             const variant = product.variants.find(x => x.color == color && x.variant == variantVariant)
 
-                            if (!variant || !(field.scope == 'variants' || field.scope == 'images')) continue
+                            if (!variant) continue
 
                             // Now that we have our variant, it's just a question of setting the values
                             const variantField = variant[field.name]
@@ -356,10 +362,20 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                                 variantFieldHasBeenProcessed = true
                                 continue
                             }
-                            if (field.name == 'ean') {
+                            if (field.name == 'eans') {
+                                // Set the variant ean
+                                if (!variant.ean) variant.ean = fieldValue
+
+                                // Add the EAN to the products EANs
+                                if (product.eans) {
+                                    const existsInArray = product.eans.find(x => x == fieldValue)
+                                    if (!existsInArray) product.eans.push(fieldValue)
+                                }
+
+                                // Set ean_sizes
                                 const existingEan = variant.ean_sizes.find(x => x.ean == fieldValue)
                                 if (!existingEan) {
-                                    // Check if we have an object with no size set
+                                    // Check if we have an object with no ean set
                                     const noEanSet = variant.ean_sizes.find(x => !x.ean)
                                     // If we have an object with no size set, set its size
                                     if (noEanSet) noEanSet.ean = fieldValue
@@ -466,15 +482,18 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             product.assortments = product.assortments.filter(x => !!x.name)
         }
         // Generate the product variant name
-        product.variants.map(variant => {
-            // Calculate the new name
-            const nameComponents = []
-            if (variant.color) nameComponents.push(variant.color)
-            if (variant.variant) nameComponents.push(variant.variant)
-            const newName = nameComponents.join([' - '])
-            variant.name = newName
-        })
+        if (product.variants) {
+            product.variants.map(variant => {
+                // Calculate the new name
+                const nameComponents = []
+                if (variant.color) nameComponents.push(variant.color)
+                if (variant.variant) nameComponents.push(variant.variant)
+                const newName = nameComponents.join([' - '])
+                variant.name = newName
+            })
+        }
     })
+    console.log('instantaited rpoducts', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }
