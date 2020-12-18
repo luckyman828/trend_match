@@ -19,9 +19,14 @@
                     </div>
                 </div>
 
-                <div class="form-section" v-if="$route.name != 'editFile'">
+                <div class="form-section">
                     <h4>Choose export type</h4>
-                    <BaseRadioInputField class="form-element" v-model="exportType" value="results">
+                    <BaseRadioInputField
+                        class="form-element"
+                        v-model="exportType"
+                        value="results"
+                        v-if="$route.name != 'editFile'"
+                    >
                         Export results
                     </BaseRadioInputField>
                     <BaseRadioInputField class="form-element" v-model="exportType" value="template">
