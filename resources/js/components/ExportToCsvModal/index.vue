@@ -24,6 +24,9 @@
                     <BaseRadioInputField class="form-element" v-model="exportType" value="results">
                         Export results
                     </BaseRadioInputField>
+                    <BaseRadioInputField class="form-element" v-model="exportType" value="template">
+                        Custom Export
+                    </BaseRadioInputField>
                     <BaseRadioInputField class="form-element" v-model="exportType" value="dump">
                         <span>Export CSV dump</span>
                         <i
@@ -33,21 +36,21 @@
                     </BaseRadioInputField>
                 </div>
 
+                <div class="form-element" v-if="exportType != 'dump'">
+                    <label for="currency-selector">Choose Currency to export</label>
+                    <BaseInputField
+                        id="currency-selector"
+                        type="select"
+                        :disabled="true"
+                        :value="currencyToExport || 'Choose currency to export'"
+                        @click="showCurrencyContext($event)"
+                    >
+                        <i class="far fa-chevron-down"></i>
+                    </BaseInputField>
+                </div>
+
                 <!-- START Export results only -->
                 <template v-if="exportType == 'results'">
-                    <div class="form-element">
-                        <label for="currency-selector">Choose Currency to export</label>
-                        <BaseInputField
-                            id="currency-selector"
-                            type="select"
-                            :disabled="true"
-                            :value="currencyToExport || 'Choose currency to export'"
-                            @click="showCurrencyContext($event)"
-                        >
-                            <i class="far fa-chevron-down"></i>
-                        </BaseInputField>
-                    </div>
-
                     <div class="form-section">
                         <h4>Choose what to export</h4>
                         <div class="form-element">
@@ -95,7 +98,15 @@
                 </template>
                 <!-- END Export results only -->
 
-                <BaseButton style="width: 100%" buttonClass="dark full-width lg" @click="onExport">
+                <CustomExportSection v-if="exportType == 'template'" :exportTemplate.sync="exportTemplate" />
+
+                <BaseButton
+                    style="width: 100%"
+                    buttonClass="dark full-width lg"
+                    @click="onExport"
+                    :disabled="exportType == 'template' && (!exportTemplate || exportTemplate.headers.length <= 0)"
+                    disabledTooltip="Select some headers to export"
+                >
                     <span>Export</span>
                 </BaseButton>
             </form>
@@ -129,9 +140,11 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import exportToCsv from '../../mixins/exportToCsv'
+import CustomExportSection from './CustomExportSection'
 
 export default {
     name: 'exportCSVModal',
+    components: { CustomExportSection },
     props: ['show'],
     mixins: [exportToCsv],
     data: function() {
@@ -139,6 +152,7 @@ export default {
             // selectionsToExport: [],
             exportSelected: false,
             currencyToExport: null,
+            exportTemplate: null,
 
             exportType: this.$route.name == 'editFile' ? 'dump' : 'results',
 
@@ -225,6 +239,10 @@ export default {
             this.$refs.currencyContext.show(e)
         },
         onExport() {
+            if (this.exportType == 'template') {
+                this.exportCSVByTemplate()
+                return
+            }
             if (this.exportType == 'dump') {
                 this.exportCsvDump()
                 return
@@ -703,6 +721,22 @@ export default {
             dateStr = dateStr.replace('/', '-')
 
             this.exportToCsv(`Kollekt File Dump - ${this.currentFile.name} - ${dateStr}.csv`, [headers].concat(rows))
+        },
+        exportCSVByTemplate() {
+            const rows = this.generateCSVRowsFromTemplate(
+                this.productsToExport,
+                this.exportTemplate,
+                this.currencyToExport
+            )
+            if (!rows || rows.length <= 0) return
+
+            let dateStr = DateTime.local().toLocaleString()
+            // Replace slashes with dashes in date
+            dateStr = dateStr.replace('/', '-')
+            this.exportToCsv(
+                `Kollekt ${this.exportTemplate.name} Export - ${this.currentFile.name} - ${dateStr}.csv`,
+                rows
+            )
         },
         getDefaultProductRowData(product) {
             const priceToReturn = this.getProductPrice(product)

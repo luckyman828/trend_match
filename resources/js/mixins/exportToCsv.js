@@ -25,5 +25,90 @@ export default {
                 }
             }
         },
+        generateCSVRowsFromTemplate(products, template, preferredCurrency) {
+            const rows = []
+
+            // Add headers
+            rows.push(template.headers.filter(x => !!x.key).map(x => x.name))
+
+            products.map(product => {
+                if (template.rowScope == 'Variant') {
+                    for (let i = 0; i < Math.max(product.variants.length, 1); i++) {
+                        const variant = product.variants[i]
+                        getRowData(product, variant)
+                    }
+                } else {
+                    getRowData(product)
+                }
+            })
+
+            function getRowData(product, variant) {
+                const row = []
+                // Loop through the headers of our template and populate their data
+                template.headers.map(header => {
+                    const key = header.key
+                    if (!key) return
+                    // Check if the key has a scope
+                    const scopeIndex = key.indexOf('.')
+                    const keyScope = scopeIndex >= 0 && key.slice(0, scopeIndex)
+                    if (keyScope) {
+                        const scopeKey = key.slice(scopeIndex + 1)
+                        if (keyScope == 'variant') {
+                            // We have to do some magic for sizes
+                            if (scopeKey == 'sizes') {
+                                row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
+                            } else {
+                                row.push(variant ? variant[scopeKey] : '')
+                            }
+                            return
+                        }
+
+                        if (keyScope == 'price') {
+                            // See if we have the preffered currency available
+                            if (product.prices.length <= 0) {
+                                row.push()
+                                return
+                            }
+                            let priceToExport = {}
+                            if (!preferredCurrency) priceToExport = product.prices[0]
+                            const priceMatch = product.prices.find(
+                                x => x.currency && x.currency.toLowerCase() == preferredCurrency.toLowerCase()
+                            )
+                            if (priceMatch) priceToExport = priceMatch
+                            row.push(priceToExport[scopeKey])
+                            return
+                        }
+
+                        const scopeValue = product[keyScope]
+                        if (Array.isArray(scopeValue)) {
+                            row.push(scopeValue.map(x => x[scopeKey]).join(', '))
+                            return
+                        }
+
+                        const keyValue = product[keyScope][scopeKey]
+                        row.push(keyValue)
+                        return
+                    }
+                    // END HAS SCOPE
+
+                    const keyValue = product[key]
+                    if (Array.isArray(keyValue)) {
+                        if (key == 'delivery_dates') {
+                            const prettyDates = keyValue.map(x =>
+                                DateTime.fromFormat(x, 'yyyy-MM-dd').toFormat('MMMM yyyy')
+                            )
+                            row.push(prettyDates.join(', '))
+                            return
+                        }
+                        row.push(keyValue.join(', '))
+                        return
+                    }
+                    row.push(keyValue)
+                })
+                rows.push(row)
+            }
+
+            return rows
+        },
     },
 }

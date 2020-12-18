@@ -34,6 +34,7 @@ export default {
         searchMultipleArrays: {},
         multipleArrayKey: {},
         placeholderText: {},
+        focusOnMount: { default: false },
         inputClasses: {
             default: 'small',
         },
@@ -250,6 +251,9 @@ export default {
 
             return resultsToReturn
         },
+    },
+    mounted() {
+        if (this.focusOnMount) this.setFocus()
     },
     created() {
         if (this.arrayToSearch) {

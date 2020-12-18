@@ -54,7 +54,12 @@ export default {
         },
         getUploadOptionField(field) {
             if (!this.uploadOptions) return
-            return this.uploadOptions.fields.find(x => x.name == field.name)
+            let fieldToReturn = this.uploadOptions.fields.find(x => x.name == field.name)
+            if (field.name == 'extra_data')
+                fieldToReturn = this.uploadOptions.fields.find(
+                    x => x.name == field.name && x.displayName == field.displayName
+                )
+            return fieldToReturn
         },
     },
     created() {
