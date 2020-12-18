@@ -169,6 +169,9 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                   return this.uploadOptions.scopes.find(x => x.name == field.scope).enabled
               }
+              if (field.name == 'extra_data')
+                  return this.uploadOptions.fields.find(x => x.name == field.name && x.displayName == field.displayName)
+                      .enabled
               return this.uploadOptions.fields.find(x => x.name == field.name).enabled
           })
 
@@ -479,15 +482,18 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             product.assortments = product.assortments.filter(x => !!x.name)
         }
         // Generate the product variant name
-        product.variants.map(variant => {
-            // Calculate the new name
-            const nameComponents = []
-            if (variant.color) nameComponents.push(variant.color)
-            if (variant.variant) nameComponents.push(variant.variant)
-            const newName = nameComponents.join([' - '])
-            variant.name = newName
-        })
+        if (product.variants) {
+            product.variants.map(variant => {
+                // Calculate the new name
+                const nameComponents = []
+                if (variant.color) nameComponents.push(variant.color)
+                if (variant.variant) nameComponents.push(variant.variant)
+                const newName = nameComponents.join([' - '])
+                variant.name = newName
+            })
+        }
     })
+    console.log('instantaited rpoducts', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }

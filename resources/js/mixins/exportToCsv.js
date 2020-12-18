@@ -26,7 +26,6 @@ export default {
             }
         },
         generateCSVRowsFromTemplate(products, template, preferredCurrency) {
-            console.log('generate CSV rows from template', products, template)
             const rows = []
 
             // Add headers
@@ -44,7 +43,6 @@ export default {
             })
 
             function getRowData(product, variant) {
-                console.log('get row data', product.title, variant)
                 const row = []
                 // Loop through the headers of our template and populate their data
                 template.headers.map(header => {
@@ -64,11 +62,6 @@ export default {
                             }
                             return
                         }
-                        // if (keyScope == 'assortments') {
-                        //     row.push()
-                        //     row.push('havent done assortmetns')
-                        //     return
-                        // }
 
                         if (keyScope == 'price') {
                             // See if we have the preffered currency available
@@ -96,12 +89,16 @@ export default {
                         row.push(keyValue)
                         return
                     }
+                    // END HAS SCOPE
 
                     const keyValue = product[key]
                     if (Array.isArray(keyValue)) {
-                        if (keyValue == 'delivery_dates') {
-                            const prettyDates = keyValue.map(x => getPrettyDate(x))
-                            console.log('pretty dates', prettyDates)
+                        if (key == 'delivery_dates') {
+                            const prettyDates = keyValue.map(x =>
+                                DateTime.fromFormat(x, 'yyyy-MM-dd').toFormat('MMMM yyyy')
+                            )
+                            row.push(prettyDates.join(', '))
+                            return
                         }
                         row.push(keyValue.join(', '))
                         return
@@ -111,7 +108,6 @@ export default {
                 rows.push(row)
             }
 
-            console.log('Return rows', rows)
             return rows
         },
     },

@@ -699,7 +699,6 @@ export default {
             }
         },
         REMOVE_UNSAVED_FILES(state) {
-            console.log('remoe unsaved fiels')
             state.files = state.files.filter(x => !!x.id)
         },
         setAvailableFileIds(state, fileIds) {

@@ -18,7 +18,7 @@
             <button class="primary ghost form-element" @click="onAddHeader">
                 <i class="far fa-plus"></i><span>Add header</span>
             </button>
-            <Draggable class="flex-list xs flex-v form-element">
+            <Draggable class="flex-list xs flex-v form-element" v-model="exportTemplate.headers">
                 <div class="header-item flex-list sm" v-for="(header, index) in exportTemplate.headers" :key="index">
                     <button class="ghost handle" v-tooltip="'Drag to re-position'">
                         <i class="far fa-grip-vertical"></i>
@@ -103,7 +103,7 @@ export default {
                         { name: 'DESCRIPTION', key: 'sale_description' },
                         { name: 'SIZE NAME', key: 'variant.sizes' },
                         { name: 'BRAND_NAME', key: 'brand' },
-                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.Country Of Origin' },
+                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.Country of Origin' },
                     ],
                 },
                 {
