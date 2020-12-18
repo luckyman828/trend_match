@@ -6,6 +6,7 @@
             { 'read-only': readOnly },
             { error: error || errorTooltip },
             { 'has-label': label },
+            { 'has-inner-label': innerLabel },
             { 'has-icon-right': !!$slots.default },
         ]"
     >
@@ -16,6 +17,7 @@
             :tabindex="type == 'select' ? 0 : -1"
         >
             <label v-if="label" class="label" v-html="label" :for="id ? id : `uid-${_uid}`"></label>
+            <span v-if="innerLabel" class="inner-label" v-html="innerLabel"></span>
             <input
                 ref="inputField"
                 :type="type"
@@ -68,6 +70,7 @@ export default {
         'selectOnFocus',
         'focusOnMount',
         'actionOnBlur',
+        'innerLabel',
     ],
     computed: {
         inputField() {
@@ -150,10 +153,21 @@ export default {
                 margin-top: 6px;
             }
         }
-        .input-wrapper,
-        input {
-            cursor: pointer;
+        &:not(.read-only) {
+            .input-wrapper,
+            input {
+                cursor: pointer;
+            }
         }
+    }
+    .inner-label {
+        color: $primary;
+        position: absolute;
+        top: 2px;
+        z-index: 1;
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
     }
     &.error {
         .input-wrapper {

@@ -267,6 +267,13 @@
             </div>
             <div class="item-group">
                 <BaseContextMenuItem
+                    iconClass="far fa-filter"
+                    hotkey="KeyF"
+                    @click="onShowChapterFilterModal(contextSelection)"
+                >
+                    <span>Chapter <u>F</u>ilter</span>
+                </BaseContextMenuItem>
+                <BaseContextMenuItem
                     iconClass="far fa-cog"
                     hotkey="KeyS"
                     @click="showSettingsContext(contextMouseEvent, contextSelection)"
@@ -1121,23 +1128,28 @@
             <p>All input of the selection{{ selectedSelections.length > 1 ? 's' : '' }} will be permanently deleted.</p>
             <p><strong>Please beware:</strong> All sub-selections will be deleted as well.</p>
         </BaseDialog>
+
+        <ChapterFilterModal :selection="contextSelection" :show="showChapterFilterModal" @close="showChapterFilterModal = false"/>
     </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
+import ChapterFilterModal from './ChapterFilterModal'
 import sortArray from '../../../mixins/sortArray'
 
 export default {
     name: 'selectionsTable',
     components: {
         SelectionsTableRow,
+        ChapterFilterModal,
     },
     mixins: [sortArray],
     data: function() {
         return {
             focusSelection: null,
+            showChapterFilterModal: false,
             loadingData: false,
             fileSelectionMagicLinkSent: false,
             selectedSelections: [],
@@ -1444,6 +1456,10 @@ export default {
                 // Position the contextual menu
                 selectionContext.show(e)
             }
+        },
+        onShowChapterFilterModal(selection) {
+            this.showChapterFilterModal = true
+            this.contextSelection = selection
         },
         onMoveSelection(selection, parent) {
             this.selectionToMove = selection
