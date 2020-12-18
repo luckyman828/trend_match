@@ -2,7 +2,11 @@
     <div class="selections-table-row">
         <tr
             class="selection"
-            :class="[{ 'is-hidden': isHidden }, `presentation-group-${presentationGroupIndex}`]"
+            :class="[
+                { 'is-hidden': isHidden },
+                `presentation-group-${presentationGroupIndex}`,
+                { 'has-focus': hasFocus },
+            ]"
             @contextmenu="emitShowContext"
             @click="onClick"
         >
@@ -192,6 +196,7 @@
                 :moveSelectionActive="moveSelectionActive"
                 :selectedSelections="selectedSelections"
                 v-model="localSelectedSelections"
+                :focusId="focusId"
                 @submitToEdit="$emit('submitToEdit')"
                 @cancelToEdit="$emit('cancelToEdit', $event)"
                 @showContext="emitEmissionShowContext"
@@ -230,6 +235,7 @@ export default {
         'path',
         'file',
         'selectedSelections',
+        'focusId',
     ],
     data: function() {
         return {
@@ -287,6 +293,9 @@ export default {
                 return this.selection.presentation.presenter.id == this.authUser.id
             }
             return true
+        },
+        hasFocus() {
+            return this.selection.id == this.focusId
         },
     },
     methods: {
@@ -389,6 +398,10 @@ export default {
     &.is-hidden {
         display: none;
     }
+    // &.has-focus {
+    //     // background: blue;
+    //     box-shadow: 0 0 1px 1px $primary inset;
+    // }
 }
 
 .title {

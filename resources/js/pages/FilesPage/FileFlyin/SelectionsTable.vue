@@ -1,5 +1,5 @@
 <template>
-    <div class="selections-table">
+    <div class="selections-table" v-click-outside="rowClick">
         <BaseFlexTable
             class="flex-table-root"
             :contentStatus="readyStatus"
@@ -96,6 +96,7 @@
                             :selectionToEdit="selectionToEdit"
                             :selectedSelections="selectedSelections"
                             v-model="selectedSelections"
+                            :focusId="focusSelection ? focusSelection.id : null"
                             @submitToEdit="clearToEdit"
                             @cancelToEdit="
                                 clearUnsaved($event)
@@ -136,7 +137,8 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new masters'"
+                        v-tooltip="'Create a new Master'"
                         @click="onNewSelection({ type: 'Master' })"
                     >
                         <i class="far fa-crown"></i><span>Add Master</span>
@@ -146,8 +148,14 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
-                        @click="onNewSelection({ type: 'Normal' })"
+                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        v-tooltip="'Create a new selection. Will be added under the currently focused selection.'"
+                        @click="
+                            onNewSelection({
+                                type: 'Normal',
+                                parent: focusSelection,
+                            })
+                        "
                     >
                         <i class="far fa-poll"></i><span>Add Selection</span>
                     </BaseButton>
@@ -156,10 +164,16 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
-                        @click="onNewSelection({ type: 'Chapter' })"
+                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new chapters'"
+                        v-tooltip="'Create a new chapter. Will be added under the currently focused selection.'"
+                        @click="
+                            onNewSelection({
+                                type: 'Chapter',
+                                parent: focusSelection,
+                            })
+                        "
                     >
-                        <i class="far fa-project-diagram"></i><span>Add Chapters</span>
+                        <i class="far fa-project-diagram"></i><span>Add Chapter</span>
                     </BaseButton>
                 </td>
             </template>
@@ -232,20 +246,10 @@
                         <div class="item-group">
                             <BaseContextMenuItem
                                 iconClass="far fa-poll"
-                                hotkey="KeyN"
+                                hotkey="KeyS"
                                 @click="onNewSelection({ parent: contextSelection, type: 'Normal' })"
                             >
-                                <span><u>N</u>ormal</span>
-                            </BaseContextMenuItem>
-
-                            <BaseContextMenuItem
-                                iconClass="far fa-crown"
-                                hotkey="KeyM"
-                                :disabled="contextSelection.type != 'Master'"
-                                disabledTooltip="Can only create Master sub-selections on another Master selection"
-                                @click="onNewSelection({ parent: contextSelection, type: 'Master' })"
-                            >
-                                <span><u>M</u>aster</span>
+                                <span><u>S</u>election</span>
                             </BaseContextMenuItem>
 
                             <BaseContextMenuItem
@@ -1133,6 +1137,7 @@ export default {
     mixins: [sortArray],
     data: function() {
         return {
+            focusSelection: null,
             loadingData: false,
             fileSelectionMagicLinkSent: false,
             selectedSelections: [],
@@ -1300,9 +1305,16 @@ export default {
             this.sortArray(this.getSelectionsTree, sortAsc, sortKey)
         },
         rowClick(e, component) {
+            if (!component) {
+                this.focusSelection = null
+                return
+            }
+            const selection = component.selection
+            this.focusSelection = this.focusSelection && this.focusSelection.id == selection.id ? null : selection
+            this.contextSelectionComponent = component
             if (this.moveSelectionActive) {
                 e.stopPropagation()
-                this.endMoveSelection(component.selection, component)
+                this.endMoveSelection(selection, component)
             }
         },
         async showSettingsContext(e, selection) {
