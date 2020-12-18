@@ -25,7 +25,7 @@ export default {
                 }
             }
         },
-        generateCSVRowsFromTemplate(products, template) {
+        generateCSVRowsFromTemplate(products, template, preferredCurrency) {
             console.log('generate CSV rows from template', products, template)
             const rows = []
 
@@ -69,7 +69,18 @@ export default {
                         }
 
                         if (keyScope == 'price') {
-                            row.push('havent done prices')
+                            // See if we have the preffered currency available
+                            if (product.prices.length <= 0) {
+                                row.push('')
+                                return
+                            }
+                            let priceToExport = {}
+                            if (!preferredCurrency) priceToExport = product.prices[0]
+                            const priceMatch = product.prices.find(
+                                x => x.currency && x.currency.toLowerCase() == preferredCurrency.toLowerCase()
+                            )
+                            if (priceMatch) priceToExport = priceMatch
+                            row.push(priceToExport[scopeKey])
                             return
                         }
 
@@ -86,6 +97,9 @@ export default {
 
                     const keyValue = product[key]
                     if (Array.isArray(keyValue)) {
+                        if (keyValue == 'delivery_dates') {
+                            const prettyValues = keyValue.map(x => getPrettyDate(x))
+                        }
                         row.push(keyValue.join(', '))
                         return
                     }

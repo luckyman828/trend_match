@@ -100,7 +100,13 @@
 
                 <CustomExportSection v-if="exportType == 'template'" :exportTemplate.sync="exportTemplate" />
 
-                <BaseButton style="width: 100%" buttonClass="dark full-width lg" @click="onExport">
+                <BaseButton
+                    style="width: 100%"
+                    buttonClass="dark full-width lg"
+                    @click="onExport"
+                    :disabled="exportType == 'template' && (!exportTemplate || exportTemplate.headers.length <= 0)"
+                    disabledTooltip="Select some headers to export"
+                >
                     <span>Export</span>
                 </BaseButton>
             </form>
@@ -234,7 +240,7 @@ export default {
         },
         onExport() {
             if (this.exportType == 'template') {
-                this.exportCSVbyTemplate()
+                this.exportCSVByTemplate()
                 return
             }
             if (this.exportType == 'dump') {
@@ -716,8 +722,12 @@ export default {
 
             this.exportToCsv(`Kollekt File Dump - ${this.currentFile.name} - ${dateStr}.csv`, [headers].concat(rows))
         },
-        exportCSVbyTemplate() {
-            const rows = this.generateCSVRowsFromTemplate(this.productsToExport, this.exportTemplate)
+        exportCSVByTemplate() {
+            const rows = this.generateCSVRowsFromTemplate(
+                this.productsToExport,
+                this.exportTemplate,
+                this.currencyToExport
+            )
             if (!rows || rows.length <= 0) return
 
             let dateStr = DateTime.local().toLocaleString()
