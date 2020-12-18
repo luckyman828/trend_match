@@ -39,7 +39,7 @@
                 <button
                     class="primary ghost"
                     v-if="selection.type == 'Master'"
-                    @click="onViewSelectionAsRole('Member')"
+                    @click="onViewSelectionAsRole('Approver')"
                 >
                     <i class="far fa-user-clock"></i>
                     <span>View as Approver</span>
