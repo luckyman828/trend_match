@@ -186,8 +186,9 @@ export default {
     },
     created() {
         // Preset the selected template to the first
-        // this.exportTemplate = this.availableTemplates[0]
-        this.$emit('update:exportTemplate', this.availableTemplates[0])
+        if (!this.exportTemplate) {
+            this.$emit('update:exportTemplate', this.availableTemplates[0])
+        }
     },
 }
 </script>
