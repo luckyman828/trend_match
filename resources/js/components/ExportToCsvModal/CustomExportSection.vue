@@ -85,7 +85,7 @@ export default {
             availableTemplates: [
                 {
                     name: 'Custom',
-                    rowScope: 'Product',
+                    rowScope: 'Variant',
                     headers: [],
                 },
                 {
@@ -131,8 +131,8 @@ export default {
                         { name: 'Variant EAN', key: 'variant.eans' },
                         { name: 'Image URL', key: 'image_url' },
                         { name: 'Assortment Name', key: 'assortments.name' },
-                        { name: 'Assortment EAN', key: 'assortments.ean' },
-                        { name: 'Assortment Size', key: 'assortments.size' },
+                        // { name: 'Assortment EAN', key: 'assortments.ean' },
+                        // { name: 'Assortment Size', key: 'assortments.size' },
                     ],
                 },
             ],
@@ -162,8 +162,8 @@ export default {
                 { name: 'Variant EAN', key: 'variant.eans' },
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
-                { name: 'Assortment EAN', key: 'assortments.ean' },
-                { name: 'Assortment Size', key: 'assortments.size' },
+                // { name: 'Assortment EAN', key: 'assortments.ean' },
+                // { name: 'Assortment Size', key: 'assortments.size' },
             ]
             return baseHeaders
         },

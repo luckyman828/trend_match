@@ -1370,9 +1370,6 @@ form,
     border-bottom: solid 1px $divider;
     padding-bottom: 32px;
     margin-bottom: 32px;
-    .form-element {
-        display: block;
-    }
 }
 input::placeholder {
     color: $grey700;

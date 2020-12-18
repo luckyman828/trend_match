@@ -30,7 +30,7 @@ export default {
             const rows = []
 
             // Add headers
-            rows.push(template.headers.map(x => x.name))
+            rows.push(template.headers.filter(x => !!x.key).map(x => x.name))
 
             products.map(product => {
                 if (template.rowScope == 'Variant') {
@@ -49,6 +49,7 @@ export default {
                 // Loop through the headers of our template and populate their data
                 template.headers.map(header => {
                     const key = header.key
+                    if (!key) return
                     // Check if the key has a scope
                     const scopeIndex = key.indexOf('.')
                     const keyScope = scopeIndex >= 0 && key.slice(0, scopeIndex)
@@ -63,15 +64,16 @@ export default {
                             }
                             return
                         }
-                        if (keyScope == 'assortment') {
-                            row.push('havent done assortmetns')
-                            return
-                        }
+                        // if (keyScope == 'assortments') {
+                        //     row.push()
+                        //     row.push('havent done assortmetns')
+                        //     return
+                        // }
 
                         if (keyScope == 'price') {
                             // See if we have the preffered currency available
                             if (product.prices.length <= 0) {
-                                row.push('')
+                                row.push()
                                 return
                             }
                             let priceToExport = {}
@@ -98,7 +100,8 @@ export default {
                     const keyValue = product[key]
                     if (Array.isArray(keyValue)) {
                         if (keyValue == 'delivery_dates') {
-                            const prettyValues = keyValue.map(x => getPrettyDate(x))
+                            const prettyDates = keyValue.map(x => getPrettyDate(x))
+                            console.log('pretty dates', prettyDates)
                         }
                         row.push(keyValue.join(', '))
                         return
