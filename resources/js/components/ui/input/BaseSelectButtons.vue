@@ -88,13 +88,14 @@
                             { 'has-description': optionDescriptionKey },
                             {
                                 active:
-                                    type == 'radio'
+                                    selection != null &&
+                                    (type == 'radio'
                                         ? option[optionValueKey]
                                             ? option[optionValueKey] == selection
                                             : option == selection
                                         : option[optionValueKey]
                                         ? selection.includes(option[optionValueKey])
-                                        : selection.includes(selection),
+                                        : selection.includes(selection)),
                             },
                         ]"
                     >
@@ -149,13 +150,14 @@
                         { 'has-description': optionDescriptionKey },
                         {
                             active:
-                                type == 'radio'
+                                selection != null &&
+                                (type == 'radio'
                                     ? option[optionValueKey]
                                         ? option[optionValueKey] == selection
                                         : option == selection
                                     : option[optionValueKey]
                                     ? selection.includes(option[optionValueKey])
-                                    : selection.includes(selection),
+                                    : selection.includes(selection)),
                         },
                     ]"
                 >

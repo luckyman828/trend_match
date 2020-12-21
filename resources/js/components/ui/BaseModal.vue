@@ -11,6 +11,7 @@
                             </button>
                         </div>
                         <h2 v-if="header" v-html="header"></h2>
+                        <div class="sub-header" v-html="subHeader"></div>
                         <slot name="header" />
                         <!-- <div class="right">
                             <button class="close md circle" @click="close"><i class="fal fa-times"></i></button>
@@ -29,7 +30,7 @@
 <script>
 export default {
     name: 'Modal',
-    props: ['header', 'classes', 'goBack', 'show'],
+    props: ['header', 'subHeader', 'classes', 'goBack', 'show'],
     data: function() {
         return {}
     },
@@ -90,6 +91,7 @@ export default {
         overflow: auto;
         scroll-behavior: smooth;
         z-index: 1;
+        text-align: center;
     }
     &.sm {
         .modal {
@@ -115,10 +117,13 @@ export default {
 .modal {
     position: relative;
     z-index: 120;
-    width: 100%;
-    max-width: 848px;
+    // width: 100%;
+    // width: 512px;
+    min-width: 500px;
+    display: inline-block;
+    text-align: left;
     margin: 10vh auto 5vh;
-    background: $bg;
+    background: white;
     border-radius: 6px;
     overflow: hidden;
     .header {
@@ -126,12 +131,20 @@ export default {
         justify-content: center;
         align-items: center;
         position: relative;
+        flex-direction: column;
         height: 72px;
-        border-bottom: solid 2px $divider;
+        border-bottom: $borderModule;
         background: $bgContent;
+        text-align: center;
         h2 {
-            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: $font;
             margin: 0;
+        }
+        .sub-header {
+            color: $fontSoft;
+            font-size: 12px;
         }
         .right {
             position: absolute;
@@ -153,10 +166,10 @@ export default {
         }
     }
     .body {
-        width: 100%;
-        max-width: 512px;
+        // width: 100%;
+        // max-width: 512px;
         margin: auto;
-        padding: 20px 32px 40px;
+        padding: 32px;
     }
     .close {
         position: absolute;

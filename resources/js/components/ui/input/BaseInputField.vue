@@ -160,14 +160,26 @@ export default {
             }
         }
     }
-    .inner-label {
-        color: $primary;
-        position: absolute;
-        top: 2px;
-        z-index: 1;
-        font-size: 10px;
-        white-space: nowrap;
-        overflow: hidden;
+    &.has-inner-label {
+        .input-wrapper {
+            padding-top: 14px;
+            input {
+                font-weight: 700;
+                font-size: 12px;
+                padding: 0;
+            }
+        }
+        .inner-label {
+            color: $primary;
+            position: absolute;
+            top: 2px;
+            z-index: 1;
+            font-size: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            width: calc(100% - 32px);
+            text-overflow: ellipsis;
+        }
     }
     &.error {
         .input-wrapper {
@@ -191,6 +203,7 @@ export default {
         background: inherit;
         width: 100%;
         text-overflow: ellipsis;
+        color: inherit;
     }
     &.small,
     &.sm {
