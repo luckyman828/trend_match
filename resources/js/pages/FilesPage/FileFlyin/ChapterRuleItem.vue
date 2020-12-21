@@ -60,7 +60,7 @@
             v-model="chapterRule.value"
         />
 
-        <BaseButton buttonClass="invisible ghost-hover dark" :disabled="index == 0" @click="$emit('remove')"
+        <BaseButton buttonClass="invisible ghost-hover dark" :disabled="chapterRuleCount <= 1" @click="$emit('remove')"
             ><i class="far fa-trash"></i
         ></BaseButton>
     </div>
@@ -70,7 +70,15 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'chapterRuleItem',
-    props: ['chapterRule', 'index', 'availableCombinators', 'availableRules', 'availableOperators', 'filterCombinator'],
+    props: [
+        'chapterRule',
+        'index',
+        'availableCombinators',
+        'availableRules',
+        'availableOperators',
+        'filterCombinator',
+        'chapterRuleCount',
+    ],
     computed: {
         ...mapGetters('products', {
             products: 'products',
@@ -123,6 +131,7 @@ export default {
     },
     watch: {
         ruleOperator(newOperator, oldOperator) {
+            console.log('opreator changed')
             if (!this.chapterRule.type == 'array' || !oldOperator) return
             // From Multi to Single
             if (['Equal', 'NotEqual'].includes(newOperator) && ['AnyInArray', 'NotInArray'].includes(oldOperator)) {
@@ -135,6 +144,7 @@ export default {
             }
         },
         mappedRule() {
+            console.log('mapped rule changed')
             // Reset the selected values when the mapped rule changed
             this.chapterRule.value = null
             this.chapterRule.values = []

@@ -10,13 +10,14 @@
         <div class="rule-item-list flex-list flex-v" v-if="show && !status">
             <ChapterRuleItem
                 v-for="(chapterRule, index) in chapterRules"
-                :key="index"
+                :key="chapterRule.key"
                 :chapterRule="chapterRule"
                 :index="index"
                 :availableCombinators="availableCombinators"
                 :availableOperators="availableOperators"
                 :availableRules="availableRules"
                 :filterCombinator.sync="filterCombinator"
+                :chapterRuleCount="chapterRules.length"
                 @remove="onRemoveRule(index)"
             />
             <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
@@ -161,7 +162,10 @@ export default {
                 const chapterRules = await this.fetchChapterRules({ selection: this.selection })
 
                 this.filterCombinator = chapterRules.relation
-                this.chapterRules = chapterRules.rules
+                this.chapterRules = chapterRules.rules.map(rule => {
+                    rule.key = this.$uuid.v4()
+                    return rule
+                })
                 // console.log('fetched chatper rules', chapterRules)
 
                 // this.chapterRules.push(...chapterRules.rules)
@@ -183,6 +187,7 @@ export default {
                 operator: this.availableOperators[0].operatorName,
                 value: null,
                 values: [],
+                key: this.$uuid.v4(),
             }
         },
         onAddRule() {

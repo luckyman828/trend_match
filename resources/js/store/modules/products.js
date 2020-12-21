@@ -1292,10 +1292,14 @@ export default {
             })
         },
         mergeProductsWithSelectionInput({ state, dispatch }, { selectionProductInput, authUser }) {
+            // Filter out products not in our selection input
+            state.products = state.products.filter(
+                product => !!selectionProductInput.products.find(x => x.id == product.id)
+            )
+
             const products = state.products
             products.map(product => {
                 const rawSelectionInput = selectionProductInput.products.find(x => x.id == product.id)
-                console.log('rawSelectionInput', rawSelectionInput)
                 const selectionInput = {}
                 Vue.set(selectionInput, 'rawSelectionInput', rawSelectionInput)
                 Vue.set(selectionInput, 'selection_id', selectionProductInput.selection.id)

@@ -133,6 +133,7 @@
                     placement="right"
                     popoverInnerClass="tooltip-inner popover-inner"
                     :open="showAdvancedFilters"
+                    :boundariesElement="$root.$el.querySelector('#main')"
                     :autoHide="false"
                 >
                     <BaseContextMenuItem iconClass="far fa-sliders-v" @click="showAdvancedFilters = true">
@@ -143,6 +144,7 @@
                     </BaseContextMenuItem>
                     <template slot="popover">
                         <ConditionalFilters
+                            v-if="showAdvancedFilters"
                             :distributionScope="distributionScope"
                             :key="advancedFilterKey"
                             @close="showAdvancedFilters = false"
