@@ -24,6 +24,7 @@
                 :search="search"
                 :focusSearchOnMount="true"
                 :type="type"
+                :value="value"
                 :optionNameKey="optionNameKey"
                 :optionValueKey="optionValueKey"
                 :optionDescriptionKey="descriptionKey"
@@ -50,6 +51,7 @@ export default {
         'cloneOptionOnSubmit',
         'readOnly',
         'innerLabel',
+        'valueToDisplayOverwrite',
     ],
     computed: {
         optionValueKey() {
@@ -63,6 +65,7 @@ export default {
             return Object.keys(this.options[0]).includes('name') ? 'name' : null
         },
         valueToDisplay() {
+            if (this.valueToDisplayOverwrite) return this.valueToDisplayOverwrite
             if (!this.value) return
             if (!this.options || this.options.length <= 0) return this.value
 

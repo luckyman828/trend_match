@@ -201,6 +201,8 @@
                     </label>
                 </div>
             </template>
+
+            <blockquote v-if="!options || options.length <= 0">No options available</blockquote>
         </div>
     </div>
 </template>
