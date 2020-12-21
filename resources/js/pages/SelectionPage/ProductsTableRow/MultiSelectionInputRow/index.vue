@@ -1,12 +1,20 @@
 <template>
     <div class="multi-selection-input-row flex-table-row">
-        <SelectionInputGroup v-for="(selectionInput, index) 
-        in product.selectionInputList.filter(selectionInput => getCurrentSelections.find(selection => selectionInput.selection_id == selection.id))" 
-        :key="selectionInput.selection.id"
-        :selection="selectionInput.selection" :product="product" :selectionInput="selectionInput" :index="index"
-        :currentAction="currentAction" :focusGroupIndex="focusGroupIndex"
-        :distributionTooltipComp="distributionTooltipComp" :distributionScope="distributionScope"
-        @updateAction="onUpdateAction"/>
+        <SelectionInputGroup
+            v-for="(selectionInput, index) in product.selectionInputList.filter(selectionInput =>
+                getCurrentSelections.find(selection => selectionInput.selection_id == selection.id)
+            )"
+            :key="selectionInput.selection.id"
+            :selection="selectionInput.selection"
+            :product="product"
+            :selectionInput="selectionInput"
+            :index="index"
+            :currentAction="currentAction"
+            :focusGroupIndex="focusGroupIndex"
+            :distributionTooltipRef="distributionTooltipRef"
+            :distributionScope="distributionScope"
+            @updateAction="onUpdateAction"
+        />
     </div>
 </template>
 
@@ -15,19 +23,13 @@ import { mapGetters, mapMutations } from 'vuex'
 import SelectionInputGroup from './SelectionInputGroup'
 export default {
     name: 'multiSelectionInputRow',
-    props: [
-        'product',
-        'currentAction',
-        'focusGroupIndex',
-        'distributionTooltipComp',
-        'distributionScope',
-    ],
+    props: ['product', 'currentAction', 'focusGroupIndex', 'distributionTooltipRef', 'distributionScope'],
     components: {
-        SelectionInputGroup
+        SelectionInputGroup,
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['getCurrentSelections'])
+        ...mapGetters('selections', ['getCurrentSelections']),
     },
     methods: {
         ...mapMutations('actions', ['UPDATE_ACTIONS']),
@@ -44,8 +46,8 @@ export default {
             // })
             // console.log('on updaet action', product, action, selection)
             this.$emit('updateAction', action, selectionInput)
-        }
-    }
+        },
+    },
 }
 </script>
 
@@ -78,10 +80,7 @@ export default {
             &:last-child button {
                 border-radius: 0 4px 4px 0;
             }
-
         }
     }
-    
 }
-
 </style>

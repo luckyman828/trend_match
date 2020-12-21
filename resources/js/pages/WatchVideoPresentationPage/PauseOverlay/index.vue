@@ -1,7 +1,20 @@
 <template>
-    <div class="pause-overlay" :class="{ 'controls-hidden': controlsHidden }">
-        <div class="rail">
-            <div class="product-timing-list" v-horizontal-scroll v-dragscroll>
+    <div class="pause-overlay" :class="[{ 'controls-hidden': controlsHidden }, { show: show }]">
+        <BaseLoader v-if="isLoading" />
+        <div class="rail" v-else-if="isVisible">
+            <RecycleScroller
+                class="product-timing-list"
+                :items="timings"
+                direction="horizontal"
+                :item-size="96"
+                key-field="id"
+                v-horizontal-scroll
+                v-dragscroll
+                v-slot="{ item, index }"
+            >
+                <TimingListItem class="product-timing-list-item" :timing="item" :index="index" />
+            </RecycleScroller>
+            <!-- <div class="product-timing-list" v-horizontal-scroll v-dragscroll>
                 <TimingListItem
                     class="product-timing-list-item"
                     v-for="(timing, index) in timings"
@@ -9,7 +22,7 @@
                     :timing="timing"
                     :index="index"
                 />
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -22,6 +35,28 @@ export default {
     components: {
         TimingListItem,
     },
+    props: ['show'],
+    data: function() {
+        return {
+            isVisible: false,
+            isLoading: false,
+            showTimeout: null,
+        }
+    },
+    watch: {
+        show(newVal) {
+            if (newVal) {
+                this.isLoading = true
+                this.showTimeout = setTimeout(() => {
+                    this.isVisible = true
+                    this.isLoading = false
+                }, 300)
+            } else {
+                this.isVisible = false
+                clearTimeout(this.showTimeout)
+            }
+        },
+    },
     computed: {
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',
@@ -30,6 +65,9 @@ export default {
             controlsHidden: 'getControlsHidden',
         }),
     },
+    destroyed() {
+        if (this.showTimeout) clearTimeout(this.showTimeout)
+    },
 }
 </script>
 
@@ -37,7 +75,6 @@ export default {
 @import '~@/_variables.scss';
 .pause-overlay {
     position: absolute;
-    background: $dark100;
     color: white;
     width: 100%;
     z-index: 1;
@@ -48,11 +85,14 @@ export default {
     height: $heightPauseOverlay;
     bottom: calc(#{$heightPlayerControls} + 8px);
     pointer-events: all;
+    border-radius: 20px 20px 0 0;
+    backdrop-filter: blur(20px);
+    background: rgba(black, 0.6);
+    padding-top: 16px;
     &.controls-hidden {
         bottom: 0;
     }
-    .paused &,
-    .ended & {
+    &.show {
         transform: none;
     }
     .rail {

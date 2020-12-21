@@ -3,7 +3,7 @@
         <div class="cart-item" :class="`action-${selectionInput[currentAction]}`">
             <div class="action-indicator"></div>
             <div class="img-wrapper">
-                <BaseVariantImage :variant="product.variants[0]" size="sm" />
+                <BaseVariantImage :variant="product.variants[0]" size="sm" :key="product.id" />
             </div>
             <div class="details-wrapper flex-list flex-v justify-content">
                 <div class="flex-list space-between">

@@ -28,10 +28,14 @@
                             $refs.cartSidebar.cartView = 'ins'
                         "
                     />
+                    <BaseLoader v-if="desiredStatus == 'playing' && playerStatus != 'playing'" />
                     <template v-if="playerStarted">
                         <ProductDetailsSidebar />
                         <CartSidebar ref="cartSidebar" />
-                        <PauseOverlay v-if="videoType != 'live'" />
+                        <PauseOverlay
+                            v-if="videoType != 'live'"
+                            :show="desiredStatus == 'paused' || playerStatus == 'ended'"
+                        />
                         <ChatOverlay v-if="videoType == 'live'" />
                         <PlayerControls />
                     </template>
@@ -88,6 +92,7 @@ export default {
         return {
             playerStarted: false,
             isConnectedToLiveUpdates: false,
+            playerStartedTester: null,
         }
     },
     computed: {
@@ -105,6 +110,7 @@ export default {
             isLive: 'getIsLive',
             controlsHidden: 'getControlsHidden',
             currentTiming: 'getCurrentTiming',
+            desiredStatus: 'getDesiredStatus',
         }),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
@@ -155,11 +161,11 @@ export default {
             this.onEnterFullscreen()
             this.playerStarted = true
             const interval = 1000
-            const playerStartedTester = setInterval(() => {
+            this.playerStartedTester = setInterval(() => {
                 if (!this.isPlaying) {
                     this.togglePlaying()
                 } else {
-                    clearInterval(playerStartedTester)
+                    clearInterval(this.playerStartedTester)
                 }
             }, interval)
         },
@@ -231,6 +237,7 @@ export default {
         if (this.isConnectedToLiveUpdates) {
             this.disconnectLiveUpdates()
         }
+        if (this.playerStartedTester) clearInterval(this.playerStartedTester)
     },
 }
 </script>

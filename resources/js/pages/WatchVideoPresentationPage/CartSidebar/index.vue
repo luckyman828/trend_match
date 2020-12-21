@@ -10,19 +10,21 @@
                 <span>Close</span>
             </button>
         </div>
-        <div class="body">
-            <div class="main">
-                <CartItem
-                    v-for="(product, index) in actionGroups[cartView]"
-                    :key="product.id"
-                    :product="product"
-                    :index="index"
-                    :currentAction="currentAction"
-                />
-                <p v-if="cart.length <= 0" style="text-align: center; margin: 40px auto;">
-                    No items yet. Better add some!
-                </p>
-            </div>
+        <div class="body" v-if="show">
+            <!-- <div class="main"> -->
+            <RecycleScroller
+                class="main"
+                :items="actionGroups[cartView]"
+                :item-size="120"
+                key-field="id"
+                v-slot="{ item, index }"
+            >
+                <CartItem :product="item" :index="index" :currentAction="currentAction" />
+            </RecycleScroller>
+            <p v-if="cart.length <= 0" style="text-align: center; margin: 40px auto;">
+                No items yet. Better add some!
+            </p>
+            <!-- </div> -->
             <div class="footer">
                 <TabList :cartView.sync="cartView" :actionGroups="actionGroups" />
             </div>

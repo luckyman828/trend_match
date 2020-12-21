@@ -291,7 +291,9 @@ export default {
         },
         getCurrentSelectionRealRole: state => state.currentSelectionRealRole,
         getViewingAsObserver: (state, getters) =>
-            !getters.currentSelection || getters.currentSelection.your_role != getters.getCurrentSelectionRealRole,
+            !getters.currentSelection ||
+            !getters.currentSelection.your_role ||
+            getters.currentSelection.your_role != getters.getCurrentSelectionRealRole,
     },
 
     actions: {

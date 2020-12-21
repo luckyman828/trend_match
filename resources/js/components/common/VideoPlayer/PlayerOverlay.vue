@@ -20,7 +20,8 @@ export default {
     props: ['playerReady', 'hideTimeline'],
     computed: {
         ...mapGetters('videoPlayer', {
-            playerStatus: 'getStatus',
+            // playerStatus: 'getStatus',
+            playerStatus: 'getDesiredStatus',
             player: 'getPlayer',
             iframe: 'getIframe',
             isPlaying: 'getIsPlaying',
@@ -56,7 +57,7 @@ export default {
     &.paused {
         .over-player {
             // z-index: -1;
-            background: rgba(black, 0.4);
+            background: rgba(black, 0.2);
         }
     }
 }
