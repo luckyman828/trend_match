@@ -1295,6 +1295,7 @@ export default {
             const products = state.products
             products.map(product => {
                 const rawSelectionInput = selectionProductInput.products.find(x => x.id == product.id)
+                console.log('rawSelectionInput', rawSelectionInput)
                 const selectionInput = {}
                 Vue.set(selectionInput, 'rawSelectionInput', rawSelectionInput)
                 Vue.set(selectionInput, 'selection_id', selectionProductInput.selection.id)

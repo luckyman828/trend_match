@@ -20,7 +20,7 @@
                     <div class="body">
                         <slot :close="close" />
                     </div>
-                    <button class="close md circle" @click="close"><i class="far fa-times"></i></button>
+                    <button class="close circle" @click="close"><i class="far fa-times"></i></button>
                 </div>
             </div>
         </div>
@@ -132,10 +132,11 @@ export default {
         align-items: center;
         position: relative;
         flex-direction: column;
-        height: 72px;
+        padding: 8px;
         border-bottom: $borderModule;
         background: $bgContent;
         text-align: center;
+        min-height: 52px;
         h2 {
             font-size: 14px;
             font-weight: 700;
@@ -145,6 +146,8 @@ export default {
         .sub-header {
             color: $fontSoft;
             font-size: 12px;
+            line-height: 1;
+            margin-top: 2px;
         }
         .right {
             position: absolute;
@@ -174,7 +177,7 @@ export default {
     .close {
         position: absolute;
         right: 16px;
-        top: 16px;
+        top: 10px;
     }
 }
 </style>

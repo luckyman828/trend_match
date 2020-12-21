@@ -1228,13 +1228,12 @@ export default {
                 })
             })
         },
-        async fetchChapterRules({ commit }, { selection }) {
+        async fetchChapterRules({ commit, dispatch }, { selection }) {
             const apiUrl = `selections/${selection.id}/chapter`
             let chapterRules
             await axios
                 .get(apiUrl)
                 .then(response => {
-                    console.log('fetch response', response)
                     chapterRules = response.data
                 })
                 .catch(err => {
@@ -1253,19 +1252,24 @@ export default {
                 })
             return chapterRules
         },
-        async updateChapterRules({}, { selection, chapterRules, combinator }) {
+        async updateChapterRules({ commit }, { selection, chapterRules, combinator }) {
             const apiUrl = `selections/${selection.id}/chapter`
-            await axios.put(apiUrl, {
-                rules: chapterRules.map(rule => {
-                    return {
-                        name: rule.ruleName,
-                        values: rule.value,
-                        value: rule.value,
-                        operator: rule.operator,
-                    }
-                }),
-                relation: combinator,
-            })
+            await axios
+                .put(apiUrl, {
+                    rules: chapterRules,
+                    relation: combinator,
+                })
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Chapter rules updated.',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 

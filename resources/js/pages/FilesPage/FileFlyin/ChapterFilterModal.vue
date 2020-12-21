@@ -7,11 +7,11 @@
         subHeader="Chapter settings"
     >
         <h3>Show products...</h3>
-        <div class="rule-item-list flex-list flex-v" v-if="show && !isLoading">
+        <div class="rule-item-list flex-list flex-v" v-if="show && !status">
             <ChapterRuleItem
-                v-for="(filterRule, index) in chapterFilterRules"
+                v-for="(chapterRule, index) in chapterRules"
                 :key="index"
-                :filterRule="filterRule"
+                :chapterRule="chapterRule"
                 :index="index"
                 :availableCombinators="availableCombinators"
                 :availableOperators="availableOperators"
@@ -25,7 +25,7 @@
             </button>
             <button class="dark full-width lg" @click="onSubmit"><span>Save Chapter</span></button>
         </div>
-        <BaseLoader v-else />
+        <BaseLoader v-else :msg="status" />
     </BaseModal>
 </template>
 
@@ -38,10 +38,11 @@ export default {
     props: ['show', 'selection'],
     data: function() {
         return {
-            isLoading: true,
-            fileProductsAreFetchedFromId: null,
+            status: true,
+            fileIdFetchedFrom: null,
+            selectionIdFetchedFrom: null,
             filterCombinator: 'AND',
-            chapterFilterRules: [],
+            chapterRules: [],
         }
     },
     computed: {
@@ -73,33 +74,33 @@ export default {
             const baseRules = [
                 {
                     displayName: 'Category',
-                    ruleName: 'Category',
+                    name: 'Category',
                     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
                     type: 'array',
                 },
                 {
                     displayName: 'Buying Gruop',
-                    ruleName: 'BuyingGroup',
+                    name: 'BuyingGroup',
                     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
                     type: 'array',
                 },
                 {
                     displayName: 'Delivery Date',
-                    ruleName: 'DeliveryDate',
+                    name: 'DeliveryDate',
                     validOperators: [
                         'Equal',
                         'AnyInArray',
-                        'Greater',
-                        'LessThan',
-                        'GreaterOrEqual',
-                        'IsNullOrEmpty',
-                        'LessThanOrEqual',
+                        // 'Greater',
+                        // 'LessThan',
+                        // 'GreaterOrEqual',
+                        // 'IsNullOrEmpty',
+                        // 'LessThanOrEqual',
                     ],
                     type: 'array',
                 },
                 {
                     displayName: 'Product Minimum',
-                    ruleName: 'MinOrder',
+                    name: 'MinOrder',
                     validOperators: [
                         'Equal',
                         'Greater',
@@ -112,7 +113,7 @@ export default {
                 },
                 {
                     displayName: 'Variant Minimum',
-                    ruleName: 'MinVariantOrder',
+                    name: 'MinVariantOrder',
                     validOperators: [
                         'Equal',
                         'Greater',
@@ -121,11 +122,11 @@ export default {
                         'IsNullOrEmpty',
                         'LessThanOrEqual',
                     ],
-                    type: 'array',
+                    type: 'number',
                 },
                 {
                     displayName: 'Parent IN/OUT',
-                    ruleName: 'ParentSelectionAlignment',
+                    name: 'ParentSelectionAlignment',
                     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
                     type: 'array',
                 },
@@ -134,7 +135,7 @@ export default {
             //     ...this.customFields.map(field => {
             //         return {
             //             displayName: field,
-            //             ruleName: field,
+            //             name: field,
             //             validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
             //         }
             //     })
@@ -153,55 +154,67 @@ export default {
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('selections', ['fetchChapterRules', 'updateChapterRules']),
         async init() {
-            this.isLoading = true
+            this.status = 'Fetching rules'
             // Fetch chapter rules
-            const chapterRules = await this.fetchChapterRules({ selection: this.selection })
+            if (this.selectionIdFetchedFrom != this.selection.id) {
+                this.selectionIdFetchedFrom = this.selection.id
+                const chapterRules = await this.fetchChapterRules({ selection: this.selection })
 
-            console.log('fetched chatper rules', chapterRules)
+                this.filterCombinator = chapterRules.relation
+                this.chapterRules = chapterRules.rules
+                // console.log('fetched chatper rules', chapterRules)
 
-            // this.chapterFilterRules.push(...chapterRules)
-            if (this.chapterFilterRules.length <= 0) {
-                this.chapterFilterRules.push(this.getDefaultRule())
+                // this.chapterRules.push(...chapterRules.rules)
+            }
+            if (this.chapterRules.length <= 0) {
+                this.chapterRules.push(this.getDefaultRule())
             }
 
             // Check if we have any products fetched, else fetch them
-            if (this.file.id != this.fileProductsAreFetchedFromId) {
-                this.fileProductsAreFetchedFromId = this.file.id
+            if (this.file.id != this.fileIdFetchedFrom) {
+                this.fileIdFetchedFrom = this.file.id
                 await this.fetchProducts({ fileId: this.file.id })
             }
-            this.isLoading = false
+            this.status = null
         },
         getDefaultRule() {
             return {
-                ruleName: this.availableRules[0].ruleName,
+                name: this.availableRules[0].name,
                 operator: this.availableOperators[0].operatorName,
-                value: '',
+                value: null,
+                values: [],
             }
         },
         onAddRule() {
-            this.chapterFilterRules.push(this.getDefaultRule())
+            this.chapterRules.push(this.getDefaultRule())
         },
         onRemoveRule(index) {
-            this.chapterFilterRules.splice(index, 1)
+            this.chapterRules.splice(index, 1)
         },
 
         async onSubmit() {
+            this.status = 'Saving rules'
             await this.updateChapterRules({
                 selection: this.selection,
-                chapterRules: this.chapterFilterRules,
+                chapterRules: this.chapterRules,
                 combinator: this.filterCombinator,
             })
+            this.status = null
+            this.$emit('close')
         },
     },
     created() {
         // this.init()
-        // this.chapterFilterRules.push(this.getDefaultRule())
+        // this.chapterRules.push(this.getDefaultRule())
     },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+h3 {
+    text-align: center;
+}
 .ghost-item {
     width: 100%;
     height: 72px;

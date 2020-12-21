@@ -20,36 +20,44 @@
         <BaseDropdownInputField
             class="rule-name-field"
             innerLabel="Field"
-            v-model="filterRule.ruleName"
+            v-model="chapterRule.name"
             type="radio"
             :options="availableRules"
             nameKey="displayName"
-            valueKey="ruleName"
+            valueKey="name"
             @input="onRuleChange"
         />
         <BaseDropdownInputField
             class="operator-field"
             type="radio"
             innerLabel="Operator"
-            v-model="filterRule.operator"
+            v-model="chapterRule.operator"
             :options="validOperators"
             nameKey="displayName"
             valueKey="operatorName"
         />
 
         <!-- Arrays -->
-        <BaseDropdownInputField
-            v-if="mappedRule.type == 'array'"
-            class="value-field"
-            :type="['AnyInArray', 'NotInArray'].includes(filterRule.operator) ? 'select' : 'radio'"
-            v-model="filterRule.value"
-            :options="availableValues"
-        />
+        <template v-if="mappedRule.type == 'array'">
+            <BaseDropdownInputField
+                v-if="!['AnyInArray', 'NotInArray'].includes(chapterRule.operator)"
+                class="value-field"
+                type="radio"
+                v-model="chapterRule.value"
+                :options="availableValues"
+            />
+            <BaseDropdownInputField
+                v-else
+                class="value-field"
+                v-model="chapterRule.values"
+                :options="availableValues"
+            />
+        </template>
         <BaseInputField
             type="number"
-            v-else-if="filterRule.type == 'number'"
+            v-else-if="mappedRule.type == 'number'"
             class="value-field"
-            v-model="filterRule.value"
+            v-model="chapterRule.value"
         />
 
         <BaseButton buttonClass="invisible ghost-hover dark" :disabled="index == 0" @click="$emit('remove')"
@@ -62,16 +70,16 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'chapterRuleItem',
-    props: ['filterRule', 'index', 'availableCombinators', 'availableRules', 'availableOperators', 'filterCombinator'],
+    props: ['chapterRule', 'index', 'availableCombinators', 'availableRules', 'availableOperators', 'filterCombinator'],
     computed: {
         ...mapGetters('products', {
             products: 'products',
         }),
         mappedRule() {
-            return this.availableRules.find(rule => rule.ruleName == this.filterRule.ruleName)
+            return this.availableRules.find(rule => rule.name == this.chapterRule.name)
         },
         validOperatorNames() {
-            if (!this.filterRule.ruleName) return []
+            if (!this.chapterRule.name) return []
             return this.mappedRule.validOperators
         },
         validOperators() {
@@ -79,16 +87,17 @@ export default {
         },
 
         availableValues() {
-            const ruleName = this.filterRule.ruleName
+            let ruleName = this.chapterRule.name
             if (!ruleName) return []
             if (ruleName == 'ParentSelectionAlignment') {
                 return ['Focus', 'In', 'Out', 'None']
             }
+            if (ruleName == 'DeliveryDate') ruleName = 'DeliveryDates'
 
             const productKey = ruleName
                 .split(/(?=[A-Z])/)
                 .join('_')
-                .toLowerCase() // Convert rulename to product key
+                .toLowerCase() // Convert ruleName to product key
 
             const unique = []
 
@@ -108,13 +117,35 @@ export default {
 
             return unique
         },
+        ruleOperator() {
+            return this.chapterRule.operator
+        },
+    },
+    watch: {
+        ruleOperator(newOperator, oldOperator) {
+            if (!this.chapterRule.type == 'array' || !oldOperator) return
+            // From Multi to Single
+            if (['Equal', 'NotEqual'].includes(newOperator) && ['AnyInArray', 'NotInArray'].includes(oldOperator)) {
+                this.chapterRule.value = this.chapterRule.values[0]
+            }
+
+            // From Single to Multi
+            if (['Equal', 'NotEqual'].includes(oldOperator) && ['AnyInArray', 'NotInArray'].includes(newOperator)) {
+                this.chapterRule.values = this.chapterRule.value ? [this.chapterRule.value] : []
+            }
+        },
+        mappedRule() {
+            // Reset the selected values when the mapped rule changed
+            this.chapterRule.value = null
+            this.chapterRule.values = []
+        },
     },
     methods: {
         onRuleChange() {
             // Make sure the operator is valid for the rule
-            const operatorIsValid = this.validOperatorNames.includes(this.filterRule.operator)
+            const operatorIsValid = this.validOperatorNames.includes(this.chapterRule.operator)
             if (!operatorIsValid) {
-                this.filterRule.operator = this.validOperatorNames[0]
+                this.chapterRule.operator = this.validOperatorNames[0]
             }
         },
     },
@@ -126,6 +157,7 @@ export default {
 .rule-item {
     padding: 16px;
     border: $borderModule;
+    border-radius: $borderRadiusModule;
     &:hover {
         background: $bgElHover;
     }

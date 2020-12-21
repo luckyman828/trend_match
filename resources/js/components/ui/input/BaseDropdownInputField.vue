@@ -65,12 +65,16 @@ export default {
             return Object.keys(this.options[0]).includes('name') ? 'name' : null
         },
         valueToDisplay() {
+            // function returnValue(value) {
+            //     return Array.isArray(value) ? value.join(', ') : value
+            // }
+
             if (this.valueToDisplayOverwrite) return this.valueToDisplayOverwrite
             if (!this.value) return
             if (!this.options || this.options.length <= 0) return this.value
 
             // If we have no option name key, we must have a simple value that we want to display
-            if (!this.optionNameKey) return this.value
+            if (!this.optionNameKey) return Array.isArray(this.value) ? this.value.join(', ') : this.value
 
             // If we have no value key, we must have selected an entire object
             if (!this.optionValueKey) {
