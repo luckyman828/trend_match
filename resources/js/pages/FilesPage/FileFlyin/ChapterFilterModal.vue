@@ -162,13 +162,12 @@ export default {
                 const chapterRules = await this.fetchChapterRules({ selection: this.selection })
 
                 this.filterCombinator = chapterRules.relation
-                this.chapterRules = chapterRules.rules.map(rule => {
-                    rule.key = this.$uuid.v4()
-                    return rule
-                })
-                // console.log('fetched chatper rules', chapterRules)
-
-                // this.chapterRules.push(...chapterRules.rules)
+                this.chapterRules = chapterRules.rules
+                    ? chapterRules.rules.map(rule => {
+                          rule.key = this.$uuid.v4()
+                          return rule
+                      })
+                    : []
             }
             if (this.chapterRules.length <= 0) {
                 this.chapterRules.push(this.getDefaultRule())
