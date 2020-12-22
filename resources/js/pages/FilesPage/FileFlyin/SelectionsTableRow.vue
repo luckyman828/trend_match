@@ -7,7 +7,10 @@
                 `presentation-group-${presentationGroupIndex}`,
                 { 'has-focus': hasFocus },
             ]"
-            @contextmenu="emitShowContext"
+            @contextmenu="
+                emitShowContext($event)
+                onClick($event)
+            "
             @click="onClick"
         >
             <td class="select">
