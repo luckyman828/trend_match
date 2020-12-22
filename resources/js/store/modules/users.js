@@ -275,7 +275,7 @@ export default {
                 })
         },
         async searchForUser({ commit }, query) {
-            const apiUrl = `/users?${query}`
+            const apiUrl = `/users?query=${query}`
             let result
             await axios
                 .get(apiUrl)

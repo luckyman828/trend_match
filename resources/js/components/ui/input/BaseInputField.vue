@@ -5,6 +5,7 @@
             type,
             { 'read-only': readOnly },
             { error: error || errorTooltip },
+            status,
             { 'has-label': label },
             { 'has-inner-label': innerLabel },
             { 'has-icon-right': !!$slots.default },
@@ -65,6 +66,7 @@ export default {
         'disabled',
         'readOnly',
         'errorTooltip',
+        'status',
         'label',
         'inputClass',
         'selectOnFocus',
@@ -94,7 +96,8 @@ export default {
         select() {
             this.$refs.inputField.select()
         },
-        onFocus() {
+        onFocus(e) {
+            this.$emit('focus', e)
             if (this.selectOnFocus) this.select()
         },
         onBlur(e) {
@@ -184,6 +187,14 @@ export default {
     &.error {
         .input-wrapper {
             border: solid 2px $fail;
+        }
+        .error-msg {
+            display: flex;
+        }
+    }
+    &.warning {
+        .input-wrapper {
+            border: solid 2px $warning;
         }
         .error-msg {
             display: flex;

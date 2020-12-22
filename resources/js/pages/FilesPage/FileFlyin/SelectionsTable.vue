@@ -164,7 +164,7 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can create new chapters'"
+                        disabledTooltip="Only admins can create new chapters"
                         v-tooltip="'Create a new chapter. Will be added under the currently focused selection.'"
                         @click="
                             onNewSelection({
