@@ -137,7 +137,7 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new masters'"
+                        disabledTooltip="Only admins can create new masters"
                         v-tooltip="'Create a new Master'"
                         @click="onNewSelection({ type: 'Master' })"
                     >
@@ -148,7 +148,7 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        disabledTooltip="Only admins can create new selections"
                         v-tooltip="'Create a new selection. Will be added under the currently focused selection.'"
                         @click="
                             onNewSelection({
@@ -164,7 +164,7 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new chapters'"
+                        disabledTooltip="Only admins can create new chapters'"
                         v-tooltip="'Create a new chapter. Will be added under the currently focused selection.'"
                         @click="
                             onNewSelection({
