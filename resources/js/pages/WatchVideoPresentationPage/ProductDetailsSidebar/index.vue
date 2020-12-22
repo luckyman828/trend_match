@@ -1,7 +1,7 @@
 <template>
     <div class="product-details-sidebar" v-if="product" tabindex="-1">
-        <ProductPreview @click.native="showFlyin = true" />
-        <ProductDetailsSidebar v-if="product" :product="product" :show="showFlyin" @close="showFlyin = false" />
+        <ProductPreview :product="product" @click.native="SET_SIDEBAR_PRODUCT(product)" />
+        <ProductDetailsSidebar :product="sidebarProduct" :show="!!sidebarProduct" @close="SET_SIDEBAR_PRODUCT(null)" />
     </div>
 </template>
 
@@ -24,6 +24,12 @@ export default {
         ...mapGetters('videoPlayer', {
             product: 'getCurrentProduct',
         }),
+        ...mapGetters('videoPresentation', {
+            sidebarProduct: 'getSidebarProduct',
+        }),
+    },
+    methods: {
+        ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
 }
 </script>
