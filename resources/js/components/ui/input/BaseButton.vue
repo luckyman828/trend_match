@@ -1,9 +1,9 @@
 <template>
-    <div class="button-wrapper">
+    <div class="button-wrapper" :class="{ disabled: disabled }">
         <button
             v-bind="$attrs"
             :class="[buttonClass, { disabled: disabled }, { 'has-target-area': !!targetAreaPadding }]"
-            v-tooltip="disabled && disabledTooltip"
+            v-tooltip="disabled ? disabledTooltip : tooltip"
             @click="!disabled && $emit('click', $event)"
         >
             <slot />
@@ -66,7 +66,6 @@ export default {
             font-size: 11px;
         }
     }
-
     // Target Area
     .target-area {
         position: absolute;
