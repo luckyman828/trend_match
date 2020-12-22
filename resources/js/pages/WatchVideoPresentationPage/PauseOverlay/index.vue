@@ -12,6 +12,7 @@
                 v-horizontal-scroll
                 v-dragscroll
                 v-slot="{ item, index }"
+                @visible="onScrollerVisible"
             >
                 <TimingListItem class="product-timing-list-item" :timing="item" :index="index" />
             </RecycleScroller>
@@ -71,12 +72,10 @@ export default {
         onShow() {
             this.isVisible = true
             this.isLoading = false
-            console.log()
-            // Scroll current timing into view
+        },
+        onScrollerVisible() {
             if (!this.currentTiming) return
-            setTimeout(() => {
-                this.$refs.scroller.scrollToItem(this.currentTimingIndex)
-            }, 100)
+            this.$refs.scroller.scrollToItem(this.currentTimingIndex)
         },
     },
     destroyed() {

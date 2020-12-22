@@ -2,8 +2,14 @@
     <v-popover placement="right" popoverClass="min dark">
         <div class="cart-item" :class="`action-${selectionInput[currentAction]}`">
             <div class="action-indicator"></div>
-            <div class="img-wrapper">
+            <div class="img-wrapper" @click="SET_SIDEBAR_PRODUCT(product)">
                 <BaseVariantImage :variant="product.variants[0]" size="sm" :key="product.id" />
+                <div class="view-overlay flex-list center-v center-h">
+                    <div class="flex-list flex-v center-h sm">
+                        <i class="far fa-eye md dark"></i>
+                        <span>View details</span>
+                    </div>
+                </div>
             </div>
             <div class="details-wrapper flex-list flex-v justify-content">
                 <div class="flex-list space-between">
@@ -47,7 +53,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import ActionListPopover from '../ActionListPopover.vue'
 export default {
     name: 'cartItem',
@@ -60,6 +66,9 @@ export default {
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },
+    },
+    methods: {
+        ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
 }
 </script>
@@ -99,10 +108,28 @@ export default {
     width: 120px;
     min-width: 120px;
     height: 100%;
+    position: relative;
+    cursor: pointer;
     img {
         height: 100%;
         width: 100%;
         object-fit: cover;
+    }
+    .view-overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        z-index: 1;
+        background: rgba(white, 0.5);
+        font-weight: 500;
+    }
+    &:hover {
+        .view-overlay {
+            opacity: 1;
+        }
     }
 }
 .details-wrapper {

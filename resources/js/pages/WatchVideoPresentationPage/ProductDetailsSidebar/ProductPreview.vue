@@ -44,11 +44,7 @@ export default {
         // ProductActionButton,
         ActionListPopover,
     },
-    computed: {
-        ...mapGetters('videoPlayer', {
-            product: 'getCurrentProduct',
-        }),
-    },
+    props: ['product'],
     watch: {
         product(newVal, oldVal) {
             if (!newVal) return

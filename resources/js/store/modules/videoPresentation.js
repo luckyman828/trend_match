@@ -45,6 +45,7 @@ export default {
         timelineEl: null,
         snapThreshold: 12, // In seconds
         zoomLevels: [1, 2, 4, 8, 16, 32, 64],
+        sidebarProduct: null,
     },
 
     getters: {
@@ -71,6 +72,7 @@ export default {
             // return arr
             return state.zoomLevels
         },
+        getSidebarProduct: state => state.sidebarProduct,
     },
 
     actions: {
@@ -353,6 +355,9 @@ export default {
         },
         SET_TIMING_STATUS(state, status) {
             state.timingStatus = status
+        },
+        SET_SIDEBAR_PRODUCT(state, product) {
+            state.sidebarProduct = product
         },
     },
 }
