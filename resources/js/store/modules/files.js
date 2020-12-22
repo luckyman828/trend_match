@@ -334,14 +334,17 @@ export default {
             }
         },
         async deleteMultipleFiles({ commit, dispatch }, files) {
-            commit('DELETE_MULTIPLE_FILES', files)
+            // Create a new array that holds all the files in case the parsed array is tampered with
+            const filesCopy = [...files]
+
+            commit('DELETE_MULTIPLE_FILES', filesCopy)
 
             // Start timer for deletion
             let wasCancelled = false
             commit(
                 'alerts/SHOW_SNACKBAR',
                 {
-                    msg: `${files.length} files/folders will be deleted`,
+                    msg: `${filesCopy.length} files/folders will be deleted`,
                     iconClass: 'fa-trash',
                     type: 'danger',
                     callback: () => {
@@ -360,7 +363,7 @@ export default {
 
             const sendRequest = async () =>
                 await Promise.all(
-                    files.map(async file => {
+                    filesCopy.map(async file => {
                         const apiUrl = `/files/${file.id}`
                         await axios.delete(apiUrl).catch(err => {
                             // Undo
@@ -387,7 +390,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: `${files.length} files/folders permanently deleted`,
+                            msg: `${filesCopy.length} files/folders permanently deleted`,
                             iconClass: 'fa-check',
                             type: 'success',
                         },
@@ -397,7 +400,7 @@ export default {
 
             // Undo delete
             const undoDelete = () => {
-                commit('INSERT_MULTIPLE_FILES', files)
+                commit('INSERT_MULTIPLE_FILES', filesCopy)
             }
         },
         async addUsersToFile({ commit }, { file, users }) {
