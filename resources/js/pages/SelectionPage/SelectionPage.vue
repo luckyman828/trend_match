@@ -26,25 +26,27 @@
                 </button>
             </div>
 
-            <h3>System Admin: View as</h3>
-            <div class="admin-action-list flex-list" v-if="getIsSystemAdmin">
-                <button class="primary ghost" @click="onViewSelectionAsRole('Owner')">
-                    <i class="far fa-user-shield"></i>
-                    <span>View as Owner</span>
-                </button>
-                <button class="primary ghost" @click="onViewSelectionAsRole('Member')">
-                    <i class="far fa-user"></i>
-                    <span>View as Member</span>
-                </button>
-                <button
-                    class="primary ghost"
-                    v-if="selection.type == 'Master'"
-                    @click="onViewSelectionAsRole('Approver')"
-                >
-                    <i class="far fa-user-clock"></i>
-                    <span>View as Approver</span>
-                </button>
-            </div>
+            <template v-if="getIsSystemAdmin">
+                <h3>System Admin: View as</h3>
+                <div class="admin-action-list flex-list">
+                    <button class="primary ghost" @click="onViewSelectionAsRole('Owner')">
+                        <i class="far fa-user-shield"></i>
+                        <span>View as Owner</span>
+                    </button>
+                    <button class="primary ghost" @click="onViewSelectionAsRole('Member')">
+                        <i class="far fa-user"></i>
+                        <span>View as Member</span>
+                    </button>
+                    <button
+                        class="primary ghost"
+                        v-if="selection.type == 'Master'"
+                        @click="onViewSelectionAsRole('Approver')"
+                    >
+                        <i class="far fa-user-clock"></i>
+                        <span>View as Approver</span>
+                    </button>
+                </div>
+            </template>
         </template>
 
         <!-- Access granted -->
