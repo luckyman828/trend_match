@@ -8,6 +8,7 @@
                 direction="horizontal"
                 :item-size="96"
                 key-field="id"
+                ref="scroller"
                 v-horizontal-scroll
                 v-dragscroll
                 v-slot="{ item, index }"
@@ -48,9 +49,8 @@ export default {
             if (newVal) {
                 this.isLoading = true
                 this.showTimeout = setTimeout(() => {
-                    this.isVisible = true
-                    this.isLoading = false
-                }, 300)
+                    this.onShow()
+                }, 100)
             } else {
                 this.isVisible = false
                 clearTimeout(this.showTimeout)
@@ -63,7 +63,21 @@ export default {
         }),
         ...mapGetters('videoPlayer', {
             controlsHidden: 'getControlsHidden',
+            currentTiming: 'getCurrentTiming',
+            currentTimingIndex: 'getCurrentTimingIndex',
         }),
+    },
+    methods: {
+        onShow() {
+            this.isVisible = true
+            this.isLoading = false
+            console.log()
+            // Scroll current timing into view
+            if (!this.currentTiming) return
+            setTimeout(() => {
+                this.$refs.scroller.scrollToItem(this.currentTimingIndex)
+            }, 100)
+        },
     },
     destroyed() {
         if (this.showTimeout) clearTimeout(this.showTimeout)
