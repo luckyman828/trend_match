@@ -138,7 +138,7 @@
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can create new masters"
-                        tooltip="'Create a new Master'"
+                        tooltip="Create a new Master"
                         @click="onNewSelection({ type: 'Master' })"
                     >
                         <i class="far fa-crown"></i><span>Add Master</span>
@@ -149,7 +149,7 @@
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can create new selections"
-                        tooltip="'Create a new selection. Will be added under the currently focused selection.'"
+                        tooltip="Create a new selection. Will be added under the currently focused selection."
                         @click="
                             onNewSelection({
                                 type: 'Normal',
@@ -165,7 +165,7 @@
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can create new chapters"
-                        tooltip="'Create a new chapter. Will be added under the currently focused selection.'"
+                        tooltip="Create a new chapter. Will be added under the currently focused selection."
                         @click="
                             onNewSelection({
                                 type: 'Chapter',

@@ -101,7 +101,6 @@ export default {
     border-radius: 20px 20px 0 0;
     backdrop-filter: blur(20px);
     background: rgba(black, 0.6);
-    padding-top: 16px;
     &.controls-hidden {
         bottom: 0;
     }

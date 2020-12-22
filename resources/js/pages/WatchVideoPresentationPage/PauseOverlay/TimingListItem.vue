@@ -46,6 +46,7 @@ export default {
 .product-timing-list-item {
     width: 84px;
     min-width: 84px;
+    margin-top: 16px;
     .card {
         box-shadow: $shadowEl;
         transition: box-shadow 0.2s ease-out, transform 0.2s ease-out;
@@ -56,7 +57,7 @@ export default {
     &:hover {
         .card {
             box-shadow: $shadowElHard;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
         }
     }
     &:not(:first-child) {
