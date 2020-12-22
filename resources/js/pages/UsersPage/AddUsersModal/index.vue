@@ -135,8 +135,8 @@ export default {
                 return
             }
             // Submit form
-            const usersToAdd = this.usersToAdd.filter(x => !this.users.find(x => x.id == x.id))
-            this.ignoredUsers = this.usersToAdd.filter(x => !!this.users.find(x => x.id == x.id))
+            const usersToAdd = this.usersToAdd.filter(x => !this.users.find(user => user.email == x.email))
+            this.ignoredUsers = this.usersToAdd.filter(x => !!this.users.find(user => user.email == x.email))
             await this.addUsersToWorkspace(usersToAdd)
                 .then(async response => {
                     if (this.ignoredUsers.length > 0) {

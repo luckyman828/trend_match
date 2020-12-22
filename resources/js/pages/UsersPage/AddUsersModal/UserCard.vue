@@ -163,6 +163,7 @@ export default {
 
             // Check if the user already exists
             this.existsOnKollekt = !!this.userQueryResults.find(x => x.email == email)
+            if (this.existsOnKollekt) this.user.password = 'mustBe8Long'
 
             // Check if the user already exists on the dashboard
             this.existsOnWorkspace = !!this.workspaceUsers.find(x => x.email == email)

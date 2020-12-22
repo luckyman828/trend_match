@@ -91,9 +91,11 @@ export default {
             }
         },
         focus() {
+            if (!this.$refs.inputField) return
             this.$refs.inputField.focus()
         },
         select() {
+            if (!this.$refs.inputField) return
             this.$refs.inputField.select()
         },
         onFocus(e) {
