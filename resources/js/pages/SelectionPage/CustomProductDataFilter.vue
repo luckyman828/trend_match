@@ -4,7 +4,7 @@
             <BaseContextMenuItem
                 iconClass="far fa-magic"
                 :disabled="availableCustomFieldValues.length <= 0"
-                disabledTooltip="No buyer groups available"
+                disabledTooltip="No options available"
                 @click="showAdvancedFilters = false"
             >
                 <span>{{ field }}</span>

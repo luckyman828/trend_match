@@ -145,6 +145,7 @@ $bgModuleInactive: $grey600;
 $bgContentAlt: #fafbfc;
 // $bgEl: #d7dee1;
 $bgEl: #cfd8dd;
+$bgElHover: #cddde8;
 // $bgElInactive: $grey400;
 $bgElInactive: #d5dee1;
 
@@ -198,6 +199,7 @@ $borderRadiusEl: 4px;
 $borderElSoft: solid 1px #cddde8;
 $borderElHard: solid 2px $borderColorElHard;
 $borderElHover: solid 2px $primary;
+$borderGhostItem: dashed 1px #cddde8;
 
 // TABLES
 $heightTableTab: 40px;

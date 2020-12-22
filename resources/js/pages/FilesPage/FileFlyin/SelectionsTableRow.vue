@@ -2,7 +2,11 @@
     <div class="selections-table-row">
         <tr
             class="selection"
-            :class="[{ 'is-hidden': isHidden }, `presentation-group-${presentationGroupIndex}`]"
+            :class="[
+                { 'is-hidden': isHidden },
+                `presentation-group-${presentationGroupIndex}`,
+                { 'has-focus': hasFocus },
+            ]"
             @contextmenu="emitShowContext"
             @click="onClick"
         >
@@ -30,10 +34,7 @@
                 "
                 :style="selectionWidth"
             >
-                <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"
-                    ><i class="fas fa-crown"></i
-                ></i>
-                <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i>
+                <SelectionIcon :selection="selection" />
                 <BaseEditInputWrapper
                     activateOnMount="true"
                     type="text"
@@ -57,10 +58,7 @@
                 @click="isClickable && onGoToSelection()"
                 :style="selectionWidth"
             >
-                <i v-if="isMaster" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"
-                    ><i class="fas fa-crown"></i
-                ></i>
-                <i v-else class="fa-poll light-2" :class="selection.id ? 'fas' : 'far'"></i>
+                <SelectionIcon :selection="selection" />
                 <span :title="selection.name">{{ selection.name }}</span>
             </td>
             <td class="budget">
@@ -198,6 +196,7 @@
                 :moveSelectionActive="moveSelectionActive"
                 :selectedSelections="selectedSelections"
                 v-model="localSelectedSelections"
+                :focusId="focusId"
                 @submitToEdit="$emit('submitToEdit')"
                 @cancelToEdit="$emit('cancelToEdit', $event)"
                 @showContext="emitEmissionShowContext"
@@ -218,12 +217,14 @@
 import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
+import SelectionIcon from '../../../components/common/SelectionIcon'
 
 export default {
     name: 'selectionsTableRow',
     components: {
         selectionsTableRow: SelectionsTableRow,
         SelectionPresenterModeButton,
+        SelectionIcon,
     },
     props: [
         'selection',
@@ -234,6 +235,7 @@ export default {
         'path',
         'file',
         'selectedSelections',
+        'focusId',
     ],
     data: function() {
         return {
@@ -251,9 +253,6 @@ export default {
             set(localSelectedSelections) {
                 this.$emit('input', localSelectedSelections)
             },
-        },
-        isMaster() {
-            return this.selection.type == 'Master'
         },
         indent() {
             const baseIndent = 48
@@ -294,6 +293,9 @@ export default {
                 return this.selection.presentation.presenter.id == this.authUser.id
             }
             return true
+        },
+        hasFocus() {
+            return this.selection.id == this.focusId
         },
     },
     methods: {
@@ -396,6 +398,10 @@ export default {
     &.is-hidden {
         display: none;
     }
+    // &.has-focus {
+    //     // background: blue;
+    //     box-shadow: 0 0 1px 1px $primary inset;
+    // }
 }
 
 .title {
@@ -403,25 +409,8 @@ export default {
     align-items: center;
     i {
         margin-right: 8px;
-        width: 24px;
-        font-size: 16px;
         &:first-child {
             margin-right: 8px;
-        }
-        &.master {
-            position: relative;
-            i {
-                position: absolute;
-                left: -3px;
-                bottom: 5px;
-                font-size: 11px;
-                color: $primary;
-                margin: 0;
-                width: auto;
-            }
-            &::after {
-                opacity: 1;
-            }
         }
     }
 }

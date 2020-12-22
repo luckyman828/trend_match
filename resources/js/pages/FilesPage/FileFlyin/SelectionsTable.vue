@@ -1,5 +1,5 @@
 <template>
-    <div class="selections-table">
+    <div class="selections-table" v-click-outside="rowClick">
         <BaseFlexTable
             class="flex-table-root"
             :contentStatus="readyStatus"
@@ -46,9 +46,11 @@
                             <span>Hide/Show all</span>
                         </BaseButton>
 
-                        <span
-                            ><strong>{{ getSelectionsTree.length }}</strong> records</span
-                        >
+                        <div class="pill sm">
+                            <span
+                                ><strong>{{ getSelectionsTree.length }}</strong> selections</span
+                            >
+                        </div>
                     </template>
                 </BaseTableTopBar>
             </template>
@@ -94,6 +96,7 @@
                             :selectionToEdit="selectionToEdit"
                             :selectedSelections="selectedSelections"
                             v-model="selectedSelections"
+                            :focusId="focusSelection ? focusSelection.id : null"
                             @submitToEdit="clearToEdit"
                             @cancelToEdit="
                                 clearUnsaved($event)
@@ -134,119 +137,162 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new masters'"
+                        v-tooltip="'Create a new Master'"
                         @click="onNewSelection({ type: 'Master' })"
                     >
-                        <i class="far fa-plus"></i><span>Add master selection</span>
+                        <i class="far fa-crown"></i><span>Add Master</span>
+                    </BaseButton>
+                </td>
+                <td>
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new selections'"
+                        v-tooltip="'Create a new selection. Will be added under the currently focused selection.'"
+                        @click="
+                            onNewSelection({
+                                type: 'Normal',
+                                parent: focusSelection,
+                            })
+                        "
+                    >
+                        <i class="far fa-poll"></i><span>Add Selection</span>
+                    </BaseButton>
+                </td>
+                <td>
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="authUserWorkspaceRole != 'Admin'"
+                        disabledTooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new chapters'"
+                        v-tooltip="'Create a new chapter. Will be added under the currently focused selection.'"
+                        @click="
+                            onNewSelection({
+                                type: 'Chapter',
+                                parent: focusSelection,
+                            })
+                        "
+                    >
+                        <i class="far fa-project-diagram"></i><span>Add Chapter</span>
                     </BaseButton>
                 </td>
             </template>
         </BaseFlexTable>
 
         <BaseContextMenu ref="contextMenuSelection" class="context-selection">
-            <div class="item-group" v-if="!!contextSelection">
-                <BaseContextMenuItem
-                    iconClass="far fa-users"
-                    :disabled="
-                        !(
-                            !contextSelection.is_presenting ||
-                            (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')
-                        )
-                    "
-                    disabledTooltip="Selection is in presentation mode. To join the presentation login to the Kollekt mobile app"
-                    hotkey="KeyG"
-                    @click="
-                        $router.push({
-                            name: 'selection',
-                            params: { fileId: contextSelection.file_id, selectionId: contextSelection.id },
-                        })
-                    "
-                >
-                    <span><u>G</u>o to selection </span>
-                </BaseContextMenuItem>
-            </div>
-            <div class="item-group" v-if="!!contextSelection">
-                <BaseContextMenuItem
-                    :disabled="contextSelection.selectionLinkSent"
-                    :iconClass="contextSelection.selectionLinkSent ? 'far fa-check' : 'far fa-paper-plane'"
-                    hotkey="KeyL"
-                    @click="onSendSelectionLink(contextSelection)"
-                >
-                    <span v-if="!contextSelection.selectionLinkSent">Send selection <u>L</u>ink</span>
-                    <span v-else>Link sent</span>
-                </BaseContextMenuItem>
+            <template v-slot v-if="!!contextSelection">
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-users"
+                        :disabled="
+                            !(
+                                !contextSelection.is_presenting ||
+                                (contextSelection.your_role == 'Owner' && contextSelection.type == 'Master')
+                            )
+                        "
+                        disabledTooltip="Selection is in presentation mode. To join the presentation login to the Kollekt mobile app"
+                        hotkey="KeyG"
+                        @click="
+                            $router.push({
+                                name: 'selection',
+                                params: { fileId: contextSelection.file_id, selectionId: contextSelection.id },
+                            })
+                        "
+                    >
+                        <span><u>G</u>o to selection </span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        :disabled="contextSelection.selectionLinkSent"
+                        :iconClass="contextSelection.selectionLinkSent ? 'far fa-check' : 'far fa-paper-plane'"
+                        hotkey="KeyL"
+                        @click="onSendSelectionLink(contextSelection)"
+                    >
+                        <span v-if="!contextSelection.selectionLinkSent">Send selection <u>L</u>ink</span>
+                        <span v-else>Link sent</span>
+                    </BaseContextMenuItem>
 
-                <BaseContextMenuItem
-                    iconClass="far fa-link"
-                    hotkey="KeyL"
-                    @click="onGetSelectionLink(contextSelection.id)"
-                >
-                    <span>C<u>o</u>py Selection link</span>
-                </BaseContextMenuItem>
-            </div>
-            <div class="item-group" v-if="!!contextSelection">
-                <BaseContextMenuItem
-                    iconClass="far fa-pen"
-                    hotkey="KeyR"
-                    @click="selectionToEdit = { selection: contextSelection, field: 'name' }"
-                >
-                    <u>R</u>ename
-                </BaseContextMenuItem>
+                    <BaseContextMenuItem
+                        iconClass="far fa-link"
+                        hotkey="KeyL"
+                        @click="onGetSelectionLink(contextSelection.id)"
+                    >
+                        <span>C<u>o</u>py Selection link</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-pen"
+                        hotkey="KeyR"
+                        @click="selectionToEdit = { selection: contextSelection, field: 'name' }"
+                    >
+                        <u>R</u>ename
+                    </BaseContextMenuItem>
 
-                <BaseContextMenuItem
-                    iconClass="far fa-user-cog"
-                    hotkey="KeyM"
-                    @click="$emit('showSelectionUsersFlyin', contextSelection)"
-                >
-                    <u>M</u>embers and Access
-                </BaseContextMenuItem>
+                    <BaseContextMenuItem
+                        iconClass="far fa-user-cog"
+                        hotkey="KeyM"
+                        @click="$emit('showSelectionUsersFlyin', contextSelection)"
+                    >
+                        <u>M</u>embers and Access
+                    </BaseContextMenuItem>
 
-                <BaseContextMenuItem iconClass="far fa-plus" hotkey="KeyC">
-                    <template>
-                        <span><u>C</u>reate sub-selection</span>
-                    </template>
+                    <BaseContextMenuItem iconClass="far fa-plus" hotkey="KeyC">
+                        <template>
+                            <span><u>C</u>reate</span>
+                        </template>
 
-                    <template v-slot:submenu>
-                        <div class="item-group">
-                            <BaseContextMenuItem
-                                iconClass="far fa-poll"
-                                hotkey="KeyN"
-                                @click="onNewSelection({ parent: contextSelection, type: 'Normal' })"
-                            >
-                                <span><u>N</u>ormal</span>
-                            </BaseContextMenuItem>
+                        <template v-slot:submenu>
+                            <div class="item-group">
+                                <BaseContextMenuItem
+                                    iconClass="far fa-poll"
+                                    hotkey="KeyS"
+                                    @click="onNewSelection({ parent: contextSelection, type: 'Normal' })"
+                                >
+                                    <span><u>S</u>election</span>
+                                </BaseContextMenuItem>
 
-                            <BaseContextMenuItem
-                                iconClass="far fa-crown"
-                                hotkey="KeyM"
-                                :disabled="contextSelection.type != 'Master'"
-                                disabledTooltip="Can only create Master sub-selections on another Master selection"
-                                @click="onNewSelection({ parent: contextSelection, type: 'Master' })"
-                            >
-                                <span><u>M</u>aster</span>
-                            </BaseContextMenuItem>
-                        </div>
-                    </template>
-                </BaseContextMenuItem>
-            </div>
-            <div class="item-group">
-                <BaseContextMenuItem
-                    iconClass="far fa-cog"
-                    hotkey="KeyS"
-                    @click="showSettingsContext(contextMouseEvent, contextSelection)"
-                >
-                    <u>S</u>ettings
-                </BaseContextMenuItem>
-            </div>
-            <div class="item-group">
-                <BaseContextMenuItem
-                    iconClass="far fa-trash-alt"
-                    hotkey="KeyD"
-                    @click="onDeleteSelection(contextSelection, contextSelectionParent)"
-                >
-                    <u>D</u>elete selection
-                </BaseContextMenuItem>
-            </div>
+                                <BaseContextMenuItem
+                                    iconClass="far fa-project-diagram"
+                                    hotkey="KeyC"
+                                    :disabled="contextSelection.type != 'Master'"
+                                    disabledTooltip="Can only create Master sub-selections on another Master selection"
+                                    @click="onNewSelection({ parent: contextSelection, type: 'Chapter' })"
+                                >
+                                    <span><u>C</u>hapter</span>
+                                </BaseContextMenuItem>
+                            </div>
+                        </template>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        v-if="contextSelection.type == 'Chapter'"
+                        iconClass="far fa-filter"
+                        hotkey="KeyF"
+                        @click="onShowChapterFilterModal(contextSelection)"
+                    >
+                        <span>Chapter <u>F</u>ilter</span>
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem
+                        iconClass="far fa-cog"
+                        hotkey="KeyS"
+                        @click="showSettingsContext(contextMouseEvent, contextSelection)"
+                    >
+                        <u>S</u>ettings
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-trash-alt"
+                        hotkey="KeyD"
+                        @click="onDeleteSelection(contextSelection, contextSelectionParent)"
+                    >
+                        <u>D</u>elete selection
+                    </BaseContextMenuItem>
+                </div>
+            </template>
         </BaseContextMenu>
 
         <BaseContextMenu ref="contextMenuSelectedSelections" class="context-selection">
@@ -1085,22 +1131,32 @@
             <p>All input of the selection{{ selectedSelections.length > 1 ? 's' : '' }} will be permanently deleted.</p>
             <p><strong>Please beware:</strong> All sub-selections will be deleted as well.</p>
         </BaseDialog>
+
+        <ChapterFilterModal
+            :selection="contextSelection"
+            :show="showChapterFilterModal"
+            @close="showChapterFilterModal = false"
+        />
     </div>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
+import ChapterFilterModal from './ChapterFilterModal'
 import sortArray from '../../../mixins/sortArray'
 
 export default {
     name: 'selectionsTable',
     components: {
         SelectionsTableRow,
+        ChapterFilterModal,
     },
     mixins: [sortArray],
     data: function() {
         return {
+            focusSelection: null,
+            showChapterFilterModal: false,
             loadingData: false,
             fileSelectionMagicLinkSent: false,
             selectedSelections: [],
@@ -1268,9 +1324,16 @@ export default {
             this.sortArray(this.getSelectionsTree, sortAsc, sortKey)
         },
         rowClick(e, component) {
+            if (!component) {
+                this.focusSelection = null
+                return
+            }
+            const selection = component.selection
+            this.focusSelection = this.focusSelection && this.focusSelection.id == selection.id ? null : selection
+            this.contextSelectionComponent = component
             if (this.moveSelectionActive) {
                 e.stopPropagation()
-                this.endMoveSelection(component.selection, component)
+                this.endMoveSelection(selection, component)
             }
         },
         async showSettingsContext(e, selection) {
@@ -1401,6 +1464,10 @@ export default {
                 selectionContext.show(e)
             }
         },
+        onShowChapterFilterModal(selection) {
+            this.showChapterFilterModal = true
+            this.contextSelection = selection
+        },
         onMoveSelection(selection, parent) {
             this.selectionToMove = selection
             this.selectionToMoveParent = parent
@@ -1474,7 +1541,7 @@ export default {
             const newSelection = {
                 id: null,
                 file_id: this.currentFile.id,
-                name: '',
+                name: type == 'Master' ? 'New Master' : type == 'Chapter' ? 'New Chapter' : 'New Selection',
                 type,
                 currency: null,
                 user_count: 0,
@@ -1493,7 +1560,6 @@ export default {
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection
-                newSelection.name = 'New Sub Selection'
                 newSelection.parent_id = parent.id
                 newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
@@ -1507,7 +1573,6 @@ export default {
                 this.contextSelectionComponent.childrenExpanded = true
             } else {
                 // If no parent, we are creating a new master
-                newSelection.name = 'New Master Selection'
                 newSelection.parent_id = 0
                 // this.selections.push(newSelection)
                 this.insertSelections({ selections: [newSelection], method: 'add' })

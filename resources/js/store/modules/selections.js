@@ -1230,6 +1230,49 @@ export default {
                 })
             })
         },
+        async fetchChapterRules({ commit, dispatch }, { selection }) {
+            const apiUrl = `selections/${selection.id}/chapter`
+            let chapterRules
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    chapterRules = response.data
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong trying to fetch chapter settings. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('fetchChapterRules', { selection }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
+            return chapterRules
+        },
+        async updateChapterRules({ commit }, { selection, chapterRules, combinator }) {
+            const apiUrl = `selections/${selection.id}/chapter`
+            await axios
+                .put(apiUrl, {
+                    rules: chapterRules,
+                    relation: combinator,
+                })
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Chapter rules updated.',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+        },
     },
 
     mutations: {
