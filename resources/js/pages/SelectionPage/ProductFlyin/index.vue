@@ -315,7 +315,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import CommentsSection from './CommentsSection'
-import DistributionSection from './DistributionSection'
+import DistributionSection from './DistributionSection/'
 import RequestsSection from './RequestsSection'
 import SelectionSelector from './SelectionSelector'
 import VariantListItem from './VariantListItem'

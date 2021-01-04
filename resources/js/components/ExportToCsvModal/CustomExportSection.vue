@@ -101,9 +101,9 @@ export default {
                         { name: 'COLOUR_NAME', key: 'variant.color' },
                         { name: 'SAMPLE_LOCATION_NAME', key: 'extra_data.Sample Location Name' },
                         { name: 'DESCRIPTION', key: 'sale_description' },
-                        { name: 'SIZE NAME', key: 'variant.sizes' },
                         { name: 'BRAND_NAME', key: 'brand' },
                         { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.Country of Origin' },
+                        { name: 'QUANTITY', key: 'extra_data.Quantity' },
                     ],
                 },
                 {
