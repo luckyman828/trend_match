@@ -18,6 +18,9 @@
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
                 <strong class="sender">
+                    <div class="chapter pill xs" v-if="request.selection.parent_chapter">
+                        <i class="fas fa-product-diagram"></i><span>{{ request.selection.parent_chapter.name }}</span>
+                    </div>
                     <span>{{ request.selection.name }}</span>
                     <!-- </span> -->
                     <span> | </span>
