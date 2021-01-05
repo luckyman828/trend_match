@@ -16,7 +16,15 @@
                     :key="theSelection.id"
                     :modelValue="theSelection"
                     v-model="selectedSelections"
+                    :disabled="
+                        selectedSelections.length > 0 &&
+                            selectedSelections[0].product_set_identifier != theSelection.product_set_identifier
+                    "
+                    disabledTooltip="Selection belongs to different chapter."
                 >
+                    <div class="pill xs" v-if="theSelection.parent_chapter">
+                        <i class="fas fa-project-diagram"></i><span>{{ theSelection.parent_chapter.name }}</span>
+                    </div>
                     <i
                         v-if="theSelection.type == 'Master'"
                         class="far fa-crown"
@@ -39,7 +47,7 @@
                             'Selection is <strong>Locked</strong>. You can view input from a locked selection, but not make any new'
                         "
                     ></i>
-                    {{ theSelection.name }}
+                    <span>{{ theSelection.name }}</span>
                 </BaseSelectButton>
                 <div class="item-group actions">
                     <BaseButton

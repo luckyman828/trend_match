@@ -1,6 +1,11 @@
 <template>
     <div class="action-list-item">
-        <span class="chapter" v-if="chapter">{{ chapter }}</span>
+        <div class="chapter pill " v-if="action.selection.parent_selection">
+            <i class="fas fa-project-diagram"></i>
+            <span>
+                {{ action.selection.parent_selection.name }}
+            </span>
+        </div>
         <!-- <SelectionIcon v-if="action.selection.type == 'Master'" :selection="action.selection" /> -->
         <i
             v-if="action.selection.type == 'Master'"

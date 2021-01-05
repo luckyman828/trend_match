@@ -42,27 +42,29 @@
 
             <div class="available-selection-list">
                 <h4>Choose selections to present for:</h4>
-                <BaseSelectButtons
-                    class="selections-to-present"
-                    :submitOnChange="true"
-                    optionNameKey="name"
-                    :options="availableSelections"
-                    v-model="selectionsToPresent"
-                >
-                    <template v-slot:before="slotProps">
-                        <!-- <span ><i class="far fa-info-circle"></i></span> -->
+                <div class="selections-to-present">
+                    <BaseSelectButton
+                        v-for="theSelection in availableSelections"
+                        :key="theSelection.id"
+                        :modelValue="theSelection"
+                        v-model="selectionsToPresent"
+                        :disabled="
+                            selectionsToPresent.length > 0 &&
+                                selectionsToPresent[0].product_set_identifier != theSelection.product_set_identifier
+                        "
+                        disabledTooltip="Selection belongs to different chapter."
+                    >
+                        <div class="pill xs" v-if="theSelection.parent_chapter">
+                            <i class="fas fa-project-diagram"></i><span>{{ theSelection.parent_chapter.name }}</span>
+                        </div>
                         <i
                             class="far fa-presentation primary"
-                            v-if="slotProps.option.is_presenting"
+                            v-if="theSelection.is_presenting"
                             v-tooltip="'In presentation'"
                         ></i>
-                    </template>
-                </BaseSelectButtons>
-                <!-- <div class="form-element" v-for="selection in availableSelections" :key="selection.id">
-                    <BaseCheckboxInputField v-model="selectionsToPresent">
-                        <span>{{ selection.name }}</span>
-                    </BaseCheckboxInputField>
-                </div> -->
+                        <span>{{ theSelection.name }}</span>
+                    </BaseSelectButton>
+                </div>
             </div>
         </BaseDialog>
 

@@ -68,8 +68,18 @@ export default {
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
         getCurrentPDPSelection: state => state.currentPDPSelection,
-        getSelectionsAvailableForAlignment: state => state.selections.filter(x => x.your_job == 'Alignment'),
-        getSelectionsAvailableForPresentation: state => state.selections.filter(x => x.your_role == 'Owner'),
+        getSelectionsAvailableForAlignment: state =>
+            state.selections
+                .filter(x => x.your_job == 'Alignment')
+                .sort((a, b) => {
+                    return a.product_set_identifier > b.product_set_identifier ? 1 : -1
+                }),
+        getSelectionsAvailableForPresentation: state =>
+            state.selections
+                .filter(x => x.your_role == 'Owner')
+                .sort((a, b) => {
+                    return a.product_set_identifier > b.product_set_identifier ? 1 : -1
+                }),
         getSelectionUsersFlyinIsVisible: state => state.usersFlyInVisible,
         getQuantityModeActive: (state, getters) => {
             return (
