@@ -24,12 +24,11 @@
 
                 <p><strong>Handover and Sales Meetings</strong></p>
                 <p>
-                    You can make the chapter filters by product category, delivery or other product related data, but
-                    you can also make a chapter that only includes IN-products, from another selection.
+                    You can make the chapter filters by product category, delivery or other product related data.
                 </p>
                 <p>
                     This will let you keep one dynamic file, where you can see all of your results by chapter, or
-                    together, and where comments made in Handover can be available in Sales Meetings.
+                    together.
                 </p>
 
                 <h3>Custom CSV Export</h3>
