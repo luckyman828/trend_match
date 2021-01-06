@@ -512,7 +512,7 @@ export default {
     },
     destroyed() {
         this.disconnectSignalR()
-        this.onViewSelectionAsRole(this.getCurrentSelectionRealRole)
+        this.onViewSelectionAsRole(null)
     },
 }
 </script>
