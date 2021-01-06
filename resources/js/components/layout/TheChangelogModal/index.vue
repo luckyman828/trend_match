@@ -1,6 +1,64 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Damask: Atomic Tangerine"
+            date="January 2021 Release"
+            featuredImgUrl="/images/blog/undraw_Powerful_re_frhr.svg"
+        >
+            <template v-slot:lead>
+                <p>The new year is here, and so is an update for Kollekt. Cheers.</p>
+            </template>
+
+            <template v-slot:body>
+                <h3>Selection Chapters</h3>
+                <p>We are very happy to introduce our new feature: Chapters.</p>
+                <p>Chapters are a special kind of selection on a file.</p>
+                <p>The thing about chapters is that you can apply a product filter to the chapter.</p>
+
+                <p><strong>What does that mean for you?</strong></p>
+                <p>
+                    Where you before had to upload multiple files in order to have them split out in the iOS app, you
+                    can now do the same thing with Chapters.
+                </p>
+                <p>You just upload 1 set of products, and create sub-divisions via chapters.</p>
+
+                <p><strong>Handover and Sales Meetings</strong></p>
+                <p>
+                    You can make the chapter filters by product category, delivery or other product related data, but
+                    you can also make a chapter that only includes IN-products, from another selection.
+                </p>
+                <p>
+                    This will let you keep one dynamic file, where you can see all of your results by chapter, or
+                    together, and where comments made in Handover can be available in Sales Meetings.
+                </p>
+
+                <h3>Custom CSV Export</h3>
+                <p>When exporting to CSV you now have a new option available: Custom.</p>
+                <p>Custom let's you decide exactly what product data should be included in the export.</p>
+                <p>
+                    You can re-arrange the columns as you please, and can even rename the columns to the name you need.
+                </p>
+
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>
+                        The add-users modal now automatically checks a user with the entered e-mail already exists on
+                        Kollekt, so you don't have to enter a new name or e-mail.
+                    </li>
+                    <li>Workspace owners can now set custom product data fields from workspace settings.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+
+        <ChangelogPost
             title="Damask: Asparagus"
             date="The Christmas 2020 Release"
             featuredImgUrl="/images/blog/undraw_christmas_tree_56sw.svg"

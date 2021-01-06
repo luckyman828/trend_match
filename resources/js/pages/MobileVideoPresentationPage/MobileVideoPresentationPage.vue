@@ -2,7 +2,11 @@
     <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }]">
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
-                <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
+                <div
+                    class="play-overlay"
+                    v-if="!playerStarted"
+                    :style="video.thumbnail && `background-image: url(${video.thumbnail})`"
+                >
                     <div class="overlay"></div>
                     <button class="xxl circle black blur" @click="onStartPlaying">
                         <i class="far fa-play"></i>
@@ -142,24 +146,8 @@ export default {
         ...mapActions('videoPresentation', ['initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
         ...mapMutations('videoPresentation', ['ADD_TIMING']),
-        onEnterFullscreen() {
-            const elem = document.documentElement
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen()
-            } else if (elem.mozRequestFullScreen) {
-                /* Firefox */
-                elem.mozRequestFullScreen()
-            } else if (elem.webkitRequestFullscreen) {
-                /* Chrome, Safari and Opera */
-                elem.webkitRequestFullscreen()
-            } else if (elem.msRequestFullscreen) {
-                /* IE/Edge */
-                elem.msRequestFullscreen()
-            }
-        },
         onStartPlaying() {
             this.togglePlaying()
-            this.onEnterFullscreen()
             this.playerStarted = true
             const interval = 1000
             this.playerStartedTester = setInterval(() => {
@@ -212,17 +200,32 @@ export default {
             this.isConnectedToLiveUpdates = false
         },
     },
+    mounted() {
+        alert('scroll down a little')
+        /* iOS re-orientation fix */
+        if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
+            /* iOS hides Safari address bar */
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    window.scrollTo(0, 1)
+                }, 1000)
+            })
+        }
+    },
     created() {
         // Check if we are in a presentation
         if (this.isLive) {
             this.connectToLiveUpdates()
         }
+        // Make the page full screen
+        document.body.classList.add('fit-height')
     },
     destroyed() {
         if (this.isConnectedToLiveUpdates) {
             this.disconnectLiveUpdates()
         }
         if (this.playerStartedTester) clearInterval(this.playerStartedTester)
+        document.body.classList.remove('fit-height')
     },
 }
 </script>
@@ -230,7 +233,13 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .video-presentation-page {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 100%;
     height: 100%;
+    overscroll-behavior: none;
+    z-index: 2147483646;
     .video-presentation-wrapper {
         height: 100%;
         position: relative;
@@ -246,7 +255,13 @@ export default {
     }
     ::v-deep {
         .timeline {
-            bottom: 4px;
+            bottom: 0;
+            .knob {
+                display: none;
+            }
+            .rail {
+                height: 12px;
+            }
         }
     }
 }

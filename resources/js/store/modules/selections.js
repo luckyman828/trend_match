@@ -404,7 +404,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: 'Something went wrong trying to creat the selection. Please try again.',
+                            msg: 'Something went wrong trying to create the selection. Please try again.',
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
                             callback: () => dispatch('insertSelection', { file, selection, addToState }),

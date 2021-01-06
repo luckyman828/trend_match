@@ -74,9 +74,7 @@
         </div>
 
         <div class="sender" v-if="displayAuthor && !editActive">
-            <div class="chapter pill xs" v-if="comment.selection.parent_chapter">
-                <i class="fas fa-product-diagram"></i><span>{{ comment.selection.parent_chapter.name }}</span>
-            </div>
+            <SelectionChapterPill class="chapter" :selection="comment.selection" />
             <strong>{{ comment.role == 'Approver' ? 'Approval' : comment.selection.name }}</strong> |
             {{
                 comment.user_id == authUser.id
@@ -100,8 +98,12 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import SelectionChapterPill from '../../../components/common/SelectionChapterPill'
 export default {
     name: 'comment',
+    components: {
+        SelectionChapterPill
+    },
     props: ['comment', 'selectionInput', 'displayAuthor'],
     data: function() {
         return {

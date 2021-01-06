@@ -18,9 +18,7 @@
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
                 <strong class="sender">
-                    <div class="chapter pill xs" v-if="request.selection.parent_chapter">
-                        <i class="fas fa-product-diagram"></i><span>{{ request.selection.parent_chapter.name }}</span>
-                    </div>
+                    <SelectionChapterPill :selection="request.selection" />
                     <span>{{ request.selection.name }}</span>
                     <!-- </span> -->
                     <span> | </span>
@@ -135,11 +133,13 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import RequestInputArea from './RequestInputArea'
+import SelectionChapterPill from '../../../components/common/SelectionChapterPill'
 
 export default {
     name: 'request',
     components: {
         RequestInputArea,
+        SelectionChapterPill,
     },
     props: ['request', 'selectionInput', 'disableControls'],
     data: function() {

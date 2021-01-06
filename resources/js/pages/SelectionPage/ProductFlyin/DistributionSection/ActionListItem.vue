@@ -1,12 +1,6 @@
 <template>
     <div class="action-list-item">
-        <div class="chapter pill " v-if="action.selection.parent_selection">
-            <i class="fas fa-project-diagram"></i>
-            <span>
-                {{ action.selection.parent_selection.name }}
-            </span>
-        </div>
-        <!-- <SelectionIcon v-if="action.selection.type == 'Master'" :selection="action.selection" /> -->
+        <SelectionChapterPill class="chapter" :selection="action.selection" />
         <i
             v-if="action.selection.type == 'Master'"
             :selection="action.selection"
@@ -23,17 +17,14 @@
 </template>
 
 <script>
-import SelectionIcon from '../../../../components/common/SelectionIcon'
+import SelectionChapterPill from '../../../../components/common/SelectionChapterPill'
 export default {
     name: 'actionListItem',
     components: {
-        SelectionIcon,
+        SelectionChapterPill,
     },
     props: ['action', 'showQty'],
     computed: {
-        chapter() {
-            return
-        },
         totalQty() {
             return this.action.variants.reduce((total, variant) => {
                 return total + variant.quantity
@@ -49,6 +40,9 @@ export default {
     display: flex;
     align-items: center;
     padding-right: 0px;
+    .chapter {
+        margin-right: 4px;
+    }
     .selection-icon {
         margin-right: 6px;
         font-size: 12px;
