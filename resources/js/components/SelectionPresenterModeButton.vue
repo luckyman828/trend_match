@@ -104,6 +104,7 @@ export default {
     computed: {
         ...mapGetters('selections', {
             availableSelections: 'getSelectionsAvailableForPresentation',
+            allSelections: 'getSelections',
         }),
     },
     methods: {
@@ -120,7 +121,10 @@ export default {
             if (!this.selection.is_presenting) {
                 // Make sure we have fethed the selections children
                 if (!selection.children || selection.children.length <= 0) {
-                    const selections = await this.fetchSelections({ fileId: selection.file_id })
+                    const selections =
+                        this.allSelections && this.allSelections.length > 0
+                            ? this.allSelections
+                            : await this.fetchSelections({ fileId: selection.file_id })
                     const tree = await this.createSelectionTree(selections)
                     const theSelection = selections.find(x => x.id == selection.id)
                     await this.UPDATE_SELECTION(theSelection)
@@ -128,13 +132,10 @@ export default {
 
                 const hasChapters = this.availableSelections.find(x => x.type == 'Chapter')
                 if (!(hasChapters && selection.type == 'Master')) {
-                    console.log('got here')
                     // Pre-select the selection and all descendants
                     this.presetSelectionAndDescendants(selection)
                 }
 
-                console.log('confirm start', this.$refs)
-                return
                 if (await this.$refs.confirmStart.confirm()) {
                     console.log('show dialog pls')
                     this.startPresentation({ selections: this.selectionsToPresent })
