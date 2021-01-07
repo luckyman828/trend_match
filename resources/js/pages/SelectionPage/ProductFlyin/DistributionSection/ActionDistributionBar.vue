@@ -61,6 +61,7 @@ export default {
     svg {
         height: 8px;
         border-radius: 4px;
+        width: 100%;
         .bg {
             fill: $grey600;
         }

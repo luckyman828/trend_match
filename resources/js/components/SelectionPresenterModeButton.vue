@@ -126,10 +126,17 @@ export default {
                     await this.UPDATE_SELECTION(theSelection)
                 }
 
-                // Pre-select the selection and all descendants
-                this.presetSelectionAndDescendants(selection)
+                const hasChapters = this.availableSelections.find(x => x.type == 'Chapter')
+                if (!(hasChapters && selection.type == 'Master')) {
+                    console.log('got here')
+                    // Pre-select the selection and all descendants
+                    this.presetSelectionAndDescendants(selection)
+                }
 
+                console.log('confirm start', this.$refs)
+                return
                 if (await this.$refs.confirmStart.confirm()) {
+                    console.log('show dialog pls')
                     this.startPresentation({ selections: this.selectionsToPresent })
                 }
             } else {
