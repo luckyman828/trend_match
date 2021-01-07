@@ -416,6 +416,11 @@ export default {
             margin-right: 8px;
         }
     }
+    span {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 }
 .expand {
     i {

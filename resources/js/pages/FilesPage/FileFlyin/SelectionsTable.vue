@@ -69,12 +69,7 @@
                 <BaseTableHeader class="title">Name</BaseTableHeader>
                 <BaseTableHeader class="budget">Budget</BaseTableHeader>
                 <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
-                <!-- <BaseTableHeader :sortKey="'items'" :currentSortKey="sortKey" @sort="onSort">Items</BaseTableHeader>
-                <BaseTableHeader :sortKey="'in'" :currentSortKey="sortKey" @sort="onSort">In</BaseTableHeader>
-                <BaseTableHeader :sortKey="'out'" :currentSortKey="sortKey" @sort="onSort">Out</BaseTableHeader>
-                <BaseTableHeader :sortKey="'nd'" :currentSortKey="sortKey" @sort="onSort">ND</BaseTableHeader> -->
                 <BaseTableHeader class="currency">Currency</BaseTableHeader>
-                <!-- <BaseTableHeader class="teams">Teams</BaseTableHeader> -->
                 <BaseTableHeader class="users">Users</BaseTableHeader>
                 <BaseTableHeader class="status">Status</BaseTableHeader>
                 <BaseTableHeader class="presentation">Presentation</BaseTableHeader>
@@ -147,13 +142,23 @@
                 <td>
                     <BaseButton
                         buttonClass="primary invisible"
-                        :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can create new selections"
+                        :disabled="
+                            authUserWorkspaceRole != 'Admin' || (getSelectionsTree.length != 1 && !focusSelection)
+                        "
+                        :disabledTooltip="
+                            getSelectionsTree.length != 1 && !focusSelection
+                                ? 'Selections cannot be made in the root'
+                                : 'Only admins can create new selections'
+                        "
                         tooltip="Create a new selection. Will be added under the currently focused selection."
                         @click="
                             onNewSelection({
                                 type: 'Normal',
-                                parent: focusSelection,
+                                parent: focusSelection
+                                    ? focusSelection
+                                    : getSelectionsTree.length == 1
+                                    ? getSelectionsTree[0]
+                                    : null,
                             })
                         "
                     >
@@ -163,13 +168,26 @@
                 <td>
                     <BaseButton
                         buttonClass="primary invisible"
-                        :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can create new chapters"
+                        :disabled="
+                            authUserWorkspaceRole != 'Admin' ||
+                                (getSelectionsTree.length != 1 && !focusSelection) ||
+                                (!!focusSelection && focusSelection.type != 'Master')
+                        "
+                        :disabledTooltip="
+                            (getSelectionsTree.length != 1 && !focusSelection) ||
+                            (!!focusSelection && focusSelection.type != 'Master')
+                                ? 'Chapters must be children of a Master'
+                                : 'Only admins can create new chapters'
+                        "
                         tooltip="Create a new chapter. Will be added under the currently focused selection."
                         @click="
                             onNewSelection({
                                 type: 'Chapter',
-                                parent: focusSelection,
+                                parent: focusSelection
+                                    ? focusSelection
+                                    : getSelectionsTree.length == 1
+                                    ? getSelectionsTree[0]
+                                    : null,
                             })
                         "
                     >
@@ -369,695 +387,12 @@
             </div>
         </BaseContextMenu>
 
-        <BaseContextMenu ref="contextMenuOptions" class="context-options" columns="4" @hide="settingsSelections = []">
-            <template v-slot:header v-if="contextSelection">
-                <span
-                    >Settings: {{ contextSelection.name }}
-                    <template v-if="settingsSelections.length > 1">
-                        + {{ settingsSelections.length - 1 }} more</template
-                    >
-                </span>
-            </template>
-            <template v-slot="slotProps" v-if="settingsSelections.length > 0">
-                <!-- If loading -->
-                <div class="loading-wrapper" v-if="loadingSelectionSettings">
-                    <BaseLoader />
-                </div>
-                <!-- if ready -->
-                <div class="columns" v-else>
-                    <!-- Feedback -->
-                    <div class="item-group">
-                        <div class="item-group">
-                            <strong class="header">Feedback Actions</strong>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.feedback.broadcast.parent_level
-                                        ).label
-                                    "
-                                    @click="
-                                        showParentLevelContext($event, contextSelection.settings.feedback.broadcast)
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.feedback.broadcast.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.feedback.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.feedback.broadcast.sibling">
-                                    <span>Broadcast to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.feedback.listen.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.feedback.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.feedback.listen.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.feedback.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.feedback.listen.sibling">
-                                    <span>Listen to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Limit who can see feedback</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayLevelOptions.find(
-                                            x => x.value == contextSelection.settings.feedback_visible
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayLevelContext($event, contextSelection.settings, 'feedback_visible')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                            <div class="item-wrapper">
-                                <label class="settings-label"
-                                    >Display feedback authors for
-                                    <i
-                                        class="far fa-info-circle"
-                                        v-tooltip="
-                                            'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'
-                                        "
-                                    ></i>
-                                    :</label
-                                >
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayAuthorOptions.find(
-                                            x => x.value == contextSelection.settings.anonymize_feedback
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayAuthorContext(
-                                            $event,
-                                            contextSelection.settings,
-                                            'anonymize_feedback'
-                                        )
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Actions -->
-                    <div class="item-group">
-                        <div class="item-group">
-                            <strong class="header">Alignment Actions</strong>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.action.broadcast.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.action.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.action.broadcast.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.action.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.action.broadcast.sibling">
-                                    <span>Broadcast to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.action.listen.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.action.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.action.listen.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.action.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.action.listen.sibling">
-                                    <span>Listen to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Limit who can see alignment actions</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayLevelOptions.find(
-                                            x => x.value == contextSelection.settings.action_visible
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayLevelContext($event, contextSelection.settings, 'action_visible')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                            <div class="item-wrapper">
-                                <label class="settings-label"
-                                    >Display alignment authors for
-                                    <i
-                                        class="far fa-info-circle"
-                                        v-tooltip="
-                                            'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'
-                                        "
-                                    ></i>
-                                    :</label
-                                >
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayAuthorOptions.find(
-                                            x => x.value == contextSelection.settings.anonymize_action
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_action')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Comments -->
-                    <div class="item-group">
-                        <div class="item-group">
-                            <strong class="header">Comments</strong>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.comment.broadcast.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.comment.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.comment.broadcast.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.comment.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.comment.broadcast.sibling">
-                                    <span>Broadcast to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.comment.listen.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.comment.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.comment.listen.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.comment.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.comment.listen.sibling">
-                                    <span>Listen to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Limit who can see comments</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayLevelOptions.find(
-                                            x => x.value == contextSelection.settings.comment_visible
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayLevelContext($event, contextSelection.settings, 'comment_visible')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                            <div class="item-wrapper">
-                                <label class="settings-label"
-                                    >Display comment authors for
-                                    <i
-                                        class="far fa-info-circle"
-                                        v-tooltip="
-                                            'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'
-                                        "
-                                    ></i>
-                                    :</label
-                                >
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayAuthorOptions.find(
-                                            x => x.value == contextSelection.settings.anonymize_comment
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_comment')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Requests -->
-                    <div class="item-group">
-                        <div class="item-group">
-                            <strong class="header">Requests</strong>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.request.broadcast.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.request.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.request.broadcast.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.request.broadcast)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Broadcast to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.request.broadcast.sibling">
-                                    <span>Broadcast to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Up</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        parentLevelOptions.find(
-                                            x => x.value == contextSelection.settings.request.listen.parent_level
-                                        ).label
-                                    "
-                                    @click="showParentLevelContext($event, contextSelection.settings.request.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen Down</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        childLevelOptions.find(
-                                            x => x.value == contextSelection.settings.request.listen.child_level
-                                        ).label
-                                    "
-                                    @click="showChildLevelContext($event, contextSelection.settings.request.listen)"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-
-                            <div class="item-wrapper">
-                                <label class="settings-label">Listen to Siblings</label>
-                                <BaseCheckboxInputField v-model="contextSelection.settings.request.listen.sibling">
-                                    <span>Listen to Siblings</span>
-                                </BaseCheckboxInputField>
-                            </div>
-                        </div>
-
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <label class="settings-label">Limit who can see requests</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayLevelOptions.find(
-                                            x => x.value == contextSelection.settings.request_visible
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayLevelContext($event, contextSelection.settings, 'request_visible')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                            <div class="item-wrapper">
-                                <label class="settings-label"
-                                    >Display request authors for
-                                    <i
-                                        class="far fa-info-circle"
-                                        v-tooltip="
-                                            'Please beware: Changing this setting does not fully anonymize the data. Admins can always see authors, and changing the settings affects past input.'
-                                        "
-                                    ></i>
-                                    :</label
-                                >
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        displayAuthorOptions.find(
-                                            x => x.value == contextSelection.settings.anonymize_request
-                                        ).label
-                                    "
-                                    @click="
-                                        showDisplayAuthorContext($event, contextSelection.settings, 'anonymize_request')
-                                    "
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                            <div class="item-wrapper">
-                                <label class="settings-label">Can make tickets</label>
-                                <BaseInputField
-                                    disabled="true"
-                                    type="select"
-                                    :value="
-                                        ticketLevelOptions.find(x => x.value == contextSelection.settings.ticket_level)
-                                            .label
-                                    "
-                                    @click="showTicketLevelContext($event, contextSelection.settings, 'ticket_level')"
-                                >
-                                    <i class="fas fa-caret-down"></i>
-                                </BaseInputField>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="item-group footer item-wrapper"
-                    style="display: flex; justify-content: space-between; width: 100%;"
-                >
-                    <!-- <div class="item-wrapper" > -->
-                    <div>
-                        <button class="ghost primary" @click="onCloneSettings">
-                            <i class="far fa-clone"></i><span>Clone settings from another Selection</span>
-                        </button>
-                    </div>
-                    <div style="text-align: right;">
-                        <button
-                            class="primary"
-                            @click="
-                                onSaveSelectionSettings()
-                                slotProps.hide()
-                            "
-                        >
-                            <span>Save</span>
-                        </button>
-                        <button class="invisible ghost-hover" @click="slotProps.hide()"><span>Cancel</span></button>
-                    </div>
-                    <!-- </div> -->
-                </div>
-
-                <BaseContextMenu ref="contextParentLevel" v-slot="slotProps">
-                    <BaseSelectButtons
-                        type="radio"
-                        :submitOnChange="true"
-                        v-model="contextSelectionOption.parent_level"
-                        @submit="slotProps.hide"
-                        :options="parentLevelOptions"
-                        :optionNameKey="'label'"
-                        :optionValueKey="'value'"
-                    />
-                </BaseContextMenu>
-
-                <BaseContextMenu ref="contextChildLevel" v-slot="slotProps">
-                    <BaseSelectButtons
-                        type="radio"
-                        :submitOnChange="true"
-                        v-model="contextSelectionOption.child_level"
-                        @submit="slotProps.hide"
-                        :options="childLevelOptions"
-                        :optionNameKey="'label'"
-                        :optionValueKey="'value'"
-                    />
-                </BaseContextMenu>
-
-                <BaseContextMenu ref="contextDisplayLevel" v-slot="slotProps">
-                    <BaseSelectButtons
-                        type="radio"
-                        :submitOnChange="true"
-                        v-model="contextSelectionSettings[contextSelectionSettingsKey]"
-                        @submit="slotProps.hide"
-                        :options="displayLevelOptions"
-                        :optionNameKey="'label'"
-                        :optionValueKey="'value'"
-                    />
-                </BaseContextMenu>
-
-                <BaseContextMenu ref="contextAuthorLevel" v-slot="slotProps">
-                    <BaseSelectButtons
-                        type="radio"
-                        :submitOnChange="true"
-                        v-model="contextSelectionSettings[contextSelectionSettingsKey]"
-                        @submit="slotProps.hide"
-                        :options="displayAuthorOptions"
-                        :optionNameKey="'label'"
-                        :optionValueKey="'value'"
-                    />
-                </BaseContextMenu>
-
-                <BaseContextMenu ref="contextTicketLevel" v-slot="slotProps">
-                    <BaseSelectButtons
-                        type="radio"
-                        :submitOnChange="true"
-                        v-model="contextSelectionSettings[contextSelectionSettingsKey]"
-                        @submit="slotProps.hide"
-                        :options="ticketLevelOptions"
-                        :optionNameKey="'label'"
-                        :optionValueKey="'value'"
-                    />
-                </BaseContextMenu>
-
-                <BaseContextMenu ref="contextCloneSettings" class="context-clone-settings">
-                    <template v-slot:header>
-                        <span>Select selections to copy settings from</span>
-                    </template>
-                    <template v-slot="innerSlotProps">
-                        <div class="item-group">
-                            <BaseSelectButtons
-                                type="radio"
-                                search="true"
-                                :options="allSelections.filter(x => x.id != contextSelection.id)"
-                                optionNameKey="name"
-                                v-model="selectionToCloneSettingsFrom"
-                                :submitOnChange="true"
-                            />
-                        </div>
-                        <div class="item-group">
-                            <div class="item-wrapper">
-                                <button
-                                    class="primary"
-                                    @click="
-                                        cloneSettings()
-                                        innerSlotProps.hide()
-                                    "
-                                >
-                                    <span>Clone</span>
-                                </button>
-                                <button
-                                    class="invisible ghost-hover"
-                                    style="margin-left: 8px;"
-                                    @click="innerSlotProps.hide()"
-                                >
-                                    <span>Cancel</span>
-                                </button>
-                            </div>
-                        </div>
-                    </template>
-                </BaseContextMenu>
-            </template>
-        </BaseContextMenu>
+        <SelectionSettingsContextMenu
+            ref="contextMenuSettings"
+            :selection="contextSelection"
+            :settingsSelections="settingsSelections"
+            @hide="settingsSelections = []"
+        />
 
         <div ref="moveSelectionIndicator" class="move-selection-indicator" :class="{ active: moveSelectionActive }">
             <span>Click selection to move to</span>
@@ -1144,6 +479,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import ChapterFilterModal from './ChapterFilterModal'
+import SelectionSettingsContextMenu from './SelectionSettingsContextMenu'
 import sortArray from '../../../mixins/sortArray'
 
 export default {
@@ -1151,6 +487,7 @@ export default {
     components: {
         SelectionsTableRow,
         ChapterFilterModal,
+        SelectionSettingsContextMenu,
     },
     mixins: [sortArray],
     data: function() {
@@ -1170,77 +507,6 @@ export default {
             selectionToMove: null,
             selectionToMoveParent: null,
             fileToClone: null,
-            loadingSelectionSettings: false,
-            contextSelectionOption: null,
-            contextSelectionSettings: null,
-            contextSelectionSettingsKey: null,
-            selectionToCloneSettingsFrom: null,
-            parentLevelOptions: [
-                {
-                    value: 'Ancestors',
-                    label: 'All',
-                },
-                {
-                    value: 'Parent',
-                    label: 'Parent',
-                },
-                {
-                    value: 'None',
-                    label: 'None',
-                },
-            ],
-            childLevelOptions: [
-                {
-                    value: 'Descendants',
-                    label: 'All',
-                },
-                {
-                    value: 'Children',
-                    label: 'Children',
-                },
-                {
-                    value: 'None',
-                    label: 'None',
-                },
-            ],
-            displayLevelOptions: [
-                {
-                    value: 'Member',
-                    label: 'Everyone',
-                },
-                {
-                    value: 'Owner',
-                    label: 'Owners',
-                },
-            ],
-            displayAuthorOptions: [
-                {
-                    value: 'Member',
-                    label: 'Everyone',
-                },
-                {
-                    value: 'Owner',
-                    label: 'Owners',
-                },
-                {
-                    value: 'None',
-                    label: 'No one',
-                },
-            ],
-            ticketLevelOptions: [
-                {
-                    value: 'Multiple',
-                    label: 'True',
-                },
-                {
-                    value: 'None',
-                    label: 'False',
-                },
-                // {
-                //     value: 'Single',
-                //     label: 'INVALID. PLEASE CHANGE'
-                // },
-            ],
             cloningSetup: false,
             settingsSelections: [],
         }
@@ -1283,8 +549,6 @@ export default {
             'addTeamsToSelection',
             'addUsersToSelection',
             'fetchSelection',
-            'fetchSelectionSettings',
-            'updateSelectionSettings',
             'deleteSelection',
             'sendSelectionLink',
             'getSelectionLink',
@@ -1344,12 +608,7 @@ export default {
                 this.contextSelection = selection
             }
 
-            // Load the selections settings
-            this.loadingSelectionSettings = true
-            await this.fetchSelectionSettings(selection)
-            this.loadingSelectionSettings = false
-
-            const contextMenu = this.$refs.contextMenuOptions
+            const contextMenu = this.$refs.contextMenuSettings
 
             // If the parsed selection is part of the selected selection, edit settings for all of them
             if (this.selectedSelections.find(x => x.id == selection.id)) {
@@ -1372,71 +631,6 @@ export default {
             this.$nextTick(() => {
                 this.$refs.contextCurrency.show(e)
             })
-        },
-        showParentLevelContext(e, option) {
-            this.contextSelectionOption = option
-            this.$refs.contextChildLevel.hide()
-            this.$refs.contextDisplayLevel.hide()
-            this.$refs.contextAuthorLevel.hide()
-            this.$refs.contextTicketLevel.hide()
-            this.$refs.contextParentLevel.show(e)
-        },
-        showChildLevelContext(e, option) {
-            this.contextSelectionOption = option
-            this.$refs.contextParentLevel.hide()
-            this.$refs.contextDisplayLevel.hide()
-            this.$refs.contextAuthorLevel.hide()
-            this.$refs.contextTicketLevel.hide()
-            this.$refs.contextChildLevel.show(e)
-        },
-        showDisplayLevelContext(e, settings, key) {
-            this.contextSelectionSettings = settings
-            this.contextSelectionSettingsKey = key
-            this.$refs.contextParentLevel.hide()
-            this.$refs.contextChildLevel.hide()
-            this.$refs.contextAuthorLevel.hide()
-            this.$refs.contextTicketLevel.hide()
-            this.$refs.contextDisplayLevel.show(e)
-        },
-        showDisplayAuthorContext(e, settings, key) {
-            this.contextSelectionSettings = settings
-            this.contextSelectionSettingsKey = key
-            this.$refs.contextParentLevel.hide()
-            this.$refs.contextChildLevel.hide()
-            this.$refs.contextDisplayLevel.hide()
-            this.$refs.contextTicketLevel.hide()
-            this.$refs.contextAuthorLevel.show(e)
-        },
-        showTicketLevelContext(e, settings, key) {
-            this.contextSelectionSettings = settings
-            this.contextSelectionSettingsKey = key
-            this.$refs.contextParentLevel.hide()
-            this.$refs.contextChildLevel.hide()
-            this.$refs.contextDisplayLevel.hide()
-            this.$refs.contextAuthorLevel.hide()
-            this.$refs.contextTicketLevel.show(e)
-        },
-        onCloneSettings(e) {
-            this.$refs.contextCloneSettings.show(e)
-        },
-        async cloneSettings() {
-            // Fetch the settings of the selection to clone from
-            const settingsToClone = await this.fetchSelectionSettings(this.selectionToCloneSettingsFrom)
-            // Set the settings on the context selection
-            this.$set(this.contextSelection, 'settings', settingsToClone)
-        },
-        onSaveSelectionSettings() {
-            // Send API request to update the selections settings.
-            if (this.settingsSelections.length > 1) {
-                this.settingsSelections.map(selection => {
-                    // Set the selection settings of this selection to a copy of the context selection's
-                    // Use Vue.set to instantiate 'settings' as a reactive property on the selection
-                    Vue.set(selection, 'settings', JSON.parse(JSON.stringify(this.contextSelection.settings)))
-                })
-                this.updateSelectionSettings({ selections: this.settingsSelections })
-            } else {
-                this.updateSelectionSettings({ selections: [this.contextSelection] })
-            }
         },
         showContextMenuSelection(e, selection, component, parent) {
             if (!this.getAuthUserHasSelectionEditAccess(selection)) return
@@ -1495,9 +689,6 @@ export default {
                     this.getSelectionsTree.splice(index, 1)
                 }
 
-                // Expand the component
-                component.childrenExpanded = true
-
                 // Remove event listener to listen for mousemove
                 document.removeEventListener('mousemove', this.moveSelectionMouseFollowHandler)
                 // Remove event listener to listen for right clicks to show a special context menu
@@ -1535,6 +726,7 @@ export default {
             moveContext.show(e)
         },
         async onNewSelection({ parent, type }) {
+            console.log('on new selection', parent, type)
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
@@ -1561,16 +753,12 @@ export default {
             if (parent) {
                 // If we are creating a sbu selection
                 newSelection.parent_id = parent.id
-                newSelection.is_presenting = parent.is_presenting
                 // Instantiate a children array on the parent
                 if (!parent.children) {
                     this.$set(parent, 'children', [])
                 }
                 // parent.children.push(newSelection)
                 this.insertSelections({ selections: [newSelection], method: 'add' })
-                // Expand the selection the new selection is added to
-                // Loop through the children to find the selectionrow in question
-                this.contextSelectionComponent.childrenExpanded = true
             } else {
                 // If no parent, we are creating a new master
                 newSelection.parent_id = 0
@@ -1625,74 +813,6 @@ export default {
             this.cloningSetup = false
             // Force refresh the data, to fetch the cloned selections
             this.initData(true)
-            // Clone selections and their users to the new file
-            // Fetch file selections
-            // const selections = await this.fetchSelections({fileId: file.id, addToState: false})
-            // // We have to copy the selection structure as well
-            // // This means we have to insert one level of selections at a time
-            // // Transform the selections into a tree structure
-            // const selectionTree = await this.createSelectionTree(selections)
-
-            // // Loop through all selections and upload them
-            // for (const rootSelection of selectionTree) {
-            //     await this.cloneSelectionTree(rootSelection)
-            // }
-            // // Update the settings of all the newly created selection to sync relationsships
-            // const newSelectionTree = this.getSelectionsTree
-            // console.log('end for. New selections:', newSelectionTree)
-            // for (const rootSelection of newSelectionTree) {
-            //     this.syncSelectionTreeSettings(rootSelection)
-            // }
-        },
-        async cloneSelectionTree(selection) {
-            // Recursive function that calls itself for all children of a selection until there are no more children
-            // Make a clone of the selection to upload
-            const newSelection = JSON.parse(JSON.stringify(selection))
-            // Fetch the selection with its teams and users so we can add them to the clone
-            const selectionWithTeamsAndUsers = await this.fetchSelection({
-                selectionId: selection.id,
-                addToState: false,
-            })
-            // Set the selection ID to null, so we create a new selection
-            newSelection.id = null
-            await this.insertSelection({ file: this.currentFile, selection: newSelection })
-            // Fetch the selections settings (will be added to the selection as a settings object)
-            await this.fetchSelectionSettings(selection)
-            // Save selection settings to the new selection
-            newSelection.settings = selection.settings
-            // Upload the fetched users and teams to our new selection
-            if (selectionWithTeamsAndUsers.users.length > 0)
-                this.addUsersToSelection({
-                    selection: newSelection,
-                    users: selectionWithTeamsAndUsers.users,
-                    ignoreRole: false,
-                })
-            // Add denied users
-            this.addUsersToSelection({
-                selection: newSelection,
-                users: selectionWithTeamsAndUsers.denied_users.map(user => {
-                    user.role = 'Denied'
-                    return user
-                }),
-                ignoreRole: false,
-            })
-
-            if (selectionWithTeamsAndUsers.teams.length > 0)
-                this.addTeamsToSelection({ selection: newSelection, teams: selectionWithTeamsAndUsers.teams })
-
-            // Loop through the selections children and repeat
-            for (const childSelection of selection.children) {
-                // Set the parent id
-                childSelection.parent_id = newSelection.id
-                await this.cloneSelectionTree(childSelection)
-            }
-        },
-        syncSelectionTreeSettings(selection) {
-            // Update the selections settings and loop through its tree and do the same
-            this.updateSelectionSettings({ selections: [selection] })
-            for (const childSelection of selection.children) {
-                this.syncSelectionTreeSettings(childSelection)
-            }
         },
         onSendSelectionLink(selection) {
             let selectionsToPost = [selection]
@@ -1874,18 +994,6 @@ export default {
     }
     > *:not(:last-child) {
         margin-bottom: 24px;
-    }
-}
-.context-menu.context-options {
-    .item-wrapper {
-        display: block;
-    }
-    .footer {
-        display: flex;
-        justify-content: flex-end;
-        .input-field {
-            max-width: 208px;
-        }
     }
 }
 </style>
