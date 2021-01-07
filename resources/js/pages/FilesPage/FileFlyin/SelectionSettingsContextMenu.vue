@@ -650,7 +650,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'selectionSettingsContextMenu',
     props: ['selection', 'settingsSelections'],
@@ -724,6 +724,11 @@ export default {
                 },
             ],
         }
+    },
+    computed: {
+        ...mapGetters('selections', {
+            allSelections: 'getSelections',
+        }),
     },
     methods: {
         ...mapActions('selections', ['fetchSelectionSettings', 'updateSelectionSettings']),
