@@ -39,7 +39,7 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
-        ...mapActions('selections', ['fetchSelections']),
+        ...mapActions('selections', ['fetchSelections', 'createSelectionTree']),
         ...mapActions('videoPresentation', ['fetchFileVideo']),
         ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
@@ -49,7 +49,8 @@ export default {
             const fileId = this.$route.params.fileId
             this.fetchFile(fileId)
             this.fetchProducts({ fileId })
-            this.fetchSelections({ fileId })
+            const selections = await this.fetchSelections({ fileId })
+            await this.createSelectionTree(selections)
 
             this.SET_CURRENT_VIDEO(null)
 

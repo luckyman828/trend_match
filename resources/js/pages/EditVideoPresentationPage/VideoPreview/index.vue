@@ -130,6 +130,9 @@ export default {
             opacity: 1;
         }
     }
+    .form-element {
+        width: 100%;
+    }
 }
 .url-input {
     background: white;

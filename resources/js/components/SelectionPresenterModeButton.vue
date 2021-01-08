@@ -137,7 +137,6 @@ export default {
                 }
 
                 if (await this.$refs.confirmStart.confirm()) {
-                    console.log('show dialog pls')
                     this.startPresentation({ selections: this.selectionsToPresent })
                 }
             } else {

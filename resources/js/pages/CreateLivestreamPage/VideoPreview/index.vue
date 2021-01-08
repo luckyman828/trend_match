@@ -30,8 +30,44 @@
                         type="radio"
                         placeholder="Choose selection to present from"
                         v-model="selectionToPresentFrom"
+                        @input="onNewSelectionToPresentFrom"
                     >
                     </BaseDropdownInputField>
+                </div>
+
+                <div class="form-element available-selection-list" v-if="selectionToPresentFrom">
+                    <h4>Choose selections to present for:</h4>
+                    <div class="selections-to-present">
+                        <BaseSelectButton
+                            v-for="theSelection in availableSelections"
+                            :key="theSelection.id"
+                            :modelValue="theSelection"
+                            v-model="selectionsToPresent"
+                            :disabled="
+                                theSelection.id == selectionToPresentFrom.id ||
+                                    ((theSelection.type == 'Chapter' || !!theSelection.parent_chapter) &&
+                                        selectionsToPresent.find(
+                                            x =>
+                                                (x.type == 'Chapter' || !!x.parent_chapter) &&
+                                                x.product_set_identifier != theSelection.product_set_identifier
+                                        ))
+                            "
+                            :disabledTooltip="
+                                theSelection.id == selectionToPresentFrom.id
+                                    ? `You can't de-select the presentation you present from`
+                                    : 'Selection belongs to different chapter.'
+                            "
+                        >
+                            <i
+                                class="far fa-presentation primary"
+                                v-if="theSelection.is_presenting"
+                                v-tooltip="'In presentation'"
+                            ></i>
+                            <SelectionChapterPill class="chapter-pill" :selection="theSelection" />
+                            <SelectionIcon class="selection-icon" :selection="theSelection" />
+                            <span>{{ theSelection.name }}</span>
+                        </BaseSelectButton>
+                    </div>
                 </div>
 
                 <button
@@ -87,14 +123,21 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
+import SelectionIcon from '../../../components/common/SelectionIcon'
+import SelectionChapterPill from '../../../components/common/SelectionChapterPill'
 
 export default {
     name: 'videoPreview',
+    components: {
+        SelectionIcon,
+        SelectionChapterPill,
+    },
     data: function() {
         return {
             videoUrl: '',
             editModeActive: true,
             selectionToPresentFrom: null,
+            selectionsToPresent: [],
         }
     },
     computed: {
@@ -117,7 +160,7 @@ export default {
             return this.provider && this.videoId
         },
         submitDisabled() {
-            return this.videoUrl.length < 5
+            return this.videoUrl.length < 5 || !this.selectionToPresentFrom
         },
     },
     methods: {
@@ -128,16 +171,37 @@ export default {
         async onSetVideoByURL() {
             if (await this.$refs.confirmGoLiveDialog.confirm()) {
                 // Start a presentation with all the selections of the file
-                await this.startPresentation({ selections: this.selections })
-                this.SET_CURRENT_SELECTIONS([this.selections[0]])
+                await this.startPresentation({ selections: this.selectionsToPresent })
+                this.SET_CURRENT_SELECTIONS([this.selectionToPresentFrom])
 
                 await this.setVideoByURL({ file: this.file, url: this.videoUrl })
                 this.editModeActive = false
             }
         },
-    },
-    created() {
-        console.log('created', this.selections, this.availableSelections)
+        onNewSelectionToPresentFrom(selection) {
+            // Reset the selections to present
+            this.selectionsToPresent = [selection]
+            // Preset the selection and its descendants
+            const hasChapters = this.availableSelections.find(x => x.type == 'Chapter')
+            if (!(hasChapters && selection.type == 'Master')) {
+                // Pre-select the selection and all descendants
+                this.presetSelectionAndDescendants(selection)
+            }
+        },
+        presetSelectionAndDescendants(selection) {
+            const existsInArray = this.selectionsToPresent.find(x => x.id == selection.id)
+            if (!existsInArray) {
+                // Find the selection in the available selections list
+                const selectionToPush = this.availableSelections.find(x => x.id == selection.id)
+                if (selectionToPush) {
+                    this.selectionsToPresent.push(selectionToPush)
+                }
+            }
+
+            selection.children.map(child => {
+                this.presetSelectionAndDescendants(child)
+            })
+        },
     },
 }
 </script>
@@ -163,6 +227,9 @@ export default {
         .player-overlay:hover & {
             opacity: 1;
         }
+    }
+    .form-element {
+        width: 100%;
     }
 }
 .url-input {
@@ -191,6 +258,19 @@ export default {
         color: $fontSoft;
         font-size: 12px;
         margin-bottom: -8px;
+    }
+    .available-selection-list {
+        h4 {
+            margin: 4px 0;
+        }
+    }
+    .selections-to-present {
+        background: $bg;
+        border-radius: $borderRadiusEl;
+        border: $borderEl;
+    }
+    .selection-icon {
+        margin-left: 8px;
     }
 }
 </style>
