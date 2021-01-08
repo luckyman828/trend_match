@@ -60,7 +60,7 @@
                         :value="selectedSelections.length > 0"
                         :modelValue="true"
                         @change="
-                            checked => (checked ? (selectedSelections = allSelections) : (selectedSelections = []))
+                            checked => (checked ? (selectedSelections = [...allSelections]) : (selectedSelections = []))
                         "
                     />
                 </BaseTableHeader>
@@ -575,7 +575,6 @@ export default {
         },
         async onGetSelectionLink(selectionId) {
             const link = await this.getSelectionLink(selectionId)
-            console.log('the link: ', link)
             this.copyToClipboard(link)
             this.SHOW_SNACKBAR({
                 msg: 'Link copied',
@@ -726,7 +725,6 @@ export default {
             moveContext.show(e)
         },
         async onNewSelection({ parent, type }) {
-            console.log('on new selection', parent, type)
             // First check that we don't already have an unsaved new selection
             if (this.getSelectionsTree.find(x => x.id == null)) return
             // Else instantiate a new master object in the table
@@ -776,9 +774,10 @@ export default {
             if (await this.$refs.deleteSelectionDialog.confirm()) {
                 // If we have a selection, delete all those selections
                 if (this.selectedSelections.length > 1) {
-                    for (let i = this.selectedSelections.length - 1; i >= 0; i--) {
-                        const selectionToDelete = this.selectedSelections[i]
-                        this.deleteSelection(selectionToDelete)
+                    for (const selectionToDelete of this.selectedSelections) {
+                        // Check that the selction still exists on the file
+                        if (!this.selections.find(x => x.id == selectionToDelete.id)) continue
+                        await this.deleteSelection(selectionToDelete)
                     }
                     // Reset the selected selections
                     this.selectedSelections = []
