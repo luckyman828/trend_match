@@ -87,6 +87,7 @@
                             :key="chunk.selection.id"
                         >
                             <div class="section-header">
+                                <SelectionChapterPill class="chapter-pill" :selection="chunk.selection" />
                                 <SelectionIcon :selection="chunk.selection" />
                                 <span>{{ chunk.selection.name }}</span>
                             </div>
@@ -111,6 +112,7 @@ import ActionDistributionBar from './ActionDistributionBar'
 import ActionListItem from './ActionListItem'
 import FeedbackListItem from './FeedbackListItem'
 import SelectionIcon from '../../../../components/common/SelectionIcon'
+import SelectionChapterPill from '../../../../components/common/SelectionChapterPill'
 
 export default {
     name: 'distibutionSection',
@@ -119,6 +121,7 @@ export default {
         ActionListItem,
         FeedbackListItem,
         SelectionIcon,
+        SelectionChapterPill,
     },
     props: ['selectionInput', 'product'],
     data: function() {
@@ -303,6 +306,10 @@ export default {
         padding: 6px 8px;
         align-items: center;
         display: flex;
+        .chapter-pill {
+            margin-right: 4px;
+            font-weight: 400;
+        }
         i {
             width: 20px;
             &.master {
