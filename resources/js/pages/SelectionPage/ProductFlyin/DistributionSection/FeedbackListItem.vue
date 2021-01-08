@@ -1,8 +1,19 @@
 <template>
-    <div class="feedback-list-item" :class="{ 'is-self': isSelf }">
+    <div
+        class="feedback-list-item"
+        :class="{ 'is-self': isSelf }"
+        v-tooltip="{
+            content: `<strong>${action.user ? action.user.name : 'Anonymous'}</strong>${
+                action.user ? '<br>' + action.user.email : ''
+            }`,
+            delay: { show: 500 },
+        }"
+    >
         <div class="user-name">
             <i class="fas fa-user"></i>
-            <span>{{ isSelf ? 'You' : action.user ? action.user.name : 'Anonymous' }}</span>
+            <span>{{
+                isSelf ? 'You' : action.user ? (action.user.name ? action.user.name : action.user.email) : 'Anonymous'
+            }}</span>
         </div>
         <span class="action" v-if="!showQty || ['None', 'Out'].includes(action.action)">{{ action.action }}</span>
         <div class="quantity pill ghost xs" v-else>
@@ -37,6 +48,9 @@ export default {
 .feedback-list-item {
     display: flex;
     align-items: center;
+    &:hover {
+        background: $bgModuleHover;
+    }
     .user-name {
         font-size: 12px;
         font-weight: 500;
