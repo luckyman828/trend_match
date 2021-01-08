@@ -205,6 +205,7 @@ export default {
             'selectionsStatus',
             'getSelections',
             'getSelectionsAvailableForInputFiltering',
+            'getSelectionChapter',
         ]),
         ...mapGetters('products', [
             'productsFiltered',
@@ -343,37 +344,49 @@ export default {
             // START PUSH UNIQUE INPUT HEADERS
             if (this.exportAlignment || this.exportRequests) {
                 uniqueAlignmentOrigins.map(origin => {
+                    const chapter = this.getSelectionChapter(origin.selection)
+                    const chapterName = chapter ? `[${chapter.name}] ` : ''
                     if (this.exportAlignment) {
-                        headers.push(`${origin.selection.name} (Alignment)`)
+                        headers.push(`${chapterName}${origin.selection.name} (Alignment)`)
                         if (this.exportQuantity) {
-                            headers.push(`${origin.selection.name} (QTY)`)
-                            headers.push(`${origin.selection.name} (Spend)`)
+                            headers.push(`${chapterName}${origin.selection.name} (QTY)`)
+                            headers.push(`${chapterName}${origin.selection.name} (Spend)`)
                         }
                     }
                     if (this.exportRequests) {
-                        headers.push(`${origin.selection.name} (Request)`)
+                        headers.push(`${chapterName}${origin.selection.name} (Request)`)
                     }
                 })
             }
 
             if (this.exportFeedback || this.exportComments) {
                 uniqueFeedbackOrigins.map(origin => {
+                    const chapter = this.getSelectionChapter(origin.selection)
+                    const chapterName = chapter ? `[${chapter.name}] ` : ''
                     if (this.exportFeedback) {
                         headers.push(
-                            `${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Feedback)`
+                            `${chapterName}${origin.selection.name} - ${
+                                origin.user ? origin.user.name : 'Anonymous'
+                            } (Feedback)`
                         )
                         if (this.exportQuantity) {
                             headers.push(
-                                `${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (QTY)`
+                                `${chapterName}${origin.selection.name} - ${
+                                    origin.author ? origin.author.name : 'Anonymous'
+                                } (QTY)`
                             )
                             headers.push(
-                                `${origin.selection.name} - ${origin.author ? origin.author.name : 'Anonymous'} (Spend)`
+                                `${chapterName}${origin.selection.name} - ${
+                                    origin.author ? origin.author.name : 'Anonymous'
+                                } (Spend)`
                             )
                         }
                     }
                     if (this.exportComments) {
                         headers.push(
-                            `${origin.selection.name} - ${origin.user ? origin.user.name : 'Anonymous'} (Comment)`
+                            `${chapterName}${origin.selection.name} - ${
+                                origin.user ? origin.user.name : 'Anonymous'
+                            } (Comment)`
                         )
                     }
                 })

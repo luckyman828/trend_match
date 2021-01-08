@@ -37,6 +37,7 @@
                 "
                 :style="selectionWidth"
             >
+                <SelectionChapterPill v-if="displayChapter" :selection="selection" />
                 <SelectionIcon :selection="selection" />
                 <BaseEditInputWrapper
                     activateOnMount="true"
@@ -221,6 +222,7 @@ import { mapGetters, mapActions } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import SelectionIcon from '../../../components/common/SelectionIcon'
+import SelectionChapterPill from '../../../components/common/SelectionChapterPill'
 
 export default {
     name: 'selectionsTableRow',
@@ -228,6 +230,7 @@ export default {
         selectionsTableRow: SelectionsTableRow,
         SelectionPresenterModeButton,
         SelectionIcon,
+        SelectionChapterPill,
     },
     props: [
         'selection',
@@ -248,6 +251,9 @@ export default {
     },
     computed: {
         ...mapGetters('selections', ['getAuthUserHasSelectionEditAccess', 'getSelectionPresentationGroups']),
+        ...mapGetters('selections', {
+            allSelections: 'getSelections',
+        }),
         ...mapGetters('auth', ['authUser']),
         localSelectedSelections: {
             get() {
@@ -275,6 +281,11 @@ export default {
         },
         isHidden() {
             return !this.userHasEditAccess && !this.selection.is_visible
+        },
+        displayChapter() {
+            return (
+                this.selection.parent_chapter && !this.allSelections.find(x => x.id == this.selection.parent_chapter.id)
+            )
         },
         selectionDepth() {
             // If the selection is not visible to the user, then set the depth equal to the previous depth

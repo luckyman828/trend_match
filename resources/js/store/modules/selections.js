@@ -64,6 +64,24 @@ export default {
         getDisplayUnreadBullets: (state, getters) => {
             return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
+        getSelectionChapter: state => selection => {
+            if (!selection) return
+            if (selection.type == 'Chapter') return selection
+            if (selection.parent_chapter) return selection.parent_chapter
+
+            // If we are out of easy options.
+            if (!state.selections) return
+            const stateSelection = state.selections.find(
+                stateSelection =>
+                    stateSelection.id == selection.id ||
+                    stateSelection.parent_id == selection.id ||
+                    stateSelection.id == selection.parent_id
+            )
+            if (stateSelection) {
+                if (stateSelection.type == 'Chapter') return stateSelection
+                if (stateSelection.parent_chapter) return stateSelection.parent_chapter
+            }
+        },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
         getSelections: state => state.selections,
