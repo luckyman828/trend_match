@@ -17,7 +17,7 @@ export default {
             getSelectionChapter: 'getSelectionChapter',
         }),
         chapter() {
-            this.getSelectionChapter(this.selection)
+            return this.getSelectionChapter(this.selection)
         },
     },
 }
