@@ -18,13 +18,14 @@
                 <div class="form-element">
                     <label
                         >Selection to present from
-                        <i
+                        <!-- <i
                             class="far fa-info-circle"
                             v-tooltip="
                                 'You will be able to see the feedback and comments that are visible to this selection'
                             "
                         ></i
-                    ></label>
+                        > -->
+                    </label>
                     <BaseDropdownInputField
                         :options="availableSelections"
                         type="radio"
