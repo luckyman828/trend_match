@@ -110,7 +110,13 @@
                         >
                             <div style="overflow: hidden; white-space: nowrap; max-width: 80px; min-width: 80px;">
                                 <td style="font-size: 10px;">
-                                    <span style="font-size: 10px;">{{ action.selection.name | truncate(16) }}</span>
+                                    <span style="font-size: 10px;">{{
+                                        `${
+                                            getSelectionChapter(action.selection)
+                                                ? `[${getSelectionChapter(action.selection).name}] `
+                                                : ''
+                                        }${action.selection.name}` | truncate(16)
+                                    }}</span>
                                 </td>
                             </div>
                             <div
@@ -176,7 +182,12 @@
                                 <td style="font-size: 10px;">
                                     <span style="font-size: 10px;"
                                         >{{ feedback.user ? feedback.user.name : 'Anonymous' | truncate(12) }} ({{
-                                            feedback.selection.name | truncate(10)
+                                            `
+                                        ${
+                                            getSelectionChapter(feedback.selection)
+                                                ? `[${getSelectionChapter(feedback.selection).name}] `
+                                                : ''
+                                        }(${feedback.selection.name})` | truncate(16)
                                         }})</span
                                     >
                                 </td>
@@ -229,6 +240,7 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['getActiveSelectionInput']),
+        ...mapGetters('selections', ['getSelectionChapter']),
         prettyDates() {
             return this.product.delivery_dates.map(date => this.getPrettyDate(date, 'short'))
         },
