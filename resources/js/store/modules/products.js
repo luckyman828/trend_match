@@ -12,6 +12,7 @@ export default {
         availableProducts: [],
         selectedCategories: [],
         selectedDeliveryDates: [],
+        selectedBrands: [],
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
         selectedProducts: [],
@@ -89,6 +90,7 @@ export default {
         selectedCategories: state => state.selectedCategories,
         selectedDeliveryDates: state => state.selectedDeliveryDates,
         selectedBuyerGroups: state => state.selectedBuyerGroups,
+        selectedBrands: state => state.selectedBrands,
         getSelectedSelectionIds: state => state.selectedSelectionIds,
         getHasAdvancedFilter: state => !!state.advancedFilter && state.advancedFilter.length > 0,
         getSelectedTicketLabels: state => state.selectedTicketLabels,
@@ -128,6 +130,18 @@ export default {
                 })
             })
             return uniqueDeliveryDates.sort()
+        },
+        availableBrands(state, getters) {
+            const products = getters.products
+            let unique = []
+            products.forEach(product => {
+                if (product.brand) {
+                    const theBrand = product.brand.toLowerCase()
+                    const found = unique.includes(theBrand)
+                    if (!found) unique.push(theBrand)
+                }
+            })
+            return unique
         },
         availableBuyerGroups(state, getters) {
             const products = getters.products
@@ -173,6 +187,7 @@ export default {
             const categories = getters.selectedCategories
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
+            const brands = getters.selectedBrands
             const ticketLabels = getters.getSelectedTicketLabels
             const unreadOnly = getters.unreadOnly
             const openTicketsOnly = getters.openTicketsOnly
@@ -196,6 +211,13 @@ export default {
                     return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
                 })
                 productsToReturn = filteredByDeliveryDate
+            }
+            // Filter by brand
+            if (brands.length > 0) {
+                const filteredByBrands = productsToReturn.filter(product => {
+                    return product.brand && Array.from(brands).includes(product.brand.toLowerCase())
+                })
+                productsToReturn = filteredByBrands
             }
             // Filter by buyer group
             if (buyerGroups.length > 0) {
@@ -2121,6 +2143,9 @@ export default {
         },
         SET_NO_IMAGES_ONLY(state, boolean) {
             state.noImagesOnly = boolean
+        },
+        SET_SELECTED_BRANDS(state, brands) {
+            state.selectedBrands = brands
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index

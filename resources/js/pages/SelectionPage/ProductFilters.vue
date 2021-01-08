@@ -57,6 +57,25 @@
             </div>
 
             <div class="item-group">
+                <v-popover trigger="click" :disabled="availableBrands.length <= 0" placement="right">
+                    <BaseContextMenuItem
+                        iconClass="far fa-building"
+                        :disabled="availableBrands.length <= 0"
+                        disabledTooltip="No brands available"
+                        @click="showAdvancedFilters = false"
+                    >
+                        <span>Brand</span>
+                        <span v-if="selectedBrands.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ selectedBrands.length }}</span>
+                        </span>
+                    </BaseContextMenuItem>
+                    <template slot="popover">
+                        <BaseSelectButtons submitOnChange="true" :options="availableBrands" v-model="selectedBrands" />
+                    </template>
+                </v-popover>
+            </div>
+
+            <div class="item-group">
                 <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-box"
@@ -80,29 +99,6 @@
             </div>
 
             <CustomProductDataFilter v-for="field in customFields" :key="field" :field="field" />
-
-            <!-- <div class="item-group" v-for="(field, index) in customFields" :key="index">
-                <v-popover trigger="click" :disabled="availableCustomFieldValues[index].length <= 0" placement="right">
-                    <BaseContextMenuItem
-                        iconClass="far fa-box"
-                        :disabled="availableCustomFieldValues[index].length <= 0"
-                        disabledTooltip="No buyer groups available"
-                        @click="showAdvancedFilters = false"
-                    >
-                        <span>{{ field }}</span>
-                        <span v-if="selectedCustomFieldValues[0].length > 0" class="filter-counter circle primary xs">
-                            <span>{{ selectedCustomFieldValues[0].length }}</span>
-                        </span>
-                    </BaseContextMenuItem>
-                    <template slot="popover">
-                        <BaseSelectButtons
-                            submitOnChange="true"
-                            :options="availableCustomFieldValues[index]"
-                            v-model="selectedCustomFieldValues[0]"
-                        />
-                    </template>
-                </v-popover>
-            </div> -->
 
             <div class="item-group" v-if="$route.name == 'selection'">
                 <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
@@ -211,6 +207,7 @@ export default {
             'availableCategories',
             'availableDeliveryDates',
             'availableBuyerGroups',
+            'availableBrands',
             'getHasAdvancedFilter',
             'getAdvancedFilter',
             'getSelectedTicketLabels',
@@ -238,6 +235,14 @@ export default {
             },
             set(value) {
                 this.updateSelectedBuyerGroups(value)
+            },
+        },
+        selectedBrands: {
+            get() {
+                return this.$store.getters['products/selectedBrands']
+            },
+            set(value) {
+                this.SET_SELECTED_BRANDS(value)
             },
         },
         selectedTicketLabels: {
@@ -277,12 +282,14 @@ export default {
             'updateSelectedDeliveryDates',
             'updateSelectedBuyerGroups',
             'SET_SELECTED_TICKET_LABELS',
+            'SET_SELECTED_BRANDS',
             'SET_ADVANCED_FILTER',
             'RESET_CUSTOM_FILTERS',
         ]),
         resetFilters() {
             this.selectedCategories = []
             this.selectedDeliveryDates = []
+            this.selectedBrands = []
             this.selectedBuyerGroups = []
             this.SET_SELECTED_TICKET_LABELS([])
             this.advancedFilterKey++
