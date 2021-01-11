@@ -28,6 +28,11 @@ export default {
             sidebarProduct: 'getSidebarProduct',
         }),
     },
+    watch: {
+        product(newProduct, oldProduct) {
+            if (!oldProduct || newProduct.id != oldProduct.id) this.SET_SIDEBAR_PRODUCT(newProduct)
+        },
+    },
     methods: {
         ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
