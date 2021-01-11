@@ -123,6 +123,20 @@ export default {
     .timing-list {
         transition: 0.1s ease-out;
     }
+    @include mobile {
+        bottom: 8px;
+        .paused & {
+            bottom: 12px;
+            .rail {
+                height: 12px;
+            }
+            .knob {
+                top: -6px;
+                height: 24px;
+                width: 24px;
+            }
+        }
+    }
 }
 .timeline-wrapper {
     width: 100%;

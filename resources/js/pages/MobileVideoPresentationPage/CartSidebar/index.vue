@@ -6,7 +6,7 @@
         <div class="cart-sidebar" :class="[{ show: show }, { 'player-paused': !isPlaying }]">
             <div class="background"></div>
             <div class="body">
-                <button class="trigger primary" @click="$emit('close')">
+                <button class="close primary" @click="$emit('close')">
                     <span>Close</span>
                 </button>
                 <div class="main">
@@ -112,6 +112,12 @@ export default {
     display: flex;
     flex-direction: column;
     pointer-events: none;
+    .trigger {
+        position: fixed;
+        right: 16px;
+        top: 16px;
+        pointer-events: all;
+    }
     .background {
         height: calc(100%);
         width: 100%;

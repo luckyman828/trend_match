@@ -1726,6 +1726,11 @@ img {
         display: none !important;
     }
 }
+.show-mobile {
+    @media (min-width: #{$tablet-width} + 1) {
+        display: none !important;
+    }
+}
 // MAKE INPUT PRETTY
 input[type='search']::-webkit-search-decoration,
 input[type='search']::-webkit-search-cancel-button,

@@ -1,5 +1,5 @@
 <template>
-    <div class="player-wrapper" :class="{ 'drag-active': isDragging }">
+    <div class="player-wrapper" :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]">
         <vimeo-player
             v-if="provider == 'vimeo'"
             ref="player"
@@ -42,9 +42,14 @@
         />
         <!-- </div> -->
 
-        <PlayerOverlay :playerReady="playerReady" :hideTimeline="hideTimeline">
+        <div class="click-to-pause" @click="togglePlaying" />
+        <div class="player-overlay">
             <slot />
-        </PlayerOverlay>
+        </div>
+
+        <!-- <PlayerOverlay :playerReady="playerReady" :hideTimeline="hideTimeline">
+            <slot />
+        </PlayerOverlay> -->
     </div>
 </template>
 
@@ -76,6 +81,7 @@ export default {
             isDragging: 'getTimelineKnobIsBeingDragged',
             isLive: 'getIsLive',
             currentTiming: 'getCurrentTiming',
+            desiredStatus: 'getDesiredStatus',
         }),
         isVimeoPrivateLink() {
             const url = this.providerVideoId
@@ -245,8 +251,34 @@ export default {
             }
         }
     }
+    .click-to-pause {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+    }
+    &.desired-paused {
+        .player-overlay {
+            background: rgba(0, 0, 0, 0.5);
+        }
+    }
     &.drag-active {
         cursor: grabbing;
+    }
+}
+.player-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    pointer-events: none;
+    transition: background $videoPauseTransition;
+    > * {
+        pointer-events: all;
     }
 }
 </style>

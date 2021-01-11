@@ -26,7 +26,7 @@ export default {
     width: 80px;
     position: absolute;
     right: 12px;
-    bottom: 80px;
+    bottom: 120px;
     background: white;
     border-radius: $borderRadiusEl;
     box-shadow: $shadowEl;
