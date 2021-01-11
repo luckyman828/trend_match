@@ -56,5 +56,8 @@ export default {
         SET_NEXT_CURSOR(state, nextCursor) {
             state.nextCursor = nextCursor
         },
+        SET_VIDEO_COMMENTS(state, comments) {
+            state.comments = comments
+        },
     },
 }

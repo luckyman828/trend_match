@@ -136,6 +136,7 @@ export default {
                 .then(response => {
                     Object.assign(newVideo, response.data)
                     commit('SET_CURRENT_VIDEO', newVideo)
+                    commit('videoComments/SET_VIDEO_COMMENTS', [], { root: true })
                 })
                 .catch(err => {
                     commit('SET_STATUS', 'error')
