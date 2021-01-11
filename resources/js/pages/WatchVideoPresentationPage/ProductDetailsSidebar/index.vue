@@ -16,9 +16,7 @@ export default {
         ProductDetailsSidebar,
     },
     data: function() {
-        return {
-            showFlyin: false,
-        }
+        return {}
     },
     computed: {
         ...mapGetters('videoPlayer', {
@@ -29,8 +27,9 @@ export default {
         }),
     },
     watch: {
-        product(newProduct, oldProduct) {
-            if (!oldProduct || newProduct.id != oldProduct.id) this.SET_SIDEBAR_PRODUCT(newProduct)
+        product(newVal, oldVal) {
+            if (!newVal) return
+            if (!!this.sidebarProduct && this.sidebarProduct.id != newVal.id) this.SET_SIDEBAR_PRODUCT(newVal)
         },
     },
     methods: {

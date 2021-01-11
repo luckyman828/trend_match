@@ -187,13 +187,6 @@ export default {
             this.ADD_TIMING({ timing: newTiming, index: null })
         },
         async presentationChangeHandler(eventName, args) {
-            console.log(
-                'presentation changed',
-                eventName,
-                args,
-                this.selection.id,
-                args.selection_ids.includes(this.selection.id)
-            )
             // Filter out selection not the current
             if (!args.selection_ids.includes(this.selection.id)) return
             if (eventName == 'ProductChanged' && this.isLive) {

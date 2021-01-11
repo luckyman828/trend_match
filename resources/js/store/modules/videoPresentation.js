@@ -334,7 +334,6 @@ export default {
             if (index != null) {
                 state.currentVideo.timings.splice(index, 0, timing)
             } else {
-                console.log('push timing', timing)
                 state.currentVideo.timings.push(timing)
             }
         },
