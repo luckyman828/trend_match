@@ -1,5 +1,13 @@
 <template>
-    <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }, playerStatus]">
+    <div
+        class="video-presentation-page"
+        :class="[
+            { started: playerStarted },
+            { playing: isPlaying },
+            playerStatus,
+            { 'recently-started': recentlyStarted },
+        ]"
+    >
         <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
             <BeforeStartScreen v-if="!playerStarted" :video="video" @start="onStartPlaying" />
 
@@ -83,6 +91,7 @@ export default {
             showProductDrawer: false,
             showCart: false,
             playerStartedTester: null,
+            recentlyStarted: false,
         }
     },
     computed: {
@@ -138,6 +147,12 @@ export default {
                     clearInterval(this.playerStartedTester)
                 }
             }, interval)
+
+            // Add a class to the player to tell that it has recently been started
+            this.recentlyStarted = true
+            setTimeout(() => {
+                this.recentlyStarted = false
+            }, 4000)
         },
         async onNewProduct(productId) {
             // Find the new start
@@ -209,57 +224,63 @@ export default {
     height: 100%;
     overscroll-behavior: none;
     z-index: 2147483646;
-}
-.player-controls {
-    z-index: 999;
-    bottom: 50%;
-    height: 120px;
-}
-
-.bottom-items {
-    position: absolute;
-    bottom: 8px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    left: 0;
-    padding: 12px;
-    background: linear-gradient(0deg, black, transparent);
-    pointer-events: all;
-}
-.watch-overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 2;
-    overflow: hidden;
-    pointer-events: none;
-
-    .actions-wrapper {
-        pointer-events: auto;
-        position: absolute;
-        top: 0;
+    .timeline {
+        position: fixed;
+        bottom: 6px;
         left: 0;
         width: 100%;
-        margin: auto;
-        display: flex;
-        justify-content: center;
-        z-index: 1;
-        .actions {
-            pointer-events: all;
-            transition: transform 0.1s ease-out;
-            transform: translateY(-100%);
-            padding: 32px 0 16px;
-        }
-        &:hover,
-        &.show {
-            .actions {
-                transform: none;
-            }
-        }
     }
 }
+// .player-controls {
+//     z-index: 999;
+//     bottom: 50%;
+//     height: 120px;
+// }
+
+// .bottom-items {
+//     position: absolute;
+//     bottom: 8px;
+//     width: 100%;
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: flex-end;
+//     left: 0;
+//     padding: 12px;
+//     background: linear-gradient(0deg, black, transparent);
+//     pointer-events: all;
+// }
+// .watch-overlay {
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//     height: 100%;
+//     width: 100%;
+//     z-index: 2;
+//     overflow: hidden;
+//     pointer-events: none;
+
+//     .actions-wrapper {
+//         pointer-events: auto;
+//         position: absolute;
+//         top: 0;
+//         left: 0;
+//         width: 100%;
+//         margin: auto;
+//         display: flex;
+//         justify-content: center;
+//         z-index: 1;
+//         .actions {
+//             pointer-events: all;
+//             transition: transform 0.1s ease-out;
+//             transform: translateY(-100%);
+//             padding: 32px 0 16px;
+//         }
+//         &:hover,
+//         &.show {
+//             .actions {
+//                 transform: none;
+//             }
+//         }
+//     }
+// }
 </style>

@@ -56,7 +56,8 @@ export default {
         z-index: -1;
         pointer-events: none;
     }
-    .desired-paused &::before {
+    .desired-paused &::before,
+    .recently-started &::before {
         animation: none;
         opacity: 1;
     }
@@ -66,7 +67,8 @@ export default {
     transition: transform $videoPauseTransition, opacity $videoPauseTransition;
     transform: translateX(-40px);
     opacity: 0;
-    .desired-paused & {
+    .desired-paused &,
+    .recently-started & {
         transform: none;
         opacity: 1;
     }
