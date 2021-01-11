@@ -35,6 +35,9 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
+import Vue2TouchEvents from 'vue2-touch-events'
+Vue.use(Vue2TouchEvents)
+
 import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
 import clickOutsideDirective from './directives/clickOutsideDirective'

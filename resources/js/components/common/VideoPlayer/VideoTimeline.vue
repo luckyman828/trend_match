@@ -1,8 +1,16 @@
 <template>
-    <div class="timeline">
-        <div class="timeline-wrapper" @click="onClickToTimestamp" :class="{ 'drag-active': isDragging }">
+    <div class="timeline" :class="{ 'drag-active': isDragging }">
+        <div class="timeline-wrapper" @click="onClickToTimestamp">
             <div class="rail" :style="railStyle">
-                <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div>
+                <div
+                    class="knob"
+                    @mousedown="onDragStart"
+                    v-touch:moved="onDragStart"
+                    v-touch:moving="onTouchDragMove"
+                    v-touch:end="onDragEnd"
+                    v-touch.prevent
+                ></div>
+                <!-- <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div> -->
             </div>
         </div>
         <TimelineItemList v-if="timings && productsReady" :timings="timings" class="timing-list" />
@@ -40,17 +48,19 @@ export default {
             productsStatus: 'productsStatus',
         }),
         watchedPercentage() {
+            console.log('get watched percentage', this.isDragging)
             const timeToUse = this.isDragging ? this.dragTime : this.timestamp
             const percentage = (timeToUse / this.duration) * 100
             const rounded = Math.round(percentage * 1e2) / 1e2
             return rounded
         },
-        knobStyle() {
-            const playerRect = this.playerIframe.getBoundingClientRect()
-            return `transform: translateX(calc(${(playerRect.width / 100) * this.watchedPercentage}px - ${14 *
-                (this.watchedPercentage / 100)}px));`
-        },
+        // knobStyle() {
+        //     const playerRect = this.playerIframe.getBoundingClientRect()
+        //     return `transform: translateX(calc(${(playerRect.width / 100) * this.watchedPercentage}px - ${14 *
+        //         (this.watchedPercentage / 100)}px));`
+        // },
         railStyle() {
+            if (!this.playerIframe) return
             const playerRect = this.playerIframe.getBoundingClientRect()
             return `width: calc(${(playerRect.width / 100) * this.watchedPercentage}px + 0px);`
         },
@@ -61,6 +71,9 @@ export default {
     methods: {
         ...mapActions('videoPlayer', ['seekTo']),
         ...mapMutations('videoPlayer', ['SET_IS_DRAGGING']),
+        onTouchMoved() {
+            alert('tap moved')
+        },
         addDragListeners() {
             document.addEventListener('mouseup', this.onDragEnd)
             document.body.addEventListener('mouseleave', this.onDragEnd)
@@ -77,6 +90,7 @@ export default {
             this.dragTime = null
         },
         onDragStart(e) {
+            // alert('drag start')
             // Remove any previous drag listener - just in case
             this.removeDragListeners()
             this.SET_IS_DRAGGING(true)
@@ -86,6 +100,9 @@ export default {
         },
         onDragMove(e) {
             this.getDragTime(e)
+        },
+        onTouchDragMove(e) {
+            this.getDragTime(e.touches[0])
         },
         onDragEnd() {
             this.seekTo(this.dragTime)
@@ -125,15 +142,15 @@ export default {
     }
     @include mobile {
         bottom: 8px;
-        .paused & {
+        transition: bottom $videoPauseTransition;
+        .paused &,
+        &.drag-active {
             bottom: 12px;
             .rail {
-                height: 12px;
+                height: 8px;
             }
             .knob {
-                top: -6px;
-                height: 24px;
-                width: 24px;
+                transform: translate(50%, -50%) scale(3);
             }
         }
     }
@@ -144,7 +161,8 @@ export default {
     cursor: pointer;
     position: relative;
     z-index: 3;
-    &.drag-active {
+    border-radius: 50px;
+    .drag-active & {
         .rail,
         .knob {
             transition: none;
@@ -165,15 +183,20 @@ export default {
             }
         }
     }
+    @include mobile {
+        background: rgba(white, 25%);
+    }
     .rail {
         cursor: pointer;
         height: $heightVideoTimeline;
         position: relative;
         margin-right: 14px;
         background: $primary;
-        transition: width 0.05s, height 0.1s;
+        transition: width 0.05s, height $videoPauseTransition;
+        border-radius: 50px;
         @include mobile {
             height: 4px;
+            background: white;
         }
     }
     .knob {
@@ -184,9 +207,10 @@ export default {
         border-radius: 50px;
         background: white;
         position: absolute;
-        top: -3px;
-        left: 0;
-        transition: transform 0.05s;
+        top: 50%;
+        right: 0;
+        transition: transform $videoPauseTransition;
+        transform: translate(50%, -50%);
         // Make not draggable
         user-drag: none;
         user-select: none;
@@ -197,7 +221,7 @@ export default {
         @include mobile {
             height: 8px;
             width: 8px;
-            top: -2px;
+            background: $primary;
         }
     }
 }

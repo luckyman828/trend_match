@@ -226,9 +226,9 @@ export default {
     z-index: 2147483646;
     .timeline {
         position: fixed;
-        bottom: 6px;
-        left: 0;
-        width: 100%;
+        // bottom: 6px;
+        left: 8px;
+        width: calc(100% - 2 * 8px);
     }
 }
 // .player-controls {

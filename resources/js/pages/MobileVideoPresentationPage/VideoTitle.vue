@@ -49,7 +49,8 @@ export default {
         left: 0;
         width: 100%;
         height: 100px;
-        animation: fadeout 0.2s ease-out forwards;
+        // animation: fadeout 0.2s ease-out forwards;
+        animation: fadeout 0.4s ease-out forwards;
         animation-delay: 0.1s;
         background: linear-gradient(180deg, $dark100 40%, transparent);
         // opacity: 0;
