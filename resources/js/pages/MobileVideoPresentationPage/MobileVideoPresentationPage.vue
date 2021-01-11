@@ -15,6 +15,7 @@
 
             <template v-if="playerStarted">
                 <VideoTimeline />
+                <ProductActions />
             </template>
             <!-- <div class="watch-overlay">
                 <div class="top-items flex-list md">
@@ -65,7 +66,7 @@ import VideoTimeline from '../../components/common/VideoPlayer/VideoTimeline'
 import PlayerControls from '../WatchVideoPresentationPage/PlayerControls'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
-import ProductActionSelector from './ProductActionSelector'
+import ProductActions from './ProductActions'
 import CartSidebar from './CartSidebar/'
 import VideoTitle from './VideoTitle'
 import BeforeStartScreen from './BeforeStartScreen'
@@ -78,7 +79,7 @@ export default {
         VideoTimeline,
         ProductDetailsDrawer,
         ProductPreview,
-        ProductActionSelector,
+        ProductActions,
         PlayerControls,
         CartSidebar,
         BeforeStartScreen,
@@ -209,7 +210,6 @@ export default {
             this.disconnectLiveUpdates()
         }
         if (this.playerStartedTester) clearInterval(this.playerStartedTester)
-        document.body.classList.remove('fit-height')
     },
 }
 </script>
@@ -227,8 +227,8 @@ export default {
     .timeline {
         position: fixed;
         // bottom: 6px;
-        left: 8px;
-        width: calc(100% - 2 * 8px);
+        left: 16px;
+        width: calc(100% - 2 * 16px);
     }
 }
 // .player-controls {

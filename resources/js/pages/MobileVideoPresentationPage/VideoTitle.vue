@@ -52,7 +52,7 @@ export default {
         // animation: fadeout 0.2s ease-out forwards;
         animation: fadeout 0.4s ease-out forwards;
         animation-delay: 0.1s;
-        background: linear-gradient(180deg, $dark100 40%, transparent);
+        background: linear-gradient(180deg, black 40%, transparent);
         // opacity: 0;
         z-index: -1;
         pointer-events: none;

@@ -1,12 +1,12 @@
 <template>
     <BaseButton
-        :buttonClass="selectionInput[currentAction] != action ? 'white' : actionColor"
+        :buttonClass="[selectionInput[currentAction] != action ? 'white' : actionColor, buttonClass]"
         :disabled="!userWriteAccess.actions.hasAccess"
         v-tooltip="userWriteAccess.actions.msg"
         @click="onUpdateAction(action)"
     >
-        <i :class="actionIconClass"></i>
-        <span v-if="displayStyle != 'iconOnly'">{{ action }}</span>
+        <i :class="[actionIconClass, actionIconColor]"></i>
+        <span v-if="displayStyle != 'iconOnly' && displayStyle != 'coleredIcons'">{{ action }}</span>
     </BaseButton>
 </template>
 
@@ -14,7 +14,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'productActionButton',
-    props: ['action', 'product', 'displayStyle'],
+    props: ['action', 'product', 'displayStyle', 'buttonClass'],
     computed: {
         actionColor() {
             const action = this.action
@@ -24,9 +24,13 @@ export default {
         },
         actionIconClass() {
             const action = this.action
-            if (action == 'Out') return 'far fa-times-circle'
+            if (action == 'Out') return this.displayStyle == 'coleredIcons' ? 'fas fa-times' : 'far fa-times-circle'
             if (action == 'Focus') return 'far fa-star'
             if (action == 'In') return 'far fa-heart'
+        },
+        actionIconColor() {
+            if (!this.displayStyle == 'coloredIcons') return
+            return this.selectionInput[this.currentAction] == this.action ? 'white' : this.actionColor
         },
         ...mapGetters('products', ['getActiveSelectionInput']),
         ...mapGetters('selections', {

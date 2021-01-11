@@ -1,7 +1,7 @@
 <template>
-    <div class="product-action-selector" v-if="product">
+    <div class="product-actions" v-if="product">
         <div class="flex-list center-v md">
-            <button class="circle lg white out" @click="onSetAction('Out')">
+            <!-- <button class="circle lg white out" @click="onSetAction('Out')">
                 <i class="far fa-times red"></i>
             </button>
             <button class="circle white focus" @click="onSetAction('Focus')">
@@ -9,15 +9,22 @@
             </button>
             <button class="circle white lg in" @click="onSetAction('In')">
                 <i class="far fa-heart green"></i>
-            </button>
+            </button> -->
+            <ProductActionButton action="Out" :product="product" displayStyle="coleredIcons" buttonClass="circle lg" />
+            <ProductActionButton action="Focus" :product="product" displayStyle="coleredIcons" buttonClass="circle" />
+            <ProductActionButton action="In" :product="product" displayStyle="coleredIcons" buttonClass="circle lg" />
         </div>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import ProductActionButton from '../../components/common/ProductActionButton.vue'
 export default {
-    name: 'productActionSelector',
+    name: 'productActions',
+    components: {
+        ProductActionButton,
+    },
     data: function() {
         return {}
     },
@@ -37,10 +44,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.product-action-selector {
+@import '~@/_variables.scss';
+
+.product-actions {
     position: fixed;
     bottom: 28px;
-    transition: transform 0.1s ease-out;
+    transition: transform $videoPauseTransition;
     width: 100%;
     text-align: center;
     .paused & {
