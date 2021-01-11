@@ -1563,6 +1563,16 @@ input::placeholder {
             margin-bottom: 8px;
         }
     }
+    &.min {
+        > *:not(:last-child) {
+            margin-right: 0;
+        }
+    }
+    &.xs {
+        > *:not(:last-child) {
+            margin-right: 2px;
+        }
+    }
     &.sm {
         > *:not(:last-child) {
             margin-right: 4px;
@@ -1589,6 +1599,11 @@ input::placeholder {
         }
         > *:not(:last-child) {
             margin-right: 0;
+        }
+        &.min {
+            > *:not(:first-child) {
+                margin-top: 0;
+            }
         }
         &.xs {
             > *:not(:first-child) {

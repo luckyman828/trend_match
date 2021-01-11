@@ -16,6 +16,12 @@
             <template v-if="playerStarted">
                 <VideoTimeline />
                 <ProductActions />
+                <ProductPreview />
+                <ProductDetailsDrawer
+                    :show="!!sidebarProduct"
+                    :product="sidebarProduct"
+                    @close="SET_SIDEBAR_PRODUCT(null)"
+                />
             </template>
             <!-- <div class="watch-overlay">
                 <div class="top-items flex-list md">
@@ -52,7 +58,7 @@
                         </button>
                     </CartSidebar>
                     <ProductPreview @click.native="showProductDrawer = true" />
-                    <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
+                    
                 </template>
             </div> -->
         </VideoPlayer>
@@ -99,6 +105,7 @@ export default {
         ...mapGetters('videoPresentation', {
             videoTimings: 'getVideoTimings',
             video: 'getCurrentVideo',
+            sidebarProduct: 'getSidebarProduct',
         }),
         ...mapGetters('videoPlayer', {
             isPlaying: 'getIsPlaying',
@@ -136,7 +143,7 @@ export default {
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
-        ...mapMutations('videoPresentation', ['ADD_TIMING']),
+        ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_SIDEBAR_PRODUCT']),
         onStartPlaying() {
             this.togglePlaying()
             this.playerStarted = true

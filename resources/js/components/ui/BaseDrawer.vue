@@ -38,14 +38,20 @@ export default {
         background: white;
         transition: transform 0.1s ease-out;
         z-index: 2;
+        display: flex;
+        flex-direction: column;
         .header {
             padding: 20px 16px;
-            min-height: 80px;
+            // min-height: 80px;
         }
         &.pos-bottom {
             bottom: 0;
             border-radius: 16px 16px 0 0;
             transform: translateY(100%);
+            max-height: 72vh;
+            .body {
+                overflow-y: auto;
+            }
         }
     }
     &.show {

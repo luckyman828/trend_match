@@ -52,12 +52,18 @@ export default {
     transition: transform $videoPauseTransition;
     width: 100%;
     text-align: center;
+    z-index: 3;
     .paused & {
         transform: translateY(-24px);
     }
     .flex-list {
         pointer-events: all;
         display: inline-flex;
+    }
+    ::v-deep {
+        button {
+            border: $borderEl;
+        }
     }
 }
 </style>
