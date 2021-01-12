@@ -121,7 +121,8 @@ export function autoMapField(field, availableFiles, matchesToAvoid, mustInclude)
     availableFiles.forEach(fieldCollection => {
         const matches = fieldCollection.headers.filter(header =>
             field.headersToMatch.find(headerMatch => {
-                return header.toLowerCase().search(headerMatch) >= 0
+                const headerToMatch = typeof headerMatch == 'string' ? headerMatch.toLowerCase() : headerMatch
+                return header.toLowerCase().search(headerToMatch) >= 0
             })
         )
         allMatches.push({
@@ -493,7 +494,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             })
         }
     })
-    console.log('instantaited rpoducts', products)
     // Remove products with no ID
     return products.filter(x => !!x.datasource_id)
 }

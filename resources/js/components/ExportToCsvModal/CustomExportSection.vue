@@ -73,6 +73,7 @@
 
 <script>
 import Draggable from 'vuedraggable'
+import { mapGetters } from 'vuex'
 export default {
     name: 'customExportSection',
     components: {
@@ -95,15 +96,15 @@ export default {
                         { name: 'EAN_NO', key: 'variant.ean' },
                         { name: 'STYLE_NUMBER', key: 'datasource_id' },
                         { name: 'STYLE_NAME', key: 'title' },
-                        { name: 'COLLECTION_NAME', key: 'extra_data.Collection Name' },
+                        { name: 'COLLECTION_NAME', key: 'extra_data.COLLECTION_NAME' },
                         { name: 'CATEGORY', key: 'category' },
                         { name: 'STYLE_VARIANT_NAME', key: 'variant.variant' },
                         { name: 'COLOUR_NAME', key: 'variant.color' },
-                        { name: 'SAMPLE_LOCATION_NAME', key: 'extra_data.Sample Location Name' },
+                        { name: 'SAMPLE_LOCATION_NAME', key: 'extra_data.SAMPLE_LOCATION_NAME' },
                         { name: 'DESCRIPTION', key: 'sale_description' },
                         { name: 'BRAND_NAME', key: 'brand' },
-                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.Country of Origin' },
-                        { name: 'QUANTITY', key: 'extra_data.Quantity' },
+                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.COUNTRY_OF_ORIGIN' },
+                        { name: 'QUANTITY', key: 'extra_data.QUANTITY' },
                     ],
                 },
                 {
@@ -139,6 +140,9 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('workspaces', {
+            customFields: 'getCustomProductFields',
+        }),
         availableCsvHeaders() {
             const baseHeaders = [
                 { name: 'ID', key: 'datasource_id' },
@@ -162,10 +166,17 @@ export default {
                 { name: 'Variant EAN', key: 'variant.eans' },
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
-                // { name: 'Assortment EAN', key: 'assortments.ean' },
-                // { name: 'Assortment Size', key: 'assortments.size' },
             ]
-            return baseHeaders
+
+            const customHeaders = this.customFields
+                ? this.customFields.map(field => {
+                      return {
+                          name: field,
+                          key: `extra_data.${field}`,
+                      }
+                  })
+                : []
+            return baseHeaders.concat(customHeaders)
         },
     },
     // watch: {
