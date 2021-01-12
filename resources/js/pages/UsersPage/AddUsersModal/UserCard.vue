@@ -150,7 +150,7 @@ export default {
         },
 
         async validateEmail() {
-            const email = this.user.email
+            const email = this.user.email.toLowerCase()
             let isValid = true
 
             // Check if the email is valid

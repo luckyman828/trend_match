@@ -39,6 +39,7 @@
                 <i class="lg dark far fa-building"></i>
             </div>
             <h3>Success!</h3>
+            <p>{{ userAddedCount }} users added</p>
             <p v-if="ignoredUsers.length > 0">
                 {{ ignoredUsers.length }} user already existed on the workspace and have been ignored.
             </p>
@@ -64,6 +65,7 @@ export default {
             },
             submitDisabled: false,
             ignoredUsers: [],
+            userAddedCount: 0,
         }
     },
     props: ['users', 'show'],
@@ -110,7 +112,9 @@ export default {
                 }
             })
 
-            this.validateUsers()
+            this.$nextTick(() => {
+                this.validateUsers()
+            })
         },
 
         async validateUsers(fullValidate) {
@@ -135,9 +139,23 @@ export default {
                 return
             }
             // Submit form
-            const usersToAdd = this.usersToAdd.filter(x => !this.users.find(user => user.email == x.email))
-            this.ignoredUsers = this.usersToAdd.filter(x => !!this.users.find(user => user.email == x.email))
-            await this.addUsersToWorkspace(usersToAdd)
+            this.ignoredUsers = []
+            const usersToAddFiltered = this.usersToAdd.filter((user, index) => {
+                const usersBefore = this.usersToAdd.slice(0, index)
+                const isDuplicate = !!usersBefore.find(x => x.email.toLowerCase() == user.email.toLowerCase())
+                if (isDuplicate) {
+                    this.ignoredUsers.push(user)
+                    return false
+                }
+                const existsOnWorkspace = !!this.users.find(x => x.email.toLowerCase() == user.email.toLowerCase())
+                if (existsOnWorkspace) {
+                    this.ignoredUsers.push(user)
+                    return false
+                }
+                return true
+            })
+            this.userAddedCount = usersToAddFiltered.length
+            await this.addUsersToWorkspace(usersToAddFiltered)
                 .then(async response => {
                     if (this.ignoredUsers.length > 0) {
                         await this.$refs.ignoredUsersUsersDialog.show()
