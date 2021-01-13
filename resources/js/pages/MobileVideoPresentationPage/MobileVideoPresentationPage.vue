@@ -15,7 +15,9 @@
 
             <template v-if="playerStarted">
                 <VideoTimeline />
-                <ProductActions />
+                <ProductActions @show-chat="showChatInput = true" />
+                <ChatInput v-if="showChatInput" @close="showChatInput = false" />
+                <ChatArea />
                 <ProductPreview />
                 <ProductDetailsDrawer
                     :show="!!sidebarProduct"
@@ -75,6 +77,8 @@ import ProductPreview from './ProductPreview'
 import ProductActions from './ProductActions'
 import CartSidebar from './CartSidebar/'
 import VideoTitle from './VideoTitle'
+import ChatInput from './ChatInput'
+import ChatArea from './ChatArea'
 import BeforeStartScreen from './BeforeStartScreen'
 
 export default {
@@ -89,14 +93,16 @@ export default {
         PlayerControls,
         CartSidebar,
         BeforeStartScreen,
+        ChatInput,
+        ChatArea,
     },
     data: function() {
         return {
             playerStarted: false,
             isConnectedToLiveUpdates: false,
             showControls: true,
-            showProductDrawer: false,
             showCart: false,
+            showChatInput: false,
             playerStartedTester: null,
             recentlyStarted: false,
         }

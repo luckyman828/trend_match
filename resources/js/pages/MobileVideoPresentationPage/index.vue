@@ -56,6 +56,7 @@ export default {
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
         ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
+        ...mapActions('videoComments', ['fetchVideoComments']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
@@ -78,6 +79,8 @@ export default {
 
             const fileVideo = await this.fetchFileVideo(fileId)
             this.SET_CURRENT_VIDEO(fileVideo)
+
+            await this.fetchVideoComments({ video: fileVideo.video })
 
             // if (this.presentationIsActive) {
             //     this.SET_VIDEO_TYPE('live')

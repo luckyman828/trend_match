@@ -36,7 +36,7 @@ export default {
         width: 100%;
         position: absolute;
         background: white;
-        transition: transform 0.1s ease-out;
+        transition: transform 0.2s ease-out;
         z-index: 2;
         display: flex;
         flex-direction: column;

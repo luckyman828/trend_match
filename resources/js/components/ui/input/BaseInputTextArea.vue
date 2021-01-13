@@ -6,6 +6,7 @@
             :placeholder="placeholder"
             :class="{ disabled: disabled || readOnly }"
             :disabled="disabled || readOnly"
+            @blur="$emit('blur', $event)"
             @input="
                 resize()
                 $emit('input', $event.target.value)

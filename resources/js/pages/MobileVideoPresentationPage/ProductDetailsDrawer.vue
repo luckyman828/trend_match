@@ -138,7 +138,7 @@ export default {
         font-weight: 500;
     }
     .body-inner {
-        padding: 16px;
+        padding: 16px 16px 100px;
     }
     .variant-list {
         .image-rail {
