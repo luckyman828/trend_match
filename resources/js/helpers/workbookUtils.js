@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { parse, v4 as uuidv4 } from 'uuid'
 export function parseWorkbookToRowsAndCells(workbook, noHeaderRow) {
     // Use SheetJS to parse the workbook
     const data = new Uint8Array(workbook)
@@ -68,7 +68,11 @@ export function validateMappedField(field, rows, depth) {
         if (fieldValue && isValid) {
             // Test for integers
             if (field.type == 'number') {
-                if (typeof fieldValue != 'number' && !parseInt(fieldValue)) {
+                const isNumber = typeof fieldValue == 'number'
+                const canBeParsedAsNumber = !!parseInt(fieldValue)
+                const changesLengthWhenParsed =
+                    typeof fieldValue == 'string' && parseInt(fieldValue).toString().length != fieldValue.length
+                if (!isNumber && (!canBeParsedAsNumber || changesLengthWhenParsed)) {
                     field.error = `Must be a <strong>number</strong>.
                     <br>Found value: <i>${fieldValue}</i> on <strong>line ${i + 2}</strong>`
                     isValid = false
