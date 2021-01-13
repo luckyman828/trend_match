@@ -9,15 +9,15 @@
                     </div>
                     <div class="img-wrapper">
                         <BaseVariantImage :variant="product.variants[0]" size="sm" />
-                        <div class="square white price sm">
-                            <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
-                        </div>
                         <div class="view-overlay flex-list center-v center-h">
                             <div class="flex-list flex-v center-h sm">
                                 <i class="far fa-eye md dark"></i>
                                 <span>View details</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="square white price sm">
+                        <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
                     </div>
                 </div>
 
@@ -141,13 +141,6 @@ export default {
             position: absolute;
             left: 0;
             top: 0;
-        }
-        .price {
-            position: absolute;
-            left: 8px;
-            bottom: 8px;
-            font-weight: 700;
-            opacity: 0.9;
         }
         .view-overlay {
             width: 100%;
