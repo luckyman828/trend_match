@@ -242,7 +242,7 @@ export default {
                 headersToMatch: [
                     'currency',
                     'currency name',
-                    '^(?=.*(DKK|SEK|NOK|GBP|EUR|CHF)).*(RRP|WHS|MU).*$', // VILA-style currencies --> Must include a currency code and RRP, WHS or MU
+                    // '^(?=.*(DKK|SEK|NOK|GBP|EUR|CHF)).*(RRP|WHS|MU).*$', // VILA-style currencies --> Must include a currency code and RRP, WHS or MU
                 ],
             },
             {
