@@ -119,7 +119,6 @@ export function validateMappedField(field, rows, depth) {
 }
 
 export function autoMapField(field, availableFiles, matchesToAvoid, mustInclude) {
-    // console.log('automap', field)
     let foundMatch = false
     let allMatches = []
     availableFiles.forEach(fieldCollection => {
@@ -174,9 +173,9 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
                   return this.uploadOptions.scopes.find(x => x.name == field.scope).enabled
               }
-              if (field.name == 'extra_data')
-                  return this.uploadOptions.fields.find(x => x.name == field.name && x.displayName == field.displayName)
-                      .enabled
+              //   if (field.customProperty)
+              //       return this.uploadOptions.fields.find(x => x.name == field.name)
+              //           .enabled
               return this.uploadOptions.fields.find(x => x.name == field.name).enabled
           })
 
@@ -213,9 +212,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
 
             // Add custom product data if we have any
             mappedFields
-                .filter(x => x.name == 'extra_data')
+                .filter(x => x.customProperty && x.scope != 'variants')
                 .map(extraField => {
-                    baseProduct.extra_data[extraField.displayName] = null
+                    baseProduct.extra_data[extraField.customProperty.name] =
+                        extraField.customProperty.type == 'Array' ? [] : null
                 })
 
             const product = existingProduct ? existingProduct : baseProduct
@@ -271,7 +271,15 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             images: [],
                             ean: null,
                             ean_sizes: [{ size: null, ean: null }],
+                            extra_data: {},
                         }
+                        // Add custom product data if we have any
+                        mappedFields
+                            .filter(x => x.customProperty && x.scope == 'variants')
+                            .map(extraField => {
+                                baseVariant.extra_data[extraField.customProperty.name] =
+                                    extraField.customProperty.type == 'Array' ? [] : null
+                            })
 
                         const existsInArray = !!product.variants.find(
                             x => (!color || x.color == color) && (!variant || x.variant == variant)
@@ -337,7 +345,9 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             if (!variant) continue
 
                             // Now that we have our variant, it's just a question of setting the values
-                            const variantField = variant[field.name]
+                            const variantField = field.customProperty
+                                ? variant.extra_data[field.name]
+                                : variant[field.name]
 
                             if (field.name == 'image') {
                                 const valueExistsInArray = variant.pictures.find(
@@ -393,6 +403,13 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             if (Array.isArray(variantField)) {
                                 const valueExistsInArray = variantField.includes(fieldValue)
                                 if (!valueExistsInArray) variantField.push(fieldValue)
+                                variantFieldHasBeenProcessed = true
+                                continue
+                            }
+
+                            // Set value of an object. This should take care of custom product data
+                            if (field.customProperty) {
+                                variant.extra_data[field.name] = fieldValue
                                 variantFieldHasBeenProcessed = true
                                 continue
                             }
@@ -461,7 +478,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 // END MAP ASSORTMENTS
 
                 // NO SCOPE
-                const productField = product[field.name]
+                const productField = field.customProperty ? product.extra_data[field.name] : product[field.name]
                 if (Array.isArray(productField)) {
                     const valueExistsInArray = productField.includes(fieldValue)
                     // Only push if we actually have a fieldValue
@@ -470,8 +487,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 }
 
                 // Set value of an object. This should take care of custom product data
-                if (field.name == 'extra_data') {
-                    productField[field.displayName] = fieldValue
+                if (field.customProperty) {
+                    product.extra_data[field.name] = fieldValue
                     return
                 }
 

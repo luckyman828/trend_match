@@ -311,11 +311,12 @@ export default {
             if (customFields)
                 customFields.map(field => {
                     allFields.push({
-                        scope: null,
-                        name: 'extra_data',
-                        displayName: field,
+                        scope: field.belong_to == 'Variant' ? 'variants' : null,
+                        name: field.name,
+                        displayName: field.display_name,
                         type: 'string',
-                        headersToMatch: [field],
+                        headersToMatch: [field.name, field.display_name],
+                        customProperty: field,
                     })
                 })
 
