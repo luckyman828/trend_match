@@ -7,7 +7,7 @@
                 disabledTooltip="No options available"
                 @click="showAdvancedFilters = false"
             >
-                <span>{{ field }}</span>
+                <span>{{ field.display_name }}</span>
                 <span v-if="selectedCustomFieldValues.length > 0" class="filter-counter circle primary xs">
                     <span>{{ selectedCustomFieldValues.length }}</span>
                 </span>
@@ -35,7 +35,7 @@ export default {
         }),
         selectedCustomFieldValues: {
             get() {
-                return this.getSelectedCustomFieldValues(this.field)
+                return this.getSelectedCustomFieldValues(this.field.name)
             },
             set(value) {
                 this.onSetSelected(value)
@@ -44,7 +44,7 @@ export default {
         availableCustomFieldValues() {
             const unique = []
             this.products.map(product => {
-                const value = product.extra_data[this.field]
+                const value = product.extra_data[this.field.name]
                 if (!value) return
                 const alreadyAdded = !!unique.find(x => x == value)
                 if (!alreadyAdded) unique.push(value)
@@ -55,7 +55,7 @@ export default {
     methods: {
         ...mapMutations('products', ['SET_SELECTED_CUSTOM_FIELD_VALUES']),
         onSetSelected(value) {
-            this.SET_SELECTED_CUSTOM_FIELD_VALUES({ field: this.field, value })
+            this.SET_SELECTED_CUSTOM_FIELD_VALUES({ field: this.field.name, value })
         },
     },
 }

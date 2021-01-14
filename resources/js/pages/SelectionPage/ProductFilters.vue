@@ -98,7 +98,7 @@
                 </v-popover>
             </div>
 
-            <CustomProductDataFilter v-for="field in customFields" :key="field" :field="field" />
+            <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
             <div class="item-group" v-if="$route.name == 'selection'">
                 <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">

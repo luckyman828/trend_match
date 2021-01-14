@@ -211,7 +211,10 @@ export default {
             Vue.prototype.$connection = new signalR.HubConnectionBuilder()
                 .withAutomaticReconnect()
                 .withUrl(
-                    `${process.env.MIX_API_BASE_URL.substr(0, process.env.MIX_API_BASE_URL.length - 3)}/live-update`
+                    `${process.env.MIX_API_BASE_URL.substr(
+                        0,
+                        process.env.MIX_API_BASE_URL.lastIndexOf('/')
+                    )}/live-update`
                 )
                 .configureLogging(signalR.LogLevel.Information)
                 .build()

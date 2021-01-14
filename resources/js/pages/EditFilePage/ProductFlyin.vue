@@ -285,15 +285,26 @@
 
                 <div class="form-section">
                     <h3>Custom Data</h3>
-                    <div class="form-element" v-for="(field, index) in customFields" :key="field">
-                        <label for="product-name">{{ field }}</label>
+                    <div
+                        class="form-element"
+                        v-for="(field, index) in customFields.filter(x => x.belong_to == 'Product')"
+                        :key="index"
+                    >
+                        <label>{{ field.display_name }}</label>
                         <BaseEditInputWrapper
+                            v-if="field.type != 'Array'"
                             :id="`extra-data-${index}`"
                             :type="'text'"
-                            :value="product.extra_data[field]"
-                            :oldValue="originalProduct.extra_data[field]"
-                            v-model="product.extra_data[field]"
+                            :value="product.extra_data[field.name]"
+                            :oldValue="originalProduct.extra_data[field.name]"
+                            v-model="product.extra_data[field.name]"
                             :submitOnBlur="true"
+                            @submit="onSubmitField"
+                        />
+                        <CustomPropertyArray
+                            v-else
+                            :property="field"
+                            :extraData="product.extra_data"
                             @submit="onSubmitField"
                         />
                     </div>
@@ -569,6 +580,39 @@
                     </div>
                 </div>
 
+                <div class="form-section variant-custom-props">
+                    <h3>Variant Custom Data</h3>
+                    <div v-if="!currentVariant">
+                        <p>Click a variant to manage it's sizes</p>
+                    </div>
+
+                    <div class="custom-property-list" v-else>
+                        <div
+                            class="form-element"
+                            v-for="(field, index) in customFields.filter(x => x.belong_to == 'Variant')"
+                            :key="index"
+                        >
+                            <label>{{ field.display_name }}</label>
+                            <BaseEditInputWrapper
+                                v-if="field.type != 'Array'"
+                                :id="`extra-data-${index}`"
+                                :type="'text'"
+                                :value="currentVariant.extra_data[field.name]"
+                                :oldValue="currentVariant.extra_data[field.name]"
+                                v-model="currentVariant.extra_data[field.name]"
+                                :submitOnBlur="true"
+                                @submit="onSubmitField"
+                            />
+                            <CustomPropertyArray
+                                v-else
+                                :property="field"
+                                :extraData="currentVariant.extra_data"
+                                @submit="onSubmitField"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div class="EANs form-section">
                     <h3>
                         EANs
@@ -701,6 +745,7 @@ import Draggable from 'vuedraggable'
 import axios from 'axios'
 import variantImage from '../../mixins/variantImage'
 import VariantNameInput from './VariantNameInput'
+import CustomPropertyArray from './CustomPropertyArray'
 
 export default {
     name: 'editProductFlyin',
@@ -709,6 +754,7 @@ export default {
     components: {
         Draggable,
         VariantNameInput,
+        CustomPropertyArray,
     },
     data: function() {
         return {
@@ -905,6 +951,7 @@ export default {
                 imageIndex: 0,
                 ean: null,
                 ean_sizes: [],
+                extra_data: {},
             }
 
             Object.defineProperty(newVariant, 'currentImg', {

@@ -1081,6 +1081,9 @@ export default {
 
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
+                // Custom Props
+                if (!product.extra_data) Vue.set(product, 'extra_data', {})
+
                 Object.defineProperty(product, 'name', {
                     get: function() {
                         return product.title
@@ -1304,6 +1307,8 @@ export default {
                     }
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
+                    // Custom Props
+                    if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {

@@ -12,41 +12,7 @@
                 />
             </div>
 
-            <div class="form-section">
-                <h3>Custom product properties</h3>
-                <i
-                    >Here you can define custom properties you would like to have available on your products.<br />
-                    The custom propeties can be used to filter by, and can be included in CSV-exports.</i
-                >
-                <div class="form-element custom-properties">
-                    <button class="ghost primary form-element" @click="onAddProperty">
-                        <i class="far fa-plus"></i><span>Add property</span>
-                    </button>
-                    <div class="custom-property-list flex-list flex-v form-element">
-                        <div
-                            class="property-item flex-list sm"
-                            v-for="(property, index) in workspace.custom_product_fields"
-                            :key="index"
-                        >
-                            <BaseEditInputWrapper
-                                v-model="workspace.custom_product_fields[index]"
-                                :oldValue="workspace.custom_product_fields[index]"
-                                @submit="onUpdateWorkspaceDetails"
-                            />
-                            <button class="invisible ghost-hover" @click="onDeleteProperty(index)">
-                                <i class="far fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <button
-                        class="ghost primary form-element"
-                        @click="onAddProperty"
-                        v-if="workspace.custom_product_fields.length > 0"
-                    >
-                        <i class="far fa-plus"></i><span>Add property</span>
-                    </button>
-                </div>
-            </div>
+            <CustomProductFieldsForm class="form-section" />
 
             <div class="form-section">
                 <h3>Workspace logo</h3>
@@ -150,10 +116,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import Breadcrumbs from '../../components/common/Breadcrumbs'
+import CustomProductFieldsForm from './CustomProductFieldsForm'
 export default {
     name: 'settingsPage',
     components: {
         Breadcrumbs,
+        CustomProductFieldsForm,
     },
     data: function() {
         return {
@@ -206,13 +174,6 @@ export default {
         },
         async onUpdateWorkspaceDetails() {
             await this.updateWorkspaceDetails(this.workspace)
-        },
-        onDeleteProperty(index) {
-            this.workspace.custom_product_fields.splice(index, 1)
-            this.onUpdateWorkspaceDetails()
-        },
-        onAddProperty(index) {
-            this.workspace.custom_product_fields.push('New property')
         },
     },
     created() {

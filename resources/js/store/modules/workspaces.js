@@ -262,6 +262,16 @@ export default {
         },
         async updateWorkspaceDetails({ commit }, workspace) {
             const apiUrl = `workspaces/workspaces/${workspace.id}`
+
+            // Transform custom property to set name from display name
+            workspace.custom_product_fields.map(property => {
+                property.name = property.display_name
+                    .toLowerCase()
+                    .trim()
+                    .replaceAll(' ', '_')
+                property.display_name = property.display_name.trim()
+            })
+
             await axios.put(apiUrl, workspace).then(response => {
                 commit(
                     'alerts/SHOW_SNACKBAR',

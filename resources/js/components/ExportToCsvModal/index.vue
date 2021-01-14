@@ -773,7 +773,12 @@ export default {
             ]
             // Get the extra data
             const extraFields = this.getCustomProductFields
-            arrayToReturn.push(...extraFields.map(field => product.extra_data[field]))
+            arrayToReturn.push(
+                ...extraFields.map(field => {
+                    const propValue = product.extra_data[field.name]
+                    return Array.isArray(propValue) ? propValue.join(', ') : propValue
+                })
+            )
             return arrayToReturn
         },
         getDefaultProductRowDumpData(product) {
