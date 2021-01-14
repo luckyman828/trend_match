@@ -171,8 +171,8 @@ export default {
             const customHeaders = this.customFields
                 ? this.customFields.map(field => {
                       return {
-                          name: field,
-                          key: `extra_data.${field}`,
+                          name: field.display_name,
+                          key: field.belong_to == 'Variant' ? `variant.extra_data.${field}` : `extra_data.${field}`,
                       }
                   })
                 : []

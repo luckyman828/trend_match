@@ -259,10 +259,11 @@ export default {
 
             // Add extra data headers
             const extraFields = this.getCustomProductFields
-            headers.push(...extraFields)
+            headers.push(...extraFields.filter(x => x.belong_to == 'Product').map(field => field.display_name))
 
             if (this.exportVariants) {
                 headers.push('Variant Color', 'Variant Variant', 'Variant EANs')
+                headers.push(...extraFields.filter(x => x.belong_to == 'Variant').map(field => field.display_name))
             }
 
             // Add additional headers based on settings
@@ -621,7 +622,7 @@ export default {
 
             // Add extra data headers
             const extraFields = this.getCustomProductFields
-            headers.push(...extraFields)
+            headers.push(...extraFields.filter(x => x.belong_to == 'Product').map(x => x.display_name))
 
             const currencies = []
             // Find out how many different currencies we have
@@ -637,19 +638,9 @@ export default {
             })
 
             // Add variant headers
-            headers.push(
-                ...[
-                    'Delivery',
-                    'Variant Color',
-                    'Variant Variant',
-                    'Variant Sizes',
-                    'Variant EAN',
-                    'Image URL',
-                    'Assortment Name',
-                    'Assortment EAN',
-                    'Assortment Size',
-                ]
-            )
+            headers.push(...['Delivery', 'Variant Color', 'Variant Variant', 'Variant Sizes', 'Variant EAN'])
+            headers.push(...extraFields.filter(x => x.belong_to == 'Variant').map(x => x.display_name))
+            headers.push(...['Image URL', 'Assortment Name', 'Assortment EAN', 'Assortment Size'])
 
             const rows = []
 
@@ -699,10 +690,21 @@ export default {
 
                     // Add variant
                     const variantIndex = productVariantMap[i] ? productVariantMap[i].variantIndex : null
+
                     const variant = product.variants[variantIndex]
+                    // Get the extra data
+                    const extraFields = this.getCustomProductFields
 
                     if (!variant) {
-                        extraRow.push(...['', '', '', ''])
+                        extraRow.push(
+                            ...['', '', '', ''].concat(
+                                extraFields
+                                    .filter(x => x.belong_to == 'Variant')
+                                    .map(x => {
+                                        return ''
+                                    })
+                            )
+                        )
                     } else {
                         // Figure out what variant we are at
                         extraRow.push(
@@ -711,7 +713,14 @@ export default {
                                 variant.variant,
                                 variant.ean_sizes.map(size => size.size).join(', '),
                                 variant.ean,
-                            ]
+                            ].concat(
+                                extraFields
+                                    .filter(x => x.belong_to == 'Variant')
+                                    .map(extraField => {
+                                        const propValue = variant.extra_data[extraField.name]
+                                        return Array.isArray(propValue) ? propValue.join(', ') : propValue
+                                    })
+                            )
                         )
                         const pictureIndex = productVariantMap[i] ? productVariantMap[i].pictureIndex : null
                         const picture = variant.pictures[pictureIndex]
@@ -774,10 +783,12 @@ export default {
             // Get the extra data
             const extraFields = this.getCustomProductFields
             arrayToReturn.push(
-                ...extraFields.map(field => {
-                    const propValue = product.extra_data[field.name]
-                    return Array.isArray(propValue) ? propValue.join(', ') : propValue
-                })
+                ...extraFields
+                    .filter(x => x.belong_to == 'Product')
+                    .map(field => {
+                        const propValue = product.extra_data[field.name]
+                        return Array.isArray(propValue) ? propValue.join(', ') : propValue
+                    })
             )
             return arrayToReturn
         },
@@ -795,8 +806,16 @@ export default {
                 product.sale_description,
                 product.eans.join(', '),
             ]
+            // Get the extra data
             const extraFields = this.getCustomProductFields
-            arrayToReturn.push(...extraFields.map(field => product.extra_data[field]))
+            arrayToReturn.push(
+                ...extraFields
+                    .filter(x => x.belong_to == 'Product')
+                    .map(field => {
+                        const propValue = product.extra_data[field.name]
+                        return Array.isArray(propValue) ? propValue.join(', ') : propValue
+                    })
+            )
             return arrayToReturn
         },
         getProductPrice(product) {
