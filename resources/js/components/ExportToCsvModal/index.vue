@@ -408,8 +408,19 @@ export default {
                 if (this.exportVariants) {
                     // Insert a blank column space for variant names
                     currentRow.push('')
+                    // Variant variant
+                    currentRow.push('')
                     // Insert a blank space for variant EANS
                     currentRow.push('')
+                    // Push custom properties
+                    const extraFields = this.getCustomProductFields
+                    currentRow.push(
+                        ...extraFields
+                            .filter(x => x.belong_to == 'Variant')
+                            .map(extraField => {
+                                return ''
+                            })
+                    )
                 }
 
                 // START QUANTITY DATA
@@ -528,6 +539,17 @@ export default {
                             if (!existsInArr) allVariantEans.push(size.ean)
                         })
                         variantRow.push(allVariantEans.join(', '))
+
+                        // Push custom properties
+                        const extraFields = this.getCustomProductFields
+                        variantRow.push(
+                            ...extraFields
+                                .filter(x => x.belong_to == 'Variant')
+                                .map(extraField => {
+                                    const propValue = variant.extra_data[extraField.name]
+                                    return Array.isArray(propValue) ? propValue.join(', ') : propValue
+                                })
+                        )
 
                         // START QUANTITY DATA
                         if (this.exportQuantity) {
