@@ -54,11 +54,21 @@ export default {
                     if (keyScope) {
                         const scopeKey = key.slice(scopeIndex + 1)
                         if (keyScope == 'variant') {
-                            // We have to do some magic for sizes
-                            if (scopeKey == 'sizes') {
-                                row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
+                            const variantScopeIndex = scopeKey.indexOf('.')
+                            const variantKeyScope = variantScopeIndex >= 0 && scopeKey.slice(0, variantScopeIndex)
+                            if (variantKeyScope) {
+                                const variantScopeKey = scopeKey.slice(variantScopeIndex + 1)
+                                if (variantKeyScope == 'extra_data') {
+                                    const keyValue = variant ? variant.extra_data[variantScopeKey] : null
+                                    row.push(keyValue ? (Array.isArray(keyValue) ? keyValue.join(', ') : keyValue) : '')
+                                }
                             } else {
-                                row.push(variant ? variant[scopeKey] : '')
+                                // We have to do some magic for sizes
+                                if (scopeKey == 'sizes') {
+                                    row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
+                                } else {
+                                    row.push(variant ? variant[scopeKey] : '')
+                                }
                             }
                             return
                         }

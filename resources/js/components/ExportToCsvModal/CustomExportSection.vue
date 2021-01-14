@@ -96,15 +96,14 @@ export default {
                         { name: 'EAN_NO', key: 'variant.ean' },
                         { name: 'STYLE_NUMBER', key: 'datasource_id' },
                         { name: 'STYLE_NAME', key: 'title' },
-                        { name: 'COLLECTION_NAME', key: 'extra_data.COLLECTION_NAME' },
+                        { name: 'COLLECTION_NAME', key: 'extra_data.collection_name' },
                         { name: 'CATEGORY', key: 'category' },
                         { name: 'STYLE_VARIANT_NAME', key: 'variant.variant' },
                         { name: 'COLOUR_NAME', key: 'variant.color' },
-                        { name: 'SAMPLE_LOCATION_NAME', key: 'extra_data.SAMPLE_LOCATION_NAME' },
+                        { name: 'SAMPLE_LOCATION_NAME', key: 'variant.extra_data.sample_location_name' },
                         { name: 'DESCRIPTION', key: 'sale_description' },
                         { name: 'BRAND_NAME', key: 'brand' },
-                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.COUNTRY_OF_ORIGIN' },
-                        { name: 'QUANTITY', key: 'extra_data.QUANTITY' },
+                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.country_of_origin' },
                     ],
                 },
                 {
@@ -172,18 +171,16 @@ export default {
                 ? this.customFields.map(field => {
                       return {
                           name: field.display_name,
-                          key: field.belong_to == 'Variant' ? `variant.extra_data.${field}` : `extra_data.${field}`,
+                          key:
+                              field.belong_to == 'Variant'
+                                  ? `variant.extra_data.${field.name}`
+                                  : `extra_data.${field.name}`,
                       }
                   })
                 : []
             return baseHeaders.concat(customHeaders)
         },
     },
-    // watch: {
-    //     exportTemplate(newTemplate) {
-    //         this.selectedHeaders
-    //     }
-    // },
     methods: {
         onAddHeader() {
             this.exportTemplate.headers.push({
