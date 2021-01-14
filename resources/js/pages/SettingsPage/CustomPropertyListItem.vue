@@ -15,7 +15,7 @@
                 :oldValue="property.type"
                 :options="['String', 'Array']"
                 type="radio"
-                @submit="$emit('update')"
+                @input="$emit('update')"
             />
         </div>
         <div class="list-item">
@@ -25,7 +25,7 @@
                 :oldValue="property.belong_to"
                 :options="['Product', 'Variant']"
                 type="radio"
-                @submit="$emit('update')"
+                @input="$emit('update')"
             />
         </div>
         <button class="delete-button invisible ghost-hover" @click="$emit('delete')">
