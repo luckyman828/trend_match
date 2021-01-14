@@ -30,6 +30,7 @@ export default {
 
             // Add headers
             rows.push(template.headers.filter(x => !!x.key).map(x => x.name))
+            let rowIndex = 0
 
             products.map(product => {
                 if (template.rowScope == 'Variant') {
@@ -43,9 +44,10 @@ export default {
             })
 
             function getRowData(product, variant) {
-                const row = []
+                const productRows = [[]]
                 // Loop through the headers of our template and populate their data
                 template.headers.map(header => {
+                    const isRowKey = header.isRowKey
                     const key = header.key
                     if (!key) return
                     // Check if the key has a scope
@@ -60,14 +62,35 @@ export default {
                                 const variantScopeKey = scopeKey.slice(variantScopeIndex + 1)
                                 if (variantKeyScope == 'extra_data') {
                                     const keyValue = variant ? variant.extra_data[variantScopeKey] : null
-                                    row.push(keyValue ? (Array.isArray(keyValue) ? keyValue.join(', ') : keyValue) : '')
+                                    if (Array.isArray(keyValue)) {
+                                        if (isRowKey) {
+                                            // Instantiate extra rows
+                                            keyValue.map((keyArrayValue, index) => {
+                                                // console.log('keyArrayValue', index, keyArrayValue)
+                                                let currentRow = productRows[index]
+                                                if (!currentRow) {
+                                                    currentRow = JSON.parse(JSON.stringify(productRows[0]))
+                                                    productRows.push(currentRow)
+                                                }
+                                            })
+                                            // Populate rows
+                                            keyValue.map((keyArrayValue, index) => {
+                                                let currentRow = productRows[index]
+                                                currentRow.push(keyArrayValue)
+                                            })
+                                        } else productRows.map(row => row.push(keyValue.join(', ')))
+                                    } else {
+                                        productRows.map(row => row.push(keyValue))
+                                    }
                                 }
                             } else {
                                 // We have to do some magic for sizes
                                 if (scopeKey == 'sizes') {
-                                    row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
+                                    productRows.map(row =>
+                                        row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
+                                    )
                                 } else {
-                                    row.push(variant ? variant[scopeKey] : '')
+                                    productRows.map(row => row.push(variant ? variant[scopeKey] : ''))
                                 }
                             }
                             return
@@ -76,7 +99,7 @@ export default {
                         if (keyScope == 'price') {
                             // See if we have the preffered currency available
                             if (product.prices.length <= 0) {
-                                row.push()
+                                productRows.map(row => row.push())
                                 return
                             }
                             let priceToExport = {}
@@ -85,18 +108,18 @@ export default {
                                 x => x.currency && x.currency.toLowerCase() == preferredCurrency.toLowerCase()
                             )
                             if (priceMatch) priceToExport = priceMatch
-                            row.push(priceToExport[scopeKey])
+                            productRows.map(row => row.push(priceToExport[scopeKey]))
                             return
                         }
 
                         const scopeValue = product[keyScope]
                         if (Array.isArray(scopeValue)) {
-                            row.push(scopeValue.map(x => x[scopeKey]).join(', '))
+                            productRows.map(row => row.push(scopeValue.map(x => x[scopeKey]).join(', ')))
                             return
                         }
 
                         const keyValue = product[keyScope][scopeKey]
-                        row.push(keyValue)
+                        productRows.map(row => row.push(keyValue))
                         return
                     }
                     // END HAS SCOPE
@@ -107,15 +130,16 @@ export default {
                             const prettyDates = keyValue.map(x =>
                                 DateTime.fromFormat(x, 'yyyy-MM-dd').toFormat('MMMM yyyy')
                             )
-                            row.push(prettyDates.join(', '))
+                            productRows.map(row => row.push(prettyDates.join(', ')))
                             return
                         }
-                        row.push(keyValue.join(', '))
+                        productRows.map(row => row.push(keyValue.join(', ')))
                         return
                     }
-                    row.push(keyValue)
+                    productRows.map(row => row.push(keyValue))
                 })
-                rows.push(row)
+                rows.push(...productRows)
+                rowIndex++
             }
 
             return rows

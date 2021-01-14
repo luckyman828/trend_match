@@ -100,7 +100,11 @@ export default {
                         { name: 'CATEGORY', key: 'category' },
                         { name: 'STYLE_VARIANT_NAME', key: 'variant.variant' },
                         { name: 'COLOUR_NAME', key: 'variant.color' },
-                        { name: 'SAMPLE_LOCATION_NAME', key: 'variant.extra_data.sample_location_name' },
+                        {
+                            name: 'SAMPLE_LOCATION_NAME',
+                            key: 'variant.extra_data.sample_location_name',
+                            isRowKey: true,
+                        },
                         { name: 'DESCRIPTION', key: 'sale_description' },
                         { name: 'BRAND_NAME', key: 'brand' },
                         { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.country_of_origin' },
