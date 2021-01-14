@@ -18,7 +18,11 @@
                     </BaseCheckboxInputField>
 
                     <!-- Variant only -->
-                    <BaseCheckboxInputField v-if="scope.name == 'variants' && scope.enabled" v-model="scope.imagesOnly" style="margin-top: 4px;">
+                    <BaseCheckboxInputField
+                        v-if="scope.name == 'variants' && scope.enabled"
+                        v-model="scope.imagesOnly"
+                        style="margin-top: 4px;"
+                    >
                         <span>Images only</span>
                     </BaseCheckboxInputField>
                 </div>
@@ -106,4 +110,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.select-fields {
+    max-width: 436px;
+}
+</style>

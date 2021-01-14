@@ -362,11 +362,12 @@ export default {
             if (customFields)
                 customFields.map(field => {
                     fields.push({
-                        scope: null,
-                        name: 'extra_data',
-                        displayName: field,
+                        scope: field.belong_to == 'Variant' ? 'variants' : null,
+                        name: field.name,
+                        displayName: field.display_name,
                         type: 'string',
-                        headersToMatch: [field],
+                        headersToMatch: [field.name, field.display_name],
+                        customProperty: field,
                     })
                 })
             return fields.map(x => {
@@ -389,15 +390,18 @@ export default {
             // Add custom fields defined on the workspace
             const customFields = rootGetters['workspaces/getCustomProductFields']
             if (customFields)
-                customFields.map(field => {
-                    fields.push({
-                        scope: null,
-                        name: 'extra_data',
-                        displayName: field,
-                        type: 'string',
-                        headersToMatch: [field],
+                customFields
+                    .filter(x => x.belong_to != 'Variant')
+                    .map(field => {
+                        fields.push({
+                            scope: field.belong_to == 'Variant' ? 'variants' : null,
+                            name: field.name,
+                            displayName: field.display_name,
+                            type: 'string',
+                            headersToMatch: [field.name, field.display_name],
+                            customProperty: field,
+                        })
                     })
-                })
             const fieldsRefined = fields.map(x => {
                 x.enabled = enabledByDefault
                 return x
