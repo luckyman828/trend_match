@@ -1,6 +1,73 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Damask: Banana Mania"
+            date="January 2021 Tweaks & Fixes Release 1"
+            featuredImgUrl="/images/blog/undraw_relaxing_walk_mljx.svg"
+        >
+            <template v-slot:lead>
+                <p>Thanks to your input, we are already ready with a new batch of tweaks & fixes.</p>
+            </template>
+
+            <template v-slot:body>
+                <h3>Kollekt PLAY</h3>
+                <ul>
+                    <li>
+                        On the product preivew, the price has now been moved below the image, so it will no longer
+                        obscure your bags.
+                    </li>
+                </ul>
+                <h3>Import from spreadsheet</h3>
+                <ul>
+                    <li>
+                        Fixed a bug, where no validation error would be shown for number errors, where the spreadsheet
+                        value included a number, but was not in fact a number. Go fiure 🤷.
+                    </li>
+                </ul>
+                <h3>Custom product data</h3>
+                <ul>
+                    <li>
+                        Custom product properties can now belong to variants. Useful, if you have variant properties
+                        like size, or similar (we already have variant sizes as a default property, don't worry - I just
+                        can't think of a better example.).
+                    </li>
+                    <li>
+                        Added custom property type <strong>Array</strong>. This means a property can hold a list of
+                        values if needed. Like sizes: S, M, L.
+                    </li>
+                    <li>
+                        The new cutom property updates work with importing from spreadsheet, and can be included in CSV
+                        exports.
+                    </li>
+                    <li>
+                        If you need these custom properties, you can set them from the workspace settings screen, if you
+                        are the owner of your workspace.
+                    </li>
+                </ul>
+                <p>
+                    We are of course, also working on a ton of other features for you!
+                </p>
+                <p>
+                    For one, we are going to expand on the usefulness of <strong>Chapters</strong>, which we hope will
+                    make it even easier for you to organize and analyze your results.
+                </p>
+                <p>It should also reduce manual labor in connection with importing data to Kollekt.</p>
+                <p>
+                    We would always love to give you a tour of our new features. All you need to do is reach out to me,
+                    Simon or Michael.
+                </p>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+
+        <ChangelogPost
             title="Damask: Atomic Tangerine"
             date="January 2021 Release"
             featuredImgUrl="/images/blog/undraw_Powerful_re_frhr.svg"
