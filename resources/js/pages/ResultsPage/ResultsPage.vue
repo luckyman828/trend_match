@@ -1,5 +1,5 @@
 <template>
-    <div class="results-page">
+    <div class="results-page" ref="page">
         <div class="header flex-list min justify">
             <div class="left">
                 <h1>{{ file.name }}</h1>
@@ -35,10 +35,13 @@
                 >
                 </BaseDropdownInputField>
             </div>
-            <div class="right">
-                <button class="primary">
-                    <span>Export PDF</span>
-                    <i class="fas fa-share"></i>
+            <div class="right flex-list">
+                <button class="primary" :disabled="exportingPDF" @click="printToPdf">
+                    <BaseLoader v-if="exportingPDF" />
+                    <template v-else>
+                        <span>Export PDF</span>
+                        <i class="fas fa-share"></i>
+                    </template>
                 </button>
             </div>
         </div>
@@ -81,11 +84,71 @@
                 <label>Total Price</label>
                 <div class="value">{{ totalPrice }} {{ products[0].yourPrice.currency }}</div>
             </div>
-            <!-- <button class="primary">
-                <i class="far fa-share"></i>
-                <span>Export PDF</span>
-            </button> -->
         </div>
+
+        <VueHtml2pdf
+            :show-layout="false"
+            :float-layout="true"
+            :enable-download="true"
+            :preview-modal="false"
+            :paginate-elements-by-height="960"
+            :filename="file.name + '_export'"
+            :pdf-quality="1"
+            :manual-pagination="false"
+            pdf-format="a4"
+            pdf-orientation="portrait"
+            pdf-content-width="800px"
+            ref="html2Pdf"
+            @startPagination="exportingPDF = true"
+            @hasDownloaded="exportingPDF = false"
+        >
+            <section slot="pdf-content" class="pdf-content">
+                <section class="header flex-list min justify" style="margin-bottom: -20px">
+                    <div class="left">
+                        <h1 style="margin: 0">{{ file.name }}</h1>
+                    </div>
+                </section>
+                <ProductListItem
+                    v-for="product in products"
+                    :key="product.id"
+                    :product="product"
+                    :actionFilter="actionFilter"
+                    :userId="userId"
+                    :selectionId="selectionId"
+                />
+                <section class="order-total  theme-light" v-if="products.length > 0">
+                    <h1>Totals</h1>
+                    <div class="total-items flex-list lg justify">
+                        <div class="list-item" v-if="orderedDates.length > 0">
+                            <label>First delivery</label>
+                            <div class="value">{{ getPrettyDate(orderedDates[0]) }}</div>
+                        </div>
+                        <div class="list-item" v-if="orderedDates.length > 0">
+                            <label>Last delivery</label>
+                            <div class="value">{{ getPrettyDate(orderedDates[orderedDates.length - 1]) }}</div>
+                        </div>
+                        <div class="list-item" v-if="orderedDates.length > 0">
+                            <label>Products</label>
+                            <div class="value">{{ products.length }}</div>
+                        </div>
+                        <div class="list-item" v-if="orderedDates.length > 0">
+                            <label>Variants</label>
+                            <div class="value">
+                                {{ variantsFiltered.length }}
+                            </div>
+                        </div>
+                        <div class="list-item" v-if="orderedDates.length > 0">
+                            <label>Total Quantity</label>
+                            <div class="value">{{ totalQuantity }}</div>
+                        </div>
+                        <div class="list-item" v-if="orderedDates.length > 0">
+                            <label>Total Price</label>
+                            <div class="value">{{ totalPrice }} {{ products[0].yourPrice.currency }}</div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </VueHtml2pdf>
     </div>
 </template>
 
@@ -93,15 +156,18 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductListItem from './ProductListItem'
 import pdfExport from './pdfExport'
+import axios from 'axios'
+import VueHtml2pdf from 'vue-html2pdf'
 export default {
     name: 'resultsPage',
-    components: { ProductListItem },
+    components: { ProductListItem, VueHtml2pdf },
     data: function() {
         return {
             selectionId: null,
             userId: null,
             fetchingData: false,
             actionFilter: 'All',
+            exportingPDF: false,
         }
     },
     computed: {
@@ -322,6 +388,13 @@ export default {
             }
             this.actionFilter = 'In'
         },
+        async printToPdf() {
+            this.exportingPDF = true
+            this.$nextTick(async () => {
+                await this.$refs.html2Pdf.generatePdf()
+            })
+            this.exportingPDF = false
+        },
     },
     async created() {
         // Check if the selection is available
@@ -378,6 +451,56 @@ export default {
         padding: 20px;
         border-top: $borderModule;
         box-shadow: $shadowModule;
+    }
+    .list-item {
+        > * {
+            display: block;
+            &:first-line {
+                line-height: 1;
+                white-space: normal;
+            }
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 400;
+            display: block;
+            margin-bottom: 6px;
+            color: $bluegrey500;
+        }
+        .value {
+            font-size: 14px;
+            font-weight: 700;
+            &.description {
+                white-space: pre-line;
+                word-break: break-word;
+                &:first-line {
+                    line-height: 1.6;
+                }
+            }
+        }
+    }
+}
+.pdf-content {
+    padding: 20px;
+    padding-bottom: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    ::v-deep {
+        .product-header,
+        .variant-list-item {
+            border-bottom: $borderEl;
+        }
+    }
+    .order-total {
+        position: static;
+        margin-top: 40px;
+        .total-items {
+            padding: 4px 0;
+            border-top: $borderEl;
+            border-bottom: $borderEl;
+        }
     }
     .list-item {
         > * {

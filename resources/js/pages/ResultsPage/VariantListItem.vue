@@ -1,5 +1,5 @@
 <template>
-    <div class="variant-list-item theme-light flex-list md">
+    <section class="variant-list-item theme-light flex-list md">
         <div class="img-wrapper">
             <div class="img-sizer">
                 <BaseVariantImage :variant="variant" size="sm" />
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </template>
 
 <script>

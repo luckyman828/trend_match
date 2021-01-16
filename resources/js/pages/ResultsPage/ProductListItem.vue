@@ -1,5 +1,5 @@
 <template>
-    <div class="product-list-item">
+    <section class="product-list-item">
         <div class="product-header flex-list justify">
             <div class="left flex-list center-v">
                 <div class="name">{{ product.name }}</div>
@@ -21,7 +21,7 @@
                 :userId="userId"
             />
         </div>
-    </div>
+    </section>
 </template>
 
 <script>
@@ -96,7 +96,10 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .product-list-item {
-    margin-bottom: 40px;
+    &:not(:first-child) {
+        margin-top: 40px;
+    }
+    // margin-bottom: 40px;
     .product-header {
         margin-bottom: 6px;
         > * {
