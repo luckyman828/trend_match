@@ -141,6 +141,7 @@ export default {
                 'watchLivestream',
                 'mobileVideoPresentation',
                 'mobileVideoViewer',
+                'results',
             ].includes(this.$route.name)
         },
         hideCrisp() {

@@ -1,5 +1,5 @@
 <template>
-    <div class="page-loader" :class="{ 'fit-page': fitPage }">
+    <div class="page-loader" :class="[{ 'fit-page': fitPage }]">
         <!-- Error  -->
         <BaseContentLoadError
             v-if="status == 'error'"
@@ -11,7 +11,7 @@
         <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
 
         <!-- Success -->
-        <div class="page-wrapper" v-else>
+        <div class="page-wrapper" :class="`theme-${theme}`" v-else>
             <slot />
         </div>
     </div>
@@ -22,7 +22,7 @@ import { mapGetters } from 'vuex'
 
 export default {
     name: 'pageLoader',
-    props: ['loading', 'error', 'status', 'loadingMsg', 'errorMsg', 'errorCallback', 'fitPage'],
+    props: ['loading', 'error', 'status', 'loadingMsg', 'errorMsg', 'errorCallback', 'fitPage', 'theme'],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
     },
@@ -53,6 +53,9 @@ export default {
     }
     .page-wrapper {
         padding: 20px 60px 100px;
+        &.theme-dark {
+            background: $dark;
+        }
         @media screen and (max-width: $screenSm) {
             padding: 20px;
         }

@@ -1563,6 +1563,11 @@ input::placeholder {
             margin-bottom: 8px;
         }
     }
+    &.min {
+        > *:not(:last-child) {
+            margin-right: 0px;
+        }
+    }
     &.sm {
         > *:not(:last-child) {
             margin-right: 4px;
@@ -1571,6 +1576,11 @@ input::placeholder {
     &.md {
         > *:not(:last-child) {
             margin-right: 16px;
+        }
+    }
+    &.lg {
+        > *:not(:last-child) {
+            margin-right: 40px;
         }
     }
     &.flex-v {
@@ -1582,7 +1592,7 @@ input::placeholder {
             justify-content: center;
         }
         &.justify {
-            align-items: space-between;
+            justify-content: space-between;
         }
         > *:not(:first-child) {
             margin-top: 8px;
@@ -1797,3 +1807,44 @@ body {
         padding: 0 !important;
     }
 }
+
+.theme-dark {
+    background: $dark;
+    color: white;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    button,
+    a,
+    th,
+    strong {
+        color: white;
+    }
+}
+.theme-light {
+    background: white;
+    color: $fontBody;
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    button,
+    a,
+    th,
+    strong {
+        color: $font;
+    }
+}
+
+// .card {
+//     background: white;
+//     &.theme-dark,
+//     .theme-dark & {
+//         background: $dark;
+//     }
+//     border-radius: 4px;
+//     padding: 8px;
+// }

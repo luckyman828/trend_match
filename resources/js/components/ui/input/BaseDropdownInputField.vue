@@ -1,15 +1,15 @@
 <template>
-    <v-popover trigger="click" :disabled="readOnly">
+    <v-popover trigger="click" :disabled="readOnly || disabled">
         <!-- TRIGGER -->
         <!-- <div class="dropdown-input-field input-wrapper"></div> -->
-        <div class="dropdown-field">
+        <div class="dropdown-field" v-tooltip="disabled && disabledTooltip">
             <BaseInputField
                 :disabled="true"
                 :placeholder="placeholder"
                 type="select"
                 :value="valueToDisplay"
                 :inputClass="inputClass"
-                :readOnly="readOnly"
+                :readOnly="readOnly || disabled"
                 :innerLabel="innerLabel"
             />
             <i class="dropdown-icon fas fa-caret-down" v-if="!readOnly"></i>
@@ -29,6 +29,7 @@
                 :optionValueKey="optionValueKey"
                 :optionDescriptionKey="descriptionKey"
                 :cloneOptionOnSubmit="cloneOptionOnSubmit"
+                :unsetOption="unsetOption"
                 @input="$emit('input', $event)"
             />
         </div>
@@ -52,6 +53,9 @@ export default {
         'readOnly',
         'innerLabel',
         'valueToDisplayOverwrite',
+        'unsetOption',
+        'disabled',
+        'disabledTooltip',
     ],
     computed: {
         optionValueKey() {

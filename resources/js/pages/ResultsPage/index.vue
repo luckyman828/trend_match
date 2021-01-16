@@ -1,18 +1,17 @@
 <template>
-    <PageLoader :status="status">
-        <div class="results-page">
-            <h1>Welcome to your results</h1>
-        </div>
+    <PageLoader :status="status" theme="dark" :fitPage="true">
+        <ResultsPage />
     </PageLoader>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import PageLoader from '../../components/common/PageLoader'
+import ResultsPage from './ResultsPage'
 
 export default {
-    name: 'resultsPage',
-    components: { PageLoader },
+    name: 'resultsPageLoader',
+    components: { PageLoader, ResultsPage },
     data: function() {
         return {
             loadingData: true,
@@ -20,16 +19,14 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['productsStatus']),
-        ...mapGetters('selections', ['currentSelectionStatus', 'getCurrentSelections']),
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', ['getSelectionsStatus']),
         ...mapGetters('files', ['filesStatus']),
         status() {
-            if (this.productsStatus == 'error' || this.currentSelectionStatus == 'error' || this.filesStatus == 'error')
+            if (this.productsStatus == 'error' || this.getSelectionsStatus == 'error' || this.filesStatus == 'error')
                 return 'error'
             if (
                 this.productsStatus == 'loading' ||
-                this.currentSelectionStatus == 'loading' ||
+                this.getSelectionsStatus == 'loading' ||
                 this.filesStatus == 'loading' ||
                 this.loadingData
             )
@@ -39,46 +36,19 @@ export default {
     },
     methods: {
         ...mapActions('files', ['fetchFile']),
-        ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
-        ...mapMutations('products', ['SET_SELECTIONS_AVAILABLE_FOR_INPUT_FILTERING']),
-        ...mapActions('selections', [
-            'fetchSelection',
-            'fetchSelections',
-            'filterSelectionsByAvailabilityForAlignment',
-            'fetchSelectionSettings',
-        ]),
-        ...mapActions('teams', ['fetchTeamUsers']),
-        ...mapActions('presentation', ['fetchPresentationDetails']),
-        ...mapMutations('presentationQueue', ['SET_PRESENTER_QUEUE']),
-        async fetchSelectionTeamsUsers(teams) {
-            // Use of promise and map to fetch users for all teams in parallel
-            await Promise.all(
-                teams.map(async team => {
-                    await this.fetchTeamUsers(team)
-                })
-            )
-        },
+        ...mapActions('products', ['fetchProducts']),
+        ...mapActions('selections', ['fetchSelections']),
         async fetchData() {
             this.loadingData = true
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
-            this.fetchFile(fileId)
+            const file = this.fetchFile(fileId)
 
             // Fetch current selection
             const selectionId = this.$route.params.selectionId
-            const selection = await this.fetchSelection({ selectionId })
 
             // This works because vuex actions are always promises
-            let promisesToResolve = [
-                await this.fetchProducts({ fileId }),
-                await this.fetchSelectionProducts(selection),
-                await this.fetchSelectionSettings(selection),
-                await this.fetchSelections({ fileId }),
-            ]
-
-            if (selection.is_presenting) {
-                promisesToResolve.push(this.fetchPresentationDetails(selection.presentation_id))
-            }
+            let promisesToResolve = [await this.fetchSelections({ fileId }), await this.fetchProducts({ fileId })]
 
             // Use promise.all to resolve all the promises simultaneously
             await Promise.all(promisesToResolve)
