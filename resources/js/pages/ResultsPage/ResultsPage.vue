@@ -347,13 +347,13 @@ export default {
     },
     watch: {
         selectionId(newVal) {
-            if (this.$route.query.selectionId == newVal) return
-            this.$router.replace({ query: { ...this.$route.query, selectionId: newVal } })
+            if (this.$route.query.selection_id == newVal) return
+            this.$router.replace({ query: { ...this.$route.query, selection_id: newVal } })
             this.onNewSelectionId(newVal)
         },
         userId(newVal) {
-            if (this.$route.query.userId == newVal) return
-            this.$router.replace({ query: { ...this.$route.query, userId: newVal } })
+            if (this.$route.query.user_id == newVal) return
+            this.$router.replace({ query: { ...this.$route.query, user_id: newVal } })
             this.onNewUserId(newVal)
         },
     },
@@ -373,7 +373,7 @@ export default {
         },
         onNewUserId(userId) {},
         async initSelection() {
-            const selectionId = this.$route.query.selectionId
+            const selectionId = this.$route.query.selection_id
             if (!selectionId) return
             this.fetchingData = true
 
@@ -400,7 +400,7 @@ export default {
         // Check if the selection is available
         this.initSelection()
 
-        const userId = this.$route.query.userId
+        const userId = this.$route.query.user_id
         const userIsAvailable = this.availableUsers.find(x => x.id == userId)
         if (userIsAvailable) {
             this.userId = userId
