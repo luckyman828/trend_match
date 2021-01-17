@@ -1324,6 +1324,10 @@ export default {
             state.currentSelection = selection
         },
         SET_CURRENT_SELECTIONS(state, selections) {
+            selections.map(selection => {
+                const isInState = state.selections.find(x => x.id == selection.id)
+                if (!isInState) state.selections.push(selection)
+            })
             // selections.map(selection => {
             //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
             // })

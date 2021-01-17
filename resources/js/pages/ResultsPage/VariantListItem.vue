@@ -18,7 +18,7 @@
                     {{ variant.ean }}
                 </div>
             </div>
-            <div class="assortment list-item">
+            <div class="assortment list-item" v-if="variant.extra_data && variant.extra_data.assortment">
                 <label>Assortment</label>
                 <div class="value">
                     {{ variant.extra_data.assortment }}

@@ -175,7 +175,8 @@ export default {
             file: ['getCurrentFile'],
         }),
         ...mapGetters('selections', {
-            availableSelections: ['getSelectionsAvailableForPresentation'],
+            allSelections: 'getSelections',
+            availableSelections: 'getSelectionsAvailableForPresentation',
         }),
         ...mapGetters('products', {
             allProducts: 'products',
