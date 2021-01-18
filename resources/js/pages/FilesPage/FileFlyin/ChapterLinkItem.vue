@@ -2,7 +2,7 @@
     <div class="rule-item flex-list center-v md">
         <BaseDropdownInputField
             class="combinator-field"
-            v-if="index == 0"
+            v-if="ruleIndex == 0"
             type="radio"
             innerLabel="Combinator"
             value="WHERE"
@@ -18,14 +18,13 @@
             @input="$emit('update:filterCombinator', $event)"
         />
         <BaseDropdownInputField
-            class="rule-name-field"
-            innerLabel="Field"
-            v-model="chapterRule.name"
+            class="linked-chapter-field"
+            innerLabel="Chapter"
+            v-model="chapterLink.linkedChapterId"
             type="radio"
-            :options="availableRules"
-            nameKey="displayName"
-            valueKey="name"
-            @input="onRuleChange"
+            :options="availableChapters"
+            nameKey="name"
+            valueKey="id"
         />
         <BaseDropdownInputField
             class="operator-field"
@@ -59,8 +58,7 @@
             class="value-field"
             v-model="chapterRule.value"
         />
-
-        <BaseButton buttonClass="invisible ghost-hover dark" :disabled="chapterRuleCount <= 1" @click="$emit('remove')"
+        <BaseButton buttonClass="invisible ghost-hover dark" @click="$emit('remove')"
             ><i class="far fa-trash"></i
         ></BaseButton>
     </div>
@@ -69,22 +67,24 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
-    name: 'chapterRuleItem',
+    name: 'chapterLinkItem',
     props: [
-        'chapterRule',
-        'index',
-        'availableCombinators',
-        'availableRules',
+        'chapter',
+        'chapterLink',
         'availableOperators',
+        'availableChapters',
         'filterCombinator',
-        'chapterRuleCount',
+        'availableCombinators',
     ],
     computed: {
         ...mapGetters('products', {
             products: 'products',
         }),
+        chapterRule() {
+            return this.chapterLink.rule
+        },
         mappedRule() {
-            return this.availableRules.find(rule => rule.name == this.chapterRule.name)
+            return this.chapterLink.rule
         },
         validOperatorNames() {
             if (!this.chapterRule.name) return []
@@ -148,14 +148,8 @@ export default {
             this.chapterRule.values = []
         },
     },
-    methods: {
-        onRuleChange() {
-            // Make sure the operator is valid for the rule
-            const operatorIsValid = this.validOperatorNames.includes(this.chapterRule.operator)
-            if (!operatorIsValid) {
-                this.chapterRule.operator = this.validOperatorNames[0]
-            }
-        },
+    created() {
+        if (!this.chapterLink.linkedChapterId) this.chapterLink.linkedChapterId = this.availableChapters[0].id
     },
 }
 </script>

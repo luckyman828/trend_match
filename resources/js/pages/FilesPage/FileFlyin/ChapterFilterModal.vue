@@ -7,25 +7,50 @@
         subHeader="Chapter settings"
     >
         <h3>Show products...</h3>
-        <div class="rule-item-list flex-list flex-v" v-if="show && !status">
-            <ChapterRuleItem
-                v-for="(chapterRule, index) in chapterRules"
-                :key="chapterRule.key"
-                :chapterRule="chapterRule"
-                :index="index"
-                :availableCombinators="availableCombinators"
-                :availableOperators="availableOperators"
-                :availableRules="availableRules"
-                :filterCombinator.sync="filterCombinator"
-                :chapterRuleCount="chapterRules.length"
-                @remove="onRemoveRule(index)"
-            />
-            <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
-                <i class="far fa-plus"></i>
-                <span>Add Filter</span>
-            </button>
+        <template v-if="show && !status">
+            <div class="rule-item-list flex-list flex-v">
+                <ChapterRuleItem
+                    v-for="(chapterRule, index) in chapterRules"
+                    :key="chapterRule.key"
+                    :chapterRule="chapterRule"
+                    :index="index"
+                    :availableCombinators="availableCombinators"
+                    :availableOperators="availableOperators"
+                    :availableRules="availableRules"
+                    :filterCombinator.sync="filterCombinator"
+                    :chapterRuleCount="chapterRules.length"
+                    @remove="onRemoveRule(index)"
+                />
+                <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
+                    <i class="far fa-plus"></i>
+                    <span>Add Filter</span>
+                </button>
+            </div>
+            <div class="chapter-link rule-item-list" v-if="availableChapters.length > 0">
+                <h3>And.. Chapter action is</h3>
+                <button
+                    class="ghost-item invisible primary ghost-hover"
+                    v-if="!hasChapterLink"
+                    @click="hasChapterLink = true"
+                >
+                    <i class="far fa-plus"></i>
+                    <span>Add Chapter Action Filter</span>
+                </button>
+                <template v-if="hasChapterLink">
+                    <ChapterLinkItem
+                        :chapterLink="chapterLink"
+                        :availableOperators="availableOperators"
+                        :chapter="selection"
+                        :availableChapters="availableChapters"
+                        :filterCombinator.sync="filterCombinator"
+                        :availableCombinators="availableCombinators"
+                        @remove="hasChapterLink = false"
+                    />
+                </template>
+            </div>
+
             <button class="dark full-width lg" @click="onSubmit"><span>Save Chapter</span></button>
-        </div>
+        </template>
         <BaseLoader v-else :msg="status" />
     </BaseModal>
 </template>
@@ -33,9 +58,10 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import ChapterRuleItem from './ChapterRuleItem'
+import ChapterLinkItem from './ChapterLinkItem'
 export default {
     name: 'chapterFilterModal',
-    components: { ChapterRuleItem },
+    components: { ChapterRuleItem, ChapterLinkItem },
     props: ['show', 'selection'],
     data: function() {
         return {
@@ -44,6 +70,20 @@ export default {
             selectionIdFetchedFrom: null,
             filterCombinator: 'AND',
             chapterRules: [],
+            hasChapterLink: false,
+            chapterLink: {
+                rule: {
+                    displayName: 'Chapter Alignment',
+                    name: 'ParentSelectionAlignment',
+                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    type: 'array',
+                    operator: 'Equal',
+                    value: null,
+                    values: [],
+                    key: this.$uuid.v4(),
+                },
+                linkedChapterId: null,
+            },
         }
     },
     computed: {
@@ -56,6 +96,12 @@ export default {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
         }),
+        ...mapGetters('selections', {
+            allSelections: 'getSelections',
+        }),
+        availableChapters() {
+            return this.allSelections.filter(x => x.type == 'Chapter' && x.id != this.selection.id)
+        },
         availableCombinators() {
             return ['AND', 'OR']
         },
@@ -125,12 +171,12 @@ export default {
                     ],
                     type: 'number',
                 },
-                {
-                    displayName: 'Parent IN/OUT',
-                    name: 'ParentSelectionAlignment',
-                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
-                    type: 'array',
-                },
+                // {
+                //     displayName: 'Parent IN/OUT',
+                //     name: 'ParentSelectionAlignment',
+                //     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                //     type: 'array',
+                // },
             ]
             // baseRules.push(
             //     ...this.customFields.map(field => {
@@ -210,6 +256,9 @@ export default {
     created() {
         // this.init()
         // this.chapterRules.push(this.getDefaultRule())
+        this.chapterRules = this.chapterRules.filter(rule => {
+            rule.name != 'ParentSelectionAlignment'
+        })
     },
 }
 </script>
@@ -218,6 +267,9 @@ export default {
 @import '~@/_variables.scss';
 h3 {
     text-align: center;
+}
+.rule-item-list {
+    margin-bottom: 16px;
 }
 .ghost-item {
     width: 100%;
