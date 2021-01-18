@@ -243,13 +243,6 @@ export default {
             this.onReset()
         },
         setKeyValue(srcProduct, targetProduct, key, strategy) {
-            // console.log(
-            //     'set key value',
-            //     JSON.parse(JSON.stringify(srcProduct)),
-            //     JSON.parse(JSON.stringify(targetProduct)),
-            //     key,
-            //     strategy
-            // )
             if (srcProduct[key] == null || key == 'id') return // Don't do anything if we don't have a value
 
             // If the product key value is an array (variants, prices, assortments, eans)
@@ -267,19 +260,28 @@ export default {
                                 const isMatching =
                                     existingArrayItem[itemKey] != null &&
                                     typeof existingArrayItem[itemKey] == 'string' &&
-                                    existingArrayItem[itemKey] == newArrayItem[itemKey]
+                                    typeof newArrayItem[itemKey] == 'string' &&
+                                    existingArrayItem[itemKey].toLowerCase() == newArrayItem[itemKey].toLowerCase()
                                 return isMatching
                             })
                         )
 
                         // If we found an existing match, we want to update that match
                         if (existingArrayItem) {
+                            // Only update existing variants if the setting is set
+                            if (key == 'variants' && !this.uploadStrategy.updateExistingVariants) {
+                                return
+                            }
+
                             Object.keys(existingArrayItem).map(itemKey => {
                                 // Call this function recursively (it doens't matter that it isnt actually a product)
                                 this.setKeyValue(newArrayItem, existingArrayItem, itemKey, strategy)
                             })
                             return
                         }
+                        // Check if we are adding variants, and want to add extra variants
+                        if (key == 'variants' && !this.uploadStrategy.createNewVariants) return
+
                         // If we have no existing array item, but we have a new one - push it!
                         productArray.push(newArrayItem)
                     }

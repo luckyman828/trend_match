@@ -204,7 +204,12 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             if (!options || options.scopes.find(x => x.name == 'assortments').enabled) {
                 baseProduct.assortments = []
             }
-            if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
+            if (
+                !options ||
+                options.fields.find(x => x.name == 'eans').enabled ||
+                options.scopes.find(x => x.name == 'variants').enabled
+            )
+                baseProduct.eans = []
             if (!options || options.fields.find(x => x.name == 'assortment_sizes').enabled)
                 baseProduct.assortment_sizes = []
             if (!options || options.fields.find(x => x.name == 'delivery_dates').enabled)
@@ -321,10 +326,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 // START MAP VARIANTS
                 //Don't set name or variant of variants
                 if (['variant', 'color'].includes(field.name)) return
-                if (
-                    product.variants &&
-                    (field.scope == 'variants' || field.scope == 'images' || field.name == 'eans')
-                ) {
+                if (product.variants && (field.scope == 'variants' || field.scope == 'images')) {
                     let variantFieldHasBeenProcessed
                     // Find all variants of this row
                     for (let i = 0; i < Math.max(colorFields.length, 1); i++) {
@@ -512,6 +514,13 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 if (variant.variant) nameComponents.push(variant.variant)
                 const newName = nameComponents.join([' - '])
                 variant.name = newName
+
+                // Remove empty variant ean_sizes
+                for (let i = variant.ean_sizes.length - 1; i >= 0; i--) {
+                    const eanSize = variant.ean_sizes[i]
+                    const isEmpty = !eanSize.size && !eanSize.ean
+                    if (isEmpty) variant.ean_sizes.splice(i, 1)
+                }
             })
         }
     })
