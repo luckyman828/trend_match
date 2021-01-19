@@ -56,6 +56,7 @@ export default {
     .main {
         overflow: auto;
         flex: 1;
+        padding-bottom: 100px;
     }
     .footer {
         width: 100%;

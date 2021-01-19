@@ -15,6 +15,7 @@
 
             <template v-if="playerStarted">
                 <VideoTimeline />
+                <!-- <VolumeControl class="volume-control" /> -->
                 <ProductActions @show-chat="showChatInput = true" />
                 <ChatInput v-if="showChatInput" @close="showChatInput = false" />
                 <ChatArea />
@@ -81,6 +82,7 @@ import ChatInput from './ChatInput'
 import ChatArea from './ChatArea'
 import BeforeStartScreen from './BeforeStartScreen'
 import CartDrawer from './CartDrawer/'
+import VolumeControl from '../../components/common/VideoPlayer/VolumeControl.vue'
 
 export default {
     name: 'mobileVideoPresentationPage',
@@ -96,6 +98,7 @@ export default {
         BeforeStartScreen,
         ChatInput,
         ChatArea,
+        VolumeControl,
     },
     data: function() {
         return {
@@ -119,6 +122,7 @@ export default {
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
             playerStatus: 'getStatus',
+            desiredStatus: 'getDesiredStatus',
             videoType: 'getVideoType',
             videoDuration: 'getDuration',
             isLive: 'getIsLive',
@@ -156,7 +160,7 @@ export default {
             this.playerStarted = true
             const interval = 1000
             this.playerStartedTester = setInterval(() => {
-                if (!this.isPlaying) {
+                if (!this.isPlaying && this.desiredStatus == 'playing') {
                     this.togglePlaying()
                 } else {
                     clearInterval(this.playerStartedTester)
