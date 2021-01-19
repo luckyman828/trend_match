@@ -35,7 +35,6 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../components/common/VideoPlayer/'
 import VideoTimeline from '../../components/common/VideoPlayer/VideoTimeline'
-import PlayerControls from '../WatchVideoPresentationPage/PlayerControls'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
 import ProductActions from './ProductActions'
@@ -55,7 +54,6 @@ export default {
         ProductDetailsDrawer,
         ProductPreview,
         ProductActions,
-        PlayerControls,
         CartDrawer,
         BeforeStartScreen,
         ChatInput,
@@ -116,11 +114,13 @@ export default {
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
+        ...mapMutations('videoPlayer', ['SET_DESIRED_STATUS']),
         ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_SIDEBAR_PRODUCT']),
         onStartPlaying() {
             this.togglePlaying()
             this.playerStarted = true
             const interval = 1000
+            this.SET_DESIRED_STATUS('playing')
             this.playerStartedTester = setInterval(() => {
                 if (!this.isPlaying && this.desiredStatus == 'playing') {
                     this.togglePlaying()
