@@ -277,7 +277,7 @@ export default {
     z-index: 2;
     pointer-events: none;
     transition: background $videoPauseTransition;
-    > * {
+    > *:not(.drawer-wrapper) {
         pointer-events: all;
     }
 }

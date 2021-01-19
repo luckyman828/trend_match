@@ -21,12 +21,13 @@ export default {
 
 <style scoped lang="scss">
 .drawer-wrapper {
-    // position: absolute;
-    // width: 100%;
-    // height: 100%;
-    // left: 0;
-    // top: 0;
-    // z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+    pointer-events: none;
     .overlay {
         display: none;
         z-index: 1;
@@ -56,6 +57,7 @@ export default {
     }
     &.show {
         z-index: 1;
+        pointer-events: all;
         .drawer {
             transform: none;
         }

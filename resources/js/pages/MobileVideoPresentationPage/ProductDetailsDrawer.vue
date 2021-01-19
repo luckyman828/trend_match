@@ -125,7 +125,6 @@ export default {
 @import '~@/_variables.scss';
 
 .product-details-drawer {
-    pointer-events: all;
     line-height: 1.4;
     .product-name {
         max-width: 50%;

@@ -24,6 +24,7 @@
                     :product="sidebarProduct"
                     @close="SET_SIDEBAR_PRODUCT(null)"
                 />
+                <CartDrawer />
             </template>
             <!-- <div class="watch-overlay">
                 <div class="top-items flex-list md">
@@ -75,11 +76,11 @@ import PlayerControls from '../WatchVideoPresentationPage/PlayerControls'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
 import ProductActions from './ProductActions'
-import CartSidebar from './CartSidebar/'
 import VideoTitle from './VideoTitle'
 import ChatInput from './ChatInput'
 import ChatArea from './ChatArea'
 import BeforeStartScreen from './BeforeStartScreen'
+import CartDrawer from './CartDrawer/'
 
 export default {
     name: 'mobileVideoPresentationPage',
@@ -91,7 +92,7 @@ export default {
         ProductPreview,
         ProductActions,
         PlayerControls,
-        CartSidebar,
+        CartDrawer,
         BeforeStartScreen,
         ChatInput,
         ChatArea,
