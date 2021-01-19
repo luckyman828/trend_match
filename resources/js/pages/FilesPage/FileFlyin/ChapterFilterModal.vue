@@ -38,6 +38,7 @@
                 </button>
                 <template v-if="hasChapterLink">
                     <ChapterLinkItem
+                        :ruleIndex="chapterRules.length"
                         :chapterLink="chapterLink"
                         :availableOperators="availableOperators"
                         :chapter="selection"
@@ -194,6 +195,20 @@ export default {
         show(newVal) {
             if (newVal) {
                 this.init()
+            } else {
+                this.chapterLink = {
+                    rule: {
+                        displayName: 'Chapter Alignment',
+                        name: 'ParentSelectionAlignment',
+                        validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                        type: 'array',
+                        operator: 'Equal',
+                        value: null,
+                        values: [],
+                        key: this.$uuid.v4(),
+                    },
+                    linkedChapterId: null,
+                }
             }
         },
     },
@@ -209,11 +224,24 @@ export default {
 
                 this.filterCombinator = chapterRules.relation
                 this.chapterRules = chapterRules.rules
-                    ? chapterRules.rules.map(rule => {
-                          rule.key = this.$uuid.v4()
-                          return rule
-                      })
+                    ? chapterRules.rules
+                          .filter(rule => rule.name != 'ParentSelectionAlignment')
+                          .map(rule => {
+                              rule.key = this.$uuid.v4()
+                              return rule
+                          })
                     : []
+
+                if (parseInt(this.selection.linked_chapter_id)) {
+                    const actionRule =
+                        chapterRules.rules && chapterRules.rules.find(rule => rule.name == 'ParentSelectionAlignment')
+                    if (actionRule) {
+                        Object.assign(this.chapterLink.rule, actionRule)
+                    }
+                    this.hasChapterLink = true
+                    this.chapterLink.linkedChapterId = this.selection.linked_chapter_id
+                } else {
+                }
             }
             if (this.chapterRules.length <= 0) {
                 this.chapterRules.push(this.getDefaultRule())
@@ -248,6 +276,7 @@ export default {
                 selection: this.selection,
                 chapterRules: this.chapterRules,
                 combinator: this.filterCombinator,
+                chapterLink: this.hasChapterLink ? this.chapterLink : null,
             })
             this.status = null
             this.$emit('close')
@@ -256,9 +285,6 @@ export default {
     created() {
         // this.init()
         // this.chapterRules.push(this.getDefaultRule())
-        this.chapterRules = this.chapterRules.filter(rule => {
-            rule.name != 'ParentSelectionAlignment'
-        })
     },
 }
 </script>

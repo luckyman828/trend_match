@@ -75,6 +75,7 @@ export default {
         'availableChapters',
         'filterCombinator',
         'availableCombinators',
+        'ruleIndex',
     ],
     computed: {
         ...mapGetters('products', {

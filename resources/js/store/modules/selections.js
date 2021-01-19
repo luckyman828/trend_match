@@ -1283,11 +1283,33 @@ export default {
                 })
             return chapterRules
         },
-        async updateChapterRules({ commit }, { selection, chapterRules, combinator }) {
+        async updateChapterRules({ commit }, { selection, chapterRules, combinator, chapterLink }) {
+            const rulesToPush = [...chapterRules]
+
+            // Handle Chapter link
+            if (chapterLink) {
+                // Add chapter link
+                console.log('set chapter link')
+                const linkApiUrl = `selections/${selection.id}/chapter/link/${chapterLink.linkedChapterId}`
+                selection.linked_chapter_id = chapterLink.linkedChapterId
+                await axios.put(linkApiUrl)
+                // Add action rule
+                rulesToPush.push(chapterLink.rule)
+            } else if (selection.linked_chapter_id) {
+                const linkApiUrl = `selections/${selection.id}/chapter/link`
+                await axios.delete(linkApiUrl)
+                // Remove the parent action rule if any
+                const ruleIndex = rulesToPush.findIndex(rule => (rule.name = 'ParentSelectionAlignment'))
+                if (ruleIndex >= 0) {
+                    rulesToPush.splice(ruleIndex, 1)
+                    chapterRules.splice(ruleIndex, 1)
+                }
+            }
+
             const apiUrl = `selections/${selection.id}/chapter`
             await axios
                 .put(apiUrl, {
-                    rules: chapterRules,
+                    rules: rulesToPush,
                     relation: combinator,
                 })
                 .then(response => {
