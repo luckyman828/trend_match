@@ -27,44 +27,6 @@
                 />
                 <CartDrawer />
             </template>
-            <!-- <div class="watch-overlay">
-                <div class="top-items flex-list md">
-                    <button
-                        class="dark blur circle"
-                        @click="
-                            $router.push({
-                                name: 'selection',
-                                params: { fileId: selection.file_id, selectionId: selection.id },
-                            })
-                        "
-                    >
-                        <i class="fal fa-arrow-left"></i>
-                    </button>
-                    <div class="flex-list flex-v xs">
-                        <span class="selection-name">{{ selection.name }}</span>
-                        <span class="brand-name">{{ workspace.title }}</span>
-                    </div>
-                </div>
-                <EndedOverlay
-                    v-if="playerStatus == 'ended'"
-                    @view-cart-ins="
-                        $refs.cartSidebar.show = true
-                        $refs.cartSidebar.cartView = 'ins'
-                    "
-                />
-                <template v-if="playerStarted">
-                    <ProductActionSelector />
-
-                    <CartSidebar :show="showCart" @close="showCart = false" v-slot="slotProps">
-                        <button class="pill white" @click="showCart = true">
-                            <i class="far fa-heart"></i>
-                            <div class="counter circle xs black">{{ slotProps.ins.length }}</div>
-                        </button>
-                    </CartSidebar>
-                    <ProductPreview @click.native="showProductDrawer = true" />
-                    
-                </template>
-            </div> -->
         </VideoPlayer>
     </div>
 </template>

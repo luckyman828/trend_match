@@ -1,5 +1,9 @@
 <template>
-    <div class="chat-area" @click="onClick">
+    <div class="chat-area" @click="onClick" v-touch:swipe.left="onHide" :class="{ show: show }">
+        <button class="white trigger pill" v-if="!show" @click="onShow" v-touch:swipe.right="onShow">
+            <i class="far fa-comments"></i>
+            <i class="far fa-angle-right"></i>
+        </button>
         <div class="chat-message-list" ref="messageList" :class="{ highlight: highlight }">
             <BaseLoader msg="Loading more" v-if="isFetchingMore" />
             <button class="white pill sm ghost" v-else-if="nextCursor" @click="onFetchMore">
@@ -31,6 +35,7 @@ export default {
         return {
             isFetchingMore: false,
             highlight: false,
+            show: true,
         }
     },
     computed: {
@@ -89,7 +94,13 @@ export default {
             })
         },
         onClick(e) {
-            if (!e.target.closest('.chat-message')) this.togglePlaying()
+            if (!e.target.closest('.chat-message') && !e.target.closest('.trigger')) this.togglePlaying()
+        },
+        onHide() {
+            this.show = false
+        },
+        onShow() {
+            this.show = true
         },
     },
     mounted() {
@@ -120,6 +131,20 @@ export default {
     .desired-paused & {
         transform: translateY(-20px);
     }
+    &.show {
+        .chat-message-list {
+            transform: none;
+        }
+    }
+    .trigger {
+        position: absolute;
+        top: 35%;
+        left: -8px;
+        i:last-child {
+            width: 8px;
+            margin-right: 8px;
+        }
+    }
 }
 .chat-message-list {
     // display: flex;
@@ -131,6 +156,8 @@ export default {
     padding-right: 8px;
     margin-right: -8px;
     justify-content: flex-end;
+    transition: transform 0.2s ease-out;
+    transform: translateX(calc(-100% - 16px));
     &::-webkit-scrollbar {
         width: 4px;
     }
