@@ -175,7 +175,8 @@ export default {
             file: ['getCurrentFile'],
         }),
         ...mapGetters('selections', {
-            availableSelections: ['getSelectionsAvailableForPresentation'],
+            allSelections: 'getSelections',
+            availableSelections: 'getSelectionsAvailableForPresentation',
         }),
         ...mapGetters('products', {
             allProducts: 'products',
@@ -352,8 +353,8 @@ export default {
             this.onNewSelectionId(newVal)
         },
         userId(newVal) {
-            if (this.$route.query.userId == newVal) return
-            this.$router.replace({ query: { ...this.$route.query, userId: newVal } })
+            if (this.$route.query.user_id == newVal) return
+            this.$router.replace({ query: { ...this.$route.query, user_id: newVal } })
             this.onNewUserId(newVal)
         },
     },
