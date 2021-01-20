@@ -9,6 +9,7 @@
             { 'has-label': label },
             { 'has-inner-label': innerLabel },
             { 'has-icon-right': !!$slots.default },
+            inputClass,
         ]"
     >
         <div
@@ -184,6 +185,16 @@ export default {
             overflow: hidden;
             width: calc(100% - 32px);
             text-overflow: ellipsis;
+        }
+        &.sm,
+        &.small {
+            .input-wrapper {
+                padding-top: 8px;
+            }
+            .inner-label {
+                top: 0;
+                font-size: 8px;
+            }
         }
     }
     &.error {

@@ -55,8 +55,14 @@ export default {
         border-radius: 4px;
         padding: 4px 8px;
         box-shadow: $shadowEl;
+        .details {
+            overflow: hidden;
+            white-space: nowrap;
+        }
         .name {
             font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .img-wrapper {
             width: 40px;
@@ -79,6 +85,7 @@ export default {
         }
         .action-count {
             margin-left: auto;
+            white-space: nowrap;
         }
     }
 }

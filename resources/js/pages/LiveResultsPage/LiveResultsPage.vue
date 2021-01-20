@@ -6,18 +6,30 @@
             </div>
 
             <div class="center flex-list">
-                <button
-                    class="white"
-                    :class="{ 'is-current': currentSelectionId == selection.id }"
-                    v-for="selection in availableSelections"
-                    :key="selection.id"
-                    @click="onNewSelectionId(selection.id)"
-                >
-                    <SelectionIcon :selection="selection" />
-                    <span>{{ selection.name }}</span>
-                </button>
+                <div class="selection-list-item" v-for="selection in selectedSelections" :key="selection.id">
+                    <button
+                        class="white"
+                        :class="{ 'is-current': currentSelectionId == selection.id }"
+                        @click="onNewSelectionId(selection.id)"
+                    >
+                        <SelectionIcon :selection="selection" />
+                        <span>{{ selection.name }}</span>
+                    </button>
+                    <div class="timer" v-if="currentSelectionId == selection.id">
+                        <svg>
+                            <rect class="animate" ref="countdown" :style="animationDuration" />
+                        </svg>
+                    </div>
+                </div>
             </div>
             <div class="right flex-list">
+                <BaseDropdownInputField
+                    :options="availableSelections"
+                    type="checkbox"
+                    placeholder="Choose Selections"
+                    v-model="selectedSelections"
+                    inputClass="sm"
+                />
                 <BaseButton buttonClass="primary" :disabled="true" disabledTooltip="Not implemented yet.">
                     <span>Share</span>
                     <i class="fas fa-share"></i>
@@ -27,7 +39,7 @@
 
         <div class="body">
             <BaseLoader v-if="fetchingData" />
-            <div v-else class="flex-list lg">
+            <div v-else class="columns col-3">
                 <div class="product-column">
                     <h3>Top 10 Most IN</h3>
                     <div class="product-list">
@@ -73,6 +85,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SelectionIcon from '../../components/common/SelectionIcon.vue'
 import ProductListItem from './ProductListItem'
+import Timer from '../../helpers/Timer'
 export default {
     name: 'liveResults',
     components: {
@@ -83,6 +96,9 @@ export default {
         return {
             currentSelectionId: null,
             fetchingData: false,
+            selectedSelections: [],
+            cycleTimer: null,
+            cycleDuration: 5000,
         }
     },
     computed: {
@@ -95,6 +111,9 @@ export default {
         ...mapGetters('products', {
             allProducts: ['getProducts'],
         }),
+        animationDuration() {
+            return `animation-duration: ${this.cycleDuration}ms`
+        },
         topProductsByAction() {
             const getFeedbackCount = function(product, actions) {
                 const selectionInput = product.getActiveSelectionInput
@@ -127,6 +146,11 @@ export default {
                 focus: topFocus.slice(0, limit),
             }
         },
+        onTimeout() {
+            if (this.snackbar.timeoutCallback) {
+                this.snackbar.timeoutCallback()
+            }
+        },
     },
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
@@ -140,6 +164,17 @@ export default {
                 await this.fetchSelectionProducts(selection)
             }
             this.fetchingData = false
+
+            const duration = 5000
+            this.cycleTimer = new Timer(() => {
+                this.cycleNextSelection()
+            }, duration)
+        },
+        cycleNextSelection() {
+            const index = this.selectedSelections.findIndex(x => x.id == this.currentSelectionId)
+            const isLast = index == this.selectedSelections.length - 1
+            const newIndex = isLast ? 0 : index + 1
+            this.onNewSelectionId(this.selectedSelections[newIndex].id)
         },
     },
 }
@@ -170,6 +205,8 @@ export default {
             justify-content: flex-end;
         }
         button {
+            min-width: 140px;
+            justify-content: flex-start;
             &:not(.is-current) {
                 opacity: 0.5;
                 &:hover {
@@ -178,11 +215,54 @@ export default {
             }
         }
     }
+    .columns {
+        grid-column-gap: 40px;
+    }
     .product-column {
         flex: 1;
         h3 {
             margin-left: 20px;
         }
+    }
+    .selection-list-item {
+        position: relative;
+        .timer {
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+            svg {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                rect {
+                    width: 0;
+                    height: 100%;
+                    fill: white;
+                    &.animate {
+                        animation: animateWidth linear forwards;
+                    }
+                }
+            }
+        }
+        // &:hover {
+        //     .timer svg rect {
+        //         animation-play-state: paused;
+        //     }
+        // }
+    }
+}
+@keyframes animateWidth {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
     }
 }
 </style>
