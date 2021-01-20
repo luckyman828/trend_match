@@ -68,23 +68,10 @@ export default {
         return {
             status: true,
             fileIdFetchedFrom: null,
-            selectionIdFetchedFrom: null,
             filterCombinator: 'AND',
             chapterRules: [],
             hasChapterLink: false,
-            chapterLink: {
-                rule: {
-                    displayName: 'Chapter Alignment',
-                    name: 'ParentSelectionAlignment',
-                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
-                    type: 'array',
-                    operator: 'Equal',
-                    value: null,
-                    values: [],
-                    key: this.$uuid.v4(),
-                },
-                linkedChapterId: null,
-            },
+            chapterLink: null,
         }
     },
     computed: {
@@ -215,37 +202,49 @@ export default {
     methods: {
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('selections', ['fetchChapterRules', 'updateChapterRules']),
+        getDefaultChapterLink() {
+            return {
+                rule: {
+                    displayName: 'Chapter Alignment',
+                    name: 'ParentSelectionAlignment',
+                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    type: 'array',
+                    operator: 'Equal',
+                    value: null,
+                    values: [],
+                    key: this.$uuid.v4(),
+                },
+                linkedChapterId: null,
+            }
+        },
         async init() {
             this.status = 'Fetching rules'
             // Fetch chapter rules
-            if (this.selectionIdFetchedFrom != this.selection.id) {
-                this.selectionIdFetchedFrom = this.selection.id
-                const chapterRules = await this.fetchChapterRules({ selection: this.selection })
+            const chapterRules = await this.fetchChapterRules({ selection: this.selection })
+            this.chapterLink = this.getDefaultChapterLink()
 
-                this.filterCombinator = chapterRules.relation
-                this.chapterRules = chapterRules.rules
-                    ? chapterRules.rules
-                          .filter(rule => rule.name != 'ParentSelectionAlignment')
-                          .map(rule => {
-                              rule.key = this.$uuid.v4()
-                              return rule
-                          })
-                    : []
+            console.log('this chapterlink', this.chapterLink)
 
-                if (parseInt(this.selection.linked_chapter_id)) {
-                    const actionRule =
-                        chapterRules.rules && chapterRules.rules.find(rule => rule.name == 'ParentSelectionAlignment')
-                    if (actionRule) {
-                        Object.assign(this.chapterLink.rule, actionRule)
-                    }
-                    this.hasChapterLink = true
-                    this.chapterLink.linkedChapterId = this.selection.linked_chapter_id
-                } else {
-                    this.hasChapterLink = false
+            this.filterCombinator = chapterRules.relation
+            this.chapterRules = chapterRules.rules
+                ? chapterRules.rules
+                      .filter(rule => rule.name != 'ParentSelectionAlignment')
+                      .map(rule => {
+                          rule.key = this.$uuid.v4()
+                          return rule
+                      })
+                : []
+
+            if (parseInt(this.selection.linked_chapter_id)) {
+                const actionRule =
+                    chapterRules.rules && chapterRules.rules.find(rule => rule.name == 'ParentSelectionAlignment')
+                if (actionRule) {
+                    Object.assign(this.chapterLink.rule, actionRule)
                 }
-            }
-            if (this.chapterRules.length <= 0) {
-                this.chapterRules.push(this.getDefaultRule())
+                this.hasChapterLink = true
+                this.chapterLink.linkedChapterId = this.selection.linked_chapter_id
+            } else {
+                this.hasChapterLink = false
             }
 
             // Check if we have any products fetched, else fetch them

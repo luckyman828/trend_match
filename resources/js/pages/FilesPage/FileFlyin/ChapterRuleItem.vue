@@ -60,7 +60,7 @@
             v-model="chapterRule.value"
         />
 
-        <BaseButton buttonClass="invisible ghost-hover dark" :disabled="chapterRuleCount <= 1" @click="$emit('remove')"
+        <BaseButton buttonClass="invisible ghost-hover dark" @click="$emit('remove')"
             ><i class="far fa-trash"></i
         ></BaseButton>
     </div>
