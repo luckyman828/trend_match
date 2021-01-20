@@ -142,6 +142,7 @@ export default {
                 'mobileVideoPresentation',
                 'mobileVideoViewer',
                 'results',
+                'liveResults',
             ].includes(this.$route.name)
         },
         hideCrisp() {
@@ -151,6 +152,7 @@ export default {
                 'watchVideoPresentation',
                 'editVideoPresentation',
                 'mobileVideoPresentation',
+                'liveResults',
             ].includes(this.$route.name)
         },
     },

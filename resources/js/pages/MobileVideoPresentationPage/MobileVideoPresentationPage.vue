@@ -201,7 +201,6 @@ export default {
         },
     },
     mounted() {
-        alert('scroll down a little')
         /* iOS re-orientation fix */
         if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
             /* iOS hides Safari address bar */
