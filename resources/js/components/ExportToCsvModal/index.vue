@@ -546,7 +546,7 @@ export default {
                             ...extraFields
                                 .filter(x => x.belong_to == 'Variant')
                                 .map(extraField => {
-                                    const propValue = variant.extra_data[extraField.name]
+                                    const propValue = variant.extra_data && variant.extra_data[extraField.name]
                                     return Array.isArray(propValue) ? propValue.join(', ') : propValue
                                 })
                         )

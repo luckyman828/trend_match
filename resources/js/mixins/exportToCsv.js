@@ -61,7 +61,8 @@ export default {
                             if (variantKeyScope) {
                                 const variantScopeKey = scopeKey.slice(variantScopeIndex + 1)
                                 if (variantKeyScope == 'extra_data') {
-                                    const keyValue = variant ? variant.extra_data[variantScopeKey] : null
+                                    const keyValue =
+                                        variant && variant.extra_data ? variant.extra_data[variantScopeKey] : null
                                     if (Array.isArray(keyValue)) {
                                         if (isRowKey) {
                                             // Instantiate extra rows
