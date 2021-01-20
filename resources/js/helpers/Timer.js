@@ -5,6 +5,11 @@ var Timer = function(callback, delay, resetCallback) {
         remaining = delay,
         lastReset
 
+    this.getRemaining = function() {
+        // let newRemaining = remaining -= Date.now() - start
+        return remaining - (Date.now() - start)
+    }
+
     this.pause = function() {
         window.clearTimeout(timerId)
         remaining -= Date.now() - start
@@ -22,6 +27,10 @@ var Timer = function(callback, delay, resetCallback) {
         window.clearTimeout(timerId)
         timerId = window.setTimeout(callback, remaining)
         resetCallback()
+    }
+
+    this.clear = function() {
+        window.clearTimeout(timerId)
     }
 
     this.resume()

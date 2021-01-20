@@ -15,9 +15,9 @@
                         <SelectionIcon :selection="selection" />
                         <span>{{ selection.name }}</span>
                     </button>
-                    <div class="timer" v-if="currentSelectionId == selection.id">
+                    <div class="timer" v-if="cycleDuration && currentSelectionId == selection.id">
                         <svg>
-                            <rect class="animate" ref="countdown" :style="animationDuration" />
+                            <rect :class="{ animate: !!cycleTimer }" ref="countdown" :style="animationDuration" />
                         </svg>
                     </div>
                 </div>
@@ -29,6 +29,21 @@
                     placeholder="Choose Selections"
                     v-model="selectedSelections"
                     inputClass="sm"
+                />
+                <BaseDropdownInputField
+                    style="width:"
+                    :options="[
+                        { name: 'Static', value: 0 },
+                        { name: '5s', value: 5000 },
+                        { name: '10s', value: 10000 },
+                        { name: '20s', value: 20000 },
+                    ]"
+                    type="radio"
+                    placeholder="Set Interval"
+                    valueKey="value"
+                    v-model="cycleDuration"
+                    inputClass="sm"
+                    @input="onSetCycleDuration"
                 />
                 <BaseButton buttonClass="primary" :disabled="true" disabledTooltip="Not implemented yet.">
                     <span>Share</span>
@@ -98,7 +113,7 @@ export default {
             fetchingData: false,
             selectedSelections: [],
             cycleTimer: null,
-            cycleDuration: 5000,
+            cycleDuration: 0,
         }
     },
     computed: {
@@ -146,29 +161,32 @@ export default {
                 focus: topFocus.slice(0, limit),
             }
         },
-        onTimeout() {
-            if (this.snackbar.timeoutCallback) {
-                this.snackbar.timeoutCallback()
-            }
-        },
     },
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
+        ...mapMutations('products', ['SET_FEEDBACKS']),
         async onNewSelectionId(selectionId) {
             this.fetchingData = true
+            if (this.cycleTimer) {
+                this.cycleTimer.clear()
+            }
+            this.disconnectSignalR()
             this.currentSelectionId = selectionId
             const selection = this.availableSelections.find(x => x.id == selectionId)
             this.SET_CURRENT_SELECTIONS([selection])
             if (!this.allProducts[0].selectionInputList.find(x => x.selection_id == selectionId)) {
                 await this.fetchSelectionProducts(selection)
             }
+            this.connectToLiveUpdates()
             this.fetchingData = false
 
-            const duration = 5000
-            this.cycleTimer = new Timer(() => {
-                this.cycleNextSelection()
-            }, duration)
+            const duration = this.cycleDuration
+            if (this.cycleDuration) {
+                this.cycleTimer = new Timer(() => {
+                    this.cycleNextSelection()
+                }, duration)
+            }
         },
         cycleNextSelection() {
             const index = this.selectedSelections.findIndex(x => x.id == this.currentSelectionId)
@@ -176,6 +194,54 @@ export default {
             const newIndex = isLast ? 0 : index + 1
             this.onNewSelectionId(this.selectedSelections[newIndex].id)
         },
+        onSetCycleDuration(newDuration) {
+            if (this.cycleTimer) {
+                const remaining = this.cycleTimer.getRemaining()
+                this.cycleTimer.clear()
+
+                if (newDuration > 0) {
+                    this.cycleTimer = new Timer(() => {
+                        this.cycleNextSelection()
+                    }, newDuration - remaining)
+                }
+            }
+        },
+        async connectToLiveUpdates() {
+            const connection = this.$connection
+
+            // Subscribe to our selections
+            connection.invoke('Subscribe', this.currentSelectionId).catch(function(err) {
+                return console.error(err.toString())
+            })
+
+            // Feedback
+            connection.on('OnBulkFeedbackArrived', this.bulkFeedbackArrivedHandler)
+            connection.on('OnFeedbackArrived', this.feedbackArrivedHandler)
+        },
+        disconnectSignalR() {
+            const connection = this.$connection
+
+            this.$connection.invoke('UnSubscribeAll')
+
+            // Feedback
+            connection.off('OnBulkFeedbackArrived', this.bulkFeedbackArrivedHandler)
+            connection.off('OnFeedbackArrived', this.feedbackArrivedHandler)
+        },
+        bulkFeedbackArrivedHandler(selectionId, feedbacks) {
+            if (feedbacks[0].user_id != this.authUser.id) {
+                // console.log('bulk feedback arrived', selectionId, feedbacks)
+                this.SET_FEEDBACKS(feedbacks)
+            }
+        },
+        feedbackArrivedHandler(selectionId, feedback) {
+            if (feedback.user_id != this.authUser.id) {
+                // console.log('feedback arrived', selectionId, feedback)
+                this.SET_FEEDBACKS([feedback])
+            }
+        },
+    },
+    destroyed() {
+        this.disconnectSignalR()
     },
 }
 </script>
@@ -199,7 +265,7 @@ export default {
         }
         .center {
             justify-content: center;
-            flex: 3;
+            flex: 2;
         }
         .right {
             justify-content: flex-end;
