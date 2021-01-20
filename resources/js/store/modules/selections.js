@@ -1295,7 +1295,7 @@ export default {
                 await axios.put(linkApiUrl)
                 // Add action rule
                 rulesToPush.push(chapterLink.rule)
-            } else if (selection.linked_chapter_id) {
+            } else if (parseInt(selection.linked_chapter_id)) {
                 const linkApiUrl = `selections/${selection.id}/chapter/link`
                 await axios.delete(linkApiUrl)
                 // Remove the parent action rule if any

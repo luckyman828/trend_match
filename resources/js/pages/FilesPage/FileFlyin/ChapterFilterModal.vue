@@ -241,6 +241,7 @@ export default {
                     this.hasChapterLink = true
                     this.chapterLink.linkedChapterId = this.selection.linked_chapter_id
                 } else {
+                    this.hasChapterLink = false
                 }
             }
             if (this.chapterRules.length <= 0) {
