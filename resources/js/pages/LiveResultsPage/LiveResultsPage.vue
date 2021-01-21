@@ -2,7 +2,9 @@
     <div class="live-results-page">
         <div class="header flex-list min justify">
             <div class="left">
-                <h1>{{ file.name }}</h1>
+                <router-link :to="{ name: 'files' }">
+                    <h1>{{ file.name }}</h1>
+                </router-link>
             </div>
 
             <div class="center flex-list">
