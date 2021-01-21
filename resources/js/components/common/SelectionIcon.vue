@@ -2,9 +2,11 @@
     <i v-if="selection.type == 'Master'" class="fa-poll master" :class="selection.id ? 'fas' : 'far'"
         ><i class="fas fa-crown"></i
     ></i>
-    <i v-else-if="selection.type == 'Chapter'" class="fa-project-diagram master" :class="selection.id ? 'fas' : 'far'">
-        <i class="fas fa-filter"></i>
-    </i>
+    <i
+        v-else-if="selection.type == 'Chapter'"
+        class="fa-project-diagram master"
+        :class="selection.id ? 'fas' : 'far'"
+    />
     <i class="fa fa-poll" v-else></i>
 </template>
 
