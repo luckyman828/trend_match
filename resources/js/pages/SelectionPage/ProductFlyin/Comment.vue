@@ -3,7 +3,7 @@
         class="comment-wrapper"
         :class="[
             { own: comment.user_id == authUser.id },
-            { master: comment.selection.type == 'Master' },
+            { master: comment.selection && comment.selection.type == 'Master' },
             { 'has-traits': hasTraits },
             { 'edit-active': editActive },
         ]"
@@ -102,7 +102,7 @@ import SelectionChapterPill from '../../../components/common/SelectionChapterPil
 export default {
     name: 'comment',
     components: {
-        SelectionChapterPill
+        SelectionChapterPill,
     },
     props: ['comment', 'selectionInput', 'displayAuthor'],
     data: function() {
