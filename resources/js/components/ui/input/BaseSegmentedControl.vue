@@ -35,8 +35,11 @@ export default {
     padding: 2px;
     background: $grey;
     border-radius: 50px;
+    white-space: nowrap;
+    display: flex;
     cursor: pointer;
     .option {
+        display: flex;
         &:not(:first-child) {
             margin-left: 4px;
         }

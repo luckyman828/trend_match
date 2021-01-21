@@ -24,12 +24,12 @@
 <script>
 export default {
     name: 'productListItem',
-    props: ['product', 'index', 'actions'],
+    props: ['product', 'index', 'actions', 'actionScope'],
     computed: {
         actionCount() {
             const selectionInput = this.product.getActiveSelectionInput
             if (!selectionInput) return 0
-            return selectionInput.feedbacks.filter(feedback => this.actions.includes(feedback.action)).length
+            return selectionInput[this.actionScope].filter(feedback => this.actions.includes(feedback.action)).length
         },
     },
 }

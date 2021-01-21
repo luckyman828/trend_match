@@ -1,30 +1,39 @@
 <template>
     <div class="live-results-page">
         <div class="header flex-list min justify">
-            <div class="left">
+            <div class="left flex-list">
                 <router-link :to="{ name: 'files' }">
                     <h1>{{ file.name }}</h1>
                 </router-link>
-            </div>
-
-            <div class="center flex-list">
-                <div class="selection-list-item" v-for="selection in selectedSelections" :key="selection.id">
-                    <button
-                        class="white"
-                        :class="{ 'is-current': currentSelectionId == selection.id }"
-                        @click="onNewSelectionId(selection.id)"
-                    >
-                        <SelectionIcon :selection="selection" />
-                        <span>{{ selection.name }}</span>
-                    </button>
-                    <div class="timer" v-if="cycleDuration && currentSelectionId == selection.id">
-                        <svg>
-                            <rect :class="{ animate: !!cycleTimer }" ref="countdown" :style="animationDuration" />
-                        </svg>
+                <div class="selection-list flex-list">
+                    <div class="selection-list-item" v-for="selection in selectedSelections" :key="selection.id">
+                        <button
+                            class="white"
+                            :class="{ 'is-current': currentSelectionId == selection.id }"
+                            @click="onNewSelectionId(selection.id)"
+                        >
+                            <SelectionIcon :selection="selection" />
+                            <span>{{ selection.name }}</span>
+                        </button>
+                        <div class="timer" v-if="cycleDuration && currentSelectionId == selection.id">
+                            <svg>
+                                <rect :class="{ animate: !!cycleTimer }" ref="countdown" :style="animationDuration" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="right flex-list">
+
+            <div class="right flex-list center-v">
+                <BaseSegmentedControl
+                    :options="availableActionScopes"
+                    :currentOptionIndex="actionScopeIndex"
+                    sizeClass="sm"
+                    v-slot="slotProps"
+                    v-model="actionScopeIndex"
+                >
+                    <span>{{ slotProps.option.name }}</span>
+                </BaseSegmentedControl>
                 <BaseDropdownInputField
                     :options="availableSelections"
                     type="checkbox"
@@ -67,6 +76,7 @@
                             :product="product"
                             :index="index"
                             :actions="['Focus', 'In']"
+                            :actionScope="actionScope"
                         />
                     </div>
                 </div>
@@ -79,6 +89,7 @@
                             :product="product"
                             :index="index"
                             :actions="['Out']"
+                            :actionScope="actionScope"
                         />
                     </div>
                 </div>
@@ -91,6 +102,7 @@
                             :product="product"
                             :index="index"
                             :actions="['Focus']"
+                            :actionScope="actionScope"
                         />
                     </div>
                 </div>
@@ -117,6 +129,11 @@ export default {
             selectedSelections: [],
             cycleTimer: null,
             cycleDuration: 0,
+            availableActionScopes: [
+                { name: 'Feedback', value: 'feedbacks' },
+                { name: 'Alignment', value: 'actions' },
+            ],
+            actionScopeIndex: 0,
         }
     },
     computed: {
@@ -129,14 +146,18 @@ export default {
         ...mapGetters('products', {
             allProducts: ['getProducts'],
         }),
+        actionScope() {
+            return this.availableActionScopes[this.actionScopeIndex].value
+        },
         animationDuration() {
             return `animation-duration: ${this.cycleDuration}ms`
         },
         topProductsByAction() {
-            const getFeedbackCount = function(product, actions) {
+            const getFeedbackCount = (product, actions) => {
                 const selectionInput = product.getActiveSelectionInput
                 if (!selectionInput) return 0
-                const count = selectionInput.feedbacks.filter(feedback => actions.includes(feedback.action)).length
+                const count = selectionInput[this.actionScope].filter(feedback => actions.includes(feedback.action))
+                    .length
                 product[`acount_${actions[0]}`] = count
                 return count
             }
@@ -283,6 +304,16 @@ export default {
         > * {
             flex: 1;
             display: flex;
+        }
+        .left {
+            flex: 2;
+            a {
+                margin-right: 20px;
+            }
+            .selection-list {
+                margin-left: auto;
+                margin-right: 32px;
+            }
         }
         .center {
             justify-content: center;
