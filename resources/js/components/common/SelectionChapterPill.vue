@@ -1,5 +1,5 @@
 <template>
-    <div class="chapter pill xs" v-if="chapter">
+    <div class="chapter pill xs chapter-pill" v-if="chapter">
         <i class="fas fa-project-diagram"></i>
         <span>
             {{ chapter.name }}
@@ -26,5 +26,12 @@ export default {
 <style scoped lang="scss">
 i {
     margin-left: 4px;
+}
+.chapter-pill {
+    max-width: 100%;
+    > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 </style>

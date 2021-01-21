@@ -87,7 +87,11 @@
                             :key="chunk.selection.id"
                         >
                             <div class="section-header">
-                                <SelectionChapterPill class="chapter-pill" :selection="chunk.selection" />
+                                <SelectionChapterPill
+                                    class="chapter-pill"
+                                    :selection="chunk.selection"
+                                    v-if="!chunk.selection.type == 'Chapter'"
+                                />
                                 <SelectionIcon :selection="chunk.selection" />
                                 <span>{{ chunk.selection.name }}</span>
                             </div>
