@@ -63,6 +63,8 @@
                                     <BaseContextMenuItem
                                         iconClass="far fa-chart-bar"
                                         hotkey="KeyL"
+                                        :disabled="authUserWorkspaceRole != 'Admin'"
+                                        disabledTooltip="Only admins can view live results"
                                         @click="
                                             $router.push({ name: 'liveResults', params: { fileId: currentFile.id } })
                                         "
