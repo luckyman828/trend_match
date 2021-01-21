@@ -228,16 +228,10 @@ export default {
             connection.off('OnFeedbackArrived', this.feedbackArrivedHandler)
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
-            if (feedbacks[0].user_id != this.authUser.id) {
-                // console.log('bulk feedback arrived', selectionId, feedbacks)
-                this.SET_FEEDBACKS(feedbacks)
-            }
+            this.SET_FEEDBACKS(feedbacks)
         },
         feedbackArrivedHandler(selectionId, feedback) {
-            if (feedback.user_id != this.authUser.id) {
-                // console.log('feedback arrived', selectionId, feedback)
-                this.SET_FEEDBACKS([feedback])
-            }
+            this.SET_FEEDBACKS([feedback])
         },
     },
     destroyed() {
