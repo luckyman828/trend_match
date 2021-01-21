@@ -29,6 +29,7 @@
                     placeholder="Choose Selections"
                     v-model="selectedSelections"
                     inputClass="sm"
+                    @input="onSelectedSelectionChange"
                 />
                 <BaseDropdownInputField
                     style="width:"
@@ -45,7 +46,7 @@
                     inputClass="sm"
                     @input="onSetCycleDuration"
                 />
-                <BaseButton buttonClass="primary" :disabled="true" disabledTooltip="Not implemented yet.">
+                <BaseButton buttonClass="primary" @click="onShare">
                     <span>Share</span>
                     <i class="fas fa-share"></i>
                 </BaseButton>
@@ -133,18 +134,12 @@ export default {
             const getFeedbackCount = function(product, actions) {
                 const selectionInput = product.getActiveSelectionInput
                 if (!selectionInput) return 0
-                // console.log(
-                //     'get feedback count',
-                //     actions,
-                //     selectionInput.feedbacks.filter(feedback => actions.includes(feedback.action))
-                // )
                 const count = selectionInput.feedbacks.filter(feedback => actions.includes(feedback.action)).length
                 product[`acount_${actions[0]}`] = count
                 return count
             }
 
             const topIn = [...this.allProducts].sort((a, b) => {
-                // console.log('get top in', getFeedbackCount(a, ['Focus', 'In']), getFeedbackCount(b, ['Focus', 'In']))
                 return getFeedbackCount(a, ['In', 'Focus']) > getFeedbackCount(b, ['In', 'Focus']) ? -1 : 1
             })
             const topOut = [...this.allProducts].sort((a, b) => {
@@ -166,6 +161,7 @@ export default {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapMutations('products', ['SET_FEEDBACKS']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async onNewSelectionId(selectionId) {
             this.fetchingData = true
             if (this.cycleTimer) {
@@ -233,9 +229,38 @@ export default {
         feedbackArrivedHandler(selectionId, feedback) {
             this.SET_FEEDBACKS([feedback])
         },
+        onSelectedSelectionChange(newSelection) {
+            const newQueryValue = newSelection.map(x => x.id).join(',')
+            this.$router.replace({ query: { ...this.$route.query, selection_ids: newQueryValue } })
+        },
+        onShare() {
+            this.copyToClipboard(location.href)
+            this.SHOW_SNACKBAR({
+                type: 'info',
+                msg: 'Link copied to clipboard',
+                iconClass: 'far fa-info-circle',
+            })
+        },
     },
     destroyed() {
         this.disconnectSignalR()
+    },
+    created() {
+        // Get selections from url query params
+        const querySelectionsValue = this.$route.query.selection_ids
+        if (querySelectionsValue) {
+            const selectionIdList = querySelectionsValue.split(',')
+            // filter our list, to only include selections we have available
+            const querySelections = []
+            selectionIdList.map(selectionId => {
+                const selection = this.availableSelections.find(x => x.id == selectionId)
+                if (selection) querySelections.push(selection)
+            })
+            this.selectedSelections = querySelections
+            if (this.selectedSelections.length > 0) {
+                this.onNewSelectionId(this.selectedSelections[0].id)
+            }
+        }
     },
 }
 </script>
