@@ -6,27 +6,7 @@
         :header="selection ? selection.name : 'Unnamed'"
         subHeader="Chapter settings"
     >
-        <h3>Show products...</h3>
         <template v-if="show && !status">
-            <div class="rule-item-list flex-list flex-v">
-                <ChapterRuleItem
-                    v-for="(chapterRule, index) in chapterRules"
-                    :key="chapterRule.key"
-                    :chapterRule="chapterRule"
-                    :index="index"
-                    :availableCombinators="availableCombinators"
-                    :availableOperators="availableOperators"
-                    :availableRules="availableRules"
-                    :filterCombinator.sync="filterCombinator"
-                    :chapterRuleCount="chapterRules.length"
-                    @remove="onRemoveRule(index)"
-                />
-                <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
-                    <i class="far fa-plus"></i>
-                    <span>Add Filter</span>
-                </button>
-            </div>
-
             <div class="linked-chapter-section" v-if="availableChapters.length > 0">
                 <h3>Linked Chapter</h3>
                 <div class="rule-item-list">
@@ -39,11 +19,11 @@
                         <span>Add Linked Chapter</span>
                     </button>
                     <template v-else>
-                        <div class="flex-list center-v md center-h">
+                        <div class="flex-list center-v md">
                             <BaseDropdownInputField
                                 class="linked-chapter-field"
                                 innerLabel="Linked Chapter"
-                                v-model="chapterLink.linkedChapterId"
+                                v-model="linkedChapterId"
                                 type="radio"
                                 :options="availableChapters"
                                 nameKey="name"
@@ -53,7 +33,7 @@
                             <button
                                 class="invisible ghost-hover dark"
                                 v-tooltip="'Remove chapter link'"
-                                @click="hasChapterLink = false"
+                                @click="onNewLinkedChapter(null)"
                             >
                                 <i class="far fa-trash"></i>
                             </button>
@@ -76,32 +56,29 @@
                                 />
                             </div>
                         </div>
-
-                        <div class="rule-item-list" v-if="linkedChapter">
-                            <h4>linked chapter action</h4>
-                            <div class="chapter-link">
-                                <button
-                                    class="ghost-item invisible primary ghost-hover"
-                                    v-if="!hasChapterActionLink"
-                                    @click="hasChapterActionLink = true"
-                                >
-                                    <i class="far fa-plus"></i>
-                                    <span>Add Linked Chapter Action Filter</span>
-                                </button>
-                                <ChapterLinkItem
-                                    v-else
-                                    :ruleIndex="chapterRules.length"
-                                    :chapterLink="chapterLink"
-                                    :availableOperators="availableOperators"
-                                    :chapter="selection"
-                                    :availableChapters="availableChapters"
-                                    :filterCombinator.sync="filterCombinator"
-                                    :availableCombinators="availableCombinators"
-                                    @remove="hasChapterActionLink = false"
-                                />
-                            </div>
-                        </div>
                     </template>
+                </div>
+            </div>
+
+            <div class="chapter-rules-section">
+                <h3>Chapter rules</h3>
+                <div class="rule-item-list flex-list flex-v">
+                    <ChapterRuleItem
+                        v-for="(chapterRule, index) in chapterRules"
+                        :key="chapterRule.key"
+                        :chapterRule="chapterRule"
+                        :index="index"
+                        :availableCombinators="availableCombinators"
+                        :availableOperators="availableOperators"
+                        :availableRules="availableRules"
+                        :filterCombinator.sync="filterCombinator"
+                        :chapterRuleCount="chapterRules.length"
+                        @remove="onRemoveRule(index)"
+                    />
+                    <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
+                        <i class="far fa-plus"></i>
+                        <span>Add Filter</span>
+                    </button>
                 </div>
             </div>
 
@@ -114,10 +91,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import ChapterRuleItem from './ChapterRuleItem'
-import ChapterLinkItem from './ChapterLinkItem'
 export default {
     name: 'chapterFilterModal',
-    components: { ChapterRuleItem, ChapterLinkItem },
+    components: { ChapterRuleItem },
     props: ['show', 'selection'],
     data: function() {
         return {
@@ -126,9 +102,8 @@ export default {
             filterCombinator: 'AND',
             chapterRules: [],
             hasChapterLink: false,
-            chapterLink: null,
+            linkedChapterId: null,
             linkedChapter: null,
-            hasChapterActionLink: false,
         }
     },
     computed: {
@@ -216,23 +191,19 @@ export default {
                     ],
                     type: 'number',
                 },
-                // {
-                //     displayName: 'Parent IN/OUT',
-                //     name: 'ParentSelectionAlignment',
-                //     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
-                //     type: 'array',
-                // },
+                {
+                    displayName: 'Linked Chapter Action',
+                    name: 'ParentSelectionAlignment',
+                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    type: 'array',
+                },
             ]
-            // baseRules.push(
-            //     ...this.customFields.map(field => {
-            //         return {
-            //             displayName: field,
-            //             name: field,
-            //             validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
-            //         }
-            //     })
-            // )
-            return baseRules
+
+            const rulesToReturn = !this.hasChapterLink
+                ? baseRules.filter(rule => rule.name != 'ParentSelectionAlignment')
+                : baseRules
+
+            return rulesToReturn
         },
     },
     watch: {
@@ -240,70 +211,33 @@ export default {
             if (newVal) {
                 this.init()
             } else {
-                this.chapterLink = {
-                    rule: {
-                        displayName: 'Chapter Alignment',
-                        name: 'ParentSelectionAlignment',
-                        validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
-                        type: 'array',
-                        operator: 'Equal',
-                        value: null,
-                        values: [],
-                        key: this.$uuid.v4(),
-                    },
-                    linkedChapterId: null,
-                }
+                this.hasChapterLink = false
+                this.linkedChapterId = null
+                this.linkedChapter = null
             }
         },
     },
     methods: {
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('selections', ['fetchChapterRules', 'updateChapterRules']),
-        getDefaultChapterLink() {
-            return {
-                rule: {
-                    displayName: 'Chapter Alignment',
-                    name: 'ParentSelectionAlignment',
-                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
-                    type: 'array',
-                    operator: 'Equal',
-                    value: null,
-                    values: [],
-                    key: this.$uuid.v4(),
-                },
-                linkedChapterId: null,
-            }
-        },
         async init() {
             this.status = 'Fetching rules'
             // Fetch chapter rules
             const chapterRules = await this.fetchChapterRules({ selection: this.selection })
-            this.chapterLink = this.getDefaultChapterLink()
-            this.hasChapterActionLink = false
 
             this.filterCombinator = chapterRules.relation
             this.chapterRules = chapterRules.rules
-                ? chapterRules.rules
-                      .filter(rule => rule.name != 'ParentSelectionAlignment')
-                      .map(rule => {
-                          rule.key = this.$uuid.v4()
-                          return rule
-                      })
+                ? chapterRules.rules.map(rule => {
+                      rule.key = this.$uuid.v4()
+                      return rule
+                  })
                 : []
 
             if (parseInt(this.selection.linked_chapter_id)) {
-                const actionRule =
-                    chapterRules.rules && chapterRules.rules.find(rule => rule.name == 'ParentSelectionAlignment')
-                if (actionRule) {
-                    this.hasChapterActionLink = true
-                    Object.assign(this.chapterLink.rule, actionRule)
-                }
-                this.hasChapterLink = true
                 const linkedChapterId = this.selection.linked_chapter_id
                 await this.fetchLinkedChapter(linkedChapterId)
-                this.chapterLink.linkedChapterId = linkedChapterId
-            } else {
-                this.hasChapterLink = false
+                this.linkedChapterId = linkedChapterId
+                this.hasChapterLink = true
             }
 
             // Check if we have any products fetched, else fetch them
@@ -335,7 +269,7 @@ export default {
                 selection: this.selection,
                 chapterRules: this.chapterRules,
                 combinator: this.filterCombinator,
-                chapterLink: this.hasChapterLink ? this.chapterLink : null,
+                linkedChapterId: this.hasChapterLink ? this.linkedChapterId : null,
             })
             this.status = null
             this.$emit('close')
@@ -343,7 +277,9 @@ export default {
         onNewLinkedChapter(linkedChapter) {
             if (!linkedChapter) {
                 this.linkedChapter = null
-                this.chapterLink.linkedChapterId = null
+                this.linkedChapterId = null
+                this.hasChapterLink = false
+                this.chapterRules = this.chapterRules.filter(rule => rule.name != 'ParentSelectionAlignment')
                 return
             }
             this.fetchLinkedChapter(linkedChapter)
@@ -371,9 +307,6 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 h3 {
-    text-align: center;
-}
-h4 {
     margin-bottom: 8px;
 }
 .rule-item-list {

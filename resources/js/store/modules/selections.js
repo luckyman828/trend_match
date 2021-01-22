@@ -1283,46 +1283,42 @@ export default {
                 })
             return chapterRules
         },
-        async updateChapterRules({ commit }, { selection, chapterRules, combinator, chapterLink }) {
+        async updateChapterRules({ commit }, { selection, chapterRules, combinator, linkedChapterId }) {
             const rulesToPush = [...chapterRules]
 
             // Handle Chapter link
-            if (chapterLink) {
+            if (parseInt(linkedChapterId)) {
                 // Add chapter link
-                console.log('set chapter link')
-                const linkApiUrl = `selections/${selection.id}/chapter/link/${chapterLink.linkedChapterId}`
-                selection.linked_chapter_id = chapterLink.linkedChapterId
+                const linkApiUrl = `selections/${selection.id}/chapter/link/${linkedChapterId}`
+                selection.linked_chapter_id = linkedChapterId
                 await axios.put(linkApiUrl)
-                // Add action rule
-                rulesToPush.push(chapterLink.rule)
             } else if (parseInt(selection.linked_chapter_id)) {
                 const linkApiUrl = `selections/${selection.id}/chapter/link`
+                selection.linked_chapter_id = null
                 await axios.delete(linkApiUrl)
-                // Remove the parent action rule if any
-                const ruleIndex = rulesToPush.findIndex(rule => (rule.name = 'ParentSelectionAlignment'))
-                if (ruleIndex >= 0) {
-                    rulesToPush.splice(ruleIndex, 1)
-                    chapterRules.splice(ruleIndex, 1)
-                }
             }
 
             const apiUrl = `selections/${selection.id}/chapter`
-            await axios
-                .put(apiUrl, {
+            const apiMethod = chapterRules.length > 0 ? 'put' : 'delete'
+
+            await axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
                     rules: rulesToPush,
                     relation: combinator,
-                })
-                .then(response => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Chapter rules updated.',
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                })
+                },
+            }).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Chapter rules updated.',
+                        iconClass: 'fa-check',
+                        type: 'success',
+                    },
+                    { root: true }
+                )
+            })
         },
     },
 
