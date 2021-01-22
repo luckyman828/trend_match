@@ -19,13 +19,12 @@
         />
         <BaseDropdownInputField
             class="linked-chapter-field"
-            innerLabel="Chapter"
-            v-model="chapterLink.linkedChapterId"
-            type="radio"
-            :options="availableChapters"
-            nameKey="name"
-            valueKey="id"
+            innerLabel="field"
+            :options="[]"
+            valueToDisplayOverwrite="Action"
+            :readOnly="true"
         />
+
         <BaseDropdownInputField
             class="operator-field"
             type="radio"

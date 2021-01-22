@@ -1,5 +1,5 @@
 <template>
-    <div class="rule-item flex-list center-v md">
+    <div class="rule-item flex-list center-v md" :class="{ 'read-only': readOnly }">
         <BaseDropdownInputField
             class="combinator-field"
             v-if="index == 0"
@@ -15,6 +15,7 @@
             innerLabel="Combinator"
             :options="availableCombinators"
             :value="filterCombinator"
+            :readOnly="readOnly"
             @input="$emit('update:filterCombinator', $event)"
         />
         <BaseDropdownInputField
@@ -25,8 +26,10 @@
             :options="availableRules"
             nameKey="displayName"
             valueKey="name"
+            :readOnly="readOnly"
             @input="onRuleChange"
         />
+
         <BaseDropdownInputField
             class="operator-field"
             type="radio"
@@ -35,6 +38,7 @@
             :options="validOperators"
             nameKey="displayName"
             valueKey="operatorName"
+            :readOnly="readOnly"
         />
 
         <!-- Arrays -->
@@ -45,12 +49,14 @@
                 type="radio"
                 v-model="chapterRule.value"
                 :options="availableValues"
+                :readOnly="readOnly"
             />
             <BaseDropdownInputField
                 v-else
                 class="value-field"
                 v-model="chapterRule.values"
                 :options="availableValues"
+                :readOnly="readOnly"
             />
         </template>
         <BaseInputField
@@ -58,9 +64,10 @@
             v-else-if="mappedRule.type == 'number'"
             class="value-field"
             v-model="chapterRule.value"
+            :readOnly="readOnly"
         />
 
-        <BaseButton buttonClass="invisible ghost-hover dark" @click="$emit('remove')"
+        <BaseButton v-if="!readOnly" buttonClass="invisible ghost-hover dark" @click="$emit('remove')"
             ><i class="far fa-trash"></i
         ></BaseButton>
     </div>
@@ -78,6 +85,7 @@ export default {
         'availableOperators',
         'filterCombinator',
         'chapterRuleCount',
+        'readOnly',
     ],
     computed: {
         ...mapGetters('products', {
@@ -168,6 +176,10 @@ export default {
     border-radius: $borderRadiusModule;
     &:hover {
         background: $bgElHover;
+    }
+    &.read-only {
+        background: $grey450;
+        pointer-events: none;
     }
 }
 .combinator-field {
