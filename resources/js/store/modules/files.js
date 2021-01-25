@@ -543,7 +543,7 @@ export default {
 
                                 // Change the URL from https to https
                                 let newUrl = urlMap.cdn_url
-                                if (newUrl.indexOf('https') < 0) {
+                                if (newUrl && newUrl.indexOf('https') < 0) {
                                     newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
                                 }
                                 variant.pictures[pictureIndex].url = newUrl
