@@ -50,6 +50,7 @@
                 v-model="chapterRule.value"
                 :options="availableValues"
                 :readOnly="readOnly"
+                :displayFunction="chapterRule.name == 'DeliveryDate' && getPrettyDate"
             />
             <BaseDropdownInputField
                 v-else
@@ -57,6 +58,7 @@
                 v-model="chapterRule.values"
                 :options="availableValues"
                 :readOnly="readOnly"
+                :displayFunction="chapterRule.name == 'DeliveryDate' && getPrettyDate"
             />
         </template>
         <BaseInputField
