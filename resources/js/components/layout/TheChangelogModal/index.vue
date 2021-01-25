@@ -1,6 +1,53 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Damask: Beaver"
+            date="January 2021 Tweaks & Fixes Release 2"
+            featuredImgUrl="/images/blog/undraw_Co_workers_re_1i6i.svg"
+        >
+            <template v-slot:body>
+                <h3>Chatpers: Linked Chapters</h3>
+                <p>
+                    Now you can keep handover and sales meeting in the same file, and automatically exclude OUT-styles,
+                    from the sales meeting.
+                </p>
+                <p>This should mean less trouble uploading and setting up files in Kollekt for you.</p>
+                <p><strong>How it works</strong></p>
+                <p>
+                    Chapters can now be linked to another. The linked chatper inherits all the rules of the chapter it
+                    is linked it.
+                </p>
+                <p>
+                    Additionally, linked chapters have access to a special rule, filtering the products in the chapter,
+                    based on the alignment aciton in the linked chapter.
+                </p>
+
+                <h3>Fixes & Tweaks</h3>
+                <ul>
+                    <li>
+                        When posting comments as Approver the comment would disappear after closing and reopening the
+                        product details flyin.
+                    </li>
+                    <li>
+                        Uploading images to existing variants no longer matches any variant with either the same color
+                        or variant name, sometimes overwriting the wrong variant. There now has to be a match between
+                        both the variant color and variant name, before it overwrites an existing variant.
+                    </li>
+                    <li>
+                        Various tweaks to the way chapters are displayed throughout the dashboard.
+                    </li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Damask: Banana Mania"
             date="January 2021 Tweaks & Fixes Release 1"
             featuredImgUrl="/images/blog/undraw_relaxing_walk_mljx.svg"
