@@ -61,21 +61,11 @@ const routes = [
         component: () =>
             import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
     },
-    // {
-    //     path: '/file/:fileId/selection/:selectionId/video/watch',
-    //     name: 'watchVideoPresentation',
-    //     component: () => import(/* webpackChunkName: "WatchVideoPresentationPage" */ './pages/VideoPresentationPage'),
-    // },
     {
         path: '/file/:fileId/livestream/create',
         name: 'createLivestream',
         component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/CreateLivestreamPage'),
     },
-    // {
-    //     path: '/file/:fileId/selection/:selectionId/livestream/watch',
-    //     name: 'watchLivestream',
-    //     component: () => import(/* webpackChunkName: "watchLivestreamPage" */ './pages/WatchLivestreamPage'),
-    // },
     {
         path: '/file/:fileId/selection/:selectionId/video/watch',
         name: 'watchVideoPresentation',
@@ -159,6 +149,14 @@ router.beforeEach(async (to, from, next) => {
     } else {
         next()
     }
+})
+
+router.afterEach((to, from) => {
+    // Reset current selections on route leave
+    // const selectionRouteNames = ['selection', 'createLivestream']
+    // if (selectionRouteNames.includes(from.name)) {
+    store.commit('selections/SET_CURRENT_SELECTIONS', [])
+    // }
 })
 
 export default router
