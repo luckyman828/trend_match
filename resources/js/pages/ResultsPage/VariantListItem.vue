@@ -2,7 +2,7 @@
     <section class="variant-list-item theme-light flex-list md">
         <div class="img-wrapper">
             <div class="img-sizer">
-                <BaseVariantImage :variant="variant" size="sm" />
+                <BaseVariantImage :variant="variant" size="sm" :useBase64Img="isPDF" />
             </div>
         </div>
         <div class="flex-list flex-v md">
@@ -58,7 +58,7 @@
 <script>
 export default {
     name: 'variantListItem',
-    props: ['variant', 'selectionInput', 'product', 'selectionId', 'userId'],
+    props: ['variant', 'selectionInput', 'product', 'selectionId', 'userId', 'isPDF'],
     computed: {
         variantSelectionInput() {
             if (!this.selectionInput) return

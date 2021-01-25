@@ -19,6 +19,7 @@
                 :selectionInput="selectionInput"
                 :selectionId="selectionId"
                 :userId="userId"
+                :isPDF="isPDF"
             />
         </div>
     </section>
@@ -29,7 +30,7 @@ import VariantListItem from './VariantListItem'
 export default {
     name: 'productListItem',
     components: { VariantListItem },
-    props: ['product', 'actionFilter', 'selectionId', 'userId'],
+    props: ['product', 'actionFilter', 'selectionId', 'userId', 'isPDF'],
     computed: {
         selectionInput() {
             return this.product.selectionInputList.find(x => x.selection.id == this.selectionId)

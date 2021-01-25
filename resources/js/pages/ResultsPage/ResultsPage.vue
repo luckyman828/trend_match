@@ -45,69 +45,10 @@
                 </button>
             </div>
         </div>
-        <div class="product-list">
-            <BaseLoader v-if="fetchingData" />
-            <ProductListItem
-                v-else
-                v-for="product in products"
-                :key="product.id"
-                :product="product"
-                :actionFilter="actionFilter"
-                :userId="userId"
-                :selectionId="selectionId"
-            />
-        </div>
-        <div class="order-total flex-list lg center-h theme-light" v-if="products.length > 0">
-            <div class="list-item" v-if="orderedDates.length > 0">
-                <label>First delivery</label>
-                <div class="value">{{ getPrettyDate(orderedDates[0]) }}</div>
-            </div>
-            <div class="list-item" v-if="orderedDates.length > 0">
-                <label>Last delivery</label>
-                <div class="value">{{ getPrettyDate(orderedDates[orderedDates.length - 1]) }}</div>
-            </div>
-            <div class="list-item" v-if="orderedDates.length > 0">
-                <label>Products</label>
-                <div class="value">{{ products.length }}</div>
-            </div>
-            <div class="list-item" v-if="orderedDates.length > 0">
-                <label>Variants</label>
-                <div class="value">
-                    {{ variantsFiltered.length }}
-                </div>
-            </div>
-            <div class="list-item" v-if="orderedDates.length > 0">
-                <label>Total Quantity</label>
-                <div class="value">{{ totalQuantity }}</div>
-            </div>
-            <div class="list-item" v-if="orderedDates.length > 0">
-                <label>Total Price</label>
-                <div class="value">{{ totalPrice }} {{ products[0].yourPrice.currency }}</div>
-            </div>
-        </div>
 
-        <VueHtml2pdf
-            :show-layout="false"
-            :float-layout="true"
-            :enable-download="true"
-            :preview-modal="false"
-            :paginate-elements-by-height="960"
-            :filename="file.name + '_export'"
-            :pdf-quality="1"
-            :manual-pagination="false"
-            pdf-format="a4"
-            pdf-orientation="portrait"
-            pdf-content-width="800px"
-            ref="html2Pdf"
-            @startPagination="exportingPDF = true"
-            @hasDownloaded="exportingPDF = false"
-        >
-            <section slot="pdf-content" class="pdf-content">
-                <section class="header flex-list min justify" style="margin-bottom: -20px">
-                    <div class="left">
-                        <h1 style="margin: 0">{{ file.name }}</h1>
-                    </div>
-                </section>
+        <BaseLoader v-if="fetchingData" />
+        <template v-else>
+            <div class="product-list">
                 <ProductListItem
                     v-for="product in products"
                     :key="product.id"
@@ -116,47 +57,107 @@
                     :userId="userId"
                     :selectionId="selectionId"
                 />
-                <section class="order-total  theme-light" v-if="products.length > 0">
-                    <h1>Totals</h1>
-                    <div class="total-items flex-list lg justify">
-                        <div class="list-item" v-if="orderedDates.length > 0">
-                            <label>First delivery</label>
-                            <div class="value">{{ getPrettyDate(orderedDates[0]) }}</div>
+            </div>
+            <div class="order-total flex-list lg center-h theme-light" v-if="products.length > 0">
+                <div class="list-item" v-if="orderedDates.length > 0">
+                    <label>First delivery</label>
+                    <div class="value">{{ getPrettyDate(orderedDates[0]) }}</div>
+                </div>
+                <div class="list-item" v-if="orderedDates.length > 0">
+                    <label>Last delivery</label>
+                    <div class="value">{{ getPrettyDate(orderedDates[orderedDates.length - 1]) }}</div>
+                </div>
+                <div class="list-item" v-if="orderedDates.length > 0">
+                    <label>Products</label>
+                    <div class="value">{{ products.length }}</div>
+                </div>
+                <div class="list-item" v-if="orderedDates.length > 0">
+                    <label>Variants</label>
+                    <div class="value">
+                        {{ variantsFiltered.length }}
+                    </div>
+                </div>
+                <div class="list-item" v-if="orderedDates.length > 0">
+                    <label>Total Quantity</label>
+                    <div class="value">{{ totalQuantity }}</div>
+                </div>
+                <div class="list-item" v-if="orderedDates.length > 0">
+                    <label>Total Price</label>
+                    <div class="value">{{ totalPrice }} {{ products[0].yourPrice.currency }}</div>
+                </div>
+            </div>
+
+            <VueHtml2pdf
+                :show-layout="false"
+                :float-layout="true"
+                :enable-download="true"
+                :preview-modal="false"
+                :paginate-elements-by-height="960"
+                :filename="file.name + '_export'"
+                :pdf-quality="1"
+                :manual-pagination="false"
+                pdf-format="a4"
+                pdf-orientation="portrait"
+                pdf-content-width="800px"
+                ref="html2Pdf"
+                @startPagination="exportingPDF = true"
+                @hasDownloaded="exportingPDF = false"
+            >
+                <section slot="pdf-content" class="pdf-content">
+                    <section class="header flex-list min justify" style="margin-bottom: -20px">
+                        <div class="left">
+                            <h1 style="margin: 0">{{ file.name }}</h1>
                         </div>
-                        <div class="list-item" v-if="orderedDates.length > 0">
-                            <label>Last delivery</label>
-                            <div class="value">{{ getPrettyDate(orderedDates[orderedDates.length - 1]) }}</div>
-                        </div>
-                        <div class="list-item" v-if="orderedDates.length > 0">
-                            <label>Products</label>
-                            <div class="value">{{ products.length }}</div>
-                        </div>
-                        <div class="list-item" v-if="orderedDates.length > 0">
-                            <label>Variants</label>
-                            <div class="value">
-                                {{ variantsFiltered.length }}
+                    </section>
+                    <ProductListItem
+                        v-for="product in products"
+                        :key="product.id"
+                        :product="product"
+                        :actionFilter="actionFilter"
+                        :userId="userId"
+                        :selectionId="selectionId"
+                        :isPDF="true"
+                    />
+                    <section class="order-total  theme-light" v-if="products.length > 0">
+                        <h1>Totals</h1>
+                        <div class="total-items flex-list lg justify">
+                            <div class="list-item" v-if="orderedDates.length > 0">
+                                <label>First delivery</label>
+                                <div class="value">{{ getPrettyDate(orderedDates[0]) }}</div>
+                            </div>
+                            <div class="list-item" v-if="orderedDates.length > 0">
+                                <label>Last delivery</label>
+                                <div class="value">{{ getPrettyDate(orderedDates[orderedDates.length - 1]) }}</div>
+                            </div>
+                            <div class="list-item" v-if="orderedDates.length > 0">
+                                <label>Products</label>
+                                <div class="value">{{ products.length }}</div>
+                            </div>
+                            <div class="list-item" v-if="orderedDates.length > 0">
+                                <label>Variants</label>
+                                <div class="value">
+                                    {{ variantsFiltered.length }}
+                                </div>
+                            </div>
+                            <div class="list-item" v-if="orderedDates.length > 0">
+                                <label>Total Quantity</label>
+                                <div class="value">{{ totalQuantity }}</div>
+                            </div>
+                            <div class="list-item" v-if="orderedDates.length > 0">
+                                <label>Total Price</label>
+                                <div class="value">{{ totalPrice }} {{ products[0].yourPrice.currency }}</div>
                             </div>
                         </div>
-                        <div class="list-item" v-if="orderedDates.length > 0">
-                            <label>Total Quantity</label>
-                            <div class="value">{{ totalQuantity }}</div>
-                        </div>
-                        <div class="list-item" v-if="orderedDates.length > 0">
-                            <label>Total Price</label>
-                            <div class="value">{{ totalPrice }} {{ products[0].yourPrice.currency }}</div>
-                        </div>
-                    </div>
+                    </section>
                 </section>
-            </section>
-        </VueHtml2pdf>
+            </VueHtml2pdf>
+        </template>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ProductListItem from './ProductListItem'
-import pdfExport from './pdfExport'
-import axios from 'axios'
 import VueHtml2pdf from 'vue-html2pdf'
 export default {
     name: 'resultsPage',
@@ -192,11 +193,6 @@ export default {
             return uniqueDates.sort((a, b) => {
                 return new Date(a) > new Date(b) ? 1 : -1
             })
-            // return this.products.sort((a, b) => {
-            //     return a.delivery_dates.find(aDate => b.delivery_dates.find(bDate => new Date(aDate) < new Date(bDate)))
-            //         ? 1
-            //         : -1
-            // })
         },
         products() {
             let productsFilterded = this.allProducts
