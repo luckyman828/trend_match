@@ -4,7 +4,7 @@
             ref="tableComp"
             :stickyHeader="true"
             :items="products"
-            :itemsTotalCount="stateProducts.length"
+            :itemsTotalCount="allProducts.length"
             itemKey="id"
             :itemSize="currentSelections.length > 1 ? 247 : 139"
             :selected.sync="selectedProducts"
@@ -20,29 +20,28 @@
                 <div class="tabs-inner">
                     <BaseTableTab
                         :label="`Overview`"
-                        :count="stateProducts.length"
+                        :count="allProducts.length"
                         v-model="currentProductFilter"
                         modelValue="overview"
                     />
                     <BaseTableTab
                         :label="`In`"
                         :count="
-                            stateProducts.filter(x =>
-                                ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction])
-                            ).length
+                            allProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction]))
+                                .length
                         "
                         v-model="currentProductFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         :modelValue="insTabValue"
                     />
-                    <!-- <BaseTableTab :label="`In`" :count="stateProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
+                    <!-- <BaseTableTab :label="`In`" :count="allProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
                     v-model="currentProductFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
                     <BaseTableTab
                         :label="`Out`"
-                        :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length"
+                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length"
                         v-model="currentProductFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -50,19 +49,19 @@
                     />
                     <BaseTableTab
                         :label="`Nds`"
-                        :count="stateProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length"
+                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length"
                         v-model="currentProductFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         modelValue="nds"
                     />
                     <BaseTableTab
-                        v-if="selection.settings.ticket_level != 'None'"
+                        v-if="selection && selection.settings && selection.settings.ticket_level != 'None'"
                         :label="`Tickets`"
                         :count="
                             !hideCompleted
-                                ? stateProducts.filter(x => x.hasTicket).length
-                                : stateProducts.filter(x => x.hasTicket && !x.is_completed).length
+                                ? allProducts.filter(x => x.hasTicket).length
+                                : allProducts.filter(x => x.hasTicket && !x.is_completed).length
                         "
                         v-model="currentProductFilter"
                         :disabled="currentSelections.length > 1"
@@ -531,7 +530,7 @@ export default {
             'getAuthUserSelectionWriteAccess',
             'getSelectionsAvailableForInputFiltering',
         ]),
-        ...mapState('products', { stateProducts: 'products' }),
+        ...mapGetters('products', { allProducts: 'products' }),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selection)
@@ -633,21 +632,21 @@ export default {
         },
         totalProductCount() {
             if (['ins', 'focus'].includes(this.currentProductFilter)) {
-                return this.stateProducts.filter(product =>
+                return this.allProducts.filter(product =>
                     ['In', 'Focus'].includes(this.getActiveSelectionInput(product)[this.currentAction])
                 ).length
             }
             if (this.currentProductFilter == 'outs') {
-                return this.stateProducts.filter(
+                return this.allProducts.filter(
                     product => this.getActiveSelectionInput(product)[this.currentAction] == 'Out'
                 ).length
             }
             if (this.currentProductFilter == 'nds') {
-                return this.stateProducts.filter(
+                return this.allProducts.filter(
                     product => this.getActiveSelectionInput(product)[this.currentAction] == 'None'
                 ).length
             }
-            return this.stateProducts.length
+            return this.allProducts.length
         },
         tooltipBoundariesEl() {
             return document.getElementById('main')
@@ -749,7 +748,7 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            this.sortArray(this.stateProducts, sortAsc, sortKey)
+            this.sortArray(this.allProducts, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
             this.$emit('updateAction', action, selectionInput)

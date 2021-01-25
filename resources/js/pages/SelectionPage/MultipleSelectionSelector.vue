@@ -90,6 +90,12 @@ export default {
             return this.getSelectionsAvailableForAlignment
         },
     },
+    watch: {
+        currentSelections(newSelections) {
+            // Find the corresponding selection in our available selections
+            this.syncSelectedSelections()
+        },
+    },
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelectionSettings']),
@@ -97,7 +103,6 @@ export default {
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
             const selections = this.selectedSelections
-            this.SET_CURRENT_SELECTIONS(selections)
             await Promise.all(
                 selections.map(async selection => {
                     // Fetch selection input if not fetched
@@ -110,18 +115,25 @@ export default {
                     }
                 })
             )
+            this.SET_CURRENT_SELECTIONS(selections)
             // Set the current tab to `Overview` if we are entering multi-selection mode
             if (selections.length > 1) {
                 this.setCurrentProductFilter('overview')
             }
         },
+        syncSelectedSelections() {
+            this.currentSelections.forEach(selection => {
+                const selectionToPush = this.availableSelections.find(x => x.id == selection.id)
+                if (selectionToPush) {
+                    const notInArray = !this.selectedSelections.find(x => x.id == selectionToPush.id)
+                    if (notInArray) this.selectedSelections.push(selectionToPush)
+                }
+            })
+        },
     },
     created() {
         // Find the corresponding selection in our available selections
-        this.currentSelections.forEach(selection => {
-            const selectionToPush = this.availableSelections.find(x => x.id == selection.id)
-            if (selectionToPush) this.selectedSelections.push(selectionToPush)
-        })
+        this.syncSelectedSelections()
     },
 }
 </script>
