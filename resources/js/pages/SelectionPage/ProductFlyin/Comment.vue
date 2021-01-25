@@ -3,7 +3,7 @@
         class="comment-wrapper"
         :class="[
             { own: comment.user_id == authUser.id },
-            { master: comment.selection.type == 'Master' },
+            { master: comment.selection && comment.selection.type == 'Master' },
             { 'has-traits': hasTraits },
             { 'edit-active': editActive },
         ]"
@@ -74,7 +74,11 @@
         </div>
 
         <div class="sender" v-if="displayAuthor && !editActive">
-            <SelectionChapterPill class="chapter" :selection="comment.selection" />
+            <SelectionChapterPill
+                v-if="comment.selection.type != 'Chapter'"
+                class="chapter"
+                :selection="comment.selection"
+            />
             <strong>{{ comment.role == 'Approver' ? 'Approval' : comment.selection.name }}</strong> |
             {{
                 comment.user_id == authUser.id
@@ -102,7 +106,7 @@ import SelectionChapterPill from '../../../components/common/SelectionChapterPil
 export default {
     name: 'comment',
     components: {
-        SelectionChapterPill
+        SelectionChapterPill,
     },
     props: ['comment', 'selectionInput', 'displayAuthor'],
     data: function() {

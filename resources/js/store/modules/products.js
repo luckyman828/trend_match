@@ -104,8 +104,19 @@ export default {
         actionsUpdated: state => state.actionsUpdated,
         commentsUpdated: state => state.commentsUpdated,
         commentsCreated: state => state.commentsCreated,
-        products: state => state.products,
-        getProducts: state => state.products,
+        products: (state, getters, rootState, rootGetters) => {
+            const currentSelections = rootGetters['selections/getCurrentSelections']
+            if (currentSelections.length <= 0) return state.products
+            return state.products.filter(product => {
+                let isValid = true
+                currentSelections.map(selection => {
+                    const exists = product.selectionInputList.find(x => x.selection.id == selection.id)
+                    if (!exists) isValid = false
+                })
+                return isValid
+            })
+        },
+        getProducts: (state, getters) => getters.products,
         availableCategories(state, getters) {
             const products = getters.products
             let uniqueCategories = []
@@ -1320,11 +1331,13 @@ export default {
         },
         mergeProductsWithSelectionInput({ state, dispatch }, { selectionProductInput, authUser }) {
             // Filter out products not in our selection input
-            state.products = state.products.filter(
+            // state.products = state.products.filter(
+            //     product => !!selectionProductInput.products.find(x => x.id == product.id)
+            // )
+
+            const products = state.products.filter(
                 product => !!selectionProductInput.products.find(x => x.id == product.id)
             )
-
-            const products = state.products
             products.map(product => {
                 const rawSelectionInput = selectionProductInput.products.find(x => x.id == product.id)
                 const selectionInput = {}

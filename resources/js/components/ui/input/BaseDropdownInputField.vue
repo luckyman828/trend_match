@@ -29,6 +29,8 @@
                 :optionValueKey="optionValueKey"
                 :optionDescriptionKey="descriptionKey"
                 :cloneOptionOnSubmit="cloneOptionOnSubmit"
+                :unsetOption="unsetOption"
+                :displayFunction="displayFunction"
                 @input="$emit('input', $event)"
             />
         </div>
@@ -52,6 +54,10 @@ export default {
         'readOnly',
         'innerLabel',
         'valueToDisplayOverwrite',
+        'unsetOption',
+        'disabled',
+        'disabledTooltip',
+        'displayFunction',
     ],
     computed: {
         optionValueKey() {
@@ -65,26 +71,28 @@ export default {
             return Object.keys(this.options[0]).includes('name') ? 'name' : null
         },
         valueToDisplay() {
-            // function returnValue(value) {
-            //     return Array.isArray(value) ? value.join(', ') : value
-            // }
+            function getValue(vm) {
+                if (vm.valueToDisplayOverwrite) return vm.valueToDisplayOverwrite
+                if (!vm.value) return
+                if (!vm.options || vm.options.length <= 0) return vm.value
 
-            if (this.valueToDisplayOverwrite) return this.valueToDisplayOverwrite
-            if (!this.value) return
-            if (!this.options || this.options.length <= 0) return this.value
+                // If we have no option name key, we must have a simple value that we want to display
+                if (!vm.optionNameKey) return Array.isArray(vm.value) ? vm.value.join(', ') : vm.value
 
-            // If we have no option name key, we must have a simple value that we want to display
-            if (!this.optionNameKey) return Array.isArray(this.value) ? this.value.join(', ') : this.value
+                // If we have no value key, we must have selected an entire object
+                if (!vm.optionValueKey) {
+                    return vm.value[vm.optionNameKey]
+                }
 
-            // If we have no value key, we must have selected an entire object
-            if (!this.optionValueKey) {
-                return this.value[this.optionNameKey]
+                // In case we have both a name key and a value key
+                // Read the available options and find our values match there
+                const selectedOption = vm.options.find(option => option[vm.valueKey] == vm.value)
+                return selectedOption[vm.optionNameKey]
             }
 
-            // In case we have both a name key and a value key
-            // Read the available options and find our values match there
-            const selectedOption = this.options.find(option => option[this.valueKey] == this.value)
-            return selectedOption[this.optionNameKey]
+            const value = getValue(this)
+            if (!value) return ''
+            return this.displayFunction ? this.displayFunction(value) : value
         },
     },
 }

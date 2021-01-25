@@ -1283,24 +1283,42 @@ export default {
                 })
             return chapterRules
         },
-        async updateChapterRules({ commit }, { selection, chapterRules, combinator }) {
+        async updateChapterRules({ commit }, { selection, chapterRules, combinator, linkedChapterId }) {
+            const rulesToPush = [...chapterRules]
+
+            // Handle Chapter link
+            if (parseInt(linkedChapterId)) {
+                // Add chapter link
+                const linkApiUrl = `selections/${selection.id}/chapter/link/${linkedChapterId}`
+                selection.linked_chapter_id = linkedChapterId
+                await axios.put(linkApiUrl)
+            } else if (parseInt(selection.linked_chapter_id)) {
+                const linkApiUrl = `selections/${selection.id}/chapter/link`
+                selection.linked_chapter_id = null
+                await axios.delete(linkApiUrl)
+            }
+
             const apiUrl = `selections/${selection.id}/chapter`
-            await axios
-                .put(apiUrl, {
-                    rules: chapterRules,
+            const apiMethod = chapterRules.length > 0 ? 'put' : 'delete'
+
+            await axios({
+                method: apiMethod,
+                url: apiUrl,
+                data: {
+                    rules: rulesToPush,
                     relation: combinator,
-                })
-                .then(response => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: 'Chapter rules updated.',
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
-                })
+                },
+            }).then(response => {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Chapter rules updated.',
+                        iconClass: 'fa-check',
+                        type: 'success',
+                    },
+                    { root: true }
+                )
+            })
         },
     },
 

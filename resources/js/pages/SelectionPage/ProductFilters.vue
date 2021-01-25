@@ -101,10 +101,10 @@
             <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
             <div class="item-group" v-if="$route.name == 'selection'">
-                <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
+                <v-popover trigger="click" :disabled="filterableTicketLabels.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-tag"
-                        :disabled="availableBuyerGroups.length <= 0"
+                        :disabled="filterableTicketLabels.length <= 0"
                         disabledTooltip="No ticket labels available"
                         @click="showAdvancedFilters = false"
                     >
@@ -194,16 +194,14 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('requests', {
-            availableTicketLabels: 'getAvailableRequestLabels',
-        }),
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
         }),
         ticketLabels() {
-            return ['no label'].concat(this.availableTicketLabels)
+            return ['no label'].concat(this.filterableTicketLabels)
         },
         ...mapGetters('products', [
+            'products',
             'availableCategories',
             'availableDeliveryDates',
             'availableBuyerGroups',
@@ -274,6 +272,18 @@ export default {
                 advancedFilterCount +
                 customValueFilterCount
             )
+        },
+        filterableTicketLabels() {
+            const labels = []
+            this.products.map(product => {
+                product.requests.map(request => {
+                    request.labels.map(label => {
+                        const alreadyAdded = labels.includes(label)
+                        if (!alreadyAdded) labels.push(label)
+                    })
+                })
+            })
+            return labels
         },
     },
     methods: {

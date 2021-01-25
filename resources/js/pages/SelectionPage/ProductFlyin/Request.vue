@@ -18,7 +18,7 @@
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
                 <strong class="sender">
-                    <SelectionChapterPill :selection="request.selection" />
+                    <SelectionChapterPill v-if="request.selection.type != 'Chapter'" :selection="request.selection" />
                     <span>{{ request.selection.name }}</span>
                     <!-- </span> -->
                     <span> | </span>

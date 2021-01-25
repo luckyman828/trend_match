@@ -37,7 +37,6 @@
                 "
                 :style="selectionWidth"
             >
-                <SelectionChapterPill v-if="displayChapter" :selection="selection" />
                 <SelectionIcon :selection="selection" />
                 <BaseEditInputWrapper
                     activateOnMount="true"
@@ -63,7 +62,10 @@
                 :style="selectionWidth"
             >
                 <SelectionIcon :selection="selection" />
-                <span :title="selection.name">{{ selection.name }}</span>
+                <div class="inner" :title="selection.name" :class="{ 'has-chapter': displayChapter }">
+                    <SelectionChapterPill v-if="displayChapter" class="chapter" :selection="selection" />
+                    <span>{{ selection.name }}</span>
+                </div>
             </td>
             <td class="budget">
                 <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
@@ -284,7 +286,9 @@ export default {
         },
         displayChapter() {
             return (
-                this.selection.parent_chapter && !this.allSelections.find(x => x.id == this.selection.parent_chapter.id)
+                this.selection.parent_chapter &&
+                this.selection.type != 'Chapter' &&
+                !this.allSelections.find(x => this.selection.parent_chapter.id == x.id)
             )
         },
         selectionDepth() {
@@ -407,6 +411,11 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
+.selections-table-row {
+    tr {
+        min-height: 56px;
+    }
+}
 
 .selection {
     &.is-hidden {
@@ -431,6 +440,19 @@ export default {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+        display: block;
+    }
+    .inner {
+        width: 100%;
+        &.has-chapter {
+            position: relative;
+            padding-top: 16px;
+            margin-bottom: -8px;
+            .chapter {
+                position: absolute;
+                top: -6px;
+            }
+        }
     }
 }
 .expand {

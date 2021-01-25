@@ -1,6 +1,10 @@
 <template>
     <div class="action-list-item">
-        <SelectionChapterPill class="chapter" :selection="action.selection" />
+        <SelectionChapterPill
+            class="chapter"
+            :selection="action.selection"
+            v-if="!action.selection.type == 'Chapter'"
+        />
         <i
             v-if="action.selection.type == 'Master'"
             :selection="action.selection"

@@ -541,8 +541,12 @@ export default {
 
                                 const pictureIndex = imageMaps[index].pictureIndex
 
-                                variant.pictures[pictureIndex].url = urlMap.cdn_url
-
+                                // Change the URL from https to https
+                                let newUrl = urlMap.cdn_url
+                                if (newUrl && newUrl.indexOf('https') < 0) {
+                                    newUrl = newUrl.slice(0, 4) + 's' + newUrl.slice(4)
+                                }
+                                variant.pictures[pictureIndex].url = newUrl
                                 const productAlreadyAdded = productsToUpdate.find(
                                     x => x.datasource_id == product.datasource_id
                                 )

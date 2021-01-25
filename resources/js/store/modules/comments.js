@@ -84,6 +84,7 @@ export default {
                     // Set the given ID to the comment if we were posting a new comment
                     // if (!comment.id) comment.id = response.data.id
                     if (!comment.id) {
+                        delete response.data.selection
                         Object.assign(comment, response.data)
                     } else {
                         commit(

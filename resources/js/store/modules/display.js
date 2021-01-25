@@ -2,7 +2,11 @@ export default {
     namespaced: true,
 
     state: {
-        visibleComponents: {},
+        visibleComponents: {
+            importFromSpreadsheetModal: false,
+            importFromDatabaseControls: false,
+            importFromKollektModal: false,
+        },
     },
 
     getters: {

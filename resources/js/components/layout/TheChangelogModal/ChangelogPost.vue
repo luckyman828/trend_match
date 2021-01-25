@@ -48,8 +48,6 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-        border-bottom: $borderModule;
-        border-width: 2px;
         img {
             height: 80%;
             width: 80%;
@@ -62,6 +60,7 @@ export default {
         .title {
             font-size: 52px;
             font-weight: 500;
+            margin-top: 0;
         }
         .date {
             font-size: 20px;

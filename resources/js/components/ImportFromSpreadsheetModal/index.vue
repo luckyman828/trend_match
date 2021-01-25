@@ -262,15 +262,21 @@ export default {
                     // If the arrayitem is an object
                     if (typeof newArrayItem == 'object') {
                         // Test if our array item matches an existing array item
-                        const existingArrayItem = productArray.find(existingArrayItem =>
-                            Object.keys(existingArrayItem).find(itemKey => {
-                                const isMatching =
+                        const existingArrayItem = productArray.find(existingArrayItem => {
+                            let keysToMatch = Object.keys(existingArrayItem)
+                            if (key == 'variants') {
+                                keysToMatch = ['name']
+                            }
+                            return keysToMatch.find(itemKey => {
+                                let isMatching =
                                     existingArrayItem[itemKey] != null &&
                                     typeof existingArrayItem[itemKey] == 'string' &&
-                                    existingArrayItem[itemKey] == newArrayItem[itemKey]
+                                    typeof newArrayItem[itemKey] == 'string' &&
+                                    existingArrayItem[itemKey].toLowerCase() == newArrayItem[itemKey].toLowerCase()
+
                                 return isMatching
                             })
-                        )
+                        })
 
                         // If we found an existing match, we want to update that match
                         if (existingArrayItem) {
