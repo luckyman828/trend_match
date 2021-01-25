@@ -376,17 +376,23 @@ export default {
             this.setSingleVisisble(true)
         },
         onSaveOrder() {
-            const products = this.products
+            const allProducts = this.products
             const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.productsFilteredBySearch
 
+            // Sort the reordered products first
             productsReOrdered.map((reOrdered, index) => {
                 // Find the corresponding product
-                const product = this.products.find(x => x.id == reOrdered.id)
+                const product = allProducts.find(x => x.id == reOrdered.id)
+                product.sequence = index - productsReOrdered.length
+            })
+            // Sort by sequence
+            this.onSort(true, 'sequence')
+
+            // Set the new sequence of all products
+            allProducts.map((product, index) => {
                 product.sequence = index + 1
             })
-            this.updateManyProducts({ file: this.file, products })
-            // Resort
-            this.onSort(true, 'sequence')
+            this.updateManyProducts({ file: this.file, products: allProducts })
         },
         hotkeyHandler(e) {
             const key = e.code
