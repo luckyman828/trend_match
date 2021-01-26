@@ -63,7 +63,6 @@ export default {
             if (this.disabled) return
             if (this.contextMenuParent && !this.contextMenuParent.visible && !this.contextMenuParent.inline) return
             if (this.parentPopover && !this.parentPopover.classList.contains('open')) return
-            console.log('fire action', this.parentPopover)
             this.$emit('click', e)
             this.$emit('action', e)
             this.closeContextMenu()

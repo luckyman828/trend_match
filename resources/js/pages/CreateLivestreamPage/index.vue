@@ -31,8 +31,8 @@ export default {
         ...mapGetters('files', ['currentFile', 'filesStatus']),
         status() {
             if (this.loadingData) return 'loading'
-            if (this.productsStatus == 'error' || this.filesStatus == 'error') return 'error'
-            if (this.productsStatus == 'loading' || this.filesStatus == 'loading' || !this.currentFile) return 'loading'
+            if (this.filesStatus == 'error') return 'error'
+            if (this.filesStatus == 'loading' || !this.currentFile) return 'loading'
             return 'success'
         },
     },
