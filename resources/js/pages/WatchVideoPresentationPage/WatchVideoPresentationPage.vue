@@ -277,7 +277,7 @@ export default {
     width: 100%;
     z-index: 2;
     overflow: hidden;
-    pointer-events: none;
+    pointer-events: none !important;
     .actions-wrapper {
         pointer-events: auto;
         position: absolute;
@@ -308,7 +308,7 @@ export default {
     top: 0;
     height: 100%;
     width: 100%;
-    z-index: 1;
+    z-index: 3;
     overflow: hidden;
     pointer-events: none;
     justify-content: center;
