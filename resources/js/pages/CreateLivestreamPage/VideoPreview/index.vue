@@ -157,6 +157,9 @@ export default {
             selections: 'getSelections',
             availableSelections: 'getSelectionsAvailableForPresentation',
         }),
+        ...mapGetters('products', {
+            allProducts: ['getProducts'],
+        }),
         playerReady() {
             return this.provider && this.videoId
         },
@@ -165,6 +168,7 @@ export default {
         },
     },
     methods: {
+        ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['startPresentation']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapActions('videoPresentation', ['setVideoByURL', 'updateCurrentVideo']),
@@ -173,6 +177,11 @@ export default {
             if (await this.$refs.confirmGoLiveDialog.confirm()) {
                 // Start a presentation with all the selections of the file
                 await this.startPresentation({ selections: this.selectionsToPresent })
+                if (
+                    !this.allProducts[0].selectionInputList.find(x => x.selection_id == this.selectionToPresentFrom.id)
+                ) {
+                    await this.fetchSelectionProducts(this.selectionToPresentFrom)
+                }
                 this.SET_CURRENT_SELECTIONS([this.selectionToPresentFrom])
 
                 await this.setVideoByURL({ file: this.file, url: this.videoUrl })
