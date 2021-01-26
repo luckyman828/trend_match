@@ -1,11 +1,13 @@
 <template>
     <div class="cart-drawer-wrapper">
-        <button class="trigger white circle" @click="showCart = true">
+        <BaseButton class="trigger" buttonClass="white circle" @click="showCart = true">
             <i class="far fa-heart"></i>
-            <span class="count circle dark xs" v-if="actionGroups.ins.length > 0">
-                {{ actionGroups.ins.length }}
-            </span>
-        </button>
+            <template v-slot:count>
+                <div class="circle dark xs" v-if="actionGroups.ins.length > 0">
+                    {{ actionGroups.ins.length }}
+                </div>
+            </template>
+        </BaseButton>
         <CartDrawer
             :show="showCart"
             :cart="cart"

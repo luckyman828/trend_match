@@ -12,6 +12,10 @@
             <div class="target-area" v-if="targetAreaPadding" :style="'padding: ' + targetAreaPadding"></div>
         </button>
 
+        <div class="count">
+            <slot name="count" />
+        </div>
+
         <!-- Hotkey -->
         <div class="hotkey" v-if="hotkey" :style="hotkeyStyle">
             <span class="key">{{ hotkey.key }}</span>
@@ -41,6 +45,12 @@ export default {
 .button-wrapper {
     position: relative;
     display: inline-flex;
+    .count {
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translate(35%, -35%);
+    }
     .hover-only {
         display: none;
     }
