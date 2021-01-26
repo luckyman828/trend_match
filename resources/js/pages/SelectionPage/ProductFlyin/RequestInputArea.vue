@@ -187,6 +187,7 @@ export default {
             this.request.author_id = this.authUser.id
             this.request.author = this.authUser
             this.request.lastReadAt = new Date().toISOString()
+            this.request.created_at = new Date().toISOString()
             // dispatch action
             await this.insertOrUpdateRequest({ selectionInput: this.selectionInput, request: this.request })
             this.submitting = false

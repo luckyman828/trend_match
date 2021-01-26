@@ -156,7 +156,13 @@ Vue.mixin({
             if (style == 'medium') {
                 return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMM yyyy')
             }
+
             return DateTime.fromFormat(date, 'yyyy-MM-dd').toFormat('MMMM yyyy')
+        },
+        getPrettyTimestamp(timestamp, style) {
+            return DateTime.fromISO(timestamp, { zone: 'UTC' })
+                .toLocal()
+                .toFormat('HH:mm - dd MMM yyyy')
         },
         chunkArray(array, chunk_size) {
             return Array(Math.ceil(array.length / chunk_size))

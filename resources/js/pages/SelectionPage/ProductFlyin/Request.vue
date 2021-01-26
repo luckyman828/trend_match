@@ -51,6 +51,10 @@
                     </div>
                 </div>
 
+                <div class="timestamp" v-if="request.created_at">
+                    {{ getPrettyTimestamp(request.created_at) }}
+                </div>
+
                 <div class="thread-controls" v-if="isTicket && !disableControls">
                     <div class="resolve-actions" v-if="hasTicketControl">
                         <BaseButton
@@ -302,6 +306,12 @@ export default {
             display: block;
         }
     }
+    .timestamp {
+        position: absolute;
+        bottom: 2px;
+        font-size: 10px;
+        color: $grey600;
+    }
 }
 .save-controls {
     position: absolute;
@@ -365,6 +375,7 @@ export default {
         flex-direction: column;
         flex: 1;
         overflow: hidden;
+        padding-bottom: 20px;
     }
     .thread-controls {
         width: 100%;

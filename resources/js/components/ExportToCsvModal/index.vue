@@ -471,7 +471,7 @@ export default {
                                             : 'OPEN'
                                     requestContent = `[${requestStatus}] ${
                                         request.labels.length > 0 ? `{${request.labels[0]}}` : ''
-                                    } ${requestContent}`
+                                    } - ${this.getPrettyTimestamp(request.created_at)} - ${requestContent}`
                                 }
                                 return requestContent
                             })
