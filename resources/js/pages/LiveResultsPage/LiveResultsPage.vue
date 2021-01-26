@@ -193,10 +193,10 @@ export default {
             this.disconnectSignalR()
             this.currentSelectionId = selectionId
             const selection = this.availableSelections.find(x => x.id == selectionId)
-            this.SET_CURRENT_SELECTIONS([selection])
             if (!this.allProducts[0].selectionInputList.find(x => x.selection_id == selectionId)) {
                 await this.fetchSelectionProducts(selection)
             }
+            this.SET_CURRENT_SELECTIONS([selection])
             this.connectToLiveUpdates()
             this.fetchingData = false
 
