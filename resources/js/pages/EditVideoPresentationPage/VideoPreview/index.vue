@@ -115,7 +115,7 @@ export default {
     width: 100%;
     top: 0;
     left: 0;
-    pointer-events: none;
+    pointer-events: none !important;
     &.drag-active {
         cursor: grabbing;
     }
