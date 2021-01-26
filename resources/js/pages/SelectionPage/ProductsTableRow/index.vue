@@ -29,8 +29,9 @@
                 <span>{{ product.datasource_id }}</span>
             </td>
             <td class="title">
-                <span class="clickable" @click="onViewSingle">
-                    <span v-tooltip="product.title">{{ product.title }}</span>
+                <span class="clickable">
+                    <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
+                    <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" />
                     <div class="variant-list">
                         <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
@@ -320,6 +321,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import variantImage from '../../../mixins/variantImage'
 import MultiSelectionInputRow from './MultiSelectionInputRow/index'
 import VariantListItem from './VariantListItem'
+import LabelList from './LabelList'
 
 export default {
     name: 'productsRow',
@@ -336,6 +338,7 @@ export default {
     components: {
         MultiSelectionInputRow,
         VariantListItem,
+        LabelList,
     },
     mixins: [variantImage],
     filters: {
@@ -367,7 +370,18 @@ export default {
             currentQty: 'getCurrentSelectionModeQty',
             displayUnreadBullets: 'getDisplayUnreadBullets',
             isObserver: 'getViewingAsObserver',
+            selectionRole: 'getCurrentSelectionMode',
         }),
+        ...mapGetters('workspaces', {
+            availableLabels: 'getAvailableProductLabels',
+            workspaceRole: 'authUserWorkspaceRole',
+        }),
+        labelsEnabled() {
+            return this.availableLabels.length > 0
+        },
+        hasLabelWriteAccess() {
+            return this.labelsEnabled && (this.workspaceRole == 'Admin' || this.selectionRole == 'Alignment')
+        },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
         },
@@ -419,7 +433,7 @@ export default {
         // }
     },
     methods: {
-        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted']),
+        ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'updateProduct']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -544,6 +558,27 @@ export default {
                 if (key == 'KeyO') this.onUpdateAction('Out', this.selectionInput)
                 if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus', this.selectionInput)
             }
+
+            // Label hotkeys
+            if (this.hasLabelWriteAccess && parseInt(event.key)) {
+                const pressedNumber = event.key
+                const label = this.availableLabels[pressedNumber - 1]
+                if (!label) return
+
+                // Check if the label is already added
+                const existingIndex = this.product.labels.findIndex(x => x == label)
+                if (existingIndex >= 0) {
+                    this.product.labels.splice(existingIndex, 1)
+                } else {
+                    this.product.labels.push(label)
+                }
+                this.onUpdateProduct()
+            }
+        },
+        async onUpdateProduct() {
+            const product = Object.assign({}, this.product)
+            delete product.selectionInputList
+            await this.updateProduct(product)
         },
     },
 }

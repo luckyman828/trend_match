@@ -14,6 +14,8 @@
 
             <CustomProductFieldsForm class="form-section" />
 
+            <ProductLabelsForm class="form-section" />
+
             <div class="form-section">
                 <h3>Workspace logo</h3>
                 <div class="img-wrapper logo-wrapper">
@@ -117,11 +119,13 @@
 import { mapActions, mapGetters } from 'vuex'
 import Breadcrumbs from '../../components/common/Breadcrumbs'
 import CustomProductFieldsForm from './CustomProductFieldsForm'
+import ProductLabelsForm from './ProductLabelsForm'
 export default {
     name: 'settingsPage',
     components: {
         Breadcrumbs,
         CustomProductFieldsForm,
+        ProductLabelsForm,
     },
     data: function() {
         return {

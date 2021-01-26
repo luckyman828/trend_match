@@ -122,7 +122,7 @@
                             />
 
                             <div class="label">
-                                <slot name="before" :option="option" />
+                                <slot name="before" :option="option" :index="index" />
                                 <template v-if="optionNameKey">
                                     {{
                                         displayFunction ? displayFunction(option[optionNameKey]) : option[optionNameKey]
@@ -134,7 +134,7 @@
                                 <p class="description" v-if="optionDescriptionKey">
                                     {{ optionGroup[optionDescriptionKey] }}
                                 </p>
-                                <slot name="after" :option="option" />
+                                <slot name="after" :option="option" :index="index" />
                             </div>
                         </label>
                     </div>
@@ -183,7 +183,7 @@
                         />
 
                         <div class="label">
-                            <slot name="before" :option="option" />
+                            <slot name="before" :option="option" :index="index" />
                             <template v-if="labelPrefix">
                                 <span v-html="labelPrefix" style="margin-right: 4px"></span>
                             </template>
@@ -196,7 +196,7 @@
                             <p class="description" v-if="optionDescriptionKey">
                                 {{ option[optionDescriptionKey] }}
                             </p>
-                            <slot name="after" :option="option" />
+                            <slot name="after" :option="option" :index="index" />
                         </div>
                     </label>
                 </div>

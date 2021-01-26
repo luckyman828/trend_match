@@ -658,6 +658,7 @@ export default {
             commit('setCurrentProduct', product)
             commit('setSingleVisisble', true)
         },
+        
         async updateProduct({ commit, dispatch }, product) {
             return new Promise((resolve, reject) => {
                 const apiUrl = `/products/${product.id}`
