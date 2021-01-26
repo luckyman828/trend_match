@@ -181,6 +181,13 @@ Vue.mixin({
             document.execCommand('copy')
             document.body.removeChild(tempInput)
         },
+        getNextArrayIndex(array, currentIndex, forwards) {
+            // Special cases
+            // Forwards and last
+            if (array.length == currentIndex + 1 && forwards) return 0
+            if (currentIndex == 0 && !forwards) return array.length - 1
+            return forwards ? currentIndex + 1 : currentIndex - 1
+        },
     },
 })
 

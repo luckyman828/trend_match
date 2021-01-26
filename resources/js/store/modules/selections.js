@@ -1192,7 +1192,7 @@ export default {
             let link
             await axios.get(apiUrl).then(response => {
                 // linkCode = response.data.message
-                // console.log('response code', linkCode)
+                console.log('response code', reponse)
                 link = response.data.magic_link
             })
 

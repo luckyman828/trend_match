@@ -297,7 +297,6 @@ export default {
                     this.scrollDir = 'down'
                     this.scrollRef = scrollDist
                 }
-                // console.log('scroll down')
                 // Check if we have scrolled further than the threshold
                 if (scrollDist > this.scrollRef + threshold && !this.hideNav) {
                     this.hideNav = true

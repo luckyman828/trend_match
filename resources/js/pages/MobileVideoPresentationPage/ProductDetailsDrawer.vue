@@ -10,13 +10,20 @@
             <div class="body-inner form-wrapper">
                 <div class="variant-list form-element">
                     <div class="image-rail" :class="{ center: product.variants.length <= 1 }">
-                        <BaseVariantImage
-                            class="variant-image"
-                            v-for="variant in product.variants"
-                            :key="variant.id"
-                            :variant="variant"
-                            size="sm"
-                        />
+                        <div class="img-wrapper" v-for="variant in product.variants" :key="variant.id">
+                            <BaseVariantImage
+                                class="variant-image"
+                                :variant="variant"
+                                :index="variant.imageIndex"
+                                size="sm"
+                            />
+                            <div class="target-area prev" @click="cycleVariantPicture(variant, false)"></div>
+                            <div class="target-area next" @click="cycleVariantPicture(variant, false)"></div>
+                            <div class="square images-icon white" v-if="variant.pictures.length > 1">
+                                <i class="far fa-images"></i>
+                                <div class="count primary xs circle">{{ variant.pictures.length }}</div>
+                            </div>
+                        </div>
                     </div>
                     <!-- <div class="pagination" v-for="variant in product.variants" :key="variant.id"></div> -->
                 </div>
@@ -42,7 +49,7 @@
                     </div>
                 </div>
 
-                <div class="form-element flex-list md">
+                <div class="form-element flex-list md delivery-list">
                     <i class="fal fa-calendar md"></i>
                     <div class="list-item" v-for="(delivery, index) in product.delivery_dates" :key="index">
                         <label>Delivery {{ index + 1 }}</label>
@@ -118,6 +125,13 @@ import { mapGetters } from 'vuex'
 export default {
     name: 'productDetailsDrawer',
     props: ['show', 'product'],
+    methods: {
+        cycleVariantPicture(variant, forwards) {
+            const newIndex = this.getNextArrayIndex(variant.pictures, variant.imageIndex, forwards)
+            console.log('get new index', variant, forwards, newIndex)
+            variant.imageIndex = newIndex
+        },
+    },
 }
 </script>
 
@@ -142,15 +156,52 @@ export default {
     .variant-list {
         .image-rail {
             display: flex;
-            margin-left: 16px;
             overflow: auto;
-            .variant-image {
+            padding-bottom: 8px;
+            margin-bottom: -8px;
+            width: 100%;
+            .img-wrapper {
+                position: relative;
                 width: 270px;
+                min-width: 270px;
+                flex: 1 0 auto;
                 height: 360px;
-                object-fit: cover;
-                margin-right: 12px;
-                border-radius: 2px;
                 overflow: hidden;
+                border-radius: 2px;
+                margin-right: 12px;
+                .variant-image {
+                    // position: absolute;
+                    // left: 0;
+                    // top: 0;
+                    // object-fit: cover;
+                    width: 100%;
+                    height: 100%;
+                }
+                .target-area {
+                    position: absolute;
+                    height: 100%;
+                    width: 50%;
+                    top: 0;
+                    z-index: 1;
+                    &.prev {
+                        left: 0;
+                    }
+                    &.next {
+                        right: 0;
+                    }
+                }
+                .images-icon {
+                    position: absolute;
+                    z-index: 1;
+                    right: 8px;
+                    top: 8px;
+                    .count {
+                        top: 0;
+                        right: 0;
+                        transform: translate(25%, -25%);
+                        position: absolute;
+                    }
+                }
             }
             &::after {
                 content: '';
@@ -160,7 +211,7 @@ export default {
             }
             &.center {
                 margin: 0;
-                .variant-image {
+                .img-wrapper {
                     margin: auto;
                 }
             }
@@ -198,6 +249,12 @@ export default {
                 }
             }
         }
+    }
+    .delivery-list {
+        width: 100%;
+        overflow: auto;
+        padding-bottom: 8px;
+        margin-bottom: 32px;
     }
 }
 </style>
