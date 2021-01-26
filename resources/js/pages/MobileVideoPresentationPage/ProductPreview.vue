@@ -36,6 +36,7 @@ export default {
     border-radius: 2px;
     // box-shadow: $shadowEl;
     overflow: hidden;
+    pointer-events: all;
     .img-wrapper {
         width: 100%;
         height: 102px;
