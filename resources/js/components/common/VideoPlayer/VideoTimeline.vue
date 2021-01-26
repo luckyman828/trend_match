@@ -1,8 +1,27 @@
 <template>
-    <div class="timeline">
-        <div class="timeline-wrapper" @click="onClickToTimestamp" :class="{ 'drag-active': isDragging }">
+    <div class="timeline" :class="{ 'drag-active': isDragging }">
+        <div
+            ref="targetArea"
+            class="target-area"
+            v-touch:moved="onDragStart"
+            v-touch:moving="onTouchDragMove"
+            v-touch:end="onDragEnd"
+        />
+        <div
+            class="timeline-wrapper"
+            @click="onClickToTimestamp"
+            v-touch:moved="onDragStart"
+            v-touch:moving="onTouchDragMove"
+            v-touch:end="onDragEnd"
+        >
             <div class="rail" :style="railStyle">
-                <div class="knob" :style="knobStyle" @mousedown="onDragStart"></div>
+                <div
+                    class="knob"
+                    @mousedown="onDragStart"
+                    v-touch:moved="onDragStart"
+                    v-touch:moving="onTouchDragMove"
+                    v-touch:end="onDragEnd"
+                ></div>
             </div>
         </div>
         <TimelineItemList v-if="timings && productsReady" :timings="timings" class="timing-list" />
@@ -10,6 +29,7 @@
 </template>
 
 <script>
+import { offset } from '@popperjs/core'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TimelineItemList from './TimelineItemList'
 
@@ -22,7 +42,7 @@ export default {
         return {
             dragTime: 0,
             stopDragTimeout: null,
-            // watchedPercentage: 0,
+            isMounted: false,
         }
     },
     computed: {
@@ -41,18 +61,14 @@ export default {
         }),
         watchedPercentage() {
             const timeToUse = this.isDragging ? this.dragTime : this.timestamp
-            const percentage = (timeToUse / this.duration) * 100
+            const percentage = Math.max(Math.min((timeToUse / this.duration) * 100, 100), 0)
             const rounded = Math.round(percentage * 1e2) / 1e2
             return rounded
         },
-        knobStyle() {
-            const playerRect = this.playerIframe.getBoundingClientRect()
-            return `transform: translateX(calc(${(playerRect.width / 100) * this.watchedPercentage}px - ${14 *
-                (this.watchedPercentage / 100)}px));`
-        },
         railStyle() {
-            const playerRect = this.playerIframe.getBoundingClientRect()
-            return `width: calc(${(playerRect.width / 100) * this.watchedPercentage}px + 0px);`
+            if (!this.isMounted) return
+            const elRect = this.$el.getBoundingClientRect()
+            return `width: calc(${(elRect.width / 100) * this.watchedPercentage}px + 0px);`
         },
         productsReady() {
             return this.productsStatus == 'success'
@@ -77,6 +93,7 @@ export default {
             this.dragTime = null
         },
         onDragStart(e) {
+            // alert('drag start')
             // Remove any previous drag listener - just in case
             this.removeDragListeners()
             this.SET_IS_DRAGGING(true)
@@ -87,31 +104,35 @@ export default {
         onDragMove(e) {
             this.getDragTime(e)
         },
+        onTouchDragMove(e) {
+            this.getDragTime(e.touches[0])
+        },
         onDragEnd() {
             this.seekTo(this.dragTime)
             this.removeDragListeners()
 
             this.SET_IS_DRAGGING(false)
             this.dragTime = null
-            // Use a timeout to let the player set the new timestamp before reverting to using the player timestamp
-            // this.stopDragTimeout = setTimeout(() => {
-            // }, 1000)
         },
         getDragTime(mouseEvent) {
             const playerRect = this.playerIframe.getBoundingClientRect()
             const mouseX = mouseEvent.clientX - playerRect.left
-            const xPercentage = Math.max(Math.min(mouseX / playerRect.width, 1), 0)
+            // Add an offset to allow the user to reach the extremes of each side
+            const offSetX = ((mouseX - playerRect.width / 2) / playerRect.width / 2) * 200
+
+            const xPercentage = Math.max(Math.min((mouseX + offSetX) / playerRect.width, 1), 0)
             this.dragTime = this.duration * xPercentage
         },
-        // getWatchedPercentage() {
-        //     const timeToUse = this.isDragging ? this.dragTime : this.timestamp
-        //     const percentage = (timeToUse / this.duration) * 100
-        //     const rounded = Math.round(percentage * 1e2) / 1e2
-        //     this.watchedPercentage = rounded
-        // },
+        touchStartHandler(e) {
+            e.preventDefault()
+        },
     },
-    created() {
-        // setInterval(this.getWatchedPercentage(), 1000)
+    mounted() {
+        this.$refs.targetArea.addEventListener('touchstart', this.touchStartHandler, { passive: false })
+        this.isMounted = true
+    },
+    destroyed() {
+        this.$refs.targetArea.removeEventListener('touchstart', this.touchStartHandler)
     },
 }
 </script>
@@ -123,6 +144,29 @@ export default {
     .timing-list {
         transition: 0.1s ease-out;
     }
+    .target-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 80px;
+        width: 100%;
+        width: 200%;
+        transform: translate(-25%, -50%);
+    }
+    @include mobile {
+        bottom: 12px;
+        transition: bottom $videoPauseTransition;
+        .paused &,
+        &.drag-active {
+            bottom: 16px;
+            .rail {
+                height: 8px;
+            }
+            .knob {
+                transform: translate(50%, -50%) scale(3);
+            }
+        }
+    }
 }
 .timeline-wrapper {
     width: 100%;
@@ -130,7 +174,8 @@ export default {
     cursor: pointer;
     position: relative;
     z-index: 3;
-    &.drag-active {
+    border-radius: 50px;
+    .drag-active & {
         .rail,
         .knob {
             transition: none;
@@ -151,15 +196,20 @@ export default {
             }
         }
     }
+    @include mobile {
+        background: rgba(white, 25%);
+    }
     .rail {
         cursor: pointer;
         height: $heightVideoTimeline;
         position: relative;
         margin-right: 14px;
         background: $primary;
-        transition: width 0.05s, height 0.1s;
+        transition: width 0.05s, height $videoPauseTransition;
+        border-radius: 50px;
         @include mobile {
             height: 4px;
+            background: white;
         }
     }
     .knob {
@@ -170,9 +220,10 @@ export default {
         border-radius: 50px;
         background: white;
         position: absolute;
-        top: -3px;
-        left: 0;
-        transition: transform 0.05s;
+        top: 50%;
+        right: 0;
+        transition: transform $videoPauseTransition;
+        transform: translate(50%, -50%);
         // Make not draggable
         user-drag: none;
         user-select: none;
@@ -183,7 +234,7 @@ export default {
         @include mobile {
             height: 8px;
             width: 8px;
-            top: -2px;
+            background: $primary;
         }
     }
 }

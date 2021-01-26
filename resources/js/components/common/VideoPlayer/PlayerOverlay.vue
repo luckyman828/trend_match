@@ -1,6 +1,8 @@
 <template>
     <div class="player-overlay" :class="playerStatus">
-        <div class="over-player" @click="onTogglePlay" />
+        <div class="over-player flex-list center-h center-v" @click="onTogglePlay">
+            <button class="play-button circle white xl mobile-only"><i class="fas fa-play"></i></button>
+        </div>
         <div class="custom-overlay">
             <slot />
         </div>
@@ -56,8 +58,14 @@ export default {
     }
     &.paused {
         .over-player {
-            // z-index: -1;
             background: rgba(black, 0.2);
+        }
+    }
+    &.playing {
+        .over-player {
+            .play-button {
+                display: none;
+            }
         }
     }
 }

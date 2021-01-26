@@ -1,116 +1,88 @@
 <template>
-    <div class="video-presentation-page" :class="[{ started: playerStarted }, { playing: isPlaying }]">
-        <div class="video-presentation-wrapper">
-            <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
-                <div
-                    class="play-overlay"
-                    v-if="!playerStarted"
-                    :style="video.thumbnail && `background-image: url(${video.thumbnail})`"
-                >
-                    <div class="overlay"></div>
-                    <button class="xxl circle black blur" @click="onStartPlaying">
-                        <i class="far fa-play"></i>
-                    </button>
-                </div>
-                <div class="watch-overlay">
-                    <div class="top-items flex-list md">
-                        <button
-                            class="dark blur circle"
-                            @click="
-                                $router.push({
-                                    name: 'selection',
-                                    params: { fileId: selection.file_id, selectionId: selection.id },
-                                })
-                            "
-                        >
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <div class="flex-list flex-v xs">
-                            <span class="selection-name">{{ selection.name }}</span>
-                            <span class="brand-name">{{ workspace.title }}</span>
-                        </div>
-                    </div>
-                    <EndedOverlay
-                        v-if="playerStatus == 'ended'"
-                        @view-cart-ins="
-                            $refs.cartSidebar.show = true
-                            $refs.cartSidebar.cartView = 'ins'
-                        "
-                    />
-                    <template v-if="playerStarted">
-                        <div class="bottom-items">
-                            <ProductActionSelector />
+    <div
+        class="video-presentation-page"
+        :class="[
+            { started: playerStarted },
+            { playing: isPlaying },
+            playerStatus,
+            { 'recently-started': recentlyStarted },
+        ]"
+    >
+        <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false">
+            <BeforeStartScreen v-if="!playerStarted" :video="video" @start="onStartPlaying" />
 
-                            <CartSidebar :show="showCart" @close="showCart = false" v-slot="slotProps">
-                                <button class="pill white sm" @click="showCart = true">
-                                    <span
-                                        >{{
-                                            slotProps.ins
-                                                .reduce((acc, curr) => {
-                                                    return (acc += curr.yourPrice.wholesale_price)
-                                                }, 0)
-                                                .toFixed(2)
-                                        }}
-                                        {{ products[0].yourPrice.currency }}</span
-                                    >
-                                </button>
-                            </CartSidebar>
-                        </div>
-                        <ProductPreview @click.native="showProductDrawer = true" />
-                        <ProductDetailsDrawer :show="showProductDrawer" @close="showProductDrawer = false" />
-                        <!-- <PauseOverlay /> -->
-                        <!-- <PlayerControls class="player-controls" /> -->
-                    </template>
-                </div>
-            </VideoPlayer>
-        </div>
+            <VideoTitle :video="video" :selection="selection" v-if="selection" />
+
+            <template v-if="playerStarted">
+                <VideoTimeline />
+                <!-- <VolumeControl class="volume-control" /> -->
+                <ProductActions @show-chat="showChatInput = true" />
+                <ChatInput v-if="showChatInput" @close="showChatInput = false" />
+                <ChatArea />
+                <ProductPreview />
+                <ProductDetailsDrawer
+                    :show="!!sidebarProduct"
+                    :product="sidebarProduct"
+                    @close="SET_SIDEBAR_PRODUCT(null)"
+                />
+                <CartDrawer />
+            </template>
+        </VideoPlayer>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VideoPlayer from '../../components/common/VideoPlayer/'
-import PlayerControls from '../WatchVideoPresentationPage/PlayerControls'
+import VideoTimeline from '../../components/common/VideoPlayer/VideoTimeline'
 import ProductDetailsDrawer from './ProductDetailsDrawer'
 import ProductPreview from './ProductPreview'
-import ProductActionSelector from './ProductActionSelector'
-import CartSidebar from './CartSidebar/'
-// import PauseOverlay from './PauseOverlay/'
-// import EndedOverlay from './EndedOverlay'
+import ProductActions from './ProductActions'
+import VideoTitle from './VideoTitle'
+import ChatInput from './ChatInput'
+import ChatArea from './ChatArea'
+import BeforeStartScreen from './BeforeStartScreen'
+import CartDrawer from './CartDrawer/'
+import VolumeControl from '../../components/common/VideoPlayer/VolumeControl.vue'
 
 export default {
     name: 'mobileVideoPresentationPage',
     components: {
         VideoPlayer,
+        VideoTitle,
+        VideoTimeline,
         ProductDetailsDrawer,
         ProductPreview,
-        ProductActionSelector,
-        PlayerControls,
-        // ProductDetailsSidebar,
-        CartSidebar,
-        // PauseOverlay,
-        // EndedOverlay,
+        ProductActions,
+        CartDrawer,
+        BeforeStartScreen,
+        ChatInput,
+        ChatArea,
+        VolumeControl,
     },
     data: function() {
         return {
             playerStarted: false,
             isConnectedToLiveUpdates: false,
             showControls: true,
-            showProductDrawer: false,
             showCart: false,
+            showChatInput: false,
             playerStartedTester: null,
+            recentlyStarted: false,
         }
     },
     computed: {
         ...mapGetters('videoPresentation', {
             videoTimings: 'getVideoTimings',
             video: 'getCurrentVideo',
+            sidebarProduct: 'getSidebarProduct',
         }),
         ...mapGetters('videoPlayer', {
             isPlaying: 'getIsPlaying',
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
             playerStatus: 'getStatus',
+            desiredStatus: 'getDesiredStatus',
             videoType: 'getVideoType',
             videoDuration: 'getDuration',
             isLive: 'getIsLive',
@@ -120,9 +92,6 @@ export default {
         }),
         ...mapGetters('presentation', {
             presentedProductId: 'getCurrentProductId',
-        }),
-        ...mapGetters('workspaces', {
-            workspace: 'currentWorkspace',
         }),
         ...mapGetters('products', {
             products: 'products',
@@ -145,18 +114,26 @@ export default {
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
-        ...mapMutations('videoPresentation', ['ADD_TIMING']),
+        ...mapMutations('videoPlayer', ['SET_DESIRED_STATUS']),
+        ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_SIDEBAR_PRODUCT']),
         onStartPlaying() {
             this.togglePlaying()
             this.playerStarted = true
             const interval = 1000
+            this.SET_DESIRED_STATUS('playing')
             this.playerStartedTester = setInterval(() => {
-                if (!this.isPlaying) {
+                if (!this.isPlaying && this.desiredStatus == 'playing') {
                     this.togglePlaying()
                 } else {
                     clearInterval(this.playerStartedTester)
                 }
             }, interval)
+
+            // Add a class to the player to tell that it has recently been started
+            this.recentlyStarted = true
+            setTimeout(() => {
+                this.recentlyStarted = false
+            }, 4000)
         },
         async onNewProduct(productId) {
             // Find the new start
@@ -200,18 +177,6 @@ export default {
             this.isConnectedToLiveUpdates = false
         },
     },
-    mounted() {
-        alert('scroll down a little')
-        /* iOS re-orientation fix */
-        if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i)) {
-            /* iOS hides Safari address bar */
-            window.addEventListener('load', function() {
-                setTimeout(function() {
-                    window.scrollTo(0, 1)
-                }, 1000)
-            })
-        }
-    },
     created() {
         // Check if we are in a presentation
         if (this.isLive) {
@@ -225,7 +190,6 @@ export default {
             this.disconnectLiveUpdates()
         }
         if (this.playerStartedTester) clearInterval(this.playerStartedTester)
-        document.body.classList.remove('fit-height')
     },
 }
 </script>
@@ -240,138 +204,63 @@ export default {
     height: 100%;
     overscroll-behavior: none;
     z-index: 2147483646;
-    .video-presentation-wrapper {
-        height: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-    }
-    &:not(.started) {
-        ::v-deep {
-            .timeline {
-                display: none;
-            }
-        }
-    }
-    ::v-deep {
-        .timeline {
-            bottom: 0;
-            .knob {
-                display: none;
-            }
-            .rail {
-                height: 12px;
-            }
-        }
+    .timeline {
+        position: fixed;
+        // bottom: 6px;
+        left: 16px;
+        width: calc(100% - 2 * 16px);
     }
 }
-.player-controls {
-    z-index: 999;
-    bottom: 50%;
-    height: 120px;
-}
-.top-items {
-    padding: 12px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    color: white;
-    line-height: 1;
-    pointer-events: all;
-    background: linear-gradient(180deg, rgba(black, 0.5), transparent);
-    padding-bottom: 40px;
-    .selection-name {
-        font-size: 20px;
-        font-weight: 700;
-    }
-    .brand-name {
-        font-size: 12px;
-        font-weight: 500;
-    }
-}
-.bottom-items {
-    position: absolute;
-    bottom: 8px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    left: 0;
-    padding: 12px;
-    background: linear-gradient(0deg, black, transparent);
-    pointer-events: all;
-}
-.watch-overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 2;
-    overflow: hidden;
-    pointer-events: none;
+// .player-controls {
+//     z-index: 999;
+//     bottom: 50%;
+//     height: 120px;
+// }
 
-    .actions-wrapper {
-        pointer-events: auto;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        margin: auto;
-        display: flex;
-        justify-content: center;
-        z-index: 1;
-        .actions {
-            pointer-events: all;
-            transition: transform 0.1s ease-out;
-            transform: translateY(-100%);
-            padding: 32px 0 16px;
-        }
-        &:hover,
-        &.show {
-            .actions {
-                transform: none;
-            }
-        }
-    }
-}
-.play-overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    overflow: hidden;
-    pointer-events: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    display: flex;
-    background: rgba(black, 0.55);
-    color: white;
-    pointer-events: all;
-    background-size: cover;
-    background-position: center;
-    .overlay {
-        display: block;
-        z-index: 0;
-        background: rgba(black, 0.5);
-    }
-    h3 {
-        color: white;
-    }
-    button {
-        background: rgba(black, 0.8);
-        backdrop-filter: blur(5px);
-        border: none;
-        width: 72px;
-        height: 72px;
-        i {
-            color: white;
-            margin-left: 6px;
-        }
-    }
-}
+// .bottom-items {
+//     position: absolute;
+//     bottom: 8px;
+//     width: 100%;
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: flex-end;
+//     left: 0;
+//     padding: 12px;
+//     background: linear-gradient(0deg, black, transparent);
+//     pointer-events: all;
+// }
+// .watch-overlay {
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//     height: 100%;
+//     width: 100%;
+//     z-index: 2;
+//     overflow: hidden;
+//     pointer-events: none;
+
+//     .actions-wrapper {
+//         pointer-events: auto;
+//         position: absolute;
+//         top: 0;
+//         left: 0;
+//         width: 100%;
+//         margin: auto;
+//         display: flex;
+//         justify-content: center;
+//         z-index: 1;
+//         .actions {
+//             pointer-events: all;
+//             transition: transform 0.1s ease-out;
+//             transform: translateY(-100%);
+//             padding: 32px 0 16px;
+//         }
+//         &:hover,
+//         &.show {
+//             .actions {
+//                 transform: none;
+//             }
+//         }
+//     }
+// }
 </style>

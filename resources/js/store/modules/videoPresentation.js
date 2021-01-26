@@ -97,6 +97,8 @@ export default {
             if (providerMatches.length < 2) return false
             let provider = providerMatches[1]
 
+            console.log('get video from URL', url, provider)
+
             let videoIdRegex
             if (provider == 'vimeo') {
                 // Check if it is a private link.
@@ -108,12 +110,14 @@ export default {
             }
             if (provider == 'youtube') {
                 videoIdRegex = new RegExp(
-                    /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/watch\?v=(([A-z]|[0-9])*)/
+                    /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/watch\?v=(([A-z]|[0-9]|\-)*)/
                 )
+                console.log('provider is youtube', url, provider)
             }
             if (provider == 'youtu') {
                 provider = 'youtube'
                 videoIdRegex = new RegExp(/(?:\.be\/)(.*)/)
+                console.log('provider is youtu', url, provider)
             }
 
             const videoIdMatches = url.match(videoIdRegex)
