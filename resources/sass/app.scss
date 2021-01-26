@@ -308,6 +308,7 @@ input[type='submit'] {
     // SIZES
     // Default
     height: 32px;
+    min-width: 32px;
     font-size: 12px;
     > span:first-child {
         margin-left: 12px;
@@ -315,7 +316,13 @@ input[type='submit'] {
     > span:last-child {
         margin-right: 12px;
     }
-    &:not(.ghost):not(.invisible) i:not(.fa-times) {
+    > span,
+    > i {
+        &:not(:last-child) {
+            margin-right: 8px;
+        }
+    }
+    &:not(.ghost):not(.invisible) > i:not(.fa-times) {
         &.fa,
         &.fas,
         &.far,
@@ -325,66 +332,58 @@ input[type='submit'] {
             font-weight: 900;
         }
     }
-    i {
+    > i {
         &.fa,
         &.fas,
         &.far,
         &.fal,
         &.fad,
         &.fab {
-            width: 32px - 4px;
             text-align: center;
             font-size: 14px;
             color: inherit;
         }
-    }
-    &.ghost i {
-        &.fa,
-        &.fas,
-        &.far,
-        &.fal,
-        &.fad,
-        &.fab {
-            width: 32px - 4px;
+        &:first-child {
+            margin-left: 6px;
+        }
+        &:last-child {
+            margin-right: 6px;
         }
     }
     @each $size in $button-sizes {
         &.#{nth($size,1)} {
             height: nth($size, 2);
             font-size: nth($size, 3);
-            i {
+            min-width: nth($size, 2);
+            > i {
                 &.fa,
                 &.fas,
                 &.far,
                 &.fal,
                 &.fad,
                 &.fab {
-                    width: nth($size, 2) - 4px;
                     font-size: nth($size, 5);
                 }
-            }
-            &.ghost i {
-                &.fa,
-                &.fas,
-                &.far,
-                &.fal,
-                &.fad,
-                &.fab {
-                    width: nth($size, 2) - 4px;
+                &:first-child {
+                    margin-left: nth($size, 4) / 2;
+                }
+                &:last-child {
+                    margin-right: nth($size, 4) / 2;
                 }
             }
             > span:first-child {
                 margin-left: nth($size, 4);
+            }
+            > span:last-child {
+                margin-right: nth($size, 4);
+            }
+            > i,
+            > span {
                 &:not(:last-child) {
                     margin-right: nth($size, 6);
                 }
             }
-            > span:last-child {
-                margin-right: nth($size, 4);
-                &:not(:first-child) {
-                    margin-left: nth($size, 6);
-                }
-            }
+
             &.has-target-area {
                 &::after {
                     content: '';
@@ -587,6 +586,32 @@ i {
     &.fab {
         position: relative;
         color: $icon;
+        // Icons in icons // Icon in icon // icon-in-icon
+        i {
+            position: absolute;
+            font-size: 9px;
+            text-shadow: -1px -1px 0 white, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+            width: auto;
+            &.pos-right {
+                right: 0;
+            }
+            &.pos-left {
+                left: 0;
+            }
+            &.pos-bottom {
+                bottom: 0;
+                &.pos-left {
+                    // transform: translate(-50%, 50%);
+                    transform: translate(-25%, 25%);
+                }
+                &.pos-right {
+                    transform: translate(25%, 25%);
+                }
+            }
+            &.pos-top {
+                top: 0;
+            }
+        }
     }
     &.fad {
         --fa-secondary-color: #2a46ff;
@@ -616,14 +641,6 @@ i {
         &.#{nth($color,1)}-hover:hover {
             color: nth($color, 2) !important;
         }
-    }
-    // Icons in icons
-    i {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        font-size: 9px;
-        transform: translate(-50%, -50%);
     }
 }
 
@@ -1517,22 +1534,22 @@ input::placeholder {
 // LAYOUT / COLUMNS
 .col-5 {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-gap: 8px;
 }
 .col-4 {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-gap: 8px;
 }
 .col-3 {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-gap: 8px;
 }
 .col-2 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-gap: 8px;
 }
 

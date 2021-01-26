@@ -98,6 +98,11 @@ const routes = [
         name: 'results',
         component: () => import(/* webpackChunkName: "resultsPage" */ './pages/ResultsPage'),
     },
+    {
+        path: '/file/:fileId/live-results',
+        name: 'liveResults',
+        component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
+    },
     { path: '*', redirect: '/files' },
 ]
 
