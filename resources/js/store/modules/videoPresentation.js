@@ -201,7 +201,7 @@ export default {
 
             const conflictingTiming = allTimings.find(
                 x =>
-                    (newTiming.start > x.start && newTiming.start < x.end) ||
+                    (newTiming.start >= x.start && newTiming.start < x.end) ||
                     (newTiming.end < x.end && newTiming.end > x.start)
             )
             const minDuration = 1
@@ -209,7 +209,8 @@ export default {
                 // Place befoe
                 const placeBefore = newTiming.start < conflictingTiming.start
                 if (placeBefore) {
-                    newTiming.end = conflictingTiming.start
+                    const nextTiming = allTimings[newTiming.index + 1]
+                    newTiming.end = nextTiming.start
                 }
 
                 // Place after
