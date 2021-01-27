@@ -57,6 +57,9 @@ Vue.use(VueYoutube)
 import vueVimeoPlayer from 'vue-vimeo-player'
 Vue.use(vueVimeoPlayer)
 
+import VueObserveVisibility from 'vue-observe-visibility'
+Vue.use(VueObserveVisibility)
+
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip, {
     defaultBoundariesElement: 'window',
