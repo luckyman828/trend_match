@@ -1,3 +1,5 @@
+import store from '../store/'
+
 export default {
     methods: {
         exportToCsv(filename, rows) {
@@ -34,8 +36,19 @@ export default {
 
             products.map(product => {
                 if (template.rowScope == 'Variant') {
-                    for (let i = 0; i < Math.max(product.variants.length, 1); i++) {
+                    const variantCount = Math.max(product.variants.length, 1)
+                    for (let i = 0; i < variantCount; i++) {
                         const variant = product.variants[i]
+                        if (template.inVariantsOnly) {
+                            if (!variant) continue
+                            // Find the variant in our selectionInput
+                            const selectionInputVariant = product.getActiveSelectionInput.variants.find(
+                                x => x.id == variant.id
+                            )
+                            const actionKey = store.getters['selections/getCurrentActionKey']
+                            const variantAction = selectionInputVariant[actionKey]
+                            if (!['In', 'Focus'].includes(variantAction)) continue
+                        }
                         getRowData(product, variant)
                     }
                 } else {
