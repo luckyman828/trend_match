@@ -14,11 +14,14 @@
             <span>{{ product.datasource_id }}</span>
         </td>
         <td class="title">
-            <span class="clickable" @click="onViewSingle">
-                <span v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title">{{
-                    product.title | truncate(titleTruncateSize)
-                }}</span>
-                <div class="variant-list">
+            <span class="clickable">
+                <span
+                    @click="onViewSingle"
+                    v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title"
+                    >{{ product.title | truncate(titleTruncateSize) }}</span
+                >
+                <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" />
+                <div class="variant-list" @click="onViewSingle">
                     <div
                         class="variant-list-item pill ghost xs"
                         v-for="(variant, index) in product.variants.slice(0, 5)"
@@ -93,9 +96,11 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import variantImage from '../../mixins/variantImage'
+import LabelList from '../SelectionPage/ProductsTableRow/LabelList'
 
 export default {
     name: 'productsRow',
+    components: { LabelList },
     props: ['product', 'selectedProducts', 'editOrderModeActive'],
     mixins: [variantImage],
     filters: {
@@ -109,6 +114,9 @@ export default {
         },
     },
     computed: {
+        ...mapGetters('workspaces', {
+            availableLabels: 'getAvailableProductLabels',
+        }),
         localSelectedProducts: {
             get() {
                 return this.selectedProducts
@@ -119,6 +127,12 @@ export default {
         },
         titleTruncateSize() {
             return window.innerWidth < 1260 ? 16 : 24
+        },
+        labelsEnabled() {
+            return this.availableLabels.length > 0
+        },
+        hasLabelWriteAccess() {
+            return this.labelsEnabled
         },
     },
     methods: {

@@ -32,7 +32,7 @@
                 <span class="clickable">
                     <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
                     <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" />
-                    <div class="variant-list">
+                    <div class="variant-list" @click="onViewSingle">
                         <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
                     </div> -->
