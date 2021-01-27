@@ -1,55 +1,48 @@
 <template>
-    <div
-        class="player-wrapper"
-        :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]"
-        :key="intanceId"
-    >
-        <vimeo-player
-            v-if="provider == 'vimeo' && providerVideoId"
-            :key="providerVideoId"
-            ref="player"
-            class="player"
-            :videoId="providerVideoId"
-            :videoUrl="isVimeoPrivateLink ? providerVideoId : null"
-            :controls="false"
-            :autoplay="autoplay"
-            @ready="onPlayerReady"
-            @play="onPlayingStatus"
-            @pause="SET_PLAYER_STATUS('paused')"
-            @loaded="SET_PLAYER_STATUS('buffering')"
-            @ended="onEndedStatus"
-            @timeupdate="$event => onTimeupdate($event.seconds)"
-        />
+    <div class="player-wrapper" :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]">
+        <div class="players" :key="intanceId">
+            <vimeo-player
+                v-if="provider == 'vimeo' && providerVideoId"
+                ref="player"
+                class="player"
+                :videoId="providerVideoId"
+                :videoUrl="isVimeoPrivateLink ? providerVideoId : null"
+                :controls="false"
+                :autoplay="autoplay"
+                @ready="onPlayerReady"
+                @play="onPlayingStatus"
+                @pause="SET_PLAYER_STATUS('paused')"
+                @loaded="SET_PLAYER_STATUS('buffering')"
+                @ended="onEndedStatus"
+                @timeupdate="$event => onTimeupdate($event.seconds)"
+            />
 
-        <youtube
-            v-else-if="provider == 'youtube'"
-            ref="player"
-            class="player"
-            tabindex="-1"
-            :key="providerVideoId"
-            :videoId="providerVideoId"
-            :playerVars="{
-                autoplay: autoplay ? 1 : 0,
-                controls: 0,
-                modestbranding: 1,
-                fs: 0,
-                cc_load_policy: 0,
-                iv_load_policy: 3,
-                disablekb: 0,
-                playsinline: 1,
-            }"
-            :resize="true"
-            :fitParent="true"
-            @ready="onPlayerReady"
-            @playing="onPlayingStatus"
-            @paused="SET_PLAYER_STATUS('paused')"
-            @buffering="SET_PLAYER_STATUS('buffering')"
-            @ended="onEndedStatus"
-            @error="SET_PLAYER_STATUS('error')"
-        />
-
-        <BaseLoader v-else />
-        <!-- </div> -->
+            <youtube
+                v-else-if="provider == 'youtube'"
+                ref="player"
+                class="player"
+                tabindex="-1"
+                :videoId="providerVideoId"
+                :playerVars="{
+                    autoplay: autoplay ? 1 : 0,
+                    controls: 0,
+                    modestbranding: 1,
+                    fs: 0,
+                    cc_load_policy: 0,
+                    iv_load_policy: 3,
+                    disablekb: 0,
+                    playsinline: 1,
+                }"
+                :resize="true"
+                :fitParent="true"
+                @ready="onPlayerReady"
+                @playing="onPlayingStatus"
+                @paused="SET_PLAYER_STATUS('paused')"
+                @buffering="SET_PLAYER_STATUS('buffering')"
+                @ended="onEndedStatus"
+                @error="SET_PLAYER_STATUS('error')"
+            />
+        </div>
 
         <div class="click-to-pause" @click="!isLive && togglePlaying()" />
         <div class="player-overlay">
@@ -256,6 +249,10 @@ export default {
     background: black;
     height: 100%;
     position: relative;
+    .players {
+        height: 100%;
+        width: 100%;
+    }
     ::v-deep {
         iframe {
             height: 100%;

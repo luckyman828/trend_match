@@ -2,7 +2,7 @@
     <div class="video-preview" :class="{ 'drag-active': isDragging }">
         <form class="url-input" @submit.prevent v-if="!playerReady || editModeActive">
             <div class="container">
-                <h3>Enter the URL of your video to get started</h3>
+                <h3>Enter the URL osssf your video to get started</h3>
                 <div class="form-element">
                     <label for="url-input">Video URL</label>
                     <BaseInputField
@@ -184,8 +184,17 @@ export default {
                 }
                 this.SET_CURRENT_SELECTIONS([this.selectionToPresentFrom])
 
-                await this.setVideoByURL({ file: this.file, url: this.videoUrl })
+                console.log('set video by url')
                 this.editModeActive = false
+                await this.setVideoByURL({ file: this.file, url: this.videoUrl })
+                console.log('done setting video by url', this.editModeActive)
+                this.editModeActive = false
+                console.log('AGANI done setting video by url', this.editModeActive)
+                setTimeout(() => {
+                    this.editModeActive = false
+                    console.log('disable that crap', this.playerReady, this.editModeActive)
+                }, 1000)
+                // console.lo()
             }
         },
         onNewSelectionToPresentFrom(selection) {
