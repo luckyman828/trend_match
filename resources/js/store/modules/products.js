@@ -16,6 +16,7 @@ export default {
         selectedBuyerGroups: [],
         selectedSelectionIds: [],
         selectedProducts: [],
+        selectedProductLabels: [],
         selectedTicketLabels: [],
         advancedFilter: null,
         unreadOnly: false,
@@ -93,6 +94,7 @@ export default {
         selectedBrands: state => state.selectedBrands,
         getSelectedSelectionIds: state => state.selectedSelectionIds,
         getHasAdvancedFilter: state => !!state.advancedFilter && state.advancedFilter.length > 0,
+        getSelectedProductLabels: state => state.selectedProductLabels,
         getSelectedTicketLabels: state => state.selectedTicketLabels,
         getAdvancedFilter: state => state.advancedFilter,
         unreadOnly: state => state.unreadOnly,
@@ -199,6 +201,7 @@ export default {
             const deliveryDates = getters.selectedDeliveryDates
             const buyerGroups = getters.selectedBuyerGroups
             const brands = getters.selectedBrands
+            const productLabels = getters.getSelectedProductLabels
             const ticketLabels = getters.getSelectedTicketLabels
             const unreadOnly = getters.unreadOnly
             const openTicketsOnly = getters.openTicketsOnly
@@ -237,11 +240,18 @@ export default {
                 })
                 productsToReturn = filteredByBuyerGroups
             }
+            // Filter by product labels
+            if (productLabels.length > 0) {
+                const filteredByProductLabels = productsToReturn.filter(product => {
+                    return productLabels.find(label => {
+                        if (label == 'no label') return product.labels.length <= 0
+                        return product.labels.includes(label)
+                    })
+                })
+                productsToReturn = filteredByProductLabels
+            }
             // Filter by ticket labels
             if (ticketLabels.length > 0) {
-                // const filteredByTicketLabels = productsToReturn.filter(product => {
-                //     return product.requests.find(request => request.labels.find(label => ticketLabels.includes(label)))
-                // })
                 const filteredByTicketLabels = productsToReturn.filter(product => {
                     return ticketLabels.find(label => {
                         if (label == 'no label') {
@@ -254,7 +264,6 @@ export default {
                             )
                         }
                     })
-                    // return product.requests.find(request => request.labels.find(label => ticketLabels.includes(label)))
                 })
                 productsToReturn = filteredByTicketLabels
             }
@@ -658,7 +667,7 @@ export default {
             commit('setCurrentProduct', product)
             commit('setSingleVisisble', true)
         },
-        
+
         async updateProduct({ commit, dispatch }, product) {
             return new Promise((resolve, reject) => {
                 const apiUrl = `/products/${product.id}`
@@ -2142,6 +2151,9 @@ export default {
         },
         SET_SELECTED_PRODUCTS(state, products) {
             state.selectedProducts = products
+        },
+        SET_SELECTED_PRODUCT_LABELS(state, labels = []) {
+            state.selectedProductLabels = labels
         },
         SET_SELECTED_TICKET_LABELS(state, labels = []) {
             state.selectedTicketLabels = labels

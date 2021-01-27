@@ -49,13 +49,13 @@ export default {
             const labels = this.product.labels
             const sortingArr = this.availableLabels
             // Sort by available labels
-            labels.sort((a, b) => {
+            labels.slice().sort((a, b) => {
                 return sortingArr.indexOf(a) - sortingArr.indexOf(b)
             })
             return labels
         },
         availableLabelsFiltered() {
-            const labels = this.availableLabels.filter(x => {
+            const labels = this.availableLabels.slice().filter(x => {
                 const alreadyAdded = this.product.labels.includes(x)
                 return !alreadyAdded
             })

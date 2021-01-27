@@ -75,7 +75,7 @@
                 <!-- Selection Selector Ends -->
             </template>
             <template v-slot:topBarLeft>
-                <ProductFilters :distributionScope="distributionScope" />
+                <ProductFilters :distributionScope="distributionScope" :ticketsEnabled="ticketsEnabled" />
 
                 <!-- Temp. disabled until the functionality gets hooked up -->
                 <BaseCheckboxInputField
@@ -522,6 +522,7 @@ export default {
             'getAdvancedFilter',
             'getSelectedTicketLabels',
             'getAllCustomValueFilters',
+            'getSelectedProductLabels',
         ]),
         ...mapGetters('selections', [
             'getCurrentSelections',
@@ -665,6 +666,7 @@ export default {
                 this.selectedSelectionIds.length > 0 ||
                 this.unreadOnly ||
                 this.getSelectedTicketLabels.length > 0 ||
+                this.getSelectedProductLabels.length > 0 ||
                 this.getHasAdvancedFilter ||
                 this.getAllCustomValueFilters.length > 0
             )
@@ -690,6 +692,7 @@ export default {
             'SET_HIDE_COMPLETED',
             'SET_OPEN_TICKETS_ONLY',
             'SET_SELECTED_TICKET_LABELS',
+            'SET_SELECTED_PRODUCT_LABELS',
             'RESET_CUSTOM_FILTERS',
         ]),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
@@ -716,6 +719,7 @@ export default {
             this.selectedBuyerGroups = []
             this.selectedSelectionIds = []
             this.SET_SELECTED_TICKET_LABELS([])
+            this.SET_SELECTED_PRODUCT_LABELS([])
             this.unreadOnly = false
             this.SET_ADVANCED_FILTER()
             this.RESET_CUSTOM_FILTERS()

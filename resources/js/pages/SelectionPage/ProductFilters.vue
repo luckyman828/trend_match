@@ -100,7 +100,32 @@
 
             <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
-            <div class="item-group" v-if="$route.name == 'selection'">
+            <div class="item-group" v-if="availableProductLabels.length > 0 || filterableProductLabels > 0">
+                <v-popover trigger="click" :disabled="filterableProductLabels.length <= 0" placement="right">
+                    <BaseContextMenuItem
+                        iconClass="far fa-tag"
+                        :disabled="availableProductLabels.length <= 0"
+                        disabledTooltip="No product labels available"
+                        @click="showAdvancedFilters = false"
+                    >
+                        <span>Product label</span>
+                        <span v-if="selectedProductLabels.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ selectedProductLabels.length }}</span>
+                        </span>
+                    </BaseContextMenuItem>
+                    <template slot="popover">
+                        <BaseSelectButtons
+                            submitOnChange="true"
+                            :options="productLabels"
+                            v-model="selectedProductLabels"
+                            optionValueKey="value"
+                            optionNameKey="name"
+                        />
+                    </template>
+                </v-popover>
+            </div>
+
+            <div class="item-group" v-if="$route.name == 'selection' && (filterableTicketLabels > 0 || ticketsEnabled)">
                 <v-popover trigger="click" :disabled="filterableTicketLabels.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-tag"
@@ -185,7 +210,7 @@ export default {
         ConditionalFilters,
         CustomProductDataFilter,
     },
-    props: ['distributionScope'],
+    props: ['distributionScope', 'ticketsEnabled'],
     data: function() {
         return {
             advancedFilterKey: 0,
@@ -196,9 +221,15 @@ export default {
     computed: {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
+            availableProductLabels: 'getAvailableProductLabels',
         }),
         ticketLabels() {
             return ['no label'].concat(this.filterableTicketLabels)
+        },
+        productLabels() {
+            return ['no label'].concat(this.filterableProductLabels).map((label, index) => {
+                return { name: `${index} - ${label}`, value: label }
+            })
         },
         ...mapGetters('products', [
             'products',
@@ -243,12 +274,12 @@ export default {
                 this.SET_SELECTED_BRANDS(value)
             },
         },
-        selectedTicketLabels: {
+        selectedProductLabels: {
             get() {
-                return this.$store.getters['products/getSelectedTicketLabels']
+                return this.$store.getters['products/getSelectedProductLabels']
             },
             set(value) {
-                this.SET_SELECTED_TICKET_LABELS(value)
+                this.SET_SELECTED_PRODUCT_LABELS(value)
             },
         },
         selectedTicketLabels: {
@@ -268,6 +299,7 @@ export default {
                 this.selectedBuyerGroups.length +
                 this.selectedCategories.length +
                 this.selectedDeliveryDates.length +
+                this.selectedProductLabels.length +
                 this.selectedTicketLabels.length +
                 advancedFilterCount +
                 customValueFilterCount
@@ -285,12 +317,23 @@ export default {
             })
             return labels
         },
+        filterableProductLabels() {
+            const labels = []
+            this.products.map(product => {
+                product.labels.map(label => {
+                    const alreadyAdded = labels.includes(label)
+                    if (!alreadyAdded) labels.push(label)
+                })
+            })
+            return labels
+        },
     },
     methods: {
         ...mapMutations('products', [
             'updateSelectedCategories',
             'updateSelectedDeliveryDates',
             'updateSelectedBuyerGroups',
+            'SET_SELECTED_PRODUCT_LABELS',
             'SET_SELECTED_TICKET_LABELS',
             'SET_SELECTED_BRANDS',
             'SET_ADVANCED_FILTER',
@@ -301,7 +344,9 @@ export default {
             this.selectedDeliveryDates = []
             this.selectedBrands = []
             this.selectedBuyerGroups = []
-            this.SET_SELECTED_TICKET_LABELS([])
+            this.selectedTicketLabels = []
+            this.selected = []
+            this.selectedProductLabels = []
             this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
             this.RESET_CUSTOM_FILTERS()
