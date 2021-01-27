@@ -42,7 +42,7 @@
         />
         <!-- </div> -->
 
-        <div class="click-to-pause" @click="togglePlaying" />
+        <div class="click-to-pause" @click="!isLive && togglePlaying()" />
         <div class="player-overlay">
             <slot />
         </div>
