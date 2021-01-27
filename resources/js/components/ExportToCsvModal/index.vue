@@ -41,7 +41,7 @@
                     </BaseRadioInputField>
                 </div>
 
-                <div class="form-element" v-if="exportType != 'dump'">
+                <div class="form-element" v-if="displayCurrencySelector">
                     <label for="currency-selector">Choose Currency to export</label>
                     <BaseInputField
                         id="currency-selector"
@@ -229,10 +229,17 @@ export default {
             const products = this.productsFiltered
             products.forEach(product => {
                 product.prices.forEach(price => {
-                    if (!currenciesToReturn.includes(price.currency)) currenciesToReturn.push(price.currency)
+                    if (!!price.currency && !currenciesToReturn.includes(price.currency))
+                        currenciesToReturn.push(price.currency)
                 })
             })
             return currenciesToReturn
+        },
+        displayCurrencySelector() {
+            if (!this.exportTemplate || this.exportType == 'dump') return
+            return this.exportTemplate.headers.find(header => {
+                return header.key && header.key.startsWith('price.')
+            })
         },
     },
     methods: {
