@@ -1,7 +1,12 @@
 <template>
-    <div class="player-wrapper" :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]">
+    <div
+        class="player-wrapper"
+        :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]"
+        :key="intanceId"
+    >
         <vimeo-player
-            v-if="provider == 'vimeo'"
+            v-if="provider == 'vimeo' && providerVideoId"
+            :key="providerVideoId"
             ref="player"
             class="player"
             :videoId="providerVideoId"
@@ -11,15 +16,17 @@
             @ready="onPlayerReady"
             @play="onPlayingStatus"
             @pause="SET_PLAYER_STATUS('paused')"
+            @loaded="SET_PLAYER_STATUS('buffering')"
             @ended="onEndedStatus"
             @timeupdate="$event => onTimeupdate($event.seconds)"
         />
 
         <youtube
-            v-if="provider == 'youtube'"
+            v-else-if="provider == 'youtube'"
             ref="player"
             class="player"
             tabindex="-1"
+            :key="providerVideoId"
             :videoId="providerVideoId"
             :playerVars="{
                 autoplay: autoplay ? 1 : 0,
@@ -40,6 +47,8 @@
             @ended="onEndedStatus"
             @error="SET_PLAYER_STATUS('error')"
         />
+
+        <BaseLoader v-else />
         <!-- </div> -->
 
         <div class="click-to-pause" @click="!isLive && togglePlaying()" />
@@ -68,6 +77,7 @@ export default {
             playerReady: false,
             intervalTimer: null,
             lastTimestamp: 0,
+            intanceId: 0,
         }
     },
     computed: {
@@ -87,6 +97,21 @@ export default {
             const url = this.providerVideoId
             const slashCount = (url.match(/\//g) || []).length
             return slashCount >= 4
+        },
+    },
+    watch: {
+        playerStatus(newStatus, oldStatus) {
+            // Fetch the duration when our video changes
+            // Buffering is our only indication that the video has changed and is done loading.
+            if (oldStatus == 'buffering') {
+                this.getVideoDuration()
+            }
+        },
+        provider(newProvider, oldProvider) {
+            // Force the compoennt to rerender in case of changing from another provider to vimeo, because of a weird vimeo player bug
+            if (newProvider == 'vimeo') {
+                this.intanceId++
+            }
         },
     },
     methods: {

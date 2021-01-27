@@ -132,7 +132,7 @@ export default {
         this.isMounted = true
     },
     destroyed() {
-        this.$refs.targetArea.removeEventListener('touchstart', this.touchStartHandler)
+        if (this.$refs.targetArea) this.$refs.targetArea.removeEventListener('touchstart', this.touchStartHandler)
     },
 }
 </script>
