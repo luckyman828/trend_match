@@ -78,7 +78,7 @@
                                 <span>Comments</span>
                             </BaseCheckboxInputField>
                         </div>
-                        <div class="form-element">
+                        <div class="form-element" v-if="quantityEnabled">
                             <BaseCheckboxInputField v-model="exportQuantity">
                                 <span>Quantity</span>
                             </BaseCheckboxInputField>
@@ -207,6 +207,9 @@ export default {
             'getSelectionsAvailableForInputFiltering',
             'getSelectionChapter',
         ]),
+        ...mapGetters('selections', {
+            quantityEnabled: 'getQuantityModeActive',
+        }),
         ...mapGetters('products', [
             'productsFiltered',
             'getActiveSelectionInput',
@@ -292,6 +295,7 @@ export default {
                                 uniqueAlignmentOrigins.push({
                                     selection: action.selection,
                                     selection_id: action.selection_id,
+                                    labels: [],
                                 })
                         })
                     }
@@ -300,10 +304,16 @@ export default {
                             const originExists = uniqueAlignmentOrigins.find(
                                 x => x.selection_id == request.selection_id
                             )
+                            if (originExists) {
+                                const label = request.labels[0]
+                                const labelExists = !label || originExists.labels.includes(label)
+                                if (!labelExists) originExists.labels.push(label)
+                            }
                             if (!originExists)
                                 uniqueAlignmentOrigins.push({
                                     selection: request.selection,
                                     selection_id: request.selection_id,
+                                    labels: [...request.labels],
                                 })
                         })
                     }
@@ -362,7 +372,12 @@ export default {
                         }
                     }
                     if (this.exportRequests) {
-                        headers.push(`${chapterName}${origin.selection.name} (Request)`)
+                        for (let i = -1; i < origin.labels.length; i++) {
+                            const label = origin.labels[i]
+                            headers.push(
+                                `${chapterName}${origin.selection.name} (Request)${label ? ` - ${label}` : ''}`
+                            )
+                        }
                     }
                 })
             }
@@ -462,27 +477,34 @@ export default {
                         }
 
                         if (this.exportRequests) {
-                            // Find the origin Request(s)
-                            const originRequestList = selectionInput.requests.filter(
-                                request => request.selection_id == origin.selection_id
-                            )
-                            // Merge the requests with a double line-break
-                            const requestContentList = originRequestList.map(request => {
-                                let requestContent = request.content
-                                if (request.type == 'Ticket') {
-                                    const requestStatus =
-                                        request.status == 'Resolved'
-                                            ? 'ACCEPTED'
-                                            : request.status == 'Rejected'
-                                            ? 'REJECTED'
-                                            : 'OPEN'
-                                    requestContent = `[${requestStatus}] ${
-                                        request.labels.length > 0 ? `{${request.labels[0]}}` : ''
-                                    } ${requestContent}`
-                                }
-                                return requestContent
-                            })
-                            currentRow.push(requestContentList.join('\n\n'))
+                            for (let i = -1; i < origin.labels.length; i++) {
+                                // Find the origin Request(s)
+                                const originRequestList = selectionInput.requests.filter(request => {
+                                    let isMatch = request.selection_id == origin.selection_id
+                                    const originLabel = origin.labels[i]
+                                    if (originLabel) {
+                                        isMatch = request.labels[0] == originLabel
+                                    }
+                                    return isMatch
+                                })
+                                // Merge the requests with a double line-break
+                                const requestContentList = originRequestList.map(request => {
+                                    let requestContent = request.content
+                                    if (request.type == 'Ticket') {
+                                        const requestStatus =
+                                            request.status == 'Resolved'
+                                                ? 'ACCEPTED'
+                                                : request.status == 'Rejected'
+                                                ? 'REJECTED'
+                                                : 'OPEN'
+                                        requestContent = `[${requestStatus}] ${
+                                            request.labels.length > 0 ? `{${request.labels[0]}}` : ''
+                                        } ${requestContent}`
+                                    }
+                                    return requestContent
+                                })
+                                currentRow.push(requestContentList.join('\n\n'))
+                            }
                         }
                     })
                 }
@@ -591,7 +613,9 @@ export default {
 
                                 if (this.exportRequests) {
                                     // If we are exporting requests, push a blank
-                                    variantRow.push('')
+                                    for (let i = -1; i < origin.labels.length; i++) {
+                                        variantRow.push('')
+                                    }
                                 }
                             })
                         }
@@ -869,6 +893,7 @@ export default {
         if (this.getSelectedProducts.length > 0) {
             this.exportSelected = true
         }
+        this.exportQuantity = this.quantityEnabled
     },
 }
 </script>
