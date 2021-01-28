@@ -26,7 +26,7 @@
                     <span>No images only</span>
                 </BaseCheckboxInputField>
 
-                <button class="invisible primary" v-if="activeFiltersCount > 0" @click="onClearFilters">
+                <button class="invisible primary" v-if="getFiltersAreActive" @click="onClearFilters">
                     <span>Clear filter</span>
                 </button>
             </template>
@@ -217,11 +217,7 @@ import ProductFilters from '../SelectionPage/ProductFilters'
 
 export default {
     name: 'editProductsTable',
-    props: [
-        // 'products',
-        'sortKey',
-        'file',
-    ],
+    props: ['sortKey', 'file'],
     components: {
         ProductsTableRow,
         ProductFilters,
@@ -237,15 +233,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', [
-            'productTotals',
-            'availableCategories',
-            'availableDeliveryDates',
-            'availableBuyerGroups',
-            'getProductsFilteredBySearch',
-            'singleVisible',
-            'getAllCustomValueFilters',
-        ]),
+        ...mapGetters('products', ['getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('productFilters', ['getFiltersAreActive']),
         ...mapGetters('products', {
             products: 'productsFiltered',
         }),
@@ -266,44 +255,33 @@ export default {
                 this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
             },
         },
-        selectedCategories: {
+        filterCategories: {
             get() {
-                return this.$store.getters['products/selectedCategories']
+                return this.$store.getters['productFilters/getFilterCategories']
             },
             set(value) {
-                this.updateSelectedCategories(value)
+                this.SET_FILTER_CATEGORIES(value)
             },
         },
-        selectedDeliveryDates: {
+        filterDeliveryDates: {
             get() {
-                return this.$store.getters['products/selectedDeliveryDates']
+                return this.$store.getters['productFilters/getfilterDeliveryDates']
             },
             set(value) {
-                this.updateSelectedDeliveryDates(value)
+                this.SET_FILTER_DELIVERY_DATES(value)
             },
         },
-        selectedBuyerGroups: {
+        filterBuyerGroups: {
             get() {
-                return this.$store.getters['products/selectedBuyerGroups']
+                return this.$store.getters['productFilters/getFilterBuyerGroups']
             },
             set(value) {
-                this.updateSelectedBuyerGroups(value)
+                this.SET_FILTER_BUYER_GROUPS(value)
             },
-        },
-        activeFiltersCount() {
-            const customValueFilterCount = Object.keys(this.getAllCustomValueFilters).reduce((acc, curr) => {
-                return (acc += this.getAllCustomValueFilters[curr].length)
-            }, 0)
-            return (
-                this.selectedBuyerGroups.length +
-                this.selectedCategories.length +
-                this.selectedDeliveryDates.length +
-                customValueFilterCount
-            )
         },
         noImagesOnly: {
             get() {
-                return this.$store.getters['products/noImagesOnly']
+                return this.$store.getters['productFilters/noImagesOnly']
             },
             set(value) {
                 this.SET_NO_IMAGES_ONLY(value)
@@ -319,16 +297,12 @@ export default {
         ]),
         ...mapMutations('products', [
             'setSingleVisisble',
-            'updateSelectedCategories',
             'SET_PRODUCTS',
-            'updateSelectedDeliveryDates',
-            'updateSelectedBuyerGroups',
             'SET_PRODUCTS_FILTERED_BY_SEARCH',
             'SET_AVAILABLE_PRODUCTS',
-            'SET_NO_IMAGES_ONLY',
             'SET_SELECTED_PRODUCTS',
-            'RESET_CUSTOM_FILTERS',
         ]),
+        ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS', 'SET_NO_IMAGES_ONLY']),
         onViewSingle(product) {
             this.setCurrentProduct(product)
             this.SET_AVAILABLE_PRODUCTS(this.productsFilteredBySearch) // Save array of available products
@@ -357,10 +331,7 @@ export default {
             this.$emit('onSort', sortAsc, sortKey)
         },
         onClearFilters() {
-            this.selectedCategories = []
-            this.selectedDeliveryDates = []
-            this.selectedBuyerGroups = []
-            this.RESET_CUSTOM_FILTERS()
+            this.CLEAR_PRODUCT_FILTERS()
         },
         onEnterOrderMode(shouldBeActive) {
             this.editOrderModeActive = shouldBeActive

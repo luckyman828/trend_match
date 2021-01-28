@@ -193,7 +193,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', [
             'currentSelection',

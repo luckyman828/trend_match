@@ -363,7 +363,8 @@ export default {
             'currentSelectionMode',
             'getAuthUserSelectionWriteAccess',
         ]),
-        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
+        ...mapGetters('products', ['currentFocusRowIndex', 'singleVisible']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',

@@ -21,7 +21,7 @@
                     <BaseTableTab
                         :label="`Overview`"
                         :count="allProducts.length"
-                        v-model="currentProductFilter"
+                        v-model="productActionFilter"
                         modelValue="overview"
                     />
                     <BaseTableTab
@@ -30,19 +30,19 @@
                             allProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction]))
                                 .length
                         "
-                        v-model="currentProductFilter"
+                        v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         :modelValue="insTabValue"
                     />
                     <!-- <BaseTableTab :label="`In`" :count="allProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
-                    v-model="currentProductFilter" :disabled="currentSelections.length > 1"
+                    v-model="productActionFilter" :disabled="currentSelections.length > 1"
                     v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                     :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
                     <BaseTableTab
                         :label="`Out`"
                         :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length"
-                        v-model="currentProductFilter"
+                        v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         modelValue="outs"
@@ -50,7 +50,7 @@
                     <BaseTableTab
                         :label="`Nds`"
                         :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length"
-                        v-model="currentProductFilter"
+                        v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         modelValue="nds"
@@ -63,7 +63,7 @@
                                 ? allProducts.filter(x => x.hasTicket).length
                                 : allProducts.filter(x => x.hasTicket && !x.is_completed).length
                         "
-                        v-model="currentProductFilter"
+                        v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         modelValue="tickets"
@@ -88,22 +88,18 @@
 
                 <BaseCheckboxInputField
                     class="small"
-                    v-if="['ins', 'focus'].includes(currentProductFilter)"
+                    v-if="['ins', 'focus'].includes(productActionFilter)"
                     :value="insTabValue == 'focus'"
                     @check="onToggleFocusOnly"
                 >
                     <span>Focus only</span>
                 </BaseCheckboxInputField>
 
-                <BaseCheckboxInputField class="small" v-if="currentProductFilter == 'tickets'" v-model="hideCompleted">
+                <BaseCheckboxInputField class="small" v-if="productActionFilter == 'tickets'" v-model="hideCompleted">
                     <span>Hide completed</span>
                 </BaseCheckboxInputField>
 
-                <BaseCheckboxInputField
-                    class="small"
-                    v-if="currentProductFilter == 'tickets'"
-                    v-model="openTicketsOnly"
-                >
+                <BaseCheckboxInputField class="small" v-if="productActionFilter == 'tickets'" v-model="openTicketsOnly">
                     <span>Open tickets only</span>
                 </BaseCheckboxInputField>
 
@@ -116,8 +112,8 @@
                 <v-popover trigger="click">
                     <button class="ghost filter-button">
                         <span>Selection Input</span>
-                        <span v-if="selectedSelectionIds.length > 0" class="circle primary xs">
-                            <span>{{ selectedSelectionIds.length }}</span>
+                        <span v-if="filterSelectionIds.length > 0" class="circle primary xs">
+                            <span>{{ filterSelectionIds.length }}</span>
                         </span>
                         <i class="far fa-chevron-down"></i>
                     </button>
@@ -125,7 +121,7 @@
                         <BaseSelectButtons
                             submitOnChange="true"
                             :options="getSelectionsAvailableForInputFiltering"
-                            v-model="selectedSelectionIds"
+                            v-model="filterSelectionIds"
                             optionNameKey="name"
                             optionValueKey="id"
                         />
@@ -511,19 +507,14 @@ export default {
     },
     computed: {
         ...mapGetters('products', [
-            'availableCategories',
-            'availableDeliveryDates',
             'currentFocusRowIndex',
-            'availableBuyerGroups',
             'getProductsFilteredBySearch',
             'singleVisible',
-            'getActiveSelectionInput',
-            'getHasAdvancedFilter',
-            'getAdvancedFilter',
-            'getSelectedTicketLabels',
-            'getAllCustomValueFilters',
-            'getSelectedProductLabels',
         ]),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
+        ...mapGetters('productFilters', {
+            filtersActive: 'getFiltersAreActive',
+        }),
         ...mapGetters('selections', [
             'getCurrentSelections',
             'getSelectionsAvailableForAlignment',
@@ -561,63 +552,39 @@ export default {
         },
         distributionScope: {
             get() {
-                return this.$store.getters['products/getDistributionScope']
+                return this.$store.getters['selectionProducts/getDistributionScope']
             },
             set(value) {
                 this.SET_DISTRIBUTION_SCOPE(value)
             },
         },
-        currentProductFilter: {
+        productActionFilter: {
             get() {
-                return this.$store.getters['products/currentProductFilter']
+                return this.$store.getters['productFilters/getProductActionFilter']
             },
             set(value) {
-                this.setCurrentProductFilter(value)
+                this.SET_PRODUCT_ACTION_FILTER(value)
             },
         },
-        selectedCategories: {
+        filterSelectionIds: {
             get() {
-                return this.$store.getters['products/selectedCategories']
+                return this.$store.getters['productFilters/getFilterSelectionIds']
             },
             set(value) {
-                this.updateSelectedCategories(value)
-            },
-        },
-        selectedDeliveryDates: {
-            get() {
-                return this.$store.getters['products/selectedDeliveryDates']
-            },
-            set(value) {
-                this.updateSelectedDeliveryDates(value)
-            },
-        },
-        selectedBuyerGroups: {
-            get() {
-                return this.$store.getters['products/selectedBuyerGroups']
-            },
-            set(value) {
-                this.updateSelectedBuyerGroups(value)
-            },
-        },
-        selectedSelectionIds: {
-            get() {
-                return this.$store.getters['products/getSelectedSelectionIds']
-            },
-            set(value) {
-                this.SET_SELECTED_SELECTION_IDS(value)
+                this.SET_FILTER_SELECTION_IDS(value)
             },
         },
         unreadOnly: {
             get() {
-                return this.$store.getters['products/unreadOnly']
+                return this.$store.getters['productFilters/unreadOnly']
             },
             set(value) {
-                this.setUnreadOnly(value)
+                this.SET_UNREAD_ONLY(value)
             },
         },
         hideCompleted: {
             get() {
-                return this.$store.getters['products/hideCompleted']
+                return this.$store.getters['productFilters/hideCompleted']
             },
             set(value) {
                 this.SET_HIDE_COMPLETED(value)
@@ -625,24 +592,24 @@ export default {
         },
         openTicketsOnly: {
             get() {
-                return this.$store.getters['products/openTicketsOnly']
+                return this.$store.getters['productFilters/openTicketsOnly']
             },
             set(value) {
                 this.SET_OPEN_TICKETS_ONLY(value)
             },
         },
         totalProductCount() {
-            if (['ins', 'focus'].includes(this.currentProductFilter)) {
+            if (['ins', 'focus'].includes(this.productActionFilter)) {
                 return this.allProducts.filter(product =>
                     ['In', 'Focus'].includes(this.getActiveSelectionInput(product)[this.currentAction])
                 ).length
             }
-            if (this.currentProductFilter == 'outs') {
+            if (this.productActionFilter == 'outs') {
                 return this.allProducts.filter(
                     product => this.getActiveSelectionInput(product)[this.currentAction] == 'Out'
                 ).length
             }
-            if (this.currentProductFilter == 'nds') {
+            if (this.productActionFilter == 'nds') {
                 return this.allProducts.filter(
                     product => this.getActiveSelectionInput(product)[this.currentAction] == 'None'
                 ).length
@@ -658,47 +625,30 @@ export default {
         completeAvailable() {
             return this.selection.type == 'Master' && this.ticketsEnabled && this.currentSelectionMode == 'Alignment'
         },
-        filtersActive() {
-            return (
-                this.selectedCategories.length > 0 ||
-                this.selectedDeliveryDates.length > 0 ||
-                this.selectedBuyerGroups.length > 0 ||
-                this.selectedSelectionIds.length > 0 ||
-                this.unreadOnly ||
-                this.getSelectedTicketLabels.length > 0 ||
-                this.getSelectedProductLabels.length > 0 ||
-                this.getHasAdvancedFilter ||
-                this.getAllCustomValueFilters.length > 0
-            )
-        },
     },
     methods: {
         ...mapMutations('products', [
             'setSingleVisisble',
-            'updateSelectedCategories',
-            'updateSelectedDeliveryDates',
-            'setUnreadOnly',
-            'setCurrentProductFilter',
-            'updateSelectedBuyerGroups',
             'setCurrentProduct',
             'setAvailableProducts',
             'SET_PRODUCTS_FILTERED_BY_SEARCH',
-            'SET_SELECTED_SELECTION_IDS',
-            'SET_ADVANCED_FILTER',
-            'SET_DISTRIBUTION_SCOPE',
             'SET_SELECTED_PRODUCTS',
             'SET_SHOW_PDF_MODAL',
             'SET_SHOW_CSV_MODAL',
+        ]),
+        ...mapMutations('productFilters', [
+            'SET_UNREAD_ONLY',
+            'SET_PRODUCT_ACTION_FILTER',
+            'SET_FILTER_SELECTION_IDS',
             'SET_HIDE_COMPLETED',
             'SET_OPEN_TICKETS_ONLY',
-            'SET_SELECTED_TICKET_LABELS',
-            'SET_SELECTED_PRODUCT_LABELS',
-            'RESET_CUSTOM_FILTERS',
         ]),
+        ...mapMutations('selectionProducts', ['SET_DISTRIBUTION_SCOPE']),
         ...mapActions('actions', ['updateActions', 'updateFeedbacks']),
         ...mapMutations('selections', ['SET_CURRENT_PDP_SELECTION']),
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'setProductsCompleted']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
+        ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS']),
         onToggleProductsCompleted(products) {
             products.map(product => {
                 this.toggleProductCompleted({ selectionId: this.selection.id, product })
@@ -714,19 +664,11 @@ export default {
             this.SET_SHOW_PDF_MODAL(true)
         },
         resetFilters() {
-            this.selectedCategories = []
-            this.selectedDeliveryDates = []
-            this.selectedBuyerGroups = []
-            this.selectedSelectionIds = []
-            this.SET_SELECTED_TICKET_LABELS([])
-            this.SET_SELECTED_PRODUCT_LABELS([])
-            this.unreadOnly = false
-            this.SET_ADVANCED_FILTER()
-            this.RESET_CUSTOM_FILTERS()
+            this.CLEAR_PRODUCT_FILTERS()
         },
         onToggleFocusOnly(focusOnly) {
-            if (this.currentProductFilter == 'ins' && focusOnly) this.currentProductFilter = 'focus'
-            if (this.currentProductFilter == 'focus' && !focusOnly) this.currentProductFilter = 'ins'
+            if (this.productActionFilter == 'ins' && focusOnly) this.productActionFilter = 'focus'
+            if (this.productActionFilter == 'focus' && !focusOnly) this.productActionFilter = 'ins'
             this.insTabValue = focusOnly ? 'focus' : 'ins'
         },
         showVariantTooltip({ variant, product, selectionInput }) {
@@ -814,7 +756,7 @@ export default {
         document.removeEventListener('keydown', this.hotkeyHandler)
         // Reset all filters
         this.resetFilters()
-        this.setCurrentProductFilter('overview')
+        this.SET_PRODUCT_ACTION_FILTER('overview')
         this.selectedProducts = []
     },
 }

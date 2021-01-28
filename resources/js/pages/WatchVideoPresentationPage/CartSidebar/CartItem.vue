@@ -60,11 +60,8 @@ export default {
     components: { ActionListPopover },
     props: ['product', 'index', 'currentAction'],
     computed: {
-        ...mapGetters('products', {
-            getActiveSelectionInput: 'getActiveSelectionInput',
-        }),
         selectionInput() {
-            return this.getActiveSelectionInput(this.product)
+            return this.product.getActiveSelectionInput
         },
     },
     methods: {

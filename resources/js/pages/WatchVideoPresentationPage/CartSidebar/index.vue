@@ -60,7 +60,7 @@ export default {
         ...mapGetters('selections', {
             currentSelectionMode: 'currentSelectionMode',
         }),
-        ...mapGetters('products', {
+        ...mapGetters('selectionProducts', {
             getActiveSelectionInput: 'getActiveSelectionInput',
         }),
         currentAction() {

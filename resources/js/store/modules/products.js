@@ -10,31 +10,20 @@ export default {
         loading: true,
         currentProduct: null,
         availableProducts: [],
-        selectedCategories: [],
-        selectedDeliveryDates: [],
-        selectedBrands: [],
-        selectedBuyerGroups: [],
-        selectedSelectionIds: [],
         selectedProducts: [],
-        selectedProductLabels: [],
-        selectedTicketLabels: [],
-        advancedFilter: null,
         unreadOnly: false,
         hideCompleted: false,
         noImagesOnly: false,
-        currentProductFilter: 'overview',
         singleVisible: false,
         products: [],
         productsFilteredBySearch: [],
         status: null,
         currentFocusRowIndex: null,
         lastSort: null,
-        distributionScope: 'Feedback',
         showPDFModal: false,
         showCSVModal: false,
         openTicketsOnly: false,
         pdpVariantIndex: 0,
-        selectedCustomFieldValues: {},
     },
 
     getters: {
@@ -46,11 +35,6 @@ export default {
         getPDFModalVisible: state => state.showPDFModal,
         getCSVModalVisisble: state => state.showCSVModal,
         getProductsFilteredBySearch: state => state.productsFilteredBySearch,
-        getDistributionScope: state => state.distributionScope,
-        getActiveSelectionInput: (state, getters, rootState, rootGetters) => product => {
-            const activeSelection = rootGetters['selections/getCurrentSelections'][0]
-            return product.selectionInputList.find(selectionInput => selectionInput.selection_id == activeSelection.id)
-        },
         availableProducts: state => {
             return state.availableProducts
         },
@@ -88,24 +72,11 @@ export default {
                 return availableProducts[index - 1]
             }
         },
-        selectedCategories: state => state.selectedCategories,
-        selectedDeliveryDates: state => state.selectedDeliveryDates,
-        selectedBuyerGroups: state => state.selectedBuyerGroups,
-        selectedBrands: state => state.selectedBrands,
-        getSelectedSelectionIds: state => state.selectedSelectionIds,
-        getHasAdvancedFilter: state => !!state.advancedFilter && state.advancedFilter.length > 0,
-        getSelectedProductLabels: state => state.selectedProductLabels,
-        getSelectedTicketLabels: state => state.selectedTicketLabels,
-        getAdvancedFilter: state => state.advancedFilter,
         unreadOnly: state => state.unreadOnly,
         openTicketsOnly: state => state.openTicketsOnly,
         hideCompleted: state => state.hideCompleted,
         noImagesOnly: state => state.noImagesOnly,
-        currentProductFilter: state => state.currentProductFilter,
         singleVisible: state => state.singleVisible,
-        actionsUpdated: state => state.actionsUpdated,
-        commentsUpdated: state => state.commentsUpdated,
-        commentsCreated: state => state.commentsCreated,
         products: (state, getters, rootState, rootGetters) => {
             const currentSelections = rootGetters['selections/getCurrentSelections']
             if (currentSelections.length <= 0) return state.products
@@ -119,97 +90,26 @@ export default {
             })
         },
         getProducts: (state, getters) => getters.products,
-        availableCategories(state, getters) {
-            const products = getters.products
-            let uniqueCategories = []
-            products.forEach(product => {
-                if (product.category) {
-                    const theCategory = product.category.toLowerCase()
-                    const found = uniqueCategories.includes(theCategory)
-                    if (!found) uniqueCategories.push(theCategory)
-                }
-            })
-            return uniqueCategories
-        },
-        availableDeliveryDates(state, getters) {
-            const products = getters.products
-            let uniqueDeliveryDates = []
-            products.forEach(product => {
-                product.delivery_dates.map(date => {
-                    const found = uniqueDeliveryDates.find(x => x == date)
-                    if (!found) {
-                        uniqueDeliveryDates.push(date)
-                    }
-                })
-            })
-            return uniqueDeliveryDates.sort()
-        },
-        availableBrands(state, getters) {
-            const products = getters.products
-            let unique = []
-            products.forEach(product => {
-                if (product.brand) {
-                    const theBrand = product.brand.toLowerCase()
-                    const found = unique.includes(theBrand)
-                    if (!found) unique.push(theBrand)
-                }
-            })
-            return unique
-        },
-        availableBuyerGroups(state, getters) {
-            const products = getters.products
-            let unique = []
-            products.forEach(product => {
-                if (product.buying_group) {
-                    const theBuyingGroup = product.buying_group.toLowerCase()
-                    const found = unique.includes(theBuyingGroup)
-                    if (!found) unique.push(theBuyingGroup)
-                }
-            })
-            return unique
-        },
-        productTotals(state, getters, rootState, rootGetters) {
-            const products = getters.products
-            const selection = rootGetters['selections/currentSelection']
-            const currentAction = rootGetters['selections/currentSelectionModeAction']
-
-            const totals = {
-                all: 0,
-                ins: 0,
-                focus: 0,
-                outs: 0,
-                nds: 0,
-                count: 0,
-            }
-            totals.all = products.length
-
-            if (selection) {
-                products.forEach(product => {
-                    if (!product[currentAction] || product[currentAction] == 'None') totals.nds++
-                    if (product[currentAction] == 'In') totals.ins++
-                    if (product[currentAction] == 'Out') totals.outs++
-                    if (product[currentAction] == 'Focus') totals.focus++
-                })
-            }
-            return totals
-        },
         productsFiltered(state, getters, rootState, rootGetters) {
+            const products = getters.products
+            const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
+            // Filters
+            const categories = rootGetters['productFilters/getFilterCategories']
+            const deliveryDates = rootGetters['productFilters/getFilterDeliveryDates']
+            const buyerGroups = rootGetters['productFilters/getFilterBuyerGroups']
+            const brands = rootGetters['productFilters/getFilterBrands']
+            const productLabels = rootGetters['productFilters/getFilterProductLabels']
+            const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
+            const unreadOnly = rootGetters['productFilters/unreadOnly']
+            const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
+            const hideCompleted = rootGetters['productFilters/hideCompleted']
+            const noImagesOnly = rootGetters['productFilters/noImagesOnly']
+            const actionFilter = rootGetters['productFilters/getProductActionFilter']
+            const customDataFilters = rootGetters['productFilters/getFilterCustomFieldValues']
+            // Selection Specific
+            const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
             const selectionMode = rootGetters['selections/currentSelectionMode']
-            const products = getters.products
-            const categories = getters.selectedCategories
-            const deliveryDates = getters.selectedDeliveryDates
-            const buyerGroups = getters.selectedBuyerGroups
-            const brands = getters.selectedBrands
-            const productLabels = getters.getSelectedProductLabels
-            const ticketLabels = getters.getSelectedTicketLabels
-            const unreadOnly = getters.unreadOnly
-            const openTicketsOnly = getters.openTicketsOnly
-            const hideCompleted = getters.hideCompleted
-            const noImagesOnly = getters.noImagesOnly
-            const actionFilter = getters.currentProductFilter
-            const getSelectionInput = getters.getActiveSelectionInput
-            const customDataFilters = state.selectedCustomFieldValues
             let productsToReturn = products
 
             // First filter by category
@@ -327,8 +227,7 @@ export default {
                                     if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId))
                                         include = false
                                 } else {
-                                    const actionArray =
-                                        getters.getDistributionScope == 'Alignment' ? 'actions' : 'feedbacks'
+                                    const actionArray = distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
                                     const userFeedback = selectionInput[actionArray].find(
                                         action => action.user_id == userId
                                     )
@@ -380,14 +279,10 @@ export default {
                         else {
                             if (filter.key.value == null) return
                             let filterKey = filter.key.value
-                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'ins')
-                                filterKey = 'alignmentIns'
-                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'outs')
-                                filterKey = 'alignmentOuts'
-                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'focus')
-                                filterKey = 'alignmentFocus'
-                            if (getters.getDistributionScope == 'Alignment' && filterKey == 'nds')
-                                filterKey = 'alignmentNds'
+                            if (distributionScope == 'Alignment' && filterKey == 'ins') filterKey = 'alignmentIns'
+                            if (distributionScope == 'Alignment' && filterKey == 'outs') filterKey = 'alignmentOuts'
+                            if (distributionScope == 'Alignment' && filterKey == 'focus') filterKey = 'alignmentFocus'
+                            if (distributionScope == 'Alignment' && filterKey == 'nds') filterKey = 'alignmentNds'
                             const keyValue = Array.isArray(product[filterKey])
                                 ? product[filterKey].length
                                 : product[filterKey]
@@ -434,15 +329,6 @@ export default {
             }
 
             return productsToReturn
-        },
-        getSelectedCustomFieldValues: state => key => {
-            if (!state.selectedCustomFieldValues[key]) {
-                Vue.set(state.selectedCustomFieldValues, key, [])
-            }
-            return state.selectedCustomFieldValues[key]
-        },
-        getAllCustomValueFilters: state => {
-            return state.selectedCustomFieldValues
         },
     },
 
@@ -1339,12 +1225,7 @@ export default {
                 })
             })
         },
-        mergeProductsWithSelectionInput({ state, dispatch }, { selectionProductInput, authUser }) {
-            // Filter out products not in our selection input
-            // state.products = state.products.filter(
-            //     product => !!selectionProductInput.products.find(x => x.id == product.id)
-            // )
-
+        mergeProductsWithSelectionInput({ state, rootGetters, dispatch }, { selectionProductInput, authUser }) {
             const products = state.products.filter(
                 product => !!selectionProductInput.products.find(x => x.id == product.id)
             )
@@ -1380,8 +1261,9 @@ export default {
                 Object.defineProperty(selectionInput, 'feedbacks', {
                     get: function() {
                         const allFeedback = rawSelectionInput.feedbacks
-                        if (state.selectedSelectionIds.length > 0) {
-                            return allFeedback.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        const filterSelectionIds = rootGetters['productFilters/getFilterSelectionIds']
+                        if (filterSelectionIds.length > 0) {
+                            return allFeedback.filter(x => filterSelectionIds.includes(x.selection_id))
                         }
                         return allFeedback
                     },
@@ -1395,8 +1277,9 @@ export default {
                 Object.defineProperty(selectionInput, 'actions', {
                     get: function() {
                         const allActions = rawSelectionInput.actions
-                        if (state.selectedSelectionIds.length > 0) {
-                            return allActions.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        const filterSelectionIds = rootGetters['productFilters/getFilterSelectionIds']
+                        if (filterSelectionIds.length > 0) {
+                            return allActions.filter(x => filterSelectionIds.includes(x.selection_id))
                         }
                         return allActions
                     },
@@ -1410,8 +1293,9 @@ export default {
                 Object.defineProperty(selectionInput, 'comments', {
                     get: function() {
                         const allComments = rawSelectionInput.comments.filter(comment => !comment.is_deleted)
-                        if (state.selectedSelectionIds.length > 0) {
-                            return allComments.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        const filterSelectionIds = rootGetters['productFilters/getFilterSelectionIds']
+                        if (filterSelectionIds.length > 0) {
+                            return allComments.filter(x => filterSelectionIds.includes(x.selection_id))
                         }
                         return allComments
                     },
@@ -1419,8 +1303,9 @@ export default {
                 Object.defineProperty(selectionInput, 'requests', {
                     get: function() {
                         const allRequests = rawSelectionInput.requests
-                        if (state.selectedSelectionIds.length > 0) {
-                            return allRequests.filter(x => state.selectedSelectionIds.includes(x.selection_id))
+                        const filterSelectionIds = rootGetters['productFilters/getFilterSelectionIds']
+                        if (filterSelectionIds.length > 0) {
+                            return allRequests.filter(x => filterSelectionIds.includes(x.selection_id))
                         }
                         return allRequests
                     },
@@ -1995,33 +1880,6 @@ export default {
         SET_AVAILABLE_PRODUCTS(state, products) {
             state.availableProducts = products
         },
-        updateSelectedCategories(state, payload) {
-            state.selectedCategories = payload
-        },
-        updateSelectedDeliveryDates(state, payload) {
-            state.selectedDeliveryDates = payload
-        },
-        updateSelectedBuyerGroups(state, payload) {
-            state.selectedBuyerGroups = payload
-        },
-        SET_SELECTED_SELECTION_IDS(state, payload) {
-            state.selectedSelectionIds = payload
-        },
-        SET_ADVANCED_FILTER(state, payload) {
-            state.advancedFilter = payload
-        },
-        setUnreadOnly(state, payload) {
-            state.unreadOnly = payload
-        },
-        SET_HIDE_COMPLETED(state, payload) {
-            state.hideCompleted = payload
-        },
-        SET_OPEN_TICKETS_ONLY(state, payload) {
-            state.openTicketsOnly = payload
-        },
-        setCurrentProductFilter(state, payload) {
-            state.currentProductFilter = payload
-        },
         setSingleVisisble(state, bool) {
             state.singleVisible = bool
         },
@@ -2146,17 +2004,9 @@ export default {
                 })
             })
         },
-        SET_DISTRIBUTION_SCOPE(state, newScope) {
-            state.distributionScope = newScope
-        },
+
         SET_SELECTED_PRODUCTS(state, products) {
             state.selectedProducts = products
-        },
-        SET_SELECTED_PRODUCT_LABELS(state, labels = []) {
-            state.selectedProductLabels = labels
-        },
-        SET_SELECTED_TICKET_LABELS(state, labels = []) {
-            state.selectedTicketLabels = labels
         },
         SET_SHOW_CSV_MODAL(state, makeVisible) {
             state.showCSVModal = makeVisible
@@ -2172,22 +2022,8 @@ export default {
                 product.is_completed = shouldBeCompleted
             })
         },
-        SET_NO_IMAGES_ONLY(state, boolean) {
-            state.noImagesOnly = boolean
-        },
-        SET_SELECTED_BRANDS(state, brands) {
-            state.selectedBrands = brands
-        },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
-        },
-        SET_SELECTED_CUSTOM_FIELD_VALUES(state, { field, value }) {
-            Vue.set(state.selectedCustomFieldValues, field, value)
-        },
-        RESET_CUSTOM_FILTERS(state) {
-            Object.keys(state.selectedCustomFieldValues).map(key => {
-                state.selectedCustomFieldValues[key] = []
-            })
         },
     },
 }

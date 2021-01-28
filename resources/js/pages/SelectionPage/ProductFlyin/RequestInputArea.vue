@@ -128,7 +128,7 @@ export default {
         },
 
         onInput(e) {
-            if (!this.ticketModeActive) return
+            // if (!this.ticketModeActive) return
             if (this.showLabelList) {
                 if (this.labelListFocusIndex > this.labelsFiltered.length - 1) this.labelListFocusIndex = 0
                 if (e.target.value.search('#') < 0) this.showLabelList = false

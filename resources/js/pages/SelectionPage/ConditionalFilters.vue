@@ -259,6 +259,8 @@ export default {
     computed: {
         ...mapGetters('products', {
             products: 'products',
+        }),
+        ...mapGetters('selectionProducts', {
             getActiveSelectionInput: 'getActiveSelectionInput',
         }),
         ...mapGetters('auth', ['authUser']),

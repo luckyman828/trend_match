@@ -28,6 +28,8 @@ import presentation from './modules/presentation'
 import responsive from './modules/responsive'
 import display from './modules/display'
 import videoComments from './modules/videoComments'
+import productFilters from './modules/productFilters'
+import selectionProducts from './modules/selectionProducts'
 
 // Load Vuex
 Vue.use(Vuex)
@@ -63,6 +65,8 @@ const store = new Vuex.Store({
         responsive,
         display,
         videoComments,
+        productFilters,
+        selectionProducts,
     },
 })
 

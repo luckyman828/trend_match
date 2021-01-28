@@ -99,7 +99,7 @@ export default {
     methods: {
         ...mapActions('products', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelectionSettings']),
-        ...mapMutations('products', ['setCurrentProductFilter', 'SORT_PRODUCTS']),
+        ...mapMutations('products', ['SET_PRODUCT_ACTION_FILTER', 'SORT_PRODUCTS']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
             const selections = this.selectedSelections
@@ -118,7 +118,7 @@ export default {
             this.SET_CURRENT_SELECTIONS(selections)
             // Set the current tab to `Overview` if we are entering multi-selection mode
             if (selections.length > 1) {
-                this.setCurrentProductFilter('overview')
+                this.SET_PRODUCT_ACTION_FILTER('overview')
             }
         },
         syncSelectedSelections() {
