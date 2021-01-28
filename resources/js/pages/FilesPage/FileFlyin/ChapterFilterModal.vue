@@ -203,6 +203,18 @@ export default {
                     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
                     type: 'array',
                 },
+                {
+                    displayName: 'Product ID',
+                    name: 'DataSourceId',
+                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    type: 'array',
+                },
+                {
+                    displayName: 'EAN',
+                    name: 'Ean',
+                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    type: 'array',
+                },
             ]
 
             const rulesToReturn = !this.hasChapterLink

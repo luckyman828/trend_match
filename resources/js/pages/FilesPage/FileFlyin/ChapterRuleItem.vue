@@ -140,7 +140,7 @@ export default {
     },
     watch: {
         ruleOperator(newOperator, oldOperator) {
-            if (!this.chapterRule.type == 'array' || !oldOperator) return
+            if (this.chapterRule.type != 'array' || !oldOperator) return
             // From Multi to Single
             if (['Equal', 'NotEqual'].includes(newOperator) && ['AnyInArray', 'NotInArray'].includes(oldOperator)) {
                 this.chapterRule.value = this.chapterRule.values[0]
