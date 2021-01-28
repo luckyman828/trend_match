@@ -229,7 +229,8 @@ export default {
             const products = this.productsFiltered
             products.forEach(product => {
                 product.prices.forEach(price => {
-                    if (!currenciesToReturn.includes(price.currency)) currenciesToReturn.push(price.currency)
+                    if (!!price.currency && !currenciesToReturn.includes(price.currency))
+                        currenciesToReturn.push(price.currency)
                 })
             })
             return currenciesToReturn
