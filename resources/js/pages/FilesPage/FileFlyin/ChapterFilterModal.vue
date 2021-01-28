@@ -146,6 +146,12 @@ export default {
                     type: 'array',
                 },
                 {
+                    displayName: 'Brand',
+                    name: 'Brand',
+                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    type: 'array',
+                },
+                {
                     displayName: 'Buying Gruop',
                     name: 'BuyingGroup',
                     validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],

@@ -125,7 +125,6 @@ export default {
 
             this.products.map(product => {
                 const productValue = product[productKey]
-                let alreadyAdded = false
                 if (Array.isArray(productValue)) {
                     productValue.map(arrayValue => addIfUnique(arrayValue))
                 } else {
