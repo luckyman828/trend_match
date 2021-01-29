@@ -12,7 +12,7 @@
             <div class="target-area" v-if="targetAreaPadding" :style="'padding: ' + targetAreaPadding"></div>
         </button>
 
-        <div class="count">
+        <div class="count" v-if="$slots.count || $scopedSlots.count">
             <slot name="count" />
         </div>
 

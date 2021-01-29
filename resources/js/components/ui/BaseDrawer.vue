@@ -9,6 +9,9 @@
                 <slot />
             </div>
         </div>
+        <div class="footer">
+            <slot name="footer" />
+        </div>
     </div>
 </template>
 
@@ -108,6 +111,13 @@ export default {
         .overlay {
             display: block;
         }
+    }
+    > .footer {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        z-index: 2;
     }
 }
 </style>

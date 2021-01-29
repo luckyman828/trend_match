@@ -173,7 +173,7 @@ export default {
                     // position: absolute;
                     // left: 0;
                     // top: 0;
-                    // object-fit: cover;
+                    object-fit: cover;
                     width: 100%;
                     height: 100%;
                 }

@@ -20,9 +20,11 @@
                         No items yet. Better add some!
                     </p>
                 </div>
-                <div class="footer">
-                    <TabList :cartView.sync="cartView" :actionGroups="actionGroups" />
-                </div>
+            </div>
+        </template>
+        <template v-slot:footer v-if="show">
+            <div class="footer">
+                <TabList :cartView.sync="cartView" :actionGroups="actionGroups" />
             </div>
         </template>
     </BaseDrawer>
@@ -60,9 +62,6 @@ export default {
     }
     .footer {
         width: 100%;
-        position: absolute;
-        bottom: 0;
-        left: 0;
         transition: transform 0.1s ease-out;
     }
 }
