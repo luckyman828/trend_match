@@ -203,7 +203,7 @@
                         <i class="far fa-clipboard-check"></i>
                         <div
                             v-if="displayUnreadBullets && product.hasNewComment"
-                            class="circle xs primary new-comment-bullet"
+                            class="circle xxs primary new-comment-bullet"
                         ></div>
                     </button>
 
@@ -656,8 +656,6 @@ td.title {
         position: absolute;
         right: -4px;
         top: -6px;
-        width: 10px;
-        height: 10px;
     }
 }
 

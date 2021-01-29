@@ -97,9 +97,10 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelectionSettings']),
-        ...mapMutations('products', ['SET_PRODUCT_ACTION_FILTER', 'SORT_PRODUCTS']),
+        ...mapMutations('products', ['SORT_PRODUCTS']),
+        ...mapMutations('productFilters', ['SET_PRODUCT_ACTION_FILTER']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onSetCurrentSelections() {
             const selections = this.selectedSelections

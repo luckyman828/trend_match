@@ -286,7 +286,7 @@ export default {
                         if (!existsInArray) availableSelections.push(feedback.selection)
                     })
                     // Loop through the products alignment
-                    selectionInput.rawSelectionInput.actions.forEach(action => {
+                    selectionInput.rawSelectionInput.alignments.forEach(action => {
                         const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
                         if (!existsInArray) availableSelections.push(action.selection)
                     })

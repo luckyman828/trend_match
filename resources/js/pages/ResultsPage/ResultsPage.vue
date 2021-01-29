@@ -355,9 +355,9 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection']),
-        ...mapMutations('products', ['SET_PRODUCT_ACTION_FILTER']),
+        ...mapMutations('productFilters', ['SET_PRODUCT_ACTION_FILTER']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         async onNewSelectionId(selectionId) {
             this.fetchingData = true

@@ -259,6 +259,24 @@ export default {
                 actions: [actionObject],
             })
         },
+        async initActions({ rootGetters }, actions) {
+            actions.map(action => {
+                Object.defineProperty(action, 'user', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                            user => user.id == action.user_id
+                        )
+                    },
+                })
+                Object.defineProperty(action, 'selection', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelections'].find(
+                            selection => selection.id == action.selection_id
+                        )
+                    },
+                })
+            })
+        },
     },
 
     mutations: {
