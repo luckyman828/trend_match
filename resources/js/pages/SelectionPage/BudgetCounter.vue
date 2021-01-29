@@ -61,7 +61,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['products', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['products']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         totalSpend() {
             let total = 0
             this.products.map(product => {

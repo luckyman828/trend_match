@@ -272,69 +272,6 @@ export default {
         currentFile: state => {
             return state.currentFileId != null ? File.find(state.currentFileId) : null
         },
-        currentTaskId: state => {
-            return state.currentTaskId
-        },
-        currentTask: (state, getters, rootState, rootGetters) => {
-            let currentTask =
-                state.currentTaskId != null && rootGetters['entities/tasks/tasks'] != null
-                    ? rootGetters['entities/tasks/tasks'].find(x => x.id == state.currentTaskId)
-                    : null
-
-            return currentTask
-        },
-        currentTaskProgress: (state, getters, rootState, rootGetters) => {
-            const productTotals = rootGetters['entities/products/productsScopedTotals']
-            const currentTask = getters.currentTask
-            let progress = 0
-            // Find task progress
-            if (currentTask) {
-                const currentTaskActions = Action.query()
-                    .where('task_id', currentTask.id)
-                    .get()
-                if (currentTaskActions) {
-                    if (currentTask.type == 'approval' && productTotals) {
-                        progress =
-                            Math.round((currentTaskActions.length / productTotals.totalDecisionsToMake) * 100 * 1) / 1
-                    } else if (currentTask.type == 'decision') {
-                        progress = 100
-                    } else if (getters.userPermissionLevel > 1) {
-                        progress =
-                            currentTask.type == 'feedback'
-                                ? Math.round(
-                                      (currentTaskActions.length /
-                                          (currentTask.input.length * getters.currentFile.products.length)) *
-                                          100 *
-                                          1
-                                  ) / 1
-                                : Math.round(
-                                      (currentTaskActions.length / getters.currentFile.products.length) * 100 * 1
-                                  ) / 1
-                    } else {
-                        progress =
-                            Math.round(
-                                (currentTaskActions.filter(x => x.user_id == getters.authUser.id).length /
-                                    getters.currentFile.products.length) *
-                                    100 *
-                                    1
-                            ) / 1
-                    }
-
-                    if (currentTask.type == 'feedback') {
-                        currentTask.input.forEach(user => {
-                            user.progress =
-                                Math.round(
-                                    (currentTaskActions.filter(x => x.user_id == user.id).length /
-                                        getters.currentFile.products.length) *
-                                        100 *
-                                        1
-                                ) / 1
-                        })
-                    }
-                }
-            }
-            return progress
-        },
         userPermissionLevel: state => {
             return state.userPermissionLevel
         },

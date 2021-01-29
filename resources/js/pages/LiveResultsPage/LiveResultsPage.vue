@@ -181,7 +181,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapMutations('products', ['SET_FEEDBACKS']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),

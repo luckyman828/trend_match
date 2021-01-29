@@ -193,7 +193,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', [
             'currentSelection',
@@ -379,17 +380,15 @@ export default {
             // }
         },
         requestDeletedHandler(selectionId, requestIdentifier) {
-            if (requestIdentifier.author_id != this.authUser.id) {
-                // console.log("OnRequestArrived", selectionId, request)
-                const product = this.products.find(x => x.id == requestIdentifier.product_id)
-                const request = {
-                    id: requestIdentifier.request_id,
-                    author_id: requestIdentifier.author_id,
-                    product_id: requestIdentifier.product_id,
-                    selection_id: requestIdentifier.selection_id,
-                }
-                this.DELETE_REQUEST({ selectionInput: this.getActiveSelectionInput(product), request })
+            // console.log("OnRequestArrived", selectionId, request)
+            const product = this.products.find(x => x.id == requestIdentifier.product_id)
+            const request = {
+                id: requestIdentifier.request_id,
+                author_id: requestIdentifier.author_id,
+                product_id: requestIdentifier.product_id,
+                selection_id: requestIdentifier.selection_id,
             }
+            this.DELETE_REQUEST({ selectionInput: this.getActiveSelectionInput(product), request })
         },
         requestCommentArrivedHandler(selectionId, requestComment) {
             if (requestComment.author_id != this.authUser.id) {
@@ -402,13 +401,11 @@ export default {
             }
         },
         requestCommentDeletedHandler(selectionId, requestComment) {
-            if (requestComment.author_id != this.authUser.id) {
-                const requestProduct = this.products.find(
-                    product => !!product.requests.find(x => x.id == requestComment.request_id)
-                )
-                const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
-                this.DELETE_REQUEST_COMMENT({ request, comment: requestComment })
-            }
+            const requestProduct = this.products.find(
+                product => !!product.requests.find(x => x.id == requestComment.request_id)
+            )
+            const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
+            this.DELETE_REQUEST_COMMENT({ request, comment: requestComment })
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {

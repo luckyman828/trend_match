@@ -203,7 +203,7 @@
                         <i class="far fa-clipboard-check"></i>
                         <div
                             v-if="displayUnreadBullets && product.hasNewComment"
-                            class="circle xs primary new-comment-bullet"
+                            class="circle xxs primary new-comment-bullet"
                         ></div>
                     </button>
 
@@ -363,7 +363,8 @@ export default {
             'currentSelectionMode',
             'getAuthUserSelectionWriteAccess',
         ]),
-        ...mapGetters('products', ['currentFocusRowIndex', 'getActiveSelectionInput', 'singleVisible']),
+        ...mapGetters('products', ['currentFocusRowIndex', 'singleVisible']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', {
             multiSelectionMode: 'getMultiSelectionModeIsActive',
             showQty: 'getQuantityModeActive',
@@ -655,8 +656,6 @@ td.title {
         position: absolute;
         right: -4px;
         top: -6px;
-        width: 10px;
-        height: 10px;
     }
 }
 

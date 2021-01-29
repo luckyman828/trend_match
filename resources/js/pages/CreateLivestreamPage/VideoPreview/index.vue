@@ -168,7 +168,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['startPresentation']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapActions('videoPresentation', ['setVideoByURL', 'updateCurrentVideo']),

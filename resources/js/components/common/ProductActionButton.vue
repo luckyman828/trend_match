@@ -32,7 +32,7 @@ export default {
             if (!this.displayStyle == 'coloredIcons') return
             return this.selectionInput[this.currentAction] == this.action ? 'white' : this.actionColor
         },
-        ...mapGetters('products', ['getActiveSelectionInput']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
             currentSelectionMode: 'currentSelectionMode',

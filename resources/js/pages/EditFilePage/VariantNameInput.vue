@@ -67,7 +67,6 @@ export default {
             if (clone.color) nameComponents.push(clone.color)
             if (clone.variant) nameComponents.push(clone.variant)
             const newName = nameComponents.join([' - '])
-            console.log('new variant name', newName)
             variant.name = newName
             this.editActive = false
             this.$emit('submit')

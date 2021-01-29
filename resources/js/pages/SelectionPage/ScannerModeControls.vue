@@ -62,7 +62,8 @@ export default {
         ...mapGetters('scanner', {
             scannerMode: 'getScannerMode',
         }),
-        ...mapGetters('products', ['products', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['products']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', ['getCurrentSelection']),
         ...mapGetters('selections', {
             currentAction: 'currentSelectionModeAction',
