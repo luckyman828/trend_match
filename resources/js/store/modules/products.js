@@ -944,6 +944,22 @@ export default {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
 
+                // Find all EANs
+                Object.defineProperty(product, 'getAllEAN', {
+                    get: function() {
+                        const eanList = [...product.eans]
+                        product.variants.map(variant => {
+                            const exists = eanList.includes(variant.ean)
+                            if (!exists) eanList.push(variant.ean)
+                            variant.ean_sizes.map(x => {
+                                const exists = eanList.includes(x.ean)
+                                if (!exists) eanList.push(x.ean)
+                            })
+                        })
+                        return eanList.filter(x => !!x) // fitler out empty values
+                    },
+                })
+
                 // Name
                 product.title = product.title ? product.title : 'Unnamed'
                 // Custom Props

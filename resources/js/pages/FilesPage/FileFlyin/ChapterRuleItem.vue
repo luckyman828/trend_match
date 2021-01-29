@@ -117,10 +117,13 @@ export default {
             }
             if (ruleName == 'DeliveryDate') ruleName = 'DeliveryDates'
 
-            const productKey = ruleName
+            let productKey = ruleName
                 .split(/(?=[A-Z])/)
                 .join('_')
                 .toLowerCase() // Convert ruleName to product key
+            if (ruleName == 'Ean') {
+                productKey = 'getAllEAN'
+            }
 
             const unique = []
 
