@@ -81,7 +81,8 @@ export default {
         getProducts: (state, getters) => getters.products,
         getAllProducts: (state, getters) => state.products,
         productsFiltered(state, getters, rootState, rootGetters) {
-            const products = getters.products
+            // const products = getters.products
+            const products = rootGetters['selectionProducts/getProducts']
             const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             // Filters
             const categories = rootGetters['productFilters/getFilterCategories']
