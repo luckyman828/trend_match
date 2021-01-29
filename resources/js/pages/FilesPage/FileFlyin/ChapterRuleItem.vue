@@ -44,21 +44,14 @@
         <!-- Arrays -->
         <template v-if="mappedRule.type == 'array'">
             <BaseDropdownInputField
-                v-if="!['AnyInArray', 'NotInArray'].includes(chapterRule.operator)"
                 class="value-field"
-                type="radio"
-                v-model="chapterRule.value"
+                :type="isRadioInput ? 'radio' : 'select'"
+                v-model="ruleValueArray"
                 :options="availableValues"
                 :readOnly="readOnly"
                 :displayFunction="chapterRule.name == 'DeliveryDate' && getPrettyDate"
-            />
-            <BaseDropdownInputField
-                v-else
-                class="value-field"
-                v-model="chapterRule.values"
-                :options="availableValues"
-                :readOnly="readOnly"
-                :displayFunction="chapterRule.name == 'DeliveryDate' && getPrettyDate"
+                :search="availableValues.length > 5"
+                :allowManualEntry="mappedRule.allowManualEntry"
             />
         </template>
         <BaseInputField
@@ -91,8 +84,20 @@ export default {
     ],
     computed: {
         ...mapGetters('products', {
-            products: 'products',
+            products: 'getAllProducts',
         }),
+        ruleValueArray: {
+            get() {
+                return this.isRadioInput ? this.chapterRule.value : this.chapterRule.values
+            },
+            set(val) {
+                if (this.isRadioInput) this.chapterRule.value = val
+                else this.chapterRule.values = val
+            },
+        },
+        isRadioInput() {
+            return !['AnyInArray', 'NotInArray'].includes(this.chapterRule.operator)
+        },
         mappedRule() {
             return this.availableRules.find(rule => rule.name == this.chapterRule.name)
         },
@@ -120,7 +125,7 @@ export default {
             const unique = []
 
             function addIfUnique(value) {
-                if (value != null && !unique.find(x => x == value)) unique.push(value)
+                if (value != null && !unique.find(x => x == value)) unique.push(value.toString())
             }
 
             this.products.map(product => {
@@ -188,5 +193,8 @@ export default {
 }
 .operator-field {
     width: 106px;
+}
+.value-field {
+    width: 200px;
 }
 </style>

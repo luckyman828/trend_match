@@ -7,6 +7,28 @@
         subHeader="Chapter settings"
     >
         <template v-if="show && !status">
+            <div class="chapter-rules-section">
+                <h3>Chapter rules</h3>
+                <div class="rule-item-list flex-list flex-v">
+                    <ChapterRuleItem
+                        v-for="(chapterRule, index) in chapterRules"
+                        :key="chapterRule.key"
+                        :chapterRule="chapterRule"
+                        :index="index"
+                        :availableCombinators="availableCombinators"
+                        :availableOperators="availableOperators"
+                        :availableRules="availableRules"
+                        :filterCombinator.sync="filterCombinator"
+                        :chapterRuleCount="chapterRules.length"
+                        @remove="onRemoveRule(index)"
+                    />
+                    <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
+                        <i class="far fa-plus"></i>
+                        <span>Add Filter</span>
+                    </button>
+                </div>
+            </div>
+
             <div class="linked-chapter-section" v-if="availableChapters.length > 0">
                 <h3>Linked Chapter</h3>
                 <div class="rule-item-list">
@@ -57,28 +79,6 @@
                             </div>
                         </div>
                     </template>
-                </div>
-            </div>
-
-            <div class="chapter-rules-section">
-                <h3>Chapter rules</h3>
-                <div class="rule-item-list flex-list flex-v">
-                    <ChapterRuleItem
-                        v-for="(chapterRule, index) in chapterRules"
-                        :key="chapterRule.key"
-                        :chapterRule="chapterRule"
-                        :index="index"
-                        :availableCombinators="availableCombinators"
-                        :availableOperators="availableOperators"
-                        :availableRules="availableRules"
-                        :filterCombinator.sync="filterCombinator"
-                        :chapterRuleCount="chapterRules.length"
-                        @remove="onRemoveRule(index)"
-                    />
-                    <button class="ghost-item invisible primary ghost-hover" @click="onAddRule">
-                        <i class="far fa-plus"></i>
-                        <span>Add Filter</span>
-                    </button>
                 </div>
             </div>
 
@@ -205,15 +205,17 @@ export default {
                 },
                 {
                     displayName: 'Product ID',
-                    name: 'DataSourceId',
-                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    name: 'DatasourceId',
+                    validOperators: ['AnyInArray', 'NotInArray'],
                     type: 'array',
+                    allowManualEntry: true,
                 },
                 {
                     displayName: 'EAN',
                     name: 'Ean',
-                    validOperators: ['Equal', 'NotEqual', 'AnyInArray', 'NotInArray', 'IsNullOrEmpty'],
+                    validOperators: ['AnyInArray', 'NotInArray'],
                     type: 'array',
+                    allowManualEntry: true,
                 },
             ]
 

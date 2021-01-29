@@ -2,8 +2,13 @@
     <v-popover trigger="click" :disabled="readOnly || disabled">
         <!-- TRIGGER -->
         <!-- <div class="dropdown-input-field input-wrapper"></div> -->
-        <div class="dropdown-field" v-tooltip="disabled && disabledTooltip">
+        <div
+            class="dropdown-field"
+            v-tooltip="disabled && disabledTooltip"
+            :class="{ 'manual-entry': allowManualEntry }"
+        >
             <BaseInputField
+                v-if="!allowManualEntry"
                 :disabled="true"
                 :placeholder="placeholder"
                 type="select"
@@ -11,6 +16,21 @@
                 :inputClass="inputClass"
                 :readOnly="readOnly || disabled"
                 :innerLabel="innerLabel"
+            />
+            <BaseInputField
+                ref="manualEntry"
+                class="manual-input"
+                v-else
+                :placeholder="placeholder"
+                :value="manualEntryInProgress ? localValue : valueToDisplay"
+                v-model="localValue"
+                :inputClass="inputClass"
+                :readOnly="readOnly || disabled"
+                :innerLabel="innerLabel"
+                @paste="onPasteToManual"
+                @input="onManualInput"
+                @focus="manualEntryInProgress = true"
+                @blur="manualEntryInProgress = false"
             />
             <i class="dropdown-icon fas fa-caret-down" v-if="!readOnly"></i>
         </div>
@@ -22,7 +42,7 @@
                 :options="options"
                 :emitOnChange="true"
                 :search="search"
-                :focusSearchOnMount="true"
+                :focusSearchOnMount="!allowManualEntry"
                 :type="type"
                 :value="value"
                 :optionNameKey="optionNameKey"
@@ -31,7 +51,7 @@
                 :cloneOptionOnSubmit="cloneOptionOnSubmit"
                 :unsetOption="unsetOption"
                 :displayFunction="displayFunction"
-                @input="$emit('input', $event)"
+                @input="onSelect($event)"
             />
         </div>
     </v-popover>
@@ -58,7 +78,15 @@ export default {
         'disabled',
         'disabledTooltip',
         'displayFunction',
+        'allowManualEntry',
     ],
+    data: function() {
+        return {
+            manualEntryInProgress: false,
+            localValue: '',
+            manualEntryTimeout: null,
+        }
+    },
     computed: {
         optionValueKey() {
             if (!!this.valueKey) return this.valueKey
@@ -71,29 +99,77 @@ export default {
             return Object.keys(this.options[0]).includes('name') ? 'name' : null
         },
         valueToDisplay() {
-            function getValue(vm) {
-                if (vm.valueToDisplayOverwrite) return vm.valueToDisplayOverwrite
-                if (!vm.value) return
-                if (!vm.options || vm.options.length <= 0) return vm.value
+            const getValue = () => {
+                if (this.valueToDisplayOverwrite) return this.valueToDisplayOverwrite
+                if (!this.value) return
+                if (!this.options || this.options.length <= 0) return this.value
 
                 // If we have no option name key, we must have a simple value that we want to display
-                if (!vm.optionNameKey) return Array.isArray(vm.value) ? vm.value.join(', ') : vm.value
+                if (!this.optionNameKey) return Array.isArray(this.value) ? this.value.join(', ') : this.value
 
                 // If we have no value key, we must have selected an entire object
-                if (!vm.optionValueKey) {
-                    return vm.value[vm.optionNameKey]
+                if (!this.optionValueKey) {
+                    return this.value[this.optionNameKey]
                 }
 
                 // In case we have both a name key and a value key
                 // Read the available options and find our values match there
-                const selectedOption = vm.options.find(option => option[vm.valueKey] == vm.value)
-                return selectedOption[vm.optionNameKey]
+                const selectedOption = this.options.find(option => option[this.valueKey] == this.value)
+                return selectedOption[this.optionNameKey]
             }
 
-            const value = getValue(this)
+            const value = getValue()
             if (!value) return ''
             return this.displayFunction ? this.displayFunction(value) : value
         },
+    },
+    methods: {
+        onManualInput(input) {
+            if (this.manualEntryTimeout) clearTimeout(this.manualEntryTimeout)
+            this.manualEntryTimeout = setTimeout(() => {
+                // Throttle manual entry
+                let valueToReturn = input
+                if (this.type != 'radio') {
+                    valueToReturn = input
+                        .split(/,|;/) // Split by , and trim spaces
+                        .map(x => {
+                            let value = x.trim() // trim just in case
+                            // if (parseInt(value)) value = parseInt(value) // Let numbers be numbers
+                            return value
+                        })
+                }
+                this.$emit('input', valueToReturn)
+            }, 300) // Throttle duration
+        },
+        onPasteToManual(e) {
+            e.preventDefault()
+            const clipData = e.clipboardData.getData('text/plain')
+            clipData.trim('\r\n')
+            const rows = clipData.split('\r\n')
+            const allCells = []
+            rows.map(row => {
+                const cells = row.split('\t').filter(cellValue => !!cellValue)
+                allCells.push(...cells)
+            })
+            const newStr = allCells.join(', ')
+
+            // Insert the modified pasta in the correct spot
+            const selectionStart = e.target.selectionStart
+            const selectionEnd = e.target.selectionEnd
+            const oldVal = e.target.value
+            const newVal = oldVal.slice(0, selectionStart) + newStr + oldVal.slice(selectionEnd)
+            this.localValue = newVal
+            this.onManualInput(newVal)
+        },
+        onSelect(value) {
+            this.$emit('input', value)
+            this.$nextTick(() => {
+                this.localValue = this.valueToDisplay
+            })
+        },
+    },
+    mounted() {
+        this.localValue = this.valueToDisplay
     },
 }
 </script>
@@ -114,6 +190,16 @@ export default {
     ::v-deep {
         input {
             font-weight: 700;
+            .manual-input & {
+                padding-right: 28px;
+            }
+        }
+    }
+    .manual-input {
+        &::v-deep {
+            input {
+                padding-right: 28px;
+            }
         }
     }
 }
