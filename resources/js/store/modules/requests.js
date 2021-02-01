@@ -8,8 +8,15 @@ export default {
         loading: true,
         submitting: false,
         currentRequestThread: null,
-        availableRequestLabels: ['color_added', 'color_removed', 'price_wish', 'add_delivery', 'change_delivery'],
-        // availableRequestLabels: ['Color added', 'Color removed', 'Price wish', 'Add delivery', 'Change delivery'],
+        availableRequestLabels: [
+            'color_added',
+            'color_removed',
+            'delivery_added',
+            'change_delivery',
+            'box_wish',
+            'price_wish',
+            'comments in general',
+        ],
     },
 
     getters: {

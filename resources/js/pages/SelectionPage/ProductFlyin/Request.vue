@@ -14,7 +14,7 @@
         <div class="traits">
             <span v-if="request.focus" class="pill small primary"><i class="fas fa-star"></i> Focus</span>
         </div>
-        <div class="request" @click="isTicket && !disableControls && !editActive && onToggleRequestThread($event)">
+        <div class="request">
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
                 <strong class="sender">
@@ -33,7 +33,11 @@
                     </span>
                 </strong>
 
-                <div class="content-wrapper" v-if="!editActive">
+                <div
+                    class="content-wrapper"
+                    v-if="!editActive"
+                    @click="isTicket && !disableControls && !editActive && onToggleRequestThread($event)"
+                >
                     <span class="content">{{ request.content }}</span>
                 </div>
                 <RequestInputArea
@@ -45,36 +49,29 @@
                     @submit="onUpdateRequest"
                 />
 
-                <div class="label-wrapper" v-if="hasLabel">
-                    <div class="request-label ghost dark xs square">
-                        <span>#{{ request.labels[0] }}</span>
-                    </div>
+                <div class="label-wrapper">
+                    <v-popover
+                        ref="labelPopover"
+                        trigger="click"
+                        :disabled="!hasTicketControl"
+                        @hide="$refs.labelList.removeListeners()"
+                        @show="$refs.labelList.addListeners()"
+                    >
+                        <div class="request-label ghost dark xs square" :class="{ clickable: hasTicketControl }">
+                            <span v-if="hasLabel">#{{ request.labels[0] }}</span>
+                            <template v-else> <i class="far fa-plus"></i><span>Add label</span> </template>
+                        </div>
+                        <RequestLabelList
+                            ref="labelList"
+                            slot="popover"
+                            :selectionInput="selectionInput"
+                            :request="request"
+                            @update="$refs.labelPopover.hide()"
+                        />
+                    </v-popover>
                 </div>
 
                 <div class="thread-controls" v-if="isTicket && !disableControls">
-                    <div class="resolve-actions" v-if="hasTicketControl">
-                        <BaseButton
-                            v-tooltip="'Accept'"
-                            :disabled="!hasTicketControl"
-                            disabledTooltip="Only approvers and owners can accept a request"
-                            :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
-                            @click="onSetStatus('Resolved')"
-                        >
-                            <i class="far fa-check-circle"></i>
-                            <span>Accept</span>
-                        </BaseButton>
-                        <BaseButton
-                            v-tooltip="'Reject'"
-                            :disabled="!hasTicketControl"
-                            disabledTooltip="Only approvers and owners can reject a request"
-                            :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
-                            @click="onSetStatus('Rejected')"
-                        >
-                            <i class="far fa-times-circle"></i>
-                            <span>Reject</span>
-                        </BaseButton>
-                    </div>
-
                     <button
                         class="view-thread-button invisible dark ghost-hover sm"
                         v-tooltip="'View request thread'"
@@ -119,6 +116,29 @@
             </button>
         </div>
 
+        <div class="resolve-actions flex-list sm" v-if="hasTicketControl">
+            <BaseButton
+                v-tooltip="'Accept'"
+                :disabled="!hasTicketControl"
+                disabledTooltip="Only approvers and owners can accept a request"
+                :buttonClass="request.status != 'Resolved' ? 'ghost green sm' : 'green sm'"
+                @click="onSetStatus('Resolved')"
+            >
+                <i class="far fa-check-circle"></i>
+                <span>Accept</span>
+            </BaseButton>
+            <BaseButton
+                v-tooltip="'Reject'"
+                :disabled="!hasTicketControl"
+                disabledTooltip="Only approvers and owners can reject a request"
+                :buttonClass="request.status != 'Rejected' ? 'ghost red sm' : 'red sm'"
+                @click="onSetStatus('Rejected')"
+            >
+                <i class="far fa-times-circle"></i>
+                <span>Reject</span>
+            </BaseButton>
+        </div>
+
         <BaseDialog ref="confirmDeleteRequest" type="confirm" confirmColor="red" confirmText="Yes, delete it">
             <div class="icon-graphic">
                 <i class="lg primary far fa-clipboard-check"></i>
@@ -133,12 +153,14 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import RequestInputArea from './RequestInputArea'
+import RequestLabelList from './RequestLabelList'
 import SelectionChapterPill from '../../../components/common/SelectionChapterPill'
 
 export default {
     name: 'request',
     components: {
         RequestInputArea,
+        RequestLabelList,
         SelectionChapterPill,
     },
     props: ['request', 'selectionInput', 'disableControls'],
@@ -279,8 +301,13 @@ export default {
             }
         }
     }
+    &:not(.has-label) {
+        .label-wrapper {
+            opacity: 0;
+        }
+    }
     &.has-thread {
-        .request {
+        .request .content-wrapper {
             cursor: pointer;
         }
         &:not(.no-controls) {
@@ -290,7 +317,7 @@ export default {
         }
     }
     &.no-controls {
-        .request {
+        .request .content-wrapper {
             cursor: default;
         }
         .request > .inner {
@@ -301,6 +328,27 @@ export default {
         .controls {
             display: block;
         }
+
+        .resolve-actions {
+            display: flex;
+        }
+        .label-wrapper {
+            opacity: 1;
+        }
+    }
+    .resolve-actions {
+        flex: 1;
+        display: none;
+        background: white;
+        padding: 4px;
+        border-radius: 4px;
+        box-shadow: $shadowEl;
+        border: $borderEl;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+        transform: translateY(75%);
     }
 }
 .save-controls {
@@ -354,11 +402,7 @@ export default {
             background: $green;
         }
     }
-    &:hover {
-        .thread-controls .resolve-actions {
-            display: flex;
-        }
-    }
+
     .inner {
         padding: 8px 12px 12px 8px;
         display: flex;
@@ -367,15 +411,10 @@ export default {
         overflow: hidden;
     }
     .thread-controls {
-        width: 100%;
-        display: flex;
+        display: inline-flex;
         justify-content: flex-end;
         margin-top: 8px;
-        .resolve-actions {
-            flex: 1;
-            display: none;
-            background: white;
-        }
+        margin-left: auto;
     }
     .sender {
         font-size: 12px;
