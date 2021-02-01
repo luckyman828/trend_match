@@ -1215,7 +1215,7 @@ export default {
             })
             return joinResponse
         },
-        async initSelections({ rootGetters }, selections) {
+        async initSelections({ getters, rootGetters }, selections) {
             selections.map(selection => {
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
@@ -1254,6 +1254,12 @@ export default {
                         if (!selection.presentation_id) return
                         const presentations = rootGetters['presentation/getPresentations']
                         return presentations.find(x => x.id == selection.presentation_id)
+                    },
+                })
+
+                Object.defineProperty(selection, 'chapter', {
+                    get: () => {
+                        return getters.getSelectionChapter(selection)
                     },
                 })
             })
