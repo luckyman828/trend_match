@@ -10,7 +10,12 @@
             <template v-slot:topBar>
                 <BaseTableTopBar>
                     <template v-slot:right>
-                        <BaseButton buttonClass="ghost sm" @click="showChannelsModal = true">
+                        <BaseButton
+                            buttonClass="ghost sm"
+                            :disabled="authUserWorkspaceRole != 'Admin'"
+                            disabledTooltip="Only admins can manage channels"
+                            @click="showChannelsModal = true"
+                        >
                             <i class="far fa-network-wired"></i>
                             <span>Manage channels</span>
                         </BaseButton>
