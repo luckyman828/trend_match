@@ -93,8 +93,8 @@
             </v-popover>
             <!-- END SYSTEM ADMIN -->
 
-            <button class="primary" @click="showImportInputModal = true">
-                <i class="far fa-download"></i>
+            <button class="primary" v-if="authUserWorkspaceRole == 'Admin'" @click="showImportInputModal = true">
+                <i class="far fa-file-import"></i>
                 <span>Import input</span>
             </button>
 
@@ -215,6 +215,9 @@ export default {
         }),
         ...mapGetters('auth', {
             isSystemAdmin: 'getIsSystemAdmin',
+        }),
+        ...mapGetters('workspaces', {
+            authUserWorkspaceRole: 'authUserWorkspaceRole',
         }),
         roleIcon() {
             let roleIcon = 'far fa-shield'

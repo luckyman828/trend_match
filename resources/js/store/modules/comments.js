@@ -155,6 +155,24 @@ export default {
                     )
                 })
         },
+        initComments({ rootGetters }, comments) {
+            comments.map(comment => {
+                Object.defineProperty(comment, 'user', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                            user => user.id == comment.user_id
+                        )
+                    },
+                })
+                Object.defineProperty(comment, 'selection', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelections'].find(
+                            selection => selection.id == comment.selection_id
+                        )
+                    },
+                })
+            })
+        },
     },
 
     mutations: {

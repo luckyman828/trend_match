@@ -50,7 +50,8 @@ export default {
     },
     methods: {
         ...mapActions('files', ['fetchFile']),
-        ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
+        ...mapActions('products', ['fetchProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
         ...mapActions('videoPresentation', ['fetchFileVideo']),
         ...mapActions('videoComments', ['fetchVideoComments']),

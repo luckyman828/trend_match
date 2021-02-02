@@ -100,7 +100,7 @@ export default {
             right: 12px;
             top: 12px;
             i {
-                margin-left: -4px;
+                margin-left: 4px;
             }
             &.disabled {
                 pointer-events: none;

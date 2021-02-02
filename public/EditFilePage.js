@@ -2779,7 +2779,7 @@
                                     return this.$store.getters['products/selectedCategories']
                                 },
                                 set: function set(value) {
-                                    this.updateSelectedCategories(value)
+                                    this.SET_FILTER_CATEGORIES(value)
                                 },
                             },
                             selectedDeliveryDates: {
@@ -2787,7 +2787,7 @@
                                     return this.$store.getters['products/selectedDeliveryDates']
                                 },
                                 set: function set(value) {
-                                    this.updateSelectedDeliveryDates(value)
+                                    this.SET_FILTER_DELIVERY_DATES(value)
                                 },
                             },
                             selectedBuyerGroups: {
@@ -2795,7 +2795,7 @@
                                     return this.$store.getters['products/selectedBuyerGroups']
                                 },
                                 set: function set(value) {
-                                    this.updateSelectedBuyerGroups(value)
+                                    this.SET_FILTER_BUYER_GROUPS(value)
                                 },
                             },
                             activeFiltersCount: function activeFiltersCount() {
@@ -2828,10 +2828,10 @@
                             ),
                             Object(vuex__WEBPACK_IMPORTED_MODULE_1__['mapMutations'])('products', [
                                 'setSingleVisisble',
-                                'updateSelectedCategories',
+                                'SET_FILTER_CATEGORIES',
                                 'SET_PRODUCTS',
-                                'updateSelectedDeliveryDates',
-                                'updateSelectedBuyerGroups',
+                                'SET_FILTER_DELIVERY_DATES',
+                                'SET_FILTER_BUYER_GROUPS',
                                 'SET_PRODUCTS_FILTERED_BY_SEARCH',
                                 'SET_AVAILABLE_PRODUCTS',
                                 'SET_NO_IMAGES_ONLY',

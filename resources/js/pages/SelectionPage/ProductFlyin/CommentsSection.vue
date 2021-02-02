@@ -199,7 +199,7 @@ export default {
 }
 </script>
 
-<style <style lang="scss" scoped>
+<style lang="scss" scoped>
 @import '~@/_variables.scss';
 ::v-deep {
     &.flyin-column {

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Vue from 'vue'
+import router from '../../router'
 
 export default {
     namespaced: true,
@@ -287,7 +287,7 @@ export default {
                         if (!existsInArray) availableSelections.push(feedback.selection)
                     })
                     // Loop through the products alignment
-                    selectionInput.rawSelectionInput.actions.forEach(action => {
+                    selectionInput.rawSelectionInput.alignments.forEach(action => {
                         const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
                         if (!existsInArray) availableSelections.push(action.selection)
                     })
@@ -1216,7 +1216,7 @@ export default {
             })
             return joinResponse
         },
-        async initSelections({ rootGetters }, selections) {
+        async initSelections({ getters, rootGetters }, selections) {
             selections.map(selection => {
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
@@ -1257,6 +1257,17 @@ export default {
                         return presentations.find(x => x.id == selection.presentation_id)
                     },
                 })
+
+                Object.defineProperty(selection, 'chapter', {
+                    get: () => {
+                        return getters.getSelectionChapter(selection)
+                    },
+                })
+                // Object.defineProperty(selection, 'chapterName', {
+                //     get: () => {
+                //         return selection.chapter ? selection.chapter.name : ''
+                //     },
+                // })
             })
         },
         async fetchChapterRules({ commit, dispatch }, { selection }) {
@@ -1319,6 +1330,61 @@ export default {
                     { root: true }
                 )
             })
+        },
+        async importSelectionInput(
+            { commit, dispatch },
+            { destinationSelection, sourceSelection, sourceUser, importOptions }
+        ) {
+            const apiUrl = `admins/convert-user-inputs`
+
+            const actions = Object.keys(importOptions)
+                .map(optionKey => {
+                    const isEnabled = importOptions[optionKey]
+                    return isEnabled ? optionKey : null
+                })
+                .filter(x => !!x)
+
+            await axios
+                .post(apiUrl, {
+                    user_id: sourceUser ? sourceUser.id : null,
+                    source_selection_id: sourceSelection.id,
+                    destination_selection_id: destinationSelection.id,
+                    actions,
+                })
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Input imported',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                            callbackLabel: 'Refresh to see change',
+                            callback: () => {
+                                router.go()
+                            },
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong, trying to import input',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callbackLabel: 'Retry',
+                            callback: () =>
+                                dispatch('importSelectionInput', {
+                                    destinationSelection,
+                                    sourceSelection,
+                                    sourceUser,
+                                    importOptions,
+                                }),
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 

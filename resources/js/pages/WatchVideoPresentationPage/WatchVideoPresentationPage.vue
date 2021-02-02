@@ -5,7 +5,11 @@
     >
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false" :hideTimeline="true">
-                <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
+                <div
+                    class="play-overlay"
+                    v-if="!playerStarted"
+                    :style="video.thumbnail && `background-image: url(${video.thumbnail})`"
+                >
                     <h3>Welcome to the video presentation</h3>
                     <button class="xl white" @click="onStartPlaying">
                         <i class="far fa-play"></i>

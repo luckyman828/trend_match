@@ -33,7 +33,7 @@ export default {
                                 if (key == 'delivery_date') aKey = new Date(this.getPrettyDate(aKey[0]))
                                 if (key == 'delivery_date') bKey = new Date(this.getPrettyDate(bKey[0]))
 
-                                if (type) if (aKey > bKey) returnValue = 1
+                                if (aKey > bKey) returnValue = 1
                                 if (aKey < bKey) returnValue = -1
                             }
                         }

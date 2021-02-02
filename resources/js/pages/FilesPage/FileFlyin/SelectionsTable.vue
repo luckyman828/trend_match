@@ -12,6 +12,15 @@
                     <template v-slot:right>
                         <BaseButton
                             buttonClass="ghost sm"
+                            :disabled="authUserWorkspaceRole != 'Admin'"
+                            disabledTooltip="Only admins can manage channels"
+                            @click="showChannelsModal = true"
+                        >
+                            <i class="far fa-network-wired"></i>
+                            <span>Manage channels</span>
+                        </BaseButton>
+                        <BaseButton
+                            buttonClass="ghost sm"
                             :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
                             v-tooltip="'Send a link to all selection members of this file'"
                             @click="onSendMagicLinkToAll"
@@ -286,6 +295,16 @@
                 </div>
                 <div class="item-group">
                     <BaseContextMenuItem
+                        v-if="authUserWorkspaceRole == 'Admin'"
+                        iconClass="far fa-file-import"
+                        hotkey="KeyI"
+                        @click="showImportInputModal = true"
+                    >
+                        <span><u>I</u>mport input</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
                         v-if="contextSelection.type == 'Chapter'"
                         iconClass="far fa-filter"
                         hotkey="KeyF"
@@ -472,6 +491,13 @@
             :show="showChapterFilterModal"
             @close="showChapterFilterModal = false"
         />
+        <ChannelsModal :show="showChannelsModal" @close="showChannelsModal = false" />
+        <ImportSelectionInputModal
+            v-if="showImportInputModal"
+            :show="showImportInputModal"
+            :destinationSelection="contextSelection"
+            @close="showImportInputModal = false"
+        />
     </div>
 </template>
 
@@ -480,7 +506,9 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import ChapterFilterModal from './ChapterFilterModal'
 import SelectionSettingsContextMenu from './SelectionSettingsContextMenu'
+import ChannelsModal from './ChannelsModal/'
 import sortArray from '../../../mixins/sortArray'
+import ImportSelectionInputModal from '../../../components/common/ImportSelectionInputModal'
 
 export default {
     name: 'selectionsTable',
@@ -488,6 +516,8 @@ export default {
         SelectionsTableRow,
         ChapterFilterModal,
         SelectionSettingsContextMenu,
+        ChannelsModal,
+        ImportSelectionInputModal,
     },
     mixins: [sortArray],
     data: function() {
@@ -509,6 +539,8 @@ export default {
             fileToClone: null,
             cloningSetup: false,
             settingsSelections: [],
+            showChannelsModal: false,
+            showImportInputModal: false,
         }
     },
     computed: {
