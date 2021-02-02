@@ -144,7 +144,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '~@/_variables.scss';
 h3 {
     margin: 0;
