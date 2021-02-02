@@ -93,6 +93,11 @@
             </v-popover>
             <!-- END SYSTEM ADMIN -->
 
+            <button class="primary" @click="showImportInputModal = true">
+                <i class="far fa-download"></i>
+                <span>Import input</span>
+            </button>
+
             <div class="scanner-mode-toggle">
                 <BaseToggle
                     label="Scanner Mode"
@@ -158,6 +163,11 @@
             :show="exportToFileModalVisible"
             @close="exportToFileModalVisible = false"
         />
+        <ImportSelectionInputModal
+            v-if="showImportInputModal"
+            :show="showImportInputModal"
+            @close="showImportInputModal = false"
+        />
     </div>
 </template>
 
@@ -167,6 +177,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import ExportToFileModal from '../../components/common/ExportToFileModal'
+import ImportSelectionInputModal from '../../components/common/ImportSelectionInputModal'
 import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
 import BudgetCounter from './BudgetCounter'
 
@@ -178,12 +189,14 @@ export default {
         ExportToFileModal,
         SelectionPresenterModeButton,
         BudgetCounter,
+        ImportSelectionInputModal,
     },
     data: function() {
         return {
             exportToFileModalVisible: false,
             exportContextOpen: false,
             viewAsContextOpen: false,
+            showImportInputModal: false,
         }
     },
     computed: {
