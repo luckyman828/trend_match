@@ -196,6 +196,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 id: null,
                 datasource_id: keyValue,
                 extra_data: {},
+                labels: [],
             }
 
             // Instantiate arrays based on options if any
