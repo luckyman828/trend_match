@@ -6,6 +6,7 @@
             { master: comment.selection && comment.selection.type == 'Master' },
             { 'has-traits': hasTraits },
             { 'edit-active': editActive },
+            { 'has-edit-access': hasEditAccess },
         ]"
     >
         <div class="traits">
@@ -120,6 +121,9 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         isOwn() {
             return this.comment.user_id == this.authUser.id
+        },
+        hasEditAccess() {
+            return this.isOwn || this.comment.selection.your_role == 'Owner'
         },
         hasTraits() {
             return (
@@ -250,6 +254,7 @@ export default {
         color: $dark;
     }
     .own &:hover,
+    .has-edit-access &:hover,
     &.failed {
         font-weight: 700;
         .controls {

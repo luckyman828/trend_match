@@ -89,16 +89,7 @@
             </div>
         </div>
         <!-- Request Controls -->
-        <div
-            class="controls"
-            v-if="
-                !selectionInput.is_completed &&
-                    !editActive &&
-                    !disableControls &&
-                    isOwn &&
-                    getCurrentPDPSelection.your_role == 'Owner'
-            "
-        >
+        <div class="controls" v-if="!selectionInput.is_completed && !editActive && !disableControls && hasEditAccess">
             <button
                 v-tooltip.top="{ content: 'Delete', delay: { show: 300 } }"
                 class="button invisible ghost-hover"
@@ -214,6 +205,9 @@ export default {
                 this.currentSelection.your_role == 'Approver' ||
                 (this.currentSelection.type == 'Master' && this.currentSelection.your_role == 'Owner')
             )
+        },
+        hasEditAccess() {
+            return this.request.selection.your_role == 'Owner'
         },
     },
     watch: {
