@@ -68,6 +68,7 @@ export default {
             this.selectedSelections.map(selectionRules => {
                 selectionRules[ruleName] = isTrue
             })
+            this.$emit('update')
         },
     },
 }

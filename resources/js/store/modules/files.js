@@ -677,7 +677,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: `Channel ${isNew ? 'created' : 'updated'}.`,
+                            msg: `Channel ${isNew ? 'created' : 'updated'}`,
                             iconClass: 'fa-check',
                             type: 'success',
                         },
@@ -688,7 +688,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: 'Error when saving channel.',
+                            msg: 'Error when saving channel',
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
                         },

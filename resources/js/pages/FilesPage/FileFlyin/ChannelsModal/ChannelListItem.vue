@@ -28,6 +28,7 @@
                 :selectedSelections.sync="selectedSelections"
                 :index="index"
                 @remove="onRemoveSelection"
+                @update="onUpdateChannel"
             />
 
             <template v-slot:empty>
@@ -102,7 +103,21 @@ export default {
             contextMenu.show(e)
         },
         onRemoveSelection(index) {
-            this.channel.selections.splice(index, 1)
+            const selectionToRemove = this.channel.selections[index]
+            if (
+                this.selectedSelections.length > 0 &&
+                this.selectedSelections.find(x => x.selection_id == selectionToRemove.selection_id)
+            ) {
+                this.selectedSelections.map(selected => {
+                    const indexToRemove = this.channel.selections.findIndex(
+                        x => x.selection_id == selected.selection_id
+                    )
+                    this.channel.selections.splice(indexToRemove, 1)
+                    this.selectedSelections = []
+                })
+            } else {
+                this.channel.selections.splice(index, 1)
+            }
             this.onUpdateChannel()
         },
         onUpdateChannel() {
