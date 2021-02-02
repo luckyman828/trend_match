@@ -126,11 +126,7 @@ export default {
             return this.isOwn || this.comment.selection.your_role == 'Owner'
         },
         hasTraits() {
-            return (
-                this.comment.important ||
-                // || this.comment.votes.length > 0
-                this.comment.focus
-            )
+            return this.comment.important || this.comment.focus
         },
         commentIsAnonymized() {
             const yourRole = this.selectionInput.selection.your_role
