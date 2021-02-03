@@ -1332,10 +1332,11 @@ export default {
             })
         },
         async importSelectionInput(
-            { commit, dispatch },
+            { commit, dispatch, rootGetters },
             { destinationSelection, sourceSelection, sourceUser, importOptions }
         ) {
-            const apiUrl = `admins/convert-user-inputs`
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
+            const apiUrl = `workspaces/${workspaceId}/convert-user-inputs`
 
             const actions = Object.keys(importOptions)
                 .map(optionKey => {
@@ -1352,15 +1353,16 @@ export default {
                     actions,
                 })
                 .then(response => {
+                    const showCallback = router.currentRoute.name == 'selection'
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
                             msg: 'Input imported',
                             iconClass: 'fa-check',
                             type: 'success',
-                            callbackLabel: 'Refresh to see change',
+                            callbackLabel: showCallback ? 'Refresh changes' : null,
                             callback: () => {
-                                router.go()
+                                showCallback && router.go()
                             },
                         },
                         { root: true }

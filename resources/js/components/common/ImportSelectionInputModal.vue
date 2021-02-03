@@ -8,7 +8,7 @@
     >
         <div class="form-wrapper" v-if="!isSubmitting">
             <div class="form-section">
-                <h3>Where to import from?</h3>
+                <h3>Choose selection to import from</h3>
                 <div class="form-element" v-if="!loadingFiles">
                     <label>Choose file to import from</label>
                     <BaseDropdownInputField
@@ -33,11 +33,13 @@
                 <BaseLoader v-if="loadingFiles || loadingSelections" msg="Loading" />
             </div>
             <div class="form-section">
-                <h3>What to do?</h3>
+                <h3>Choose what to import</h3>
                 <BaseTableV2>
                     <template v-slot:header>
                         <BaseTableHeader />
-                        <BaseTableHeader class="center">Copy</BaseTableHeader>
+                        <BaseTableHeader class="center"
+                            >Copy <i class="far fa-info-circle" v-tooltip="'Must be between 2 different selections'"></i
+                        ></BaseTableHeader>
                         <BaseTableHeader class="center"
                             >Convert
                             <i
@@ -50,6 +52,7 @@
                         <td>Feedback</td>
                         <td class="center">
                             <BaseCheckbox
+                                :disabled="isSameSelection"
                                 :value="true"
                                 v-model="importOptions.FeedbackToFeedback"
                                 @change="importOptions.FeedbackToAlignment = false"
@@ -66,7 +69,11 @@
                     <BaseTableV2Row>
                         <td>Alignment</td>
                         <td class="center">
-                            <BaseCheckbox :value="true" v-model="importOptions.AlignmentToAlignment" />
+                            <BaseCheckbox
+                                :disabled="isSameSelection"
+                                :value="true"
+                                v-model="importOptions.AlignmentToAlignment"
+                            />
                         </td>
                         <td class="center"></td>
                     </BaseTableV2Row>
@@ -74,6 +81,7 @@
                         <td>Comment</td>
                         <td class="center">
                             <BaseCheckbox
+                                :disabled="isSameSelection"
                                 :value="true"
                                 v-model="importOptions.CommentToComment"
                                 @change="importOptions.CommentToRequest = false"
@@ -89,13 +97,19 @@
                     </BaseTableV2Row>
                     <BaseTableV2Row>
                         <td>Requests / Tickets</td>
-                        <td class="center"><BaseCheckbox :value="true" v-model="importOptions.RequestToRequest" /></td>
+                        <td class="center">
+                            <BaseCheckbox
+                                :disabled="isSameSelection"
+                                :value="true"
+                                v-model="importOptions.RequestToRequest"
+                            />
+                        </td>
                         <td class="center"></td>
                     </BaseTableV2Row>
                 </BaseTableV2>
             </div>
             <div class="form-section" v-if="userIsRequired">
-                <h3>What user?</h3>
+                <h3>Choose user to convert from</h3>
                 <template v-if="!loadingSelections">
                     <div class="form-element">
                         <label>Choose user to import from</label>
@@ -105,13 +119,8 @@
                 </template>
                 <BaseLoader v-else msg="Loading Users" />
             </div>
-            <BaseButton
-                class="full-width"
-                buttonClass="primary lg full-width"
-                :disabled="!selectedSelection || (userIsRequired && !selectedUser)"
-                @click="onSubmit"
-            >
-                <span>Do it!</span>
+            <BaseButton class="full-width" buttonClass="primary lg full-width" :disabled="isDisabled" @click="onSubmit">
+                <span>Import input</span>
             </BaseButton>
         </div>
         <BaseLoader v-else msg="Importing.." />
@@ -156,6 +165,19 @@ export default {
         currentSelection() {
             return this.destinationSelection ? this.destinationSelection : this.getCurrentSelection
         },
+        isSameSelection() {
+            return (
+                this.currentSelection && this.selectedSelection && this.currentSelection.id == this.selectedSelection.id
+            )
+        },
+        isDisabled() {
+            if (!this.importOptions) return
+            return (
+                !Object.values(this.importOptions).find(x => !!x) ||
+                !this.selectedSelection ||
+                (this.userIsRequired && !this.selectedUser)
+            )
+        },
     },
     watch: {
         selectedFile(newFile) {
@@ -183,6 +205,12 @@ export default {
             this.loadingSelections = false
         },
         async onNewSelection() {
+            if (this.isSameSelection) {
+                this.importOptions.FeedbackToFeedback = false
+                this.importOptions.AlignmentToAlignment = false
+                this.importOptions.CommentToComment = false
+                this.importOptions.RequestToRequest = false
+            }
             this.selectedUser = null
             this.loadingUsers = true
             const selection = await this.fetchSelection({ selectionId: this.selectedSelection.id, addToState: false })
