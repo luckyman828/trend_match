@@ -49,10 +49,6 @@
                     v-else
                     :style="`background-image: url(/images/pexels-andrew-neel-3178875.jpg); filter: brightness(0.5);`"
                 ></div>
-                <!-- <template v-else>
-                    <img src="/images/graphs.svg" class="bg-left" />
-                    <img src="/images/graphs.svg" class="bg-right" />
-                </template> -->
             </template>
             <div class="inner">
                 <img

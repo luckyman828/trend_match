@@ -5,8 +5,10 @@
             <div class="header" v-touch:swipe.down="onSwipeDown">
                 <slot name="header" />
             </div>
-            <div class="body" @scroll.capture.passive="onScrollBody">
-                <slot />
+            <div class="body" @scroll.passive="onScrollBody">
+                <div class="body-rail" :style="bodyStyle" @scroll.passive="onScrollBody">
+                    <slot />
+                </div>
             </div>
         </div>
         <div class="footer">
@@ -32,6 +34,14 @@ export default {
 
             return {
                 transform: `translateY(calc(18vh - ${Math.max(Math.min(max, this.extendAmount), 0)}px))`,
+            }
+        },
+        bodyStyle() {
+            if (!this.show) return
+            const max = 100
+
+            return {
+                transform: `translateY(calc(-18vh + ${Math.max(Math.min(max, this.extendAmount), 0)}px))`,
             }
         },
     },
@@ -92,7 +102,13 @@ export default {
             transform: translateY(100%);
             max-height: 90vh;
             .body {
+                overflow: auto;
+            }
+            .body-rail {
+                padding-top: 18vh;
                 overflow-y: auto;
+                height: 100%;
+                transition: transform 0.1s ease-out;
             }
             // &.extend {
             //     transform: translateY(-18vh);
