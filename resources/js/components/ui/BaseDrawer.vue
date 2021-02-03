@@ -2,7 +2,7 @@
     <div class="drawer-wrapper" :class="[{ show: show }]">
         <div class="overlay" @click="$emit('close')" />
         <div class="drawer" :class="[`pos-${position}`, { extend: extend }]" :style="extendStyle">
-            <div class="header" v-touch:swipe.down="onSwipeDown">
+            <div class="header" v-touch:swipe.down="onSwipeDown" :class="{ 'show-shadow': showHeaderShadow }">
                 <slot name="header" />
             </div>
             <div class="body" @scroll.passive="onScrollBody">
@@ -25,12 +25,13 @@ export default {
         return {
             extend: false,
             extendAmount: 0,
+            extendMax: 100,
         }
     },
     computed: {
         extendStyle() {
             if (!this.show) return
-            const max = 100
+            const max = this.extendMax
 
             return {
                 transform: `translateY(calc(18vh - ${Math.max(Math.min(max, this.extendAmount), 0)}px))`,
@@ -38,11 +39,14 @@ export default {
         },
         bodyStyle() {
             if (!this.show) return
-            const max = 100
+            const max = this.extendMax
 
             return {
                 transform: `translateY(calc(-18vh + ${Math.max(Math.min(max, this.extendAmount), 0)}px))`,
             }
+        },
+        showHeaderShadow() {
+            return this.extendAmount > this.extendMax
         },
     },
     methods: {
@@ -67,6 +71,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '~@/_variables.scss';
+
 .drawer-wrapper {
     position: fixed;
     top: 0;
@@ -92,6 +98,9 @@ export default {
         .header {
             padding: 20px 16px;
             // min-height: 80px;
+            &.show-shadow {
+                box-shadow: $shadowModule;
+            }
         }
         &.extend {
             transition: transform 0.1s ease-out;
