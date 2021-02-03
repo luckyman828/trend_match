@@ -119,9 +119,9 @@ router.beforeEach(async (to, from, next) => {
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
 
-    if (to.name == 'login' && from && from.name) {
-        store.commit('routes/SET_NEXT_URL', from.fullPath)
-    }
+    // if (to.name == 'login' && from && from.name) {
+    //     store.commit('routes/SET_NEXT_URL', from.fullPath)
+    // }
 
     if (to.path.startsWith('/login') && store.getters['auth/isAuthenticated']) {
         next({ name: 'files' })
@@ -148,6 +148,7 @@ router.beforeEach(async (to, from, next) => {
 
     // Check that the user is not going to the login page already
     else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {
+        store.commit('routes/SET_NEXT_URL', to.fullPath)
         next({
             name: 'login',
         })

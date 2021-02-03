@@ -30,44 +30,59 @@ import display from './modules/display'
 import videoComments from './modules/videoComments'
 import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
+const cloneDeep = require('clone-deep')
 
 // Load Vuex
 Vue.use(Vuex)
 
-// Create Vuex Store and register database through Vuex ORM.
+// Initial store with modules as an object
+export const initialStoreModules = {
+    persist,
+    auth,
+    workspaces,
+    teams,
+    users,
+    files,
+    folders,
+    selections,
+    products,
+    actions,
+    alerts,
+    comments,
+    requests,
+    contextMenu,
+    presentationQueue,
+    lightbox,
+    tables,
+    changelog,
+    flyin,
+    mapProductData,
+    videoPresentation,
+    videoPlayer,
+    routes,
+    scanner,
+    presentation,
+    responsive,
+    display,
+    videoComments,
+    productFilters,
+    selectionProducts,
+}
+
+// const store = new Vuex.Store({
+
 const store = new Vuex.Store({
-    modules: {
-        persist,
-        auth,
-        workspaces,
-        teams,
-        users,
-        files,
-        folders,
-        selections,
-        products,
-        actions,
-        alerts,
-        comments,
-        requests,
-        contextMenu,
-        presentationQueue,
-        lightbox,
-        tables,
-        changelog,
-        flyin,
-        mapProductData,
-        videoPresentation,
-        videoPlayer,
-        routes,
-        scanner,
-        presentation,
-        responsive,
-        display,
-        videoComments,
-        productFilters,
-        selectionProducts,
+    modules: cloneDeep(initialStoreModules),
+    mutations: {
+        // reset default state modules by looping around the initialStoreModules
+        RESET_STATE(state) {
+            for (const key of Object.keys(initialStoreModules)) {
+                const value = cloneDeep(initialStoreModules[key].state)
+                state[key] = value
+            }
+        },
     },
 })
-
+// Set the token in the store
+store.state.auth.token = localStorage.getItem('user-token') || ''
 export default store

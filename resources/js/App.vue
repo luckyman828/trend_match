@@ -189,6 +189,7 @@ export default {
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
+        ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async initWorkspace() {
             // Get workspaces
@@ -234,7 +235,6 @@ export default {
             connection.on('AuthenticatedSuccess', message => {})
 
             connection.on('OnSelectionPresentationChanged', (eventName, args) => {
-                // console.log('on selection oresentqito', eventName, args)
                 args.selection_ids.map(async id => {
                     const selection = this.getSelectionById(id)
                     const presentationGroupId = args.detail.find(x => x.selection_id == id).presentation_group_id
@@ -321,21 +321,14 @@ export default {
         // Set up a request intercepter that checks if the user is still authenticated
         axios.interceptors.response.use(
             response => response,
-            error => {
+            async error => {
                 if (this.$route.name != 'login') {
                     if (!!error.response && error.response.status === 401) {
                         // if you ever get an unauthorized, logout the user
-                        this.logout()
+                        await this.logout()
+                        this.SET_NEXT_URL(this.$route.fullPath)
                     }
                 }
-                // if (!!error.response && error.response.status === 404) {
-                //     this.SHOW_SNACKBAR({
-                //         msg: `You dont have access to any workspaces.`,
-                //         type: 'warning',
-                //         iconClass: 'fa-exclamation-triangle',
-                //         duration: 10000, // 10 seconds
-                //     })
-                // }
                 return Promise.reject(error.response)
             }
         )

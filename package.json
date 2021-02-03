@@ -30,6 +30,7 @@
         "ajv-keywords": "^3.5.2",
         "ansi-regex": "^5.0.0",
         "blueimp-canvas-to-blob": "^3.28.0",
+        "clone-deep": "^4.0.1",
         "compressorjs": "^1.0.6",
         "es-abstract": "^1.17.7",
         "focus-visible": "^5.2.0",

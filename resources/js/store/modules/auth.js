@@ -5,7 +5,7 @@ export default {
     namespaced: true,
 
     state: {
-        token: localStorage.getItem('user-token') || '',
+        token: '',
         status: '',
         user: null,
         passwordRecoveryEmail: null,
@@ -52,15 +52,13 @@ export default {
 
             return success
         },
-        async logout({ commit, state }) {
+        async logout({ commit, state, getters }) {
             // Remember to add actual logging out request here to the API
             localStorage.removeItem('user-token')
             localStorage.removeItem('workspace-index')
-            state.token = ''
+            commit('RESET_STATE', null, { root: true })
             // Redirect the user
             router.push({ name: 'login' })
-            // Refresh the page to clear our state
-            router.go()
         },
         async recoverPassword({ commit, state }, email) {
             let success
