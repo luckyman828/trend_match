@@ -15,7 +15,7 @@
                                 class="variant-image"
                                 :variant="variant"
                                 :index="variant.imageIndex"
-                                size="sm"
+                                size="lg"
                             />
                             <div class="target-area prev" @click="cycleVariantPicture(variant, false)"></div>
                             <div class="target-area next" @click="cycleVariantPicture(variant, false)"></div>
@@ -176,6 +176,7 @@ export default {
                     object-fit: cover;
                     width: 100%;
                     height: 100%;
+                    background: $grey300;
                 }
                 .target-area {
                     position: absolute;
