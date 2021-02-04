@@ -164,9 +164,9 @@ export default {
             }
         },
         // Watch for workspace changes
-        currentWorkspaceIndex: function(newVal) {
+        currentWorkspaceIndex(newVal, oldVal) {
             // If we are in a selection -> send us back to files
-            if (this.$route.name == 'selection' || this.$route.name == 'editFile') {
+            if (oldVal != null && (this.$route.name == 'selection' || this.$route.name == 'editFile')) {
                 this.$router.push({ name: 'files' })
             }
         },
