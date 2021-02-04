@@ -10,23 +10,32 @@
             <span>{{ getLabelIndex(label) + 1 }} - {{ label }}</span>
             <i v-if="hasWriteAccess" class="hover-only fas fa-times-circle"></i>
         </button>
-        <v-popover ref="popover" trigger="click" v-if="hasWriteAccess">
+        <v-popover ref="popover" trigger="click" v-if="hasWriteAccess" @hide="onUpdateProduct">
             <button class="primary ghost pill xs add-button">
                 <i class="far fa-plus"></i>
                 <span>Add Label</span>
             </button>
-            <BaseSelectButtons
-                slot="popover"
-                :options="availableLabelsFiltered"
-                type="radio"
-                :submitOnChange="true"
-                v-close-popover
-                @submit="onAddLabel"
-            >
-                <template v-slot:before="slotProps">
-                    <span>{{ getLabelIndex(slotProps.option) + 1 }} - </span>
-                </template>
-            </BaseSelectButtons>
+            <BaseContextMenu :inline="true" slot="popover">
+                <div class="item-group">
+                    <BaseSelectButtons
+                        :options="availableLabels"
+                        v-model="product.labels"
+                        type="select"
+                        :submitOnChange="true"
+                    >
+                        <template v-slot:before="slotProps">
+                            <span>{{ getLabelIndex(slotProps.option) + 1 }} - </span>
+                        </template>
+                    </BaseSelectButtons>
+                </div>
+                <div class="item-group">
+                    <div class="item-wrapper">
+                        <button class="primary full-width" v-close-popover>
+                            <span>Done</span>
+                        </button>
+                    </div>
+                </div>
+            </BaseContextMenu>
         </v-popover>
     </div>
 </template>
@@ -55,11 +64,11 @@ export default {
             return labels
         },
         availableLabelsFiltered() {
-            const labels = this.availableLabels.slice().filter(x => {
-                const alreadyAdded = this.product.labels.includes(x)
-                return !alreadyAdded
-            })
-            return labels
+            // const labels = this.availableLabels.slice().filter(x => {
+            //     const alreadyAdded = this.product.labels.includes(x)
+            //     return !alreadyAdded
+            // })
+            return this.availableLabels
         },
         hasWriteAccess() {
             return this.workspaceRole == 'Admin' || this.selectionRole == 'Alignment'
