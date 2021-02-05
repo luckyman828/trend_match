@@ -160,7 +160,6 @@ export default {
             }
 
             // Filter by custom values
-            console.log('filter by custom', customDataFilters)
             Object.keys(customDataFilters).map(filterKey => {
                 const filterValues = customDataFilters[filterKey]
                 if (filterValues.length <= 0) return

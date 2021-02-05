@@ -18,8 +18,8 @@
             <div class="ribbon" v-if="isTicket" :class="request.status" v-tooltip="statusTooltip" />
             <div class="inner">
                 <strong class="sender">
-                    <SelectionChapterPill v-if="request.selection.type != 'Chapter'" :selection="request.selection" />
-                    <span>{{ request.selection.name }}</span>
+                    <SelectionChapterPill :selection="request.selection" />
+                    <span v-if="request.selection.type != 'Chapter'">{{ request.selection.name }}</span>
                     <!-- </span> -->
                     <span> | </span>
                     <span class="sender" :class="request.author_id == authUser.id ? 'square primary xs' : ''">

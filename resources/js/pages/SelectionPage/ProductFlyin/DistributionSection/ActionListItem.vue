@@ -1,16 +1,12 @@
 <template>
     <div class="action-list-item">
-        <SelectionChapterPill
-            class="chapter"
-            :selection="action.selection"
-            v-if="!action.selection.type == 'Chapter'"
-        />
+        <SelectionChapterPill class="chapter" :selection="action.selection" />
         <i
             v-if="action.selection.type == 'Master'"
             :selection="action.selection"
             class="selection-icon fas fa-crown primary"
         />
-        <span class="selection-name">{{ action.selection.name }}</span>
+        <span class="selection-name" v-if="action.selection.type != 'Chapter'">{{ action.selection.name }}</span>
         <span class="action" v-if="!showQty || ['None', 'Out'].includes(action.action)">{{ action.action }}</span>
         <div class="quantity pill ghost xs" v-else>
             <i class="fas fa-box"></i>
