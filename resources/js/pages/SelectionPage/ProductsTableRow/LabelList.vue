@@ -10,12 +10,7 @@
             <span>{{ getLabelIndex(label) + 1 }} - {{ label }}</span>
             <i v-if="hasWriteAccess" class="hover-only fas fa-times-circle"></i>
         </button>
-        <v-popover
-            ref="popover"
-            trigger="click"
-            v-if="hasWriteAccess"
-            @update:open="isOpen => isOpen === false && onUpdateProduct()"
-        >
+        <v-popover ref="popover" trigger="click" v-if="hasWriteAccess" @update:open="onShowPopover">
             <button class="primary ghost pill xs add-button">
                 <i class="far fa-plus"></i>
                 <span>Add Label</span>
@@ -50,6 +45,11 @@ import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'labelList',
     props: ['product'],
+    data: function() {
+        return {
+            isOpen: false,
+        }
+    },
     computed: {
         ...mapGetters('workspaces', {
             availableLabels: 'getAvailableProductLabels',
@@ -99,6 +99,10 @@ export default {
             const product = Object.assign({}, this.product)
             delete product.selectionInputList
             await this.updateProduct(product)
+        },
+        onShowPopover(isOpen) {
+            if (this.isOpen) this.onUpdateProduct()
+            this.isOpen = isOpen
         },
     },
 }
