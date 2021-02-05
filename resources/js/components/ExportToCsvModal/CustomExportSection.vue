@@ -135,6 +135,8 @@ export default {
                         { name: 'Variant EAN', key: 'variant.eans' },
                         { name: 'Image URL', key: 'image_url' },
                         { name: 'Assortment Name', key: 'assortments.name' },
+                        { name: 'Labels', key: 'labels' },
+
                         // { name: 'Assortment EAN', key: 'assortments.ean' },
                         // { name: 'Assortment Size', key: 'assortments.size' },
                     ],
