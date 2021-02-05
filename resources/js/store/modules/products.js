@@ -96,7 +96,7 @@ export default {
             const hideCompleted = rootGetters['productFilters/hideCompleted']
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
-            const customDataFilters = rootGetters['productFilters/getFilterCustomFieldValues']
+            const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -160,6 +160,7 @@ export default {
             }
 
             // Filter by custom values
+            console.log('filter by custom', customDataFilters)
             Object.keys(customDataFilters).map(filterKey => {
                 const filterValues = customDataFilters[filterKey]
                 if (filterValues.length <= 0) return
