@@ -10,7 +10,12 @@
             <span>{{ getLabelIndex(label) + 1 }} - {{ label }}</span>
             <i v-if="hasWriteAccess" class="hover-only fas fa-times-circle"></i>
         </button>
-        <v-popover ref="popover" trigger="click" v-if="hasWriteAccess" @hide="onUpdateProduct">
+        <v-popover
+            ref="popover"
+            trigger="click"
+            v-if="hasWriteAccess"
+            @update:open="isOpen => isOpen === false && onUpdateProduct()"
+        >
             <button class="primary ghost pill xs add-button">
                 <i class="far fa-plus"></i>
                 <span>Add Label</span>
