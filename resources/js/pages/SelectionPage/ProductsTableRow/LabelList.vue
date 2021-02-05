@@ -53,6 +53,9 @@ export default {
         ...mapGetters('selections', {
             selectionRole: 'getCurrentSelectionMode',
         }),
+        ...mapGetters('files', {
+            file: 'getCurrentFile',
+        }),
 
         labelsSorted() {
             const labels = this.product.labels
@@ -71,7 +74,7 @@ export default {
             return this.availableLabels
         },
         hasWriteAccess() {
-            return this.workspaceRole == 'Admin' || this.selectionRole == 'Alignment'
+            return this.workspaceRole == 'Admin' || this.file.editable
         },
     },
     methods: {
