@@ -4,7 +4,7 @@
             <JobListItem v-for="job in jobs" :key="job.id" :job="job" />
         </div>
         <div class="action-list" v-if="!!jobs.find(job => job.status == 'Completed')">
-            <button class="full-width red ghost clear-button" @click="CLEAR_COMPLETED">
+            <button class="full-width red primary clear-button" @click="CLEAR_COMPLETED">
                 <i class="far fa-check"></i>
                 <span>Clear completed</span>
             </button>

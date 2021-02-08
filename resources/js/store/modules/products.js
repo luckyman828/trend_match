@@ -418,7 +418,7 @@ export default {
 
                         // Start image sync job
                         const syncJobId = response.data.download_image_progress_id
-                        if (syncJobId) {
+                        if (syncJobId != 0) {
                             dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
                         }
 
@@ -601,6 +601,12 @@ export default {
                             },
                             { root: true }
                         )
+
+                        // Start image sync job
+                        const syncJobId = response.data.download_image_progress_id
+                        if (syncJobId != 0) {
+                            dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
+                        }
 
                         products.map(product => {
                             commit('updateProduct', product)
