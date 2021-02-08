@@ -587,7 +587,7 @@ export default {
             }
         },
         async onGetSelectionLink(selectionId) {
-            const link = await this.getSelectionLink(selectionId)
+            const link = await this.getSelectionLink({selectionId})
             this.copyToClipboard(link)
             this.SHOW_SNACKBAR({
                 msg: 'Link copied',

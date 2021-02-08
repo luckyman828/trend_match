@@ -1186,8 +1186,8 @@ export default {
 
             return joinResponse
         },
-        async getSelectionLink({}, selectionId) {
-            const apiUrl = `selections/${selectionId}/shorten-code`
+        async getSelectionLink({}, { selectionId, openDashboard }) {
+            const apiUrl = `selections/${selectionId}/shorten-code${openDashboard ? '?open_app=false' : ''}`
             // let linkCode
             let link
             await axios.get(apiUrl).then(response => {
