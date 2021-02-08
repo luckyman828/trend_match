@@ -179,9 +179,9 @@ export default {
     },
     created() {
         // Check if we are in a presentation
-        if (this.isLive) {
-            this.connectToLiveUpdates()
-        }
+        // if (this.isLive) {
+        this.connectToLiveUpdates()
+        // }
         // Make the page full screen
         document.body.classList.add('fit-height')
     },

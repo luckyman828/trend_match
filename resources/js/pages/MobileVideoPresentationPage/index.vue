@@ -83,11 +83,11 @@ export default {
 
             await this.fetchVideoComments({ video: fileVideo.video })
 
-            // if (this.presentationIsActive) {
-            //     this.SET_VIDEO_TYPE('live')
-            //     // Fetch the currently presented product
-            //     await this.fetchPresentationDetails(selection.presentation_id)
-            // }
+            if (this.presentationIsActive) {
+                this.SET_VIDEO_TYPE('live')
+                // Fetch the currently presented product
+                await this.fetchPresentationDetails(selection.presentation_id)
+            }
 
             this.loadingData = false
         },

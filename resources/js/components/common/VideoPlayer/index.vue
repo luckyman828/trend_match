@@ -48,22 +48,14 @@
         <div class="player-overlay">
             <slot />
         </div>
-
-        <!-- <PlayerOverlay :playerReady="playerReady" :hideTimeline="hideTimeline">
-            <slot />
-        </PlayerOverlay> -->
     </div>
 </template>
 
 <script>
-import PlayerOverlay from './PlayerOverlay'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPlayer',
-    components: {
-        PlayerOverlay,
-    },
     props: ['providerVideoId', 'provider', 'autoplay', 'hideTimeline'],
     data: function() {
         return {
