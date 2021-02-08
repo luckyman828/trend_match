@@ -10,7 +10,8 @@ export default {
         getImageSyncJobs: state => state.imageSyncJobs,
         getRemainingImageSyncCount: (state, getters) => {
             return getters.getImageSyncJobs.reduce((acc, curr) => {
-                return (acc += curr.total - curr.completed)
+                const remaining = curr.status == 'Completed' ? 0 : curr.total - curr.completed
+                return (acc += remaining)
             }, 0)
         },
     },
@@ -33,8 +34,8 @@ export default {
                 // // Update the images of our product variants if we have the products loaded in our state
                 const stateProducts = rootGetters['products/getProducts']
                 const currentFile = rootGetters['files/getCurrentFile']
-                const jobFile = job.file ? job.file : file ? file : {}
-                if (stateProducts && currentFile.id == jobFile.id) {
+                const jobFile = job.file ? job.file : file
+                if (stateProducts && currentFile && jobFile && currentFile.id == jobFile.id) {
                     // Loop through our items
                     job.items.map(async item => {
                         if (!item.identifier.startsWith('product:')) return

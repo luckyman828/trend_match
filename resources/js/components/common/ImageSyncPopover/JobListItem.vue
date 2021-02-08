@@ -2,11 +2,15 @@
     <div class="job-list-item" :class="job.status">
         <div class="flex-list justify">
             <div
-                class="file-name-wrapper clickable"
-                @click="$router.push({ name: 'editFile', params: { fileId: job.file.id } })"
+                class="file-name-wrapper"
+                :class="{ clickable: $route.params.fileId != job.file.id }"
+                @click="
+                    $route.params.fileId != job.file.id &&
+                        $router.push({ name: 'editFile', params: { fileId: job.file.id } })
+                "
             >
                 <div class="name">{{ job.file.name }}</div>
-                <div class="hover-action-list">
+                <div class="hover-action-list" v-if="$route.params.fileId != job.file.id">
                     <button class="primary ghost xs">
                         <span>View</span>
                     </button>
@@ -26,7 +30,7 @@ export default {
     props: ['job'],
     computed: {
         remainingCount() {
-            return this.job.total - this.job.completed
+            return this.job.status == 'Completed' ? 0 : this.job.total - this.job.completed
         },
     },
 }
