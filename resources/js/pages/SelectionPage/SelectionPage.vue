@@ -256,8 +256,9 @@ export default {
             'INSERT_OR_UPDATE_REQUEST_COMMENT',
             'DELETE_REQUEST_COMMENT',
         ]),
-        ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
+        ...mapActions('actions', ['initActions', 'insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         ...mapActions('requests', ['initRequests', 'insertOrUpdateRequest']),
+        ...mapActions('comments', ['initComments']),
         ...mapActions('selections', ['addUsersToSelection']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
         onViewSelectionAsRole(role) {
@@ -360,10 +361,11 @@ export default {
             this.SET_PRODUCTS_COMPLETED({ selectionId, shouldBeCompleted, products })
         },
 
-        commentArrivedHandler(selectionId, comment) {
+        async commentArrivedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentArrived", selectionId, comment)
                 const product = this.products.find(x => x.id == comment.product_id)
+                await this.initComments([comment])
                 this.INSERT_OR_UPDATE_COMMENT({ selectionInput: this.getActiveSelectionInput(product), comment })
             }
         },
