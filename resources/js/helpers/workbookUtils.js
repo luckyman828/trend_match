@@ -269,6 +269,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                         // Instantiate a basevariant
                         const baseVariant = {
                             id: uuidv4(), // We have to generate a UUID for our variants ourselves
+                            style_option_id: null,
                             color,
                             variant,
                             sizes: [],

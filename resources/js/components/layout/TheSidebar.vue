@@ -50,6 +50,18 @@
             </div>
         </div>
         <div class="bottom-nav">
+            <v-popover placement="right" v-if="jobs.length > 0" trigger="click">
+                <div class="sidebar-item">
+                    <a class="inner">
+                        <i class="fad fa-sync"></i>
+                        <span>Sync</span>
+                        <div class="pill count xs" :class="remainingSyncCount > 0 ? '' : 'green'">
+                            <span>{{ remainingSyncCount > 0 ? remainingSyncCount : 'Done' }}</span>
+                        </div>
+                    </a>
+                </div>
+                <ImageSyncPopover slot="popover" />
+            </v-popover>
             <div class="sidebar-item">
                 <div
                     class="inner"
@@ -105,6 +117,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TheNavbarLogo from './TheNavbarLogo'
+import ImageSyncPopover from '../common/ImageSyncPopover/'
 
 import SignoutButton from './SignoutButton'
 
@@ -113,6 +126,7 @@ export default {
     components: {
         SignoutButton,
         TheNavbarLogo,
+        ImageSyncPopover,
     },
     data: function() {
         return {
@@ -130,6 +144,10 @@ export default {
             'getRealWorkspaceRole',
         ]),
         ...mapGetters('changelog', ['getLatestChangelogUpdateDate']),
+        ...mapGetters('backgroundJobs', {
+            jobs: 'getImageSyncJobs',
+            remainingSyncCount: 'getRemainingImageSyncCount',
+        }),
         displayTooltips() {
             return window.innerWidth <= 1400
         },
@@ -199,6 +217,10 @@ export default {
         &.router-link-active {
             background: white;
             color: $font;
+        }
+        > .count {
+            position: absolute;
+            top: -24px;
         }
     }
     &.logo {

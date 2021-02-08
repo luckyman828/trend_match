@@ -184,15 +184,11 @@ export default {
                 }
                 this.SET_CURRENT_SELECTIONS([this.selectionToPresentFrom])
 
-                console.log('set video by url')
                 this.editModeActive = false
                 await this.setVideoByURL({ file: this.file, url: this.videoUrl })
-                console.log('done setting video by url', this.editModeActive)
                 this.editModeActive = false
-                console.log('AGANI done setting video by url', this.editModeActive)
                 setTimeout(() => {
                     this.editModeActive = false
-                    console.log('disable that crap', this.playerReady, this.editModeActive)
                 }, 1000)
                 // console.lo()
             }

@@ -14,8 +14,19 @@ export default {
             }
 
             if (size) {
-                if (size == 'sm') urlToReturn = `${urlToReturn}-300x300`
-                if (size == 'lg') urlToReturn = `${urlToReturn}-1024x1024`
+                let sizeString = ''
+                if (size == 'sm') sizeString = `-300x300`
+                if (size == 'lg') sizeString = `-1024x1024`
+
+                // Check if there is an extension
+                const extensionIndex = urlToReturn.indexOf('.jpg')
+                if (extensionIndex >= 0) {
+                    urlToReturn = `${urlToReturn.slice(0, extensionIndex)}${sizeString}${urlToReturn.slice(
+                        extensionIndex
+                    )}`
+                } else {
+                    urlToReturn = `${urlToReturn}${sizeString}`
+                }
             }
             return urlToReturn
         },

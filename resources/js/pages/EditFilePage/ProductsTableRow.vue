@@ -8,6 +8,11 @@
                     :variant="product.variants[0]"
                     size="sm"
                 />
+                <div class="sync-wrapper" :class="syncStatus" v-if="syncStatus">
+                    <i v-if="syncStatus == 'Success'" class="sync-icon success far green fa-check-circle md"></i>
+                    <i v-else-if="syncStatus == 'Error'" class="sync-icon error far red fa-times-circle md"></i>
+                    <i v-else class="sync-icon syncing fad fa-sync md"></i>
+                </div>
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
@@ -117,6 +122,12 @@ export default {
         ...mapGetters('workspaces', {
             availableLabels: 'getAvailableProductLabels',
         }),
+        ...mapGetters('files', {
+            file: 'getCurrentFile',
+        }),
+        ...mapGetters('backgroundJobs', {
+            syncJobs: 'getImageSyncJobs',
+        }),
         localSelectedProducts: {
             get() {
                 return this.selectedProducts
@@ -134,14 +145,12 @@ export default {
         hasLabelWriteAccess() {
             return this.labelsEnabled
         },
+        syncStatus() {
+            return this.product.imageSyncStatus
+        },
     },
     methods: {
-        productImg(variant) {
-            if (!variant || (!variant.blob_id && !variant.image)) return `/images/placeholder.JPG`
-            if (variant.blob_id)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
-        },
+        ...mapActions('products', ['fetchProduct']),
         onViewSingle() {
             this.$emit('view-single-product', this.product)
         },
@@ -165,11 +174,28 @@ export default {
         border: $borderElSoft;
         height: 100%;
         width: 100%;
+        position: relative;
         // width: 48px;
         img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+        .sync-wrapper {
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            position: absolute;
+            &:not(.Success):not(.Error) {
+                background: rgba(white, 0.8);
+            }
+            .sync-icon {
+                margin: 8px;
+                &.syncing {
+                    animation: spin infinite 2s;
+                }
+            }
         }
     }
 }
@@ -204,6 +230,14 @@ td.title {
     cursor: grab;
     i {
         font-weight: 400 !important;
+    }
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>
