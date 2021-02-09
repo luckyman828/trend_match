@@ -135,29 +135,14 @@ export default {
                 this.recentlyStarted = false
             }, 4000)
         },
-        async onNewProduct(productId) {
-            // Find the new start
-            const newStart = Math.round(this.videoDuration)
+        presentationChangeHandler(eventName, args) {},
+        async videoTimingsUpdatedHandler(videoId, videoTimings) {
+            if (this.video.id != videoId) return
 
-            // Stop the current timing if any
-            if (this.currentTiming) {
-                this.currentTiming.end_at_ms = newStart - 1
-            }
-
-            // Add the new timing
-            const newTiming = {
-                start_at_ms: newStart,
-                end_at_ms: Math.ceil(this.videoDuration + 5),
-                product_id: productId,
-            }
-            await this.initTimings([newTiming])
-            this.ADD_TIMING({ timing: newTiming, index: null })
-        },
-        presentationChangeHandler(eventName, args) {
-            if (eventName == 'ProductChanged') {
-                const productId = args.detail[0].product_id
-                this.onNewProduct(productId)
-            }
+            // Replace the last 2 timings with the new timings
+            const newTimings = videoTimings.slice(videoTimings.length - 2)
+            await this.initTimings(newTimings)
+            this.videoTimings.splice(this.videoTimings.length - 2, 2, ...newTimings)
         },
         connectToLiveUpdates() {
             const connection = this.$connection
@@ -165,6 +150,7 @@ export default {
             // Subscribe to our selections
             connection.invoke('Subscribe', this.selection.id)
             connection.on('OnSelectionPresentationChanged', this.presentationChangeHandler)
+            connection.on('OnVideoTimingsUpdated', this.videoTimingsUpdatedHandler)
 
             this.isConnectedToLiveUpdates = true
         },
@@ -173,6 +159,7 @@ export default {
 
             this.$connection.invoke('UnSubscribeAll')
             connection.off('OnSelectionPresentationChanged', this.presentationChangeHandler)
+            connection.off('OnVideoTimingsUpdated', this.videoTimingsUpdatedHandler)
 
             this.isConnectedToLiveUpdates = false
         },

@@ -182,6 +182,7 @@ export default {
                 'RRP',
                 'MU',
                 'Product EANs',
+                'Labels',
             ],
             defaultCsvDumpHeaders: [
                 'Product ID',
@@ -798,6 +799,7 @@ export default {
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
                 product.eans.join(', '),
+                product.labels.join(', '),
             ]
             // Get the extra data
             const extraFields = this.getCustomProductFields

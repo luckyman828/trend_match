@@ -86,7 +86,7 @@ export default {
     },
     methods: {
         seperateThousands(value) {
-            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            return (Math.round(value * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         },
     },
 }
