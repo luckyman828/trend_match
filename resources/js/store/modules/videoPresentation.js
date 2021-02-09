@@ -24,21 +24,6 @@ export default {
         //     provider: 'Vimeo',
         // },
         searchItemDragActive: false,
-        videoTimings: [],
-        // videoTimings: [
-        //     {
-        //         id: 1,
-        //         start: 3,
-        //         end: 24,
-        //         product_id: '750475784351613090',
-        //     },
-        //     {
-        //         id: 2,
-        //         start: 24,
-        //         end: 46,
-        //         product_id: '748096819460718599',
-        //     },
-        // ],
         timingId: 0,
         timelineZoom: 1,
         timelineRail: null,
