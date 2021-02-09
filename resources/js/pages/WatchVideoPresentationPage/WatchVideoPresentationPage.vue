@@ -195,17 +195,6 @@ export default {
             const newTimings = videoTimings.slice(videoTimings.length - 2)
             await this.initTimings(newTimings)
             this.videoTimings.splice(this.videoTimings.length - 2, 2, ...newTimings)
-
-            // // Insert the new timing
-            // const newTiming = videoTimings[videoTimings.length - 1]
-            // await this.initTimings([newTiming])
-            // this.ADD_TIMING(newTiming)
-
-            // // Set the end of our current timing
-            // if (this.currentTiming && videoTimings.length >= 2) {
-            //     const updatedCurrentTiming = videoTimings[videoTimings.length - 2]
-            //     this.currentTiming.end_at_ms = updatedCurrentTiming.end_at_ms
-            // }
         },
         connectToLiveUpdates() {
             const connection = this.$connection
