@@ -60,7 +60,7 @@
             optionNameKey="name"
             optionDescriptionKey="chapterName"
             :search="true"
-            :submitText="`Add ${selectionsToAdd.length} user${selectionsToAdd.length > 1 ? 's' : ''}`"
+            :submitText="`Add ${selectionsToAdd.length} selection${selectionsToAdd.length > 1 ? 's' : ''}`"
             @submit="
                 onAddSelections(selectionsToAdd)
                 selectionsToAdd = []
