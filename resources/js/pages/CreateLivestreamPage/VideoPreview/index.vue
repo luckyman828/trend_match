@@ -275,6 +275,8 @@ export default {
         }
     }
     .selections-to-present {
+        max-height: 200px;
+        overflow-y: auto;
         background: $bg;
         border-radius: $borderRadiusEl;
         border: $borderEl;
