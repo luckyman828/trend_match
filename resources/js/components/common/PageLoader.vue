@@ -13,6 +13,8 @@
         <!-- Success -->
         <div class="page-wrapper" :class="`theme-${theme}`" v-else>
             <slot />
+            <slot v-if="isMobile" name="mobile" />
+            <slot v-else name="desktop" />
         </div>
     </div>
 </template>
@@ -25,6 +27,7 @@ export default {
     props: ['loading', 'error', 'status', 'loadingMsg', 'errorMsg', 'errorCallback', 'fitPage', 'theme'],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('responsive', { isMobile: 'getIsMobile' }),
     },
     watch: {
         currentWorkspace: function(newVal, oldVal) {

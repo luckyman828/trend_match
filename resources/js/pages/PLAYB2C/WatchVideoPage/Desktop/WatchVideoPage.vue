@@ -1,52 +1,12 @@
 <template>
     <div class="watch-video-page">
-        <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false" :hideTimeline="true">
-            <div
-                class="play-overlay"
-                v-if="!playerStarted"
-                :style="video.thumbnail && `background-image: url(${video.thumbnail})`"
-            >
-                <h3>Welcome to the video presentation</h3>
-                <button class="xl white" @click="onStartPlaying">
-                    <i class="far fa-play"></i>
-                    <span>Play in full-screen</span>
-                </button>
-            </div>
-            <div class="watch-overlay">
-                <div class="actions-wrapper" :class="{ show: !isPlaying }">
-                    <div class="actions">
-                        <router-link class="button pill ghost white" :to="{ name: 'selection' }">
-                            <i class="far fa-arrow-left"></i>
-                            <span>View results / Back to selection</span>
-                        </router-link>
-                    </div>
-                </div>
-                <!-- <EndedOverlay
-                    v-if="playerStatus == 'ended'"
-                    @view-cart-ins="
-                        $refs.cartSidebar.show = true
-                        $refs.cartSidebar.cartView = 'ins'
-                    "
-                />
-                <BaseLoader v-if="desiredStatus == 'playing' && playerStatus != 'playing'" />
-                <template v-if="playerStarted">
-                    <ProductDetailsSidebar />
-                    <CartSidebar ref="cartSidebar" />
-                    <PauseOverlay
-                        v-if="videoType != 'live'"
-                        :show="desiredStatus == 'paused' || playerStatus == 'ended'"
-                    />
-                    <ChatOverlay v-if="videoType == 'live'" />
-                    <PlayerControls />
-                </template> -->
-            </div>
-        </VideoPlayer>
+        <h1>I am a desktop!</h1>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import VideoPlayer from '../../../../components/common/VideoPlayer/'
+// import VideoPlayer from '../../../../components/common/VideoPlayer/'
 // import PlayerControls from './PlayerControls'
 // import ProductDetailsSidebar from './ProductDetailsSidebar/'
 // import CartSidebar from './CartSidebar/'
@@ -55,9 +15,9 @@ import VideoPlayer from '../../../../components/common/VideoPlayer/'
 // import ChatOverlay from './ChatOverlay'
 
 export default {
-    name: 'watchVideoPresentationPage',
+    name: 'watchVideoPage',
     components: {
-        VideoPlayer,
+        // VideoPlayer,
         // PlayerControls,
         // ProductDetailsSidebar,
         // CartSidebar,

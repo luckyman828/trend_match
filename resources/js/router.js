@@ -178,7 +178,7 @@ const playRoutes = [
             isFullscreen: true,
             hideCrisp: true,
         },
-        component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/Mobile/WatchVideoPage'),
+        component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/WatchVideoPage/'),
     },
 ]
 
