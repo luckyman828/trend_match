@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 
 // Define route components
 
-const routes = [
+const selectRoutes = [
     {
         path: '/login',
         name: 'login',
@@ -105,6 +105,16 @@ const routes = [
     },
     { path: '*', redirect: '/files' },
 ]
+
+const playRoutes = [
+    {
+        path: '/play/watch/:videoId',
+        name: 'play/watchVideo',
+        component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PlayB2C/WatchVideoPage'),
+    },
+]
+
+const routes = [...selectRoutes, ...playRoutes]
 
 const router = new VueRouter({
     routes, // short for `routes: routes`
