@@ -21,7 +21,7 @@
                         </router-link>
                     </div>
                 </div>
-                <EndedOverlay
+                <!-- <EndedOverlay
                     v-if="playerStatus == 'ended'"
                     @view-cart-ins="
                         $refs.cartSidebar.show = true
@@ -38,7 +38,7 @@
                     />
                     <ChatOverlay v-if="videoType == 'live'" />
                     <PlayerControls />
-                </template>
+                </template> -->
             </div>
         </VideoPlayer>
     </div>
@@ -46,24 +46,24 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import VideoPlayer from '../../../components/common/VideoPlayer/'
-import PlayerControls from './PlayerControls'
-import ProductDetailsSidebar from './ProductDetailsSidebar/'
-import CartSidebar from './CartSidebar/'
-import PauseOverlay from './PauseOverlay/'
-import EndedOverlay from './EndedOverlay'
-import ChatOverlay from './ChatOverlay'
+import VideoPlayer from '../../../../components/common/VideoPlayer/'
+// import PlayerControls from './PlayerControls'
+// import ProductDetailsSidebar from './ProductDetailsSidebar/'
+// import CartSidebar from './CartSidebar/'
+// import PauseOverlay from './PauseOverlay/'
+// import EndedOverlay from './EndedOverlay'
+// import ChatOverlay from './ChatOverlay'
 
 export default {
     name: 'watchVideoPresentationPage',
     components: {
         VideoPlayer,
-        PlayerControls,
-        ProductDetailsSidebar,
-        CartSidebar,
-        PauseOverlay,
-        EndedOverlay,
-        ChatOverlay,
+        // PlayerControls,
+        // ProductDetailsSidebar,
+        // CartSidebar,
+        // PauseOverlay,
+        // EndedOverlay,
+        // ChatOverlay,
     },
     data: function() {
         return {

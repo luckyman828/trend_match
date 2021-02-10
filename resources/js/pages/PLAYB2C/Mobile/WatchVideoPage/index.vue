@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import PageLoader from '../../../components/common/PageLoader'
+import PageLoader from '../../../../components/common/PageLoader'
 import WatchVideoPage from './WatchVideoPage'
 
 export default {

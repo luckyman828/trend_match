@@ -58,6 +58,7 @@ export default {
         }
         @media screen and (max-width: $screenSm) {
             padding: 20px;
+            padding-bottom: 80px;
         }
     }
 }
