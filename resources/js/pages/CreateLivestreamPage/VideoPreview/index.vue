@@ -282,6 +282,8 @@ export default {
         background: $bg;
         border-radius: $borderRadiusEl;
         border: $borderEl;
+        max-height: 200px;
+        overflow-y: auto;
     }
     .selection-icon {
         margin-left: 8px;

@@ -14,7 +14,7 @@
                 @pause="SET_PLAYER_STATUS('paused')"
                 @loaded="SET_PLAYER_STATUS('buffering')"
                 @ended="onEndedStatus"
-                @timeupdate="$event => onTimeupdate($event.seconds)"
+                @timeupdate="onTimeupdate"
             />
 
             <youtube
@@ -143,7 +143,8 @@ export default {
             this.SET_DESIRED_STATUS('paused')
             this.SET_CURRENT_PLAYER_TIMESTAMP(this.duration)
         },
-        onTimeupdate(timestamp) {
+        onTimeupdate(e) {
+            const timestamp = e.seconds
             this.onSetTimestamp(timestamp)
         },
         startTimerListener() {
