@@ -36,12 +36,17 @@
             </template>
 
             <template v-slot:footer>
-                <td>
+                <td class="flex-list justify" style="width: 100%">
                     <BaseButton buttonClass="primary invisible" @click="showAddSelectionsContext">
                         <i class="far fa-plus"></i>
                         <span>Add selection(s)</span>
                     </BaseButton>
+                    <BaseButton buttonClass="red invisible" @click="onDeleteChannel">
+                        <i class="far fa-trash"></i>
+                        <span>Delete channel</span>
+                    </BaseButton>
                 </td>
+                <td></td>
             </template>
         </BaseTableV2>
 
@@ -67,6 +72,21 @@
             "
             @cancel="selectionsToAdd = []"
         />
+
+        <BaseDialog
+            ref="deleteDialog"
+            type="confirm"
+            confirmColor="red"
+            confirmText="Yes, delete channel"
+            cancelText="No, keep it"
+        >
+            <div class="icon-graphic">
+                <i class="lg primary far fa-network-wired"></i>
+                <i class="lg far fa-arrow-right"></i>
+                <i class="lg dark far fa-trash"></i>
+            </div>
+            <h3>Really delete channel: {{ channel.name }}?</h3>
+        </BaseDialog>
     </div>
 </template>
 
@@ -97,7 +117,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('files', ['insertOrUpdateBroadcastChannel']),
+        ...mapActions('files', ['insertOrUpdateBroadcastChannel', 'deleteBroadcastChannel']),
         showAddSelectionsContext(e) {
             let contextMenu = this.$refs.contextMenuAddSelections
             contextMenu.show(e)
@@ -136,6 +156,10 @@ export default {
                 })
             )
             this.onUpdateChannel()
+        },
+        async onDeleteChannel() {
+            if (!(await this.$refs.deleteDialog.confirm())) return
+            this.deleteBroadcastChannel({ file: this.file, broadcastChannel: this.channel })
         },
     },
     mounted() {
