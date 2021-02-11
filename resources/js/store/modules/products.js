@@ -97,6 +97,8 @@ export default {
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
             const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
+            const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
+            const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -192,10 +194,10 @@ export default {
             }
 
             // Filter by advanced filters
-            if (getters.getHasAdvancedFilter) {
+            if (hasAdvancedFilter) {
                 productsToReturn = productsToReturn.filter(product => {
                     let include = true
-                    getters.getAdvancedFilter.forEach((filter, index) => {
+                    advancedFilters.forEach((filter, index) => {
                         // FILTER BY USER / SELECTION INPUT
                         if (filter.type == 'author') {
                             if (!filter.filter.filterType) return

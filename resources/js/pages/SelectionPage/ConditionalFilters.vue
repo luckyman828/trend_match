@@ -418,7 +418,7 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('products', ['SET_ADVANCED_FILTER']),
+        ...mapMutations('productFilters', ['SET_ADVANCED_FILTER']),
         onAddFilter() {
             this.keyFilters.push(JSON.parse(JSON.stringify(this.defaultKeyFilterObject)))
         },
