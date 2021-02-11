@@ -78,6 +78,7 @@
                 <BaseTableHeader class="title">Name</BaseTableHeader>
                 <BaseTableHeader class="budget">Budget</BaseTableHeader>
                 <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
+                <BaseTableHeader class="budget-spend-percent"></BaseTableHeader>
                 <BaseTableHeader class="currency">Currency</BaseTableHeader>
                 <BaseTableHeader class="users">Users</BaseTableHeader>
                 <BaseTableHeader class="status">Status</BaseTableHeader>
@@ -606,7 +607,7 @@ export default {
             }
         },
         async onGetSelectionLink(selectionId) {
-            const link = await this.getSelectionLink({selectionId})
+            const link = await this.getSelectionLink({ selectionId })
             this.copyToClipboard(link)
             this.SHOW_SNACKBAR({
                 msg: 'Link copied',
@@ -949,9 +950,15 @@ export default {
                     margin-left: auto;
                     text-align: right;
                 }
-                &.budget-spend {
+                &.budget-spend-percent {
                     min-width: 64px;
                     max-width: 64px;
+                    text-align: right;
+                    padding-right: 8px;
+                }
+                &.budget-spend {
+                    min-width: 100px;
+                    max-width: 100px;
                     text-align: right;
                     padding-right: 8px;
                 }

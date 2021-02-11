@@ -89,6 +89,11 @@
                 </v-popover>
             </td>
             <td class="budget-spend" :class="{ over: budgetSpendPercentage > 100 }">
+                <span v-if="selection.budget > 0">
+                    {{ separateThousands(selection.budget_spend.toFixed(0)) }} {{ selection.currency }}</span
+                >
+            </td>
+            <td class="budget-spend-percent" :class="{ over: budgetSpendPercentage > 100 }">
                 <span
                     v-if="selection.budget > 0"
                     v-tooltip="`${separateThousands(selection.budget_spend.toFixed(0))} ${selection.currency}`"
@@ -488,7 +493,8 @@ export default {
         bottom: 5px;
     }
 }
-.budget-spend {
+.budget-spend,
+.budget-spend-percent {
     font-size: 13px;
     cursor: default;
     &:hover {
