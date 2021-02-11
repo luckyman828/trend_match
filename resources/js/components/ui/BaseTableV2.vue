@@ -18,7 +18,7 @@
             <slot />
         </table>
 
-        <div class="empty flex-list center-v center-h" v-if="items.length <= 0">
+        <div class="empty flex-list center-v center-h" v-if="items && items.length <= 0">
             <slot name="empty" />
         </div>
 

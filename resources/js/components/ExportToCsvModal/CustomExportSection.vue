@@ -13,60 +13,70 @@
             />
         </div>
 
+        <div class="form-element" v-if="$route.name == 'selection' && exportTemplate">
+            <label>Filter variants</label>
+            <BaseCheckboxInputField v-model="exportTemplate.inVariantsOnly">
+                <span>IN-variants only</span>
+            </BaseCheckboxInputField>
+        </div>
+
         <div class="csv-headers-section form-section" v-if="exportTemplate">
             <h4>Template headers</h4>
-            <button class="primary ghost form-element" @click="onAddHeader">
-                <i class="far fa-plus"></i><span>Add header</span>
-            </button>
-            <Draggable class="flex-list xs flex-v form-element" v-model="exportTemplate.headers">
-                <div class="header-item flex-list sm" v-for="(header, index) in exportTemplate.headers" :key="index">
-                    <button class="ghost handle" v-tooltip="'Drag to re-position'">
-                        <i class="far fa-grip-vertical"></i>
-                    </button>
-                    <BaseInputField
-                        v-if="header.key && editIndex == index"
-                        v-model="header.name"
-                        inputClass="sm"
-                        placeholder="Write custom name"
-                        :focusOnMount="true"
-                        :selectOnFocus="true"
-                        @submit="editIndex = null"
-                    />
-                    <BaseDropdownInputField
-                        v-else
-                        type="radio"
-                        :value="header"
-                        @input="
-                            ({ key, name }) => {
-                                header.key = key
-                                header.name = name
-                            }
-                        "
-                        :options="availableCsvHeaders"
-                        :cloneOptionOnSubmit="true"
-                        placeholder="Choose header"
-                        :search="true"
-                        inputClass="sm"
-                        :actionOnBlur="'Submit'"
-                        class="header-dropdown"
-                    />
-                    <BaseButton
-                        buttonClass="invisible ghost-hover"
-                        v-tooltip="'Edit column header displayed in CSV'"
-                        @click="editIndex = index"
-                        :disabled="!header.key"
-                        disabledTooltip="You must first choose a header from the list."
+            <div class="flex-list xs flex-v form-element">
+                <Draggable v-model="exportTemplate.headers">
+                    <div
+                        class="header-item flex-list sm"
+                        v-for="(header, index) in exportTemplate.headers"
+                        :key="index"
                     >
-                        <i class="far fa-pen"></i>
-                    </BaseButton>
-                    <button class="invisible ghost-hover" @click="onRemoveHeader(index)">
-                        <i class="far fa-trash"></i>
-                    </button>
-                </div>
-            </Draggable>
-            <button class="primary ghost" @click="onAddHeader" v-if="exportTemplate.headers.length > 0">
-                <i class="far fa-plus"></i><span>Add header</span>
-            </button>
+                        <button class="ghost handle" v-tooltip="'Drag to re-position'">
+                            <i class="far fa-grip-vertical"></i>
+                        </button>
+                        <BaseInputField
+                            v-if="header.key && editIndex == index"
+                            v-model="header.name"
+                            inputClass="sm"
+                            placeholder="Write custom name"
+                            :focusOnMount="true"
+                            :selectOnFocus="true"
+                            @submit="editIndex = null"
+                        />
+                        <BaseDropdownInputField
+                            v-else
+                            type="radio"
+                            :value="header"
+                            @input="
+                                ({ key, name }) => {
+                                    header.key = key
+                                    header.name = name
+                                }
+                            "
+                            :options="availableCsvHeaders"
+                            :cloneOptionOnSubmit="true"
+                            placeholder="Choose header"
+                            :search="true"
+                            inputClass="sm"
+                            :actionOnBlur="'Submit'"
+                            class="header-dropdown"
+                        />
+                        <BaseButton
+                            buttonClass="invisible ghost-hover"
+                            v-tooltip="'Edit column header displayed in CSV'"
+                            @click="editIndex = index"
+                            :disabled="!header.key"
+                            disabledTooltip="You must first choose a header from the list."
+                        >
+                            <i class="far fa-pen"></i>
+                        </BaseButton>
+                        <button class="invisible ghost-hover" @click="onRemoveHeader(index)">
+                            <i class="far fa-trash"></i>
+                        </button>
+                    </div>
+                </Draggable>
+                <button style="margin-top: 8px" class="header-item primary ghost" @click="onAddHeader">
+                    <i class="far fa-plus"></i><span>Add header</span>
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -87,11 +97,13 @@ export default {
                 {
                     name: 'Custom',
                     rowScope: 'Variant',
+                    inVariantsOnly: false,
                     headers: [],
                 },
                 {
                     name: 'Gross list',
                     rowScope: 'Variant',
+                    inVariantsOnly: false,
                     headers: [
                         { name: 'EAN_NO', key: 'variant.ean' },
                         { name: 'STYLE_NUMBER', key: 'datasource_id' },
@@ -113,6 +125,7 @@ export default {
                 {
                     name: 'Full export',
                     rowScope: 'Variant',
+                    inVariantsOnly: false,
                     headers: [
                         { name: 'ID', key: 'datasource_id' },
                         { name: 'Name', key: 'title' },
