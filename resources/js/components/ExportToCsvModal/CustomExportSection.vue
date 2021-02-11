@@ -123,6 +123,20 @@ export default {
                     ],
                 },
                 {
+                    name: 'QTY Export',
+                    rowScope: 'Variant',
+                    inVariantsOnly: true,
+                    headers: [
+                        { name: 'ID', key: 'datasource_id' },
+                        { name: 'Name', key: 'title' },
+                        { name: 'Color', key: 'variant.color' },
+                        { name: 'Col. code ', key: 'variant.variant' },
+                        { name: 'Brand', key: 'brand' },
+                        { name: 'Labels', key: 'labels' },
+                        { name: 'Quantity', key: 'getActiveSelectionInput.quantity', scope: 'selection' },
+                    ],
+                },
+                {
                     name: 'Full export',
                     rowScope: 'Variant',
                     inVariantsOnly: false,
@@ -185,6 +199,7 @@ export default {
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
                 { name: 'Labels', key: 'labels' },
+                { name: 'Quantity', key: 'getActiveSelectionInput.quantity', scope: 'selection' },
             ]
 
             const customHeaders = this.customFields
@@ -198,7 +213,9 @@ export default {
                       }
                   })
                 : []
-            return baseHeaders.concat(customHeaders)
+
+            const allHeaders = baseHeaders.concat(customHeaders)
+            return this.$route.name == 'selection' ? allHeaders : allHeaders.filter(x => x.scope != 'selection')
         },
     },
     methods: {
