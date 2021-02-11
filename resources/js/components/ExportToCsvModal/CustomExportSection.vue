@@ -134,7 +134,7 @@ export default {
                         { name: 'Color', key: 'variant.color' },
                         { name: 'Retail price', key: 'price.recommended_retail_price' },
                         { name: 'Labels', key: 'labels' },
-                        { name: 'Quantity', key: 'getActiveSelectionInput.quantity', scope: 'selection' },
+                        { name: 'Quantity', key: 'variant.quantity', scope: 'selection' },
                     ],
                 },
                 {

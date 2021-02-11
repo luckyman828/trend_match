@@ -1183,6 +1183,19 @@ export default {
                     },
                 })
 
+                Object.defineProperty(product, 'quantity', {
+                    get: function() {
+                        const selectionInput = product.getActiveSelectionInput
+                        if (!selectionInput) return
+                        return selectionInput.quantity
+                    },
+                    set: function(value) {
+                        const selectionInput = product.getActiveSelectionInput
+                        if (!selectionInput) return
+                        selectionInput.quantity = value
+                    },
+                })
+
                 // VARIANTS
                 product.variants.forEach(variant => {
                     if (variant.imageIndex == null) {
@@ -1193,9 +1206,35 @@ export default {
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
+                    Object.defineProperty(variant, 'getActiveSelectionInput', {
+                        get: function() {
+                            const selectionInput = product.getActiveSelectionInput
+                            if (!selectionInput) return
+                            return selectionInput.variants.find(x => x.id == variant.id)
+                        },
+                        set: function(value) {
+                            const selectionInput = product.getActiveSelectionInput
+                            if (!selectionInput) return
+                            const inputVariant = selectionInput.variants.find(x => x.id == variant.id)
+                            return inputVariant.quantity
+                        },
+                    })
+
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {
                             return variant.pictures[variant.imageIndex]
+                        },
+                    })
+                    Object.defineProperty(variant, 'quantity', {
+                        get: function() {
+                            const selectionInput = variant.getActiveSelectionInput
+                            if (!selectionInput) return
+                            return selectionInput.quantity
+                        },
+                        set: function(value) {
+                            const selectionInput = variant.getActiveSelectionInput
+                            if (!selectionInput) return
+                            selectionInput.quantity = value
                         },
                     })
                 })
@@ -1288,8 +1327,11 @@ export default {
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
+                            if (allVariantsOut) {
+                                variant.action = newAction //OUT
+                            }
                             if (allVariantsOut || variant.action == 'None') {
-                                variant.action = newAction
+                                // variant.action = newAction
                                 variant.quantity = variant.totalChildrenQuantity
                             }
                             if (['Out', 'None'].includes(newAction)) {
