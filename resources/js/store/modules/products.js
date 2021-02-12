@@ -1332,7 +1332,11 @@ export default {
                             }
                             if (allVariantsOut || variant.action == 'None') {
                                 // variant.action = newAction
-                                variant.quantity = variant.totalChildrenQuantity
+                                if (variant.totalChildrenQuantity) {
+                                    variant.quantity = variant.totalChildrenQuantity
+                                } else {
+                                    variant.quantity = variant.totalFeedbackQuantity
+                                }
                             }
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction
