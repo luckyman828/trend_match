@@ -41,7 +41,10 @@ export default {
             await axios
                 .get(apiUrl)
                 .then(async response => {
-                    commit('INSERT_SELECTIONS', response.data.selections)
+                    const selections = response.data.selections
+                    await dispatch('selections/initSelections', selections, { root: true })
+                    commit('INSERT_SELECTIONS', selections)
+                    commit('selections/insertSelections', { selections, method: 'set' }, { root: true })
                     commit('INSERT_SELECTION_USERS', response.data.users)
                     products = response.data.products
                     const selectionProductInput = { selection, products }
@@ -58,6 +61,11 @@ export default {
 
             return products
         },
+        // async initSelections({  }, selections) {
+        //     selections.map(selection => {
+
+        //     })
+        // },
         async mergeProductsWithSelectionInput({ state, rootGetters, dispatch }, { selectionProductInput, authUser }) {
             const products = rootGetters['products/getAllProducts'].filter(product => {
                 return !!selectionProductInput.products.find(x => x.id == product.id)
