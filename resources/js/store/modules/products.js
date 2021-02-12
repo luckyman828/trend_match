@@ -164,6 +164,7 @@ export default {
             // Filter by custom values
             Object.keys(customDataFilters).map(filterKey => {
                 const filterValues = customDataFilters[filterKey]
+                console.log('filter values', filterValues, customDataFilters)
                 if (filterValues.length <= 0) return
                 productsToReturn = productsToReturn.filter(product =>
                     filterValues.includes(product.extra_data[filterKey])
@@ -1342,11 +1343,9 @@ export default {
                         )
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
-                            // Check if an action for the variant already exists
-                            if (variant.your_feedback == 'None' || allVariantsOut) {
-                                variant.your_feedback = newAction
+                            if (allVariantsOut) {
+                                variant.action = newAction //OUT
                             }
-                            // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
                                 variant.your_quantity = 0

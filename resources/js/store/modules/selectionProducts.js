@@ -432,7 +432,7 @@ export default {
                                         })
                                     })
                                 })
-                                return feedbacks.filter(x => x.action != 'None')
+                                return feedbacks
                             },
                         })
                         // Get the user's feedback

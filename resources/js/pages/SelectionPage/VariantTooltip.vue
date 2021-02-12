@@ -68,9 +68,8 @@
                             actionDistributionTooltipTab == 'Alignment'
                                 ? variant.totalQuantity
                                 : variant.totalFeedbackQuantity
-                        }}
-                        / {{ product.min_variant_order }}</span
-                    >
+                        }}<span v-if="product.min_variant_order">/ {{ product.min_variant_order }}</span>
+                    </span>
                 </div>
             </div>
         </div>
