@@ -97,6 +97,7 @@ export default {
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
             const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
+            const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
             // Selection Specific
@@ -162,13 +163,37 @@ export default {
             }
 
             // Filter by custom values
+
             Object.keys(customDataFilters).map(filterKey => {
+                // Get details about the key
                 const filterValues = customDataFilters[filterKey]
-                console.log('filter values', filterValues, customDataFilters)
                 if (filterValues.length <= 0) return
-                productsToReturn = productsToReturn.filter(product =>
-                    filterValues.includes(product.extra_data[filterKey])
-                )
+
+                const customField = customFields.find(field => field.name == filterKey)
+                const checkIfObjectShouldBeIncluded = object => {
+                    if (Array.isArray(object.extra_data[filterKey])) {
+                        if (object.extra_data[filterKey].find(x => filterValues.includes(x))) {
+                            return true
+                        }
+                    } else if (filterValues.includes(object.extra_data[filterKey])) {
+                        return true
+                    }
+                    return false
+                }
+
+                productsToReturn = productsToReturn.filter(product => {
+                    let include = false
+                    if (customField.belong_to == 'Variant') {
+                        product.variants.map(variant => {
+                            if (checkIfObjectShouldBeIncluded(variant)) {
+                                include = true
+                            }
+                        })
+                    } else {
+                        include = checkIfObjectShouldBeIncluded(product)
+                    }
+                    return include
+                })
             })
 
             // Filer by unread
