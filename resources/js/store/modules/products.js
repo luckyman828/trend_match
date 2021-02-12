@@ -1384,10 +1384,13 @@ export default {
                         )
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
-                            // Check if an action for the variant already exists
-                            if (variant.your_feedback == 'None' || allVariantsOut) {
-                                variant.your_feedback = newAction
+                            if (allVariantsOut) {
+                                variant.action = newAction //OUT
                             }
+                            // Check if an action for the variant already exists
+                            // if (variant.your_feedback == 'None' || allVariantsOut) {
+                            //     variant.your_feedback = newAction
+                            // }
                             // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
