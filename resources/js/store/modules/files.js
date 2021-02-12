@@ -706,7 +706,7 @@ export default {
                     commit(
                         'alerts/SHOW_SNACKBAR',
                         {
-                            msg: `Broadcast channel delete`,
+                            msg: `Broadcast channel deleted`,
                             iconClass: 'far fa-trash',
                             type: 'danger',
                         },
