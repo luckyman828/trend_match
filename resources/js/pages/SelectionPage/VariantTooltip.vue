@@ -57,6 +57,7 @@
                     v-model.number="newQuantity"
                     :selectOnFocus="true"
                     type="number"
+                    :pattern="/^[0-9]*$/"
                     :disabled="!userWriteAccess.actions.hasAccess"
                     :readOnly="!userWriteAccess.actions.hasAccess"
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
