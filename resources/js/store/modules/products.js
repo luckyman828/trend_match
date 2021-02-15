@@ -1310,12 +1310,13 @@ export default {
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.action)
                         )
+                        const allVariantsND = !selectionInput.variants.find(variant => variant.action != 'None')
 
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (allVariantsOut || variant.action == 'None') {
-                                variant.action = newAction
+                            if (allVariantsOut || allVariantsND) {
+                                variant.action = newAction //OUT
                                 variant.quantity = variant.totalChildrenQuantity
                             }
                             if (['Out', 'None'].includes(newAction)) {
@@ -1366,10 +1367,11 @@ export default {
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.your_feedback)
                         )
+                        const allVariantsND = !selectionInput.variants.find(variant => variant.your_feedback != 'None')
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
-                            if (allVariantsOut) {
-                                variant.action = newAction //OUT
+                            if (allVariantsOut || allVariantsND) {
+                                variant.your_feedback = newAction //OUT
                             }
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
