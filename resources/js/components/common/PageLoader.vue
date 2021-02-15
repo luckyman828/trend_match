@@ -1,5 +1,5 @@
 <template>
-    <div class="page-loader" :class="[{ 'fit-page': fitPage }]">
+    <div class="page-loader" :class="[{ 'fit-page': fitPage || $route.meta.isFullscreen }]">
         <!-- Error  -->
         <BaseContentLoadError
             v-if="status == 'error'"
@@ -8,7 +8,7 @@
         />
 
         <!-- Loading -->
-        <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
+        <BaseLoader class="loader" v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
 
         <!-- Success -->
         <div class="page-wrapper" :class="`theme-${theme}`" v-else>
@@ -46,6 +46,12 @@ export default {
     height: 500px;
     &.fit-page {
         height: 100%;
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
         @include mobile {
             overflow: hidden;
         }

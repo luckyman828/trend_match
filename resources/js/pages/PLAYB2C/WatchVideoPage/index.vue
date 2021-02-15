@@ -1,5 +1,5 @@
 <template>
-    <PageLoader :status="status">
+    <PageLoader :status="status" loadingMsg="Loading video">
         <template v-slot:mobile>
             <MobileWatchVideoPage />
         </template>
@@ -32,7 +32,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPresentation', ['fetchVideo']),
+        ...mapActions('videoPresentation', ['fetchVideo', 'fetchFileVideo']),
         ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('products', ['fetchProducts']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
@@ -41,7 +41,8 @@ export default {
             // Fetch video
             const videoId = this.$route.params.videoId
             const video = await this.fetchVideo(videoId)
-            this.SET_CURRENT_VIDEO(video)
+            const fileVideo = await this.fetchFileVideo(video.file.id)
+            this.SET_CURRENT_VIDEO(fileVideo)
 
             // Fetch the file products
             const fileId = video.file.id

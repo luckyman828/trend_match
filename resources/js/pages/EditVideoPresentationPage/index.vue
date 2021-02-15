@@ -40,18 +40,19 @@ export default {
     methods: {
         ...mapActions('files', ['fetchFile']),
         ...mapActions('products', ['fetchProducts']),
-        ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapActions('videoPresentation', ['fetchFileVideo', 'fetchVideo']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
         async fetchData() {
             // Fetch the current file and the products
             const fileId = this.$route.params.fileId
             this.fetchProducts({ fileId })
             const file = await this.fetchFile(fileId)
-            let fileVideo = null
+            let video = null
             if (file.video_count > 0) {
-                fileVideo = await this.fetchFileVideo(fileId)
+                video = await this.fetchFileVideo(fileId)
+                // video = await this.fetchVideo(fileVideo.video.id)
             }
-            this.SET_CURRENT_VIDEO(fileVideo)
+            this.SET_CURRENT_VIDEO(video)
             this.dataReady = true
         },
     },

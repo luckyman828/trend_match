@@ -1,5 +1,5 @@
 <template>
-    <div class="root-select">
+    <div class="root-select" :class="[{ 'full-screen': $route.meta.isFullscreen }]">
         <RootLoader v-if="isLoading" />
         <template v-else>
             <template v-if="!$route.meta.isFullscreen">
@@ -7,11 +7,9 @@
                 <TheSidebar />
             </template>
             <div class="main" id="main" ref="main" :class="{ 'hide-crisp': $route.meta.hideCrisp }">
-                <div class="inner">
-                    <transition name="fade">
-                        <router-view :key="$route.path"></router-view>
-                    </transition>
-                </div>
+                <transition name="fade">
+                    <router-view :key="$route.path"></router-view>
+                </transition>
             </div>
             <TheImageLightbox v-if="getLightboxIsVisible" />
             <TheSnackbarSpawner />
@@ -63,6 +61,7 @@ export default {
     min-height: 100vh;
     min-width: 100vw;
     max-height: 100vh;
+    height: 100vh;
     overflow: hidden;
     &:not(.full-screen) {
         display: grid;
@@ -82,16 +81,16 @@ export default {
             grid-template-columns: 52px auto;
             grid-template-rows: 52px auto;
         }
+        .main {
+            max-height: calc(100vh - #{$navbarHeight});
+            overflow-y: scroll;
+            overflow-x: auto;
+        }
     }
     .main {
-        overflow-y: scroll;
-        overflow-x: auto;
         background: $bg;
         position: relative;
-        max-height: calc(100vh - #{$navbarHeight});
-        &.hide-crisp {
-            z-index: 2;
-        }
+        height: 100%;
     }
 }
 </style>

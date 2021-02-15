@@ -327,16 +327,16 @@ input[type='submit'] {
             margin-right: 8px;
         }
     }
-    &:not(.ghost):not(.invisible) > i:not(.fa-times) {
-        &.fa,
-        &.fas,
-        &.far,
-        &.fal,
-        &.fad,
-        &.fab {
-            font-weight: 900;
-        }
-    }
+    // &:not(.ghost):not(.invisible) > i:not(.fa-times) {
+    //     &.fa,
+    //     &.fas,
+    //     &.far,
+    //     &.fal,
+    //     &.fad,
+    //     &.fab {
+    //         font-weight: 900;
+    //     }
+    // }
     > i {
         &.fa,
         &.fas,
@@ -492,9 +492,9 @@ input[type='submit'] {
         .button-hover-trigger:hover & {
             padding: 0;
             border: solid 2px $primary;
-            i:not(.fa-times):not(.fa-ellipsis-h) {
-                font-weight: 900;
-            }
+            // i:not(.fa-times):not(.fa-ellipsis-h) {
+            //     font-weight: 900;
+            // }
         }
     }
     &.invisible {
@@ -533,6 +533,9 @@ input[type='submit'] {
     border-radius: 4px;
     &.full-width {
         width: 100%;
+    }
+    &.rounded {
+        border-radius: 16px;
     }
 }
 button:not(.text-link),
@@ -1561,6 +1564,34 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
+    &.equal-width {
+        > * {
+            flex-basis: 100%;
+            &:not(:last-child) {
+                margin-right: 0;
+            }
+        }
+        &.justify {
+            > * {
+                display: flex;
+                justify-content: center;
+                &:first-child {
+                    justify-content: flex-start;
+                }
+                &:last-child {
+                    justify-content: flex-end;
+                }
+            }
+        }
+    }
+    &.equal-height {
+        > * {
+            flex-basis: 100%;
+            &:not(:last-child) {
+                margin-top: 0;
+            }
+        }
+    }
     &.center-h:not(.flex-v) {
         justify-content: center;
     }
@@ -1873,6 +1904,24 @@ body {
     th,
     strong {
         color: $font;
+    }
+}
+
+.bg-blur {
+    position: relative;
+    overflow: hidden;
+    -webkit-filter: blur(0px);
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px) brightness(80%);
+        z-index: -1;
     }
 }
 

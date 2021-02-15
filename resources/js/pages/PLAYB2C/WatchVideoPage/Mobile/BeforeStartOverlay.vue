@@ -1,22 +1,22 @@
 <template>
-    <div class="before-start" :style="video.thumbnail && `background-image: url(${video.thumbnail})`">
+    <div class="before-start-overlay" :style="video.thumbnail && `background-image: url(${video.thumbnail})`">
         <div class="overlay"></div>
-        <button class="xxl circle bg-blur" @click="$emit('start')">
-            <i class="far fa-play"></i>
+        <button class="xxl circle white invisible bg-blur" @click="$emit('start')">
+            <i class="fas fa-play"></i>
         </button>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'beforeStartScreen',
+    name: 'beforeStartOverlay',
     props: ['video'],
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.before-start {
+.before-start-overlay {
     position: fixed;
     left: 0;
     top: 0;
@@ -42,15 +42,26 @@ export default {
         color: white;
     }
     button {
-        // background: rgba(black, 0.8);
-        // backdrop-filter: blur(5px);
         border: none;
         width: 72px;
         height: 72px;
+        position: relative;
+        overflow: hidden;
         i {
             color: white;
             margin-left: 6px;
         }
+        // &::before {
+        //     content: '';
+        //     display: block;
+        //     background: rgba(black, 0.6);
+        //     backdrop-filter: blur(5px);
+        //     position: absolute;
+        //     left: 0;
+        //     top: 0;
+        //     height: 100%;
+        //     width: 100%;
+        // }
     }
 }
 </style>

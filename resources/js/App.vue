@@ -6,6 +6,7 @@
         :class="[
             { 'drag-active': dragActive },
             { 'full-screen': $route.meta.isFullscreen },
+            { 'hide-crisp': $route.meta.hideCrisp },
             { public: !isAuthenticated },
         ]"
     >
@@ -234,6 +235,11 @@ export default {
     min-width: 100vw;
     max-height: 100vh;
     overflow: hidden;
+    background: $bg;
+    position: relative;
+    &.hide-crisp {
+        z-index: 2;
+    }
     // transition: 0.3s;
     // &:not(.full-screen) {
     //     display: grid;
@@ -323,9 +329,6 @@ export default {
     background: $bg;
     position: relative;
     max-height: calc(100vh - #{$navbarHeight});
-    &.hide-crisp {
-        z-index: 2;
-    }
 }
 h1 {
     margin-bottom: 30px;
@@ -341,6 +344,9 @@ h1 {
 }
 .grid-2 {
     grid-template-columns: repeat(2, 1fr);
+}
+.grid-2 {
+    grid-template-columns: repeat(3, 1fr);
 }
 .card {
     padding: 1em;

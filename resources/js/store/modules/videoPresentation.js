@@ -35,7 +35,7 @@ export default {
 
     getters: {
         getCurrentVideoRootobject: state => state.currentVideo,
-        getCurrentVideo: state => state.currentVideo && state.currentVideo.video,
+        getCurrentVideo: state => state.currentVideo,
         getStatus: state => state.status,
         getTimingStatus: state => state.timingStatus,
         getSearchItemDragActive: state => state.searchItemDragActive,
@@ -65,7 +65,8 @@ export default {
             const apiUrl = `/files/${fileId}/video`
             let video
             await axios.get(apiUrl).then(response => {
-                video = response.data
+                video = response.data.video
+                video.timings = response.data.timings
                 // Sort the timings
                 video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
                 // Init the videos timings
@@ -141,7 +142,7 @@ export default {
         },
         async updateCurrentVideo({ getters, rootGetters, commit }) {
             const file = rootGetters['files/currentFile']
-            const video = getters.getCurrentVideoRootobject
+            const video = getters.getCurrentVideo
             const apiUrl = `/files/${file.id}/video`
 
             // Set the curent video status
@@ -159,7 +160,10 @@ export default {
             })
 
             await axios
-                .post(apiUrl, video)
+                .post(apiUrl, {
+                    video,
+                    timings: video.timings,
+                })
                 .then(response => {
                     commit('SET_STATUS', 'success')
                 })

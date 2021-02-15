@@ -49,6 +49,11 @@ export default {
             return this.extendAmount > this.extendMax
         },
     },
+    watch: {
+        show(isVisible) {
+            this.extendAmount = 0
+        },
+    },
     methods: {
         onSwipeDown() {
             this.$emit('close')
@@ -57,7 +62,9 @@ export default {
         onScrollBody(e) {
             const threshold = 20
             const scrollY = e.target.scrollTop
-            this.extendAmount = scrollY
+            if (scrollY > this.extendAmount) {
+                this.extendAmount = scrollY
+            }
             if (scrollY > threshold) {
                 this.extend = true
             } else {
@@ -96,7 +103,7 @@ export default {
         display: flex;
         flex-direction: column;
         .header {
-            padding: 20px 16px;
+            padding: 12px 16px;
             // min-height: 80px;
             &.show-shadow {
                 box-shadow: $shadowModule;

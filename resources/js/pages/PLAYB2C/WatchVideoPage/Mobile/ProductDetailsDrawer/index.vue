@@ -1,0 +1,160 @@
+<template>
+    <BaseDrawer position="bottom" :show="show" class="product-details-drawer" @close="$emit('close')">
+        <template v-slot:header v-if="product">
+            <div class="header-inner flex-list justify">
+                <div class="flex-list flex-v sm">
+                    <div class="brand">{{ product.brand }}</div>
+                    <h3 class="product-name">{{ product.name }}</h3>
+                </div>
+                <div class="price">
+                    <div class="current-price">
+                        {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}
+                    </div>
+                    <div class="old-price">
+                        {{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template v-slot:default v-if="product">
+            <div class="body-inner form-wrapper">
+                <ImageRail :variant="currentVariant" style="margin-bottom: 12px" />
+
+                <VariantRail
+                    class="form-element"
+                    :product="product"
+                    :currentVariant="currentVariant"
+                    @show-variant="$event => (currentVariant = $event)"
+                />
+
+                <div class="form-element list-item">
+                    <label>Sizes</label>
+                    <div class="size-list flex-list">
+                        <div class="square size" v-for="size in currentVariant.ean_sizes" :key="size.ean">
+                            {{ size.size }}
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Style info</h3>
+
+                <div class="form-element flex-list md">
+                    <i class="fal fa-info-circle md"></i>
+                    <div class="list-item">
+                        <label>Description</label>
+                        <span class="value description"> {{ product.sale_description }}</span>
+                    </div>
+                </div>
+
+                <div class="form-element flex-list md">
+                    <i class="fal fa-flower md"></i>
+                    <div class="list-item">
+                        <label>Composition</label>
+                        <span class="value"> {{ product.composition }}</span>
+                    </div>
+                </div>
+            </div>
+            <CallToAction :currentVariant="currentVariant" :product="product" />
+        </template>
+    </BaseDrawer>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+import ImageRail from './ImageRail'
+import VariantRail from './VariantRail'
+import CallToAction from './CallToAction'
+
+export default {
+    name: 'productDetailsDrawer',
+    components: { ImageRail, VariantRail, CallToAction },
+    props: ['show', 'product'],
+    data: function() {
+        return {
+            currentVariant: null,
+        }
+    },
+    methods: {
+        setCurrentVariant(variant) {
+            this.currentVariant = variant
+        },
+    },
+    watch: {
+        show(isVisible) {
+            if (isVisible) this.setCurrentVariant(this.product.variants[0])
+        },
+    },
+}
+</script>
+
+<style lang="scss" scoped>
+@import '~@/_variables.scss';
+
+.product-details-drawer {
+    line-height: 1.4;
+    .brand {
+        font-weight: 12px;
+        font-weight: 700;
+        color: $fontSoft;
+    }
+    .price {
+        font-size: 14px;
+        font-weight: 500;
+        text-align: right;
+        .old-price {
+            text-decoration: line-through;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+    }
+    .body-inner {
+        padding: 0 16px 100px;
+    }
+
+    .form-element {
+        margin-bottom: 40px;
+    }
+    .size {
+        background: $grey300;
+        border-color: $grey300;
+        color: $fontBody;
+        font-size: 900;
+    }
+    .list-item {
+        min-width: 72px;
+        > * {
+            display: block;
+            &:first-line {
+                line-height: 1;
+                white-space: normal;
+            }
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+            color: $bluegrey600;
+        }
+        .value {
+            font-size: 14px;
+            font-weight: 700;
+            &.description {
+                white-space: pre-line;
+                word-break: break-word;
+                &:first-line {
+                    line-height: 1.6;
+                    // white-space: normal;
+                }
+            }
+        }
+    }
+    .delivery-list {
+        width: 100%;
+        overflow: auto;
+        padding-bottom: 8px;
+        margin-bottom: 32px;
+    }
+}
+</style>
