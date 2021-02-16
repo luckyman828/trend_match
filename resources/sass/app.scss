@@ -120,6 +120,24 @@ textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
 }
+.ft-bd {
+    font-weight: 700;
+}
+.ft-md {
+    font-weight: 500;
+}
+.txt-10 {
+    font-size: 10px;
+}
+.ft-12 {
+    font-size: 12px;
+}
+.ft-14 {
+    font-size: 14px;
+}
+.ft-16 {
+    font-size: 16px;
+}
 
 // ---------- END FONTS
 
@@ -272,6 +290,32 @@ textarea {
 }
 
 // SHAPES: BUTTONS, SQUARES, PILLS, CIRCLES
+.ui-square {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    min-width: 64px;
+    min-height: 48px;
+    background: $bluegrey250;
+    border-radius: 4px;
+    @each $size in $ui-square-sizes {
+        &.#{nth($size,1)} {
+            height: nth($size, 2);
+            padding: (nth($size, 3) / 2) nth($size, 3);
+            min-width: nth($size, 4);
+        }
+    }
+    @each $color in $brand-colors {
+        &.#{nth($color,1)} {
+            background: nth($color, 2);
+            color: nth($color, 3);
+        }
+    }
+    label {
+        font-size: 10px;
+        font-weight: 500;
+    }
+}
 .hotkey-wrapper {
     display: inline-flex;
     align-items: center;
@@ -600,6 +644,13 @@ i {
             font-size: 9px;
             text-shadow: -1px -1px 0 white, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
             width: auto;
+            // COLORS
+            @each $color in $brand-colors {
+                .#{nth($color,1)} & {
+                    text-shadow: -1px -1px 0 nth($color, 2), 1px -1px 0 nth($color, 2), -1px 1px 0 nth($color, 2),
+                        1px 1px 0 nth($color, 2);
+                }
+            }
             &.pos-right {
                 right: 0;
             }
@@ -1592,14 +1643,23 @@ input::placeholder {
             }
         }
     }
-    &.center-h:not(.flex-v) {
-        justify-content: center;
+    &.flex-end-h {
+        justify-content: flex-end;
     }
-    &.center-v:not(.flex-v) {
-        align-items: center;
+    &.flex-end-v {
+        align-items: flex-end;
     }
-    &.justify:not(.flex-v) {
-        justify-content: space-between;
+    &:not(.flex-v) {
+        &.center-h {
+            justify-content: center;
+        }
+        &.center,
+        &.center-v {
+            align-items: center;
+        }
+        &.justify {
+            justify-content: space-between;
+        }
     }
     &.col-2 > * {
         width: 50%;
@@ -1910,7 +1970,11 @@ body {
 .bg-blur {
     position: relative;
     overflow: hidden;
-    -webkit-filter: blur(0px);
+    @supports (-webkit-touch-callout: none) {
+        /* CSS specific to iOS devices */
+        -webkit-filter: blur(0px);
+    }
+
     &::before {
         content: '';
         display: block;

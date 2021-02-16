@@ -1196,6 +1196,16 @@ export default {
                             return variant.pictures[variant.imageIndex]
                         },
                     })
+                    Object.defineProperty(variant, 'product', {
+                        get: function() {
+                            return product
+                        },
+                    })
+                    Object.defineProperty(variant, 'yourPrice', {
+                        get: function() {
+                            return product.yourPrice
+                        },
+                    })
                 })
             })
         },

@@ -54,7 +54,7 @@
                     </div>
                 </div>
             </div>
-            <CallToAction :currentVariant="currentVariant" :product="product" />
+            <AddToBasketSelector :item.sync="currentVariant" :show="true" />
         </template>
     </BaseDrawer>
 </template>
@@ -63,11 +63,11 @@
 import { mapGetters } from 'vuex'
 import ImageRail from './ImageRail'
 import VariantRail from './VariantRail'
-import CallToAction from './CallToAction'
+import AddToBasketSelector from '../AddToBasketSelector'
 
 export default {
     name: 'productDetailsDrawer',
-    components: { ImageRail, VariantRail, CallToAction },
+    components: { ImageRail, VariantRail, AddToBasketSelector },
     props: ['show', 'product'],
     data: function() {
         return {

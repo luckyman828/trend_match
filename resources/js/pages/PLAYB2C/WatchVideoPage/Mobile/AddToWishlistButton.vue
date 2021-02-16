@@ -1,10 +1,6 @@
 <template>
-    <button
-        class="white lg circle wishlist-button"
-        :class="{ active: currentTimingIsInWishlist }"
-        @click="onAddToWishlist"
-    >
-        <i class="fa-heart" :class="currentTimingIsInWishlist ? 'fas' : 'far'"></i>
+    <button class="white circle wishlist-button" :class="{ active: variantIsInWishlist }" @click="onAddToWishlist">
+        <i class="fa-heart" :class="variantIsInWishlist ? 'fas green' : 'far dark'"></i>
     </button>
 </template>
 
@@ -12,28 +8,33 @@
 import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'addToWishlistButton',
+    props: ['variant'],
     computed: {
         ...mapGetters('videoPlayer', {
             currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('wishlist', {
             wishlist: 'getWishlist',
+            getVariantIsInWishlist: 'getVariantIsInWishlist',
         }),
-        currentTimingIsInWishlist() {
-            return this.currentTiming && this.wishlist.find(product => product.id == this.currentTiming.product.id)
+        variantToAdd() {
+            return this.variant ? this.variant : this.currentTiming.product.variants[0]
+        },
+        variantIsInWishlist() {
+            return this.getVariantIsInWishlist(this.variantToAdd)
         },
     },
     methods: {
         ...mapMutations('wishlist', ['REMOVE_ITEM', 'ADD_ITEM']),
         onAddToWishlist() {
             // Check if we should add or remove
-            if (this.currentTimingIsInWishlist) {
+            if (this.variantIsInWishlist) {
                 // Remove
-                const index = this.wishlist.findIndex(product => product.id == this.currentTiming.product.id)
+                const index = this.wishlist.findIndex(item => item.id == this.variantToAdd.id)
                 this.REMOVE_ITEM(index)
             } else {
                 // Add
-                this.ADD_ITEM(this.currentTiming.product)
+                this.ADD_ITEM(this.variantToAdd)
             }
         },
     },

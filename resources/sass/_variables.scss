@@ -49,6 +49,7 @@ $grey900: #27416a;
 
 $bluegrey100: #edf8fc;
 $bluegrey200: #ddf0f9;
+$bluegrey250: #e4eef5;
 $bluegrey300: #c5dfed;
 $bluegrey400: #adc9db;
 $bluegrey500: #8dabc4;
@@ -97,23 +98,6 @@ $dividerWidth: 1px;
 $borderDivider: solid $dividerWidth $dividerColor;
 $darkenAmount: 10%;
 $lightenAmount: 10%;
-
-// BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state, $bgOpacity)
-$brand-colors: (
-        'primary',
-        $primary,
-        mix(white, $primary, $lightenAmount),
-        white,
-        mix($dark05, $primary, $darkenAmount),
-        1
-    ),
-    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark, 1),
-    ('green', $green500, $green400, white, $green600, 1),
-    ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount), 1),
-    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount), 1),
-    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount), 1),
-    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
-    ('black', black, mix(white, black, $lightenAmount), white, black, 0.8);
 
 $groupColors: (#3366ff), (#26abd6), (#20a720), (#b51f26), (#905b15);
 
@@ -256,3 +240,31 @@ $desktop-width: 1024px;
 
 // VIDEO & ANIMATION
 $videoPauseTransition: 0.2s ease-out;
+
+// BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state, $bgOpacity)
+$brand-colors: (
+        'primary',
+        $primary,
+        mix(white, $primary, $lightenAmount),
+        white,
+        mix($dark05, $primary, $darkenAmount),
+        1
+    ),
+    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark, 1),
+    ('green', $green500, $green400, white, $green600, 1),
+    ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount), 1),
+    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount), 1),
+    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount), 1),
+    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
+    ('black', black, mix(white, black, $lightenAmount), white, black, 0.8),
+    (
+        'light',
+        $bluegrey250,
+        mix(white, $bluegrey250, $lightenAmount),
+        $fontSoft,
+        mix($dark05, $bluegrey250, $darkenAmount),
+        1
+    );
+
+// UI SQUARE SIZES ($name, $height, $padding, $min-width)
+$ui-square-sizes: ('sm', 24px, 12px, 8px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);

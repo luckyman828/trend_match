@@ -10,7 +10,7 @@
                     <PreviewList v-if="currentTiming" />
                     <div class="top flex-list justify">
                         <button class="white lg circle"><i class="far fa-comment"></i></button>
-                        <AddToWishlistButton v-if="currentTiming" />
+                        <AddToWishlistButton class="lg" v-if="currentTiming" />
                     </div>
                     <div class="bottom flex-list equal-width justify center-v">
                         <div class="left">
@@ -24,11 +24,23 @@
                             </div>
                         </div>
                         <div class="flex-list">
-                            <button class="wishlist-count pill white">
+                            <button
+                                class="wishlist-count pill white"
+                                @click="
+                                    showSavedProductsDrawer = true
+                                    savedProductsView = 'wishlist'
+                                "
+                            >
                                 <i class="far fa-heart"></i>
                                 <span>{{ wishlist.length }}</span>
                             </button>
-                            <button class="basket-count pill white">
+                            <button
+                                class="basket-count pill white"
+                                @click="
+                                    showSavedProductsDrawer = true
+                                    savedProductsView = 'basket'
+                                "
+                            >
                                 <i class="far fa-shopping-bag"></i>
                                 <span>{{ basket.length }}</span>
                             </button>
@@ -42,16 +54,11 @@
                     :product="sidebarProduct"
                     @close="SET_SIDEBAR_PRODUCT(null)"
                 />
-                <!-- <ProductActions @show-chat="showChatInput = true" />
-                <ChatInput v-if="showChatInput" @close="showChatInput = false" />
-                <ChatArea />
-                <ProductPreview />
-                <ProductDetailsDrawer
-                    :show="!!sidebarProduct"
-                    :product="sidebarProduct"
-                    @close="SET_SIDEBAR_PRODUCT(null)"
+                <SavedStylesDrawer
+                    :show="!!showSavedProductsDrawer"
+                    :view.sync="savedProductsView"
+                    @close="showSavedProductsDrawer = false"
                 />
-                <CartDrawer /> -->
             </template>
         </VideoPlayer>
     </div>
@@ -65,8 +72,10 @@ import VideoTimeline from '../../../../components/common/VideoPlayer/VideoTimeli
 import BeforeStartOverlay from './BeforeStartOverlay'
 import VideoTitle from './VideoTitle'
 import PreviewList from './PreviewList'
-import ProductDetailsDrawer from './ProductDetailsDrawer/'
 import AddToWishlistButton from './AddToWishlistButton'
+
+import ProductDetailsDrawer from './ProductDetailsDrawer/'
+import SavedStylesDrawer from './SavedStylesDrawer/'
 
 export default {
     name: 'watchVideoPage',
@@ -77,11 +86,13 @@ export default {
         VideoTitle,
         PreviewList,
         ProductDetailsDrawer,
+        SavedStylesDrawer,
         AddToWishlistButton,
     },
     data: function() {
         return {
-            basket: [],
+            showSavedProductsDrawer: false,
+            savedProductsView: 'wishlist',
             playerStarted: false,
             showControls: true,
             showCart: false,
@@ -110,6 +121,9 @@ export default {
         }),
         ...mapGetters('wishlist', {
             wishlist: 'getWishlist',
+        }),
+        ...mapGetters('basket', {
+            basket: 'getBasket',
         }),
         currentTimingIsInWishlist() {
             return this.currentTiming && this.wishlist.find(product => product.id == this.currentTiming.product.id)
