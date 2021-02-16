@@ -1615,6 +1615,9 @@ input::placeholder {
 // FLEX-LIST
 .flex-list {
     display: flex;
+    &.flex-1 {
+        flex: 1;
+    }
     &.equal-width {
         > * {
             flex-basis: 100%;

@@ -9,7 +9,7 @@ export default {
         getBasket: state => state.basket,
         getBasketTotal: state =>
             state.basket.reduce((acc, curr) => {
-                return (acc += curr.variant.yourPrice.wholesale_price)
+                return (acc += curr.variant.yourPrice.wholesale_price * curr.qty)
             }, 0),
         getVariantIsInBasket: state => variant => state.basket.find(basketItem => basketItem.variant.id == variant.id),
         getItemIsInBasket: state => item =>
@@ -45,7 +45,7 @@ export default {
             state.basket.push({ variant, size, qty })
         },
         SET_ITEM_QTY(state, { item, qty }) {
-            item.qty = qty
+            item.qty = Math.max(qty, 0)
         },
     },
 }

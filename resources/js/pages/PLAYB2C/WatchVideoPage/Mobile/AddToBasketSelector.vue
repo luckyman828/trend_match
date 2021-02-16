@@ -6,30 +6,37 @@
         @hide="onHide"
     >
         <AddToWishlistButton v-if="!hideWishlist" class="lg" />
-        <v-popover trigger="click">
-            <button class="rounded lg white">
-                <i class="far fa-ruler"></i>
-                <span v-if="selectedSize">Size: {{ selectedSize }}</span>
-                <span v-else>Choose size</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <BaseSelectButtons
-                v-if="item"
-                header="Choose size"
-                slot="popover"
-                type="radio"
-                v-close-popover
-                :submitOnChange="true"
-                :options="item.ean_sizes"
-                optionNameKey="size"
-                optionValueKey="size"
-                v-model="selectedSize"
-            />
-        </v-popover>
-        <BaseButton buttonClass="dark rounded lg" :disabled="!selectedSize" @click="onAddToBasket">
-            <i class="far fa-shopping-bag"></i>
-            <span>Add to basket</span>
-        </BaseButton>
+        <div class="flex-list justify equal-width flex-1">
+            <v-popover trigger="click" ref="sizePopover">
+                <button class="rounded lg white full-width">
+                    <i class="far fa-ruler"></i>
+                    <span v-if="selectedSize">Size: {{ selectedSize }}</span>
+                    <span v-else>Choose size</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <BaseSelectButtons
+                    v-if="item"
+                    header="Choose size"
+                    slot="popover"
+                    type="radio"
+                    :submitOnChange="true"
+                    :options="item.ean_sizes"
+                    optionNameKey="size"
+                    optionValueKey="size"
+                    v-model="selectedSize"
+                    @change="onChangeSize"
+                />
+            </v-popover>
+            <BaseButton
+                class="full-width"
+                buttonClass="dark rounded lg full-width"
+                :disabled="!selectedSize"
+                @click="onAddToBasket"
+            >
+                <i class="far fa-shopping-bag"></i>
+                <span>Add to basket</span>
+            </BaseButton>
+        </div>
     </BaseFloatyBar>
 </template>
 
@@ -59,6 +66,12 @@ export default {
         onClickOutside() {
             if (!this.autoHide) return
             this.onHide()
+        },
+        onChangeSize(size) {
+            this.selectedSize = size
+            this.$nextTick(() => {
+                this.$refs.sizePopover.hide()
+            })
         },
     },
 }
