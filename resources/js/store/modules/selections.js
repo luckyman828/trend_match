@@ -65,6 +65,7 @@ export default {
             return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
         getSelectionChapter: (state, getters, rootState, rootGetters) => selection => {
+            if (selection.type == 'Chapter') return selection
             if (selection.parent_chapter) {
                 return selection.parent_chapter
             }
@@ -1207,7 +1208,7 @@ export default {
         },
         async initSelections({ getters, rootGetters }, selections) {
             selections.map(selection => {
-                const chapterSetIndex = selection.product_set_identifier.indexOf(':')
+                const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
                 const chatperId =
                     chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
                 Vue.set(selection, 'chapterId', chatperId)
