@@ -325,10 +325,10 @@ export default {
                 let selections
                 await axios
                     .get(apiUrl)
-                    .then(response => {
+                    .then(async response => {
                         selections = response.data
                         // Process the selections
-                        dispatch('initSelections', selections)
+                        await dispatch('initSelections', selections)
                         if (addToState) {
                             commit('insertSelections', { selections, method: 'set' })
                         }
@@ -1212,6 +1212,10 @@ export default {
                 const chatperId =
                     chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
                 Vue.set(selection, 'chapterId', chatperId)
+
+                if (!selection.your_role) {
+                    Vue.set(selection, 'your_role', selection.your_roles[0])
+                }
 
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {

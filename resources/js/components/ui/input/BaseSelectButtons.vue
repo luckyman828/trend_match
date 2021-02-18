@@ -103,6 +103,7 @@
                             <BaseRadiobox
                                 v-if="type == 'radio'"
                                 ref="selectBox"
+                                :uniqueKey="uniqueKey"
                                 :value="optionValueKey ? option[optionValueKey] : option"
                                 :modelValue="selection"
                                 v-model="selection"
@@ -113,6 +114,7 @@
                             <BaseCheckbox
                                 v-else
                                 ref="selectBox"
+                                :uniqueKey="uniqueKey"
                                 :value="optionValueKey ? option[optionValueKey] : option"
                                 :modelValue="selection"
                                 v-model="selection"
@@ -165,6 +167,7 @@
                         <BaseRadiobox
                             v-if="type == 'radio'"
                             ref="selectBox"
+                            :uniqueKey="uniqueKey"
                             :value="
                                 optionValueKey ? (optionValueKey == 'index' ? index : option[optionValueKey]) : option
                             "
@@ -174,6 +177,7 @@
                         <BaseCheckbox
                             v-else
                             ref="selectBox"
+                            :uniqueKey="uniqueKey"
                             :value="
                                 optionValueKey ? (optionValueKey == 'index' ? index : option[optionValueKey]) : option
                             "
@@ -217,6 +221,7 @@ export default {
         'optionNameKey',
         'optionValueKey',
         'optionDescriptionKey',
+        'uniqueKey',
         'search',
         'submitOnChange',
         'emitOnChange',

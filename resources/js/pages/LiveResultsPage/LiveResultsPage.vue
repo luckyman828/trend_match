@@ -38,6 +38,7 @@
                     :options="availableSelections"
                     type="checkbox"
                     placeholder="Choose Selections"
+                    uniqueKey="id"
                     v-model="selectedSelections"
                     inputClass="sm"
                     @input="onSelectedSelectionChange"
@@ -183,7 +184,7 @@ export default {
     methods: {
         ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
-        ...mapMutations('products', ['SET_FEEDBACKS']),
+        ...mapMutations('products', ['SET_FEEDBACKS', 'SET_ACTIONS']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async onNewSelectionId(selectionId) {
             this.fetchingData = true
@@ -236,6 +237,9 @@ export default {
             // Feedback
             connection.on('OnBulkFeedbackArrived', this.bulkFeedbackArrivedHandler)
             connection.on('OnFeedbackArrived', this.feedbackArrivedHandler)
+            // Alignment
+            connection.on('OnBulkAlignmentArrived', this.bulkAlignmentArrivedHandler)
+            connection.on('OnAlignmentArrived', this.alignmentArrivedHandler)
         },
         disconnectSignalR() {
             const connection = this.$connection
@@ -245,12 +249,21 @@ export default {
             // Feedback
             connection.off('OnBulkFeedbackArrived', this.bulkFeedbackArrivedHandler)
             connection.off('OnFeedbackArrived', this.feedbackArrivedHandler)
+            // Alignment
+            connection.off('OnBulkAlignmentArrived', this.bulkAlignmentArrivedHandler)
+            connection.off('OnAlignmentArrived', this.alignmentArrivedHandler)
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             this.SET_FEEDBACKS(feedbacks)
         },
         feedbackArrivedHandler(selectionId, feedback) {
             this.SET_FEEDBACKS([feedback])
+        },
+        bulkAlignmentArrivedHandler(selectionId, alignments) {
+            this.SET_ACTIONS(alignments)
+        },
+        alignmentArrivedHandler(selectionId, alignment) {
+            this.SET_ACTIONS([alignment])
         },
         onSelectedSelectionChange(newSelection) {
             const newQueryValue = newSelection.map(x => x.id).join(',')
@@ -277,7 +290,7 @@ export default {
             const querySelections = []
             selectionIdList.map(selectionId => {
                 const selection = this.availableSelections.find(x => x.id == selectionId)
-                if (selection) querySelections.push(selection)
+                if (selection && !querySelections.find(x => x.id == selection.id)) querySelections.push(selection)
             })
             this.selectedSelections = querySelections
             if (this.selectedSelections.length > 0) {
@@ -309,6 +322,13 @@ export default {
             flex: 2;
             a {
                 margin-right: 20px;
+                max-width: 25vw;
+                overflow: hidden;
+                h1 {
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
             }
             .selection-list {
                 margin-left: auto;
