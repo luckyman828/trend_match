@@ -204,13 +204,15 @@ export default {
             }
         },
         async onSubmitQuantity() {
-            let actionToSet = this.variant.action
+            let actionToSet = this.variant[this.currentAction]
             const newQty = this.newQuantity ? this.newQuantity : 0
             if (newQty <= 0) actionToSet = 'Out'
-            else if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
+            else if (newQty > 0 && ['None', 'Out'].includes(this.variant[this.currentAction])) {
+                console.log('set variant action to in', newQty, this.variant[this.currentAction])
                 actionToSet = 'In'
             }
             this.variant[this.currentQty] = newQty
+            console.log('update variant action', actionToSet)
             await this.updateVariantAction(actionToSet)
         },
     },
