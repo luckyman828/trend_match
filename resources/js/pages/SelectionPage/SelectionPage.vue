@@ -193,7 +193,11 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['products', 'productsFiltered', 'singleVisible', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['productsFiltered', 'singleVisible']),
+        ...mapGetters('selectionProducts', {
+            products: 'getProducts',
+            getActiveSelectionInput: 'getActiveSelectionInput',
+        }),
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', [
             'currentSelection',
@@ -252,8 +256,9 @@ export default {
             'INSERT_OR_UPDATE_REQUEST_COMMENT',
             'DELETE_REQUEST_COMMENT',
         ]),
-        ...mapActions('actions', ['insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
+        ...mapActions('actions', ['initActions', 'insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         ...mapActions('requests', ['initRequests', 'insertOrUpdateRequest']),
+        ...mapActions('comments', ['initComments']),
         ...mapActions('selections', ['addUsersToSelection']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
         onViewSelectionAsRole(role) {
@@ -356,10 +361,11 @@ export default {
             this.SET_PRODUCTS_COMPLETED({ selectionId, shouldBeCompleted, products })
         },
 
-        commentArrivedHandler(selectionId, comment) {
+        async commentArrivedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentArrived", selectionId, comment)
                 const product = this.products.find(x => x.id == comment.product_id)
+                await this.initComments([comment])
                 this.INSERT_OR_UPDATE_COMMENT({ selectionInput: this.getActiveSelectionInput(product), comment })
             }
         },
@@ -379,17 +385,15 @@ export default {
             // }
         },
         requestDeletedHandler(selectionId, requestIdentifier) {
-            if (requestIdentifier.author_id != this.authUser.id) {
-                // console.log("OnRequestArrived", selectionId, request)
-                const product = this.products.find(x => x.id == requestIdentifier.product_id)
-                const request = {
-                    id: requestIdentifier.request_id,
-                    author_id: requestIdentifier.author_id,
-                    product_id: requestIdentifier.product_id,
-                    selection_id: requestIdentifier.selection_id,
-                }
-                this.DELETE_REQUEST({ selectionInput: this.getActiveSelectionInput(product), request })
+            // console.log("OnRequestArrived", selectionId, request)
+            const product = this.products.find(x => x.id == requestIdentifier.product_id)
+            const request = {
+                id: requestIdentifier.request_id,
+                author_id: requestIdentifier.author_id,
+                product_id: requestIdentifier.product_id,
+                selection_id: requestIdentifier.selection_id,
             }
+            this.DELETE_REQUEST({ selectionInput: this.getActiveSelectionInput(product), request })
         },
         requestCommentArrivedHandler(selectionId, requestComment) {
             if (requestComment.author_id != this.authUser.id) {
@@ -402,13 +406,11 @@ export default {
             }
         },
         requestCommentDeletedHandler(selectionId, requestComment) {
-            if (requestComment.author_id != this.authUser.id) {
-                const requestProduct = this.products.find(
-                    product => !!product.requests.find(x => x.id == requestComment.request_id)
-                )
-                const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
-                this.DELETE_REQUEST_COMMENT({ request, comment: requestComment })
-            }
+            const requestProduct = this.products.find(
+                product => !!product.requests.find(x => x.id == requestComment.request_id)
+            )
+            const request = requestProduct.requests.find(x => x.id == requestComment.request_id)
+            this.DELETE_REQUEST_COMMENT({ request, comment: requestComment })
         },
         bulkFeedbackArrivedHandler(selectionId, feedbacks) {
             if (feedbacks[0].user_id != this.authUser.id) {

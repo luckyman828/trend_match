@@ -46,7 +46,8 @@ export default {
     },
     methods: {
         ...mapActions('files', ['fetchFile']),
-        ...mapActions('products', ['fetchProducts', 'fetchSelectionProducts']),
+        ...mapActions('products', ['fetchProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapMutations('products', ['SET_SELECTIONS_AVAILABLE_FOR_INPUT_FILTERING']),
         ...mapActions('selections', [
             'fetchSelection',

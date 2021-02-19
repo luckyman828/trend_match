@@ -57,6 +57,7 @@
                     v-model.number="newQuantity"
                     :selectOnFocus="true"
                     type="number"
+                    :pattern="/^[0-9]*$/"
                     :disabled="!userWriteAccess.actions.hasAccess"
                     :readOnly="!userWriteAccess.actions.hasAccess"
                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
@@ -68,9 +69,8 @@
                             actionDistributionTooltipTab == 'Alignment'
                                 ? variant.totalQuantity
                                 : variant.totalFeedbackQuantity
-                        }}
-                        / {{ product.min_variant_order }}</span
-                    >
+                        }}<span v-if="product.min_variant_order">/ {{ product.min_variant_order }}</span>
+                    </span>
                 </div>
             </div>
         </div>
@@ -163,7 +163,7 @@ export default {
                 this.newQuantity = 0
             }
             let currentAction
-            let newProductAction
+            let newProductAction = newAction
 
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None
@@ -204,10 +204,10 @@ export default {
             }
         },
         async onSubmitQuantity() {
-            let actionToSet = this.variant.action
+            let actionToSet = this.variant[this.currentAction]
             const newQty = this.newQuantity ? this.newQuantity : 0
             if (newQty <= 0) actionToSet = 'Out'
-            else if (newQty > 0 && ['None', 'Out'].includes(this.variant.action)) {
+            else if (newQty > 0 && ['None', 'Out'].includes(this.variant[this.currentAction])) {
                 actionToSet = 'In'
             }
             this.variant[this.currentQty] = newQty

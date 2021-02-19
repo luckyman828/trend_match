@@ -1282,7 +1282,7 @@ export default {
         document.body.addEventListener('keydown', this.hotkeyHandler)
         // Save an initial reference to the product we are going to edit
         if (this.currentProduct) {
-            this.productToEdit = JSON.parse(JSON.stringify(this.currentProduct))
+            this.productToEdit = Object.assign({}, this.currentProduct)
         }
     },
     destroyed() {

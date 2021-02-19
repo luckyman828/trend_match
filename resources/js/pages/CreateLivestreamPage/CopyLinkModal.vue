@@ -39,7 +39,7 @@ export default {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async onCopySelectionLink(selection) {
             this.fetchingFrom.push(selection.id)
-            const link = await this.getSelectionLink(selection.id)
+            const link = await this.getSelectionLink({ selectionId: selection.id, openDashboard: true })
             this.copyToClipboard(link)
             this.SHOW_SNACKBAR({
                 msg: 'Link copied',

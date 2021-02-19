@@ -1,21 +1,24 @@
 <template>
-    <div class="item context-menu-item"
-    :class="[disabled && 'disabled no-close', {'has-submenu': hasSubmenu}]" tabindex="0"
-    ref="contextMenuItem" :id="id"
-    v-tooltip="{content: disabled && disabledTooltip || tooltip, container: `#${id}`}"
-    @click="onClick"
-    @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
-
+    <div
+        class="item context-menu-item"
+        :class="[disabled && 'disabled no-close', { 'has-submenu': hasSubmenu }]"
+        tabindex="0"
+        ref="contextMenuItem"
+        :id="id"
+        v-tooltip="{ content: (disabled && disabledTooltip) || tooltip, container: `#${id}` }"
+        @click="onClick"
+        @mouseenter="onMouseEnter"
+        @mouseleave="onMouseLeave"
+    >
         <!-- Item content -->
         <div class="item-content">
             <div class="icon-wrapper"><i :class="iconClass"></i></div>
-            <slot/>
+            <slot />
         </div>
 
         <!-- Submenu -->
-        <div class="submenu" v-if="submenuVisible"
-        ref="submenu">
-            <slot name="submenu"/>
+        <div class="submenu" v-if="submenuVisible" ref="submenu">
+            <slot name="submenu" />
         </div>
     </div>
 </template>
@@ -23,21 +26,20 @@
 <script>
 export default {
     name: 'BaseContextMenuItem',
-    props: [
-        'iconClass',
-        'disabled',
-        'disabledTooltip',
-        'tooltip',
-        'hotkey',
-    ],
-    data: function() { return {
-        submenuVisible: false,
-        id: 'id-'+this.$uuid.v4(),
-        contextMenuParent: null
-    }},
+    props: ['iconClass', 'disabled', 'disabledTooltip', 'tooltip', 'hotkey'],
+    data: function() {
+        return {
+            submenuVisible: false,
+            id: 'id-' + this.$uuid.v4(),
+            contextMenuParent: null,
+        }
+    },
     computed: {
         hasSubmenu() {
             return !!this.$scopedSlots.submenu
+        },
+        parentPopover() {
+            return this.$el.closest('.popover')
         },
     },
     methods: {
@@ -49,8 +51,18 @@ export default {
             }
             this.findParentContextMenu(parent)
         },
+        findParentContextMenu($vm) {
+            const parent = $vm.$parent
+            if (parent.$options.name == 'contextMenu') {
+                this.contextMenuParent = parent
+                return
+            }
+            this.findParentContextMenu(parent)
+        },
         onFireAction(e) {
             if (this.disabled) return
+            if (this.contextMenuParent && !this.contextMenuParent.visible && !this.contextMenuParent.inline) return
+            if (this.parentPopover && !this.parentPopover.classList.contains('open')) return
             this.$emit('click', e)
             this.$emit('action', e)
             this.closeContextMenu()
@@ -86,7 +98,7 @@ export default {
             this.onFireAction()
         },
         hotkeyHandler(e) {
-            if (e.code == this.hotkey || Array.isArray(this.hotkey) && this.hotkey.includes(e.code)) {
+            if (e.code == this.hotkey || (Array.isArray(this.hotkey) && this.hotkey.includes(e.code))) {
                 if (this.hasSubmenu) {
                     if (!this.submenuVisible) {
                         this.showSubmenu()
@@ -118,7 +130,7 @@ export default {
     },
     destroyed() {
         if (this.hotkey) document.removeEventListener('keyup', this.hotkeyHandler)
-    }
+    },
 }
 </script>
 
@@ -137,7 +149,8 @@ export default {
     }
     &:not(.item-wrapper) {
         cursor: pointer;
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
             background: $light1;
             outline: none;
         }
@@ -157,7 +170,7 @@ export default {
         cursor: default;
         pointer-events: all;
         .item-content {
-            opacity: .7;
+            opacity: 0.7;
         }
     }
     .submenu {

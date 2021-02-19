@@ -5,7 +5,11 @@
     >
         <div class="video-presentation-wrapper">
             <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false" :hideTimeline="true">
-                <div class="play-overlay" v-if="!playerStarted" :style="`background-image: url(${video.thumbnail})`">
+                <div
+                    class="play-overlay"
+                    v-if="!playerStarted"
+                    :style="video.thumbnail && `background-image: url(${video.thumbnail})`"
+                >
                     <h3>Welcome to the video presentation</h3>
                     <button class="xl white" @click="onStartPlaying">
                         <i class="far fa-play"></i>
@@ -140,7 +144,7 @@ export default {
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
         ...mapActions('videoPlayer', ['togglePlaying']),
-        ...mapMutations('videoPresentation', ['ADD_TIMING']),
+        ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_VIDEO_TIMINGS']),
         onEnterFullscreen() {
             const elem = document.documentElement
             if (elem.requestFullscreen) {
@@ -169,30 +173,10 @@ export default {
                 }
             }, interval)
         },
-        async onNewProduct(productId) {
-            // Find the new start
-            const newStart = Math.round(this.videoDuration)
-
-            // Add the new timing
-            const newTiming = {
-                start_at_ms: newStart,
-                end_at_ms: Math.ceil(this.videoDuration + 5),
-                product_id: productId,
-            }
-            await this.initTimings([newTiming])
-            // Stop the current timing if any
-            if (this.currentTiming) {
-                this.currentTiming.end_at_ms = newStart - 5
-            }
-            this.ADD_TIMING({ timing: newTiming, index: null })
-        },
         async presentationChangeHandler(eventName, args) {
             // Filter out selection not the current
             if (!args.selection_ids.includes(this.selection.id)) return
-            if (eventName == 'ProductChanged' && this.isLive) {
-                const productId = args.detail[0].product_id
-                this.onNewProduct(productId)
-            }
+
             if (eventName == 'Terminate') {
                 // Alert the user and then send them to their results
                 await this.$refs.streamEndedDialog.confirm()
@@ -204,12 +188,21 @@ export default {
                 this.$router.go()
             }
         },
+        async videoTimingsUpdatedHandler(videoId, videoTimings) {
+            if (this.video.id != videoId) return
+
+            // Replace the last 2 timings with the new timings
+            const newTimings = videoTimings.slice(videoTimings.length - 2)
+            await this.initTimings(newTimings)
+            this.videoTimings.splice(this.videoTimings.length - 1, 1, ...newTimings)
+        },
         connectToLiveUpdates() {
             const connection = this.$connection
 
             // Subscribe to our selections
             connection.invoke('Subscribe', this.selection.id)
             connection.on('OnSelectionPresentationChanged', this.presentationChangeHandler)
+            connection.on('OnVideoTimingsUpdated', this.videoTimingsUpdatedHandler)
 
             this.isConnectedToLiveUpdates = true
         },
@@ -218,6 +211,7 @@ export default {
 
             this.$connection.invoke('UnSubscribeAll')
             connection.off('OnSelectionPresentationChanged', this.presentationChangeHandler)
+            connection.off('OnVideoTimingsUpdated', this.videoTimingsUpdatedHandler)
 
             this.isConnectedToLiveUpdates = false
         },
@@ -277,7 +271,7 @@ export default {
     width: 100%;
     z-index: 2;
     overflow: hidden;
-    pointer-events: none;
+    pointer-events: none !important;
     .actions-wrapper {
         pointer-events: auto;
         position: absolute;
@@ -308,7 +302,7 @@ export default {
     top: 0;
     height: 100%;
     width: 100%;
-    z-index: 1;
+    z-index: 3;
     overflow: hidden;
     pointer-events: none;
     justify-content: center;

@@ -1,6 +1,6 @@
 <template>
     <BaseModal classes="dialog" :show="visible" @close="hide">
-        <div class="body">
+        <div class="body flex-list flex-v md">
             <slot />
         </div>
         <div class="actions">

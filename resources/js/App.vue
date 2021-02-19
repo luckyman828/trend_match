@@ -26,7 +26,7 @@
     <div
         class="app"
         id="app-component"
-        v-else-if="!error"
+        v-else-if="!error || error.status == 401"
         :class="[
             { 'hide-nav': hideNav, 'drag-active': dragActive },
             { 'full-screen': fullScreenContent },
@@ -49,10 +49,6 @@
                     v-else
                     :style="`background-image: url(/images/pexels-andrew-neel-3178875.jpg); filter: brightness(0.5);`"
                 ></div>
-                <!-- <template v-else>
-                    <img src="/images/graphs.svg" class="bg-left" />
-                    <img src="/images/graphs.svg" class="bg-right" />
-                </template> -->
             </template>
             <div class="inner">
                 <img
@@ -142,6 +138,7 @@ export default {
                 'mobileVideoPresentation',
                 'mobileVideoViewer',
                 'results',
+                'liveResults',
             ].includes(this.$route.name)
         },
         hideCrisp() {
@@ -151,6 +148,7 @@ export default {
                 'watchVideoPresentation',
                 'editVideoPresentation',
                 'mobileVideoPresentation',
+                'liveResults',
             ].includes(this.$route.name)
         },
     },
@@ -166,9 +164,9 @@ export default {
             }
         },
         // Watch for workspace changes
-        currentWorkspaceIndex: function(newVal) {
+        currentWorkspaceIndex(newVal, oldVal) {
             // If we are in a selection -> send us back to files
-            if (this.$route.name == 'selection' || this.$route.name == 'editFile') {
+            if (oldVal != null && (this.$route.name == 'selection' || this.$route.name == 'editFile')) {
                 this.$router.push({ name: 'files' })
             }
         },
@@ -187,6 +185,7 @@ export default {
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
+        ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async initWorkspace() {
             // Get workspaces
@@ -232,7 +231,6 @@ export default {
             connection.on('AuthenticatedSuccess', message => {})
 
             connection.on('OnSelectionPresentationChanged', (eventName, args) => {
-                // console.log('on selection oresentqito', eventName, args)
                 args.selection_ids.map(async id => {
                     const selection = this.getSelectionById(id)
                     const presentationGroupId = args.detail.find(x => x.selection_id == id).presentation_group_id
@@ -295,7 +293,6 @@ export default {
                     this.scrollDir = 'down'
                     this.scrollRef = scrollDist
                 }
-                // console.log('scroll down')
                 // Check if we have scrolled further than the threshold
                 if (scrollDist > this.scrollRef + threshold && !this.hideNav) {
                     this.hideNav = true
@@ -320,21 +317,16 @@ export default {
         // Set up a request intercepter that checks if the user is still authenticated
         axios.interceptors.response.use(
             response => response,
-            error => {
+            async error => {
                 if (this.$route.name != 'login') {
                     if (!!error.response && error.response.status === 401) {
+                        console.log('log out the user')
                         // if you ever get an unauthorized, logout the user
-                        this.logout()
+                        await this.logout()
+                        this.error = null
+                        this.SET_NEXT_URL(this.$route.fullPath)
                     }
                 }
-                // if (!!error.response && error.response.status === 404) {
-                //     this.SHOW_SNACKBAR({
-                //         msg: `You dont have access to any workspaces.`,
-                //         type: 'warning',
-                //         iconClass: 'fa-exclamation-triangle',
-                //         duration: 10000, // 10 seconds
-                //     })
-                // }
                 return Promise.reject(error.response)
             }
         )

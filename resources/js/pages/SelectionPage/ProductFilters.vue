@@ -17,8 +17,8 @@
                         @click="showAdvancedFilters = false"
                     >
                         <span>Category</span>
-                        <span v-if="selectedCategories.length > 0" class="filter-counter circle primary xs">
-                            <span>{{ selectedCategories.length }}</span>
+                        <span v-if="filterCategories.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterCategories.length }}</span>
                         </span>
                     </BaseContextMenuItem>
                     <template slot="popover">
@@ -26,7 +26,7 @@
                             style="width: 200px; padding-top: 8px;"
                             submitOnChange="true"
                             :options="availableCategories"
-                            v-model="selectedCategories"
+                            v-model="filterCategories"
                         />
                     </template>
                 </v-popover>
@@ -41,8 +41,8 @@
                         @click="showAdvancedFilters = false"
                     >
                         <span>Delivery</span>
-                        <span v-if="selectedDeliveryDates.length > 0" class="filter-counter circle primary xs">
-                            <span>{{ selectedDeliveryDates.length }}</span>
+                        <span v-if="filterDeliveryDates.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterDeliveryDates.length }}</span>
                         </span>
                     </BaseContextMenuItem>
                     <template slot="popover">
@@ -50,7 +50,7 @@
                             submitOnChange="true"
                             :displayFunction="getPrettyDate"
                             :options="availableDeliveryDates"
-                            v-model="selectedDeliveryDates"
+                            v-model="filterDeliveryDates"
                         />
                     </template>
                 </v-popover>
@@ -65,12 +65,12 @@
                         @click="showAdvancedFilters = false"
                     >
                         <span>Brand</span>
-                        <span v-if="selectedBrands.length > 0" class="filter-counter circle primary xs">
-                            <span>{{ selectedBrands.length }}</span>
+                        <span v-if="filterBrands.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterBrands.length }}</span>
                         </span>
                     </BaseContextMenuItem>
                     <template slot="popover">
-                        <BaseSelectButtons submitOnChange="true" :options="availableBrands" v-model="selectedBrands" />
+                        <BaseSelectButtons submitOnChange="true" :options="availableBrands" v-model="filterBrands" />
                     </template>
                 </v-popover>
             </div>
@@ -84,15 +84,15 @@
                         @click="showAdvancedFilters = false"
                     >
                         <span>Buyer group</span>
-                        <span v-if="selectedBuyerGroups.length > 0" class="filter-counter circle primary xs">
-                            <span>{{ selectedBuyerGroups.length }}</span>
+                        <span v-if="filterBuyerGroups.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterBuyerGroups.length }}</span>
                         </span>
                     </BaseContextMenuItem>
                     <template slot="popover">
                         <BaseSelectButtons
                             submitOnChange="true"
                             :options="availableBuyerGroups"
-                            v-model="selectedBuyerGroups"
+                            v-model="filterBuyerGroups"
                         />
                     </template>
                 </v-popover>
@@ -100,7 +100,32 @@
 
             <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
-            <div class="item-group" v-if="$route.name == 'selection'">
+            <div class="item-group" v-if="availableProductLabels.length > 0 || filterableProductLabels.length > 0">
+                <v-popover trigger="click" :disabled="filterableProductLabels.length <= 0" placement="right">
+                    <BaseContextMenuItem
+                        iconClass="far fa-tag"
+                        :disabled="filterableProductLabels.length <= 0"
+                        disabledTooltip="No product labels available"
+                        @click="showAdvancedFilters = false"
+                    >
+                        <span>Product label</span>
+                        <span v-if="filterProductLabels.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterProductLabels.length }}</span>
+                        </span>
+                    </BaseContextMenuItem>
+                    <template slot="popover">
+                        <BaseSelectButtons
+                            submitOnChange="true"
+                            :options="productLabels"
+                            v-model="filterProductLabels"
+                            optionValueKey="value"
+                            optionNameKey="name"
+                        />
+                    </template>
+                </v-popover>
+            </div>
+
+            <div class="item-group" v-if="$route.name == 'selection' && (filterableTicketLabels > 0 || ticketsEnabled)">
                 <v-popover trigger="click" :disabled="filterableTicketLabels.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-tag"
@@ -109,16 +134,12 @@
                         @click="showAdvancedFilters = false"
                     >
                         <span>Ticket label</span>
-                        <span v-if="selectedTicketLabels.length > 0" class="filter-counter circle primary xs">
-                            <span>{{ selectedTicketLabels.length }}</span>
+                        <span v-if="filterTicketLabels.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterTicketLabels.length }}</span>
                         </span>
                     </BaseContextMenuItem>
                     <template slot="popover">
-                        <BaseSelectButtons
-                            submitOnChange="true"
-                            :options="ticketLabels"
-                            v-model="selectedTicketLabels"
-                        />
+                        <BaseSelectButtons submitOnChange="true" :options="ticketLabels" v-model="filterTicketLabels" />
                     </template>
                 </v-popover>
             </div>
@@ -152,9 +173,9 @@
             <div
                 class="item-group"
                 v-if="
-                    selectedCategories.length > 0 ||
-                        selectedDeliveryDates.length > 0 ||
-                        selectedBuyerGroups.length > 0 ||
+                    filterCategories.length > 0 ||
+                        filterDeliveryDates.length > 0 ||
+                        filterBuyerGroups.length > 0 ||
                         getHasAdvancedFilter
                 "
             >
@@ -185,7 +206,7 @@ export default {
         ConditionalFilters,
         CustomProductDataFilter,
     },
-    props: ['distributionScope'],
+    props: ['distributionScope', 'ticketsEnabled'],
     data: function() {
         return {
             advancedFilterKey: 0,
@@ -196,81 +217,87 @@ export default {
     computed: {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
+            availableProductLabels: 'getAvailableProductLabels',
         }),
         ticketLabels() {
             return ['no label'].concat(this.filterableTicketLabels)
         },
-        ...mapGetters('products', [
-            'products',
+        productLabels() {
+            return ['no label'].concat(this.filterableProductLabels).map((label, index) => {
+                return { name: `${index} - ${label}`, value: label }
+            })
+        },
+        ...mapGetters('products', ['products']),
+        ...mapGetters('productFilters', [
             'availableCategories',
             'availableDeliveryDates',
             'availableBuyerGroups',
             'availableBrands',
             'getHasAdvancedFilter',
             'getAdvancedFilter',
-            'getSelectedTicketLabels',
+            'getFilterTicketLabels',
             'getAllCustomValueFilters',
+            'getAdvancedFilterCount',
+            'getCustomValueFilterCount',
         ]),
-        selectedCategories: {
+        filterCategories: {
             get() {
-                return this.$store.getters['products/selectedCategories']
+                return this.$store.getters['productFilters/getFilterCategories']
             },
             set(value) {
-                this.updateSelectedCategories(value)
+                this.SET_FILTER_CATEGORIES(value)
             },
         },
-        selectedDeliveryDates: {
+        filterDeliveryDates: {
             get() {
-                return this.$store.getters['products/selectedDeliveryDates']
+                return this.$store.getters['productFilters/getFilterDeliveryDates']
             },
             set(value) {
-                this.updateSelectedDeliveryDates(value)
+                this.SET_FILTER_DELIVERY_DATES(value)
             },
         },
-        selectedBuyerGroups: {
+        filterBuyerGroups: {
             get() {
-                return this.$store.getters['products/selectedBuyerGroups']
+                return this.$store.getters['productFilters/getFilterBuyerGroups']
             },
             set(value) {
-                this.updateSelectedBuyerGroups(value)
+                this.SET_FILTER_BUYER_GROUPS(value)
             },
         },
-        selectedBrands: {
+        filterBrands: {
             get() {
-                return this.$store.getters['products/selectedBrands']
+                return this.$store.getters['productFilters/getFilterBrands']
             },
             set(value) {
-                this.SET_SELECTED_BRANDS(value)
+                this.SET_FILTER_BRANDS(value)
             },
         },
-        selectedTicketLabels: {
+        filterProductLabels: {
             get() {
-                return this.$store.getters['products/getSelectedTicketLabels']
+                return this.$store.getters['productFilters/getFilterProductLabels']
             },
             set(value) {
-                this.SET_SELECTED_TICKET_LABELS(value)
+                this.SET_FILTER_PRODUCT_LABELS(value)
             },
         },
-        selectedTicketLabels: {
+        filterTicketLabels: {
             get() {
-                return this.$store.getters['products/getSelectedTicketLabels']
+                return this.$store.getters['productFilters/getFilterTicketLabels']
             },
             set(value) {
-                this.SET_SELECTED_TICKET_LABELS(value)
+                this.SET_FILTER_TICKET_LABELS(value)
             },
         },
         activeFiltersCount() {
-            const advancedFilterCount = this.getAdvancedFilter ? this.getAdvancedFilter.length : 0
-            const customValueFilterCount = Object.keys(this.getAllCustomValueFilters).reduce((acc, curr) => {
-                return (acc += this.getAllCustomValueFilters[curr].length)
-            }, 0)
             return (
-                this.selectedBuyerGroups.length +
-                this.selectedCategories.length +
-                this.selectedDeliveryDates.length +
-                this.selectedTicketLabels.length +
-                advancedFilterCount +
-                customValueFilterCount
+                this.filterBuyerGroups.length +
+                this.filterCategories.length +
+                this.filterDeliveryDates.length +
+                this.filterBrands.length +
+                this.filterProductLabels.length +
+                this.filterTicketLabels.length +
+                this.getCustomValueFilterCount +
+                this.getAdvancedFilterCount
             )
         },
         filterableTicketLabels() {
@@ -285,23 +312,36 @@ export default {
             })
             return labels
         },
+        filterableProductLabels() {
+            const labels = []
+            this.products.map(product => {
+                if (!product.labels) return
+                product.labels.map(label => {
+                    const alreadyAdded = labels.includes(label)
+                    if (!alreadyAdded) labels.push(label)
+                })
+            })
+            return labels
+        },
     },
     methods: {
-        ...mapMutations('products', [
-            'updateSelectedCategories',
-            'updateSelectedDeliveryDates',
-            'updateSelectedBuyerGroups',
-            'SET_SELECTED_TICKET_LABELS',
-            'SET_SELECTED_BRANDS',
+        ...mapMutations('productFilters', [
+            'SET_FILTER_CATEGORIES',
+            'SET_FILTER_DELIVERY_DATES',
+            'SET_FILTER_BUYER_GROUPS',
+            'SET_FILTER_PRODUCT_LABELS',
+            'SET_FILTER_TICKET_LABELS',
+            'SET_FILTER_BRANDS',
             'SET_ADVANCED_FILTER',
             'RESET_CUSTOM_FILTERS',
         ]),
         resetFilters() {
-            this.selectedCategories = []
-            this.selectedDeliveryDates = []
-            this.selectedBrands = []
-            this.selectedBuyerGroups = []
-            this.SET_SELECTED_TICKET_LABELS([])
+            this.filterCategories = []
+            this.filterDeliveryDates = []
+            this.filterBrands = []
+            this.filterBuyerGroups = []
+            this.filterTicketLabels = []
+            this.filterProductLabels = []
             this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
             this.RESET_CUSTOM_FILTERS()

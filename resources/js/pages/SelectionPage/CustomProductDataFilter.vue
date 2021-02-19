@@ -8,15 +8,15 @@
                 @click="showAdvancedFilters = false"
             >
                 <span>{{ field.display_name }}</span>
-                <span v-if="selectedCustomFieldValues.length > 0" class="filter-counter circle primary xs">
-                    <span>{{ selectedCustomFieldValues.length }}</span>
+                <span v-if="filterCustomFieldValues.length > 0" class="filter-counter circle primary xs">
+                    <span>{{ filterCustomFieldValues.length }}</span>
                 </span>
             </BaseContextMenuItem>
             <template slot="popover">
                 <BaseSelectButtons
                     submitOnChange="true"
                     :options="availableCustomFieldValues"
-                    v-model="selectedCustomFieldValues"
+                    v-model="filterCustomFieldValues"
                 />
             </template>
         </v-popover>
@@ -31,11 +31,13 @@ export default {
     computed: {
         ...mapGetters('products', {
             products: 'products',
-            getSelectedCustomFieldValues: 'getSelectedCustomFieldValues',
         }),
-        selectedCustomFieldValues: {
+        ...mapGetters('productFilters', {
+            getFilterCustomFieldValues: 'getFilterCustomFieldValues',
+        }),
+        filterCustomFieldValues: {
             get() {
-                return this.getSelectedCustomFieldValues(this.field.name)
+                return this.getFilterCustomFieldValues(this.field.name)
             },
             set(value) {
                 this.onSetSelected(value)
@@ -43,19 +45,36 @@ export default {
         },
         availableCustomFieldValues() {
             const unique = []
-            this.products.map(product => {
-                const value = product.extra_data[this.field.name]
+            const getUniqueValue = sourceObject => {
+                const value = sourceObject.extra_data[this.field.name]
                 if (!value) return
-                const alreadyAdded = !!unique.find(x => x == value)
-                if (!alreadyAdded) unique.push(value)
+                if (Array.isArray(value)) {
+                    value.map(arrayValue => {
+                        const alreadyAdded = !!unique.find(x => x == arrayValue)
+                        if (!alreadyAdded) unique.push(arrayValue)
+                    })
+                } else {
+                    const alreadyAdded = !!unique.find(x => x == value)
+                    if (!alreadyAdded) unique.push(value)
+                }
+            }
+
+            this.products.map(product => {
+                if (this.field.belong_to != 'Variant') {
+                    getUniqueValue(product)
+                } else {
+                    product.variants.map(variant => {
+                        getUniqueValue(variant)
+                    })
+                }
             })
             return unique
         },
     },
     methods: {
-        ...mapMutations('products', ['SET_SELECTED_CUSTOM_FIELD_VALUES']),
+        ...mapMutations('productFilters', ['SET_FILTER_CUSTOM_FIELD_VALUES']),
         onSetSelected(value) {
-            this.SET_SELECTED_CUSTOM_FIELD_VALUES({ field: this.field.name, value })
+            this.SET_FILTER_CUSTOM_FIELD_VALUES({ field: this.field.name, value })
         },
     },
 }

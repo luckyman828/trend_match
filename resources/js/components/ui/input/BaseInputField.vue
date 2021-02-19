@@ -9,6 +9,7 @@
             { 'has-label': label },
             { 'has-inner-label': innerLabel },
             { 'has-icon-right': !!$slots.default },
+            inputClass,
         ]"
     >
         <div
@@ -35,6 +36,7 @@
                 @focus="onFocus"
                 @keydown.esc="onCancel"
                 @keydown.enter="onSubmit"
+                @keydown="onKeydown"
             />
             <div class="icon-right">
                 <slot :onCancel="onCancel" :onSubmit="onSubmit" />
@@ -73,6 +75,7 @@ export default {
         'focusOnMount',
         'actionOnBlur',
         'innerLabel',
+        'pattern',
     ],
     computed: {
         inputField() {
@@ -120,6 +123,32 @@ export default {
             this.initialValue = this.value
             this.$emit('input', this.initialValue)
             this.$emit('submit', this.initialValue)
+        },
+        onKeydown(e) {
+            if (!this.pattern) return
+            // Allow navigation and deleting
+            const key = e.key
+            const allowedKeys = [
+                'Backspace',
+                'Delete',
+                'ArrowLeft',
+                'ArrowRight',
+                'ArrowUp',
+                'ArrowDown',
+                'Shift',
+                'Control',
+                'Alt',
+                'Meta',
+                'Escape',
+                'Tab',
+            ]
+            const passesPattern = !this.pattern || this.pattern.test(key)
+            // If we fail the check
+            if (!allowedKeys.includes(key) && !passesPattern) {
+                e.preventDefault()
+                e.stopPropagation()
+                return
+            }
         },
     },
     mounted() {
@@ -184,6 +213,16 @@ export default {
             overflow: hidden;
             width: calc(100% - 32px);
             text-overflow: ellipsis;
+        }
+        &.sm,
+        &.small {
+            .input-wrapper {
+                padding-top: 8px;
+            }
+            .inner-label {
+                top: 0;
+                font-size: 8px;
+            }
         }
     }
     &.error {

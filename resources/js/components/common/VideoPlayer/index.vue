@@ -1,68 +1,68 @@
 <template>
-    <div class="player-wrapper" :class="{ 'drag-active': isDragging }">
-        <vimeo-player
-            v-if="provider == 'vimeo'"
-            ref="player"
-            class="player"
-            :videoId="providerVideoId"
-            :videoUrl="isVimeoPrivateLink ? providerVideoId : null"
-            :controls="false"
-            :autoplay="autoplay"
-            @ready="onPlayerReady"
-            @play="onPlayingStatus"
-            @pause="SET_PLAYER_STATUS('paused')"
-            @ended="onEndedStatus"
-            @timeupdate="$event => onTimeupdate($event.seconds)"
-        />
+    <div class="player-wrapper" :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]">
+        <div class="players" :key="intanceId">
+            <vimeo-player
+                v-if="provider == 'vimeo' && providerVideoId"
+                ref="player"
+                class="player"
+                :videoId="providerVideoId"
+                :videoUrl="isVimeoPrivateLink ? providerVideoId : null"
+                :controls="false"
+                :autoplay="autoplay"
+                @ready="onPlayerReady"
+                @play="onPlayingStatus"
+                @pause="SET_PLAYER_STATUS('paused')"
+                @loaded="SET_PLAYER_STATUS('buffering')"
+                @ended="onEndedStatus"
+                @timeupdate="onTimeupdate"
+            />
 
-        <youtube
-            v-if="provider == 'youtube'"
-            ref="player"
-            class="player"
-            tabindex="-1"
-            :videoId="providerVideoId"
-            :playerVars="{
-                autoplay: autoplay ? 1 : 0,
-                controls: 0,
-                modestbranding: 1,
-                fs: 0,
-                cc_load_policy: 0,
-                iv_load_policy: 3,
-                disablekb: 0,
-                playsinline: 1,
-            }"
-            :resize="true"
-            :fitParent="true"
-            @ready="onPlayerReady"
-            @playing="onPlayingStatus"
-            @paused="SET_PLAYER_STATUS('paused')"
-            @buffering="SET_PLAYER_STATUS('buffering')"
-            @ended="onEndedStatus"
-            @error="SET_PLAYER_STATUS('error')"
-        />
-        <!-- </div> -->
+            <youtube
+                v-else-if="provider == 'youtube'"
+                ref="player"
+                class="player"
+                tabindex="-1"
+                :videoId="providerVideoId"
+                :playerVars="{
+                    autoplay: autoplay ? 1 : 0,
+                    controls: 0,
+                    modestbranding: 1,
+                    fs: 0,
+                    cc_load_policy: 0,
+                    iv_load_policy: 3,
+                    disablekb: 0,
+                    playsinline: 1,
+                }"
+                :resize="true"
+                :fitParent="true"
+                @ready="onPlayerReady"
+                @playing="onPlayingStatus"
+                @paused="SET_PLAYER_STATUS('paused')"
+                @buffering="SET_PLAYER_STATUS('buffering')"
+                @ended="onEndedStatus"
+                @error="SET_PLAYER_STATUS('error')"
+            />
+        </div>
 
-        <PlayerOverlay :playerReady="playerReady" :hideTimeline="hideTimeline">
+        <div class="click-to-pause" @click="!isLive && togglePlaying()" />
+        <div class="player-overlay">
             <slot />
-        </PlayerOverlay>
+        </div>
     </div>
 </template>
 
 <script>
-import PlayerOverlay from './PlayerOverlay'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPlayer',
-    components: {
-        PlayerOverlay,
-    },
     props: ['providerVideoId', 'provider', 'autoplay', 'hideTimeline'],
     data: function() {
         return {
             playerReady: false,
             intervalTimer: null,
             lastTimestamp: 0,
+            intanceId: 0,
         }
     },
     computed: {
@@ -76,11 +76,27 @@ export default {
             isDragging: 'getTimelineKnobIsBeingDragged',
             isLive: 'getIsLive',
             currentTiming: 'getCurrentTiming',
+            desiredStatus: 'getDesiredStatus',
         }),
         isVimeoPrivateLink() {
             const url = this.providerVideoId
             const slashCount = (url.match(/\//g) || []).length
             return slashCount >= 4
+        },
+    },
+    watch: {
+        playerStatus(newStatus, oldStatus) {
+            // Fetch the duration when our video changes
+            // Buffering is our only indication that the video has changed and is done loading.
+            if (oldStatus == 'buffering') {
+                this.getVideoDuration()
+            }
+        },
+        provider(newProvider, oldProvider) {
+            // Force the compoennt to rerender in case of changing from another provider to vimeo, because of a weird vimeo player bug
+            if (newProvider == 'vimeo') {
+                this.intanceId++
+            }
         },
     },
     methods: {
@@ -103,7 +119,7 @@ export default {
 
             this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
             // Pre-mute the player
-            if (this.$route.name != 'watchVideoPresentation') {
+            if (!['watchVideoPresentation', 'mobileVideoPresentation'].includes(this.$route.name)) {
                 this.togglePlayerMuted(true)
             }
             this.startTimerListener()
@@ -127,7 +143,8 @@ export default {
             this.SET_DESIRED_STATUS('paused')
             this.SET_CURRENT_PLAYER_TIMESTAMP(this.duration)
         },
-        onTimeupdate(timestamp) {
+        onTimeupdate(e) {
+            const timestamp = e.seconds
             this.onSetTimestamp(timestamp)
         },
         startTimerListener() {
@@ -225,6 +242,10 @@ export default {
     background: black;
     height: 100%;
     position: relative;
+    .players {
+        height: 100%;
+        width: 100%;
+    }
     ::v-deep {
         iframe {
             height: 100%;
@@ -245,8 +266,34 @@ export default {
             }
         }
     }
+    .click-to-pause {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+    }
+    &.desired-paused {
+        .player-overlay {
+            background: rgba(0, 0, 0, 0.5);
+        }
+    }
     &.drag-active {
         cursor: grabbing;
+    }
+}
+.player-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    pointer-events: none;
+    transition: background $videoPauseTransition;
+    > *:not(.drawer-wrapper) {
+        pointer-events: all;
     }
 }
 </style>

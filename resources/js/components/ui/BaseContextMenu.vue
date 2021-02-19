@@ -1,20 +1,25 @@
 <template>
-    <div v-if="visible || inline" v-click-outside="hide" class="context-menu" ref="contextMenu" :style="menuWidth"
-    :class="{'inline': inline}">
+    <div
+        v-if="visible || inline"
+        v-click-outside="hide"
+        class="context-menu"
+        ref="contextMenu"
+        :style="menuWidth"
+        :class="{ inline: inline }"
+    >
         <div class="item-group header" v-if="hasHeader">
             <strong>
-                <slot name="header" :item="item" :mouseEvent="mouseEvent"/>
+                <slot name="header" :item="item" :mouseEvent="mouseEvent" />
             </strong>
             <button v-if="!inline" class="circle close" @click="hide"><i class="far fa-times"></i></button>
         </div>
 
         <div class="body">
-            <slot :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
+            <slot :item="item" :mouseEvent="mouseEvent" :hide="hide" />
         </div>
-        
 
         <div class="item-group footer" v-if="hasFooter">
-            <slot name="footer" :item="item" :mouseEvent="mouseEvent" :hide="hide"/>
+            <slot name="footer" :item="item" :mouseEvent="mouseEvent" :hide="hide" />
         </div>
     </div>
 </template>
@@ -26,15 +31,15 @@ export default {
     props: {
         columns: {},
         hotkeys: {
-            default: () => []
+            default: () => [],
         },
-        inline: {default: false}
+        inline: { default: false },
     },
     data: function() {
         return {
             visible: false,
             item: null,
-            mouseEvent: null
+            mouseEvent: null,
         }
     },
     computed: {
@@ -48,11 +53,11 @@ export default {
         },
         menuWidth() {
             // if (this.columns) {
-                const columnCount = this.columns ? this.columns : 1
-                const baseWidth = 240
-                return {width: `${baseWidth * columnCount}px`}
+            const columnCount = this.columns ? this.columns : 1
+            const baseWidth = 240
+            return { width: `${baseWidth * columnCount}px` }
             // }
-        }
+        },
     },
     methods: {
         ...mapMutations('contextMenu', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
@@ -87,32 +92,34 @@ export default {
                 const menuWidth = contextMenu.scrollWidth
                 const windowWidth = window.innerWidth
                 const windowHeight = window.innerHeight
-                const maxHeight = this.columns > 1 ? windowHeight-2*offset : 500
+                const maxHeight = this.columns > 1 ? windowHeight - 2 * offset : 500
                 if (mouseX + menuWidth > windowWidth) {
-                    contextMenu.style.right=offset+'px'
-                    contextMenu.style.left='auto'
+                    contextMenu.style.right = offset + 'px'
+                    contextMenu.style.left = 'auto'
                 } else {
-                    contextMenu.style.left=mouseX+'px'
-                    contextMenu.style.right='auto'
+                    contextMenu.style.left = mouseX + 'px'
+                    contextMenu.style.right = 'auto'
                 }
 
                 // If there is not enough space below the mouseY
                 if (mouseY + menuHeight + offset > windowHeight && mouseY + maxHeight + offset > windowHeight) {
                     // Test if we have space to display the entire menu
-                    if (menuHeight + offset*2 < windowHeight) { // Offset * 2 to have space above and below
-                        contextMenu.style.maxHeight=`${maxHeight}px`
-                        contextMenu.style.top=`${windowHeight - menuHeight - offset*2}px`
+                    if (menuHeight + offset * 2 < windowHeight) {
+                        // Offset * 2 to have space above and below
+                        contextMenu.style.maxHeight = `${maxHeight}px`
+                        contextMenu.style.top = `${windowHeight - menuHeight - offset * 2}px`
                         // contextMenu.style.top=`${windowHeight - menuHeight - offset*2}px`
                     } else {
-                        const finalHeight = windowHeight - offset*2 < maxHeight ? windowHeight - offset*2 : maxHeight
-                        contextMenu.style.top=`${windowHeight - finalHeight - offset}px`
-                        contextMenu.style.maxHeight=`${finalHeight}px`
+                        const finalHeight =
+                            windowHeight - offset * 2 < maxHeight ? windowHeight - offset * 2 : maxHeight
+                        contextMenu.style.top = `${windowHeight - finalHeight - offset}px`
+                        contextMenu.style.maxHeight = `${finalHeight}px`
                     }
                 }
                 // If there is enough space below mouseY
                 else {
-                    contextMenu.style.top=mouseY+'px'
-                    contextMenu.style.maxHeight=maxHeight+'px'
+                    contextMenu.style.top = mouseY + 'px'
+                    contextMenu.style.maxHeight = maxHeight + 'px'
                 }
 
                 // contextMenu.style.top=mouseY+'px'
@@ -120,7 +127,6 @@ export default {
             // Add event listeners
             document.body.addEventListener('keyup', this.hotkeyHandler)
             document.body.addEventListener('click', this.clickHandler)
-
         },
         hide() {
             if (this.visible) {
@@ -136,7 +142,7 @@ export default {
         },
         hotkeyHandler(event) {
             // Only listen if the contextMenu is visible & we are not typing in an input field
-            if(this.visible && event.code == 'Escape') {
+            if (this.visible && event.code == 'Escape') {
                 this.hide()
             }
         },
@@ -144,23 +150,22 @@ export default {
             // Hide the context menu on clicks inside it
             // if (this.visible) {
             //     const el = event.target
-
             //     // Check if we have clicked an item
-            //     if (el.classList.contains('item') 
-            //     && !el.classList.contains('no-close') 
-            //     && !el.classList.contains('has-submenu') 
+            //     if (el.classList.contains('item')
+            //     && !el.classList.contains('no-close')
+            //     && !el.classList.contains('has-submenu')
             //     // && !item.classList.contains('context-menu-item')
             //     && el.closest('.context-menu')) {
             //         console.log('hide context menu 1')
             //         this.hide()
             //         return
-            //     } 
+            //     }
             //     // Or check if the parent of this element is a context Menu item
             //     else {
             //         // find the item parent
             //         const item = el.closest('.item')
-            //         if (item && !item.classList.contains('no-close') 
-            //         && !item.classList.contains('has-submenu') 
+            //         if (item && !item.classList.contains('no-close')
+            //         && !item.classList.contains('has-submenu')
             //         // && !item.classList.contains('context-menu-item')
             //         && item.closest('.context-menu')) {
             //             console.log('hide context menu 2')
@@ -169,7 +174,7 @@ export default {
             //         }
             //     }
             // }
-        }
+        },
     },
     destroyed() {
         if (this.visible) {
@@ -178,14 +183,16 @@ export default {
         // Remove event listeners
         document.body.removeEventListener('keyup', this.hotkeyHandler)
         document.body.removeEventListener('click', this.clickHandler)
-    }
+    },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-.context-menu, .context-menu:focus, .context-menu .sub-menu {
+.context-menu,
+.context-menu:focus,
+.context-menu .sub-menu {
     background: white;
     border-radius: $borderRadiusModule;
     border: $borderModule;
@@ -232,7 +239,8 @@ export default {
             border-top: solid 1px $divider;
         }
     }
-    .item, .item-wrapper {
+    .item,
+    .item-wrapper {
         padding: 8px 16px;
         color: $dark05;
         display: flex;
@@ -259,8 +267,8 @@ export default {
         &.has-submenu {
             position: relative;
             &::after {
-                content: "\f054";
-                font-family: "Font Awesome 5 Pro";
+                content: '\f054';
+                font-family: 'Font Awesome 5 Pro';
                 font-weight: 900;
                 right: 16px;
                 font-size: 12px;
@@ -276,7 +284,7 @@ export default {
             display: none;
             position: absolute;
             left: 100%;
-            width: 100%
+            width: 100%;
         }
         // &.disabled {
         //     // pointer-events: none;

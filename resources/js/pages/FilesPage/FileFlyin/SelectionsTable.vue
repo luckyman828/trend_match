@@ -12,6 +12,15 @@
                     <template v-slot:right>
                         <BaseButton
                             buttonClass="ghost sm"
+                            :disabled="authUserWorkspaceRole != 'Admin'"
+                            disabledTooltip="Only admins can manage channels"
+                            @click="showChannelsModal = true"
+                        >
+                            <i class="far fa-network-wired"></i>
+                            <span>Manage channels</span>
+                        </BaseButton>
+                        <BaseButton
+                            buttonClass="ghost sm"
                             :disabled="authUserWorkspaceRole != 'Admin' || fileSelectionMagicLinkSent"
                             v-tooltip="'Send a link to all selection members of this file'"
                             @click="onSendMagicLinkToAll"
@@ -472,6 +481,7 @@
             :show="showChapterFilterModal"
             @close="showChapterFilterModal = false"
         />
+        <ChannelsModal :show="showChannelsModal" @close="showChannelsModal = false" />
     </div>
 </template>
 
@@ -480,6 +490,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import SelectionsTableRow from './SelectionsTableRow'
 import ChapterFilterModal from './ChapterFilterModal'
 import SelectionSettingsContextMenu from './SelectionSettingsContextMenu'
+import ChannelsModal from './ChannelsModal/'
 import sortArray from '../../../mixins/sortArray'
 
 export default {
@@ -488,6 +499,7 @@ export default {
         SelectionsTableRow,
         ChapterFilterModal,
         SelectionSettingsContextMenu,
+        ChannelsModal,
     },
     mixins: [sortArray],
     data: function() {
@@ -509,6 +521,7 @@ export default {
             fileToClone: null,
             cloningSetup: false,
             settingsSelections: [],
+            showChannelsModal: false,
         }
     },
     computed: {
@@ -574,7 +587,7 @@ export default {
             }
         },
         async onGetSelectionLink(selectionId) {
-            const link = await this.getSelectionLink(selectionId)
+            const link = await this.getSelectionLink({selectionId})
             this.copyToClipboard(link)
             this.SHOW_SNACKBAR({
                 msg: 'Link copied',

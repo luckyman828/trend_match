@@ -46,6 +46,10 @@ export default {
         getWorkspaceDatabases: state => state.databases,
         getCustomProductFields: (state, getters) =>
             getters.currentWorkspace && getters.currentWorkspace.custom_product_fields,
+        getAvailableProductLabels: (state, getters) =>
+            getters.currentWorkspace && getters.currentWorkspace.available_labels
+                ? getters.currentWorkspace.available_labels
+                : [],
     },
 
     actions: {

@@ -1,5 +1,5 @@
 <template>
-    <div class="search">
+    <div class="search" v-observe-visibility="focusOnMount && onVisibilityChanged">
         <input
             class="input-wrapper"
             :class="inputClasses"
@@ -54,6 +54,13 @@ export default {
     },
     computed: {},
     methods: {
+        onVisibilityChanged(isVisible) {
+            if (this.focusOnMount && isVisible) {
+                this.$nextTick(() => {
+                    this.setFocus()
+                })
+            }
+        },
         setFocus() {
             this.$refs.searchField.focus()
             this.$refs.searchField.select()

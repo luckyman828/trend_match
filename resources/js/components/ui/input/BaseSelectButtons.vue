@@ -103,6 +103,7 @@
                             <BaseRadiobox
                                 v-if="type == 'radio'"
                                 ref="selectBox"
+                                :uniqueKey="uniqueKey"
                                 :value="optionValueKey ? option[optionValueKey] : option"
                                 :modelValue="selection"
                                 v-model="selection"
@@ -113,6 +114,7 @@
                             <BaseCheckbox
                                 v-else
                                 ref="selectBox"
+                                :uniqueKey="uniqueKey"
                                 :value="optionValueKey ? option[optionValueKey] : option"
                                 :modelValue="selection"
                                 v-model="selection"
@@ -122,7 +124,7 @@
                             />
 
                             <div class="label">
-                                <slot name="before" :option="option" />
+                                <slot name="before" :option="option" :index="index" />
                                 <template v-if="optionNameKey">
                                     {{
                                         displayFunction ? displayFunction(option[optionNameKey]) : option[optionNameKey]
@@ -134,7 +136,7 @@
                                 <p class="description" v-if="optionDescriptionKey">
                                     {{ optionGroup[optionDescriptionKey] }}
                                 </p>
-                                <slot name="after" :option="option" />
+                                <slot name="after" :option="option" :index="index" />
                             </div>
                         </label>
                     </div>
@@ -165,6 +167,7 @@
                         <BaseRadiobox
                             v-if="type == 'radio'"
                             ref="selectBox"
+                            :uniqueKey="uniqueKey"
                             :value="
                                 optionValueKey ? (optionValueKey == 'index' ? index : option[optionValueKey]) : option
                             "
@@ -174,6 +177,7 @@
                         <BaseCheckbox
                             v-else
                             ref="selectBox"
+                            :uniqueKey="uniqueKey"
                             :value="
                                 optionValueKey ? (optionValueKey == 'index' ? index : option[optionValueKey]) : option
                             "
@@ -183,7 +187,7 @@
                         />
 
                         <div class="label">
-                            <slot name="before" :option="option" />
+                            <slot name="before" :option="option" :index="index" />
                             <template v-if="labelPrefix">
                                 <span v-html="labelPrefix" style="margin-right: 4px"></span>
                             </template>
@@ -196,7 +200,7 @@
                             <p class="description" v-if="optionDescriptionKey">
                                 {{ option[optionDescriptionKey] }}
                             </p>
-                            <slot name="after" :option="option" />
+                            <slot name="after" :option="option" :index="index" />
                         </div>
                     </label>
                 </div>
@@ -217,6 +221,7 @@ export default {
         'optionNameKey',
         'optionValueKey',
         'optionDescriptionKey',
+        'uniqueKey',
         'search',
         'submitOnChange',
         'emitOnChange',

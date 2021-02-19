@@ -117,6 +117,7 @@ export default {
             await player[providerMap.setVolume](newVolume * volumeMultiplier)
         },
         async togglePlaying({ commit, getters, dispatch }) {
+            if (getters.getIsLive && (getters.desiredStatus == 'playing' || getters.getStatus == 'playing')) return
             const player = getters.getPlayer
             if (!player) return
             const providerMap = getters.getProviderMap

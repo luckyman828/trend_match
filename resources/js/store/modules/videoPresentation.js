@@ -24,21 +24,6 @@ export default {
         //     provider: 'Vimeo',
         // },
         searchItemDragActive: false,
-        videoTimings: [],
-        // videoTimings: [
-        //     {
-        //         id: 1,
-        //         start: 3,
-        //         end: 24,
-        //         product_id: '750475784351613090',
-        //     },
-        //     {
-        //         id: 2,
-        //         start: 24,
-        //         end: 46,
-        //         product_id: '748096819460718599',
-        //     },
-        // ],
         timingId: 0,
         timelineZoom: 1,
         timelineRail: null,
@@ -108,7 +93,7 @@ export default {
             }
             if (provider == 'youtube') {
                 videoIdRegex = new RegExp(
-                    /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/watch\?v=(([A-z]|[0-9])*)/
+                    /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?(?:[^:\/\n?]+)\/watch\?v=(([A-z]|[0-9]|\-)*)/
                 )
             }
             if (provider == 'youtu') {
@@ -198,11 +183,44 @@ export default {
             if (prevTiming) {
                 index = prevTiming.index + 1
             }
-            const conflictingTiming = allTimings.find(x => x.start < timestamp && x.end > timestamp)
+
+            const conflictingTiming = allTimings.find(
+                x =>
+                    (newTiming.start >= x.start && newTiming.start < x.end) ||
+                    (newTiming.end < x.end && newTiming.end > x.start)
+            )
+            const minDuration = 1
             if (conflictingTiming) {
-                index = conflictingTiming.index + 1
-                newTiming.start = conflictingTiming.end
-                newTiming.end = newTiming.start + desiredDuration
+                // Place befoe
+                const placeBefore = newTiming.start < conflictingTiming.start
+                if (placeBefore) {
+                    const nextTiming = allTimings[newTiming.index + 1]
+                    newTiming.end = nextTiming.start
+                }
+
+                // Place after
+                else {
+                    index = conflictingTiming.index + 1
+                    newTiming.start = conflictingTiming.end
+                    newTiming.end = newTiming.start + desiredDuration
+                    // Check if there is a new conflict with the next timing
+                    const nextTiming = allTimings[conflictingTiming.index + 1]
+                    if (nextTiming && nextTiming.start < newTiming.end) {
+                        newTiming.end = nextTiming.start
+                    }
+                }
+            }
+            if (newTiming.duration < minDuration) {
+                commit(
+                    'alerts/SHOW_SNACKBAR',
+                    {
+                        msg: 'Duration too short',
+                        iconClass: 'far fa-info-circle',
+                        type: 'info',
+                    },
+                    { root: true }
+                )
+                return
             }
             commit('ADD_TIMING', { timing: newTiming, index })
             await dispatch('bumpConflictingTimings', newTiming)

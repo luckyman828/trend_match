@@ -61,7 +61,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['products', 'getActiveSelectionInput']),
+        ...mapGetters('products', ['products']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         totalSpend() {
             let total = 0
             this.products.map(product => {
@@ -85,7 +86,7 @@ export default {
     },
     methods: {
         seperateThousands(value) {
-            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            return (Math.round(value * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
         },
     },
 }

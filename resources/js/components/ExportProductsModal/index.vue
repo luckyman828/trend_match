@@ -203,7 +203,8 @@ export default {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('products', ['getProductsFilteredBySearch']),
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('products', ['getActiveSelectionInput', 'getSelectedProducts']),
+        ...mapGetters('products', ['getSelectedProducts']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         productsToExport() {
             const products = this.exportSelected ? this.getSelectedProducts : this.getProductsFilteredBySearch
             return products.filter(product => {

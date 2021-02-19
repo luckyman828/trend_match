@@ -74,12 +74,11 @@
         </div>
 
         <div class="sender" v-if="displayAuthor && !editActive">
-            <SelectionChapterPill
-                v-if="comment.selection.type != 'Chapter'"
-                class="chapter"
-                :selection="comment.selection"
-            />
-            <strong>{{ comment.role == 'Approver' ? 'Approval' : comment.selection.name }}</strong> |
+            <SelectionChapterPill class="chapter" :selection="comment.selection" />
+            <strong v-if="comment.selection.type != 'Chapter' && comment.role != 'Approver'">{{
+                comment.role == 'Approver' ? 'Approval' : comment.selection.name
+            }}</strong>
+            |
             {{
                 comment.user_id == authUser.id
                     ? 'You'

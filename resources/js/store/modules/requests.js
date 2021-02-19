@@ -240,6 +240,20 @@ export default {
                         )
                     },
                 })
+                Object.defineProperty(request, 'author', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                            user => user.id == request.author_id
+                        )
+                    },
+                })
+                Object.defineProperty(request, 'selection', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelections'].find(
+                            selection => selection.id == request.selection_id
+                        )
+                    },
+                })
 
                 request.hasBeenInitialized = true
             })
@@ -276,6 +290,7 @@ export default {
         },
         DELETE_REQUEST(state, { selectionInput, request }) {
             const requestIndex = selectionInput.rawSelectionInput.requests.findIndex(x => x.id == request.id)
+            if (requestIndex < 0) return
             selectionInput.rawSelectionInput.requests.splice(requestIndex, 1)
             // Check if the request is the current request
             if (state.currentRequestThread && state.currentRequestThread.id == request.id) {
@@ -297,6 +312,7 @@ export default {
         DELETE_REQUEST_COMMENT(state, { request, comment }) {
             const commentId = comment.id ? comment.id : comment.discussion_id
             const index = request.discussions.findIndex(x => x.id == commentId)
+            if (index < 0) return
             request.discussions.splice(index, 1)
         },
         SET_REQUEST_STATUS(state, { request, status, user }) {

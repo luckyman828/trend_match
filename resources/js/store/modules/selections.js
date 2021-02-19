@@ -64,23 +64,14 @@ export default {
         getDisplayUnreadBullets: (state, getters) => {
             return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
-        getSelectionChapter: state => selection => {
-            if (!selection) return
+        getSelectionChapter: (state, getters, rootState, rootGetters) => selection => {
             if (selection.type == 'Chapter') return selection
-            if (selection.parent_chapter) return selection.parent_chapter
-
-            // If we are out of easy options.
-            if (!state.selections) return
-            const stateSelection = state.selections.find(
-                stateSelection =>
-                    stateSelection.id == selection.id ||
-                    stateSelection.parent_id == selection.id ||
-                    stateSelection.id == selection.parent_id
-            )
-            if (stateSelection) {
-                if (stateSelection.type == 'Chapter') return stateSelection
-                if (stateSelection.parent_chapter) return stateSelection.parent_chapter
+            if (selection.parent_chapter) {
+                return selection.parent_chapter
             }
+            if (!selection.chapterId) return
+            const allSelections = rootGetters['selectionProducts/getSelections'].concat(getters.getSelections)
+            return allSelections.find(x => x.id == selection.chapterId)
         },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
@@ -286,7 +277,7 @@ export default {
                         if (!existsInArray) availableSelections.push(feedback.selection)
                     })
                     // Loop through the products alignment
-                    selectionInput.rawSelectionInput.actions.forEach(action => {
+                    selectionInput.rawSelectionInput.alignments.forEach(action => {
                         const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
                         if (!existsInArray) availableSelections.push(action.selection)
                     })
@@ -334,10 +325,10 @@ export default {
                 let selections
                 await axios
                     .get(apiUrl)
-                    .then(response => {
+                    .then(async response => {
                         selections = response.data
                         // Process the selections
-                        dispatch('initSelections', selections)
+                        await dispatch('initSelections', selections)
                         if (addToState) {
                             commit('insertSelections', { selections, method: 'set' })
                         }
@@ -1186,13 +1177,12 @@ export default {
 
             return joinResponse
         },
-        async getSelectionLink({}, selectionId) {
-            const apiUrl = `selections/${selectionId}/shorten-code`
+        async getSelectionLink({}, { selectionId, openDashboard }) {
+            const apiUrl = `selections/${selectionId}/shorten-code${openDashboard ? '?open_app=false' : ''}`
             // let linkCode
             let link
             await axios.get(apiUrl).then(response => {
                 // linkCode = response.data.message
-                // console.log('response code', linkCode)
                 link = response.data.magic_link
             })
 
@@ -1216,8 +1206,17 @@ export default {
             })
             return joinResponse
         },
-        async initSelections({ rootGetters }, selections) {
+        async initSelections({ getters, rootGetters }, selections) {
             selections.map(selection => {
+                const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
+                const chatperId =
+                    chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
+                Vue.set(selection, 'chapterId', chatperId)
+
+                if (!selection.your_role) {
+                    Vue.set(selection, 'your_role', selection.your_roles[0])
+                }
+
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
                     get: () => {
@@ -1255,6 +1254,12 @@ export default {
                         if (!selection.presentation_id) return
                         const presentations = rootGetters['presentation/getPresentations']
                         return presentations.find(x => x.id == selection.presentation_id)
+                    },
+                })
+
+                Object.defineProperty(selection, 'chapter', {
+                    get: () => {
+                        return getters.getSelectionChapter(selection)
                     },
                 })
             })

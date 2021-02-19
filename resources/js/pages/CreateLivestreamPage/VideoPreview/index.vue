@@ -2,7 +2,7 @@
     <div class="video-preview" :class="{ 'drag-active': isDragging }">
         <form class="url-input" @submit.prevent v-if="!playerReady || editModeActive">
             <div class="container">
-                <h3>Enter the URL of your video to get started</h3>
+                <h3>Enter the URL osssf your video to get started</h3>
                 <div class="form-element">
                     <label for="url-input">Video URL</label>
                     <BaseInputField
@@ -148,6 +148,9 @@ export default {
         ...mapGetters('videoPresentation', {
             currentVideo: 'getCurrentVideo',
         }),
+        ...mapGetters('products', {
+            allProducts: ['getProducts'],
+        }),
         ...mapGetters('videoPlayer', {
             isDragging: 'getTimelineKnobIsBeingDragged',
             provider: 'getProvider',
@@ -168,7 +171,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('products', ['fetchSelectionProducts']),
+        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['startPresentation']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapActions('videoPresentation', ['setVideoByURL', 'updateCurrentVideo']),
@@ -184,8 +187,12 @@ export default {
                 }
                 this.SET_CURRENT_SELECTIONS([this.selectionToPresentFrom])
 
+                this.editModeActive = false
                 await this.setVideoByURL({ file: this.file, url: this.videoUrl })
                 this.editModeActive = false
+                setTimeout(() => {
+                    this.editModeActive = false
+                }, 1000)
             }
         },
         onNewSelectionToPresentFrom(selection) {
@@ -280,6 +287,8 @@ export default {
         background: $bg;
         border-radius: $borderRadiusEl;
         border: $borderEl;
+        max-height: 200px;
+        overflow-y: auto;
     }
     .selection-icon {
         margin-left: 8px;

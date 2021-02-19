@@ -239,7 +239,7 @@ export default {
         VariantList,
     },
     computed: {
-        ...mapGetters('products', ['getActiveSelectionInput']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', ['getSelectionChapter']),
         prettyDates() {
             return this.product.delivery_dates.map(date => this.getPrettyDate(date, 'short'))

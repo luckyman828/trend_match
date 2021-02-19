@@ -87,13 +87,11 @@
                             :key="chunk.selection.id"
                         >
                             <div class="section-header">
-                                <SelectionChapterPill
-                                    class="chapter-pill"
-                                    :selection="chunk.selection"
-                                    v-if="!chunk.selection.type == 'Chapter'"
-                                />
-                                <SelectionIcon :selection="chunk.selection" />
-                                <span>{{ chunk.selection.name }}</span>
+                                <SelectionChapterPill class="chapter-pill" :selection="chunk.selection" />
+                                <template v-if="chunk.selection.type != 'Chapter'">
+                                    <SelectionIcon :selection="chunk.selection" />
+                                    <span>{{ chunk.selection.name }}</span>
+                                </template>
                             </div>
                             <FeedbackListItem
                                 class="list-item"
@@ -314,11 +312,8 @@ export default {
             margin-right: 4px;
             font-weight: 400;
         }
-        i {
-            width: 20px;
-            &.master {
-                margin-left: 8px;
-            }
+        > i {
+            margin-right: 4px;
         }
     }
 }

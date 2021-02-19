@@ -35,6 +35,9 @@ Vue.use(VueCookies)
 import UUID from 'vue-uuid'
 Vue.use(UUID)
 
+import Vue2TouchEvents from 'vue2-touch-events'
+Vue.use(Vue2TouchEvents)
+
 import dragscrollDirective from './directives/dragscrollDirective'
 Vue.use(dragscrollDirective)
 import clickOutsideDirective from './directives/clickOutsideDirective'
@@ -53,6 +56,9 @@ Vue.use(VueYoutube)
 
 import vueVimeoPlayer from 'vue-vimeo-player'
 Vue.use(vueVimeoPlayer)
+
+import VueObserveVisibility from 'vue-observe-visibility'
+Vue.use(VueObserveVisibility)
 
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip, {
@@ -183,6 +189,13 @@ Vue.mixin({
             tempInput.select()
             document.execCommand('copy')
             document.body.removeChild(tempInput)
+        },
+        getNextArrayIndex(array, currentIndex, forwards) {
+            // Special cases
+            // Forwards and last
+            if (array.length == currentIndex + 1 && forwards) return 0
+            if (currentIndex == 0 && !forwards) return array.length - 1
+            return forwards ? currentIndex + 1 : currentIndex - 1
         },
     },
 })

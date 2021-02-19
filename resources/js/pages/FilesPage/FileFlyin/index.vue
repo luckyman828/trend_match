@@ -22,16 +22,6 @@
                         <BaseButton
                             buttonClass="ghost"
                             :disabled="authUserWorkspaceRole != 'Admin'"
-                            disabledTooltip="Only admins can manage video presentations"
-                            @click="$router.push({ name: 'editVideoPresentation', params: { fileId: file.id } })"
-                        >
-                            <i class="far fa-video"></i>
-                            <span>Add/Edit Video Presentation</span>
-                        </BaseButton>
-
-                        <BaseButton
-                            buttonClass="ghost"
-                            :disabled="authUserWorkspaceRole != 'Admin'"
                             disabledTooltip="Only admins can manage file editors"
                             @click="showEditorsFlyin"
                         >
@@ -45,8 +35,45 @@
                             disabledTooltip="Only admins and editors can edit files"
                             @click="goToEditSingle"
                         >
+                            <i class="far fa-tshirt">
+                                <i class="fas fa-pen pos-right pos-bottom"></i>
+                            </i>
                             <span>Edit products</span>
                         </BaseButton>
+
+                        <v-popover trigger="click">
+                            <BaseButton buttonClass="ghost">
+                                <i class="far fa-ellipsis-v"></i>
+                            </BaseButton>
+                            <BaseContextMenu slot="popover" :inline="true">
+                                <div class="item-group">
+                                    <BaseContextMenuItem
+                                        iconClass="far fa-video"
+                                        hotkey="KeyV"
+                                        :disabled="authUserWorkspaceRole != 'Admin'"
+                                        disabledTooltip="Only admins can manage video presentations"
+                                        @click="
+                                            $router.push({ name: 'editVideoPresentation', params: { fileId: file.id } })
+                                        "
+                                    >
+                                        <span>Go to <u>V</u>ideo Presentation</span>
+                                    </BaseContextMenuItem>
+                                </div>
+                                <div class="item-group">
+                                    <BaseContextMenuItem
+                                        iconClass="far fa-chart-bar"
+                                        hotkey="KeyL"
+                                        :disabled="authUserWorkspaceRole != 'Admin'"
+                                        disabledTooltip="Only admins can view live results"
+                                        @click="
+                                            $router.push({ name: 'liveResults', params: { fileId: currentFile.id } })
+                                        "
+                                    >
+                                        <span>Go to <u>L</u>ive Results</span>
+                                    </BaseContextMenuItem>
+                                </div>
+                            </BaseContextMenu>
+                        </v-popover>
                     </div>
                 </template>
             </BaseFlyinHeader>

@@ -182,6 +182,7 @@ export default {
                 'RRP',
                 'MU',
                 'Product EANs',
+                'Labels',
             ],
             defaultCsvDumpHeaders: [
                 'Product ID',
@@ -207,20 +208,17 @@ export default {
             'getSelectionsAvailableForInputFiltering',
             'getSelectionChapter',
         ]),
-        ...mapGetters('products', [
-            'productsFiltered',
-            'getActiveSelectionInput',
-            'getSelectedSelectionIds',
-            'getSelectedProducts',
-        ]),
+        ...mapGetters('products', ['productsFiltered', 'getSelectedProducts']),
+        ...mapGetters('productFilters', ['getFilterSelectionIds']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
             return products
         },
         selectionsToExport() {
-            if (this.getSelectedSelectionIds.length <= 0) return this.getSelectionsAvailableForInputFiltering
-            return this.getSelectedSelectionIds.map(selectionId => {
+            if (this.getFilterSelectionIds.length <= 0) return this.getSelectionsAvailableForInputFiltering
+            return this.getFilterSelectionIds.map(selectionId => {
                 return this.getSelectionsAvailableForInputFiltering.find(selection => selection.id == selectionId)
             })
         },
@@ -802,6 +800,7 @@ export default {
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
                 product.eans.join(', '),
+                product.labels.join(', '),
             ]
             // Get the extra data
             const extraFields = this.getCustomProductFields

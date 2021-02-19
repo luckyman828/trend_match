@@ -10,6 +10,7 @@
                         v-model="videoUrl"
                         placeholder="Your video URL"
                         :focusOnMount="true"
+                        :selectOnFocus="true"
                         @submit="onSetVideoByURL"
                     />
                     <p class="example">Example: https://vimeo.com/123456789</p>
@@ -95,9 +96,9 @@ export default {
         async onSetVideoByURL() {
             // Confirm first
             if (!!this.videoTimings && !(await this.$refs.confirmChangeURL.confirm())) return
-            await this.setVideoByURL({ file: this.currentFile, url: this.videoUrl })
             this.SET_VIDEO_TIMINGS([])
-            await this.updateCurrentVideo()
+            await this.setVideoByURL({ file: this.currentFile, url: this.videoUrl })
+            // await this.updateCurrentVideo()
             this.editModeActive = false
         },
     },
@@ -115,7 +116,7 @@ export default {
     width: 100%;
     top: 0;
     left: 0;
-    pointer-events: none;
+    pointer-events: none !important;
     &.drag-active {
         cursor: grabbing;
     }

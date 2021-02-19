@@ -10,19 +10,60 @@
                 name="email"
                 @input="checkEmailIsValid"
             />
+
+            <div class="form-element" v-if="accountExists">
+                <label for="password">Password</label>
+                <BaseInputField
+                    ref="passwordInput"
+                    id="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    name="password"
+                    required
+                    autocomplete="current-password"
+                    v-model="password"
+                    :focusOnMount="true"
+                >
+                    <i
+                        class="far show-pass"
+                        :class="showPassword ? 'fa-eye' : 'fa-eye-slash'"
+                        @click="showPassword = !showPassword"
+                    ></i>
+                </BaseInputField>
+            </div>
+
+            <div class="error-wrapper form-element" v-if="error">
+                <i class="far fa-exclamation-triangle"></i>
+                <span>{{ error }}</span>
+            </div>
+
             <BaseCheckboxInputField class="form-element" v-model="acceptTerms">
                 <span>I accept the terms & conditions</span>
             </BaseCheckboxInputField>
 
-            <vue-recaptcha
+            <!-- V2 -->
+            <!-- <vue-recaptcha
                 class="form-element"
                 sitekey="6LfCa9kZAAAAALX6qHy872UuYkYVhz_tnfdu7HA7"
+                :loadRecaptchaScript="true"
+                @verify="onCaptchaVerified"
+                @expired="onCaptchaExpired"
+            /> -->
+
+            <!-- V2 INVISIBLE -->
+            <vue-recaptcha
+                ref="recaptcha"
+                class="form-element"
+                sitekey="6Lc-PEgaAAAAAFhgxCaYbmLFaX_vwpAX6yGlt9Hh"
+                type="invisible"
+                size="invisible"
+                badge="bottomleft"
                 :loadRecaptchaScript="true"
                 @verify="onCaptchaVerified"
                 @expired="onCaptchaExpired"
             />
 
             <BaseButton
+                v-if="!verifyingCaptcha"
                 buttonClass="form-element primary full-width lg"
                 class="full-width"
                 :disabled="submitDisabled"
@@ -31,6 +72,8 @@
             >
                 <span>Go to Selection</span>
             </BaseButton>
+
+            <BaseLoader msg="Veryfying" v-else />
         </form>
     </div>
 </template>
@@ -50,6 +93,11 @@ export default {
             emailValid: false,
             acceptTerms: false,
             captchaToken: null,
+            accountExists: false,
+            showPassword: false,
+            password: '',
+            error: '',
+            verifyingCaptcha: false,
         }
     },
     computed: {
@@ -69,6 +117,7 @@ export default {
     methods: {
         ...mapActions('selections', ['joinSelectionViaLink', 'fetchSelection']),
         ...mapActions('files', ['fetchFile']),
+        ...mapActions('auth', ['login']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapMutations('auth', ['ON_SUCCESFUL_LOGIN']),
         checkEmailIsValid(newVal) {
@@ -78,15 +127,8 @@ export default {
             this.emailValid = isValid
             return isValid
         },
-        onCaptchaVerified(token) {
+        async onCaptchaVerified(token) {
             this.captchaToken = token
-        },
-        onCaptchaExpired() {
-            this.captchaToken = null
-        },
-        async onSubmit() {
-            // Make sure that submit should actually have been available
-            if (this.submitDisabled) return
 
             // Veirify catpcha and send API request
             const joinResponse = await this.joinSelectionViaLink({
@@ -94,7 +136,7 @@ export default {
                 selectionId: this.selectionId,
                 email: this.newEmail,
             })
-            console.log('join response is here! ', joinResponse)
+            this.verifyingCaptcha = false
 
             // Existing Account
             if (joinResponse.status == 'AccountExisted') {
@@ -105,14 +147,8 @@ export default {
                     duration: 10000, // 10 seconds
                 })
 
-                // Redirect to login
-                this.$router.push({
-                    name: 'login',
-                    params: {
-                        nextUrl: this.$route.fullPath,
-                        email: this.newEmail,
-                    },
-                })
+                this.accountExists = true
+
                 return
             }
 
@@ -123,28 +159,51 @@ export default {
                 const user = joinResponse.user
                 this.ON_SUCCESFUL_LOGIN({ token, user })
 
-                // // Route the user to the selection
-                // const selection = await this.fetchSelection({ selectionId: this.selectionId })
-                // // Navigate to the selection
-                // let routeName = 'selection'
-                // // If the file has a video, then navigate to the video
-                // const file = await this.fetchFile(selection.file_id)
-                // if (file.video_count > 0) {
-                //     routeName = 'watchVideoPresentation'
-                // }
-                // console.log('joni seelction route change')
-                // this.$router.push({
-                //     name: routeName,
-                //     params: { fileId: selection.file_id, selectionId: this.selectionId },
-                // })
                 return
             }
+        },
+        onCaptchaExpired() {
+            this.captchaToken = null
+        },
+        // verifyCaptcha
+
+        async onSubmit() {
+            // Make sure that submit should actually have been available
+            if (this.submitDisabled) return
+
+            if (this.accountExists) {
+                this.attemptLogin()
+                return
+            }
+
+            this.verifyingCaptcha = true
+            await this.$refs.recaptcha.execute()
+        },
+
+        attemptLogin() {
+            this.login({ email: this.newEmail, password: this.password })
+                .then(success => {
+                    if (success) {
+                        // Go to the url the user attempted to go to (nextUrl), if any
+                        // const urlToGoTo = this.nextUrl ? this.nextUrl : '/'
+                        // this.$router.push(urlToGoTo)
+                    } else {
+                        this.error = 'Wrong password'
+                    }
+                    // this.$router.push('/')
+                })
+                .catch(err => {
+                    this.error =
+                        'Something went wrong. Please refresh the page and try again.\nIf you continue to see this issue, please contact Kollekt support.'
+                })
         },
     },
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~@/_variables.scss';
+
 .join-selection-page {
     padding-top: 32px;
 }
@@ -152,5 +211,18 @@ export default {
     text-align: left;
     max-width: 302px;
     margin: auto;
+}
+.error-wrapper {
+    color: $fail;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // margin-top: -14px;
+    // margin-bottom: -10px;
+    i {
+        color: $fail;
+        margin-right: 8px;
+    }
 }
 </style>

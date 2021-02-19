@@ -144,7 +144,7 @@ export default {
         ...mapGetters('videoPresentation', {
             timings: 'getVideoTimings',
         }),
-        ...mapGetters('products', ['getActiveSelectionInput']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', {
             selection: 'getCurrentSelection',
             currentSelectionMode: 'currentSelectionMode',

@@ -44,21 +44,14 @@
         <!-- Arrays -->
         <template v-if="mappedRule.type == 'array'">
             <BaseDropdownInputField
-                v-if="!['AnyInArray', 'NotInArray'].includes(chapterRule.operator)"
                 class="value-field"
-                type="radio"
-                v-model="chapterRule.value"
+                :type="isRadioInput ? 'radio' : 'select'"
+                v-model="ruleValueArray"
                 :options="availableValues"
                 :readOnly="readOnly"
                 :displayFunction="chapterRule.name == 'DeliveryDate' && getPrettyDate"
-            />
-            <BaseDropdownInputField
-                v-else
-                class="value-field"
-                v-model="chapterRule.values"
-                :options="availableValues"
-                :readOnly="readOnly"
-                :displayFunction="chapterRule.name == 'DeliveryDate' && getPrettyDate"
+                :search="availableValues.length > 5"
+                :allowManualEntry="mappedRule.allowManualEntry"
             />
         </template>
         <BaseInputField
@@ -91,8 +84,20 @@ export default {
     ],
     computed: {
         ...mapGetters('products', {
-            products: 'products',
+            products: 'getAllProducts',
         }),
+        ruleValueArray: {
+            get() {
+                return this.isRadioInput ? this.chapterRule.value : this.chapterRule.values
+            },
+            set(val) {
+                if (this.isRadioInput) this.chapterRule.value = val
+                else this.chapterRule.values = val
+            },
+        },
+        isRadioInput() {
+            return !['AnyInArray', 'NotInArray'].includes(this.chapterRule.operator)
+        },
         mappedRule() {
             return this.availableRules.find(rule => rule.name == this.chapterRule.name)
         },
@@ -112,20 +117,22 @@ export default {
             }
             if (ruleName == 'DeliveryDate') ruleName = 'DeliveryDates'
 
-            const productKey = ruleName
+            let productKey = ruleName
                 .split(/(?=[A-Z])/)
                 .join('_')
                 .toLowerCase() // Convert ruleName to product key
+            if (ruleName == 'Ean') {
+                productKey = 'getAllEAN'
+            }
 
             const unique = []
 
             function addIfUnique(value) {
-                if (value != null && !unique.find(x => x == value)) unique.push(value)
+                if (value != null && !unique.find(x => x == value)) unique.push(value.toString())
             }
 
             this.products.map(product => {
                 const productValue = product[productKey]
-                let alreadyAdded = false
                 if (Array.isArray(productValue)) {
                     productValue.map(arrayValue => addIfUnique(arrayValue))
                 } else {
@@ -141,8 +148,7 @@ export default {
     },
     watch: {
         ruleOperator(newOperator, oldOperator) {
-            console.log('opreator changed')
-            if (!this.chapterRule.type == 'array' || !oldOperator) return
+            if (this.chapterRule.type != 'array' || !oldOperator) return
             // From Multi to Single
             if (['Equal', 'NotEqual'].includes(newOperator) && ['AnyInArray', 'NotInArray'].includes(oldOperator)) {
                 this.chapterRule.value = this.chapterRule.values[0]
@@ -191,5 +197,8 @@ export default {
 }
 .operator-field {
     width: 106px;
+}
+.value-field {
+    width: 200px;
 }
 </style>

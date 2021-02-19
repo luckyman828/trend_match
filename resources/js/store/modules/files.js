@@ -156,7 +156,7 @@ export default {
                 .catch(err => {})
             return files
         },
-        async setCurrentFolder({ commit, state, rootGetters }, folder) {
+        async setCurrentFolder({ commit, dispatch, state, rootGetters }, folder) {
             commit('SET_CURRENT_FOLDER_STATUS', 'loading')
             commit('SET_CURRENT_FOLDER', folder)
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
@@ -177,8 +177,10 @@ export default {
             // Send API request to fetch folder content
             await axios
                 .get(apiUrl)
-                .then(response => {
-                    Vue.set(state, 'files', response.data)
+                .then(async response => {
+                    const files = response.data
+                    await dispatch('initFiles', files)
+                    Vue.set(state, 'files', files)
                     commit('SET_CURRENT_FOLDER_STATUS', 'success')
                 })
                 .catch(err => {
@@ -193,7 +195,6 @@ export default {
             })
         },
         async insertOrUpdateFile({ commit, dispatch }, { file, addToState = true }) {
-            // console.log('insert or update', file, addToState)
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -221,7 +222,6 @@ export default {
                 data: requestBody,
             })
                 .then(async response => {
-                    // console.log('success!')
                     // Display message
                     const wasCreated = !file.id
                     const successMsg = wasCreated ? `${file.type} created` : `${file.type} updated`
@@ -238,7 +238,6 @@ export default {
                     )
                     // Set the files ID if not already set
                     if (wasCreated) file.id = response.data.id
-                    // console.log('done creating file', file)
                 })
                 .catch(err => {
                     // Display message
@@ -430,8 +429,6 @@ export default {
             // Send request to API
         },
         moveFiles({ state, rootGetters, commit, dispatch }, { destinationFolderId, filesToMove, undo }) {
-            // console.log('move files', destinationFolderId, filesToMove)
-
             let apiUrl = `/files/${destinationFolderId}/paste`
             if (destinationFolderId == 0) apiUrl = `/files/${rootGetters['workspaces/currentWorkspace'].id}/paste`
             // Send request to API
@@ -482,7 +479,6 @@ export default {
                 const imageMaps = []
                 products.map(product => {
                     product.variants.map(variant => {
-                        // console.log('variant to map', variant)
                         variant.pictures.map((picture, index) => {
                             if (!picture.url || picture.url.search('kollektcdn.com') >= 0) return // Don't upload images that don't exists or are already on our cdn
                             imageMaps.push({
@@ -494,8 +490,6 @@ export default {
                         })
                     })
                 })
-
-                // console.log('sync image maps', imageMaps)
 
                 // Return if we have no images to sync
                 if (imageMaps.length <= 0) {
@@ -528,7 +522,6 @@ export default {
                                 progressCallback(progressPercentage)
                             }
                             const urlMaps = response.data.media_url_maps
-                            // console.log('here are the uploaded images maps', urlMaps)
 
                             urlMaps.forEach((urlMap, index) => {
                                 const product = products.find(product =>
@@ -560,7 +553,6 @@ export default {
                 }
 
                 // Update the products when we are done uploading
-                // console.log('we are done syncing. Update the products', productsToUpdate)
                 await dispatch(
                     'products/updateManyProducts',
                     { file, products: productsToUpdate },
@@ -656,7 +648,83 @@ export default {
                         return file.parent.name
                     },
                 })
+                Vue.set(file, 'broadcastChannels', [])
+                file.isInitialized = true
             })
+        },
+        async fetchBroadcastChannels({ commit }, file) {
+            const apiUrl = `files/${file.id}/broadcast-channels`
+            let broadcastChannels = []
+            await axios.get(apiUrl).then(response => {
+                broadcastChannels = response.data
+                commit('SET_BROADCAST_CHANNELS', { file, broadcastChannels })
+            })
+            return broadcastChannels
+        },
+        async insertOrUpdateBroadcastChannel({ commit }, { file, broadcastChannel, addToState = true }) {
+            const isNew = !broadcastChannel.id
+            const apiUrl = isNew ? `files/${file.id}/broadcast-channels` : `broadcast-channels/${broadcastChannel.id}`
+            const apiMethod = isNew ? 'post' : 'put'
+
+            await axios({ url: apiUrl, method: apiMethod, data: broadcastChannel })
+                .then(response => {
+                    if (isNew) {
+                        Vue.set(broadcastChannel, 'id', response.data.id)
+                        if (addToState) {
+                            commit('INSERT_BROADCAST_CHANNELS', { file, broadcastChannels: [broadcastChannel] })
+                        }
+                    }
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Channel ${isNew ? 'created' : 'updated'}`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error when saving channel',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                        },
+                        { root: true }
+                    )
+                })
+            return broadcastChannel
+        },
+        async deleteBroadcastChannel({ commit }, { file, broadcastChannel }) {
+            commit('DELETE_BROADCAST_CHANNEL', { file, broadcastChannel })
+            const apiUrl = `broadcast-channels/${broadcastChannel.id}`
+            await axios
+                .delete(apiUrl)
+                .then(response => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `Broadcast channel deleted`,
+                            iconClass: 'far fa-trash',
+                            type: 'danger',
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit('INSERT_BROADCAST_CHANNELS', { file, broadcastChannels: [broadcastChannel] })
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Error when deletings broadcast channel.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                        },
+                        { root: true }
+                    )
+                })
         },
     },
 
@@ -763,6 +831,16 @@ export default {
         },
         SET_VIEW_NEW_FILE(state, bool) {
             state.viewNewFile = bool
+        },
+        SET_BROADCAST_CHANNELS(state, { file, broadcastChannels }) {
+            file.broadcastChannels = broadcastChannels
+        },
+        INSERT_BROADCAST_CHANNELS(state, { file, broadcastChannels }) {
+            file.broadcastChannels.push(...broadcastChannels)
+        },
+        DELETE_BROADCAST_CHANNEL(state, { file, broadcastChannel }) {
+            const index = file.broadcastChannels.findIndex(x => x.id == broadcastChannel.id)
+            if (index >= 0) file.broadcastChannels.splice(index, 1)
         },
     },
 }
