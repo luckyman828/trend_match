@@ -390,7 +390,7 @@ export default {
             await axios
                 .post(apiUrl, selection)
                 .then(async response => {
-                    selection.id = response.data.id
+                    Object.assign(selection, response.data)
                     dispatch('initSelections', [selection])
                     if (addToState) {
                         commit('insertSelections', { file, selections: [selection] })
@@ -1213,6 +1213,9 @@ export default {
                     chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
                 Vue.set(selection, 'chapterId', chatperId)
 
+                if (!selection.your_roles) {
+                    Vue.set(selection, 'your_roles', [])
+                }
                 if (!selection.your_role) {
                     Vue.set(selection, 'your_role', selection.your_roles[0])
                 }
