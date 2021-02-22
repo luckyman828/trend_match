@@ -111,7 +111,7 @@
             </button>
         </div>
 
-        <div class="resolve-actions flex-list sm" v-if="hasTicketControl">
+        <div class="resolve-actions flex-list sm" v-if="isTicket && hasTicketControl">
             <BaseButton
                 v-tooltip="'Accept'"
                 :disabled="!hasTicketControl"
