@@ -39,7 +39,7 @@
             <UploadStrategyScreen
                 v-if="currentScreenIndex == 1"
                 :uploadStrategy.sync="uploadStrategy"
-                @go-to-next-screen="currentScreenIndex++"
+                @go-to-next-screen="onGoToNextScreen"
             />
 
             <SelectFieldsScreen
@@ -141,7 +141,7 @@ export default {
             this.HIDE_COMPONENT('importFromSpreadsheetModal')
         },
         onGoToNextScreen() {
-            if (this.products.length > 0) {
+            if (this.products.length > 0 && (!this.uploadStrategy || !this.uploadStrategy.createNewProductSet)) {
                 this.currentScreenIndex++
                 return
             }
@@ -151,6 +151,8 @@ export default {
                 dataReplacementStrategy: 'smart',
                 removeExtraProducts: false,
                 addMissingProducts: true,
+                createNewVariants: true,
+                updateExistingVariants: false,
             }
             this.currentScreenIndex = 3
         },
