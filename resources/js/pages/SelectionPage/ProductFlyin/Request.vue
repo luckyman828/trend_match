@@ -51,6 +51,7 @@
 
                 <div class="label-wrapper">
                     <v-popover
+                        v-if="hasLabel || hasTicketControl"
                         ref="labelPopover"
                         trigger="click"
                         :disabled="!hasTicketControl"
