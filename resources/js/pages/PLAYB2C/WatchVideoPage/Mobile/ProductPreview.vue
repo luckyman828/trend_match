@@ -34,11 +34,11 @@ export default {
     overflow: hidden;
     .img-wrapper {
         width: 100%;
-        height: 102px;
+        height: 106px;
         img {
             height: 100%;
             width: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
     }
     .price-wrapper {

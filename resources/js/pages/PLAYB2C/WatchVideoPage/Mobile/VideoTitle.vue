@@ -13,8 +13,10 @@
                 <i class="fas fa-arrow-left"></i>
             </button>
             <div class="title">
-                <div class="video-name">[Video Name]</div>
-                <div class="brand-name">{{ workspace.title }}</div>
+                <!-- <div class="video-name">Matíníque</div>
+                <div class="brand-name">{{ workspace.title }}</div> -->
+                <div class="video-name">Main Spring 2021</div>
+                <div class="brand-name">Matíníque</div>
             </div>
         </div>
     </div>

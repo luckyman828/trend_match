@@ -1,5 +1,5 @@
 <template>
-    <div class="watch-video-page" :class="`desired-${desiredStatus}`">
+    <div class="watch-video-page" :class="[`desired-${desiredStatus}`, { 'recently-started': recentlyStarted }]">
         <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false" :hideTimeline="true">
             <BeforeStartOverlay :video="video" v-if="!playerStarted" @start="onStartPlaying" />
 
