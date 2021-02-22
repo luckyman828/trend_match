@@ -93,10 +93,6 @@
             </v-popover>
             <!-- END SYSTEM ADMIN -->
 
-            <button class="primary" v-if="authUserWorkspaceRole == 'Admin'" @click="showImportInputModal = true">
-                <i class="far fa-file-import"></i>
-                <span>Import input</span>
-            </button>
 
             <div class="scanner-mode-toggle">
                 <BaseToggle
@@ -108,6 +104,10 @@
             </div>
 
             <SelectionPresenterModeButton :selection="currentSelection" />
+            <button class="primary" v-if="authUserWorkspaceRole == 'Admin'" @click="showImportInputModal = true">
+                <i class="far fa-file-import"></i>
+                <span>Import input</span>
+            </button>
 
             <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
                 <button class="button primary">
