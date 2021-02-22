@@ -93,7 +93,6 @@
             </v-popover>
             <!-- END SYSTEM ADMIN -->
 
-
             <div class="scanner-mode-toggle">
                 <BaseToggle
                     label="Scanner Mode"
@@ -104,6 +103,7 @@
             </div>
 
             <SelectionPresenterModeButton :selection="currentSelection" />
+
             <button class="primary" v-if="authUserWorkspaceRole == 'Admin'" @click="showImportInputModal = true">
                 <i class="far fa-file-import"></i>
                 <span>Import input</span>
