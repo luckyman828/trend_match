@@ -110,11 +110,11 @@ export default {
             // First, find images that match a variant --> Our, imageMatches
             this.imagesToUpload.map(image => {
                 // Check that the image actually belongs to a variant of one of our products
-                const productId = image.name.slice(0, 8)
+                const underscoreIndex = image.name.indexOf('_')
+                const productId = image.name.slice(0, underscoreIndex)
                 if (!productId) return
 
                 // Find the variant name
-                const underscoreIndex = image.name.indexOf('_')
                 // const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)/)
                 // const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^_]*)/)
                 const variantNameMatches = image.name.slice(underscoreIndex).match(/^_([^\.\-\_]*)-?([^\.\-\_]*)/)
