@@ -3,7 +3,7 @@
 // Create Player
 const playerEl = document.createElement('div')
 playerEl.style.cssText =
-    'position: fixed; left: 0; top: 0; height: 100vh; width: 100vw; z-index: 99999; display: none; background: grey;'
+    'position: fixed; left: 0; top: 0; height: 100vh; width: 100vw; z-index: 99999; display: none; min-height: 100vh;min-width: 100vw;max-height: 100vh;overflow: hidden;background: #f4f6ff;scroll-behavior: smooth;min-height: -webkit-fill-available;height: -webkit-fill-available;'
 
 // Close button
 const closeButton = document.createElement('button')
@@ -24,7 +24,6 @@ document.body.appendChild(playerEl)
 // Add click listener
 document.addEventListener('click', function(e) {
     const button = e.target
-    console.log('button', button, e)
     if (!button.getAttribute('data-kollekt-play-id')) {
         return
     }
