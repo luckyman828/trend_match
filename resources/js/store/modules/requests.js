@@ -262,6 +262,19 @@ export default {
                     },
                 })
 
+                // START THREAD COMMENTS
+                request.discussions.map(comment => {
+                    Object.defineProperty(comment, 'author', {
+                        get: function() {
+                            return rootGetters['selectionProducts/getSelectionUsers'].find(
+                                user => user.id == request.author_id
+                            )
+                        },
+                    })
+                })
+
+                // END THREAD COMMENTS
+
                 request.hasBeenInitialized = true
             })
         },
