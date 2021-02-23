@@ -1,5 +1,5 @@
 <template>
-    <PageLoader :status="status" loadingMsg="Loading video">
+    <PageLoader v-if="videoStatus != '404'" :status="status" loadingMsg="Loading video">
         <template v-slot:mobile>
             <MobileWatchVideoPage />
         </template>
@@ -7,13 +7,20 @@
             <DekstopWatchVideoPage />
         </template>
     </PageLoader>
+    <div class="error-wrapper flex-list center-v center-h flex-v" v-else>
+        <img src="/images/undraw_void_3ggu.svg" alt="not found image" />
+        <p>
+            Video with ID: <strong>{{ $route.params.videoId }}</strong
+            >, not found
+        </p>
+    </div>
 </template>
 
 <script>
 import PageLoader from '../../../components/common/PageLoader'
 import MobileWatchVideoPage from './Mobile/WatchVideoPage'
 import DekstopWatchVideoPage from './Desktop/WatchVideoPage'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'watchVideoPageLoader',
     components: {
@@ -27,8 +34,11 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('videoPresentation', {
+            videoStatus: 'getStatus',
+        }),
         status() {
-            return this.loadingData ? 'loading' : 'success'
+            return this.videoStatus == '404' ? 'error' : this.loadingData ? 'loading' : 'success'
         },
     },
     methods: {
@@ -41,6 +51,7 @@ export default {
             // Fetch video
             const videoId = this.$route.params.videoId
             const video = await this.fetchVideo(videoId)
+            if (!video) return
             const fileVideo = await this.fetchFileVideo(video.file.id)
             this.SET_CURRENT_VIDEO(fileVideo)
 
@@ -56,4 +67,13 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+.error-wrapper {
+    height: 100%;
+    img {
+        width: 80%;
+        max-width: 320px;
+        margin-bottom: 20px;
+    }
+}
+</style>

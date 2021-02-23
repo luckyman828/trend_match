@@ -11,9 +11,15 @@
         ]"
     >
         <LoginRoot v-if="!isAuthenticated" />
+
+        <transition name="fade" v-else-if="$route.path && $route.path.startsWith('/play')">
+            <router-view :key="$route.path"></router-view>
+        </transition>
+
+        <!-- <PLAYB2CRoot v-else-if="$route.path && $route.path.startsWith('/play')" /> -->
+
         <RootLoader v-else-if="!$route.meta.root" />
         <SELECTRoot v-else-if="$route.meta.root == 'select'" />
-        <PLAYB2CRoot v-else-if="$route.meta.root == 'play'" />
 
         <div class="error-wrapper" v-else>
             <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />

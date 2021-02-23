@@ -171,14 +171,29 @@ const selectRoutes = [
 
 const playRoutes = [
     {
-        path: '/watch/:videoId',
-        name: 'watchVideo',
-        meta: {
-            root: 'play',
-            isFullscreen: true,
-            hideCrisp: true,
-        },
-        component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/WatchVideoPage/'),
+        path: '/play/',
+        name: 'play',
+        component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
+        children: [
+            {
+                path: 'home',
+                name: 'playHome',
+                component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
+            },
+            {
+                path: 'watch/:videoId',
+                name: 'watchVideo',
+                meta: {
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/WatchVideoPage/'),
+            },
+            {
+                path: '*',
+                redirect: 'home',
+            },
+        ],
     },
 ]
 
@@ -189,9 +204,10 @@ const decorateRoutes = (decoration, routes) => {
     })
 }
 // decorateRoutes('select', selectRoutes)
-decorateRoutes('play', playRoutes)
+// decorateRoutes('play', playRoutes)
 
-const routes = [...selectRoutes, ...playRoutes, { path: '*', redirect: '/files' }]
+// const routes = [...selectRoutes, ...playRoutes, { path: '*', redirect: '/files' }]
+const routes = [...selectRoutes, ...playRoutes]
 
 const router = new VueRouter({
     routes, // short for `routes: routes`
