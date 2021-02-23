@@ -1355,6 +1355,7 @@ export default {
                     source_selection_id: sourceSelection.id,
                     destination_selection_id: destinationSelection.id,
                     actions,
+                    is_copy: true,
                 })
                 .then(response => {
                     const showCallback = router.currentRoute.name == 'selection'
