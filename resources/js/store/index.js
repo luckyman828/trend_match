@@ -32,6 +32,7 @@ import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
 import wishlist from './modules/playb2c/wishlist'
 import basket from './modules/playb2c/basket'
+import videos from './modules/playb2c/videos'
 const cloneDeep = require('clone-deep')
 
 // Load Vuex
@@ -71,6 +72,7 @@ export const initialStoreModules = {
     selectionProducts,
     wishlist,
     basket,
+    videos,
 }
 
 // const store = new Vuex.Store({

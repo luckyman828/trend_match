@@ -1,6 +1,6 @@
 <template>
     <div class="play-home">
-        <h1>I am the home of play</h1>
+        <h1>Library</h1>
         <VideoGrid />
     </div>
 </template>
@@ -16,6 +16,5 @@ export default {
 
 <style lang="scss" scoped>
 .play-home {
-    padding: 16px;
 }
 </style>

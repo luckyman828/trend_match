@@ -171,7 +171,7 @@ const selectRoutes = [
 
 const playRoutes = [
     {
-        path: '/play/',
+        path: '/play',
         name: 'play',
         component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
         children: [
