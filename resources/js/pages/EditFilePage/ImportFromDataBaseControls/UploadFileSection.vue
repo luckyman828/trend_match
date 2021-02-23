@@ -26,8 +26,8 @@
 
 <script>
 import { mapMutations } from 'vuex'
-import BaseSelectButtonsContextMenu from '../../components/ui/input/BaseSelectButtonsContextMenu.vue'
-import workbookUtils from '../../mixins/workbookUtils'
+import BaseSelectButtonsContextMenu from '../../../components/ui/input/BaseSelectButtonsContextMenu.vue'
+import workbookUtils from '../../../mixins/workbookUtils'
 export default {
     components: { BaseSelectButtonsContextMenu },
     name: 'uploadFileSection',
