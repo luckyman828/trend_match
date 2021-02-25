@@ -259,6 +259,9 @@ export default {
                             let keysToMatch = Object.keys(existingArrayItem)
                             if (key == 'variants') {
                                 keysToMatch = ['name']
+                                // if the src product's variants have no variant, only look at color, and vice versa
+                                if (!srcProduct.variants.find(x => x.variant)) keysToMatch.push('color')
+                                if (!srcProduct.variants.find(x => x.color)) keysToMatch.push('variant')
                             }
                             return keysToMatch.find(itemKey => {
                                 let isMatching =
