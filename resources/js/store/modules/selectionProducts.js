@@ -60,7 +60,7 @@ export default {
 
             return products
         },
-        async initSelections({}, selections) {
+        async initSelections({ getters, rootGetters }, selections) {
             selections.map(selection => {
                 const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
                 const chatperId =
@@ -116,7 +116,8 @@ export default {
 
                 Object.defineProperty(selection, 'chapter', {
                     get: () => {
-                        return getters.getSelectionChapter(selection)
+                        console.log('get selection chatper')
+                        return rootGetters['selections/getSelectionChapter'](selection)
                     },
                 })
             })
