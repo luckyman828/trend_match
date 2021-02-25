@@ -26,6 +26,13 @@
                             {{ availableProducts.length }}</span
                         >
                     </div>
+                    <div class="item-group">
+                        <LabelList
+                            v-if="labelsEnabled || product.labels.length > 0"
+                            :product="product"
+                            v-horizontal-scroll
+                        />
+                    </div>
                 </template>
                 <template v-slot:right>
                     <div
@@ -324,6 +331,7 @@ import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import BudgetCounter from '../BudgetCounter'
+import LabelList from '../ProductsTableRow/LabelList'
 // import RequestThreadFlyin from './RequestThreadFlyin'
 import RequestThreadSection from './RequestThreadSection'
 import HotkeyHandler from '../../../components/common/HotkeyHandler'
@@ -342,6 +350,7 @@ export default {
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
+        LabelList,
         // RequestThreadFlyin,
         RequestThreadSection,
         HotkeyHandler,
@@ -406,6 +415,9 @@ export default {
             activeSelectionList: 'getCurrentSelections',
             isObserver: 'getViewingAsObserver',
         }),
+        ...mapGetters('workspaces', {
+            availableLabels: 'getAvailableProductLabels',
+        }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
         ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
         selectionInput() {
@@ -445,6 +457,9 @@ export default {
         },
         ticketsEnabled() {
             return this.selection.settings.ticket_level != 'None'
+        },
+        labelsEnabled() {
+            return this.availableLabels.length > 0
         },
     },
     methods: {
@@ -640,6 +655,19 @@ export default {
                     margin-right: -4px;
                 }
             }
+        }
+    }
+    .label-list {
+        position: static;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+        margin-bottom: -12px;
+        > * {
+            flex-shrink: 0;
+        }
+        .add-button {
+            display: block;
         }
     }
 }

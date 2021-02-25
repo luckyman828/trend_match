@@ -19,6 +19,13 @@
                             {{ availableProducts.length }}</span
                         >
                     </div>
+                    <div class="item-group">
+                        <LabelList
+                            v-if="labelsEnabled || product.labels.length > 0"
+                            :product="product"
+                            v-horizontal-scroll
+                        />
+                    </div>
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
@@ -746,6 +753,7 @@ import axios from 'axios'
 import variantImage from '../../mixins/variantImage'
 import VariantNameInput from './VariantNameInput'
 import CustomPropertyArray from './CustomPropertyArray'
+import LabelList from '../SelectionPage/ProductsTableRow/LabelList'
 
 export default {
     name: 'editProductFlyin',
@@ -755,6 +763,7 @@ export default {
         Draggable,
         VariantNameInput,
         CustomPropertyArray,
+        LabelList,
     },
     data: function() {
         return {
@@ -797,6 +806,7 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
+            availableLabels: 'getAvailableProductLabels',
         }),
         product() {
             return this.productToEdit
@@ -835,6 +845,9 @@ export default {
                 }
             })
             return filesToDelete
+        },
+        labelsEnabled() {
+            return this.availableLabels.length > 0
         },
     },
     methods: {
@@ -1293,6 +1306,22 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+
+::v-deep {
+    .label-list {
+        position: static;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 8px;
+        margin-bottom: -12px;
+        > * {
+            flex-shrink: 0;
+        }
+        .add-button {
+            display: block;
+        }
+    }
+}
 
 .product-title-wrapper {
     flex-direction: column;
