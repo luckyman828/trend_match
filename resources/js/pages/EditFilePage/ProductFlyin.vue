@@ -1,5 +1,11 @@
 <template>
-    <BaseFlyin class="edit-product-single" :show="show" @close="onCloseSingle" :columns="2">
+    <BaseFlyin
+        class="edit-product-single"
+        :show="show"
+        @close="onCloseSingle"
+        :columns="2"
+        :class="{ 'has-labels': showLabels }"
+    >
         <template v-slot:header>
             <BaseFlyinHeader
                 v-if="show"
@@ -21,6 +27,7 @@
                     </div>
                     <div class="item-group">
                         <LabelList
+                            ref="labelList"
                             v-if="labelsEnabled || product.labels.length > 0"
                             :product="product"
                             v-horizontal-scroll
@@ -807,9 +814,13 @@ export default {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
             availableLabels: 'getAvailableProductLabels',
+            workspaceRole: 'authUserWorkspaceRole',
         }),
         product() {
             return this.productToEdit
+        },
+        showLabels() {
+            return this.labelsEnabled || this.product.labels.length > 0
         },
         originalProduct() {
             return this.currentProduct
@@ -848,6 +859,9 @@ export default {
         },
         labelsEnabled() {
             return this.availableLabels.length > 0
+        },
+        hasLabelWriteAccess() {
+            return this.labelsEnabled && this.workspaceRole == 'Admin'
         },
     },
     methods: {
@@ -1115,6 +1129,30 @@ export default {
             // Only do these if the current target is not the comment box
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'KeyS' && this.saveActive) this.onUpdateProduct()
+
+                // Label hotkeys
+                if (this.hasLabelWriteAccess) {
+                    // Number hotkey
+                    if (parseInt(e.key)) {
+                        const pressedNumber = e.key
+                        const label = this.availableLabels[pressedNumber - 1]
+                        if (!label) return
+
+                        // Check if the label is already added
+                        const existingIndex = this.product.labels.findIndex(x => x == label)
+                        if (existingIndex >= 0) {
+                            this.product.labels.splice(existingIndex, 1)
+                        } else {
+                            this.product.labels.push(label)
+                        }
+                        this.onUpdateProduct()
+                    }
+                    // Hashtag
+                    if (e.key == '#') {
+                        // Open labels menu
+                        this.$refs.labelList.$refs.popover.show()
+                    }
+                }
             }
         },
         dragActive(e, index) {
@@ -1308,17 +1346,30 @@ export default {
 @import '~@/_variables.scss';
 
 ::v-deep {
-    .label-list {
-        position: static;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 8px;
-        margin-bottom: -12px;
-        > * {
-            flex-shrink: 0;
+    &.has-labels {
+        .flyin-header {
+            margin-bottom: 40px;
         }
-        .add-button {
-            display: block;
+        .label-list {
+            top: 76px;
+            left: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0 16px 6px;
+            max-width: none;
+            &::after {
+                content: '';
+                display: block;
+                width: 16px;
+                height: 1px;
+                flex-shrink: 0;
+            }
+            > * {
+                flex-shrink: 0;
+            }
+            .add-button {
+                display: block;
+            }
         }
     }
 }
