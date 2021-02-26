@@ -1,7 +1,7 @@
 <template>
-    <div class="label-list flex-list">
+    <div class="label-list flex-list" v-horizontal-scroll>
         <button
-            class="list-item pill dark xs"
+            class="list-item pill xs"
             :class="[{ 'primary-hover': hasWriteAccess }]"
             v-for="(label, index) in labelsSorted"
             :key="label"
@@ -136,9 +136,12 @@ export default {
     left: 0;
     top: -36px;
     max-width: calc(100vw - 460px);
+    padding-bottom: 6px;
+    overflow-x: auto;
     cursor: default;
     .list-item {
         padding-right: 4px;
+        flex-shrink: 0;
         .hover-only {
             display: none;
         }
