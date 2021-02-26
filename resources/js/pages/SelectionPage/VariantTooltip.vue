@@ -163,7 +163,7 @@ export default {
                 this.newQuantity = 0
             }
             let currentAction
-            let newProductAction = newAction
+            let newProductAction = this.selectionInput[this.currentAction]
 
             if (this.selectionMode == 'Feedback') {
                 // Find the users feedback action for the product and make sure it is not None

@@ -25,7 +25,7 @@
             </span>
 
             <!-- Comment Controls -->
-            <div class="controls" v-if="!editActive && comment.author_id == authUser.id">
+            <div class="controls" v-if="!editActive && hasEditAccess">
                 <!-- comment error -->
                 <span
                     v-if="comment.error"
@@ -107,6 +107,9 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         isOwn() {
             return this.comment.author_id == this.authUser.id
+        },
+        hasEditAccess() {
+            return this.isOwn || (this.comment.role != 'Approver' && this.request.selection.your_role == 'Owner')
         },
     },
     methods: {

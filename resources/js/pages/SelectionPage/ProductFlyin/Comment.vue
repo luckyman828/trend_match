@@ -6,6 +6,7 @@
             { master: comment.selection && comment.selection.type == 'Master' },
             { 'has-traits': hasTraits },
             { 'edit-active': editActive },
+            { 'has-edit-access': hasEditAccess },
         ]"
     >
         <div class="traits">
@@ -120,12 +121,11 @@ export default {
         isOwn() {
             return this.comment.user_id == this.authUser.id
         },
+        hasEditAccess() {
+            return this.isOwn || this.comment.selection.your_role == 'Owner'
+        },
         hasTraits() {
-            return (
-                this.comment.important ||
-                // || this.comment.votes.length > 0
-                this.comment.focus
-            )
+            return this.comment.important || this.comment.focus
         },
         commentIsAnonymized() {
             const yourRole = this.selectionInput.selection.your_role
@@ -249,6 +249,7 @@ export default {
         color: $dark;
     }
     .own &:hover,
+    .has-edit-access &:hover,
     &.failed {
         font-weight: 700;
         .controls {

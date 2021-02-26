@@ -76,6 +76,9 @@ export default {
     position: relative;
     line-height: 0;
     cursor: auto;
+    &.disabled {
+        opacity: 0.5;
+    }
     input[type='checkbox'] {
         position: absolute;
         display: block;

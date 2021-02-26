@@ -42,9 +42,8 @@ export default {
                 .get(apiUrl)
                 .then(async response => {
                     const selections = response.data.selections
-                    await dispatch('selections/initSelections', selections, { root: true })
+                    await dispatch('initSelections', selections)
                     commit('INSERT_SELECTIONS', selections)
-                    commit('selections/insertSelections', { selections, method: 'set' }, { root: true })
                     commit('INSERT_SELECTION_USERS', response.data.users)
                     products = response.data.products
                     const selectionProductInput = { selection, products }
@@ -61,11 +60,68 @@ export default {
 
             return products
         },
-        // async initSelections({  }, selections) {
-        //     selections.map(selection => {
+        async initSelections({ getters, rootGetters }, selections) {
+            selections.map(selection => {
+                const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
+                const chatperId =
+                    chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
+                Vue.set(selection, 'chapterId', chatperId)
 
-        //     })
-        // },
+                if (!selection.your_roles) {
+                    Vue.set(selection, 'your_roles', [])
+                }
+                if (!selection.your_role) {
+                    Vue.set(selection, 'your_role', selection.your_roles[0])
+                }
+
+                // Visible
+                Object.defineProperty(selection, 'is_visible', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.visible_from && new Date(selection.visible_from)
+                        const to = selection.visible_to && new Date(selection.visible_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
+                    },
+                })
+                // Locked
+                Object.defineProperty(selection, 'is_open', {
+                    get: () => {
+                        const now = new Date()
+                        const from = selection.open_from && new Date(selection.open_from)
+                        const to = selection.open_to && new Date(selection.open_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
+                    },
+                })
+                // Completed
+                Object.defineProperty(selection, 'is_completed', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.completed_at
+                        return !!from && now > from
+                    },
+                })
+
+                // Visible
+                Object.defineProperty(selection, 'presentation', {
+                    get: () => {
+                        if (!selection.presentation_id) return
+                        const presentations = rootGetters['presentation/getPresentations']
+                        return presentations.find(x => x.id == selection.presentation_id)
+                    },
+                })
+
+                Object.defineProperty(selection, 'chapter', {
+                    get: () => {
+                        console.log('get selection chatper')
+                        return rootGetters['selections/getSelectionChapter'](selection)
+                    },
+                })
+            })
+        },
         async mergeProductsWithSelectionInput({ state, rootGetters, dispatch }, { selectionProductInput, authUser }) {
             const products = rootGetters['products/getAllProducts'].filter(product => {
                 return !!selectionProductInput.products.find(x => x.id == product.id)
