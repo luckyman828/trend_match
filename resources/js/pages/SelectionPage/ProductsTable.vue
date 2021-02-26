@@ -736,12 +736,12 @@ export default {
                 // this.$refs.searchField.setFocus()
                 e.preventDefault() // Avoid entering an "s" in the search field
             }
-            if (key == 'Tab' && !e.shiftKey) {
-                if (this.currentFocusRowIndex == null) {
-                    e.preventDefault()
-                    this.setCurrentFocusRowIndex(0)
-                }
-            }
+            // if (key == 'Tab' && !e.shiftKey) {
+            //     if (this.currentFocusRowIndex == null) {
+            //         e.preventDefault()
+            //         this.setCurrentFocusRowIndex(0)
+            //     }
+            // }
         },
     },
     created() {

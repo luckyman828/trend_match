@@ -2,7 +2,7 @@
     <div class="label-list flex-list">
         <button
             class="list-item pill dark xs"
-            :class="{ 'primary-hover': hasWriteAccess }"
+            :class="[{ 'primary-hover': hasWriteAccess }]"
             v-for="(label, index) in labelsSorted"
             :key="label"
             @click="hasWriteAccess && onRemoveLabel(index)"
@@ -15,13 +15,15 @@
                 <i class="far fa-plus"></i>
                 <span>Add Label</span>
             </button>
-            <BaseContextMenu :inline="true" slot="popover">
+            <BaseContextMenu :inline="true" slot="popover" tabindex="0" ref="contextMenu">
                 <div class="item-group">
                     <BaseSelectButtons
                         :options="availableLabels"
                         v-model="product.labels"
                         type="select"
                         :submitOnChange="true"
+                        ref="selectButtons"
+                        :focusOptionIndex="popoverOptionIndex"
                     >
                         <template v-slot:before="slotProps">
                             <span>{{ getLabelIndex(slotProps.option) + 1 }} - </span>
@@ -48,6 +50,7 @@ export default {
     data: function() {
         return {
             isOpen: false,
+            popoverOptionIndex: -1,
         }
     },
     computed: {
@@ -103,6 +106,24 @@ export default {
         onShowPopover(isOpen) {
             if (this.isOpen) this.onUpdateProduct()
             this.isOpen = isOpen
+
+            // If now visible
+            if (isOpen) {
+                this.popoverOptionIndex = -1
+                document.addEventListener('keydown', this.keydownHandler)
+            } else {
+                document.removeEventListener('keydown', this.keydownHandler)
+            }
+        },
+        keydownHandler(e) {
+            const key = e.key
+            if (key == 'ArrowUp' || key == 'ArrowDown') {
+                e.preventDefault()
+                e.stopPropagation()
+                if (key == 'ArrowUp' && this.popoverOptionIndex > 0) this.popoverOptionIndex--
+                if (key == 'ArrowDown' && this.popoverOptionIndex < this.availableLabels.length - 1)
+                    this.popoverOptionIndex++
+            }
         },
     },
 }
