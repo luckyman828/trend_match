@@ -6,17 +6,25 @@
         </button>
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="onHide">
             <SortListItem
+                v-if="enabledSortKeys.includes('labels')"
                 icon="far fa-tag"
                 :sortKey="'labels'"
                 label="Labels"
                 :currentSortKey="currentSortKey"
                 @sort="onSort"
             />
+            <div class="item-wrapper" v-if="enabledSortKeys.length <= 0">
+                <div class="icon-wrapper">
+                    <i class="far fa-info-circle"></i>
+                </div>
+                <p>Your workspace doesn't have any keys enabled to sort by.</p>
+            </div>
         </BaseContextMenu>
     </v-popover>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import SortListItem from './SortListItem'
 
 export default {
@@ -27,6 +35,19 @@ export default {
         return {
             show: false,
         }
+    },
+    computed: {
+        ...mapGetters('workspaces', {
+            availableProductLabels: 'getAvailableProductLabels',
+        }),
+        enabledSortKeys() {
+            const keys = []
+            if (this.labelsEnabled) keys.push('labels')
+            return keys
+        },
+        labelsEnabled() {
+            return this.availableProductLabels.length > 0
+        },
     },
     methods: {
         onSort(sortKey, sortAsc) {

@@ -21,7 +21,7 @@
         >
             <template v-slot:topBarLeft>
                 <ProductFilters />
-                <ProductSort />
+                <ProductSort :currentSortKey="sortKey" @sort="onSort" />
 
                 <BaseCheckboxInputField class="small" v-model="noImagesOnly">
                     <span>No images only</span>
