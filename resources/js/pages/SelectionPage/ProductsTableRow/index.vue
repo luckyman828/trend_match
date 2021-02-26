@@ -384,7 +384,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && this.currentFile.editable
+            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
         },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
