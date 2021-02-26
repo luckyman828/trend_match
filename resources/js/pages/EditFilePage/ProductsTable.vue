@@ -21,6 +21,7 @@
         >
             <template v-slot:topBarLeft>
                 <ProductFilters />
+                <ProductSort />
 
                 <BaseCheckboxInputField class="small" v-model="noImagesOnly">
                     <span>No images only</span>
@@ -214,6 +215,7 @@ import ProductsTableRow from './ProductsTableRow'
 import NoProductsRow from './NoProductsRow'
 import sortArray from '../../mixins/sortArray'
 import ProductFilters from '../SelectionPage/ProductFilters'
+import ProductSort from '../SelectionPage/ProductSort'
 
 export default {
     name: 'editProductsTable',
@@ -221,6 +223,7 @@ export default {
     components: {
         ProductsTableRow,
         ProductFilters,
+        ProductSort,
         NoProductsRow,
     },
     mixins: [sortArray],
