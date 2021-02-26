@@ -416,6 +416,9 @@ export default {
             availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
         }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
         ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
         selectionInput() {
@@ -463,7 +466,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.workspaceRole == 'Admin' || this.selectionRole == 'Alignment')
+            return this.labelsEnabled && this.currentFile.editable
         },
     },
     methods: {

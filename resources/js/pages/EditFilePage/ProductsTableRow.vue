@@ -117,6 +117,9 @@ export default {
         ...mapGetters('workspaces', {
             availableLabels: 'getAvailableProductLabels',
         }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
         localSelectedProducts: {
             get() {
                 return this.selectedProducts
@@ -132,7 +135,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled
+            return this.labelsEnabled && this.currentFile.editable
         },
     },
     methods: {

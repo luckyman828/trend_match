@@ -861,7 +861,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && this.workspaceRole == 'Admin'
+            return this.labelsEnabled && this.currentFile.editable
         },
     },
     methods: {

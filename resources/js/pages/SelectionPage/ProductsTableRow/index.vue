@@ -377,11 +377,14 @@ export default {
             availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
         }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
         labelsEnabled() {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.workspaceRole == 'Admin' || this.selectionRole == 'Alignment')
+            return this.labelsEnabled && this.currentFile.editable
         },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
