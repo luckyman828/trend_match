@@ -661,11 +661,16 @@ export default {
 ::v-deep {
     &.product-single {
         &.has-labels {
+            &.has-budget {
+                .label-list {
+                    top: 76px;
+                }
+            }
             .flyin-header {
                 margin-bottom: 40px;
             }
             .label-list {
-                top: 76px;
+                top: 68px;
                 left: 0;
                 overflow-x: auto;
                 overflow-y: hidden;
