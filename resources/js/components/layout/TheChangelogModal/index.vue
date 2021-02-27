@@ -56,8 +56,8 @@
                 <h3>Minor tweaks & fixes</h3>
                 <ul>
                     <li>
-                        When export results to CSV, requests/tickets now have a column in the CSV per label, to make it
-                        easier to analyze by ticket labels.
+                        Exporting results to CSV: Requests/tickets now have a column in the CSV per label, to make it
+                        easier to analyze by labels.
                     </li>
                     <li>Various small fixes to the newly introduced chapters.</li>
                 </ul>
