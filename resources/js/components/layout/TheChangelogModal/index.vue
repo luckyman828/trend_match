@@ -3,7 +3,7 @@
         <ChangelogPost
             title="Gingham: Black"
             date="February 2021 Bonus Release"
-            featuredImgUrl="/images/blog/undraw_Hiking_re_k0bc.svg"
+            featuredImgUrl="/images/blog/undraw_Content_structure_re_ebkv.svg"
         >
             <template v-slot:lead>
                 <p>
