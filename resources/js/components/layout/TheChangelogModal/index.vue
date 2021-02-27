@@ -1,6 +1,77 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Gingham: Black"
+            date="February 2021 Bonus Release"
+            featuredImgUrl="/images/blog/undraw_Hiking_re_k0bc.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    Finally we are able to bring you Black, featuring lots of quality-of-life updates requested by you.
+                    Enjoy.
+                </p>
+            </template>
+            <template v-slot:body>
+                <h3>Mighty selection owners</h3>
+                <ul>
+                    <li>
+                        Selection owners are now able to delete any comment, request, or ticket on their selection or a
+                        descendant of it.
+                    </li>
+                    <li>
+                        Selection owners can now set labels for any ticket or request made in their selection or a
+                        descendant of it.
+                    </li>
+                </ul>
+
+                <h3>Import selection input</h3>
+                <p>
+                    It is now possible to import feedback, alignment, comments, and/or request/tickets from one
+                    selection to another.
+                </p>
+                <p>
+                    Simply go to the selection you wish to import to and find the new "Import input" button in the top
+                    navbar.
+                </p>
+                <p>
+                    Importing variant input from one file to another is only available if the files are clones of each
+                    other.
+                </p>
+
+                <h3>Export IN variants only</h3>
+                <p>When making a custom CSV export, you can now check a box to export "IN-variant only".</p>
+                <p>The CSV will then only include variants where the action is IN or FOCUS.</p>
+
+                <h3>Create New Products option on import from spreadsheet modal</h3>
+                <p>
+                    When importing from spreadsheet to an existing file, a new option has been added to "Create new
+                    products".
+                </p>
+                <p>
+                    This vastly simplifies the process of adding more products to a file with existing products, without
+                    affecting the existing products.
+                </p>
+                <p>This option takes care of all import settings for you, so you can safely import more products.</p>
+
+                <h3>Minor tweaks & fixes</h3>
+                <ul>
+                    <li>
+                        When export results to CSV, requests/tickets now have a column in the CSV per label, to make it
+                        easier to analyze by ticket labels.
+                    </li>
+                    <li>Various small fixes to the newly introduced chapters.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Gingham: Bittersweet"
             date="February 2021 Release"
             featuredImgUrl="/images/blog/undraw_Hiking_re_k0bc.svg"
