@@ -1350,6 +1350,12 @@ export default {
         .flyin-header {
             margin-bottom: 40px;
         }
+        .flyin {
+            background: white;
+            > .body {
+                border-top: $borderModule;
+            }
+        }
         .label-list {
             top: 68px;
             left: 0;
