@@ -552,7 +552,7 @@
                 <div class="EANs form-section">
                     <h3>Variant Sizes</h3>
                     <div v-if="!currentVariant">
-                        <p>Click a variant to manage it's sizes</p>
+                        <p>Click a variant to manage it</p>
                     </div>
 
                     <div v-else>
@@ -595,9 +595,29 @@
                 </div>
 
                 <div class="form-section variant-custom-props">
+                    <h3>Variant Option Id</h3>
+                    <div v-if="!currentVariant">
+                        <p>Click a variant to manage it</p>
+                    </div>
+
+                    <div class="custom-property-list" v-else>
+                        <div class="form-element">
+                            <label>Option Id</label>
+                            <BaseEditInputWrapper
+                                :value="currentVariant.style_option_id"
+                                :oldValue="currentVariant.style_option_id"
+                                v-model="currentVariant.style_option_id"
+                                :submitOnBlur="true"
+                                @submit="onSubmitField"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section variant-custom-props">
                     <h3>Variant Custom Data</h3>
                     <div v-if="!currentVariant">
-                        <p>Click a variant to manage it's sizes</p>
+                        <p>Click a variant to manage it</p>
                     </div>
 
                     <div class="custom-property-list" v-else>
@@ -963,6 +983,7 @@ export default {
             const newVariant = {
                 id: this.$uuid.v4(),
                 name: 'Unnamed',
+                style_option_id: null,
                 color: null,
                 variant: null,
                 image: null,

@@ -161,6 +161,7 @@ export default {
                 this.initWorkspace()
                 this.initSignalR()
                 this.initCrispChat()
+                this.getActiveJobs()
             }
         },
         // Watch for workspace changes
@@ -184,6 +185,7 @@ export default {
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
+        ...mapActions('backgroundJobs', ['getActiveJobs']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),

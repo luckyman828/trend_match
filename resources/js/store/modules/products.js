@@ -373,6 +373,15 @@ export default {
                 })
             return products
         },
+        async fetchProduct({ commit, dispatch }, productId) {
+            const apiUrl = `products/${productId}`
+
+            let product
+            await axios.get(apiUrl).then(async response => {
+                product = response.data
+            })
+            return product
+        },
         async showSelectionProductPDP({ getters, commit, dispatch }, { product, selection }) {
             // If the selection has no settings fetched, fetch the settings
             if (!selection.settings) await dispatch('selections/fetchSelectionSettings', selection, { root: true })
@@ -434,6 +443,12 @@ export default {
                         products.map(product => {
                             product.id = response.data.added_product_id_map[product.datasource_id]
                         })
+
+                        // Start image sync job
+                        const syncJobId = response.data.download_image_progress_id
+                        if (syncJobId != 0) {
+                            dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
+                        }
 
                         if (addToState) {
                             commit('insertProducts', { products, method: 'add' })
@@ -614,6 +629,12 @@ export default {
                             },
                             { root: true }
                         )
+
+                        // Start image sync job
+                        const syncJobId = response.data.download_image_progress_id
+                        if (syncJobId != 0) {
+                            dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
+                        }
 
                         products.map(product => {
                             commit('updateProduct', product)
