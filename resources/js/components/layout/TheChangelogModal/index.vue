@@ -1,6 +1,44 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Gingham: Blue"
+            date="March 2021, 1st Bonus Release"
+            featuredImgUrl="/images/blog/undraw_fireworks_q5ji.svg"
+        >
+            <template v-slot:lead>
+                <p>We are on <i>fuego</i>, bringing you yet a another set of requested tweaks. Enjoy!</p>
+            </template>
+            <template v-slot:body>
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>
+                        Product labels can now be accessed via the hotkey "#" when a product row is focused, and when
+                        viewing the product details flyin (PDP).
+                    </li>
+                    <li>
+                        Product labels can now be viewed and edited from the PDP.
+                    </li>
+                    <li>
+                        Products can now be sorted by amount of labels.<br />
+                        Find the new <i>Sort</i> button next to <i>Filter</i>, on the products overview.
+                    </li>
+                </ul>
+
+                <p>
+                    What tweaks would make your work easier on Kollekt?<br />
+                    Let us know, so we can keep making the best version of Kollekt for you.
+                </p>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Gingham: Black"
             date="February 2021 Bonus Release"
             featuredImgUrl="/images/blog/undraw_Content_structure_re_ebkv.svg"
