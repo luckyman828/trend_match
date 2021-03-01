@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 
 // Define route components
 
-const selectRoutes = [
+const routes = [
     {
         path: '/login',
         name: 'login',
@@ -167,9 +167,8 @@ const selectRoutes = [
         },
         component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
     },
-]
 
-const playRoutes = [
+    // PLAY Routes
     {
         path: '/play',
         name: 'play',
@@ -195,19 +194,25 @@ const playRoutes = [
             },
         ],
     },
+
+    // BUY Routes
+    {
+        path: '/buy',
+        name: 'buy',
+        component: () => import(/* webpackChunkName: "buyRoot" */ './pages/BUY/'),
+        children: [
+            {
+                path: 'files',
+                name: 'buy.files',
+                component: () => import(/* webpackChunkName: "buyFiles" */ './pages/BUY/FilesPage/'),
+            },
+            {
+                path: '*',
+                redirect: 'files',
+            },
+        ],
+    },
 ]
-
-const decorateRoutes = (decoration, routes) => {
-    routes.map(route => {
-        route.path = `/${decoration}${route.path}`
-        route.name = `${decoration}/${route.name}`
-    })
-}
-// decorateRoutes('select', selectRoutes)
-// decorateRoutes('play', playRoutes)
-
-// const routes = [...selectRoutes, ...playRoutes, { path: '*', redirect: '/files' }]
-const routes = [...selectRoutes, ...playRoutes]
 
 const router = new VueRouter({
     routes, // short for `routes: routes`
