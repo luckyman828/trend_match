@@ -52,7 +52,7 @@
         <div class="bottom-nav">
             <v-popover placement="right" v-if="jobs.length > 0" trigger="click">
                 <div class="sidebar-item">
-                    <a class="inner">
+                    <a class="inner background-sync">
                         <i class="fad fa-sync"></i>
                         <span>Sync</span>
                         <div class="pill count xs" :class="remainingSyncCount > 0 ? '' : 'green'">
@@ -256,6 +256,11 @@ export default {
         }
         span {
             display: none;
+        }
+        .background-sync {
+            span {
+                display: block;
+            }
         }
         .unread-circle {
             position: absolute;
