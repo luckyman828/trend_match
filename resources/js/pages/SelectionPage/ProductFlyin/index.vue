@@ -4,7 +4,7 @@
         :show="show"
         @close="onCloseSingle"
         :columns="4"
-        :class="{ 'has-budget': showQty }"
+        :class="[{ 'has-budget': showQty }, { 'has-labels': showLabels }]"
     >
         <template v-slot:header>
             <BaseFlyinHeader
@@ -25,6 +25,9 @@
                             of
                             {{ availableProducts.length }}</span
                         >
+                    </div>
+                    <div class="item-group">
+                        <LabelList v-if="showLabels" ref="labelList" :product="product" v-horizontal-scroll />
                     </div>
                 </template>
                 <template v-slot:right>
@@ -324,6 +327,7 @@ import VariantTooltip from '../VariantTooltip'
 import variantImage from '../../../mixins/variantImage'
 import SelectionPresenterModeButton from '../../../components/SelectionPresenterModeButton'
 import BudgetCounter from '../BudgetCounter'
+import LabelList from '../ProductsTableRow/LabelList'
 // import RequestThreadFlyin from './RequestThreadFlyin'
 import RequestThreadSection from './RequestThreadSection'
 import HotkeyHandler from '../../../components/common/HotkeyHandler'
@@ -342,6 +346,7 @@ export default {
         VariantListItem,
         VariantTooltip,
         BudgetCounter,
+        LabelList,
         // RequestThreadFlyin,
         RequestThreadSection,
         HotkeyHandler,
@@ -405,6 +410,14 @@ export default {
             showQty: 'getQuantityModeActive',
             activeSelectionList: 'getCurrentSelections',
             isObserver: 'getViewingAsObserver',
+            selectionRole: 'getCurrentSelectionMode',
+        }),
+        ...mapGetters('workspaces', {
+            availableLabels: 'getAvailableProductLabels',
+            workspaceRole: 'authUserWorkspaceRole',
+        }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
         }),
         ...mapGetters('requests', ['getRequestThreadVisible']),
         ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
@@ -424,6 +437,9 @@ export default {
             set(value) {
                 this.SET_CURRENT_PDP_VARIANT_INDEX(value)
             },
+        },
+        showLabels() {
+            return this.labelsEnabled || this.product.labels.length > 0
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -446,9 +462,15 @@ export default {
         ticketsEnabled() {
             return this.selection.settings.ticket_level != 'None'
         },
+        labelsEnabled() {
+            return this.availableLabels.length > 0
+        },
+        hasLabelWriteAccess() {
+            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+        },
     },
     methods: {
-        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted']),
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted', 'updateProduct']),
         ...mapActions('presentation', ['broadcastProduct']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
@@ -592,10 +614,38 @@ export default {
             if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
                 if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
+                // Label hotkeys
+                if (this.hasLabelWriteAccess) {
+                    // Number hotkey
+                    if (parseInt(e.key)) {
+                        const pressedNumber = e.key
+                        const label = this.availableLabels[pressedNumber - 1]
+                        if (!label) return
+
+                        // Check if the label is already added
+                        const existingIndex = this.product.labels.findIndex(x => x == label)
+                        if (existingIndex >= 0) {
+                            this.product.labels.splice(existingIndex, 1)
+                        } else {
+                            this.product.labels.push(label)
+                        }
+                        this.onUpdateProduct()
+                    }
+                    // Hashtag
+                    if (e.key == '#') {
+                        // Open labels menu
+                        this.$refs.labelList.$refs.popover.show()
+                    }
+                }
             }
             if (key == 'Tab') {
                 e.preventDefault()
             }
+        },
+        async onUpdateProduct() {
+            const product = Object.assign({}, this.product)
+            delete product.selectionInputList
+            await this.updateProduct(product)
         },
     },
     destroyed() {
@@ -610,6 +660,43 @@ export default {
 
 ::v-deep {
     &.product-single {
+        &.has-labels {
+            &.has-budget {
+                .label-list {
+                    top: 76px;
+                }
+            }
+            .flyin-header {
+                margin-bottom: 40px;
+            }
+            .flyin {
+                background: white;
+                > .body {
+                    border-top: $borderModule;
+                }
+            }
+            .label-list {
+                top: 68px;
+                left: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 0 16px 6px;
+                max-width: none;
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 16px;
+                    height: 1px;
+                    flex-shrink: 0;
+                }
+                > * {
+                    flex-shrink: 0;
+                }
+                .add-button {
+                    display: block;
+                }
+            }
+        }
         > .flyin {
             min-width: 0;
             width: calc(100vw - 242px);

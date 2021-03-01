@@ -76,6 +76,7 @@
             </template>
             <template v-slot:topBarLeft>
                 <ProductFilters :distributionScope="distributionScope" :ticketsEnabled="ticketsEnabled" />
+                <ProductSort :currentSortKey="sortKey" @sort="onSort" />
 
                 <!-- Temp. disabled until the functionality gets hooked up -->
                 <BaseCheckboxInputField
@@ -478,6 +479,7 @@ import sortArray from '../../mixins/sortArray'
 import VariantTooltip from './VariantTooltip'
 
 import ProductFilters from './ProductFilters'
+import ProductSort from './ProductSort'
 
 export default {
     name: 'productsTable',
@@ -489,6 +491,7 @@ export default {
         ActionDistributionTooltip,
         VariantTooltip,
         ProductFilters,
+        ProductSort,
     },
     data: function() {
         return {
@@ -506,11 +509,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', [
-            'currentFocusRowIndex',
-            'getProductsFilteredBySearch',
-            'singleVisible',
-        ]),
+        ...mapGetters('products', ['currentFocusRowIndex', 'getProductsFilteredBySearch', 'singleVisible']),
         ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
