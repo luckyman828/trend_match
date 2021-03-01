@@ -295,6 +295,16 @@
                 </div>
                 <div class="item-group">
                     <BaseContextMenuItem
+                        v-if="authUserWorkspaceRole == 'Admin'"
+                        iconClass="far fa-file-import"
+                        hotkey="KeyI"
+                        @click="showImportInputModal = true"
+                    >
+                        <span><u>I</u>mport input</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
                         v-if="contextSelection.type == 'Chapter'"
                         iconClass="far fa-filter"
                         hotkey="KeyF"
@@ -482,6 +492,12 @@
             @close="showChapterFilterModal = false"
         />
         <ChannelsModal :show="showChannelsModal" @close="showChannelsModal = false" />
+        <ImportSelectionInputModal
+            v-if="showImportInputModal"
+            :show="showImportInputModal"
+            :destinationSelection="contextSelection"
+            @close="showImportInputModal = false"
+        />
     </div>
 </template>
 
@@ -492,6 +508,7 @@ import ChapterFilterModal from './ChapterFilterModal'
 import SelectionSettingsContextMenu from './SelectionSettingsContextMenu'
 import ChannelsModal from './ChannelsModal/'
 import sortArray from '../../../mixins/sortArray'
+import ImportSelectionInputModal from '../../../components/common/ImportSelectionInputModal'
 
 export default {
     name: 'selectionsTable',
@@ -500,6 +517,7 @@ export default {
         ChapterFilterModal,
         SelectionSettingsContextMenu,
         ChannelsModal,
+        ImportSelectionInputModal,
     },
     mixins: [sortArray],
     data: function() {
@@ -522,6 +540,7 @@ export default {
             cloningSetup: false,
             settingsSelections: [],
             showChannelsModal: false,
+            showImportInputModal: false,
         }
     },
     computed: {

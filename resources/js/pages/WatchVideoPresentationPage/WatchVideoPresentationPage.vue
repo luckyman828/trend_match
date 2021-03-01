@@ -194,7 +194,7 @@ export default {
             // Replace the last 2 timings with the new timings
             const newTimings = videoTimings.slice(videoTimings.length - 2)
             await this.initTimings(newTimings)
-            this.videoTimings.splice(this.videoTimings.length - 2, 2, ...newTimings)
+            this.videoTimings.splice(this.videoTimings.length - 1, 1, ...newTimings)
         },
         connectToLiveUpdates() {
             const connection = this.$connection

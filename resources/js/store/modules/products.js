@@ -97,6 +97,9 @@ export default {
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
             const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
+            const customFields = rootGetters['workspaces/getCustomProductFields']
+            const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
+            const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -160,12 +163,37 @@ export default {
             }
 
             // Filter by custom values
+
             Object.keys(customDataFilters).map(filterKey => {
+                // Get details about the key
                 const filterValues = customDataFilters[filterKey]
                 if (filterValues.length <= 0) return
-                productsToReturn = productsToReturn.filter(product =>
-                    filterValues.includes(product.extra_data[filterKey])
-                )
+
+                const customField = customFields.find(field => field.name == filterKey)
+                const checkIfObjectShouldBeIncluded = object => {
+                    if (Array.isArray(object.extra_data[filterKey])) {
+                        if (object.extra_data[filterKey].find(x => filterValues.includes(x))) {
+                            return true
+                        }
+                    } else if (filterValues.includes(object.extra_data[filterKey])) {
+                        return true
+                    }
+                    return false
+                }
+
+                productsToReturn = productsToReturn.filter(product => {
+                    let include = false
+                    if (customField.belong_to == 'Variant') {
+                        product.variants.map(variant => {
+                            if (checkIfObjectShouldBeIncluded(variant)) {
+                                include = true
+                            }
+                        })
+                    } else {
+                        include = checkIfObjectShouldBeIncluded(product)
+                    }
+                    return include
+                })
             })
 
             // Filer by unread
@@ -192,10 +220,10 @@ export default {
             }
 
             // Filter by advanced filters
-            if (getters.getHasAdvancedFilter) {
+            if (hasAdvancedFilter) {
                 productsToReturn = productsToReturn.filter(product => {
                     let include = true
-                    getters.getAdvancedFilter.forEach((filter, index) => {
+                    advancedFilters.forEach((filter, index) => {
                         // FILTER BY USER / SELECTION INPUT
                         if (filter.type == 'author') {
                             if (!filter.filter.filterType) return
@@ -1292,12 +1320,13 @@ export default {
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.action)
                         )
+                        const allVariantsND = !selectionInput.variants.find(variant => variant.action != 'None')
 
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (allVariantsOut || variant.action == 'None') {
-                                variant.action = newAction
+                            if (allVariantsOut || allVariantsND) {
+                                variant.action = newAction //OUT
                                 variant.quantity = variant.totalChildrenQuantity
                             }
                             if (['Out', 'None'].includes(newAction)) {
@@ -1348,13 +1377,12 @@ export default {
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.your_feedback)
                         )
+                        const allVariantsND = !selectionInput.variants.find(variant => variant.your_feedback != 'None')
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
-                            // Check if an action for the variant already exists
-                            if (variant.your_feedback == 'None' || allVariantsOut) {
-                                variant.your_feedback = newAction
+                            if (allVariantsOut || allVariantsND) {
+                                variant.your_feedback = newAction //OUT
                             }
-                            // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
                                 variant.your_quantity = 0

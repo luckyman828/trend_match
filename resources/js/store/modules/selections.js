@@ -1,5 +1,5 @@
 import axios from 'axios'
-import Vue from 'vue'
+import router from '../../router'
 
 export default {
     namespaced: true,
@@ -64,23 +64,14 @@ export default {
         getDisplayUnreadBullets: (state, getters) => {
             return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
         },
-        getSelectionChapter: state => selection => {
-            if (!selection) return
+        getSelectionChapter: (state, getters, rootState, rootGetters) => selection => {
             if (selection.type == 'Chapter') return selection
-            if (selection.parent_chapter) return selection.parent_chapter
-
-            // If we are out of easy options.
-            if (!state.selections) return
-            const stateSelection = state.selections.find(
-                stateSelection =>
-                    stateSelection.id == selection.id ||
-                    stateSelection.parent_id == selection.id ||
-                    stateSelection.id == selection.parent_id
-            )
-            if (stateSelection) {
-                if (stateSelection.type == 'Chapter') return stateSelection
-                if (stateSelection.parent_chapter) return stateSelection.parent_chapter
+            if (selection.parent_chapter) {
+                return selection.parent_chapter
             }
+            if (!selection.chapterId) return
+            const allSelections = rootGetters['selectionProducts/getSelections'].concat(getters.getSelections)
+            return allSelections.find(x => x.id == selection.chapterId)
         },
         getCurrentSelection: state => state.currentSelections[0],
         getMultiSelectionModeIsActive: state => state.currentSelections.length > 1,
@@ -136,6 +127,7 @@ export default {
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
         getCurrentSelectionModeAction: (state, getters) => getters.currentSelectionModeAction,
+        getCurrentActionKey: (state, getters) => getters.currentSelectionModeAction,
         getCurrentSelectionModeQty: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_quantity' : 'quantity',
         getSelectionModeAction: () => selectionMode => (selectionMode == 'Feedback' ? 'your_feedback' : 'action'),
@@ -268,45 +260,46 @@ export default {
             // }
         },
         getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
-            const products = rootGetters['products/getProducts']
-            const activeSelections = getters.getCurrentSelections
-            const availableSelections = []
-            products.forEach(product => {
-                // Find the selection input available
-                const selectionInputListFiltered = product.selectionInputList.filter(
-                    selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
-                )
+            return rootGetters['selectionProducts/getSelections']
+            // const products = rootGetters['products/getProducts']
+            // const activeSelections = getters.getCurrentSelections
+            // const availableSelections = []
+            // products.forEach(product => {
+            //     // Find the selection input available
+            //     const selectionInputListFiltered = product.selectionInputList.filter(
+            //         selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
+            //     )
 
-                selectionInputListFiltered.forEach(selectionInput => {
-                    // Loop through the products feedback
-                    selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
-                        const existsInArray = availableSelections.find(
-                            selection => selection.id == feedback.selection_id
-                        )
-                        if (!existsInArray) availableSelections.push(feedback.selection)
-                    })
-                    // Loop through the products alignment
-                    selectionInput.rawSelectionInput.alignments.forEach(action => {
-                        const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
-                        if (!existsInArray) availableSelections.push(action.selection)
-                    })
-                    // Loop through the products comments
-                    selectionInput.rawSelectionInput.comments.forEach(comment => {
-                        const existsInArray = availableSelections.find(
-                            selection => selection.id == comment.selection_id
-                        )
-                        if (!existsInArray) availableSelections.push(comment.selection)
-                    })
-                    // Loop through the products requests
-                    selectionInput.rawSelectionInput.requests.forEach(request => {
-                        const existsInArray = availableSelections.find(
-                            selection => selection.id == request.selection_id
-                        )
-                        if (!existsInArray) availableSelections.push(request.selection)
-                    })
-                })
-            })
-            return availableSelections
+            //     selectionInputListFiltered.forEach(selectionInput => {
+            //         // Loop through the products feedback
+            //         selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
+            //             const existsInArray = availableSelections.find(
+            //                 selection => selection.id == feedback.selection_id
+            //             )
+            //             if (!existsInArray) availableSelections.push(feedback.selection)
+            //         })
+            //         // Loop through the products alignment
+            //         selectionInput.rawSelectionInput.alignments.forEach(action => {
+            //             const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
+            //             if (!existsInArray) availableSelections.push(action.selection)
+            //         })
+            //         // Loop through the products comments
+            //         selectionInput.rawSelectionInput.comments.forEach(comment => {
+            //             const existsInArray = availableSelections.find(
+            //                 selection => selection.id == comment.selection_id
+            //             )
+            //             if (!existsInArray) availableSelections.push(comment.selection)
+            //         })
+            //         // Loop through the products requests
+            //         selectionInput.rawSelectionInput.requests.forEach(request => {
+            //             const existsInArray = availableSelections.find(
+            //                 selection => selection.id == request.selection_id
+            //             )
+            //             if (!existsInArray) availableSelections.push(request.selection)
+            //         })
+            //     })
+            // })
+            // return availableSelections
         },
         getSelectionPresentationGroups: state => {
             const groupIds = []
@@ -334,10 +327,10 @@ export default {
                 let selections
                 await axios
                     .get(apiUrl)
-                    .then(response => {
+                    .then(async response => {
                         selections = response.data
                         // Process the selections
-                        dispatch('initSelections', selections)
+                        await dispatch('initSelections', selections)
                         if (addToState) {
                             commit('insertSelections', { selections, method: 'set' })
                         }
@@ -399,7 +392,7 @@ export default {
             await axios
                 .post(apiUrl, selection)
                 .then(async response => {
-                    selection.id = response.data.id
+                    Object.assign(selection, response.data)
                     dispatch('initSelections', [selection])
                     if (addToState) {
                         commit('insertSelections', { file, selections: [selection] })
@@ -1217,6 +1210,18 @@ export default {
         },
         async initSelections({ getters, rootGetters }, selections) {
             selections.map(selection => {
+                const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
+                const chatperId =
+                    chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
+                Vue.set(selection, 'chapterId', chatperId)
+
+                if (!selection.your_roles) {
+                    Vue.set(selection, 'your_roles', [])
+                }
+                if (!selection.your_role) {
+                    Vue.set(selection, 'your_role', selection.your_roles[0])
+                }
+
                 // Visible
                 Object.defineProperty(selection, 'is_visible', {
                     get: () => {
@@ -1262,6 +1267,11 @@ export default {
                         return getters.getSelectionChapter(selection)
                     },
                 })
+                // Object.defineProperty(selection, 'chapterName', {
+                //     get: () => {
+                //         return selection.chapter ? selection.chapter.name : ''
+                //     },
+                // })
             })
         },
         async fetchChapterRules({ commit, dispatch }, { selection }) {
@@ -1325,6 +1335,64 @@ export default {
                 )
             })
         },
+        async importSelectionInput(
+            { commit, dispatch, rootGetters },
+            { destinationSelection, sourceSelection, sourceUser, importOptions }
+        ) {
+            const workspaceId = rootGetters['workspaces/currentWorkspace'].id
+            const apiUrl = `workspaces/${workspaceId}/convert-user-inputs`
+
+            const actions = Object.keys(importOptions)
+                .map(optionKey => {
+                    const isEnabled = importOptions[optionKey]
+                    return isEnabled ? optionKey : null
+                })
+                .filter(x => !!x)
+
+            await axios
+                .post(apiUrl, {
+                    user_id: sourceUser ? sourceUser.id : null,
+                    source_selection_id: sourceSelection.id,
+                    destination_selection_id: destinationSelection.id,
+                    actions,
+                    is_copy: true,
+                })
+                .then(response => {
+                    const showCallback = router.currentRoute.name == 'selection'
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Input imported',
+                            iconClass: 'fa-check',
+                            type: 'success',
+                            callbackLabel: showCallback ? 'Refresh changes' : null,
+                            callback: () => {
+                                showCallback && router.go()
+                            },
+                        },
+                        { root: true }
+                    )
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong, trying to import input',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callbackLabel: 'Retry',
+                            callback: () =>
+                                dispatch('importSelectionInput', {
+                                    destinationSelection,
+                                    sourceSelection,
+                                    sourceUser,
+                                    importOptions,
+                                }),
+                        },
+                        { root: true }
+                    )
+                })
+        },
     },
 
     mutations: {
@@ -1347,10 +1415,6 @@ export default {
             state.currentSelection = selection
         },
         SET_CURRENT_SELECTIONS(state, selections) {
-            selections.map(selection => {
-                const isInState = state.selections.find(x => x.id == selection.id)
-                if (!isInState) state.selections.push(selection)
-            })
             // selections.map(selection => {
             //     Vue.set(selection, 'budget', parseInt(Math.random().toFixed(4) * 10000000))
             // })

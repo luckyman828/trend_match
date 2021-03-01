@@ -45,11 +45,28 @@ export default {
         },
         availableCustomFieldValues() {
             const unique = []
-            this.products.map(product => {
-                const value = product.extra_data[this.field.name]
+            const getUniqueValue = sourceObject => {
+                const value = sourceObject.extra_data[this.field.name]
                 if (!value) return
-                const alreadyAdded = !!unique.find(x => x == value)
-                if (!alreadyAdded) unique.push(value)
+                if (Array.isArray(value)) {
+                    value.map(arrayValue => {
+                        const alreadyAdded = !!unique.find(x => x == arrayValue)
+                        if (!alreadyAdded) unique.push(arrayValue)
+                    })
+                } else {
+                    const alreadyAdded = !!unique.find(x => x == value)
+                    if (!alreadyAdded) unique.push(value)
+                }
+            }
+
+            this.products.map(product => {
+                if (this.field.belong_to != 'Variant') {
+                    getUniqueValue(product)
+                } else {
+                    product.variants.map(variant => {
+                        getUniqueValue(variant)
+                    })
+                }
             })
             return unique
         },

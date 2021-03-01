@@ -140,9 +140,7 @@ export default {
     watch: {
         show(newVal) {
             if (newVal) {
-                this.visisbleTimeout = setTimeout(() => {
-                    this.isVisible = true
-                }, 300)
+                this.startVisibilityTimeout()
             } else {
                 this.isVisible = false
             }
@@ -161,10 +159,18 @@ export default {
             this.SET_LIGHTBOX_IMAGES(images)
             this.SET_LIGHTBOX_VISIBLE(true)
         },
+        startVisibilityTimeout() {
+            this.visisbleTimeout = setTimeout(() => {
+                    this.isVisible = true
+                }, 300)
+        }
     },
     destroyed() {
         if (this.visisbleTimeout) clearTimeout(this.visisbleTimeout)
     },
+    created() {
+        if (this.show) this.startVisibilityTimeout() 
+    }
 }
 </script>
 

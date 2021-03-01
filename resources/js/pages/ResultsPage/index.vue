@@ -44,9 +44,6 @@ export default {
             const fileId = this.$route.params.fileId
             const file = this.fetchFile(fileId)
 
-            // Fetch current selection
-            const selectionId = this.$route.params.selectionId
-
             // This works because vuex actions are always promises
             let promisesToResolve = [await this.fetchSelections({ fileId }), await this.fetchProducts({ fileId })]
 

@@ -104,6 +104,11 @@
 
             <SelectionPresenterModeButton :selection="currentSelection" />
 
+            <button class="primary" v-if="authUserWorkspaceRole == 'Admin'" @click="showImportInputModal = true">
+                <i class="far fa-file-import"></i>
+                <span>Import input</span>
+            </button>
+
             <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
                 <button class="button primary">
                     <i class="far fa-upload"></i>
@@ -158,6 +163,11 @@
             :show="exportToFileModalVisible"
             @close="exportToFileModalVisible = false"
         />
+        <ImportSelectionInputModal
+            v-if="showImportInputModal"
+            :show="showImportInputModal"
+            @close="showImportInputModal = false"
+        />
     </div>
 </template>
 
@@ -167,6 +177,7 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../components/ExportProductsModal'
 import ExportToCsvModal from '../../components/ExportToCsvModal'
 import ExportToFileModal from '../../components/common/ExportToFileModal'
+import ImportSelectionInputModal from '../../components/common/ImportSelectionInputModal'
 import SelectionPresenterModeButton from '../../components/SelectionPresenterModeButton'
 import BudgetCounter from './BudgetCounter'
 
@@ -178,12 +189,14 @@ export default {
         ExportToFileModal,
         SelectionPresenterModeButton,
         BudgetCounter,
+        ImportSelectionInputModal,
     },
     data: function() {
         return {
             exportToFileModalVisible: false,
             exportContextOpen: false,
             viewAsContextOpen: false,
+            showImportInputModal: false,
         }
     },
     computed: {
@@ -202,6 +215,9 @@ export default {
         }),
         ...mapGetters('auth', {
             isSystemAdmin: 'getIsSystemAdmin',
+        }),
+        ...mapGetters('workspaces', {
+            authUserWorkspaceRole: 'authUserWorkspaceRole',
         }),
         roleIcon() {
             let roleIcon = 'far fa-shield'

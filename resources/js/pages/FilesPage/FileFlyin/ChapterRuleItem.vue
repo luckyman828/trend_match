@@ -160,6 +160,7 @@ export default {
             }
         },
         mappedRule() {
+            console.log('mapped rule changed')
             // Reset the selected values when the mapped rule changed
             this.chapterRule.value = null
             this.chapterRule.values = []

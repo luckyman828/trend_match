@@ -46,7 +46,9 @@
                         :request="request"
                         :displayAuthor="
                             !request.discussions[index + 1] ||
-                                request.discussions[index + 1].role != request.discussions[index].role
+                                request.discussions[index + 1].role != request.discussions[index].role ||
+                                new Date(request.discussions[index + 1].created_at).toDateString() !=
+                                    new Date(request.discussions[index].created_at).toDateString()
                         "
                     />
 
@@ -210,6 +212,7 @@ export default {
                 role: this.getCurrentSelection.your_role,
                 selection_id: this.request.selection_id,
                 selection: this.request.selection,
+                created_at: new Date().toISOString(),
             }
 
             // dispatch action

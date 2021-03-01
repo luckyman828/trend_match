@@ -100,11 +100,11 @@
 
             <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
-            <div class="item-group" v-if="availableProductLabels.length > 0 || filterableProductLabels > 0">
+            <div class="item-group" v-if="availableProductLabels.length > 0 || filterableProductLabels.length > 0">
                 <v-popover trigger="click" :disabled="filterableProductLabels.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-tag"
-                        :disabled="availableProductLabels.length <= 0"
+                        :disabled="filterableProductLabels.length <= 0"
                         disabledTooltip="No product labels available"
                         @click="showAdvancedFilters = false"
                     >
@@ -315,6 +315,7 @@ export default {
         filterableProductLabels() {
             const labels = []
             this.products.map(product => {
+                if (!product.labels) return
                 product.labels.map(label => {
                     const alreadyAdded = labels.includes(label)
                     if (!alreadyAdded) labels.push(label)

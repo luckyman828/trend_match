@@ -1,5 +1,5 @@
 <template>
-    <v-popover trigger="click" :disabled="readOnly || disabled">
+    <v-popover trigger="click" :disabled="readOnly">
         <!-- TRIGGER -->
         <!-- <div class="dropdown-input-field input-wrapper"></div> -->
         <div
@@ -14,7 +14,7 @@
                 type="select"
                 :value="valueToDisplay"
                 :inputClass="inputClass"
-                :readOnly="readOnly || disabled"
+                :readOnly="readOnly"
                 :innerLabel="innerLabel"
             />
             <BaseInputField
@@ -47,6 +47,7 @@
                 :value="value"
                 :optionNameKey="optionNameKey"
                 :optionValueKey="optionValueKey"
+                :uniqueKey="uniqueKey"
                 :optionDescriptionKey="descriptionKey"
                 :cloneOptionOnSubmit="cloneOptionOnSubmit"
                 :unsetOption="unsetOption"
@@ -79,6 +80,7 @@ export default {
         'disabledTooltip',
         'displayFunction',
         'allowManualEntry',
+        'uniqueKey',
     ],
     data: function() {
         return {
@@ -109,12 +111,15 @@ export default {
 
                 // If we have no value key, we must have selected an entire object
                 if (!this.optionValueKey) {
-                    return this.value[this.optionNameKey]
+                    return Array.isArray(this.value)
+                        ? this.value.map(x => x[this.optionNameKey]).join(', ')
+                        : this.value[this.optionNameKey]
                 }
 
                 // In case we have both a name key and a value key
                 // Read the available options and find our values match there
                 const selectedOption = this.options.find(option => option[this.valueKey] == this.value)
+                if (!selectedOption) return
                 return selectedOption[this.optionNameKey]
             }
 

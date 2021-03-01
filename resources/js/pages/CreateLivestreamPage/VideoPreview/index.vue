@@ -160,6 +160,9 @@ export default {
             selections: 'getSelections',
             availableSelections: 'getSelectionsAvailableForPresentation',
         }),
+        ...mapGetters('products', {
+            allProducts: ['getProducts'],
+        }),
         playerReady() {
             return this.provider && this.videoId
         },
@@ -279,9 +282,13 @@ export default {
         }
     }
     .selections-to-present {
+        max-height: 200px;
+        overflow-y: auto;
         background: $bg;
         border-radius: $borderRadiusEl;
         border: $borderEl;
+        max-height: 200px;
+        overflow-y: auto;
     }
     .selection-icon {
         margin-left: 8px;

@@ -187,13 +187,6 @@ export default {
             // },
             {
                 scope: 'variants',
-                name: 'eans',
-                displayName: 'EANs',
-                type: 'number',
-                headersToMatch: ['eans', 'ean', 'variant ean', 'style ean', 'ean_no'],
-            },
-            {
-                scope: 'variants',
                 name: 'color',
                 displayName: 'Color',
                 type: 'string',

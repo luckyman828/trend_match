@@ -62,9 +62,6 @@ export default {
     }
     .page-wrapper {
         padding: 20px 60px 100px;
-        &.theme-dark {
-            background: $dark;
-        }
         @media screen and (max-width: $screenSm) {
             padding: 20px;
             padding-bottom: 80px;

@@ -8,8 +8,15 @@ export default {
         loading: true,
         submitting: false,
         currentRequestThread: null,
-        availableRequestLabels: ['color_added', 'color_removed', 'price_wish', 'add_delivery', 'change_delivery'],
-        // availableRequestLabels: ['Color added', 'Color removed', 'Price wish', 'Add delivery', 'Change delivery'],
+        availableRequestLabels: [
+            'color_added',
+            'color_removed',
+            'delivery_added',
+            'change_delivery',
+            'box_wish',
+            'price_wish',
+            'comments in general',
+        ],
     },
 
     getters: {
@@ -218,10 +225,12 @@ export default {
                 })
                 Object.defineProperty(request, 'hasUnreadAlignerComment', {
                     get: function() {
-                        if (request.status != 'Open' || request.type != 'Ticket') return false
+                        if (request.status != 'Open' || request.type != 'Ticket' || request.selection.type == 'Normal')
+                            return false
                         return (
                             request.discussions.length <= 0 ||
-                            request.discussions[request.discussions.length - 1].role != 'Approver'
+                            (request.discussions[request.discussions.length - 1].role != 'Approver' &&
+                                request.discussions[request.discussions.length - 1].role)
                         )
                     },
                 })
@@ -252,6 +261,19 @@ export default {
                         )
                     },
                 })
+
+                // START THREAD COMMENTS
+                request.discussions.map(comment => {
+                    Object.defineProperty(comment, 'author', {
+                        get: function() {
+                            return rootGetters['selectionProducts/getSelectionUsers'].find(
+                                user => user.id == request.author_id
+                            )
+                        },
+                    })
+                })
+
+                // END THREAD COMMENTS
 
                 request.hasBeenInitialized = true
             })

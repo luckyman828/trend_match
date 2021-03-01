@@ -104,16 +104,19 @@ export default {
         ...mapActions('mapProductData', ['fetchProductFields', 'getField']),
         async initVariantMap() {
             let newFields
-            newFields = await this.fetchProductFields({ scope: 'variants' })
-            if (this.imagesOnly) newFields = newFields.filter(field => ['variant', 'color'].includes(field.name))
-            this.fieldsToMap.push(...newFields)
+            if (!this.imagesOnly) {
+                newFields = await this.fetchProductFields({ scope: 'variants' })
+                this.fieldsToMap.push(...newFields)
+            }
 
             await this.onAddVariantImageMap()
 
             // Automap fields
-            newFields.map(field => {
-                this.autoMapField(field, this.availableFiles)
-            })
+            if (!this.imagesOnly) {
+                newFields.map(field => {
+                    this.autoMapField(field, this.availableFiles)
+                })
+            }
 
             // Attemp to determine how many image-maps we need
             // Get our first variant image map
