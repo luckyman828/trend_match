@@ -19,6 +19,8 @@ spec:
       labels:
         app: ${SERVICE_NAME}
     spec:
+      nodeSelector:
+        ${NODE_SELECTOR}
       containers:
         - name: ${SERVICE_NAME}
           image: ${IMAGE_NAME}:${IMAGE_TAG}
