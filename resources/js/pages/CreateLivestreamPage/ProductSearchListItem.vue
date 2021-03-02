@@ -66,7 +66,7 @@ export default {
             this.onStopCurrent(newStart)
             const newTiming = {
                 start_at_ms: newStart,
-                end_at_ms: Math.ceil(this.videoDuration + 5),
+                end_at_ms: Math.ceil(this.videoDuration + 60),
                 product_id: this.product.id,
             }
             await this.addTiming({ newTiming })

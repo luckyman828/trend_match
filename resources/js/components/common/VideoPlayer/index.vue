@@ -15,6 +15,7 @@
                 @loaded="SET_PLAYER_STATUS('buffering')"
                 @ended="onEndedStatus"
                 @timeupdate="onTimeupdate"
+                @progress="onProgress"
             />
 
             <youtube
@@ -63,6 +64,7 @@ export default {
             intervalTimer: null,
             lastTimestamp: 0,
             intanceId: 0,
+            liveDurationFetched: false,
         }
     },
     computed: {
@@ -100,7 +102,12 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPlayer', ['togglePlayerMuted', 'getCurrentTimestamp', 'togglePlaying']),
+        ...mapActions('videoPlayer', [
+            'togglePlayerMuted',
+            'getCurrentTimestamp',
+            'togglePlaying',
+            'makeLastTimingCurrent',
+        ]),
         ...mapMutations('videoPlayer', [
             'SET_PLAYER_REFERENCE',
             'SET_CURRENT_PLAYER_TIMESTAMP',
@@ -110,6 +117,14 @@ export default {
             'SET_DESIRED_STATUS',
         ]),
         ...mapMutations('videoPresentation', ['SET_TIMELINE_ZOOM']),
+        onProgress(e) {
+            if (this.isLive && !this.liveDurationFetched) {
+                const newDuration = e.seconds
+                this.SET_PLAYER_DURATION(newDuration)
+                this.makeLastTimingCurrent()
+                this.liveDurationFetched = true
+            }
+        },
         onPlayerReady(e, a) {
             this.playerReady = true
             const player = this.$refs.player.player
@@ -196,6 +211,7 @@ export default {
         extendCurrentTiming() {
             // Check if we have a current timing. If so extend its end time
             const currentTiming = this.currentTiming
+            // console.log('here is current timing', this.currentTiming)
             if (currentTiming) {
                 currentTiming.end_at_ms = Math.ceil(this.duration + 5000)
             }
