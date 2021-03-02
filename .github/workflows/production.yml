@@ -66,6 +66,7 @@ jobs:
                   CONTAINER_IMAGE: ${{ secrets.PRD_CONTAINER_IMAGE }}
                   IMAGE_TAG: ${{ github.sha }}
                   HOST_NAME: ${{ secrets.PRD_HOST_NAME }}
+                  NODE_SELECTOR: "${{ secrets.PROD_NODE_SELECTOR }}"
 
             - uses: Azure/k8s-deploy@v1
               with:
