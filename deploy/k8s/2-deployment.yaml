@@ -19,6 +19,8 @@ spec:
       labels:
         app: ${CONTAINER_IMAGE}
     spec:
+      nodeSelector:
+        ${NODE_SELECTOR}
       containers:
         - name: ${CONTAINER_IMAGE}
           image: reg.trendmatch.dk/kollekt/${CONTAINER_IMAGE}:${IMAGE_TAG}
