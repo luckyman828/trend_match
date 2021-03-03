@@ -1,14 +1,25 @@
 <template>
-    <div class="browse-product-set-section">
+    <div class="browse-product-set-section flex-list flex-v md">
         <BaseDropdownInputField
+            innerLabel="Season"
             :search="productSets.length > 5"
-            placeholder="Choose product set"
+            placeholder="Choose season"
             :options="productSets"
             v-model="selectedProductSets"
         />
+        <BaseDropdownInputField
+            innerLabel="Brand"
+            :search="availableBrands.length > 5"
+            placeholder="Choose brand"
+            :options="availableBrands"
+            v-model="selectedBrands"
+        />
+        <BaseCheckboxInputField v-model="seasonStylesOnly">
+            <span>Season styles only</span>
+        </BaseCheckboxInputField>
         <BaseButton
             class="full-width import-button"
-            buttonClass="primary full-width"
+            buttonClass="primary full-width lg"
             :disabled="selectedProductSets.length <= 0"
             @click="onImportProducts"
         >
@@ -24,6 +35,9 @@ export default {
         return {
             productSets: [],
             selectedProductSets: [],
+            availableBrands: ['Fransa', 'Dranella', 'InWear', 'Matinique', 'Cream'],
+            selectedBrands: [],
+            seasonStylesOnly: false
         }
     },
     methods: {

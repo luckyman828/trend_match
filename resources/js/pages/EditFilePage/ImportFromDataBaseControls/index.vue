@@ -7,7 +7,7 @@
                 <span v-else-if="mode == 'Scan'">Scan barcodes to add products</span>
                 <span v-else-if="mode == 'Search'">Search to add products</span>
                 <span v-else>How would you like to get files from the database?</span>
-                <button class="white pill back-button sm" v-if="!!mode" @click="mode = null">
+                <button class="ghost pill back-button sm" v-if="!!mode" @click="mode = null">
                     <i class="far fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
