@@ -10,7 +10,7 @@
                 />
                 <div class="sync-wrapper" :class="syncStatus" v-if="syncStatus">
                     <i v-if="syncStatus == 'Success'" class="sync-icon success far green fa-check-circle md"></i>
-                    <i v-else-if="syncStatus == 'Error'" class="sync-icon error far red fa-times-circle md"></i>
+                    <i v-else-if="syncStatus == 'Failed'" class="sync-icon error far red fa-times-circle md"></i>
                     <i v-else class="sync-icon syncing fad fa-sync md"></i>
                 </div>
             </div>

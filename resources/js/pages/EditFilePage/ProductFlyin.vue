@@ -580,7 +580,7 @@
                     </div>
                 </div>
 
-                <div class="form-section variant-custom-props" v-if="enabledFeatures.variant_option_api">
+                <div class="form-section variant-custom-props" v-if="enabledFeatures.style_option_api">
                     <h3>Variant Option Id</h3>
                     <div v-if="!currentVariant">
                         <p>Click a variant to manage it</p>

@@ -349,7 +349,7 @@ export default {
 
             // Filter out style_option_id if it is not enabled on the workspace
             const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
-            if (enabledFeatures.style_option_api) fields = fields.filter(x => x.name != style_option_id)
+            if (!enabledFeatures.style_option_api) fields = fields.filter(x => x.name != 'style_option_id')
 
             return fields.map(x => {
                 x.file = null

@@ -35,7 +35,7 @@ export default {
 
 .image-sync-popover {
     padding-right: 0;
-    width: 200px;
+    width: 320px;
     .job-list {
         max-height: 200px;
         overflow-y: auto;
