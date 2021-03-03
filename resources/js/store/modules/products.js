@@ -533,6 +533,7 @@ export default {
                 buying_group: null,
                 is_editor_choice: null,
                 compositions: null,
+                labels: [],
                 prices: [],
                 variants: [],
                 assortments: [],

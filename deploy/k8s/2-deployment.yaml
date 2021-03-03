@@ -2,36 +2,35 @@
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: ${SERVICE_NAME}
+    name: ${SERVICE_NAME}
 spec:
-  replicas: 1
-  revisionHistoryLimit: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: ${SERVICE_NAME}
-  template:
-    metadata:
-      labels:
-        app: ${SERVICE_NAME}
-    spec:
-      nodeSelector:
-        ${NODE_SELECTOR}
-      containers:
-        - name: ${SERVICE_NAME}
-          image: ${IMAGE_NAME}:${IMAGE_TAG}
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8080
-          resources:
-            limits:
-              cpu: 700m
-              memory: 800Mi
-            requests:
-              cpu: 100m
-              memory: 150Mi 
-      terminationGracePeriodSeconds: 30
+    replicas: 1
+    revisionHistoryLimit: 3
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 0
+    selector:
+        matchLabels:
+            app: ${SERVICE_NAME}
+    template:
+        metadata:
+            labels:
+                app: ${SERVICE_NAME}
+        spec:
+            nodeSelector: ${NODE_SELECTOR}
+            containers:
+                - name: ${SERVICE_NAME}
+                  image: ${IMAGE_NAME}:${IMAGE_TAG}
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 8080
+                  resources:
+                      limits:
+                          cpu: 700m
+                          memory: 800Mi
+                      requests:
+                          cpu: 100m
+                          memory: 150Mi
+            terminationGracePeriodSeconds: 30

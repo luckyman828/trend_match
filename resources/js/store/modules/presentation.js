@@ -21,7 +21,10 @@ export default {
         },
         getCurrentPresentationDetails: (state, getters) =>
             state.presentations.find(x => x.id == getters.getCurrentPresentationId),
-        getCurrentProductId: state => state.activePresentationDetails.product.id,
+        getCurrentProductId: state =>
+            state.activePresentationDetails &&
+            state.activePresentationDetails.product &&
+            state.activePresentationDetails.product.id,
         getCurrentProduct: (state, getters, rootState, rootGetters) => {
             const products = rootGetters['products/getProducts']
             if (!products) return

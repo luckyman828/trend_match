@@ -31,6 +31,7 @@ import videoComments from './modules/videoComments'
 import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
 import backgroundJobs from './modules/backgroundJobs'
+import liveUpdates from './modules/liveUpdates'
 const cloneDeep = require('clone-deep')
 
 // Load Vuex
@@ -69,6 +70,7 @@ export const initialStoreModules = {
     productFilters,
     selectionProducts,
     backgroundJobs,
+    liveUpdates,
 }
 
 // const store = new Vuex.Store({
