@@ -580,7 +580,7 @@
                     </div>
                 </div>
 
-                <div class="form-section variant-custom-props">
+                <div class="form-section variant-custom-props" v-if="enabledFeatures.variant_option_api">
                     <h3>Variant Option Id</h3>
                     <div v-if="!currentVariant">
                         <p>Click a variant to manage it</p>
@@ -817,6 +817,7 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
+            enabledFeatures: 'getEnabledFeatures',
         }),
         product() {
             return this.productToEdit

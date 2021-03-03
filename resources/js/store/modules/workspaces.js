@@ -50,6 +50,12 @@ export default {
             getters.currentWorkspace && getters.currentWorkspace.available_labels
                 ? getters.currentWorkspace.available_labels
                 : [],
+        getEnabledFeatures: (state, getters) => {
+            const workspace = getters.currentWorkspace
+            return {
+                style_option_api: workspace.style_option_enabled,
+            }
+        },
     },
 
     actions: {
