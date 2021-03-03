@@ -594,7 +594,7 @@
                     </div>
                 </div>
 
-                <div class="form-section variant-custom-props">
+                <div class="form-section variant-custom-props" v-if="enabledFeatures.style_option_api">
                     <h3>Variant Option Id</h3>
                     <div v-if="!currentVariant">
                         <p>Click a variant to manage it</p>
@@ -835,6 +835,7 @@ export default {
             customFields: 'getCustomProductFields',
             availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
+            enabledFeatures: 'getEnabledFeatures',
         }),
         product() {
             return this.productToEdit

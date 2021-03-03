@@ -901,6 +901,9 @@ i {
             border: none;
         }
     }
+    &.auto-width {
+        max-width: none;
+    }
 }
 .v-popover {
     .trigger {

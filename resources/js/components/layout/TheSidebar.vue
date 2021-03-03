@@ -50,12 +50,15 @@
             </div>
         </div>
         <div class="bottom-nav">
-            <v-popover placement="right" v-if="jobs.length > 0" trigger="click">
+            <v-popover placement="right" v-if="jobs.length > 0" trigger="click" popoverClass="auto-width">
                 <div class="sidebar-item">
                     <a class="inner background-sync">
                         <i class="fad fa-sync"></i>
                         <span>Sync</span>
-                        <div class="pill count xs" :class="remainingSyncCount > 0 ? '' : 'green'">
+                        <div
+                            class="pill count xs"
+                            :class="jobStatus == 'success' ? 'green' : jobStatus == 'failed' ? 'yellow' : ''"
+                        >
                             <span>{{ remainingSyncCount > 0 ? remainingSyncCount : 'Done' }}</span>
                         </div>
                     </a>
@@ -146,6 +149,7 @@ export default {
         ...mapGetters('changelog', ['getLatestChangelogUpdateDate']),
         ...mapGetters('backgroundJobs', {
             jobs: 'getImageSyncJobs',
+            jobStatus: 'getImageSyncJobStatus',
             remainingSyncCount: 'getRemainingImageSyncCount',
         }),
         displayTooltips() {

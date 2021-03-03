@@ -14,6 +14,13 @@ export default {
                 return (acc += remaining)
             }, 0)
         },
+        getImageSyncJobStatus: (state, getters) => {
+            const jobs = getters.getImageSyncJobs
+            if (jobs.find(x => x.failed > 0)) return 'failed'
+            if (!jobs.find(x => x.status != 'Completed')) return 'success'
+            if (getters.getRemainingImageSyncCount > 0) return 'syncing'
+            return
+        },
     },
     actions: {
         async fetchImageSyncProgress({ getters, state, rootGetters, dispatch }, { jobId, file }) {
@@ -77,11 +84,17 @@ export default {
             Vue.set(job, 'jobInterval', jobInterval)
             commit('INSERT_IMAGE_SYNC_JOB', job)
         },
+        async stopImageSyncJob({ dispatch, commit }, { job }) {
+            clearInterval(job.jobInterval)
+            // Actually cancelling the job is currently not supported by the API, but we can stop fetching the progress...
+            job.status = 'Cancelled'
+            commit('UPDATE_IMAGE_SYNC_JOBS')
+        },
         getActiveJobs({ dispatch, commit }) {
             const jobs = localStorage.getItem('imageSyncJobs')
             if (!jobs) return
             JSON.parse(jobs).map(job => {
-                if (job.status != 'Completed') {
+                if (job.status != 'Completed' && job.status != 'Cancelled') {
                     dispatch('startImageSyncJob', { jobId: job.id, file: job.file })
                 } else {
                     commit('INSERT_IMAGE_SYNC_JOB', job)
@@ -93,6 +106,9 @@ export default {
         INSERT_IMAGE_SYNC_JOB(state, job) {
             state.imageSyncJobs.push(job)
             // Store in localStorage
+            localStorage.setItem('imageSyncJobs', JSON.stringify(state.imageSyncJobs))
+        },
+        UPDATE_IMAGE_SYNC_JOBS(state) {
             localStorage.setItem('imageSyncJobs', JSON.stringify(state.imageSyncJobs))
         },
         REMOVE_IMAGE_SYNC_JOB(state, jobId) {
