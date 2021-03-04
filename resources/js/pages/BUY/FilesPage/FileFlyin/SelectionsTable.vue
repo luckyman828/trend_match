@@ -482,11 +482,12 @@ export default {
             'insertSelection',
             'updateSelection',
             'addTeamsToSelection',
-            'addUsersToSelection',
             'fetchSelection',
             'deleteSelection',
             'sendSelectionLink',
             'getSelectionLink',
+            'addUsersToSelection',
+            'removeUsersFromSelection',
         ]),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('presentation', ['fetchFilePresentations']),
@@ -565,7 +566,20 @@ export default {
             const oldUsers = this.contextSelection.users
             const usersToAdd = newUsers.filter(newUser => !oldUsers.find(oldUser => oldUser.id == newUser.id))
             const usersToRemove = oldUsers.filter(oldUser => !newUsers.find(newUser => newUser.id == oldUser.id))
-            console.log('on save users', usersToAdd, usersToRemove)
+
+            if (usersToAdd.length > 0) {
+                this.addUsersToSelection({
+                    selection: this.contextSelection,
+                    users: usersToAdd.map(user => {
+                        user.role = 'Owner'
+                        return user
+                    }),
+                    ignoreRole: false,
+                })
+            }
+            if (usersToRemove.length > 0) {
+                this.removeUsersFromSelection({ selection: this.contextSelection, users: usersToRemove })
+            }
         },
         showSelectionCurrencyContext({ selection, e }) {
             this.contextSelection = selection
