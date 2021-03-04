@@ -1,6 +1,6 @@
 <template>
-    <PageLoader>
-        <FilesPage/>
+    <PageLoader :status="!currentWorkspace ? 'loading' : 'success'">
+        <FilesPage />
     </PageLoader>
 </template>
 
@@ -13,22 +13,20 @@ export default {
     name: 'filesLoader',
     components: {
         FilesPage,
-        PageLoader
+        PageLoader,
     },
     computed: {
-        ...mapGetters('workspaces', ['currentWorkspace'])
+        ...mapGetters('workspaces', ['currentWorkspace']),
     },
     watch: {
         currentWorkspace(newVal, oldVal) {
             this.SET_CURRENT_PATH_FOLDER()
-        }
+        },
     },
     methods: {
-        ...mapMutations('files', ['SET_CURRENT_PATH_FOLDER'])
-    }
+        ...mapMutations('files', ['SET_CURRENT_PATH_FOLDER']),
+    },
 }
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>
