@@ -1,7 +1,6 @@
 <template>
     <div class="users-table">
         <BaseTable
-            v-if="currentTab == 'Users'"
             stickyHeader="true"
             ref="tableComp"
             :contentStatus="readyStatus"
@@ -19,9 +18,6 @@
             itemType="user"
             @show-contextmenu="showUserContext"
         >
-            <template v-slot:tabs v-if="authUserWorkspaceRole == 'Admin'">
-                <BaseTableTabs :tabs="['Teams', 'Users']" v-model="currentTab" :activeTab="currentTab" />
-            </template>
             <template v-slot:header>
                 <BaseTableHeader
                     class="title"
@@ -319,7 +315,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UsersTableRow from './UsersTableRow'
-import sortArray from '../../mixins/sortArray'
+import sortArray from '../../../mixins/sortArray'
 
 export default {
     name: 'usersTable',
@@ -361,17 +357,6 @@ export default {
                 this.newUserPassword.length < 8 ||
                 (this.authUserWorkspaceRole != 'Admin' && this.oldUserPassword.length < 8)
             )
-        },
-        currentTab: {
-            get() {
-                const routeName = this.$route.name
-                if (routeName == 'teams') return 'Teams'
-                if (routeName == 'users') return 'Users'
-            },
-            set(newVal) {
-                if (newVal == 'Teams') this.$router.push({ name: 'teams' })
-                if (newVal == 'Users') this.$router.push({ name: 'users' })
-            },
         },
         readyStatus() {
             return this.getUsersStatus

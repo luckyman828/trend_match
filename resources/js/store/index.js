@@ -30,6 +30,7 @@ import display from './modules/display'
 import videoComments from './modules/videoComments'
 import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
+import kollekt from './modules/kollekt'
 import wishlist from './modules/playb2c/wishlist'
 import basket from './modules/playb2c/basket'
 import videos from './modules/playb2c/videos'
@@ -73,6 +74,7 @@ export const initialStoreModules = {
     wishlist,
     basket,
     videos,
+    kollekt,
 }
 
 // const store = new Vuex.Store({

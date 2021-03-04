@@ -12,18 +12,13 @@
                 </div>
 
                 <div class="sidebar-item">
-                    <router-link to="/files" class="inner" v-tooltip.right="displayTooltips && 'Files'">
+                    <router-link :to="{ name: 'buy.files' }" class="inner" v-tooltip.right="displayTooltips && 'Files'">
                         <i class="fas fa-folder"></i><span>Files</span>
                     </router-link>
                 </div>
 
-                <div class="sidebar-item" v-if="authUserWorkspaceRole == 'Admin'">
-                    <router-link to="/teams" class="inner" v-tooltip.right="displayTooltips && 'Teams'">
-                        <i class="fas fa-users"></i><span>Teams</span>
-                    </router-link>
-                </div>
                 <div class="sidebar-item">
-                    <router-link to="/users" class="inner" v-tooltip.right="displayTooltips && 'Users'">
+                    <router-link :to="{ name: 'buy.users' }" class="inner" v-tooltip.right="displayTooltips && 'Users'">
                         <i class="fas fa-user"></i><span>Users</span>
                     </router-link>
                 </div>
@@ -35,6 +30,8 @@
                         </a>
                     </div>
                     <BaseSelectButtons
+                        :search="workspaces.length > 5"
+                        :focusSearchOnMount="workspaces.length > 5"
                         slot="popover"
                         type="radio"
                         :options="workspaces"
@@ -73,11 +70,25 @@
                     <span>Settings</span>
                 </router-link>
             </div>
-            <div class="sidebar-item">
-                <a class="inner" @click="drawerExpanded = !drawerExpanded" v-tooltip.right="'Click for more options'">
-                    <i class="fas primary" :class="authUserWorkspaceRole == 'Admin' ? 'fa-crown' : 'fa-user'"></i>
-                    <span class="user">{{ authUser.name }}</span>
-                </a>
+            <div
+                class="sidebar-item"
+                @click="drawerExpanded = !drawerExpanded"
+                v-tooltip.right="'Click for more options'"
+            >
+                <div class="circle auth-user-icon">
+                    <div class="user">
+                        {{
+                            authUser.name
+                                .split(' ')
+                                .map(x => x.slice(0, 1))
+                                .join('')
+                        }}
+                    </div>
+                    <div class="bg"></div>
+                    <div class="circle xs dark">
+                        <i class="fas white" :class="authUserWorkspaceRole == 'Admin' ? 'fa-crown' : 'fa-user'"></i>
+                    </div>
+                </div>
             </div>
             <div class="bottom-drawer" :class="[{ collapsed: !drawerExpanded }, { 'system-admin': getIsSystemAdmin }]">
                 <div class="sidebar-item" v-if="getIsSystemAdmin">
@@ -159,8 +170,9 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: $bgModuleDark;
+    background: $bgDark;
 }
+
 .sidebar-item {
     height: 80px;
     width: 100%;
@@ -181,7 +193,7 @@ export default {
         width: 60px;
         min-height: 60px;
         padding: 8px 0;
-        border-radius: 4px;
+        border-radius: $borderRadiusLg;
         cursor: pointer;
         &.router-link-active {
             color: $font;
@@ -236,6 +248,62 @@ export default {
             position: absolute;
             top: 12px;
             right: 4px;
+        }
+    }
+    &:hover {
+        .auth-user-icon .bg::after {
+            opacity: 1;
+        }
+    }
+    .auth-user-icon {
+        cursor: pointer;
+        border: none;
+        position: relative;
+        background: transparent;
+        .user {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: white;
+            position: relative;
+        }
+        .bg {
+            overflow: hidden;
+            border-radius: 50px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            background: transparent radial-gradient(closest-side at 3% 0%, #2a46ffa3 0%, #ffb0395e 100%) 0% 0% no-repeat
+                padding-box;
+            mix-blend-mode: screen;
+            &::after {
+                content: '';
+                display: block;
+                background: transparent radial-gradient(closest-side at 44% 53%, #2a46ff 54%, #ffb0395e 100%) 16% 0%
+                    no-repeat padding-box;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-59%, -60%);
+                height: 46px;
+                width: 46px;
+                /* opacity: .5; */
+                z-index: 0;
+                mix-blend-mode: overlay;
+                opacity: 0.6;
+            }
+        }
+        .circle {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            transform: translate(35%, 35%);
+            i {
+                margin: 0;
+                font-size: 10px;
+            }
         }
     }
 }

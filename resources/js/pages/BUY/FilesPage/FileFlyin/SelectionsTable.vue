@@ -58,7 +58,7 @@
                                 clearUnsaved($event)
                                 clearToEdit()
                             "
-                            @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)"
+                            @showSelectionUsersContext="showSelectionUsersContext"
                             @showContext="showContextMenuSelection"
                             @endMoveSelection="endMoveSelection"
                             @showSettingsContext="showSettingsContext"
@@ -217,17 +217,16 @@
                             </div>
                         </template>
                     </BaseContextMenuItem>
-
                 </div>
-                    <div class="item-group">
-                        <BaseContextMenuItem
-                            iconClass="far fa-user-cog"
-                            hotkey="KeyM"
-                            @click="$emit('showSelectionUsersFlyin', contextSelection)"
-                        >
-                            <u>M</u>embers and Access
-                        </BaseContextMenuItem>
-                    </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-user-cog"
+                        hotkey="KeyM"
+                        @click="showSelectionUsersContext({ selection: contextSelection, e: contextMouseEvent })"
+                    >
+                        <u>M</u>embers and Access
+                    </BaseContextMenuItem>
+                </div>
                 <div class="item-group">
                     <BaseContextMenuItem
                         iconClass="far fa-trash-alt"
@@ -355,6 +354,21 @@
 
         <BaseSelectButtonsContextMenu
             v-if="contextSelection"
+            ref="contextUsers"
+            header="Add users to selection"
+            v-model="selectedUsers"
+            :options="users"
+            optionNameKey="name"
+            optionDescriptionKey="email"
+            uniqueKey="id"
+            :search="true"
+            :loading="loadingUsers"
+            submitText="Save users"
+            @submit="onSaveUsers"
+        />
+
+        <BaseSelectButtonsContextMenu
+            v-if="contextSelection"
             ref="contextCurrency"
             header="Change Selection Currency"
             v-model="contextSelection.currency"
@@ -427,11 +441,14 @@ export default {
             fileToClone: null,
             cloningSetup: false,
             settingsSelections: [],
+            selectedUsers: [],
+            workspaceUsersFetched: false,
         }
     },
     computed: {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('files', ['currentFile', 'files', 'allFiles', 'getCurrentFileChanged']),
+        ...mapGetters('users', ['users']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('selections', [
             'getAuthUserHasSelectionEditAccess',
@@ -474,6 +491,7 @@ export default {
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('presentation', ['fetchFilePresentations']),
         ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
+        ...mapActions('users', ['fetchUsers']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async initData(forceRefresh) {
@@ -543,11 +561,33 @@ export default {
                 contextMenu.show(e)
             })
         },
+        onSaveUsers(newUsers) {
+            const oldUsers = this.contextSelection.users
+            const usersToAdd = newUsers.filter(newUser => !oldUsers.find(oldUser => oldUser.id == newUser.id))
+            const usersToRemove = oldUsers.filter(oldUser => !newUsers.find(newUser => newUser.id == oldUser.id))
+            console.log('on save users', usersToAdd, usersToRemove)
+        },
         showSelectionCurrencyContext({ selection, e }) {
             this.contextSelection = selection
             this.$nextTick(() => {
                 this.$refs.contextCurrency.show(e)
             })
+        },
+        async showSelectionUsersContext({ selection, e }) {
+            this.contextSelection = selection
+            this.$nextTick(() => {
+                this.$refs.contextUsers.show(e)
+            })
+            this.loadingUsers = true
+            const selectionWithUsers = await this.fetchSelection({ selectionId: selection.id, addToState: false })
+            this.selectedUsers = selectionWithUsers.users.slice()
+            // If we have not and are not fetching the users then fetch them
+            if (!this.workspaceUsersFetched) {
+                await this.fetchUsers()
+                this.workspaceUsersFetched = true
+            }
+
+            this.loadingUsers = false
         },
         showContextMenuSelection(e, selection, component, parent) {
             if (!this.getAuthUserHasSelectionEditAccess(selection)) return

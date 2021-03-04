@@ -4,7 +4,7 @@
             <div class="items-left"></div>
             <div class="item-right flex-list">
                 <BaseButton
-                    buttonClass="primary ghost"
+                    buttonClass="ghost pill"
                     :disabled="authUserWorkspaceRole != 'Admin'"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new folders'"
                     @click="showNewFolderModal = true"
@@ -13,7 +13,7 @@
                     <span>Add folder</span>
                 </BaseButton>
                 <BaseButton
-                    buttonClass="primary"
+                    buttonClass="dark pill"
                     :disabled="authUserWorkspaceRole != 'Admin'"
                     v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
                     @click="showNewFileModal = true"

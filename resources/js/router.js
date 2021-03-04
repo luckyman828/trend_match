@@ -168,6 +168,26 @@ const routes = [
         component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
     },
 
+    // Root Routes
+    {
+        path: '/',
+        name: 'selectSpace',
+        component: () => import(/* webpackChunkName: "selectSpace" */ './pages/ProductSpaceSelectorPage/'),
+    },
+
+    // SELECT Routes
+    {
+        path: '/select',
+        name: 'select',
+        redirect: 'files',
+        children: [
+            {
+                path: '*',
+                redirect: '/files',
+            },
+        ],
+    },
+
     // PLAY Routes
     {
         path: '/play',
@@ -199,12 +219,18 @@ const routes = [
     {
         path: '/buy',
         name: 'buy',
+        redirect: 'buy/',
         component: () => import(/* webpackChunkName: "buyRoot" */ './pages/BUY/'),
         children: [
             {
                 path: 'files',
                 name: 'buy.files',
                 component: () => import(/* webpackChunkName: "buyFiles" */ './pages/BUY/FilesPage/'),
+            },
+            {
+                path: 'users',
+                name: 'buy.users',
+                component: () => import(/* webpackChunkName: "buyUsers" */ './pages/BUY/UsersPage/'),
             },
             {
                 path: '*',

@@ -103,7 +103,7 @@
                 <button
                     class="ghost editable sm"
                     v-if="userHasEditAccess"
-                    @click="$emit('showSelectionUsersFlyin', selection)"
+                    @click="$emit('showSelectionUsersContext', { selection, e: $event })"
                 >
                     <i class="far fa-user"></i><span>{{ selection.user_count }}</span>
                 </button>
@@ -136,7 +136,7 @@
                 @cancelToEdit="$emit('cancelToEdit', $event)"
                 @showContext="emitEmissionShowContext"
                 @emitOnClick="emitOnClick"
-                @showSelectionUsersFlyin="$emit('showSelectionUsersFlyin', $event)"
+                @showSelectionUsersContext="$emit('showSelectionUsersContext', $event)"
                 @showSelectionCurrencyContext="$emit('showSelectionCurrencyContext', $event)"
                 @showSettingsContext="
                     ($event, selection) => {
