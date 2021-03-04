@@ -10,7 +10,7 @@ export default {
         getImageSyncJobs: state => state.imageSyncJobs,
         getRemainingImageSyncCount: (state, getters) => {
             return getters.getImageSyncJobs.reduce((acc, curr) => {
-                const remaining = curr.status == 'Completed' ? 0 : curr.total - curr.completed
+                const remaining = curr.total - (curr.completed + curr.failed)
                 return (acc += remaining)
             }, 0)
         },
