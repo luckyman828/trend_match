@@ -841,7 +841,7 @@ export default {
             return this.productToEdit
         },
         showLabels() {
-            return this.labelsEnabled || this.product && this.product.labels && this.product.labels.length > 0
+            return this.labelsEnabled || (this.product && this.product.labels && this.product.labels.length > 0)
         },
         originalProduct() {
             return this.currentProduct
@@ -1303,13 +1303,13 @@ export default {
             this.draggingVariantPicture = false
             // If the dragged picture was the currently active picture set the active picture index to the pictures new index
             // I.e. keep the same picure as the active one even after dragging
-            if (e.oldIndex == variant.imageIndex) {
-                variant.imageIndex = e.newIndex
-                return
-            }
-            // Keep the same position when the active picture gets "bumped"
-            if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
-            if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
+            // if (e.oldIndex == variant.imageIndex) {
+            //     variant.imageIndex = e.newIndex
+            //     return
+            // }
+            // // Keep the same position when the active picture gets "bumped"
+            // if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
+            // if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
         },
         removePicture(index) {
             const variant = this.product.variants[index]

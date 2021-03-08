@@ -273,11 +273,24 @@ export default {
                                 if (!srcProduct.variants.find(x => x.color)) keysToMatch.push('variant')
                             }
                             return keysToMatch.find(itemKey => {
-                                let isMatching =
-                                    existingArrayItem[itemKey] != null &&
-                                    typeof existingArrayItem[itemKey] == 'string' &&
-                                    typeof newArrayItem[itemKey] == 'string' &&
-                                    existingArrayItem[itemKey].toLowerCase() == newArrayItem[itemKey].toLowerCase()
+                                const singleKeyAvailable = !(
+                                    keysToMatch.includes('color') && keysToMatch.includes('variant')
+                                )
+                                if (
+                                    existingArrayItem[itemKey] == null ||
+                                    typeof existingArrayItem[itemKey] != 'string' ||
+                                    typeof newArrayItem[itemKey] != 'string'
+                                ) {
+                                    return
+                                }
+
+                                const existingVal = existingArrayItem[itemKey].toLowerCase()
+                                const newVal = newArrayItem[itemKey].toLowerCase()
+
+                                const isMatching =
+                                    existingVal == newVal ||
+                                    (singleKeyAvailable &&
+                                        (existingVal.search(newVal) >= 0 || newVal.search(existingVal) >= 0))
 
                                 return isMatching
                             })
