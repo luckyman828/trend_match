@@ -96,7 +96,7 @@ export default {
             if (this.prevFile) this.SET_CURRENT_FILE(this.prevFile)
         },
         goToEditSingle() {
-            this.$router.push({ name: 'editFile', params: { fileId: this.file.id } })
+            this.$router.push({ name: 'buy.editFile', params: { fileId: this.file.id } })
         },
     },
 }

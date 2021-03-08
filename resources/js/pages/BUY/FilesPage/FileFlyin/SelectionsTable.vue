@@ -443,6 +443,7 @@ export default {
             settingsSelections: [],
             selectedUsers: [],
             workspaceUsersFetched: false,
+            loadingUsers: false,
         }
     },
     computed: {

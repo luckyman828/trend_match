@@ -220,12 +220,27 @@ const routes = [
         path: '/buy',
         name: 'buy',
         redirect: 'buy/',
+        meta: {
+            root: 'buy',
+            isRoot: true,
+        },
         component: () => import(/* webpackChunkName: "buyRoot" */ './pages/BUY/'),
         children: [
             {
                 path: 'files',
                 name: 'buy.files',
                 component: () => import(/* webpackChunkName: "buyFiles" */ './pages/BUY/FilesPage/'),
+            },
+            {
+                path: 'file/:fileId/edit',
+                name: 'buy.editFile',
+                component: () =>
+                    import(/* webpackChunkName: "buyEditFileProductsPage" */ './pages/BUY/EditFileProductsPage/'),
+            },
+            {
+                path: 'selection/:selectionId',
+                name: 'buy.selection',
+                component: () => import(/* webpackChunkName: "buySelectionPage" */ './pages/BUY/SelectionPage/'),
             },
             {
                 path: 'users',

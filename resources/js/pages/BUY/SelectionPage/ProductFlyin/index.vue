@@ -1,0 +1,674 @@
+<template>
+    <BaseFlyin
+        class="product-single has-budget"
+        :show="show"
+        @close="onCloseSingle"
+        :columns="4"
+        :class="[{ 'has-labels': showLabels }]"
+    >
+        <template v-slot:header>
+            <BaseFlyinHeader
+                class="the-flyin-header"
+                v-if="show"
+                :next="nextProduct"
+                :prev="prevProduct"
+                @close="onCloseSingle"
+                @next="showNextProduct"
+                @prev="showPrevProduct"
+            >
+                <template v-slot:left>
+                    <div class="item-group product-title-wrapper">
+                        <h3>{{ `#${product.datasource_id}: ${product.title}` }}</h3>
+                        <span class="product-count"
+                            >Product
+                            {{ availableProducts.findIndex(x => x.id == product.id) + 1 }}
+                            of
+                            {{ availableProducts.length }}</span
+                        >
+                    </div>
+                    <div class="item-group">
+                        <LabelList v-if="showLabels" ref="labelList" :product="product" v-horizontal-scroll />
+                    </div>
+                </template>
+            </BaseFlyinHeader>
+        </template>
+        <template v-slot v-if="show">
+            <BaseFlyinColumn class="details">
+                <div class="main-img" @click="cycleImage(true)">
+                    <BaseVariantImage
+                        :key="product.id + '-' + currentImgIndex"
+                        :variant="currentVariant"
+                        size="sm"
+                        :index="currentVariant ? currentVariant.imageIndex : 0"
+                    />
+                    <button class="white controls" v-tooltip="'View large images'" @click.stop="onShowLightbox">
+                        <i class="far fa-search-plus"></i>
+                    </button>
+
+                    <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
+                        <div class="square white trigger">
+                            <i class="far fa-images"></i>
+                            <div class="count circle xxs dark">
+                                <span>{{ currentVariant.pictures.length }}</span>
+                            </div>
+                        </div>
+                        <div class="drawer">
+                            <div
+                                class="image-wrapper"
+                                v-for="(image, index) in currentVariant.pictures"
+                                :key="index"
+                                :class="{ active: currentVariant.imageIndex == index }"
+                            >
+                                <BaseVariantImage
+                                    :variant="currentVariant"
+                                    size="sm"
+                                    :index="index"
+                                    @click.native.stop="currentVariant.imageIndex = index"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-variants" v-dragscroll>
+                    <VariantListItem
+                        v-for="(variant, index) in selectionInput.variants"
+                        :key="index"
+                        :variant="variant"
+                        :product="product"
+                        :selection="selection"
+                        :selectionInput="selectionInput"
+                        :class="{ active: currentImgIndex == index }"
+                        @click.native="currentImgIndex = index"
+                    />
+                </div>
+
+                <!-- <label>Style number</label>
+                <BaseInputField readOnly=true :value="product.datasource_id"/> -->
+
+                <div class="col-3 prices">
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>WHS ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Wholesale price">
+                                    <BaseTooltipListItem
+                                        v-for="(price, index) in product.prices"
+                                        :key="index"
+                                        :label="price.currency"
+                                        :value="price.wholesale_price"
+                                    />
+                                </BaseTooltipList>
+                            </template>
+                        </v-popover>
+                        <BaseInputField readOnly="true" :value="product.yourPrice.wholesale_price" />
+                    </div>
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>RRP ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Recommended retail price">
+                                    <BaseTooltipListItem
+                                        v-for="(price, index) in product.prices"
+                                        :key="index"
+                                        :label="price.currency"
+                                        :value="price.recommended_retail_price"
+                                    />
+                                </BaseTooltipList>
+                            </template>
+                        </v-popover>
+                        <BaseInputField readOnly="true" :value="product.yourPrice.recommended_retail_price" />
+                    </div>
+                    <div>
+                        <v-popover :disabled="product.prices.length < 1">
+                            <label>Mark up <i class="far fa-info-circle"></i></label>
+                            <template slot="popover">
+                                <BaseTooltipList header="Mark up">
+                                    <BaseTooltipListItem
+                                        v-for="(price, index) in product.prices"
+                                        :key="index"
+                                        :label="price.currency"
+                                        :value="price.mark_up"
+                                    />
+                                </BaseTooltipList>
+                            </template>
+                        </v-popover>
+                        <BaseInputField readOnly="true" :value="product.yourPrice.mark_up" />
+                    </div>
+                </div>
+
+                <label>Delivery Date(s)</label>
+                <BaseInputTextArea
+                    readOnly="true"
+                    :value="product.delivery_dates.map(date => `${getPrettyDate(date)}`).join('\n')"
+                />
+
+                <div class="col-2 minimum">
+                    <div>
+                        <label>Order min. (pcs)</label>
+                        <BaseInputField readOnly="true" :value="product.min_order" />
+                    </div>
+                    <div>
+                        <label>Variant min. (pcs)</label>
+                        <BaseInputField readOnly="true" :value="product.min_variant_order" />
+                    </div>
+                </div>
+
+                <label>Composition</label>
+                <BaseInputField readOnly="true" :value="product.composition" />
+                <label>Box Sizes</label>
+                <BaseInputTextArea readOnly="true" :value="product.assortment_sizes.join(', ')" />
+                <label>Assortments</label>
+                <BaseInputTextArea readOnly="true" :value="product.assortments.map(x => `${x.name}`).join(',\n')" />
+                <label>Category</label>
+                <BaseInputField readOnly="true" :value="product.category" />
+                <label>Description</label>
+                <BaseInputTextArea readOnly="true" :value="product.sale_description" />
+            </BaseFlyinColumn>
+
+            <CommentsSection
+                class="comments"
+                ref="commentsSection"
+                :selectionInput="selectionInput"
+                @hotkeyEnter="hotkeyEnterHandler"
+            />
+
+            <BudgetCounter :hideLabel="true" class="the-budget-counter" :selection="selection" />
+        </template>
+    </BaseFlyin>
+</template>
+
+<script>
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import CommentsSection from './CommentsSection'
+import VariantListItem from './VariantListItem'
+import variantImage from '../../../../mixins/variantImage'
+import BudgetCounter from '../BudgetCounter'
+import LabelList from '../ProductsTableRow/LabelList'
+import HotkeyHandler from '../../../../components/common/HotkeyHandler'
+
+export default {
+    name: 'productFlyin',
+    props: ['show'],
+    mixins: [variantImage],
+    components: {
+        CommentsSection,
+        VariantListItem,
+        BudgetCounter,
+        LabelList,
+        HotkeyHandler,
+    },
+    watch: {
+        product(newVal, oldVal) {
+            if (oldVal && oldVal.id != newVal.id) {
+                this.currentImgIndex = 0
+            }
+        },
+        show(newVal, oldVal) {
+            if (newVal) {
+                // Broadcast the product if we have not yet broadcast a product or we have just opened the same product as shown before
+                if (
+                    this.broadcastActive &&
+                    (!this.lastBroadcastProductId || this.lastBroadcastProductId == this.product.id)
+                ) {
+                    this.onBroadcastProduct(this.product)
+                }
+                document.activeElement.blur()
+                document.body.addEventListener('keydown', this.hotkeyHandler)
+                // document.body.addEventListener('keydown', this.keydownHandler)
+            } else {
+                // On close
+                document.body.removeEventListener('keydown', this.hotkeyHandler)
+                // document.body.removeEventListener('keydown', this.keydownHandler)
+            }
+        },
+    },
+    computed: {
+        ...mapGetters('requests', {
+            currentRequestThread: 'getCurrentRequestThread',
+        }),
+        ...mapGetters('products', ['currentProduct', 'nextProduct', 'prevProduct']),
+        ...mapGetters('products', {
+            availableProducts: 'getAvailableProducts',
+            currentVariantIndex: 'getPdpVariantIndex',
+        }),
+        ...mapGetters('selections', [
+            'getCurrentPDPSelection',
+            'getSelectionCurrentMode',
+            'getSelectionModeAction',
+            'getAuthUserSelectionWriteAccess',
+        ]),
+        ...mapGetters('selections', {
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
+            activeSelectionList: 'getCurrentSelections',
+            isObserver: 'getViewingAsObserver',
+            selectionRole: 'getCurrentSelectionMode',
+        }),
+        ...mapGetters('workspaces', {
+            availableLabels: 'getAvailableProductLabels',
+            workspaceRole: 'authUserWorkspaceRole',
+        }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
+        ...mapGetters('presentationQueue', ['getpresentationQueue', 'getpresentationQueueCurrentProductIndex']),
+        selectionInput() {
+            return this.product.selectionInputList.find(x => x.selection_id == this.getCurrentPDPSelection.id)
+        },
+        product() {
+            return this.currentProduct
+        },
+        currentVariant() {
+            return this.selectionInput.variants[this.currentImgIndex]
+        },
+        currentImgIndex: {
+            get() {
+                return this.currentVariantIndex
+            },
+            set(value) {
+                this.SET_CURRENT_PDP_VARIANT_INDEX(value)
+            },
+        },
+        showLabels() {
+            return this.labelsEnabled || this.product.labels.length > 0
+        },
+        broadcastActive() {
+            return this.selection.is_presenting
+        },
+        selection() {
+            return this.getCurrentPDPSelection
+        },
+        currentSelectionMode() {
+            return this.getSelectionCurrentMode(this.selection)
+        },
+        currentSelectionModeAction() {
+            return this.getSelectionModeAction(this.currentSelectionMode)
+        },
+        currentAction() {
+            return this.currentSelectionModeAction
+        },
+        userWriteAccess() {
+            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
+        },
+        ticketsEnabled() {
+            return this.selection.settings.ticket_level != 'None'
+        },
+        labelsEnabled() {
+            return this.availableLabels.length > 0
+        },
+        hasLabelWriteAccess() {
+            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+        },
+    },
+    methods: {
+        ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted', 'updateProduct']),
+        ...mapActions('presentation', ['broadcastProduct']),
+        ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
+        ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
+        ...mapMutations('presentationQueue', [
+            'ADD_PRODUCT_TO_PRESENTER_QUEUE',
+            'SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID',
+        ]),
+        onTogglePresenterMode(gotActivated) {
+            if (gotActivated) {
+                this.onBroadcastProduct(this.product)
+            }
+        },
+        onToggleCompleted() {
+            this.toggleProductCompleted({ selectionId: this.selection.id, product: this.product })
+        },
+        onBroadcastProduct(product) {
+            this.lastBroadcastProductId = product.id
+            // Add the product to our queue
+            // If the product is not currently in our queue, add it right after the current product
+            const newProductIndex = this.getpresentationQueue.findIndex(x => x.id == product.id)
+            const currentProductIndex = this.getpresentationQueueCurrentProductIndex
+            if (newProductIndex < 0) {
+                this.ADD_PRODUCT_TO_PRESENTER_QUEUE({ product, index: currentProductIndex + 1 })
+            }
+            this.SET_PRESENTER_QUEUE_CURRENT_PRODUCT_ID(product.id)
+            this.broadcastProduct({ product })
+        },
+        onUpdateAction(action) {
+            this.$emit('updateAction', action, this.selectionInput)
+        },
+        onShowLightbox() {
+            const lightboxImages = this.product.variants.reduce(
+                (arr, variant) =>
+                    arr.concat(variant.pictures.map((picture, index) => this.variantImage(variant, { index }))),
+                []
+            )
+            // this.SET_LIGHTBOX_IMAGES(this.product.variants.map(x => this.variantImage(x)))
+            let lightboxImageIndex = 0
+            for (let i = 0; i <= this.currentImgIndex; i++) {
+                if (i < this.currentImgIndex) {
+                    lightboxImageIndex += this.selectionInput.variants[i].pictures.length
+                }
+                if (i == this.currentImgIndex) {
+                    lightboxImageIndex += this.selectionInput.variants[i].imageIndex
+                }
+            }
+            this.SET_LIGHTBOX_IMAGES(lightboxImages)
+            // this.SET_LIGHTBOX_IMAGE_INDEX(this.currentImgIndex)
+            this.SET_LIGHTBOX_IMAGE_INDEX(lightboxImageIndex)
+            this.SET_LIGHTBOX_VISIBLE(true)
+        },
+        async onCloseSingle() {
+            if (this.selection.is_presenting && !(await this.$refs.confirmCloseInPresentation.confirm())) {
+                return
+            }
+
+            this.currentImgIndex = 0
+            // Emit event to parent
+            this.$emit('close')
+        },
+        cycleImage(cycleForward = true) {
+            if (cycleForward) {
+                if (this.currentImgIndex + 1 == this.product.variants.length) {
+                    this.currentImgIndex = 0
+                } else {
+                    this.currentImgIndex++
+                }
+            } else {
+                if (this.currentImgIndex == 0) {
+                    this.currentImgIndex = this.product.variants.length - 1
+                } else {
+                    this.currentImgIndex--
+                }
+            }
+        },
+        hotkeyHandler(event) {
+            this.keydownHandler(event)
+            const key = event.code
+            // Only do these if the current target is not the comment box
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+                if (
+                    event.altKey &&
+                    key == 'KeyC' &&
+                    this.selection.type == 'Master' &&
+                    this.currentSelectionMode == 'Alignment'
+                ) {
+                    this.onToggleCompleted()
+                }
+
+                if (this.userWriteAccess.actions.hasAccess) {
+                    if (key == 'KeyI') this.onUpdateAction('In')
+                    if (key == 'KeyO') this.onUpdateAction('Out')
+                    if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus')
+                }
+                if (key == 'Tab') {
+                    event.preventDefault()
+                    // Find requests with threads
+                    const allTickets = this.product.requests.filter(x => x.type == 'Ticket')
+                    if (allTickets.length <= 0) return
+
+                    // // Else, show the first reqeust thread
+                    if (!this.currentRequestThread) {
+                        const ownTickets = allTickets.filter(x => x.selection_id == this.selection.id)
+                        const ticketToShow = ownTickets.length > 0 ? ownTickets[0] : allTickets[0]
+                        this.SET_CURRENT_REQUEST_THREAD(ticketToShow)
+                    }
+                }
+            }
+        },
+        hotkeyEnterHandler(e) {
+            // If the request thread flyin is visible, do nothing
+            if (!this.selection.is_open || e.target.contentEditabl) return
+
+            this.$refs.commentsSection.activateWrite()
+        },
+        keydownHandler(e) {
+            const key = event.code
+            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+                if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
+                if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
+                // Label hotkeys
+                if (this.hasLabelWriteAccess) {
+                    // Number hotkey
+                    if (parseInt(e.key)) {
+                        const pressedNumber = e.key
+                        const label = this.availableLabels[pressedNumber - 1]
+                        if (!label) return
+
+                        // Check if the label is already added
+                        const existingIndex = this.product.labels.findIndex(x => x == label)
+                        if (existingIndex >= 0) {
+                            this.product.labels.splice(existingIndex, 1)
+                        } else {
+                            this.product.labels.push(label)
+                        }
+                        this.onUpdateProduct()
+                    }
+                    // Hashtag
+                    if (e.key == '#') {
+                        // Open labels menu
+                        this.$refs.labelList.$refs.popover.show()
+                    }
+                }
+            }
+            if (key == 'Tab') {
+                e.preventDefault()
+            }
+        },
+        async onUpdateProduct() {
+            const product = Object.assign({}, this.product)
+            delete product.selectionInputList
+            await this.updateProduct(product)
+        },
+    },
+    destroyed() {
+        document.body.removeEventListener('keydown', this.hotkeyHandler)
+        // document.body.removeEventListener('keydown', this.keydownHandler)
+    },
+}
+</script>
+
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+
+::v-deep {
+    &.product-single {
+        &.has-labels {
+            &.has-budget {
+                .label-list {
+                    top: 76px;
+                }
+            }
+            .flyin-header {
+                margin-bottom: 40px;
+            }
+            .flyin {
+                background: white;
+                > .body {
+                    border-top: $borderModule;
+                }
+            }
+            .label-list {
+                top: 68px;
+                left: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 0 16px 6px;
+                max-width: none;
+                &::after {
+                    content: '';
+                    display: block;
+                    width: 16px;
+                    height: 1px;
+                    flex-shrink: 0;
+                }
+                > * {
+                    flex-shrink: 0;
+                }
+                .add-button {
+                    display: block;
+                }
+            }
+        }
+        > .flyin {
+            min-width: 0;
+            width: calc(100vw - 242px);
+            > .body {
+                grid-template-columns: 26% 26% 24% 24% !important;
+            }
+            .flyin-header {
+                > .left {
+                    // max-width: 380px;
+                    h3 {
+                        max-width: calc(36vw - 92px);
+                        overflow: hidden;
+                    }
+                }
+            }
+        }
+        &.has-budget {
+            > .flyin {
+                > .body {
+                    margin-top: 8px;
+                    border-top: $borderModule;
+                }
+            }
+            .the-budget-counter {
+                overflow: hidden;
+                .bar {
+                    margin-left: -4px;
+                    margin-right: -4px;
+                }
+            }
+        }
+    }
+}
+
+.the-budget-counter {
+    position: absolute;
+    top: 60px;
+    margin: 0;
+    left: 0;
+    max-width: none;
+    width: 100%;
+}
+
+.product-title-wrapper {
+    flex-direction: column;
+    justify-content: flex-start;
+    .product-count {
+        font-size: 12px;
+        line-height: 1;
+    }
+}
+
+.product-single {
+    .prices {
+        label {
+            white-space: nowrap;
+        }
+    }
+    .details {
+        background: $bgContent;
+        ::v-deep {
+            .body > *:not(:last-child) {
+                margin-bottom: 16px;
+            }
+            .main-img {
+                cursor: pointer;
+                width: 225px;
+                height: 300px;
+                overflow: hidden;
+                border: $borderElHard;
+                border-radius: $borderRadiusEl;
+                position: relative;
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    object-position: center;
+                }
+                .controls {
+                    position: absolute;
+                    left: 4px;
+                    top: 4px;
+                    opacity: 0;
+                }
+                &:hover {
+                    .controls {
+                        opacity: 1;
+                    }
+                }
+            }
+            .product-variants {
+                margin-top: 12px;
+                white-space: nowrap;
+                overflow-x: auto;
+                margin-bottom: 8px;
+                display: flex;
+            }
+        }
+    }
+    .image-drawer {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        padding: 4px;
+        border: $borderElSoft;
+        border-radius: $borderRadiusEl;
+        border-color: transparent;
+        z-index: 1;
+        &:hover,
+        &.hover {
+            background: white;
+            border-color: $borderColorEl;
+            box-shadow: $shadowEl;
+            .drawer {
+                display: block;
+            }
+            .trigger {
+                display: none;
+            }
+        }
+        .trigger {
+            border: $borderElSoft;
+            margin-right: -4px;
+            margin-top: -4px;
+            position: relative;
+            .count {
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                height: 16px;
+                width: 16px;
+                font-size: 10px;
+            }
+        }
+        .drawer {
+            display: none;
+            overflow-y: auto;
+            max-height: 200px;
+            > :not(:last-child) {
+                margin-bottom: 4px;
+            }
+        }
+        > :not(:last-child) {
+            margin-bottom: 4px;
+        }
+        .image-wrapper {
+            width: 36px;
+            height: 36px;
+            border: $borderElSoft;
+            border-radius: $borderRadiusEl;
+            position: relative;
+            cursor: pointer;
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+                position: absolute;
+            }
+            &.active {
+                border: solid 2px $primary;
+                cursor: default;
+            }
+        }
+    }
+}
+</style>

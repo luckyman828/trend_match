@@ -1,6 +1,6 @@
 <template>
     <div class="files-page">
-        <Breadcrumbs />
+        <Breadcrumbs root="buy" />
 
         <h1 v-if="!currentFolder">Files</h1>
         <h1 v-else>{{ currentFolder.name }}</h1>

@@ -111,7 +111,7 @@
             </td>
             <td class="action">
                 <BaseButton buttonClass="invisible ghost-hover primary sm" @click="onGoToSelection">
-                    <span>Go to Selection</span>
+                    <span>Go to Overview</span>
                     <!-- <span v-else>Join Presentation</span> -->
                 </BaseButton>
                 <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="emitShowContext">
@@ -263,16 +263,9 @@ export default {
         },
         onGoToSelection() {
             if (!this.moveSelectionActive) {
-                if (this.selection.is_presenting && !this.selection.presentation.presenter.id == this.authUser.id) {
-                    this.$router.push({
-                        name: 'watchVideoPresentation',
-                        params: { fileId: this.selection.file_id, selectionId: this.selection.id },
-                    })
-                    return
-                }
                 this.$router.push({
-                    name: 'selection',
-                    params: { fileId: this.selection.file_id, selectionId: this.selection.id },
+                    name: 'buy.selection',
+                    params: { selectionId: this.selection.id },
                 })
             }
         },

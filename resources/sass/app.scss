@@ -401,6 +401,9 @@ input[type='submit'] {
         &:last-child {
             margin-right: 12px;
         }
+        &:first-child:last-child {
+            margin: 0;
+        }
     }
     @each $size in $button-sizes {
         &.#{nth($size,1)} {
@@ -418,10 +421,10 @@ input[type='submit'] {
                     font-size: nth($size, 5);
                 }
                 &:first-child {
-                    margin-left: nth($size, 4) / 2;
+                    margin-left: nth($size, 4);
                 }
                 &:last-child {
-                    margin-right: nth($size, 4) / 2;
+                    margin-right: nth($size, 4);
                 }
             }
             > span:first-child {

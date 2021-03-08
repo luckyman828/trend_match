@@ -500,7 +500,7 @@ export default {
             this.sortArray(this.files, sortAsc, sortKey)
         },
         onGoToEditFile(fileId) {
-            this.$router.push({ name: 'editFile', params: { fileId: fileId } })
+            this.$router.push({ name: 'buy.editFile', params: { fileId: fileId } })
         },
         async onDeleteFile(file) {
             if (await this.$refs.deleteFileDialog.confirm()) {
