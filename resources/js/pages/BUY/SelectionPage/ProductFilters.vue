@@ -1,12 +1,13 @@
 <template>
     <v-popover trigger="manual" :open="showFilters" :autoHide="false" class="product-filters">
-        <button class="ghost trigger" @click="toggleShowFilters">
+        <slot :activeFiltersCount="activeFiltersCount" :activate="toggleShowFilters" />
+        <!-- <button class="ghost trigger">
             <i class="far fa-filter"></i>
             <span>Filters</span>
             <div class="circle primary xs" v-if="activeFiltersCount > 0">
                 {{ activeFiltersCount }}
             </div>
-        </button>
+        </button> -->
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
             <div class="item-group">
                 <v-popover trigger="click" :disabled="availableCategories.length <= 0" placement="right">

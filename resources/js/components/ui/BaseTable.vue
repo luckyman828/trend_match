@@ -16,6 +16,9 @@
                     <div class="tabs-wrapper" v-if="$slots.tabs">
                         <slot name="tabs" />
                     </div>
+                    <div class="over-table">
+                        <slot name="overTable" />
+                    </div>
                     <div class="rounded-top">
                         <BaseTableTopBar v-if="!hideTopBar">
                             <template v-slot:left>
@@ -27,7 +30,6 @@
                                     @input="$emit('update:searchResult', $event)"
                                     @keydown.enter.native="$emit('search-enter')"
                                 />
-                                <slot name="topBar" />
                                 <slot name="topBarLeft" />
                             </template>
 
@@ -477,6 +479,9 @@ export default {
                 margin-right: -4px;
             }
         }
+    }
+    .over-table {
+        margin-bottom: 8px;
     }
     .body {
         border: $borderModule;

@@ -349,6 +349,7 @@ export default {
 
             return productsToReturn
         },
+        getProductsFiltered: (state, getters) => getters.productsFiltered,
     },
 
     actions: {

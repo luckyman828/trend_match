@@ -7,12 +7,15 @@
             tabindex="-1"
             @click="setOption(index)"
             :class="[
-                { active: currentOptionIndex == index },
+                { active: theCurrentOptionIndex == index },
                 sizeClass,
-                currentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'invisible ghost-hover',
+                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'invisible ghost-hover',
             ]"
         >
-            <slot :option="option" :isActive="currentOptionIndex == index" />
+            <slot :option="option" :isActive="theCurrentOptionIndex == index" />
+            <span v-if="labelKey"
+                >{{ option[labelKey] }}<template v-if="countKey"> {{ option[countKey] }}</template></span
+            >
         </div>
     </div>
 </template>
@@ -20,14 +23,34 @@
 <script>
 export default {
     name: 'baseSegmentedControl',
-    props: ['options', 'currentOptionIndex', 'sizeClass', 'theme', 'activeClass'],
-    methods: {
-        setOption(index) {
-            this.$emit('input', index)
-            this.$emit('change', index)
+    props: {
+        options: { default: [] },
+        labelKey: { default: 'label' },
+        countKey: { default: 'count' },
+        valueKey: {},
+        currentOptionIndex: {},
+        sizeClass: {},
+        theme: {},
+        activeClass: {},
+        value: {},
+    },
+    computed: {
+        valueKeyToEmit() {
+            const objectHasKeyValue = this.options.find(x => Object.keys(x).includes('value'))
+            return this.valueKey ? this.valueKey : objectHasKeyValue ? 'value' : null
+        },
+        theCurrentOptionIndex() {
+            if (this.currentOptionIndex != null) return this.currentOptionIndex
+            if (this.valueKeyToEmit) return this.options.findIndex(option => option[this.valueKeyToEmit] == this.value)
         },
     },
-    computed: {},
+    methods: {
+        setOption(index) {
+            const valueToEmit = this.valueKeyToEmit ? this.options[index][this.valueKeyToEmit] : index
+            this.$emit('input', valueToEmit)
+            this.$emit('change', valueToEmit)
+        },
+    },
 }
 </script>
 

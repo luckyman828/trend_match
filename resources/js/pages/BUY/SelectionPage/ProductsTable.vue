@@ -9,119 +9,49 @@
             :itemSize="currentSelections.length > 1 ? 247 : 139"
             :selected.sync="selectedProducts"
             :contextItem.sync="contextProduct"
-            :searchKey="['datasource_id', 'title', 'category', 'eans']"
-            :searchResult.sync="productsFilteredBySearch"
             :hideContextButton="true"
+            :hideTopBar="true"
             :focusIndex="currentFocusRowIndex"
             @show-contextmenu="onShowContextMenu"
-            @search-enter="onViewSingle(productsFilteredBySearch[0])"
         >
-            <template v-slot:tabs>
-                <div class="tabs-inner">
-                    <BaseTableTab
-                        :label="`Overview`"
-                        :count="allProducts.length"
-                        v-model="productActionFilter"
-                        modelValue="overview"
-                    />
-                    <BaseTableTab
-                        :label="`In`"
-                        :count="
-                            allProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction]))
-                                .length
-                        "
-                        v-model="productActionFilter"
-                        :disabled="currentSelections.length > 1"
-                        v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                        :modelValue="insTabValue"
-                    />
-                    <BaseTableTab
-                        :label="`Nds`"
-                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length"
-                        v-model="productActionFilter"
-                        :disabled="currentSelections.length > 1"
-                        v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                        modelValue="nds"
-                    />
+            <template v-slot:overTable>
+                <div class="flex-list justify full-w">
+                    <div class="left">
+                        <BaseSegmentedControl
+                            activeClass="white"
+                            sizeClass="sm"
+                            theme="light"
+                            v-model="productActionFilter"
+                            :options="[
+                                { label: 'Overview', count: allProducts.length, value: 'overview' },
+                                {
+                                    label: 'Purchase',
+                                    count: allProducts.filter(product => ['In', 'Focus'].includes(product.yourAction))
+                                        .length,
+                                    value: 'ins',
+                                },
+                            ]"
+                        />
+                    </div>
+                    <BudgetCounter :selection="selection" />
+                    <div class="right flex-list">
+                        <button class="invisible primary" v-if="filtersActive" @click="resetFilters">
+                            <span>Clear filter</span>
+                        </button>
+                        <ProductFilters v-slot="slotProps">
+                            <button class="col-primary sm pill" @click="slotProps.activate()">
+                                <span>Filter</span>
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </ProductFilters>
+                        <ProductSort :currentSortKey="sortKey" @sort="onSort" v-slot="slotProps">
+                            <button class="col-primary sm pill" @click="slotProps.activate()">
+                                <span>Sort by: {{ sortKey }}</span>
+                                <i class="fas fa-angle-down"></i>
+                            </button>
+                        </ProductSort>
+                    </div>
                 </div>
-            </template>
-            <template v-slot:topBarLeft>
-                <ProductFilters />
-                <ProductSort :currentSortKey="sortKey" @sort="onSort" />
-
-                <button class="invisible primary" v-if="filtersActive" @click="resetFilters">
-                    <span>Clear filter</span>
-                </button>
-            </template>
-
-            <template v-slot:header>
-                <BaseTableHeader class="image" />
-                <BaseTableHeader
-                    class="id"
-                    :sortKey="'datasource_id'"
-                    :currentSortKey="sortKey"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    >ID</BaseTableHeader
-                >
-                <BaseTableHeader :sortKey="'title'" :currentSortKey="sortKey" defaultTo="sequence" @sort="onSort"
-                    >Product Name</BaseTableHeader
-                >
-                <BaseTableHeader
-                    class="delivery"
-                    :sortKey="'delivery_date'"
-                    :currentSortKey="sortKey"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    >Delivery</BaseTableHeader
-                >
-                <BaseTableHeader
-                    class="wholesale-price hide-screen-xs"
-                    :sortKey="'wholesale_price'"
-                    :currentSortKey="sortKey"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    :descDefault="true"
-                    >WHS</BaseTableHeader
-                >
-                <BaseTableHeader
-                    class="recommended-retail-price hide-screen-xs"
-                    :sortKey="'recommended_retail_price'"
-                    :currentSortKey="sortKey"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    :descDefault="true"
-                    >RRP</BaseTableHeader
-                >
-                <BaseTableHeader
-                    class="mark-up hide-screen-xs"
-                    :sortKey="'mark_up'"
-                    :currentSortKey="sortKey"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    :descDefault="true"
-                    >MU</BaseTableHeader
-                >
-                <BaseTableHeader class="currency hide-screen-xs" />
-                <BaseTableHeader
-                    class="minimum"
-                    :sortKey="['min_order', 'min_variant_order']"
-                    :currentSortKey="sortKey"
-                    v-tooltip="{ content: 'Minimum per Variant / Minimum per Order', delay: { show: 300 } }"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    :descDefault="true"
-                    >Minimum</BaseTableHeader
-                >
-                <BaseTableHeader
-                    :sortKey="['requests', 'comments']"
-                    :currentSortKey="sortKey"
-                    defaultTo="sequence"
-                    @sort="onSort"
-                    :descDefault="true"
-                    >Requests</BaseTableHeader
-                >
-                <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
 
             <template v-slot:row="rowProps">
@@ -282,6 +212,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ProductsTableRow from './ProductsTableRow/index'
+import BudgetCounter from './BudgetCounter'
 import sortArray from '../../../mixins/sortArray'
 
 import ProductFilters from './ProductFilters'
@@ -295,6 +226,7 @@ export default {
         ProductsTableRow,
         ProductFilters,
         ProductSort,
+        BudgetCounter,
     },
     data: function() {
         return {

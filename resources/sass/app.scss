@@ -292,6 +292,16 @@ textarea {
     }
 }
 
+// COLORS
+@each $color in $brand-colors {
+    .col-#{nth($color,1)} {
+        color: nth($color, 2) !important;
+    }
+    .bg-#{nth($color,1)} {
+        background-color: nth($color, 2) !important;
+    }
+}
+
 // SHAPES: BUTTONS, SQUARES, PILLS, CIRCLES
 .ui-square {
     display: inline-flex;
@@ -352,6 +362,8 @@ input[type='submit'] {
     user-select: none;
     border: solid 1px transparent;
     padding: 0 1px;
+    font-weight: 500;
+    font-size: 12px;
 
     &.editable {
         font-weight: 400;
@@ -392,7 +404,7 @@ input[type='submit'] {
         &.fad,
         &.fab {
             text-align: center;
-            font-size: 14px;
+            font-size: 11px;
             color: inherit;
         }
         &:first-child {
@@ -451,8 +463,8 @@ input[type='submit'] {
     }
 
     // COLORS
-    border-color: $grey500;
-    background: $grey500;
+    border-color: $bluegrey200;
+    background: $bluegrey200;
     color: $font;
     // color: $dark05;
     &:hover {
@@ -592,7 +604,7 @@ input[type='submit'] {
 button:not(.text-link),
 .button,
 input[type='submit'] {
-    font-weight: 700;
+    font-weight: 500;
     cursor: pointer;
     &.text-link {
         padding-top: 4px;
@@ -1624,6 +1636,10 @@ input::placeholder {
     display: flex;
     &.flex-1 {
         flex: 1;
+    }
+    &.full-w,
+    &.full-width {
+        width: 100%;
     }
     &.equal-width {
         > * {

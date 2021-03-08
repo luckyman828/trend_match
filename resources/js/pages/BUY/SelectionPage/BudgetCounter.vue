@@ -1,7 +1,14 @@
 <template>
     <div class="budget-counter">
         <div class="bar">
-            <svg width="100%" height="8px">
+            <svg width="100%" height="8px" :class="spendPercentage > 100 ? 'over' : 'under'">
+                <defs>
+                    <linearGradient id="budget-gradient">
+                        <stop offset="0%" class="stop1" />
+                        <stop offset="100%" class="stop2" />
+                    </linearGradient>
+                </defs>
+
                 <rect class="total" width="100%" height="8px" rx="4px" />
 
                 <rect
@@ -25,7 +32,6 @@
                     :width="`${spendPercentageCapped}%`"
                     height="8px"
                     rx="4px"
-                    :class="spendPercentage > 100 ? 'over' : 'under'"
                     v-tooltip.bottom="
                         `
                     Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
@@ -38,7 +44,13 @@
                             : ''
                     }`
                     "
-                />
+                >
+                    <linearGradient id="Gradient1">
+                        <stop class="stop1" offset="0%" />
+                        <stop class="stop2" offset="50%" />
+                        <stop class="stop3" offset="100%" />
+                    </linearGradient>
+                </rect>
             </svg>
         </div>
         <!-- <div class="indicator circle xs spend primary" :style="{left: `calc(${spendPercentageCapped}% - 4px - ${(76 * spendPercentageCapped) / 100}px)`}"
@@ -108,24 +120,33 @@ export default {
     margin-top: 12px;
     svg {
         display: block;
+        &.over {
+            .stop1 {
+                stop-color: $red;
+            }
+            .stop2 {
+                stop-color: $red700;
+            }
+        }
     }
     .bar {
+        .stop1 {
+            stop-color: $green;
+        }
+        .stop2 {
+            stop-color: $green700;
+        }
         rect.spend {
             fill: $bluegrey800;
+            fill: url(#budget-gradient) #fff;
             &:hover {
-                fill: $primary;
-            }
-            &.over {
-                fill: $red;
-                &:hover {
-                    fill: $red400;
-                }
+                opacity: 0.7;
             }
         }
         rect.remaining {
             fill: transparent;
             &:hover {
-                fill: $primary;
+                opacity: 0.7;
             }
         }
         rect.total {

@@ -58,6 +58,7 @@ export default {
             'filterSelectionsByAvailabilityForAlignment',
             'fetchSelectionSettings',
         ]),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
         ...mapActions('teams', ['fetchTeamUsers']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('presentationQueue', ['SET_PRESENTER_QUEUE']),
@@ -75,6 +76,7 @@ export default {
             // Fetch current selection
             const selectionId = this.$route.params.selectionId
             const selection = await this.fetchSelection({ selectionId })
+            this.SET_CURRENT_SELECTIONS([selection])
 
             // Fetch the current file and the products
             const fileId = selection.file_id
@@ -114,4 +116,10 @@ export default {
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+::v-deep {
+    .page-wrapper {
+        padding-top: 8px;
+    }
+}
+</style>

@@ -32,9 +32,6 @@
                     <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
                     <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
                     <div class="variant-list" @click="onViewSingle">
-                        <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
-                        <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
-                    </div> -->
                         <VariantListItem
                             v-for="(variant, index) in selectionInput.variants.slice(0, 5)"
                             :key="index"
@@ -217,21 +214,10 @@ export default {
                 this.$refs.row.$el.focus()
             }
         },
-        // product(newVal, oldVal) {
-        //     this.variantIndex = 0
-        // }
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'updateProduct']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
-        variantNameTruncateLength(product) {
-            const amount = product.variants.length
-            if (amount > 4) {
-                return window.innerWidth > 1260 ? 12 : 6
-            } else if (amount > 2) {
-                return window.innerWidth > 1260 ? 20 : 15
-            }
-        },
         onMouseleaveVariant(e) {
             const target = e.relatedTarget
             if (target.id != 'variant-tooltip') {

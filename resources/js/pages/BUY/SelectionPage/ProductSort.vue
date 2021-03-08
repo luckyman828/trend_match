@@ -1,9 +1,6 @@
 <template>
     <v-popover trigger="manual" :open="show" :autoHide="false" class="product-sort">
-        <button class="ghost trigger" @click="toggleShow">
-            <i class="far fa-sort-amount-up"></i>
-            <span>Sort</span>
-        </button>
+        <slot :activate="toggleShow" />
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="onHide">
             <SortListItem
                 v-if="enabledSortKeys.includes('labels')"

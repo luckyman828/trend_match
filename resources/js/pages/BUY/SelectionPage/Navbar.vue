@@ -1,115 +1,53 @@
 <template>
     <portal to="navbar">
-        <div class="navbar-file flex-wrapper">
-            <div class="items-left">
+        <div class="flex-list equal-width full-w">
+            <div class="left flex-list lg">
                 <router-link
                     :to="{ name: 'buy.files', params: { fileId: currentFile.id, folderId: currentFile.parent_id } }"
-                    class="back-link"
-                    ><span class="circle primary"><i class="far fa-arrow-left"></i></span
-                    ><span>Back to File</span></router-link
+                    class="button primary ghost pill"
                 >
-                <div class="breadcrumbs">
-                    <router-link
-                        class="text-link"
-                        :to="{ name: 'buy.files', params: { folderId: currentFile.parent_id } }"
-                        >Files</router-link
-                    >
-                    <router-link
-                        class="text-link current"
-                        :to="{ name: 'buy.files', params: { fileId: currentFile.id, folderId: currentFile.parent_id } }"
-                    >
-                        <strong>{{ currentFile ? currentFile.name : 'Fetching..' }}</strong>
-                    </router-link>
+                    <i class="far fa-arrow-left"></i>
+                    <span>Back to files</span>
+                </router-link>
+
+                <div class="flex-list flex-v min" style="line-height: 1.3;">
+                    <div class="ft-bd ft-12">{{ currentFile ? currentFile.name : 'Fetching..' }}</div>
+                    <div class="ft-bd ft-14">{{ currentSelection.name }}</div>
                 </div>
             </div>
 
-            <div class="items-center">
-                <BudgetCounter
-                    v-if="productsStatus == 'success' && currentSelection && showQty"
-                    :selection="currentSelection"
+            <div class="center">
+                <BaseSearchField
+                    v-model="productsFilteredBySearch"
+                    :searchKey="['datasource_id', 'title', 'category', 'eans']"
+                    :arrayToSearch="products"
                 />
             </div>
 
-            <div class="items-right">
-                <!-- START SYSTEM ADMIN -->
-                <v-popover
-                    v-if="isSystemAdmin && !!currentSelection"
-                    trigger="click"
-                    ref="viewAsPopover"
-                    :open.sync="viewAsContextOpen"
-                >
-                    <button class="button primary">
-                        <i :class="roleIcon"></i>
-                        <span>View as: {{ currentSelection.your_role || 'No role' }}</span>
-                        <i class="far fa-angle-down"></i>
+            <div class="right flex-list flex-end-h">
+                <v-popover trigger="click" ref="exportPopover" :open.sync="showMoreContext">
+                    <button class="button ghost pill">
+                        <span>More</span>
+                        <i class="far fa-ellipsis-h"></i>
                     </button>
-                    <BaseContextMenu slot="popover" :inline="true" v-if="viewAsContextOpen">
+                    <BaseContextMenu slot="popover" :inline="true" v-if="showMoreContext">
                         <div class="item-group">
-                            <BaseContextMenuItem
-                                iconClass="far fa-user"
-                                hotkey="KeyM"
-                                @click="
-                                    $refs.viewAsPopover.hide()
-                                    onViewSelectionAsRole('Member')
-                                "
-                            >
-                                <span><u>M</u>ember</span>
-                            </BaseContextMenuItem>
-                        </div>
-                        <div class="item-group">
-                            <BaseContextMenuItem
-                                iconClass="far fa-user-shield"
-                                hotkey="KeyO"
-                                @click="
-                                    $refs.viewAsPopover.hide()
-                                    onViewSelectionAsRole('Owner')
-                                "
-                            >
-                                <span><u>O</u>wner</span>
-                            </BaseContextMenuItem>
-                        </div>
-                        <div class="item-group" v-if="currentSelection.type == 'Master'">
-                            <BaseContextMenuItem
-                                iconClass="far fa-user-clock"
-                                hotkey="KeyA"
-                                @click="
-                                    $refs.viewAsPopover.hide()
-                                    onViewSelectionAsRole('Approver')
-                                "
-                            >
-                                <span><u>A</u>pprover</span>
-                            </BaseContextMenuItem>
-                        </div>
-                        <div class="item-group">
-                            <BaseContextMenuItem
-                                iconClass="far fa-times"
-                                hotkey="KeyN"
-                                @click="
-                                    $refs.viewAsPopover.hide()
-                                    onViewSelectionAsRole()
-                                "
-                            >
-                                <span><u>N</u>o role</span>
-                            </BaseContextMenuItem>
+                            <div class="scanner-mode-toggle item-wrapper">
+                                <BaseToggle
+                                    label="Scanner Mode"
+                                    sizeClass="xs"
+                                    :isActive="scannerModeActive"
+                                    @toggle="onToggleScannerMode"
+                                />
+                            </div>
                         </div>
                     </BaseContextMenu>
                 </v-popover>
-                <!-- END SYSTEM ADMIN -->
-
-                <div class="scanner-mode-toggle">
-                    <BaseToggle
-                        label="Scanner Mode"
-                        sizeClass="xs"
-                        :isActive="scannerModeActive"
-                        @toggle="onToggleScannerMode"
-                    />
-                </div>
 
                 <v-popover trigger="click" ref="exportPopover" :open.sync="exportContextOpen">
-                    <button class="button primary">
-                        <i class="far fa-upload"></i>
+                    <button class="button dark pill">
                         <span>Export</span>
-                        <i class="far fa-angle-down"></i>
+                        <i class="far fa-share"></i>
                     </button>
                     <BaseContextMenu slot="popover" :inline="true" v-if="exportContextOpen">
                         <div class="item-group">
@@ -183,18 +121,25 @@ export default {
             exportToFileModalVisible: false,
             exportContextOpen: false,
             viewAsContextOpen: false,
+            showMoreContext: false,
         }
     },
     computed: {
         ...mapGetters('files', ['currentFile']),
         ...mapGetters('selections', ['currentSelection']),
-        ...mapGetters('selections', {
-            showQty: 'getQuantityModeActive',
-        }),
+        productsFilteredBySearch: {
+            get() {
+                return this.$store.getters['products/getProductsFilteredBySearch']
+            },
+            set(value) {
+                this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
+            },
+        },
         ...mapGetters('products', {
             productsStatus: 'productsStatus',
             exportModalVisible: 'getPDFModalVisible',
             exportCsvModalVisible: 'getCSVModalVisisble',
+            products: 'getProductsFiltered',
         }),
         ...mapGetters('scanner', {
             scannerModeActive: 'getScannerModeActive',
@@ -216,7 +161,7 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL']),
+        ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL', 'SET_PRODUCTS_FILTERED_BY_SEARCH']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
         onExport() {
@@ -239,54 +184,4 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-
-.navbar-file {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    > * {
-        display: flex;
-        align-items: center;
-    }
-}
-.items-center {
-    flex: 1;
-    padding: 0 40px;
-}
-.back-link {
-    padding-right: 28px;
-    border-right: solid 2px $light2;
-    margin-right: 28px;
-    .circle {
-        margin-right: 8px;
-    }
-}
-.breadcrumbs {
-    display: flex;
-    > * {
-        display: inline-flex;
-        align-items: center;
-    }
-    > *:not(:first-child)::before {
-        content: '';
-        pointer-events: none;
-        color: $dark1;
-        margin-left: 8px;
-        margin-right: 10px;
-        margin-bottom: 2px;
-        font-size: 10px;
-        font-family: 'Font Awesome 5 Pro';
-        font-weight: 900;
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        display: inline-block;
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        line-height: 1;
-    }
-    > *:last-child::before {
-        content: '';
-    }
-}
 </style>
