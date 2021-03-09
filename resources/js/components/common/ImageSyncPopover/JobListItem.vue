@@ -30,7 +30,11 @@
                 </div>
             </div>
             <div class="hover-action-list">
-                <button v-if="$route.params.fileId != job.file.id" class="primary ghost xs">
+                <button
+                    v-if="$route.params.fileId != job.file.id"
+                    class="primary ghost xs"
+                    @click="$router.push({ name: 'editFile', params: { fileId: job.file.id } })"
+                >
                     <span>View</span>
                 </button>
                 <!-- <button v-if="job.failed > 0" class="primary ghost xs" @click="onRetryFailed">
