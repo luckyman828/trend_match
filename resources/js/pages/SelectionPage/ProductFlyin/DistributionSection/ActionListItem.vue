@@ -75,7 +75,7 @@ export default {
     }
     .quantity {
         margin-left: auto;
-        flex-shrink: 0;
+        flex: 0 1 auto;
         i {
             margin-left: 4px;
         }
