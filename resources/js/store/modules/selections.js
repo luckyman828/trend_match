@@ -105,12 +105,12 @@ export default {
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
             if (selection) {
-                return selection.your_role == 'Member'
+                return selection.your_roles.includes('Member')
                     ? 'Feedback'
-                    : selection.your_role == 'Owner'
-                    ? 'Alignment'
-                    : selection.your_role == 'Approver'
+                    : selection.your_roles.includes('Approver')
                     ? 'Approval'
+                    : selection.your_roles.includes('Owner')
+                    ? 'Alignment'
                     : 'No Access'
             }
         },
