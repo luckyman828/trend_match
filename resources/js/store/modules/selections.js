@@ -104,24 +104,17 @@ export default {
             getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
-            if (selection) {
-                return selection.your_roles.includes('Member')
-                    ? 'Feedback'
-                    : selection.your_roles.includes('Approver')
-                    ? 'Approval'
-                    : selection.your_roles.includes('Owner')
-                    ? 'Alignment'
-                    : 'No Access'
-            }
+            if (selection) return getters.getSelectionCurrentMode(selection)
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
-            return selection.your_role == 'Member'
+            return selection.your_job
+            return selection.your_roles.includes('Member')
                 ? 'Feedback'
-                : selection.your_role == 'Owner'
-                ? 'Alignment'
-                : selection.your_role == 'Approver'
+                : selection.your_roles.includes('Approver')
                 ? 'Approval'
+                : selection.your_roles.includes('Owner')
+                ? 'Alignment'
                 : 'No Access'
         },
         currentSelectionModeAction: (state, getters) =>
