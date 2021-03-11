@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -14,6 +15,27 @@ export default {
     },
 
     actions: {
+        async updateAlignments({ commit }, alignments) {
+            const apiUrl = `/selections/${alignments[0].selection_id}/actions`
+            await axios
+                .post(apiUrl, { actions: alignments })
+                .then(response => {
+                    if (alignments.length > 1) {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Updated ${actions.length} actions`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
+                })
+                .catch(err => {
+                    console.log('error in update alignments', err)
+                })
+        },
         async updateActions({ commit, dispatch, rootGetters }, { actions, newAction }) {
             // Complete the product if it was IN but now is OUT
             const selection = rootGetters['selections/getCurrentSelection']
@@ -261,6 +283,9 @@ export default {
         },
         async initActions({ rootGetters }, actions) {
             actions.map(action => {
+                if (!action.quantity_details) Vue.set(action, 'quantity_details', [])
+                if (!action.variants) Vue.set(action, 'variants', [])
+
                 Object.defineProperty(action, 'user', {
                     get: function() {
                         return rootGetters['selectionProducts/getSelectionUsers'].find(
@@ -274,6 +299,11 @@ export default {
                             selection => selection.id == action.selection_id
                         )
                     },
+                })
+                action.variants.map(variantAction => {
+                    Object.defineProperty(variantAction, 'productAlignment', {
+                        get: () => action,
+                    })
                 })
             })
         },

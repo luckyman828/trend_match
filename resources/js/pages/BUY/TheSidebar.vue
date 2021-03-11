@@ -260,6 +260,16 @@ export default {
         border: none;
         position: relative;
         background: transparent;
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg), translate(-59%, -60%);
+            }
+        }
+        &:hover {
+            .bg::after {
+                animation: spin linear forwards 1s infinite;
+            }
+        }
         .user {
             font-size: 12px;
             font-weight: 700;

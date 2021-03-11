@@ -205,7 +205,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
             if (!options || options.fields.find(x => x.name == 'assortment_sizes').enabled)
                 baseProduct.assortment_sizes = []
-            if (!options || options.fields.find(x => x.name == 'delivery_dates').enabled)
+            if (!options || options.fields.find(x => x.name == 'delivery_dates' && !x.scope).enabled)
                 baseProduct.delivery_dates = []
 
             // Add custom product data if we have any
@@ -268,6 +268,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             ean: null,
                             ean_sizes: [{ size: null, ean: null }],
                             extra_data: {},
+                        }
+
+                        if (mappedFields.find(x => x.name == 'delivery_dates' && x.scope == 'variants').enabled) {
+                            baseVariant.delivery_dates = []
                         }
                         // Add custom product data if we have any
                         mappedFields
@@ -512,5 +516,6 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         }
     })
     // Remove products with no ID
+    console.log('instantiated products', products)
     return products.filter(x => !!x.datasource_id)
 }

@@ -132,36 +132,32 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .label-list {
-    position: absolute;
-    left: 0;
-    top: -36px;
     max-width: calc(100vw - 460px);
-    padding-bottom: 6px;
     overflow-x: auto;
     cursor: default;
     .list-item {
         padding-right: 4px;
         flex-shrink: 0;
         .hover-only {
-            display: none;
+            opacity: 0;
         }
         &:hover {
             padding-right: 0;
             .hover-only {
-                display: block;
+                opacity: 1;
                 color: white !important;
             }
         }
     }
     .add-button {
-        display: none;
+        opacity: 0;
         &:hover {
             i {
                 color: white !important;
             }
         }
         tr:hover & {
-            display: inline-flex;
+            opacity: 1;
         }
     }
     .list-item,

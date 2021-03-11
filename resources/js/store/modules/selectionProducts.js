@@ -142,6 +142,9 @@ export default {
                     })
                     rawSelectionInput.alignments.map(action => {
                         if (!action.variants) action.variants = []
+                        action.variants.map(variant => {
+                            if (!variant.date_quantities) variant.date_quantities = []
+                        })
                     })
 
                     Object.defineProperty(selectionInput, 'is_completed', {
@@ -560,6 +563,7 @@ export default {
                                             user: action.user,
                                             selection_id: action.selection_id,
                                             selection: action.selection,
+                                            date_quantities: variantAction.date_quantities,
                                         })
                                     })
                                 })
@@ -596,6 +600,14 @@ export default {
                                         quantity: variant.quantity,
                                     })
                                 }
+                            },
+                        })
+                        Object.defineProperty(variant, 'selectionAction', {
+                            get: function() {
+                                const selectionAction = variant.actionsRaw.find(
+                                    x => x.selection_id == selectionInput.selection_id
+                                )
+                                return selectionAction
                             },
                         })
                         // Get the selection's quantity
@@ -750,6 +762,34 @@ export default {
                         Object.defineProperty(variant, 'alignmentNds', {
                             get: function() {
                                 return variant.actions.filter(x => x.action == 'None')
+                            },
+                        })
+
+                        // DELIVERIES
+                        Object.defineProperty(variant, 'deliveries', {
+                            get: function() {
+                                return variant.delivery_dates.map(delivery => {
+                                    const deliveryObj = {
+                                        delivery_date: delivery,
+                                    }
+                                    Object.defineProperty(deliveryObj, 'quantity', {
+                                        get: function() {
+                                            if (!variant.selectionAction) return 0
+                                            const actionDelivery = variant.selectionAction.date_quantities.find(
+                                                dateQty => dateQty.delivery_date == delivery
+                                            )
+                                            return actionDelivery.quantity
+                                        },
+                                        set: function(newQty) {
+                                            if (!variant.selectionAction) return 0
+                                            const actionDelivery = variant.selectionAction.date_quantities.find(
+                                                dateQty => dateQty.delivery_date == delivery
+                                            )
+                                            actionDelivery.quantity = newQty
+                                        },
+                                    })
+                                    return deliveryObj
+                                })
                             },
                         })
                     })

@@ -38,39 +38,31 @@
         </template>
 
         <!-- Access granted -->
+        <template v-else>
+            <ProductTable
+                ref="productsComponent"
+                :file="currentFile"
+                :products="productsFiltered"
+                :selection="selection"
+            />
 
-        <ProductsTable
-            ref="productsComponent"
-            :file="currentFile"
-            :products="productsFiltered"
-            :selection="selection"
-            :currentAction="currentAction"
-            @updateAction="onUpdateAction"
-        />
-
-        <ProductFlyin
-            :show="singleVisible"
-            :selection="selection"
-            :currentAction="currentAction"
-            @close="setSingleVisisble(false)"
-            @updateAction="onUpdateAction"
-        />
-
+            <ProductFlyin :show="singleVisible" :selection="selection" @close="setSingleVisisble(false)" />
+        </template>
         <ScannerModeControls />
     </div>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 // Import Components
-import ProductsTable from './ProductsTable'
+import ProductTable from './ProductTable'
 import ProductFlyin from './ProductFlyin'
 import ScannerModeControls from './ScannerModeControls'
 
 export default {
     name: 'selectionPage',
     components: {
-        ProductsTable,
+        ProductTable,
         ProductFlyin,
         ScannerModeControls,
     },
@@ -82,44 +74,21 @@ export default {
     },
     computed: {
         ...mapGetters('products', ['productsFiltered', 'singleVisible']),
-        ...mapGetters('selectionProducts', {
+        ...mapGetters('products', {
             products: 'getProducts',
-            getActiveSelectionInput: 'getActiveSelectionInput',
         }),
         ...mapGetters('files', ['currentFile']),
-        ...mapGetters('selections', [
-            'currentSelection',
-            'getCurrentSelections',
-            'currentSelectionMode',
-            'currentSelectionModeAction',
-            'selections',
-            'getCurrentSelectionRealRole',
-        ]),
-        ...mapGetters('auth', ['authUser', 'getAuthUserToken', 'getIsSystemAdmin']),
-        ...mapGetters('scanner', ['getScannerModeActive']),
+        ...mapGetters('selections', {
+            selection: 'getCurrentSelection',
+            currentSelectionRealRole: 'getCurrentSelectionRealRole',
+        }),
+        ...mapGetters('auth', ['authUser', 'getIsSystemAdmin']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        selection() {
-            return this.currentSelection
-        },
-        currentSelections() {
-            return this.getCurrentSelections
-        },
-        // Get the action according to the current type of selection access
-        currentAction() {
-            return this.currentSelectionModeAction
-        },
     },
     methods: {
-        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS', 'SET_PRODUCTS_COMPLETED']),
+        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
-        ...mapMutations('requests', [
-            'INSERT_OR_UPDATE_REQUEST',
-            'DELETE_REQUEST',
-            'INSERT_OR_UPDATE_REQUEST_COMMENT',
-            'DELETE_REQUEST_COMMENT',
-        ]),
         ...mapActions('actions', ['initActions', 'insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
-        ...mapActions('requests', ['initRequests', 'insertOrUpdateRequest']),
         ...mapActions('comments', ['initComments']),
         ...mapActions('selections', ['addUsersToSelection']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
@@ -133,32 +102,20 @@ export default {
             await this.addUsersToSelection({ selection: this.selection, users: [user], ignoreRole: false })
             this.$router.go()
         },
-        onUpdateAction(action, selectionInput) {
-            if (this.currentSelectionMode == 'Feedback') {
-                const selectionFeedback = selectionInput.yourSelectionFeedback
-                const newAction = selectionFeedback.action == action ? 'None' : action
-                this.updateFeedbacks({ actions: [selectionFeedback], newAction })
-            }
-            if (this.currentSelectionMode == 'Alignment') {
-                const selectionAction = selectionInput.selectionAction
-                const newAction = selectionAction.action == action ? 'None' : action
-                this.updateActions({ actions: [selectionAction], newAction })
-            }
-        },
 
         async commentArrivedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentArrived", selectionId, comment)
                 const product = this.products.find(x => x.id == comment.product_id)
                 await this.initComments([comment])
-                this.INSERT_OR_UPDATE_COMMENT({ selectionInput: this.getActiveSelectionInput(product), comment })
+                this.INSERT_OR_UPDATE_COMMENT({ product, comment })
             }
         },
         commentDeletedHandler(selectionId, comment) {
             if (comment.user_id != this.authUser.id) {
                 // console.log("OnCommentDeleted", selectionId, comment)
                 const product = this.products.find(x => x.id == comment.product_id)
-                this.DELETE_COMMENT({ selectionInput: this.getActiveSelectionInput(product), comment })
+                this.DELETE_COMMENT({ product, comment })
             }
         },
         bulkAlignmentArrivedHandler(selectionId, alignments) {
@@ -175,11 +132,9 @@ export default {
         async connectToLiveUpdates() {
             const connection = this.$connection
 
-            // Subscribe to our selections
-            this.currentSelections.forEach(selection => {
-                connection.invoke('Subscribe', selection.id).catch(function(err) {
-                    return console.error(err.toString())
-                })
+            // Subscribe to our selection
+            connection.invoke('Subscribe', this.selection.id).catch(function(err) {
+                return console.error(err.toString())
             })
 
             // Comments
@@ -210,7 +165,7 @@ export default {
     },
     destroyed() {
         this.disconnectSignalR()
-        if (this.getCurrentSelectionRealRole) this.onViewSelectionAsRole(this.getCurrentSelectionRealRole)
+        if (this.currentSelectionRealRole) this.onViewSelectionAsRole(this.currentSelectionRealRole)
     },
 }
 </script>

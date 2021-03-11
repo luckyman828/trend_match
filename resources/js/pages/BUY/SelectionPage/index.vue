@@ -29,46 +29,35 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['productsStatus']),
-        ...mapGetters('selections', ['currentSelectionStatus', 'getCurrentSelections']),
-        ...mapGetters('workspaces', ['authUserWorkspaceRole']),
-        ...mapGetters('auth', ['authUser']),
-        ...mapGetters('files', ['filesStatus']),
+        ...mapGetters('products', {
+            products: 'getProducts',
+        }),
         status() {
-            if (this.productsStatus == 'error' || this.currentSelectionStatus == 'error' || this.filesStatus == 'error')
-                return 'error'
-            if (
-                this.productsStatus == 'loading' ||
-                this.currentSelectionStatus == 'loading' ||
-                this.filesStatus == 'loading' ||
-                this.loadingData
-            )
+            if (this.loadingData) {
                 return 'loading'
+            }
             return 'success'
         },
     },
     methods: {
         ...mapActions('files', ['fetchFile']),
-        ...mapActions('products', ['fetchProducts']),
-        ...mapActions('selectionProducts', ['fetchSelectionProducts']),
-        ...mapMutations('products', ['SET_SELECTIONS_AVAILABLE_FOR_INPUT_FILTERING']),
-        ...mapActions('selections', [
-            'fetchSelection',
-            'fetchSelections',
-            'filterSelectionsByAvailabilityForAlignment',
-            'fetchSelectionSettings',
-        ]),
+        ...mapActions('buyProducts', ['fetchProducts']),
+        ...mapActions('selections', ['fetchSelection']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS']),
-        ...mapActions('teams', ['fetchTeamUsers']),
-        ...mapActions('presentation', ['fetchPresentationDetails']),
-        ...mapMutations('presentationQueue', ['SET_PRESENTER_QUEUE']),
-        async fetchSelectionTeamsUsers(teams) {
-            // Use of promise and map to fetch users for all teams in parallel
-            await Promise.all(
-                teams.map(async team => {
-                    await this.fetchTeamUsers(team)
+        async initProducts() {
+            this.products.map(product => {
+                const productRowHeight = 216
+                const variantRowHeight = 178
+                const dist = 20
+                Vue.set(product, 'expanded', false)
+                Object.defineProperty(product, 'size', {
+                    get: function() {
+                        return product.expanded
+                            ? productRowHeight + product.variants.length * variantRowHeight + dist
+                            : productRowHeight + dist
+                    },
                 })
-            )
+            })
         },
         async fetchData() {
             this.loadingData = true
@@ -82,30 +71,12 @@ export default {
             const fileId = selection.file_id
 
             // This works because vuex actions are always promises
-            let promisesToResolve = [
-                await this.fetchFile(fileId),
-                await this.fetchProducts({ fileId }),
-                await this.fetchSelectionProducts(selection),
-                await this.fetchSelectionSettings(selection),
-                await this.fetchSelections({ fileId }),
-            ]
+            let promisesToResolve = [await this.fetchFile(fileId), await this.fetchProducts(selection.id)]
 
-            if (selection.is_presenting) {
-                promisesToResolve.push(this.fetchPresentationDetails(selection.presentation_id))
-            }
+            await this.initProducts()
 
             // Use promise.all to resolve all the promises simultaneously
             await Promise.all(promisesToResolve)
-
-            // // Fetch selection products
-            // await this.fetchProducts({ fileId })
-            // await this.fetchSelectionProducts(selection)
-
-            // // Fetch selection settings
-            // await this.fetchSelectionSettings(selection) // Used to know whether comments are anonyized or not
-
-            // // Fetch selections that are available for alignment for the auth user
-            // const selections = await this.fetchSelections({ fileId })
 
             this.loadingData = false
         },

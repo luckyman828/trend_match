@@ -144,7 +144,7 @@ $bgModuleHoverDark: #273b5c;
 
 // FONTS / TYPOGRAPHY
 $font: $dark;
-$fontSoft: #75869c;
+$fontSoft: $bluegrey500;
 $fontBody: $dark;
 $fontIcon: $dark2;
 
@@ -273,4 +273,4 @@ $brand-colors: (
     );
 
 // UI SQUARE SIZES ($name, $height, $padding, $min-width)
-$ui-square-sizes: ('sm', 24px, 12px, 8px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);
+$ui-square-sizes: ('xs', 24px, 12px, 8px), ('sm', 40px, 6px, 24px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);

@@ -110,26 +110,54 @@
                         :key-field="itemKey"
                         v-slot="{ item, index }"
                     >
-                        <BaseTableRow
-                            ref="tableRow"
-                            class="draggable-row"
-                            :key="itemKey ? item[itemKey] : index"
-                            :item="item"
-                            :index="index"
-                            :showSelect="showSelect"
-                            :selected.sync="localSelected"
-                            :items="items"
-                            :contextItem="contextItem"
-                            :itemKey="itemKey"
-                            :showContextButton="!hideContextButton"
-                            :itemType="itemType"
-                            :itemSize="itemSize"
-                            :hasFocus="focusIndex == index"
-                            @select-range="selectRange(index, items, selected)"
-                            @show-contextmenu="onContextMenu($event, item)"
-                        >
-                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
-                        </BaseTableRow>
+                        <div class="row-wrapper">
+                            <BaseTableRow
+                                ref="tableRow"
+                                :key="itemKey ? item[itemKey] : index"
+                                :item="item"
+                                :index="index"
+                                :showSelect="showSelect"
+                                :selected.sync="localSelected"
+                                :items="items"
+                                :contextItem="contextItem"
+                                :itemKey="itemKey"
+                                :showContextButton="!hideContextButton"
+                                :itemType="itemType"
+                                :itemSize="itemSize"
+                                :hasFocus="focusIndex == index"
+                                @select-range="selectRange(index, items, selected)"
+                                @show-contextmenu="onContextMenu($event, item)"
+                            >
+                                <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
+                            </BaseTableRow>
+                            <template v-if="subItemsArrayKey && item.expanded">
+                                <BaseTableRow
+                                    v-for="(subItem, subItemIndex) in item[subItemsArrayKey]"
+                                    :key="subItemKey ? subItem[subItemKey] : subItemIndex"
+                                    ref="tableSubRow"
+                                    :item="subItem"
+                                    :index="index"
+                                    :showSelect="showSelect"
+                                    :selected.sync="localSelected"
+                                    :items="item[subItemsArrayKey]"
+                                    :contextItem="contextItem"
+                                    :itemKey="itemKey"
+                                    :showContextButton="!hideContextButton"
+                                    :itemType="itemType"
+                                    :itemSize="itemSize"
+                                    :hasFocus="focusIndex == index"
+                                    @select-range="selectRange(index, items, selected)"
+                                    @show-contextmenu="onContextMenu($event, item)"
+                                >
+                                    <slot
+                                        name="subRow"
+                                        :item="subItem"
+                                        :index="subItemIndex"
+                                        :rowComponent="$refs.tableSubRow"
+                                    />
+                                </BaseTableRow>
+                            </template>
+                        </div>
                     </RecycleScroller>
 
                     <BaseTableRow
@@ -190,28 +218,6 @@ export default {
         Draggable,
     },
     mixins: [selectRange],
-    props: [
-        'stickyHeader',
-        'contentStatus',
-        'loadingMsg',
-        'errorCallback',
-        'errorMsg',
-        'hideSelect',
-        'items',
-        'selected',
-        'itemKey',
-        'contextItem',
-        'itemSize',
-        'hideContextButton',
-        'searchResult',
-        'searchKey',
-        'hideTopBar',
-        'itemType',
-        'focusIndex',
-        'itemsTotalCount',
-        'isDraggable',
-        'itemsReOrdered',
-    ],
     props: {
         stickyHeader: {},
         contentStatus: {},
@@ -234,6 +240,8 @@ export default {
         isDraggable: {},
         itemsReOrdered: {},
         useVirtualScroller: { default: true },
+        subItemsArrayKey: {},
+        subItemKey: {},
     },
     data: function() {
         return {

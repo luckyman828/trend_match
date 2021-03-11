@@ -184,7 +184,7 @@ import CommentsSection from './CommentsSection'
 import VariantListItem from './VariantListItem'
 import variantImage from '../../../../mixins/variantImage'
 import BudgetCounter from '../BudgetCounter'
-import LabelList from '../ProductsTableRow/LabelList'
+import LabelList from '../LabelList'
 import HotkeyHandler from '../../../../components/common/HotkeyHandler'
 
 export default {

@@ -8,9 +8,9 @@
                         <img src="/images/kollekt_logo_00_1024x1024-color.svg" alt="SELECT logo" />
                     </div>
                     <div class="name ft-bd ft-20">Kollekt SELECT</div>
-                    <div class="dscription ft-md ft-16">Collaborative Estimatations</div>
+                    <div class="dscription ft-md ft-16">Collaborative estimates</div>
                     <button class="dark fullw-width">
-                        <span>Open</span>
+                        <span>Go</span>
                     </button>
                 </div>
                 <div class="product-card flex-list flex-v md" @click="onSetSpace('buy')">

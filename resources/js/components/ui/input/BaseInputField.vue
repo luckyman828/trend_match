@@ -142,6 +142,7 @@ export default {
                 'Escape',
                 'Tab',
             ]
+            if (e.key == 'A' && e.ctrlKey) return
             const passesPattern = !this.pattern || this.pattern.test(key)
             // If we fail the check
             if (!allowedKeys.includes(key) && !passesPattern) {

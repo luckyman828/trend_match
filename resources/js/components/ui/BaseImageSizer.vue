@@ -1,6 +1,6 @@
 <template>
     <div class="img-sizer">
-        <div class="sizer" :class="fit">
+        <div class="sizer" :class="fit" :style="{ paddingTop: paddingTop }">
             <slot />
         </div>
     </div>
@@ -9,7 +9,16 @@
 <script>
 export default {
     name: 'baseImgSizer',
-    props: ['fit'],
+    props: ['fit', 'aspect'],
+    computed: {
+        paddingTop() {
+            if (!this.aspect) return '133.3333%'
+            const aspect = this.aspect
+            const aspectWidth = aspect.split(':')[0]
+            const aspectHeight = aspect.split(':')[1]
+            return (aspectWidth / aspectHeight) * 100 + '%'
+        },
+    },
 }
 </script>
 

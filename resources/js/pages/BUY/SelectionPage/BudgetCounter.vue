@@ -73,14 +73,13 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['products']),
-        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
+        ...mapGetters('products', {
+            products: 'getProducts',
+        }),
         totalSpend() {
             let total = 0
             this.products.map(product => {
-                const selectionInput = this.getActiveSelectionInput(product)
-                if (!selectionInput) return
-                selectionInput.variants.map(variant => {
+                product.variants.map(variant => {
                     if (!this.selection.currency) return
                     const productPrice = product.prices.find(x => x.currency == this.selection.currency)
                     if (!productPrice) return
@@ -90,10 +89,11 @@ export default {
             return total
         },
         spendPercentage() {
+            if (!this.selection.budget) return 0
             return (this.totalSpend / this.selection.budget) * 100
         },
         spendPercentageCapped() {
-            return Math.min((this.totalSpend / this.selection.budget) * 100, 100)
+            return Math.min(this.spendPercentage, 100)
         },
     },
     methods: {
@@ -139,6 +139,7 @@ export default {
         rect.spend {
             fill: $bluegrey800;
             fill: url(#budget-gradient) #fff;
+            transition: width 0.2s ease-out;
             &:hover {
                 opacity: 0.7;
             }

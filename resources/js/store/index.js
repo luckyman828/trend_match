@@ -34,6 +34,7 @@ import kollekt from './modules/kollekt'
 import wishlist from './modules/playb2c/wishlist'
 import basket from './modules/playb2c/basket'
 import videos from './modules/playb2c/videos'
+import buyProducts from './modules/buy/buyProducts'
 const cloneDeep = require('clone-deep')
 
 // Load Vuex
@@ -75,6 +76,7 @@ export const initialStoreModules = {
     basket,
     videos,
     kollekt,
+    buyProducts,
 }
 
 // const store = new Vuex.Store({

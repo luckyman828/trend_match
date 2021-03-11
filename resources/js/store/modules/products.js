@@ -77,12 +77,12 @@ export default {
         hideCompleted: state => state.hideCompleted,
         noImagesOnly: state => state.noImagesOnly,
         singleVisible: state => state.singleVisible,
-        products: (state, getters, rootState, rootGetters) => rootGetters['selectionProducts/getProducts'],
-        getProducts: (state, getters) => getters.products,
+        products: state => state.products,
+        getProducts: state => state.products,
         getAllProducts: (state, getters) => state.products,
         productsFiltered(state, getters, rootState, rootGetters) {
             // const products = getters.products
-            const products = rootGetters['selectionProducts/getProducts']
+            const products = getters.products
             const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             // Filters
             const categories = rootGetters['productFilters/getFilterCategories']
@@ -1211,12 +1211,15 @@ export default {
                 })
 
                 // VARIANTS
-                product.variants.forEach(variant => {
+                product.variants.forEach((variant, variantIndex) => {
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
+                    Vue.set(variant, 'index', variantIndex)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
+                    if (!variant.delivery_dates) Vue.set(variant, 'delivery_dates', [])
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
@@ -1234,6 +1237,31 @@ export default {
                         get: function() {
                             return product.yourPrice
                         },
+                    })
+                    Object.defineProperty(variant, 'getActiveSelectionInput', {
+                        get: function() {
+                            return product.getActiveSelectionInput.variants[variantIndex]
+                        },
+                    })
+                    Object.defineProperty(variant, 'action', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.action
+                        },
+                    })
+                    Object.defineProperty(variant, 'selectionAction', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.selectionAction
+                        },
+                    })
+                    Object.defineProperty(variant, 'deliveries', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.deliveries
+                        },
+                    })
+
+                    // EAN SIZES
+                    variant.ean_sizes.map(x => {
+                        Vue.set(x, 'quantity', 0)
                     })
                 })
             })
@@ -1432,6 +1460,27 @@ export default {
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
+        },
+        SET_QUANTITY(state, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
+            if (!alignment) return
+            const existingQuantityDetail = alignment.quantity_details.find(detail => {
+                if (variantId && detail.variant_id != variantId) return false
+                if (deliveryDate && detail.delivery_date != deliveryDate) return false
+                if (size && detail.variant_size != size) return false
+                if (assortment && detail.assortment != assortment) return false
+                return true
+            })
+            if (existingQuantityDetail) {
+                existingQuantityDetail.quantity = quantity
+            } else {
+                alignment.quantity_details.push({
+                    variant_id: variantId,
+                    delivery_date: deliveryDate,
+                    variant_size: size,
+                    assortment,
+                    quantity,
+                })
+            }
         },
     },
 }

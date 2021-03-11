@@ -1,116 +1,79 @@
 <template>
     <BaseTableInnerRow
-        class="products-table-row"
+        class="products-table-row flex-list space-lg justify full-w flex-start-v"
+        :class="{ expanded: product.expanded }"
         tabindex="0"
         ref="row"
-        :class="['action-' + selectionInput[currentAction], { 'multi-selection': multiSelectionMode }]"
         @focus.native="onRowFocus"
         @keydown.native="hotkeyHandler($event)"
         @keyup.self.native="keypressHandler($event)"
     >
-        <div class="product-details">
-            <div
-                v-if="displayUnreadBullets && product.hasNewComment"
-                class="unread-indicator circle xxs primary"
-                v-tooltip.right="'A message needs a reply'"
-            />
+        <button class="expand-button circle sm" @click="product.expanded = !product.expanded">
+            <i class="fas" :class="product.expanded ? 'fa-angle-down' : 'fa-angle-up'"></i>
+        </button>
+        <div class="flex-list flex-v">
+            <div class="flex-list flex-v min lh-xs">
+                <div class="ft-12">{{ product.datasource_id }}</div>
+                <div class="ft-14 ft-bd">{{ product.title }}</div>
+            </div>
+            <BaseImageSizer fit="contain">
+                <BaseVariantImage
+                    class="main-img"
+                    :key="product.id + '-' + variantIndex"
+                    :variant="product.variants[variantIndex]"
+                    size="sm"
+                />
+            </BaseImageSizer>
+        </div>
+        <div class="flex-list flex-v fill space-md">
+            <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
 
-            <td class="image clickable" @click="onViewSingle">
-                <div class="img-wrapper">
-                    <BaseVariantImage
-                        :key="product.id + '-' + variantIndex"
-                        :variant="product.variants[variantIndex]"
-                        size="sm"
-                    />
+            <!-- Details -->
+            <div class="flex-list space-xl">
+                <div class="flex-list price-list space-md">
+                    <BaseValueDisplay label="WHS">
+                        <span>{{ product.wholesale_price }} {{ product.currency }}</span>
+                    </BaseValueDisplay>
+                    <BaseValueDisplay label="RRP">
+                        <span>{{ product.recommended_retail_price }} {{ product.currency }}</span>
+                    </BaseValueDisplay>
+                    <BaseValueDisplay label="Mark Up">
+                        <span>{{ product.mark_up }}</span>
+                    </BaseValueDisplay>
                 </div>
-            </td>
-            <td class="id clickable" @click="onViewSingle">
-                <span>{{ product.datasource_id }}</span>
-            </td>
-            <td class="title">
-                <span class="clickable">
-                    <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
-                    <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
-                    <div class="variant-list" @click="onViewSingle">
-                        <VariantListItem
-                            v-for="(variant, index) in selectionInput.variants.slice(0, 5)"
-                            :key="index"
-                            :variant="variant"
-                            :selectionInput="selectionInput"
-                            :selection="selection"
-                            :product="product"
-                            @mouseenter.native="variantIndex = index"
-                            @mouseleave.native="onMouseleaveVariant"
-                        />
-                        <div class="variant-list-item pill ghost sm" v-if="product.variants.length > 5">
-                            <span>+ {{ selectionInput.variants.length - 5 }} more</span>
-                        </div>
+                <div class="flex-list delivery-list space-md">
+                    <BaseValueDisplay
+                        :label="`Delivery ${index + 1}`"
+                        v-for="(delivery, index) in product.delivery_dates"
+                        :key="index"
+                    >
+                        <span style="text-transform: uppercase;">{{ getPrettyDate(delivery, 'medium') }}</span>
+                    </BaseValueDisplay>
+                </div>
+            </div>
+            <!-- End Details -->
+            <div class="variant-list flex-list space-md">
+                <VariantListItem
+                    :variant="variant"
+                    v-for="variant in product.variants"
+                    :key="variant.id"
+                    @click.native="product.expanded = !product.expanded"
+                />
+            </div>
+        </div>
+
+        <div class="actions flex-list center-v full-h">
+            <BaseButton buttonClass="pill">
+                <i class="far fa-comment"></i>
+                <template v-slot:count>
+                    <div class="circle dark xs">
+                        <span>{{ product.comments.length }}</span>
                     </div>
-                </span>
-            </td>
-            <td
-                class="delivery"
-                v-tooltip="{
-                    content:
-                        product.delivery_dates.length > 1 &&
-                        product.delivery_dates.map(x => getPrettyDate(x, 'short')).join(', '),
-                    trigger: 'hover',
-                }"
-                :style="product.delivery_dates.length > 1 && 'cursor: pointer;'"
-                @click="onViewSingle"
-            >
-                <span v-if="product.delivery_dates[0]">
-                    {{ getPrettyDate(product.delivery_dates[0], 'short') }}
-                    <span v-if="product.delivery_dates.length > 1" class="square ghost xs">
-                        <span>+{{ +product.delivery_dates.length - 1 }}</span>
-                    </span>
-                </span>
-            </td>
-
-            <!-- Start Prices -->
-            <td class="wholesale-price hide-screen-xs">
-                <span>{{ product.yourPrice.wholesale_price }}</span>
-            </td>
-            <td class="recommended-retail-price hide-screen-xs">
-                <span>{{ product.yourPrice.recommended_retail_price }}</span>
-            </td>
-            <td class="mark-up hide-screen-xs">
-                <span>{{ product.yourPrice.mark_up }}</span>
-            </td>
-            <td class="currency hide-screen-xs">
-                <span v-if="product.yourPrice.currency != 'Not set'">{{ product.yourPrice.currency }}</span>
-            </td>
-            <!-- End Prices -->
-
-            <td class="minimum">
-                <div
-                    class="square ghost xs"
-                    v-if="product.min_variant_order != null || product.min_order != null"
-                    v-tooltip="
-                        `
-                    ${`<strong>Variant Minimum: </strong> ${product.min_variant_order}`}
-                `
-                    "
-                >
-                    <span>
-                        <span>{{ selectionInput.totalQuantity }} /</span>
-                        <span>{{ product.min_order }}</span>
-                    </span>
-                    <i class="fa-box" :class="productHasReachedMinimum ? 'fas primary' : 'far'"></i>
-                </div>
-            </td>
-
-            <!-- End Distribution -->
-            <td class="request">
-                <button class="ghost xs" @click="onViewSingle" v-tooltip="'Comments'">
-                    <span>{{ selectionInput.comments.length }}</span
-                    ><i class="far fa-comment"></i>
-                </button>
-            </td>
-
-            <td class="action">
-                <button class="invisible ghost-hover primary" @click="onViewSingle"><span>View</span></button>
-            </td>
+                </template>
+            </BaseButton>
+            <button class="pill">
+                <span>View</span>
+            </button>
         </div>
     </BaseTableInnerRow>
 </template>
@@ -118,11 +81,11 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VariantListItem from './VariantListItem'
-import LabelList from './LabelList'
+import LabelList from '../LabelList'
 
 export default {
-    name: 'productsRow',
-    props: ['product', 'selectedProducts', 'selection', 'currentAction', 'index'],
+    name: 'buy.ProductsRow',
+    props: ['product', 'selectedProducts', 'selection', 'index'],
     components: {
         VariantListItem,
         LabelList,
@@ -141,6 +104,7 @@ export default {
         return {
             focusGroupIndex: null,
             variantIndex: 0,
+            expanded: false,
         }
     },
     computed: {
@@ -370,140 +334,23 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .products-table-row {
-    display: block;
-    padding: 0;
-    .unread-indicator {
+    padding: 8px 16px 8px 8px;
+    align-items: flex-start;
+    height: 215px;
+    .expand-button {
         position: absolute;
-        left: -20px;
-        @media screen and (max-width: $screenSm) {
-            left: -16px;
-        }
+        left: 8px;
+        top: 8px;
     }
     &:focus {
-        // outline: solid 2px $primary;
-        // outline-offset: -2px;
         outline: none;
     }
-    .img-wrapper {
+    .img-sizer {
+        width: 108px;
+    }
+    .main-img {
         border: $borderElSoft;
-        height: 100%;
-        width: 100%;
-        // width: 48px;
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        border-radius: $borderRadiusEl;
     }
-    @media screen and (max-width: $screenMd) {
-        &:not(.multi-selection) {
-            &.action-Focus {
-                box-shadow: -8px 0 0px $primary inset;
-            }
-            &.action-In {
-                box-shadow: -8px 0 0px $green inset;
-            }
-            &.action-Out {
-                box-shadow: -8px 0 0px $red inset;
-            }
-        }
-    }
-}
-td.id,
-td.title {
-    position: relative;
-}
-.variant-list {
-    position: absolute;
-    left: 0;
-    bottom: -20px;
-    display: flex;
-}
-.product-details {
-    height: 138px;
-    padding: 8px;
-    padding-left: 2px;
-    display: flex;
-    align-items: center;
-}
-.requests-button {
-    position: relative;
-    &:hover {
-        .new-comment-bullet {
-            top: -7px;
-            right: -5px;
-        }
-    }
-    .new-comment-bullet {
-        position: absolute;
-        right: -4px;
-        top: -6px;
-    }
-}
-
-// Flyover actions
-.gradient {
-    display: none;
-}
-td.action {
-    position: relative;
-    height: 100%;
-    .your-product-qty {
-        position: absolute;
-        top: 0;
-        right: 12px;
-        z-index: 2;
-    }
-}
-@media screen and (max-width: $screenMd) {
-    td.action {
-        position: relative;
-        height: 100%;
-        .fly-over-wrapper {
-            overflow: hidden;
-            width: 36px;
-            height: 100%;
-            position: relative;
-            &:hover {
-                overflow: visible;
-                .fly-over .inner {
-                    background: $bgModuleHover;
-                }
-                button.options {
-                    display: none;
-                }
-            }
-        }
-        .fly-over {
-            height: 100%;
-            position: absolute;
-            right: 0;
-            padding-right: 4px;
-            .inner {
-                height: 100%;
-                display: flex;
-                align-items: center;
-                padding-left: 20px;
-                > * {
-                    margin-left: 4px;
-                }
-            }
-            .gradient {
-                display: block;
-                height: 100%;
-                position: absolute;
-                top: 0;
-                left: -40px;
-                width: 40px;
-                background: linear-gradient(90deg, transparent, $bgModuleHover);
-                pointer-events: none;
-            }
-        }
-    }
-}
-.extra-actions {
-    position: absolute;
-    right: 4px;
-    bottom: 0px;
 }
 </style>

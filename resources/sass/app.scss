@@ -141,6 +141,15 @@ textarea {
 .ft-20 {
     font-size: 20px;
 }
+.lh-min {
+    line-height: 1;
+}
+.lh-xs {
+    line-height: 1.2;
+}
+.lh-sm {
+    line-height: 1.4;
+}
 
 // ---------- END FONTS
 
@@ -310,18 +319,19 @@ textarea {
     min-width: 64px;
     min-height: 48px;
     background: $bluegrey250;
-    border-radius: 4px;
+    border-radius: $borderRadiusEl;
     @each $size in $ui-square-sizes {
         &.#{nth($size,1)} {
+            min-height: 0;
             height: nth($size, 2);
-            padding: (nth($size, 3) / 2) nth($size, 3);
+            padding: nth($size, 3) (nth($size, 3) / 2);
             min-width: nth($size, 4);
         }
     }
     @each $color in $brand-colors {
         &.#{nth($color,1)} {
             background: nth($color, 2);
-            color: nth($color, 3);
+            color: nth($color, 4);
         }
     }
     label {
@@ -1641,6 +1651,13 @@ input::placeholder {
     &.full-width {
         width: 100%;
     }
+    &.full-h,
+    &.full-height {
+        height: 100%;
+    }
+    &.fill {
+        flex-grow: 1;
+    }
     &.equal-width {
         > * {
             flex-basis: 100%;
@@ -1702,29 +1719,39 @@ input::placeholder {
             margin-bottom: 8px;
         }
     }
-    &.min {
+    &.min,
+    &.space-min {
         > *:not(:last-child) {
             margin-right: 0;
         }
     }
-    &.xs {
+    &.xs,
+    &.space-xs {
         > *:not(:last-child) {
             margin-right: 2px;
         }
     }
-    &.sm {
+    &.sm,
+    &.space-sm {
         > *:not(:last-child) {
             margin-right: 4px;
         }
     }
-    &.md {
+    &.md,
+    &.space-md {
         > *:not(:last-child) {
             margin-right: 16px;
         }
     }
-    &.lg {
+    &.lg,
+    &.space-lg {
         > *:not(:last-child) {
             margin-right: 40px;
+        }
+    }
+    &.space-xl {
+        > *:not(:last-child) {
+            margin-right: 80px;
         }
     }
     &.flex-v {
@@ -1744,22 +1771,26 @@ input::placeholder {
         > *:not(:last-child) {
             margin-right: 0;
         }
-        &.min {
+        &.min,
+        &.space-min {
             > *:not(:first-child) {
                 margin-top: 0;
             }
         }
-        &.xs {
+        &.xs,
+        &.space-xs {
             > *:not(:first-child) {
                 margin-top: 2px;
             }
         }
-        &.sm {
+        &.sm,
+        &.space-sm {
             > *:not(:first-child) {
                 margin-top: 4px;
             }
         }
-        &.md {
+        &.md,
+        &.space-md {
             > *:not(:first-child) {
                 margin-top: 16px;
             }
@@ -1852,6 +1883,15 @@ img {
 .fade-enter,
 .fade-leave-active {
     opacity: 0;
+}
+
+.hover-shadow {
+    transition: transform 0.2s, box-shadow 0.2s ease-out;
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: $shadowEl;
+        transition: transform 0.1s, box-shadow 0.1s ease-out;
+    }
 }
 
 // SCREEN SIZES / MEDIA QUERIES
