@@ -1330,7 +1330,7 @@ export default {
         },
         async importSelectionInput(
             { commit, dispatch, rootGetters },
-            { destinationSelection, sourceSelection, sourceUser, importOptions }
+            { destinationSelection, sourceSelection, sourceUser, importOptions, isCopy }
         ) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             const apiUrl = `workspaces/${workspaceId}/convert-user-inputs`
@@ -1348,7 +1348,7 @@ export default {
                     source_selection_id: sourceSelection.id,
                     destination_selection_id: destinationSelection.id,
                     actions,
-                    is_copy: true,
+                    is_copy: isCopy,
                 })
                 .then(response => {
                     const showCallback = router.currentRoute.name == 'selection'

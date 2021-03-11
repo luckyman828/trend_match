@@ -61,6 +61,7 @@
         "vuex": "^3.6.2",
         "webpack": "^4.46.0",
         "xlsx": "^0.16.9",
+        "xml2js": "^0.4.23",
         "yargs-parser": "^18.1.3"
     },
     "name": "kollekt_app_feature_tree",
