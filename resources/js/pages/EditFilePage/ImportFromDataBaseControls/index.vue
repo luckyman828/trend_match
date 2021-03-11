@@ -3,25 +3,29 @@
         <template v-if="!isFetching">
             <h4 class="header flex-list justify center-v">
                 <span v-if="mode == 'Upload'">Upload a file of IDs</span>
+                <span v-else-if="mode == 'Browse'">Browse for a product set</span>
                 <span v-else-if="mode == 'Scan'">Scan barcodes to add products</span>
                 <span v-else-if="mode == 'Search'">Search to add products</span>
-                <span v-else>How would you like to get files from the database</span>
-                <button class="white pill back-button sm" v-if="!!mode" @click="mode = null">
+                <span v-else>How would you like to get files from the database?</span>
+                <button class="ghost pill back-button sm" v-if="!!mode" @click="mode = null">
                     <i class="far fa-arrow-left"></i>
                     <span>Back</span>
                 </button>
-                <button class="white pill back-button sm" v-else @click="onHide">
+                <button class="ghost pill back-button sm" v-else @click="onHide">
                     <span>Close</span>
                     <i class="far fa-times"></i>
                 </button>
             </h4>
+
+            <!-- BROWSE -->
+            <BrowseProductSetSection v-if="mode == 'Browse'" />
 
             <!-- UPLOAD FILE -->
             <UploadFileSection v-if="mode == 'Upload'" @submit="fetchProducts" />
 
             <!-- SCAN BARCODES -->
             <div v-if="mode == 'Scan'" class="flex-list center-h">
-                <i class="fal fa-barcode-read white xl"></i>
+                <i class="fal fa-barcode-read dark xl"></i>
             </div>
 
             <!-- SCAN BARCODES -->
@@ -43,23 +47,30 @@
             <!-- </div> -->
 
             <!-- CHOOSE MODE -->
-            <div class="flex-list md justify choose-mode">
+            <div class="flex-list justify choose-mode">
                 <button
-                    :class="mode == 'Upload' ? 'primary' : 'white'"
+                    :class="mode == 'Browse' ? 'primary' : 'dark'"
+                    @click="mode == 'Browse' ? (mode = null) : (mode = 'Browse')"
+                >
+                    <i class="far fa-folder"></i>
+                    <span>Browse</span>
+                </button>
+                <button
+                    :class="mode == 'Upload' ? 'primary' : 'dark'"
                     @click="mode == 'Upload' ? (mode = null) : (mode = 'Upload')"
                 >
                     <i class="far fa-file-import"></i>
                     <span>Upload IDs</span>
                 </button>
                 <button
-                    :class="mode == 'Scan' ? 'primary' : 'white'"
+                    :class="mode == 'Scan' ? 'primary' : 'dark'"
                     @click="mode == 'Scan' ? (mode = null) : (mode = 'Scan')"
                 >
                     <i class="far fa-scanner"></i>
                     <span>Scan Barcodes</span>
                 </button>
                 <button
-                    :class="mode == 'Search' ? 'primary' : 'white'"
+                    :class="mode == 'Search' ? 'primary' : 'dark'"
                     @click="mode == 'Search' ? (mode = null) : (mode = 'Search')"
                 >
                     <i class="far fa-search"></i>
@@ -74,10 +85,13 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import UploadFileSection from './UploadFileSection'
+import BrowseProductSetSection from './BrowseProductSetSection'
+
 export default {
     name: 'importFromDatabaseControls',
     components: {
         UploadFileSection,
+        BrowseProductSetSection,
     },
     props: ['show'],
     data: function() {
@@ -219,16 +233,15 @@ export default {
     position: fixed;
     bottom: 20px;
     z-index: 1;
-    background: $dark;
+    background: white;
     padding: 16px 40px 20px;
     border-radius: $borderRadiusEl;
+    border: $borderEl;
     box-shadow: $shadowEl;
     left: 50%;
     transform: translateX(-50%);
-    width: 424px;
-    color: white;
+    width: 512px;
     .header {
-        color: white;
         margin: 0 0 16px;
     }
     .back-button {
