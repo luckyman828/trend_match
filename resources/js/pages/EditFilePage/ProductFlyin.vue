@@ -820,7 +820,7 @@ export default {
             return this.productToEdit
         },
         showLabels() {
-            return this.labelsEnabled || this.product.labels.length > 0
+            return this.labelsEnabled || (this.product && this.product.labels.length > 0)
         },
         originalProduct() {
             return this.currentProduct

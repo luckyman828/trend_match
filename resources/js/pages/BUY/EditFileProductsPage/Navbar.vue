@@ -157,7 +157,7 @@ import ExportToCsvModal from '../../../components/ExportToCsvModal'
 import ExportToFileModal from '../../../components/common/ExportToFileModal'
 import ImportFromKollektModal from '../../../components/common/ImportFromKollektModal'
 import ImportFromSpreadsheetModal from '../../../components/ImportFromSpreadsheetModal'
-import ImportFromDatabaseControls from '../../EditFilePage/ImportFromDatabaseControls'
+import ImportFromDatabaseControls from '../../EditFilePage/ImportFromDataBaseControls/'
 
 export default {
     name: 'editFilePageNavbar',

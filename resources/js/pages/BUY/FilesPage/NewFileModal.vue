@@ -56,7 +56,7 @@ export default {
         async onSubmit() {
             const newFile = await this.onNewFile()
             if (this.viewNewFile) {
-                this.$router.push({ name: 'editFile', params: { fileId: newFile.id } })
+                this.$router.push({ name: 'buy.editFile', params: { fileId: newFile.id } })
             } else {
                 this.$emit('close')
             }

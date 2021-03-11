@@ -525,6 +525,21 @@ export default {
                 eans: [],
                 assortment_sizes: [],
                 extra_data: {},
+                labels: [],
+            }
+        },
+        instantiateNewProductVariant({ commit }) {
+            return {
+                id: null,
+                color: null,
+                variant: null,
+                delivery_dates: [],
+                ean_sizes: [],
+                extra_data: {},
+                min_order: null,
+                labels: [],
+                pictures: [],
+                style_option_id: null,
             }
         },
         setCurrentProduct({ commit }, product) {
