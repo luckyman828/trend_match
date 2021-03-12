@@ -1,75 +1,100 @@
 <template>
     <div class="browse-product-set-section flex-list flex-v md">
-        <BaseDropdownInputField
-            innerLabel="Season"
-            :search="productSets.length > 5"
-            placeholder="Choose season"
-            :options="productSets"
-            v-model="selectedProductSets"
-        />
-        <BaseDropdownInputField
-            innerLabel="Brand"
-            :search="availableBrands.length > 5"
-            placeholder="Choose brand"
-            :options="availableBrands"
-            v-model="selectedBrands"
-        />
-        <BaseCheckboxInputField v-model="seasonStylesOnly">
-            <span>Season styles only</span>
-        </BaseCheckboxInputField>
-        <BaseButton
-            class="full-width import-button"
-            buttonClass="primary full-width lg"
-            :disabled="selectedProductSets.length <= 0"
-            @click="onImportProducts"
-        >
-            <span>Import Products</span>
-        </BaseButton>
+        <BaseLoader v-if="fetchingProducts" :msg="loadingMsg" />
+        <template v-else>
+            <BaseDropdownInputField
+                innerLabel="Brand"
+                :search="availableBrands.length > 5"
+                placeholder="Choose brand"
+                :options="availableBrands"
+                nameKey="name"
+                descriptionKey="company"
+                v-model="selectedBrands"
+                :resize="false"
+                @close="onFetchBrandSeasons"
+            >
+                <button class="primary full-width" v-close-popover @click="onFetchBrandSeasons">
+                    <span>Done</span>
+                </button>
+            </BaseDropdownInputField>
+            <BaseLoader v-if="fetchingSeasons" msg="Getting seasons" />
+            <BaseDropdownInputField
+                v-else-if="selectedBrands.length > 0"
+                innerLabel="Season"
+                :search="availableSeasons.length > 5"
+                placeholder="Choose season"
+                :options="availableSeasons"
+                nameKey="code"
+                :resize="false"
+                v-model="selectedSeasons"
+            >
+                <button class="primary full-width" v-close-popover>
+                    <span>Done</span>
+                </button>
+            </BaseDropdownInputField>
+            <!-- <BaseCheckboxInputField v-model="seasonStylesOnly">
+                <span>Season styles only</span>
+            </BaseCheckboxInputField> -->
+            <BaseButton
+                class="full-width import-button"
+                buttonClass="primary full-width lg"
+                :disabled="selectedSeasons.length <= 0"
+                @click="onImportProducts"
+            >
+                <span>Import Products</span>
+            </BaseButton>
+        </template>
     </div>
 </template>
 
 <script>
+import axios from 'axios'
+import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'browseProductSetSection',
     data() {
         return {
-            productSets: [],
-            selectedProductSets: [],
-            availableBrands: ['Fransa', 'Dranella', 'InWear', 'Matinique', 'Cream'],
+            selectedSeasons: [],
             selectedBrands: [],
-            seasonStylesOnly: false
+            fetchingSeasons: false,
+            fetchingProducts: false,
+            // seasonStylesOnly: false,
+            loadingMsg: 'Fetching Products',
         }
     },
-    methods: {
-        fetchProductSets() {
-            return [
-                {
-                    name: 'AO 2016',
-                },
-                {
-                    name: 'AO 2017',
-                },
-                {
-                    name: 'AO 2018',
-                },
-                {
-                    name: 'AO 2019',
-                },
-                {
-                    name: 'AO 2020',
-                },
-                {
-                    name: 'AO 2021',
-                },
-            ]
-        },
-        onImportProducts() {
-            console.log('i will import products from these set:', this.selectedProductSets)
-        },
+    computed: {
+        ...mapGetters('integrationDkc', {
+            availableBrands: 'getBrandMap',
+            availableSeasons: 'getAvailableSeasons',
+        }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
     },
-    async created() {
-        const productSets = await this.fetchProductSets()
-        this.productSets = productSets
+    methods: {
+        ...mapActions('integrationDkc', ['fetchAvailableSeasonsByBrand', 'fetchProducts']),
+        ...mapActions('products', ['insertProducts']),
+        async onImportProducts() {
+            this.fetchingProducts = true
+            const msgFetcher = setInterval(async () => {
+                await axios.get('https://type.fit/api/quotes').then(response => {
+                    const quotes = response.data
+                    const index = Math.floor(Math.random() * quotes.length - 1) + 0
+                    const theQuote = quotes[index]
+                    this.loadingMsg = `"${theQuote.text}" - ${theQuote.author}`
+                })
+            }, 10000)
+            const products = await this.fetchProducts({ seasons: this.selectedSeasons, brands: this.selectedBrands })
+            await this.insertProducts({ file: this.currentFile, products, addToState: true })
+            clearInterval(msgFetcher)
+            this.fetchingProducts = false
+        },
+        async onFetchBrandSeasons() {
+            if (this.selectedBrands.length <= 0) return
+            this.fetchingSeasons = true
+            await this.fetchAvailableSeasonsByBrand(this.selectedBrands)
+            this.fetchingSeasons = false
+        },
     },
 }
 </script>

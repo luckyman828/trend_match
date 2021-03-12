@@ -1,5 +1,11 @@
 <template>
-    <v-popover trigger="click" :disabled="readOnly">
+    <v-popover
+        trigger="click"
+        :disabled="readOnly"
+        @apply-show="onShow"
+        @apply-hide="$emit('close')"
+        :handleResize="resize"
+    >
         <!-- TRIGGER -->
         <!-- <div class="dropdown-input-field input-wrapper"></div> -->
         <div
@@ -39,6 +45,7 @@
         <div slot="popover" v-close-popover="type == 'radio'" v-if="!readOnly">
             <!-- <BaseSelectButtonsContextMenu :options="options" :emitOnChange="true" :inline="true" :search="search" /> -->
             <BaseSelectButtons
+                ref="selectButtons"
                 :options="options"
                 :emitOnChange="true"
                 :search="search"
@@ -54,6 +61,9 @@
                 :displayFunction="displayFunction"
                 @input="onSelect($event)"
             />
+            <div class="footer" v-if="$slots.default">
+                <slot />
+            </div>
         </div>
     </v-popover>
 </template>
@@ -81,6 +91,7 @@ export default {
         'displayFunction',
         'allowManualEntry',
         'uniqueKey',
+        'resize',
     ],
     data: function() {
         return {
@@ -172,6 +183,19 @@ export default {
                 this.localValue = this.valueToDisplay
             })
         },
+        onShow() {
+            console.log('on show')
+            if (this.search) {
+                this.$refs.selectButtons.focusSearch()
+                const focusSearchTester = setInterval(() => {
+                    if (document.activeElement.type == 'search') {
+                        clearInterval(focusSearchTester)
+                        return
+                    }
+                    this.$refs.selectButtons.focusSearch()
+                }, 100)
+            }
+        },
     },
     mounted() {
         this.localValue = this.valueToDisplay
@@ -199,6 +223,11 @@ export default {
                 padding-right: 28px;
             }
         }
+        .footer {
+            padding: 8px 12px 12px;
+            border-top: $borderEl;
+            margin-top: -8px;
+        }
     }
     .manual-input {
         &::v-deep {
@@ -206,6 +235,13 @@ export default {
                 padding-right: 28px;
             }
         }
+    }
+}
+::v-deep {
+    .footer {
+        padding: 8px 12px 12px;
+        border-top: $borderEl;
+        margin-top: -8px;
     }
 }
 </style>

@@ -78,6 +78,20 @@
                     <BaseContextMenu slot="popover" :inline="true" v-if="importContextOpen">
                         <div class="item-group">
                             <BaseContextMenuItem
+                                iconClass="far fa-database"
+                                hotkey="KeyI"
+                                :disabled="!workspaceFeatures.import_from_integration"
+                                disabledTooltip="No integrations connected. Ask your admin to get an integration with Kollekt"
+                                @click="
+                                    $refs.importPopover.hide()
+                                    SHOW_COMPONENT('importFromDatabaseControls')
+                                "
+                            >
+                                <span>Import from <u>I</u>integration</span>
+                            </BaseContextMenuItem>
+                        </div>
+                        <div class="item-group">
+                            <BaseContextMenuItem
                                 iconClass="far fa-file-excel"
                                 hotkey="KeyS"
                                 @click="
@@ -86,20 +100,6 @@
                                 "
                             >
                                 <span>Import from <u>S</u>preadsheet</span>
-                            </BaseContextMenuItem>
-                        </div>
-                        <div class="item-group">
-                            <BaseContextMenuItem
-                                iconClass="far fa-database"
-                                hotkey="KeyD"
-                                :disabled="databases.length <= 0"
-                                disabledTooltip="No databases connected. Ask your admin to get an integration with Kollekt"
-                                @click="
-                                    $refs.importPopover.hide()
-                                    SHOW_COMPONENT('importFromDatabaseControls')
-                                "
-                            >
-                                <span>Import from <u>D</u>atabase</span>
                             </BaseContextMenuItem>
                         </div>
                         <div class="item-group">
@@ -185,6 +185,7 @@ export default {
         ...mapGetters('products', ['products']),
         ...mapGetters('workspaces', {
             databases: 'getWorkspaceDatabases',
+            workspaceFeatures: 'getEnabledFeatures',
         }),
         importFromSpreadsheetModalVisible() {
             return this.getComponentIsVisible('importFromSpreadsheetModal')
