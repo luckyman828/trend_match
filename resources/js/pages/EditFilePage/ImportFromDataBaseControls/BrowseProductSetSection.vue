@@ -76,13 +76,16 @@ export default {
         ...mapActions('products', ['insertProducts']),
         async onImportProducts() {
             this.fetchingProducts = true
+            let quotes = []
             const msgFetcher = setInterval(async () => {
-                await axios.get('https://type.fit/api/quotes').then(response => {
-                    const quotes = response.data
-                    const index = Math.floor(Math.random() * quotes.length - 1) + 0
-                    const theQuote = quotes[index]
-                    this.loadingMsg = `"${theQuote.text}" - ${theQuote.author}`
-                })
+                if (quotes.length == 0) {
+                    await axios.get('https://type.fit/api/quotes').then(response => {
+                        quotes = response.data
+                    })
+                }
+                const index = Math.floor(Math.random() * quotes.length - 1) + 0
+                const theQuote = quotes[index]
+                this.loadingMsg = `"${theQuote.text}" - ${theQuote.author}`
             }, 10000)
             const products = await this.fetchProducts({ seasons: this.selectedSeasons, brands: this.selectedBrands })
             await this.insertProducts({ file: this.currentFile, products, addToState: true })

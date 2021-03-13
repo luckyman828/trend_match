@@ -1,5 +1,22 @@
 <template>
     <div class="upload-file-section form-wrapper">
+        <BaseDropdownInputField
+            class="form-element"
+            innerLabel="Company"
+            :search="availableCompanies.length > 5"
+            placeholder="Choose company"
+            type="radio"
+            :options="availableCompanies"
+            nameKey="name"
+            :value="selectedCompany"
+            :resize="false"
+            @input="$emit('update:selectedCompany', $event)"
+        >
+            <button class="primary full-width" v-close-popover>
+                <span>Done</span>
+            </button>
+        </BaseDropdownInputField>
+
         <template v-if="fileRows.length <= 0">
             <BaseDroparea
                 class="form-element"
@@ -25,13 +42,14 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import BaseSelectButtonsContextMenu from '../../../components/ui/input/BaseSelectButtonsContextMenu.vue'
 import workbookUtils from '../../../mixins/workbookUtils'
 export default {
     components: { BaseSelectButtonsContextMenu },
     name: 'uploadFileSection',
     mixins: [workbookUtils],
+    props: ['selectedCompany'],
     data: function() {
         return {
             fileRows: [],
@@ -39,6 +57,11 @@ export default {
             hasHeaderRow: true,
             result: [],
         }
+    },
+    computed: {
+        ...mapGetters('integrationDkc', {
+            availableCompanies: 'getCompanyMap',
+        }),
     },
     methods: {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),

@@ -21,15 +21,35 @@
             <BrowseProductSetSection v-if="mode == 'Browse'" />
 
             <!-- UPLOAD FILE -->
-            <UploadFileSection v-if="mode == 'Upload'" @submit="fetchProducts" />
+            <UploadFileSection
+                v-if="mode == 'Upload'"
+                @submit="fetchProducts"
+                :selectedCompany.sync="selectedCompany"
+            />
+
+            <BaseDropdownInputField
+                class="form-element"
+                v-if="['Scan', 'Search'].includes(mode)"
+                type="radio"
+                innerLabel="Company"
+                :search="availableCompanies.length > 5"
+                placeholder="Choose company"
+                :options="availableCompanies"
+                nameKey="name"
+                v-model="selectedCompany"
+                :resize="false"
+            >
+                <button class="primary full-width" v-close-popover>
+                    <span>Done</span>
+                </button>
+            </BaseDropdownInputField>
 
             <!-- SCAN BARCODES -->
             <div v-if="mode == 'Scan'" class="flex-list center-h">
                 <i class="fal fa-barcode-read dark xl"></i>
             </div>
 
-            <!-- SCAN BARCODES -->
-            <!-- <div v-if="mode == 'Search'" class="flex-list center-h"> -->
+            <!-- SEARCH -->
             <BaseInputField
                 v-if="mode == 'Search'"
                 v-model="searchString"
@@ -102,9 +122,13 @@ export default {
             scanStr: '',
             isFetching: false,
             queryValueCount: 0,
+            selectedCompany: null,
         }
     },
     computed: {
+        ...mapGetters('integrationDkc', {
+            availableCompanies: 'getCompanyMap',
+        }),
         ...mapGetters('workspaces', {
             databases: 'getWorkspaceDatabases',
         }),
@@ -127,13 +151,23 @@ export default {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async fetchProducts(queryValues) {
             this.isFetching = true
-            this.queryValueCount = queryValues.length
-            const products = await this.fetchProductsFromDatabase({
-                databaseId: this.databases[0].id,
-                columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
-                // columnNameList: ['EAN_NO'],
-                queryValues,
-            })
+
+            const isEAN = this.mode == 'Scan' || (this.mode == 'Search' && queryValues[0].toString().length > 11)
+
+            let products = []
+            if (isEAN) {
+                products = await this.fetchProductsByEAN(queryValues)
+            } else {
+                products = await this.fetchProductsById({ productIds: queryValues, company: this.selectedCompany })
+            }
+
+            // this.queryValueCount = queryValues.length
+            // const products = await this.fetchProductsFromDatabase({
+            //     databaseId: this.databases[0].id,
+            //     columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
+            //     // columnNameList: ['EAN_NO'],
+            //     queryValues,
+            // })
 
             if (!products) {
                 this.isFetching = false
