@@ -1,6 +1,6 @@
 <template>
     <BaseTableInnerRow
-        class="products-table-row flex-list space-lg justify full-w flex-start-v"
+        class="products-table-row flex-list space-lg justify fill flex-start-v"
         :class="{ expanded: product.expanded }"
         tabindex="0"
         ref="row"
@@ -18,18 +18,19 @@
             </div>
             <BaseImageSizer fit="contain">
                 <BaseVariantImage
-                    class="main-img"
+                    class="main-img hover-shadow clickable"
                     :key="product.id + '-' + variantIndex"
                     :variant="product.variants[variantIndex]"
                     size="sm"
+                    @click.native="onViewSingle"
                 />
             </BaseImageSizer>
         </div>
-        <div class="flex-list flex-v fill space-md">
+        <div class="flex-list flex-v fill space-md details-section">
             <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
 
             <!-- Details -->
-            <div class="flex-list space-xl">
+            <div class="flex-list space-xl details">
                 <div class="flex-list price-list space-md">
                     <BaseValueDisplay label="WHS">
                         <span>{{ product.wholesale_price }} {{ product.currency }}</span>
@@ -52,7 +53,7 @@
                 </div>
             </div>
             <!-- End Details -->
-            <div class="variant-list flex-list space-md">
+            <div class="variant-list flex-list space-md" v-dragscroll v-horizontal-scroll>
                 <VariantListItem
                     :variant="variant"
                     v-for="variant in product.variants"
@@ -63,7 +64,7 @@
         </div>
 
         <div class="actions flex-list center-v full-h">
-            <BaseButton buttonClass="pill">
+            <BaseButton buttonClass="pill" @click="onViewSingle">
                 <i class="far fa-comment"></i>
                 <template v-slot:count>
                     <div class="circle dark xs">
@@ -71,7 +72,7 @@
                     </div>
                 </template>
             </BaseButton>
-            <button class="pill">
+            <button class="pill" @click="onViewSingle">
                 <span>View</span>
             </button>
         </div>
@@ -337,6 +338,8 @@ export default {
     padding: 8px 16px 8px 8px;
     align-items: flex-start;
     height: 215px;
+    overflow: hidden;
+    width: auto;
     .expand-button {
         position: absolute;
         left: 8px;
@@ -351,6 +354,13 @@ export default {
     .main-img {
         border: $borderElSoft;
         border-radius: $borderRadiusEl;
+    }
+    .details-section {
+        overflow: hidden;
+    }
+    .variant-list {
+        overflow-x: auto;
+        padding-bottom: 16px;
     }
 }
 </style>

@@ -15,6 +15,21 @@
             <!-- <span v-if="comment.votes.length > 0" class="pill small primary"> <i class="fas fa-plus"></i> {{comment.votes.length}}</span> -->
         </div>
         <div class="comment" :class="[{ important: comment.important }, { failed: comment.error }]">
+            <div class="sender" v-if="index == 0 && !editActive">
+                <SelectionChapterPill class="chapter" :selection="comment.selection" />
+                <span v-if="comment.selection.type != 'Chapter' && comment.role != 'Approver'">{{
+                    comment.role == 'Approver' ? 'Approval' : comment.selection.name
+                }}</span>
+                |
+                {{
+                    comment.user_id == authUser.id
+                        ? 'You'
+                        : !commentIsAnonymized && comment.user
+                        ? comment.user.name
+                        : 'Anonymous'
+                }}
+                <i v-if="comment.selection.type == 'Master'" class="fas fa-crown" />
+            </div>
             <span v-if="!editActive" class="body">{{ comment.content }}</span>
             <span v-else class="body">
                 <BaseInputTextArea
@@ -74,21 +89,6 @@
             </BaseButton>
         </div>
 
-        <div class="sender" v-if="displayAuthor && !editActive">
-            <SelectionChapterPill class="chapter" :selection="comment.selection" />
-            <strong v-if="comment.selection.type != 'Chapter' && comment.role != 'Approver'">{{
-                comment.role == 'Approver' ? 'Approval' : comment.selection.name
-            }}</strong>
-            |
-            {{
-                comment.user_id == authUser.id
-                    ? 'You'
-                    : !commentIsAnonymized && comment.user
-                    ? comment.user.name
-                    : 'Anonymous'
-            }}
-        </div>
-
         <BaseDialog ref="confirmDeleteComment" type="confirm" confirmColor="red" confirmText="Yes, delete it">
             <div class="icon-graphic">
                 <i class="lg primary far fa-comment"></i>
@@ -103,12 +103,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import SelectionChapterPill from '../../../../components/common/SelectionChapterPill'
+import SelectionIcon from '../../../../components/common/SelectionIcon'
 export default {
     name: 'comment',
     components: {
         SelectionChapterPill,
+        SelectionIcon,
     },
-    props: ['comment', 'selectionInput', 'displayAuthor'],
+    props: ['comment', 'index', 'selectionInput'],
     data: function() {
         return {
             commentToEdit: this.comment,
@@ -118,6 +120,9 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
+        ...mapGetters('selections', {
+            currentSelection: 'getCurrentSelection',
+        }),
         isOwn() {
             return this.comment.user_id == this.authUser.id
         },
@@ -128,8 +133,8 @@ export default {
             return this.comment.important || this.comment.focus
         },
         commentIsAnonymized() {
-            const yourRole = this.selectionInput.selection.your_role
-            const displayRole = this.selectionInput.selection.settings.anonymize_comment
+            const yourRole = this.currentSelection.your_role
+            const displayRole = this.currentSelection.settings.anonymize_comment
             if (this.authUserWorkspaceRole == 'Admin') return false
             return displayRole == 'None' || (displayRole == 'Owner' && yourRole != 'Owner')
         },
@@ -166,7 +171,6 @@ export default {
 
 .comment-wrapper {
     position: relative;
-    margin-bottom: 8px;
     max-width: calc(100% - 24px);
     &.edit-active {
         width: 100%;
@@ -189,14 +193,32 @@ export default {
     &.own {
         margin-left: auto;
         text-align: right;
+        &:last-child .comment {
+            border-radius: 8px 2px 8px 8px;
+        }
+        &:first-child .comment {
+            border-radius: 8px 8px 2px 8px;
+        }
+    }
+    &:last-child .comment {
+        border-radius: 2px 8px 8px 8px;
+    }
+    &:first-child .comment {
+        border-radius: 8px 8px 8px 2px;
     }
 }
 .sender {
     display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: $font;
-    margin-bottom: 20px;
+    font-size: 10px;
+    color: $fontSoft;
+    margin-bottom: 2px;
+    .own & {
+        text-align: right;
+        color: $grey500;
+    }
+    .master:not(.own) & {
+        color: $grey700;
+    }
 }
 .save-controls {
     position: absolute;
@@ -220,20 +242,23 @@ export default {
 }
 .comment {
     position: relative;
-    padding: 12px;
+    padding: 4px 8px;
     background: white;
-    border-radius: 6px;
     display: inline-block;
     margin-bottom: 4px;
     text-align: left;
+    border-radius: 2px 8px 8px 2px;
+    font-size: 12px;
+    font-weight: 500;
+
     .failed {
         color: $red;
     }
-    .own:not(.master) & {
+    .own & {
         background: $primary;
         color: white;
     }
-    .master & {
+    .master:not(.own) & {
         background: $yellow;
     }
     .body {

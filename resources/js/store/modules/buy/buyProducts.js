@@ -19,11 +19,18 @@ export default {
                     commit('selectionProducts/INSERT_SELECTION_USERS', response.data.users, { root: true })
                     products = response.data.products
                     // Process the selection products
-                    await dispatch(
-                        'actions/initActions',
-                        products.reduce((acc, curr) => [...acc, ...curr.alignments], []),
-                        { root: true }
-                    )
+                    await Promise.all([
+                        await dispatch(
+                            'actions/initActions',
+                            products.reduce((acc, curr) => [...acc, ...curr.alignments], []),
+                            { root: true }
+                        ),
+                        await dispatch(
+                            'comments/initComments',
+                            products.reduce((acc, curr) => [...acc, ...curr.comments], []),
+                            { root: true }
+                        ),
+                    ])
                     await dispatch('initProducts', { products, selectionId })
                     commit('products/SET_PRODUCTS', products, { root: true })
                 })
@@ -195,6 +202,19 @@ export default {
                     ])
                     // END QTY INPUT
                 })
+                // END Variants
+                Object.defineProperty(product, 'rawSelectionInput', {
+                    get() {
+                        return product
+                    },
+                })
+                Object.defineProperty(product, 'product_id', {
+                    get() {
+                        return product.id
+                    },
+                })
+
+                // START Backwards-compatability
             })
         },
     },

@@ -647,9 +647,8 @@ input[type='submit'] {
 .pill {
     min-width: 32px;
     @each $size in $button-sizes {
-        min-width: 32px;
         &.#{nth($size,1)} {
-            min-width: nth($size, 2);
+            min-width: nth($size, 2) * 1.5;
             &.fixed-width {
                 width: nth($size, 2) * 2;
             }
@@ -1948,8 +1947,9 @@ input[type='number']::-webkit-outer-spin-button {
 
 // SCROLLBARS
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 7px;
+    width: 4px;
+    height: 4px;
+    transition: 0.2s;
 }
 /* Track */
 ::-webkit-scrollbar-track {
@@ -1961,8 +1961,13 @@ input[type='number']::-webkit-outer-spin-button {
     border-radius: 6px;
     &:hover {
         background: $grey700;
+        width: 12px;
     }
 }
+// *:hover::-webkit-scrollbar {
+//     width: 10px;
+//     height: 10px;
+// }
 
 // SORTABLE / DRAGABLE
 .sortable-drag {

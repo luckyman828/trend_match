@@ -36,6 +36,7 @@ export default {
 .variant-list-item {
     width: 164px;
     overflow: hidden;
+    flex-shrink: 0;
     cursor: pointer;
     .details-wrapper {
         overflow: hidden;

@@ -1,28 +1,27 @@
 <template>
     <BaseFlyinColumn class="comments">
-        <template v-slot:header class="random">
-            <h3>
-                <span>Comments</span>
-                <span class="pill primary sm"
-                    ><span>{{ selectionInput.comments.length }}</span></span
-                >
-            </h3>
+        <template v-slot:header>
+            <span>Comments</span>
+            <div class="pill dark xxs">
+                <span>{{ selectionInput.comments.length }}</span>
+            </div>
         </template>
 
         <template v-slot>
             <div class="comments-wrapper">
-                <comment
-                    v-for="(comment, index) in commentsSorted"
-                    :key="index"
-                    :comment="comment"
-                    :selectionInput="selectionInput"
-                    :displayAuthor="
-                        selectionInput.comments[index + 1]
-                            ? selectionInput.comments[index + 1].user_id != comment.user_id ||
-                              selectionInput.comments[index + 1].selection_id != comment.selection_id
-                            : true
-                    "
-                />
+                <div
+                    class="sender-wrapper"
+                    v-for="(senderBundle, bundleIndex) in commentsBundledBySender"
+                    :key="bundleIndex"
+                >
+                    <comment
+                        v-for="(comment, index) in senderBundle.comments"
+                        :key="index"
+                        :index="index"
+                        :comment="comment"
+                        :selectionInput="selectionInput"
+                    />
+                </div>
             </div>
 
             <div class="form-wrapper">
@@ -102,20 +101,38 @@ export default {
     },
     computed: {
         ...mapGetters('auth', ['authUser']),
-        ...mapGetters('selections', ['getSelectionCurrentMode', 'getAuthUserSelectionWriteAccess']),
-        currentSelectionMode() {
-            return this.getSelectionCurrentMode(this.selectionInput.selection)
-        },
+        ...mapGetters('selections', {
+            currentSelection: 'getCurrentSelection',
+            getAuthUserSelectionWriteAccess: 'getAuthUserSelectionWriteAccess',
+        }),
         submitDisabled() {
             return this.newComment.content.length < 1 || this.submitting
         },
         userWriteAccess() {
-            return this.getAuthUserSelectionWriteAccess(this.selectionInput.selection, this.selectionInput)
+            return this.getAuthUserSelectionWriteAccess(this.currentSelection, this.selectionInput)
         },
         commentsSorted() {
             return this.selectionInput.comments.sort((a, b) => {
                 return a.id - b.id
             })
+        },
+        commentsBundledBySender() {
+            // Bundle chat messages with the same sender
+            const bundles = []
+            this.commentsSorted.map((comment, index) => {
+                const lastBundle = bundles[bundles.length - 1]
+                // If the sender of the last bundle is the same as the current comment
+                if (lastBundle && lastBundle.sender.id == comment.user.id) {
+                    lastBundle.comments.push(comment)
+                } else {
+                    const newBundle = {
+                        sender: comment.user,
+                        comments: [comment],
+                    }
+                    bundles.push(newBundle)
+                }
+            })
+            return bundles
         },
     },
     methods: {
@@ -142,11 +159,11 @@ export default {
             const commentToPost = {
                 id: this.newComment.id,
                 user_id: this.authUser.id,
-                product_id: this.selectionInput.product_id,
-                selection_id: this.selectionInput.selection_id,
+                product_id: this.selectionInput.id,
+                selection_id: this.currentSelection.id,
                 content: this.newComment.content,
                 user: this.authUser,
-                selection: this.selectionInput.selection,
+                selection: this.currentSelection,
                 votes: [],
             }
             // dispatch action
@@ -173,13 +190,9 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT') {
+            if (e.target.type != 'textarea' && e.target.tagName.toUpperCase() != 'INPUT') {
                 if (key == 'Enter') {
-                    this.$emit('hotkeyEnter', e)
-                }
-                if (key == 'Tab' && e.shiftKey && this.writeActive && this.currentSelectionMode == 'Alignment') {
-                    this.deactivateWrite()
-                    this.$emit('activateRequestWrite')
+                    this.activateWrite()
                 }
             }
         },
@@ -222,12 +235,15 @@ h3 {
     }
 }
 .comments {
-    background: $bg;
+    background: $bluegrey250;
 }
 .comments-wrapper {
     height: 100%;
     overflow-y: auto;
     padding: 16px 16px 64px;
+}
+.sender-wrapper {
+    margin-bottom: 4px;
 }
 .form-wrapper {
     padding: 20px 16px 28px;

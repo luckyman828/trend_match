@@ -42,7 +42,9 @@ export default {
             }
         },
         async insertOrUpdateComment({ commit, dispatch }, { selectionInput, comment }) {
+            console.log('post comment', comment)
             // Update our state
+            await dispatch('initComments', [comment])
             commit('INSERT_OR_UPDATE_COMMENT', { selectionInput, comment })
             let requestMethod
             let apiUrl
