@@ -143,10 +143,10 @@ export default {
         },
         async fetchProductsById({ productIds, company }) {
             let products = []
-            const companyCode = getters.getCompanyMap.find(x => x.name == company).code
+            // const companyCode = getters.getCompanyMap.find(x => x.name == company).code
             await Promise.all(
                 productIds.map(async productId => {
-                    const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${companyCode}`
+                    const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${company.code}`
                     await axios
                         .get(apiUrl)
                         .then(response => {
@@ -161,28 +161,18 @@ export default {
             })
             // Now we have the products, let's turn them into Kollekt style products.
             const newProducts = await instantiateDKCProducts(products)
-            console.log('new products', newProducts)
             return newProducts
         },
         async fetchProductsByEAN({ dispatch, getters }, { EANs, company }) {
             let products = []
-            const companyCode = getters.getCompanyMap.find(x => x.name == company).code
+            // const companyCode = getters.getCompanyMap.find(x => x.name == company).code
             await Promise.all(
                 EANs.map(async ean => {
-                    const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${companyCode}`
+                    const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${company.code}`
                     await axios
                         .get(apiUrl)
                         .then(async response => {
-                            console.log('found this by EAN', ean)
-                            // const productMap = response.data
-                            // const company = getters.getCompanyMap.find(x => x.name == productMap.org_company)
-
-                            // await dispatch('fetchProductsById', {
-                            //     product_ids: [productMap.no],
-                            //     company,
-                            // }).then(product => {
-                            //     products.push(product)
-                            // })
+                            products.push(response.data)
                         })
                         .catch(err => {
                             console.log('error when fetching products', err.response)
@@ -191,7 +181,8 @@ export default {
             ).catch(err => {
                 console.log('error when fetching products', err.response)
             })
-            return products
+            const newProducts = await instantiateDKCProducts(products)
+            return newProducts
         },
         async fetchAvailableSeasonsByBrand({ commit }, brands) {
             let availableSeasons = []
