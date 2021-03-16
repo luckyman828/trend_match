@@ -2,7 +2,7 @@ name: Production DevOps
 'on':
   push:
     branches:
-      - develop
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
