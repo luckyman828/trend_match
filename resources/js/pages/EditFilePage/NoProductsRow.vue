@@ -19,10 +19,10 @@
 
                 <div
                     class="card"
-                    :class="{ disabled: databases.length <= 0 }"
-                    @click="databases.length > 0 && onImportFromDatabase()"
+                    :class="{ disabled: !workspaceFeatures.import_from_integration }"
+                    @click="!!workspaceFeatures.import_from_integration && onImportFromDatabase()"
                     v-tooltip="
-                        databases.length <= 0 &&
+                        !workspaceFeatures.import_from_integration &&
                             'No databases available. Ask your admin to get an integration to Kollekt.'
                     "
                 >

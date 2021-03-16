@@ -184,7 +184,6 @@ export default {
             })
         },
         onShow() {
-            console.log('on show')
             if (this.search) {
                 this.$refs.selectButtons.focusSearch()
                 const focusSearchTester = setInterval(() => {

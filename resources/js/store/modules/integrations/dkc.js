@@ -60,6 +60,90 @@ export default {
                     code: 'DH',
                     company: 'DkCompany',
                 },
+                {
+                    name: 'Lounge Nine',
+                    code: 'LN',
+                    company: 'DkCompany',
+                },
+                {
+                    name: 'Gestuz',
+                    code: 'GZ',
+                    company: 'DkCompany',
+                },
+                {
+                    name: 'Karen by Simonsen',
+                    code: 'KB',
+                    company: 'DkCompany',
+                },
+                // DKC Wholesale A/S
+                {
+                    name: 'Culture',
+                    code: 'CU',
+                    company: 'DkcWholesale',
+                },
+                // DK Company Vejle A/S
+                {
+                    name: 'Pulz',
+                    code: 'PZ',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Blend',
+                    code: 'BH',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Fransa',
+                    code: 'FR',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Dranella',
+                    code: 'DR',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'B.Young',
+                    code: 'BY',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'B.Young',
+                    code: 'BY',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Casual Friday',
+                    code: 'CF',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Ichi',
+                    code: 'IH',
+                    company: 'DkCompanyVejle',
+                },
+                {
+                    name: 'Ichi Accessories',
+                    code: 'IA',
+                    company: 'DkCompanyVejle',
+                },
+                // DKV Mens dept. A/S
+                {
+                    name: 'Solid',
+                    code: 'SD',
+                    company: 'DKVMensDept',
+                },
+                {
+                    name: 'Tailored Originals',
+                    code: 'TO',
+                    company: 'DKVMensDept',
+                },
+                // Saint Tropez af 1993 A/S
+                {
+                    name: 'Saint Tropez',
+                    code: 'SZ',
+                    company: 'SaintTropezAf1993',
+                },
                 // The Original Group A/S
                 {
                     name: 'InWear',
@@ -109,33 +193,34 @@ export default {
     actions: {
         async fetchProducts({ commit }, { seasons, brands }) {
             let products = []
-            await Promise.all(
-                seasons.map(async season => {
-                    const apiUrl = `/dkc-adapter/get-season-products?season_code=${season.code}`
-                    await axios
-                        .get(apiUrl)
-                        .then(response => {
-                            const seasonProducts = Array.isArray(response.data) ? response.data : [response.data]
-                            console.log('seasons products', seasonProducts)
-                            if (brands) {
-                                const brandCodes = brands.map(brand => brand.code)
-                                const productsFilteredByBrand = seasonProducts.filter(
-                                    product =>
-                                        !!brands.find(brand => brandCodes.includes(product.product_group_brand_code))
-                                )
-                                products.push(...productsFilteredByBrand)
-                                console.log('seasons products by brand', productsFilteredByBrand, brands, brandCodes)
-                            } else {
-                                products.push(...seasonProducts)
-                            }
-                        })
-                        .catch(err => {
-                            console.log('error when fetching products', err.response)
-                        })
+            await Promise
+                .all
+                // seasons.map(async season => {
+                //     await Promise.all(
+                //         brands.map(async brand => {
+                //             const brand = brands && brands[i]
+                //             const apiUrl = `/dkc-adapter/get-season-products?season_code=${season.code}${
+                //                 brand ? `&brand=${brand.code}` : ''
+                //             }`
+                //             await axios
+                //                 .get(apiUrl)
+                //                 .then(response => {
+                //                     const seasonProducts = Array.isArray(response.data)
+                //                         ? response.data
+                //                         : [response.data]
+                //                     console.log('seasons products', seasonProducts)
+                //                     products.push(...seasonProducts)
+                //                 })
+                //                 .catch(err => {
+                //                     console.log('error when fetching products', err.response)
+                //                 })
+                //         })
+                //     )
+                // })
+                ()
+                .catch(err => {
+                    console.log('error when fetching products', err.response)
                 })
-            ).catch(err => {
-                console.log('error when fetching products', err.response)
-            })
             // Now we have the products, let's turn them into Kollekt style products.
             const newProducts = await instantiateDKCProducts(products)
             console.log('pnew products', newProducts)

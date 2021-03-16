@@ -68,7 +68,7 @@ export default {
         //         workspace.title == 'Internal Test Space'
         //     return {
         //         select: true,
-        //         buy: 
+        //         buy:
         //     }
         // },
     },

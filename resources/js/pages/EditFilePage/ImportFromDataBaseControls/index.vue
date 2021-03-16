@@ -183,6 +183,8 @@ export default {
                 return
             }
 
+            console.log('the fetched products', products)
+
             // Filter out products that already exist in the file
             const productsFiltered = products.filter(
                 product => !this.products.find(x => x.datasource_id == product.datasource_id)
