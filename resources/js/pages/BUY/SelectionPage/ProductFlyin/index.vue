@@ -87,7 +87,7 @@ export default {
             return this.currentProduct
         },
         showLabels() {
-            return this.labelsEnabled || this.product.labels.length > 0
+            return this.labelsEnabled || (this.product && this.product.labels.length > 0)
         },
         selection() {
             return this.getCurrentPDPSelection

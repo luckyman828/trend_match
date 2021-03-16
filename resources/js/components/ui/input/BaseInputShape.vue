@@ -32,6 +32,9 @@ export default {
             const newInput = e.target.value ? e.target.value : ''
             e.target.size = Math.max(newInput.length, 1)
         },
+        setFocus() {
+            this.$refs.input.focus()
+        },
     },
 }
 </script>

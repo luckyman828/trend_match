@@ -1,62 +1,60 @@
 <template>
     <v-popover
         trigger="manual"
-        :open="editActive || editSplit"
+        :open="editActive || showSizes"
         placement="top-end"
         popoverClass="min invisible"
         :autoHide="false"
     >
         <div
-            class="delivery-list-item ui-square"
-            :class="[{ active: editActive }, { 'edit-split': editSplit }]"
+            class="assortment-list-item ui-square"
+            :class="[{ active: editActive }, { 'view-sizes': showSizes }]"
             tabindex="0"
         >
             <div class="inner flex-list flex-v lh-sm space-sm">
-                <div class="ft-10 ft-md">Delivery {{ index + 1 }}</div>
-                <div class="ft-12 ft-bd">{{ getPrettyDate(delivery.delivery_date, 'medium') }}</div>
+                <div class="ft-10 ft-md">Assortment: {{ assortment.displayName }}</div>
 
                 <!-- Edit Active -->
                 <div class="size-list flex-list" v-dragscroll v-horizontal-scroll>
-                    <DeliveryListItemSizeInput
-                        class="size-list-item ui-square white sm"
-                        v-for="(size, index) in variant.ean_sizes"
+                    <div
+                        class="size-list-item ui-square white sm flex-list flex-v"
+                        v-for="(sizeObj, index) in assortment.sizes"
                         :key="index"
-                        :sizeObj="size"
-                        :deliveryDate="delivery.delivery_date"
-                        :variant="variant"
-                        @submit="onSubmitQty"
-                        @focus="editSplit = true"
-                    />
+                    >
+                        <div class="size-label ft-10">{{ sizeObj.size }}</div>
+                        <div class="size-label ft-12 ft-bd">{{ sizeObj.quantity }}</div>
+                    </div>
                 </div>
+
                 <!-- End Edit Active -->
                 <BaseInputShape
-                    class="qty-input square lg white"
                     ref="input"
+                    class="qty-input square lg white"
                     placeholder="0"
-                    :value="delivery.quantity"
+                    :value="assortment.quantity"
                     :pattern="/^[0-9]*$/"
                     @focus="editActive = true"
-                    @blur="onBlurQty"
                     @keydown.enter="onSubmitQty"
                     @input="onQtyInput"
+                    @blur="onBlurQty"
                     :selectOnFocus="true"
                 />
             </div>
         </div>
         <div slot="popover" class="action-list flex-list sm">
-            <button class="black sm" v-if="!editSplit" @click="editSplit = !editSplit">
-                <span>Edit split</span>
-                <i class="far fa-pen"></i>
+            <button v-if="!showSizes" class="black sm" @click="showSizes = !showSizes">
+                <span>View split</span>
+                <i class="far fa-eye"></i>
             </button>
-            <button class="black sm" v-else @click="onHideSizes">
-                <span>Done</span>
-                <i class="far fa-check"></i>
+            <button v-else class="black sm" @click="onHideSizes">
+                <span>Hide split</span>
+                <i class="far fa-eye-slash"></i>
             </button>
             <button
                 class="green sm"
                 @click="
                     onSubmitQty()
-                    editSplit = false
+                    showSizes = false
                 "
             >
                 <i class="fas fa-check"></i>
@@ -70,17 +68,15 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import DeliveryListItemSizeInput from './DeliveryListItemSizeInput'
 
 export default {
-    name: 'DeliveryListItem',
-    components: { DeliveryListItemSizeInput },
-    props: ['delivery', 'index', 'variant'],
+    name: 'AssortmentListItem',
+    props: ['assortment', 'index', 'variant', 'deliveryDate'],
     data() {
         return {
             editActive: false,
             oldSizeQty: 0,
-            editSplit: false,
+            showSizes: false,
         }
     },
     computed: {},
@@ -88,17 +84,12 @@ export default {
         ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['SET_QUANTITY']),
         onQtyInput(newQty) {
-            const sizes = this.variant.ean_sizes
-            sizes.map((size, index) => {
-                const indexFromCenter = Math.abs(sizes.length / 2 - index)
-                const total = sizes.length - 0.5
-                this.SET_QUANTITY({
-                    alignment: this.variant.selectionAlignment.productAlignment,
-                    variantId: this.variant.id,
-                    size: size.size,
-                    deliveryDate: this.delivery.delivery_date,
-                    quantity: Math.round(newQty * (indexFromCenter / total)),
-                })
+            this.SET_QUANTITY({
+                alignment: this.variant.selectionAlignment.productAlignment,
+                variantId: this.variant.id,
+                assortment: this.assortment.name,
+                deliveryDate: this.deliveryDate,
+                quantity: parseInt(newQty),
             })
         },
         onSubmitQty() {
@@ -110,8 +101,12 @@ export default {
             this.variant.selectionAlignment.feedback = 'In'
             this.updateAlignments([alignment])
         },
+        onClearQty() {
+            this.onQtyInput(0)
+            this.editActive = false
+        },
         onHideSizes() {
-            this.editSplit = false
+            this.showSizes = false
             this.$nextTick(() => {
                 this.$refs.input.setFocus()
             })
@@ -122,32 +117,24 @@ export default {
                 this.onSubmitQty()
             }, delay)
         },
-        onClearQty() {
-            this.onQtyInput(0)
-        },
     },
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-.delivery-list-item {
+.assortment-list-item {
     width: 164px;
     // overflow: hidden;
     position: relative;
     min-height: 52px;
+    flex-shrink: 0;
     border: solid 1px $light;
     &:focus-within,
     &.active {
         border-color: $primary300;
     }
-    &.active,
-    &.edit-split {
-        .size-list {
-            display: flex;
-        }
-    }
-    &.edit-split {
+    &.view-sizes {
         .qty-input {
             display: none;
         }
@@ -158,16 +145,11 @@ export default {
     .inner {
         width: 100%;
     }
-    .action-list {
-        position: absolute;
-        top: -28px;
-        right: -28px;
-    }
     .size-list {
-        display: none;
         max-width: 100%;
         overflow-x: auto;
         opacity: 0.5;
+        display: flex;
     }
     .qty-input {
         height: calc(100% - 8px);
@@ -190,6 +172,33 @@ export default {
         }
         &:not(.active) {
             cursor: pointer;
+        }
+    }
+    .size-list-item {
+        opacity: 0.7;
+        transition: width 0.1s ease-out, min-width 0.1s ease-out;
+        flex-shrink: 0;
+        &:focus-within {
+            opacity: 1;
+            min-width: 40px;
+        }
+        .size-label {
+            // position: absolute;
+            // top: 4px;
+            // left: 0;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        ::v-deep {
+            input {
+                padding-top: 12px;
+                font-weight: 700;
+                text-align: center;
+                margin: auto;
+            }
         }
     }
 }

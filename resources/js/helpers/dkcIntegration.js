@@ -1,3 +1,4 @@
+import { DateTime, Interval } from 'luxon'
 import { parse, v4 as uuidv4 } from 'uuid'
 import store from '../store/'
 export function cleanUpDKCObj(srcObj, newObj) {
@@ -22,8 +23,8 @@ export function cleanUpDKCObj(srcObj, newObj) {
         // console.log('after flatten', theKey, keyVal)
 
         if (Array.isArray(keyVal) && keyVal.length > 0) {
-            if (keyVal[0]._language) {
-                keyVal = keyVal.find(x => x._language == 'ENU')._value
+            if (keyVal[0].language) {
+                keyVal = keyVal.find(x => x.language == 'ENU').value
             }
 
             // If the Array is still an array loop through the array items and parse them as well
@@ -72,11 +73,11 @@ export async function instantiateDKCProducts(products) {
         newProduct.extra_data.topBottom = product.top_bottom
         if (product.variants.length > 0) {
             product.variants[0].prices.map(price => {
-                if (!!newProduct.prices.find(x => x.currency == price._currency)) return
-                const wholesale_price = parseFloat(price._value_whl.replace(/,/g, ''))
-                const recommended_retail_price = parseFloat(price._value.replace(/,/g, ''))
+                if (!!newProduct.prices.find(x => x.currency == price.currency)) return
+                const wholesale_price = price.value_whl ? parseFloat(price.value_whl.replace(/,/g, '')) : null
+                const recommended_retail_price = price.value ? parseFloat(price.value.replace(/,/g, '')) : null
                 const newPrice = {
-                    currency: price._country ? `${price._country} ${price._currency}` : price._currency,
+                    currency: price._country ? `${price.country} ${price.currency}` : price.currency,
                     wholesale_price,
                     recommended_retail_price,
                     mark_up:
@@ -111,19 +112,36 @@ export async function instantiateDKCProducts(products) {
                       },
                   ]
 
-                  // ASSORTMENTS
-                  variant.assortments.map(assortment => {
-                      const newAssortment = {
-                          variant_ids: [newVariant.id],
-                          box_size: assortment.assortment_pieces,
-                          box_ean: null,
-                          delivery_dates: [],
-                          name: `${assortment.code}${assortment.assortment_variant
-                              .map(x => `;${x.size_code}:${x.quantity}`)
-                              .join('')}`,
+                  // DELIVERY
+                  if (variant.delivery_window) {
+                      const fromDate = DateTime.fromISO(variant.delivery_window.shipment_from).startOf('month')
+                      const toDate = DateTime.fromISO(variant.delivery_window.shipment_to).endOf('month')
+                      let dateInterval = Interval.fromDateTimes(fromDate, toDate)
+                      let monthCount = Math.ceil(dateInterval.length('month'))
+                      for (let i = 0; i < monthCount; i++) {
+                          const deliveryDate = fromDate.set({ month: fromDate.get('month') + i }).toFormat('yyyy-MM-dd')
+                          newVariant.delivery_dates.push(deliveryDate)
+                          // Check if we should also add the delivery date to the product
+                          if (!newProduct.delivery_dates.includes(deliveryDate)) {
+                              newProduct.delivery_dates.push(deliveryDate)
+                          }
                       }
-                      newProduct.assortments.push(newAssortment)
-                  })
+                  }
+
+                  // ASSORTMENTS
+                  variant.assortments &&
+                      variant.assortments.map(assortment => {
+                          const newAssortment = {
+                              variant_ids: [newVariant.id],
+                              box_size: assortment.assortment_pieces,
+                              box_ean: null,
+                              delivery_dates: newVariant.delivery_dates,
+                              name: `${assortment.code}${assortment.assortment_variant
+                                  .map(x => `;${x.size_code}:${x.quantity}`)
+                                  .join('')}`,
+                          }
+                          newProduct.assortments.push(newAssortment)
+                      })
 
                   // Calculate the new name
                   const nameComponents = []

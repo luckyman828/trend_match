@@ -169,14 +169,6 @@ export default {
                 products = await this.fetchProductsById({ productIds: queryValues, company: this.selectedCompany })
             }
 
-            // this.queryValueCount = queryValues.length
-            // const products = await this.fetchProductsFromDatabase({
-            //     databaseId: this.databases[0].id,
-            //     columnNameList: ['EAN_NO', 'STYLE_NUMBER'],
-            //     // columnNameList: ['EAN_NO'],
-            //     queryValues,
-            // })
-
             if (!products) {
                 this.isFetching = false
                 this.queryValueCount = 0

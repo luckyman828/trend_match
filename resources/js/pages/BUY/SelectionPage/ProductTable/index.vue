@@ -311,6 +311,9 @@ export default {
             tr {
                 padding: 0;
                 background: none;
+                .has-focus {
+                    outline: none;
+                }
                 &:hover {
                     background: none !important;
                 }

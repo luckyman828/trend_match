@@ -14,7 +14,7 @@
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />
             <span v-if="labelKey"
-                >{{ option[labelKey] }}<template v-if="countKey"> {{ option[countKey] }}</template></span
+                >{{ option[labelKey] }}<template v-if="countKey"> ({{ option[countKey] }})</template></span
             >
         </div>
     </div>
@@ -64,7 +64,7 @@ export default {
     }
     border-radius: 50px;
     white-space: nowrap;
-    display: flex;
+    display: inline-flex;
     cursor: pointer;
     .option {
         display: flex;

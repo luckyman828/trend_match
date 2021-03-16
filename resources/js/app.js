@@ -18,9 +18,9 @@ window.XLSX = require('xlsx')
 
 window.focusVisible = require('focus-visible')
 
-import { DateTime } from 'luxon'
+import { DateTime, Interval, Duration } from 'luxon'
 window.DateTime = DateTime
-import Duration from 'luxon/src/duration.js'
+window.Interval = Interval
 window.Duration = Duration
 
 import store from './store/index'

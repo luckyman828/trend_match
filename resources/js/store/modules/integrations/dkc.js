@@ -183,7 +183,7 @@ export default {
                 },
                 {
                     name: "Bon'A Parte",
-                    code: 'BA',
+                    code: 'BP',
                     company: 'DkCompanyOnline',
                 },
             ]
@@ -193,42 +193,40 @@ export default {
     actions: {
         async fetchProducts({ commit }, { seasons, brands }) {
             let products = []
-            await Promise
-                .all
-                // seasons.map(async season => {
-                //     await Promise.all(
-                //         brands.map(async brand => {
-                //             const brand = brands && brands[i]
-                //             const apiUrl = `/dkc-adapter/get-season-products?season_code=${season.code}${
-                //                 brand ? `&brand=${brand.code}` : ''
-                //             }`
-                //             await axios
-                //                 .get(apiUrl)
-                //                 .then(response => {
-                //                     const seasonProducts = Array.isArray(response.data)
-                //                         ? response.data
-                //                         : [response.data]
-                //                     console.log('seasons products', seasonProducts)
-                //                     products.push(...seasonProducts)
-                //                 })
-                //                 .catch(err => {
-                //                     console.log('error when fetching products', err.response)
-                //                 })
-                //         })
-                //     )
-                // })
-                ()
-                .catch(err => {
-                    console.log('error when fetching products', err.response)
+            await Promise.all(
+                seasons.map(async season => {
+                    await Promise.all(
+                        brands.map(async brand => {
+                            const pageIndex = 1 // Limit to 10
+                            // Fetch how many pages we have
+
+                            // Fetch a page at a time
+                            const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${brand.company}&brand=${brand.code}&page=${pageIndex}`
+                            await axios
+                                .get(apiUrl)
+                                .then(response => {
+                                    const seasonProducts = Array.isArray(response.data)
+                                        ? response.data
+                                        : [response.data]
+                                    console.log('seasons products', seasonProducts)
+                                    products.push(...seasonProducts)
+                                })
+                                .catch(err => {
+                                    console.log('error when fetching products', err.response)
+                                })
+                        })
+                    )
                 })
+            ).catch(err => {
+                console.log('error when fetching products', err.response)
+            })
             // Now we have the products, let's turn them into Kollekt style products.
             const newProducts = await instantiateDKCProducts(products)
             console.log('pnew products', newProducts)
             return newProducts
         },
-        async fetchProductsById({ productIds, company }) {
+        async fetchProductsById({}, { productIds, company }) {
             let products = []
-            // const companyCode = getters.getCompanyMap.find(x => x.name == company).code
             await Promise.all(
                 productIds.map(async productId => {
                     const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${company.code}`
@@ -250,7 +248,6 @@ export default {
         },
         async fetchProductsByEAN({ dispatch, getters }, { EANs, company }) {
             let products = []
-            // const companyCode = getters.getCompanyMap.find(x => x.name == company).code
             await Promise.all(
                 EANs.map(async ean => {
                     const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${company.code}`

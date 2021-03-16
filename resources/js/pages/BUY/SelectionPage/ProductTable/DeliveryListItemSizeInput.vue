@@ -1,7 +1,6 @@
 <template>
     <BaseInputShape
         class="size-list-item ui-square white sm"
-        :innerLabel="sizeObj.size"
         placeholder="0"
         v-model.number="quantity"
         :selectOnFocus="true"
@@ -9,6 +8,7 @@
         :pattern="/^[0-9]*$/"
         @blur="$emit('submit')"
         @keydown.enter="$emit('submit')"
+        @focus="$emit('focus')"
     >
         <div class="size-label ft-10">{{ sizeObj.size }}</div>
     </BaseInputShape>

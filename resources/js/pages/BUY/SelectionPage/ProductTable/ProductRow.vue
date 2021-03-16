@@ -11,10 +11,10 @@
         <button class="expand-button circle sm" @click="product.expanded = !product.expanded">
             <i class="fas" :class="product.expanded ? 'fa-angle-down' : 'fa-angle-up'"></i>
         </button>
-        <div class="flex-list flex-v">
+        <div class="flex-list flex-v image-col">
             <div class="flex-list flex-v min lh-xs">
                 <div class="ft-12">{{ product.datasource_id }}</div>
-                <div class="ft-14 ft-bd">{{ product.title }}</div>
+                <div class="ft-14 ft-bd name" v-tooltip="product.title">{{ product.title }}</div>
             </div>
             <BaseImageSizer fit="contain">
                 <BaseVariantImage
@@ -348,8 +348,14 @@ export default {
     &:focus {
         outline: none;
     }
-    .img-sizer {
+    .image-col {
         width: 108px;
+        flex-shrink: 0;
+        overflow: hidden;
+        .name {
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
     }
     .main-img {
         border: $borderElSoft;
