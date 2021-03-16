@@ -147,6 +147,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['fetchProductsFromDatabase', 'insertProducts']),
+        ...mapActions('integrationDkc', ['fetchProductsById', 'fetchProductsByEAN']),
         ...mapMutations('display', ['HIDE_COMPONENT']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         async fetchProducts(queryValues) {
@@ -205,7 +206,7 @@ export default {
             })
             const newStr = allCells.join(', ')
             this.searchString = newStr
-            this.onSubmitSearch()
+            // this.onSubmitSearch()
         },
         onSubmitSearch() {
             const stringArray = this.searchString.split(',')

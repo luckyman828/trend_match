@@ -1381,13 +1381,14 @@ export default {
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
                             callbackLabel: 'Retry',
-                            callback: () =>
+                            callback: () => {
                                 dispatch('importSelectionInput', {
                                     destinationSelection,
                                     sourceSelection,
                                     sourceUser,
                                     importOptions,
-                                }),
+                                })
+                            },
                         },
                         { root: true }
                     )

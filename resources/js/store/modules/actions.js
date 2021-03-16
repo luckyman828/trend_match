@@ -15,10 +15,17 @@ export default {
     },
 
     actions: {
-        async updateAlignments({ commit }, alignments) {
+        async updateAlignments({ commit, rootGetters }, alignments) {
             const apiUrl = `/selections/${alignments[0].selection_id}/actions`
             await axios
-                .post(apiUrl, { actions: alignments })
+                .post(apiUrl, {
+                    actions: alignments.map(x => {
+                        x.user_id = rootGetters['auth/authUser'].id
+                        const action = Object.assign({}, x)
+                        action.variants = x.variants.filter(variantAction => variantAction.feedback != 'None')
+                        return action
+                    }),
+                })
                 .then(response => {
                     if (alignments.length > 1) {
                         commit(
@@ -70,7 +77,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         action: newAction,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -146,7 +153,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         action: action.action,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -189,7 +196,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         feedback: newAction,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -253,7 +260,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         feedback: action.action,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -281,8 +288,8 @@ export default {
                 actions: [actionObject],
             })
         },
-        async initActions({ rootGetters }, actions) {
-            actions.map(action => {
+        async initActions({ rootGetters, dispatch }, actions) {
+            actions.map(async action => {
                 if (!action.quantity_details) Vue.set(action, 'quantity_details', [])
                 if (!action.variants) Vue.set(action, 'variants', [])
 
@@ -300,10 +307,13 @@ export default {
                         )
                     },
                 })
-                action.variants.map(variantAction => {
-                    Object.defineProperty(variantAction, 'productAlignment', {
-                        get: () => action,
-                    })
+                await dispatch('initVariantActions', { productAction: action, variantActions: action.variants })
+            })
+        },
+        async initVariantActions({}, { productAction, variantActions }) {
+            variantActions.map(variantAction => {
+                Object.defineProperty(variantAction, 'productAlignment', {
+                    get: () => productAction,
                 })
             })
         },

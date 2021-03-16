@@ -14,6 +14,7 @@ export default {
         hideCompleted: false,
         noImagesOnly: false,
         productActionFilter: 'overview',
+        purchaseOnly: false,
         openTicketsOnly: false,
         filterCustomFieldValues: {},
     },
@@ -112,9 +113,8 @@ export default {
             }
             return state.filterCustomFieldValues[key]
         },
-        getAllCustomValueFilters: state => {
-            return state.filterCustomFieldValues
-        },
+        getAllCustomValueFilters: state => state.filterCustomFieldValues,
+        getPurchaseOnly: state => state.purchaseOnly,
     },
 
     actions: {},
@@ -166,6 +166,9 @@ export default {
             Object.keys(state.filterCustomFieldValues).map(key => {
                 state.filterCustomFieldValues[key] = []
             })
+        },
+        SET_PURCHASE_ONLY(state, purchaseOnly) {
+            state.purchaseOnly = purchaseOnly
         },
         CLEAR_PRODUCT_FILTERS(state) {
             state.filterCategories = []

@@ -39,7 +39,7 @@ export default {
                 })
             return products
         },
-        async initProducts({ getters }, { products, selectionId }) {
+        async initProducts({ getters, dispatch }, { products, selectionId }) {
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
@@ -105,10 +105,36 @@ export default {
                         return product.alignments.find(x => x.selection_id == selectionId)
                     },
                 })
+                // Object.defineProperty(product, 'purchase', {
+                //     get() {
+                //         return product.alignments.filter(x => [''] == selectionId)
+                //     },
+                // })
                 Object.defineProperty(product, 'quantityInputs', {
                     get() {
                         return product.selectionAlignment ? product.selectionAlignment.quantity_details : []
                     },
+                })
+                product.alignments.map(alignment => {
+                    // Add default variant action to alignments
+                    product.variants.map(async variant => {
+                        // Check if there is already a variant action
+                        if (alignment.variants.find(variantAction => variantAction.id == variant.id)) return
+                        const variantAction = {
+                            id: variant.id,
+                            feedback: 'None',
+                            quantity: 0,
+                        }
+                        await dispatch(
+                            'actions/initVariantActions',
+                            {
+                                productAction: alignment,
+                                variantActions: [variantAction],
+                            },
+                            { root: true }
+                        )
+                        alignment.variants.push(variantAction)
+                    })
                 })
 
                 // END ACTIONS

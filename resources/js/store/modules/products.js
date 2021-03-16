@@ -100,6 +100,7 @@ export default {
             const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
+            const purchaseOnly = rootGetters['productFilters/getPurchaseOnly']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -345,6 +346,12 @@ export default {
                     if (actionFilter == 'tickets') return product.hasTicket
                 })
                 productsToReturn = filteredByAction
+            }
+
+            if (purchaseOnly) {
+                productsToReturn = productsToReturn.filter(product =>
+                    ['Focus', 'In'].includes(product.selectionAlignment.action)
+                )
             }
 
             return productsToReturn

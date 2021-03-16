@@ -84,7 +84,7 @@
                                 SHOW_COMPONENT('importFromDatabaseControls')
                             "
                         >
-                            <span>Import from <u>I</u>integration</span>
+                            <span>Import from <u>I</u>ntegration</span>
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group">

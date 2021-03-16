@@ -16,8 +16,16 @@
                     @submit="onSubmitQty"
                 />
             </div>
+            <div v-if="editActive" class="action-list flex-list sm">
+                <button class="black xs" @click="editSplit = true">
+                    <span>Edit split</span>
+                    <i class="far fa-pen"></i>
+                </button>
+                <button class="red xs" @click="onClearQty">
+                    <i class="far fa-trash-alt"></i>
+                </button>
+            </div>
             <!-- End Edit Active -->
-
             <BaseInputShape
                 class="qty-input square lg white"
                 placeholder="0"
@@ -45,6 +53,7 @@ export default {
         return {
             editActive: false,
             oldSizeQty: 0,
+            editSplit: false,
         }
     },
     computed: {},
@@ -71,7 +80,11 @@ export default {
             if (!this.variant.selectionAlignment) return
             const alignment = this.variant.selectionAlignment.productAlignment
             alignment.action = 'In'
+            this.variant.selectionAlignment.feedback = 'In'
             this.updateAlignments([alignment])
+        },
+        onClearQty() {
+            this.onQtyInput(0)
         },
     },
 }
@@ -81,7 +94,7 @@ export default {
 @import '~@/_variables.scss';
 .delivery-list-item {
     width: 164px;
-    overflow: hidden;
+    // overflow: hidden;
     position: relative;
     min-height: 52px;
     border: solid 1px $light;
@@ -94,6 +107,11 @@ export default {
     }
     .inner {
         width: 100%;
+    }
+    .action-list {
+        position: absolute;
+        top: -28px;
+        right: -28px;
     }
     .size-list {
         display: none;

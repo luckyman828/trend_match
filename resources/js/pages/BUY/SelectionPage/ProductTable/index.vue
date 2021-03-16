@@ -23,21 +23,22 @@
                             activeClass="white"
                             sizeClass="sm"
                             theme="light"
-                            v-model="productActionFilter"
+                            v-model="purchaseOnly"
                             :options="[
-                                { label: 'Overview', count: allProducts.length, value: 'overview' },
+                                { label: 'Overview', count: allProducts.length, value: false },
                                 {
                                     label: 'Purchase',
-                                    count: allProducts.filter(product => ['In', 'Focus'].includes(product.yourAction))
-                                        .length,
-                                    value: 'ins',
+                                    count: allProducts.filter(product =>
+                                        ['In', 'Focus'].includes(product.selectionAlignment.action)
+                                    ).length,
+                                    value: true,
                                 },
                             ]"
                         />
                     </div>
                     <BudgetCounter :selection="selection" />
                     <div class="right flex-list">
-                        <button class="invisible primary" v-if="filtersActive" @click="resetFilters">
+                        <button class="invisible primary sm pill" v-if="filtersActive" @click="resetFilters">
                             <span>Clear filter</span>
                         </button>
                         <ProductFilters v-slot="slotProps">
@@ -140,7 +141,7 @@ import ProductFilters from '../ProductFilters'
 import ProductSort from '../ProductSort'
 
 export default {
-    name: 'buyP.roductTable',
+    name: 'buy.ProductTable',
     props: ['products', 'file', 'selection', 'currentAction'],
     mixins: [sortArray],
     components: {
@@ -180,12 +181,12 @@ export default {
                 this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
             },
         },
-        productActionFilter: {
+        purchaseOnly: {
             get() {
-                return this.$store.getters['productFilters/getProductActionFilter']
+                return this.$store.getters['productFilters/getPurchaseOnly']
             },
             set(value) {
-                this.SET_PRODUCT_ACTION_FILTER(value)
+                this.SET_PURCHASE_ONLY(value)
             },
         },
         filterSelectionIds: {
@@ -215,7 +216,7 @@ export default {
             'SET_SHOW_PDF_MODAL',
             'SET_SHOW_CSV_MODAL',
         ]),
-        ...mapMutations('productFilters', ['SET_PRODUCT_ACTION_FILTER', 'SET_FILTER_SELECTION_IDS']),
+        ...mapMutations('productFilters', ['SET_PURCHASE_ONLY', 'SET_FILTER_SELECTION_IDS']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS']),

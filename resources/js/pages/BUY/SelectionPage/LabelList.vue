@@ -1,5 +1,5 @@
 <template>
-    <div class="label-list flex-list" v-horizontal-scroll>
+    <div class="label-list flex-list" v-dragscroll>
         <button
             class="list-item pill xs"
             :class="[{ 'primary-hover': hasWriteAccess }]"
