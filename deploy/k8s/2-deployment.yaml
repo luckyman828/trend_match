@@ -2,7 +2,7 @@
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: ${CONTAINER_IMAGE}
+  name: ${SERVICE_NAME}
 spec:
   replicas: 1
   revisionHistoryLimit: 3
@@ -13,28 +13,25 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: ${CONTAINER_IMAGE}
+      app: ${SERVICE_NAME}
   template:
     metadata:
       labels:
-        app: ${CONTAINER_IMAGE}
+        app: ${SERVICE_NAME}
     spec:
       nodeSelector:
         ${NODE_SELECTOR}
       containers:
-        - name: ${CONTAINER_IMAGE}
-          image: reg.trendmatch.dk/kollekt/${CONTAINER_IMAGE}:${IMAGE_TAG}
+        - name: ${SERVICE_NAME}
+          image: ${IMAGE_NAME}:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           resources:
             limits:
-              cpu: 700m
+              cpu: 800m
               memory: 800Mi
             requests:
               cpu: 200m
-              memory: 250Mi
-      imagePullSecrets:
-        - name: dashboard-regcred
-      
+              memory: 200Mi
       terminationGracePeriodSeconds: 30

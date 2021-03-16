@@ -153,6 +153,7 @@
             header="Change Team Currency"
             v-model="teamToEdit.currency"
             type="radio"
+            :allowManualEntry="true"
             :options="availableCurrencies"
             :search="true"
             unsetOption="Clear"
