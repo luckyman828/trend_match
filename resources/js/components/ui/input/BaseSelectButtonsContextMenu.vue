@@ -20,8 +20,9 @@
                     :optionGroupNameKey="optionGroupNameKey"
                     :optionGroupOptionsKey="optionGroupOptionsKey"
                     :optionNameKey="optionNameKey"
+                    :allowManualEntry="allowManualEntry"
                     :search="search"
-                    @submit="submit"
+                    @submit="onSubmit($event)"
                     @unset="$emit('unset')"
                 />
             </div>
@@ -75,6 +76,7 @@ export default {
         'unsetValue',
         'emitOnChange',
         'inline',
+        'allowManualEntry',
     ],
     // data: function() {return {
     //     currentValue
@@ -96,10 +98,13 @@ export default {
         hide() {
             this.$refs.contextMenu.hide()
         },
-        submit() {
-            this.$emit('input', this.$refs.selectButtons.selection)
-            this.$emit('submit', this.$refs.selectButtons.selection)
+        onSubmit(input) {
+            this.$emit('input', input)
+            this.$emit('submit', input)
             this.hide()
+        },
+        submit() {
+            this.$refs.selectButtons.submit()
         },
     },
 }

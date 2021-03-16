@@ -460,6 +460,7 @@
             unsetOption="Clear"
             :unsetValue="null"
             type="radio"
+            :allowManualEntry="true"
             :options="availableCurrencies"
             :search="true"
             @submit="updateSelection(contextSelection)"

@@ -193,6 +193,7 @@
             :search="true"
             unsetOption="Clear"
             :unsetValue="null"
+            :allowManualEntry="true"
             @submit="onUpdateUsersCurrency"
         />
 
