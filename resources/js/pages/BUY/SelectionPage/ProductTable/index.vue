@@ -280,7 +280,7 @@ export default {
         document.removeEventListener('keydown', this.hotkeyHandler)
         // Reset all filters
         this.resetFilters()
-        this.SET_PRODUCT_ACTION_FILTER('overview')
+        this.SET_PURCHASE_ONLY(false)
         this.selectedProducts = []
     },
 }

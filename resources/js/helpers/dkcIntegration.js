@@ -1,3 +1,4 @@
+import { parse, v4 as uuidv4 } from 'uuid'
 import store from '../store/'
 export function cleanUpDKCObj(srcObj, newObj) {
     Object.keys(srcObj).map(key => {
@@ -21,8 +22,8 @@ export function cleanUpDKCObj(srcObj, newObj) {
         // console.log('after flatten', theKey, keyVal)
 
         if (Array.isArray(keyVal) && keyVal.length > 0) {
-            if (keyVal[0].language) {
-                keyVal = keyVal.find(x => x.language == 'ENU').value
+            if (keyVal[0]._language) {
+                keyVal = keyVal.find(x => x._language == 'ENU')._value
             }
 
             // If the Array is still an array loop through the array items and parse them as well
@@ -69,26 +70,29 @@ export async function instantiateDKCProducts(products) {
         newProduct.extra_data.sex = product.sex
         newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
-        newProduct.prices = []
-        if (product.variants.length <= 0) {
+        if (product.variants.length > 0) {
             product.variants[0].prices.map(price => {
-                if (!!prices.find(x => x.currency == price.currency)) return
-                return {
-                    currency: price.country ? `${price.country} ${price.currency}` : price.currency,
-                    wholesale_price: price.value,
-                    recommended_retail_price: price.value_whl,
+                if (!!newProduct.prices.find(x => x.currency == price._currency)) return
+                const wholesale_price = parseFloat(price._value_whl.replace(/,/g, ''))
+                const recommended_retail_price = parseFloat(price._value.replace(/,/g, ''))
+                const newPrice = {
+                    currency: price._country ? `${price._country} ${price._currency}` : price._currency,
+                    wholesale_price,
+                    recommended_retail_price,
                     mark_up:
-                        price.value != null && !!price.value_whl
-                            ? Number(Math.round(price.value / price.value_whl + 'e' + 2) + 'e-' + 2)
+                        wholesale_price != null && !!recommended_retail_price
+                            ? Number(Math.round(recommended_retail_price / wholesale_price + 'e' + 2) + 'e-' + 2)
                             : 0,
                 }
+                newProduct.prices.push(newPrice)
             })
         }
-        console.log('product variants', product.variants, product)
+        // VARIANTS
         newProduct.variants = !product.variants
             ? []
             : product.variants.map(variant => {
                   const newVariant = JSON.parse(JSON.stringify(baseVariant))
+                  newVariant.id = uuidv4()
                   newVariant.variant = variant.color
                   newVariant.color = variant.color_name
                   newVariant.extra_data.colorRGB = variant.color_rgb
@@ -107,6 +111,20 @@ export async function instantiateDKCProducts(products) {
                       },
                   ]
 
+                  // ASSORTMENTS
+                  variant.assortments.map(assortment => {
+                      const newAssortment = {
+                          variant_ids: [newVariant.id],
+                          box_size: assortment.assortment_pieces,
+                          box_ean: null,
+                          delivery_dates: [],
+                          name: `${assortment.code}${assortment.assortment_variant
+                              .map(x => `;${x.size_code}:${x.quantity}`)
+                              .join('')}`,
+                      }
+                      newProduct.assortments.push(newAssortment)
+                  })
+
                   // Calculate the new name
                   const nameComponents = []
                   if (newVariant.color) nameComponents.push(newVariant.color)
@@ -115,6 +133,7 @@ export async function instantiateDKCProducts(products) {
                   newVariant.name = newName
                   return newVariant
               })
+
         return newProduct
     })
     return newProducts

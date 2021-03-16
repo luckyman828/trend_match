@@ -88,7 +88,9 @@ export default {
                 this.loadingMsg = `"${theQuote.text}" - ${theQuote.author}`
             }, 10000)
             const products = await this.fetchProducts({ seasons: this.selectedSeasons, brands: this.selectedBrands })
-            await this.insertProducts({ file: this.currentFile, products, addToState: true })
+            if (!!products && products.length) {
+                await this.insertProducts({ file: this.currentFile, products, addToState: true })
+            }
             clearInterval(msgFetcher)
             this.fetchingProducts = false
         },

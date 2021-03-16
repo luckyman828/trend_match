@@ -98,7 +98,7 @@
                 </button>
             </div>
         </template>
-        <BaseLoader v-else :msg="`Searching for ${queryValueCount} matches`" />
+        <BaseLoader v-else :msg="`Searching for product`" />
     </div>
 </template>
 
@@ -122,7 +122,10 @@ export default {
             scanStr: '',
             isFetching: false,
             queryValueCount: 0,
-            selectedCompany: null,
+            selectedCompany:
+                (localStorage.getItem('dkcSelectedCompany') &&
+                    JSON.parse(localStorage.getItem('dkcSelectedCompany'))) ||
+                null,
         }
     },
     computed: {
@@ -144,6 +147,10 @@ export default {
             if (newVal == 'Scan') this.addScanListener()
             if (oldVal == 'Scan') this.removeScanListener()
         },
+        selectedCompany(newVal) {
+            console.log('set value selected company', newVal)
+            localStorage.setItem('dkcSelectedCompany', JSON.stringify(newVal))
+        },
     },
     methods: {
         ...mapActions('products', ['fetchProductsFromDatabase', 'insertProducts']),
@@ -157,7 +164,7 @@ export default {
 
             let products = []
             if (isEAN) {
-                products = await this.fetchProductsByEAN(queryValues)
+                products = await this.fetchProductsByEAN({ EANs: queryValues, company: this.selectedCompany })
             } else {
                 products = await this.fetchProductsById({ productIds: queryValues, company: this.selectedCompany })
             }
@@ -175,6 +182,8 @@ export default {
                 this.queryValueCount = 0
                 return
             }
+
+            console.log('the fetched products', products)
 
             // Filter out products that already exist in the file
             const productsFiltered = products.filter(
