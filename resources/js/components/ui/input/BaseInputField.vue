@@ -36,6 +36,7 @@
                 @focus="onFocus"
                 @keydown.esc="onCancel"
                 @keydown.enter="onSubmit"
+                @keydown="onKeydown"
             />
             <div class="icon-right">
                 <slot :onCancel="onCancel" :onSubmit="onSubmit" />
@@ -74,6 +75,7 @@ export default {
         'focusOnMount',
         'actionOnBlur',
         'innerLabel',
+        'pattern',
     ],
     computed: {
         inputField() {
@@ -121,6 +123,33 @@ export default {
             this.initialValue = this.value
             this.$emit('input', this.initialValue)
             this.$emit('submit', this.initialValue)
+        },
+        onKeydown(e) {
+            if (!this.pattern) return
+            // Allow navigation and deleting
+            const key = e.key
+            const allowedKeys = [
+                'Backspace',
+                'Delete',
+                'ArrowLeft',
+                'ArrowRight',
+                'ArrowUp',
+                'ArrowDown',
+                'Shift',
+                'Control',
+                'Alt',
+                'Meta',
+                'Escape',
+                'Tab',
+            ]
+            if (e.key == 'A' && e.ctrlKey) return
+            const passesPattern = !this.pattern || this.pattern.test(key)
+            // If we fail the check
+            if (!allowedKeys.includes(key) && !passesPattern) {
+                e.preventDefault()
+                e.stopPropagation()
+                return
+            }
         },
     },
     mounted() {

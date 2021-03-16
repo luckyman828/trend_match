@@ -1,6 +1,6 @@
 export default {
     methods: {
-        sortArray(array, sortAsc, key) {
+        sortArray(array, sortAsc, key, naturalSort) {
             const dataSorted = array.sort((a, b) => {
                 // console.log('sort array', sortAsc, key)
                 // Sort by multiple keys
@@ -24,6 +24,14 @@ export default {
                             else {
                                 let aKey = a[theKey]
                                 let bKey = b[theKey]
+
+                                if (naturalSort && aKey == 'string' && bKey == 'string') {
+                                    const localCompareResult = aKey.localeCompare(bKey, undefined, {
+                                        numeric: true,
+                                        sensitivity: 'base',
+                                    })
+                                    return sortAsc ? localCompareResult : localCompareResult * -1
+                                }
 
                                 // Check if type is string
                                 if (typeof a[theKey] == 'string') aKey = a[theKey].toLowerCase()
@@ -72,9 +80,17 @@ export default {
                             let aKey = a[key]
                             let bKey = b[key]
 
+                            if (naturalSort && aKey == 'string' && bKey == 'string') {
+                                const localCompareResult = aKey.localeCompare(bKey, undefined, {
+                                    numeric: true,
+                                    sensitivity: 'base',
+                                })
+                                return sortAsc ? localCompareResult : localCompareResult * -1
+                            }
+
                             // Check if type is string
-                            if (typeof a[key] == 'string') aKey = a[key].toLowerCase()
-                            if (typeof b[key] == 'string') bKey = b[key].toLowerCase()
+                            if (aKey == 'string') aKey = aKey.toLowerCase()
+                            if (bKey == 'string') bKey = bKey.toLowerCase()
 
                             // Check if type is date
                             if (key == 'delivery_date') aKey = new Date(aKey)

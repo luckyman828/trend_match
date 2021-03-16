@@ -48,8 +48,9 @@ $grey800: #425e80;
 $grey900: #27416a;
 
 $bluegrey100: #edf8fc;
-$bluegrey200: #ddf0f9;
-$bluegrey300: #c5dfed;
+$bluegrey200: #e1ebf1;
+$bluegrey250: #e4eef5;
+$bluegrey300: #cddde8;
 $bluegrey400: #adc9db;
 $bluegrey500: #8dabc4;
 $bluegrey600: #6787a8;
@@ -66,8 +67,9 @@ $info: $blue;
 $secondary: #69e4a6;
 $secondaryLight: rgba($secondary, 0.35);
 
-$dark100: #0d131c;
 $dark: #1c293b;
+$dark100: #0d131c;
+$dark200: #1c293b;
 $dark05: #313f52;
 $dark1: #535353;
 $dark15: #707070;
@@ -98,29 +100,13 @@ $borderDivider: solid $dividerWidth $dividerColor;
 $darkenAmount: 10%;
 $lightenAmount: 10%;
 
-// BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state, $bgOpacity)
-$brand-colors: (
-        'primary',
-        $primary,
-        mix(white, $primary, $lightenAmount),
-        white,
-        mix($dark05, $primary, $darkenAmount),
-        1
-    ),
-    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark, 1),
-    ('green', $green500, $green400, white, $green600, 1),
-    ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount), 1),
-    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount), 1),
-    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount), 1),
-    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
-    ('black', black, mix(white, black, $lightenAmount), white, black, 0.8);
-
 $groupColors: (#3366ff), (#26abd6), (#20a720), (#b51f26), (#905b15);
 
-// BUTTON SIZES ($name, $height, $font-size, $padding, $icon-font-size, $inner-el-spacing)
-$button-sizes: ('xxs', 12px, 8px, 1px, 8px, 2px), ('xs', 20px, 12px, 6px, 12px, 2px), ('sm', 24px, 12px, 8px, 14px, 4px),
-    ('md', 36px, 14px, 16px, 16px, 8px), ('lg', 48px, 14px, 20px, 16px, 8px), ('xl', 60px, 18px, 24px, 20px, 8px),
-    ('xxl', 72px, 20px, 24px, 20px, 8px);
+// BUTTON SIZES ($name, $height, $font-size, $padding, $icon-font-size, $inner-el-spacing, $borderRadius)
+$button-sizes: ('xxs', 16px, 10px, 1px, 8px, 2px, 2px), ('xs', 20px, 12px, 6px, 10px, 2px, 4px),
+    ('sm', 24px, 12px, 8px, 11px, 4px, 4px), ('md', 36px, 12px, 16px, 14px, 8px, 8px),
+    ('lg', 48px, 12px, 20px, 14px, 8px, 8px), ('xl', 60px, 18px, 24px, 20px, 8px, 8px),
+    ('xxl', 72px, 20px, 24px, 20px, 8px, 8px);
 
 // Sidebar
 $sidebarWidth: 260px;
@@ -149,17 +135,17 @@ $bgElHover: #cddde8;
 // $bgElInactive: $grey400;
 $bgElInactive: #d5dee1;
 
-$bgDark: #1c293b;
-$bgModuleDark: #1c293b;
+$bgDark: $dark100;
+$bgModuleDark: $dark100;
 $bgModuleActiveDark: #273b5c;
 $bgModuleHoverDark: #273b5c;
 
 // -------- END ASSIGN COLORS
 
 // FONTS / TYPOGRAPHY
-$font: #1c293b;
-$fontSoft: #75869c;
-$fontBody: #1c293b;
+$font: $dark;
+$fontSoft: $bluegrey500;
+$fontBody: $dark;
 $fontIcon: $dark2;
 
 $fontModuleActiveOnDark: $bluegrey100;
@@ -188,14 +174,18 @@ $shadowElSoft: 0 1px 2px 0 rgba(117, 134, 156, 0.3);
 $shadowElHard: 0 3px 4px 0 rgba(black, 0.4);
 
 // Borders
+$borderRadiusSm: 4px;
+$borderRadiusMd: 8px;
+$borderRadiusLg: 16px;
+
 // $borderModule: 1px solid rgba(168, 198, 223, 0.4);
 $borderModule: 1px solid #cddde8;
-$borderRadiusModule: 4px;
+$borderRadiusModule: $borderRadiusMd;
 $borderColorEl: $bluegrey400;
 $borderColorElHard: $bluegrey500;
 $borderColorElHover: #75869c;
 $borderEl: solid 1px $borderColorEl;
-$borderRadiusEl: 4px;
+$borderRadiusEl: $borderRadiusMd;
 $borderElSoft: solid 1px #cddde8;
 $borderElHard: solid 2px $borderColorElHard;
 $borderElHover: solid 2px $primary;
@@ -256,3 +246,31 @@ $desktop-width: 1024px;
 
 // VIDEO & ANIMATION
 $videoPauseTransition: 0.2s ease-out;
+
+// BRAND COLORS ($name, $color, $hoverstate, $text, $pressed state, $bgOpacity)
+$brand-colors: (
+        'primary',
+        $primary,
+        mix(white, $primary, $lightenAmount),
+        white,
+        mix($dark05, $primary, $darkenAmount),
+        1
+    ),
+    ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark, 1),
+    ('green', $green500, $green400, white, $green600, 1),
+    ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount), 1),
+    ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount), 1),
+    ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount), 1),
+    ('white', white, mix(white, white, $lightenAmount), $dark05, mix($dark05, white, $darkenAmount), 1),
+    ('black', black, mix(white, black, $lightenAmount), white, black, 0.8),
+    (
+        'light',
+        $bluegrey250,
+        mix(white, $bluegrey250, $lightenAmount),
+        $fontSoft,
+        mix($dark05, $bluegrey250, $darkenAmount),
+        1
+    );
+
+// UI SQUARE SIZES ($name, $height, $padding, $min-width)
+$ui-square-sizes: ('xs', 24px, 12px, 8px), ('sm', 40px, 6px, 24px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);

@@ -1,5 +1,11 @@
 <template>
-    <v-popover trigger="click" :disabled="readOnly || disabled">
+    <v-popover
+        trigger="click"
+        :disabled="readOnly"
+        @apply-show="onShow"
+        @apply-hide="$emit('close')"
+        :handleResize="resize"
+    >
         <!-- TRIGGER -->
         <!-- <div class="dropdown-input-field input-wrapper"></div> -->
         <div
@@ -14,7 +20,7 @@
                 type="select"
                 :value="valueToDisplay"
                 :inputClass="inputClass"
-                :readOnly="readOnly || disabled"
+                :readOnly="readOnly"
                 :innerLabel="innerLabel"
             />
             <BaseInputField
@@ -39,6 +45,7 @@
         <div slot="popover" v-close-popover="type == 'radio'" v-if="!readOnly">
             <!-- <BaseSelectButtonsContextMenu :options="options" :emitOnChange="true" :inline="true" :search="search" /> -->
             <BaseSelectButtons
+                ref="selectButtons"
                 :options="options"
                 :emitOnChange="true"
                 :search="search"
@@ -47,12 +54,16 @@
                 :value="value"
                 :optionNameKey="optionNameKey"
                 :optionValueKey="optionValueKey"
+                :uniqueKey="uniqueKey"
                 :optionDescriptionKey="descriptionKey"
                 :cloneOptionOnSubmit="cloneOptionOnSubmit"
                 :unsetOption="unsetOption"
                 :displayFunction="displayFunction"
                 @input="onSelect($event)"
             />
+            <div class="footer" v-if="$slots.default">
+                <slot />
+            </div>
         </div>
     </v-popover>
 </template>
@@ -79,6 +90,8 @@ export default {
         'disabledTooltip',
         'displayFunction',
         'allowManualEntry',
+        'uniqueKey',
+        'resize',
     ],
     data: function() {
         return {
@@ -109,12 +122,15 @@ export default {
 
                 // If we have no value key, we must have selected an entire object
                 if (!this.optionValueKey) {
-                    return this.value[this.optionNameKey]
+                    return Array.isArray(this.value)
+                        ? this.value.map(x => x[this.optionNameKey]).join(', ')
+                        : this.value[this.optionNameKey]
                 }
 
                 // In case we have both a name key and a value key
                 // Read the available options and find our values match there
                 const selectedOption = this.options.find(option => option[this.valueKey] == this.value)
+                if (!selectedOption) return
                 return selectedOption[this.optionNameKey]
             }
 
@@ -167,6 +183,19 @@ export default {
                 this.localValue = this.valueToDisplay
             })
         },
+        onShow() {
+            console.log('on show')
+            if (this.search) {
+                this.$refs.selectButtons.focusSearch()
+                const focusSearchTester = setInterval(() => {
+                    if (document.activeElement.type == 'search') {
+                        clearInterval(focusSearchTester)
+                        return
+                    }
+                    this.$refs.selectButtons.focusSearch()
+                }, 100)
+            }
+        },
     },
     mounted() {
         this.localValue = this.valueToDisplay
@@ -194,6 +223,11 @@ export default {
                 padding-right: 28px;
             }
         }
+        .footer {
+            padding: 8px 12px 12px;
+            border-top: $borderEl;
+            margin-top: -8px;
+        }
     }
     .manual-input {
         &::v-deep {
@@ -201,6 +235,13 @@ export default {
                 padding-right: 28px;
             }
         }
+    }
+}
+::v-deep {
+    .footer {
+        padding: 8px 12px 12px;
+        border-top: $borderEl;
+        margin-top: -8px;
     }
 }
 </style>

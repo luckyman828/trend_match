@@ -116,6 +116,10 @@ export default {
     computed: {
         ...mapGetters('workspaces', {
             availableLabels: 'getAvailableProductLabels',
+            workspaceRole: 'authUserWorkspaceRole',
+        }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
         }),
         localSelectedProducts: {
             get() {
@@ -132,7 +136,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled
+            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
         },
     },
     methods: {

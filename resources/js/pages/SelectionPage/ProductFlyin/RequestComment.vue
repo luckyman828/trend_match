@@ -75,6 +75,9 @@
         <div class="sender" v-if="displayAuthor && !editActive">
             <strong>{{ comment.role == 'Approver' ? 'Approval' : request.selection.name }}</strong> |
             {{ comment.author_id == authUser.id ? 'You' : comment.author ? comment.author.name : 'Anonymous' }}
+            <div class="timestamp" v-if="comment.created_at">
+                {{ getPrettyTimestamp(comment.created_at) }}
+            </div>
         </div>
 
         <BaseDialog ref="confirmDeleteComment" type="confirm" confirmColor="red" confirmText="Yes, delete it">
@@ -255,5 +258,9 @@ export default {
             flex-direction: row;
         }
     }
+}
+.timestamp {
+    font-size: 10px;
+    color: $grey600;
 }
 </style>

@@ -187,13 +187,6 @@ export default {
             // },
             {
                 scope: 'variants',
-                name: 'eans',
-                displayName: 'EANs',
-                type: 'number',
-                headersToMatch: ['eans', 'ean', 'variant ean', 'style ean', 'ean_no'],
-            },
-            {
-                scope: 'variants',
                 name: 'color',
                 displayName: 'Color',
                 type: 'string',
@@ -230,6 +223,21 @@ export default {
                     'variant sizes',
                     '^(?!.*box).*size.*$', // 'size' but not 'box size'
                     'variant size',
+                ],
+            },
+            {
+                scope: 'variants',
+                name: 'delivery_dates',
+                displayName: 'Delivery (date/month)',
+                type: 'date',
+                headersToMatch: [
+                    'delivery',
+                    'delivery date',
+                    'delivery month',
+                    'del. date',
+                    'del. month',
+                    'del. period',
+                    'delivery period',
                 ],
             },
             // IMAGES

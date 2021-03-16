@@ -21,7 +21,7 @@ export default {
         prop: 'modelValue',
         event: 'change',
     },
-    props: ['value', 'modelValue', 'disabled', 'groupIndex', 'selectedGroupIndex'],
+    props: ['value', 'modelValue', 'disabled', 'groupIndex', 'selectedGroupIndex', 'uniqueKey'],
     data: function() {
         return {
             shiftClicked: false,
@@ -32,6 +32,9 @@ export default {
             if (this.value != null || this.modelValue) {
                 // Check if the modelValue (the value we bind to v-model) is an array
                 if (Array.isArray(this.modelValue)) {
+                    if (this.uniqueKey && this.value) {
+                        return !!this.modelValue.find(x => x[this.uniqueKey] == this.value[this.uniqueKey])
+                    }
                     return this.modelValue.includes(this.value)
                 } else return this.modelValue == this.value
             }
@@ -55,7 +58,13 @@ export default {
                 if (isChecked) {
                     newValue.push(this.value)
                 } else {
-                    newValue.splice(newValue.indexOf(this.value), 1)
+                    let index
+                    if (this.uniqueKey) {
+                        index = newValue.findIndex(x => x[this.uniqueKey] == this.value[this.uniqueKey])
+                    } else {
+                        index = newValue.indexOf(this.value)
+                    }
+                    newValue.splice(index, 1)
                 }
 
                 this.$emit('change', newValue)

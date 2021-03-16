@@ -1,0 +1,35 @@
+<template>
+    <nav class="navbar">
+        <portal-target name="navbar"></portal-target>
+    </nav>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex'
+
+export default {
+    name: 'buy.TheNavbar',
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="scss" scoped>
+@import '~@/_variables.scss';
+
+.navbar {
+    grid-area: navbar;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    padding: 8px 60px;
+    background: $bgModule;
+    border-bottom: $borderModule;
+    box-shadow: $shadowModule;
+    @media screen and (max-width: $screenSm) {
+        padding: 8px 20px;
+    }
+    > * {
+        width: 100%;
+    }
+}
+</style>

@@ -12,6 +12,13 @@
             <div class="target-area" v-if="targetAreaPadding" :style="'padding: ' + targetAreaPadding"></div>
         </button>
 
+        <div class="icon-left">
+            <slot name="iconLeft" />
+        </div>
+        <div class="icon-right">
+            <slot name="iconRight" />
+        </div>
+
         <div class="count" v-if="$slots.count || $scopedSlots.count">
             <slot name="count" />
         </div>
@@ -86,6 +93,18 @@ export default {
         height: 100%;
         width: 100%;
         box-sizing: content-box;
+    }
+    .icon-left,
+    .icon-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .icon-left {
+        left: 20px;
+    }
+    .icon-right {
+        right: 20px;
     }
 }
 </style>

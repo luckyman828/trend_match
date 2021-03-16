@@ -4,7 +4,8 @@
             {{ header }}
         </template>
         <template v-slot>
-            <div class="item-group">
+            <BaseLoader v-if="loading" />
+            <div class="item-group" v-else>
                 <BaseSelectButtons
                     ref="selectButtons"
                     v-model="localValue"
@@ -21,6 +22,7 @@
                     :optionGroupOptionsKey="optionGroupOptionsKey"
                     :optionNameKey="optionNameKey"
                     :search="search"
+                    :uniqueKey="uniqueKey"
                     @submit="submit"
                     @unset="$emit('unset')"
                 />
@@ -71,10 +73,12 @@ export default {
         'multipleOptionArrays',
         'optionGroupNameKey',
         'optionGroupOptionsKey',
+        'uniqueKey',
         'unsetOption',
         'unsetValue',
         'emitOnChange',
         'inline',
+        'loading',
     ],
     // data: function() {return {
     //     currentValue

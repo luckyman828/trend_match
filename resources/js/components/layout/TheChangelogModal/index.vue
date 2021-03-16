@@ -1,6 +1,215 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Gingham: Blue"
+            date="March 2021, 1st Bonus Release"
+            featuredImgUrl="/images/blog/undraw_fireworks_q5ji.svg"
+        >
+            <template v-slot:lead>
+                <p>We are on <i>fuego</i>, bringing you yet a another set of requested tweaks. Enjoy!</p>
+            </template>
+            <template v-slot:body>
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>
+                        Product labels can now be accessed via the hotkey "#" when a product row is focused, and when
+                        viewing the product details flyin (PDP).
+                    </li>
+                    <li>
+                        Product labels can now be viewed and edited from the PDP.
+                    </li>
+                    <li>
+                        Products can now be sorted by amount of labels.<br />
+                        Find the new <i>Sort</i> button next to <i>Filter</i>, on the products overview.
+                    </li>
+                </ul>
+
+                <p>
+                    What tweaks would make your work easier on Kollekt?<br />
+                    Let us know, so we can keep making the best version of Kollekt for you.
+                </p>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
+            title="Gingham: Black"
+            date="February 2021 Bonus Release"
+            featuredImgUrl="/images/blog/undraw_Content_structure_re_ebkv.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    Finally we are able to bring you Black, featuring lots of quality-of-life updates requested by you.
+                    Enjoy.
+                </p>
+            </template>
+            <template v-slot:body>
+                <h3>Mighty selection owners</h3>
+                <ul>
+                    <li>
+                        Selection owners are now able to delete any comment, request, or ticket on their selection or a
+                        descendant of it.
+                    </li>
+                    <li>
+                        Selection owners can now set labels for any ticket or request made in their selection or a
+                        descendant of it.
+                    </li>
+                </ul>
+
+                <h3>Import selection input</h3>
+                <p>
+                    It is now possible to import feedback, alignment, comments, and/or request/tickets from one
+                    selection to another.
+                </p>
+                <p>
+                    Simply go to the selection you wish to import to and find the new "Import input" button in the top
+                    navbar.
+                </p>
+                <p>
+                    Importing variant input from one file to another is only available if the files are clones of each
+                    other.
+                </p>
+
+                <h3>Export IN variants only</h3>
+                <p>When making a custom CSV export, you can now check a box to export "IN-variant only".</p>
+                <p>The CSV will then only include variants where the action is IN or FOCUS.</p>
+
+                <h3>Create New Products option on import from spreadsheet modal</h3>
+                <p>
+                    When importing from spreadsheet to an existing file, a new option has been added to "Create new
+                    products".
+                </p>
+                <p>
+                    This vastly simplifies the process of adding more products to a file with existing products, without
+                    affecting the existing products.
+                </p>
+                <p>This option takes care of all import settings for you, so you can safely import more products.</p>
+
+                <h3>Minor tweaks & fixes</h3>
+                <ul>
+                    <li>
+                        Exporting results to CSV: Requests/tickets now have a column in the CSV per label, to make it
+                        easier to analyze by labels.
+                    </li>
+                    <li>Various small fixes to the newly introduced chapters.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
+            title="Gingham: Bittersweet"
+            date="February 2021 Release"
+            featuredImgUrl="/images/blog/undraw_Hiking_re_k0bc.svg"
+        >
+            <template v-slot:lead>
+                <p>
+                    Our Winter Break here at Kollekt, has been spend finally getting ready to bring you a new update,
+                    featuring lots of new features!
+                </p>
+                <p>
+                    This update will be shortly followed by 1 or 2 quality of life updates, including some requested
+                    features.
+                </p>
+                <p>
+                    As always, please reach out if you would like a personal introduction to our new features, and learn
+                    of the new ways in which Kollekt might optimize your work.
+                </p>
+            </template>
+            <template v-slot:body>
+                <h3>Broadcast Channels</h3>
+                <p>No more broadcast up, listen down etc.:</p>
+                <p>Introducing a, hopefully, more intuitive alternative to selection settings.</p>
+                <p>
+                    You can now create broadcast channels on a file. Every selection added to a broadcast channel will
+                    "listen" to everything that is broadcast to the channel.
+                </p>
+                <p>You choose yourself which selections broadcast what to the broadcast channel.</p>
+                <p>
+                    Apart from being easier to understand, this also let's selections broadcast and listen to each other
+                    no matter how they are structured.
+                </p>
+                <p>All in all, a powerful new tool we hope you will find useful.</p>
+
+                <h3>More Chapter Rule options</h3>
+                <ul>
+                    <li>Create filter based on list of Product Ids / EANs.</li>
+                    <li>Filter by Brand</li>
+                </ul>
+
+                <h3>Live Status screen</h3>
+                <p>We have added a live-updating status screen, where you can see the top In, Focus, and Out styles.</p>
+                <p>
+                    You decide which selections to include in the screen, and you can enable automatic cycling between
+                    the selections.
+                </p>
+                <p>
+                    This feature should be perfect for sharing live-results with your team, for instance by showing it
+                    on a monitor.
+                </p>
+
+                <h3>Product Labels</h3>
+                <p>You can now define a number of labels available to add to your products.</p>
+                <p>Products can be filtered by these labels and they can be exported to CSV.</p>
+
+                <h3>Tweak & Fixes</h3>
+                <ul>
+                    <li>You are now able to sort products with filters enabled - once again.</li>
+                    <li>
+                        Kollekt now remembers what page you were trying to reach, when you get shown the login screen,
+                        and sends you there after logging in.
+                    </li>
+                    <li>
+                        Variants set to <strong>Focus</strong> no longer change to <strong>In</strong>, when setting a
+                        quantity.
+                    </li>
+                    <li>
+                        When joining a selection / presentation via link, users should more seldom be asked to complete
+                        a
+                        <i>captcha</i>-test, and will no longer be redirected, in order to login to an existing account.
+                    </li>
+                    <li>
+                        Selections can no longer overflow their container when choosing which to include in a livestream
+                        presentation.
+                    </li>
+                    <li>
+                        Timings on the PLAY timeline should no longer be able to overflow the timeline or lay on top of
+                        each other, which should prevent other timings from moving when deleting some.
+                    </li>
+                    <li>
+                        You are now correctly able to filter by custom properties of type <i>Array</i>, and belong to
+                        <i>Variant</i>.
+                    </li>
+                    <li>Fixed various cases where a selection's chapter was not correctly displayed.</li>
+                    <li>Advanced filters now work again.</li>
+                    <li>
+                        Optimized initial loading of the selection page, which should make loading selections with lots
+                        of input faster.
+                    </li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Damask: Beaver"
             date="January 2021 Tweaks & Fixes Release 2"
             featuredImgUrl="/images/blog/undraw_Co_workers_re_1i6i.svg"

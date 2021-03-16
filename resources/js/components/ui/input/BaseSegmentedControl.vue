@@ -1,17 +1,21 @@
 <template>
-    <div class="segmented-control">
+    <div class="segmented-control" :class="'theme-' + theme">
         <div
-            class="option pill dark"
+            class="option pill"
             v-for="(option, index) in options"
             :key="index"
+            tabindex="-1"
             @click="setOption(index)"
             :class="[
-                { active: currentOptionIndex == index },
+                { active: theCurrentOptionIndex == index },
                 sizeClass,
-                currentOptionIndex == index ? '' : 'invisible ghost-hover',
+                theCurrentOptionIndex == index ? (activeClass ? activeClass : 'dark') : 'invisible ghost-hover',
             ]"
         >
-            <slot :option="option" :isActive="currentOptionIndex == index" />
+            <slot :option="option" :isActive="theCurrentOptionIndex == index" />
+            <span v-if="labelKey"
+                >{{ option[labelKey] }}<template v-if="countKey"> {{ option[countKey] }}</template></span
+            >
         </div>
     </div>
 </template>
@@ -19,11 +23,32 @@
 <script>
 export default {
     name: 'baseSegmentedControl',
-    props: ['options', 'currentOptionIndex', 'sizeClass'],
+    props: {
+        options: { default: [] },
+        labelKey: { default: 'label' },
+        countKey: { default: 'count' },
+        valueKey: {},
+        currentOptionIndex: {},
+        sizeClass: {},
+        theme: {},
+        activeClass: {},
+        value: {},
+    },
+    computed: {
+        valueKeyToEmit() {
+            const objectHasKeyValue = this.options.find(x => Object.keys(x).includes('value'))
+            return this.valueKey ? this.valueKey : objectHasKeyValue ? 'value' : null
+        },
+        theCurrentOptionIndex() {
+            if (this.currentOptionIndex != null) return this.currentOptionIndex
+            if (this.valueKeyToEmit) return this.options.findIndex(option => option[this.valueKeyToEmit] == this.value)
+        },
+    },
     methods: {
         setOption(index) {
-            this.$emit('input', index)
-            this.$emit('change', index)
+            const valueToEmit = this.valueKeyToEmit ? this.options[index][this.valueKeyToEmit] : index
+            this.$emit('input', valueToEmit)
+            this.$emit('change', valueToEmit)
         },
     },
 }
@@ -34,6 +59,9 @@ export default {
 .segmented-control {
     padding: 2px;
     background: $grey;
+    &.theme-light {
+        background: $bluegrey250;
+    }
     border-radius: 50px;
     white-space: nowrap;
     display: flex;
@@ -42,6 +70,9 @@ export default {
         display: flex;
         &:not(:first-child) {
             margin-left: 4px;
+        }
+        &.active {
+            box-shadow: 0 3px 6px rgba($dark, 0.2);
         }
     }
 }

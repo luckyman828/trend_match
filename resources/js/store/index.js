@@ -30,6 +30,12 @@ import display from './modules/display'
 import videoComments from './modules/videoComments'
 import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
+import kollekt from './modules/kollekt'
+import wishlist from './modules/playb2c/wishlist'
+import basket from './modules/playb2c/basket'
+import videos from './modules/playb2c/videos'
+import buyProducts from './modules/buy/buyProducts'
+import integrationDkc from './modules/integrations/dkc'
 const cloneDeep = require('clone-deep')
 
 // Load Vuex
@@ -67,6 +73,12 @@ export const initialStoreModules = {
     videoComments,
     productFilters,
     selectionProducts,
+    wishlist,
+    basket,
+    videos,
+    kollekt,
+    buyProducts,
+    integrationDkc,
 }
 
 // const store = new Vuex.Store({

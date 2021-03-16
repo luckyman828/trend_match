@@ -1,7 +1,7 @@
 <template>
-    <div class="product-actions flex-list justify" v-if="product">
+    <div class="product-actions flex-list justify">
         <button class="white lg circle" @click="$emit('show-chat')"><i class="far fa-comment"></i></button>
-        <div class="right flex-list md">
+        <div class="right flex-list md" v-if="product">
             <ProductActionButton action="Out" :product="product" displayStyle="coleredIcons" buttonClass="circle lg" />
             <ProductActionButton
                 action="Focus"

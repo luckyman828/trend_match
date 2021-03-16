@@ -315,6 +315,7 @@ export default {
         filterableProductLabels() {
             const labels = []
             this.products.map(product => {
+                if (!product.labels) return
                 product.labels.map(label => {
                     const alreadyAdded = labels.includes(label)
                     if (!alreadyAdded) labels.push(label)

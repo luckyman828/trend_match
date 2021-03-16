@@ -105,6 +105,7 @@ export default {
             this.getDragTime(e)
         },
         onTouchDragMove(e) {
+            if (!e.touches) return
             this.getDragTime(e.touches[0])
         },
         onDragEnd() {
@@ -148,10 +149,10 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
-        height: 80px;
+        height: 40px;
         width: 100%;
         width: 200%;
-        transform: translate(-25%, -50%);
+        transform: translate(-25%, -40%);
     }
     @include mobile {
         bottom: 12px;
@@ -178,6 +179,7 @@ export default {
     .drag-active & {
         .rail,
         .knob {
+            pointer-events: none;
             transition: none;
             cursor: grabbing;
         }

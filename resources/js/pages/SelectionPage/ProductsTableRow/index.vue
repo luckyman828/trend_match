@@ -31,7 +31,7 @@
             <td class="title">
                 <span class="clickable">
                     <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
-                    <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" />
+                    <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
                     <div class="variant-list" @click="onViewSingle">
                         <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
@@ -377,11 +377,14 @@ export default {
             availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
         }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
         labelsEnabled() {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.workspaceRole == 'Admin' || this.selectionRole == 'Alignment')
+            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
         },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
@@ -561,19 +564,27 @@ export default {
             }
 
             // Label hotkeys
-            if (this.hasLabelWriteAccess && parseInt(event.key)) {
-                const pressedNumber = event.key
-                const label = this.availableLabels[pressedNumber - 1]
-                if (!label) return
+            if (this.hasLabelWriteAccess) {
+                // Number hotkey
+                if (parseInt(event.key)) {
+                    const pressedNumber = event.key
+                    const label = this.availableLabels[pressedNumber - 1]
+                    if (!label) return
 
-                // Check if the label is already added
-                const existingIndex = this.product.labels.findIndex(x => x == label)
-                if (existingIndex >= 0) {
-                    this.product.labels.splice(existingIndex, 1)
-                } else {
-                    this.product.labels.push(label)
+                    // Check if the label is already added
+                    const existingIndex = this.product.labels.findIndex(x => x == label)
+                    if (existingIndex >= 0) {
+                        this.product.labels.splice(existingIndex, 1)
+                    } else {
+                        this.product.labels.push(label)
+                    }
+                    this.onUpdateProduct()
                 }
-                this.onUpdateProduct()
+                // Hashtag
+                if (event.key == '#') {
+                    // Open labels menu
+                    this.$refs.labelList.$refs.popover.show()
+                }
             }
         },
         async onUpdateProduct() {

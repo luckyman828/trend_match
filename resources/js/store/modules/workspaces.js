@@ -50,6 +50,27 @@ export default {
             getters.currentWorkspace && getters.currentWorkspace.available_labels
                 ? getters.currentWorkspace.available_labels
                 : [],
+        getEnabledFeatures: (state, getters) => {
+            const workspace = getters.currentWorkspace
+            const dkc_api_enabled =
+                (workspace && workspace.title.toLowerCase().search('dkc') >= 0) ||
+                workspace.title == 'Internal Test Space'
+            return {
+                style_option_api: workspace.style_option_enabled,
+                dkc_api: dkc_api_enabled,
+                import_from_integration: getters.getWorkspaceDatabases.length > 0 || dkc_api_enabled,
+            }
+        },
+        // getEnabledProductSpaces: (state, getters) => {
+        //     const workspace = getters.currentWorkspace
+        //     const dkc_api_enabled =
+        //         (workspace && workspace.title.toLowerCase().search('dkc') >= 0) ||
+        //         workspace.title == 'Internal Test Space'
+        //     return {
+        //         select: true,
+        //         buy: 
+        //     }
+        // },
     },
 
     actions: {

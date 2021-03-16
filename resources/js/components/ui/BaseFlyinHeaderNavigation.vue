@@ -1,10 +1,10 @@
 <template>
     <div class="navigation">
-        <button class="circle md primary prev" :disabled="!prev" @click="$emit('prev')">
-            <i class="far fa-angle-left"></i>
+        <button class="circle md prev" :disabled="!prev" @click="$emit('prev')">
+            <i class="fas fa-angle-left"></i>
         </button>
-        <button class="circle md primary next" :disabled="!next" @click="$emit('next')">
-            <i class="far fa-angle-right"></i>
+        <button class="circle md next" :disabled="!next" @click="$emit('next')">
+            <i class="fas fa-angle-right"></i>
         </button>
     </div>
 </template>

@@ -41,7 +41,9 @@ export default {
             await axios
                 .get(apiUrl)
                 .then(async response => {
-                    commit('INSERT_SELECTIONS', response.data.selections)
+                    const selections = response.data.selections
+                    await dispatch('initSelections', selections)
+                    commit('INSERT_SELECTIONS', selections)
                     commit('INSERT_SELECTION_USERS', response.data.users)
                     products = response.data.products
                     const selectionProductInput = { selection, products }
@@ -57,6 +59,68 @@ export default {
                 })
 
             return products
+        },
+        async initSelections({ getters, rootGetters }, selections) {
+            selections.map(selection => {
+                const chapterSetIndex = selection.product_set_identifier.lastIndexOf(':')
+                const chatperId =
+                    chapterSetIndex >= 0 ? selection.product_set_identifier.slice(chapterSetIndex + 1) : null
+                Vue.set(selection, 'chapterId', chatperId)
+
+                if (!selection.your_roles) {
+                    Vue.set(selection, 'your_roles', [])
+                }
+                if (!selection.your_role) {
+                    Vue.set(selection, 'your_role', selection.your_roles[0])
+                }
+
+                // Visible
+                Object.defineProperty(selection, 'is_visible', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.visible_from && new Date(selection.visible_from)
+                        const to = selection.visible_to && new Date(selection.visible_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
+                    },
+                })
+                // Locked
+                Object.defineProperty(selection, 'is_open', {
+                    get: () => {
+                        const now = new Date()
+                        const from = selection.open_from && new Date(selection.open_from)
+                        const to = selection.open_to && new Date(selection.open_to)
+                        return (!from || now > from) && (!to || now < to) // True if no from is set
+                    },
+                })
+                // Completed
+                Object.defineProperty(selection, 'is_completed', {
+                    get: () => {
+                        // Return true if we are after visible_from, or it isn't set
+                        // And before visible_to or it isn't set¨
+                        const now = new Date()
+                        const from = selection.completed_at
+                        return !!from && now > from
+                    },
+                })
+
+                // Visible
+                Object.defineProperty(selection, 'presentation', {
+                    get: () => {
+                        if (!selection.presentation_id) return
+                        const presentations = rootGetters['presentation/getPresentations']
+                        return presentations.find(x => x.id == selection.presentation_id)
+                    },
+                })
+
+                Object.defineProperty(selection, 'chapter', {
+                    get: () => {
+                        console.log('get selection chatper')
+                        return rootGetters['selections/getSelectionChapter'](selection)
+                    },
+                })
+            })
         },
         async mergeProductsWithSelectionInput({ state, rootGetters, dispatch }, { selectionProductInput, authUser }) {
             const products = rootGetters['products/getAllProducts'].filter(product => {
@@ -78,6 +142,9 @@ export default {
                     })
                     rawSelectionInput.alignments.map(action => {
                         if (!action.variants) action.variants = []
+                        action.variants.map(variant => {
+                            if (!variant.date_quantities) variant.date_quantities = []
+                        })
                     })
 
                     Object.defineProperty(selectionInput, 'is_completed', {
@@ -424,7 +491,6 @@ export default {
                                         })
                                     })
                                 })
-                                // return feedbacks.filter(x => x.action != 'None')
                                 return feedbacks
                             },
                         })
@@ -497,6 +563,7 @@ export default {
                                             user: action.user,
                                             selection_id: action.selection_id,
                                             selection: action.selection,
+                                            date_quantities: variantAction.date_quantities,
                                         })
                                     })
                                 })
@@ -533,6 +600,14 @@ export default {
                                         quantity: variant.quantity,
                                     })
                                 }
+                            },
+                        })
+                        Object.defineProperty(variant, 'selectionAction', {
+                            get: function() {
+                                const selectionAction = variant.actionsRaw.find(
+                                    x => x.selection_id == selectionInput.selection_id
+                                )
+                                return selectionAction
                             },
                         })
                         // Get the selection's quantity
@@ -687,6 +762,34 @@ export default {
                         Object.defineProperty(variant, 'alignmentNds', {
                             get: function() {
                                 return variant.actions.filter(x => x.action == 'None')
+                            },
+                        })
+
+                        // DELIVERIES
+                        Object.defineProperty(variant, 'deliveries', {
+                            get: function() {
+                                return variant.delivery_dates.map(delivery => {
+                                    const deliveryObj = {
+                                        delivery_date: delivery,
+                                    }
+                                    Object.defineProperty(deliveryObj, 'quantity', {
+                                        get: function() {
+                                            if (!variant.selectionAction) return 0
+                                            const actionDelivery = variant.selectionAction.date_quantities.find(
+                                                dateQty => dateQty.delivery_date == delivery
+                                            )
+                                            return actionDelivery.quantity
+                                        },
+                                        set: function(newQty) {
+                                            if (!variant.selectionAction) return 0
+                                            const actionDelivery = variant.selectionAction.date_quantities.find(
+                                                dateQty => dateQty.delivery_date == delivery
+                                            )
+                                            actionDelivery.quantity = newQty
+                                        },
+                                    })
+                                    return deliveryObj
+                                })
                             },
                         })
                     })

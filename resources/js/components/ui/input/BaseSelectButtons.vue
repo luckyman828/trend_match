@@ -99,10 +99,17 @@
                             },
                         ]"
                     >
-                        <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
+                        <label
+                            tabindex="0"
+                            ref="option"
+                            :class="{ focus: focusOptionIndex == index }"
+                            @keydown.enter.exact="onEnter(index)"
+                            @keydown.enter.ctrl="submit"
+                        >
                             <BaseRadiobox
                                 v-if="type == 'radio'"
                                 ref="selectBox"
+                                :uniqueKey="uniqueKey"
                                 :value="optionValueKey ? option[optionValueKey] : option"
                                 :modelValue="selection"
                                 v-model="selection"
@@ -113,6 +120,7 @@
                             <BaseCheckbox
                                 v-else
                                 ref="selectBox"
+                                :uniqueKey="uniqueKey"
                                 :value="optionValueKey ? option[optionValueKey] : option"
                                 :modelValue="selection"
                                 v-model="selection"
@@ -161,10 +169,17 @@
                         },
                     ]"
                 >
-                    <label tabindex="0" @keydown.enter.exact="onEnter(index)" @keydown.enter.ctrl="submit">
+                    <label
+                        tabindex="0"
+                        :class="{ focus: focusOptionIndex == index }"
+                        ref="option"
+                        @keydown.enter.exact="onEnter(index)"
+                        @keydown.enter.ctrl="submit"
+                    >
                         <BaseRadiobox
                             v-if="type == 'radio'"
                             ref="selectBox"
+                            :uniqueKey="uniqueKey"
                             :value="
                                 optionValueKey ? (optionValueKey == 'index' ? index : option[optionValueKey]) : option
                             "
@@ -174,6 +189,7 @@
                         <BaseCheckbox
                             v-else
                             ref="selectBox"
+                            :uniqueKey="uniqueKey"
                             :value="
                                 optionValueKey ? (optionValueKey == 'index' ? index : option[optionValueKey]) : option
                             "
@@ -217,6 +233,7 @@ export default {
         'optionNameKey',
         'optionValueKey',
         'optionDescriptionKey',
+        'uniqueKey',
         'search',
         'submitOnChange',
         'emitOnChange',
@@ -232,6 +249,7 @@ export default {
         'displayFunction',
         'focusSearchOnMount',
         'cloneOptionOnSubmit',
+        'focusOptionIndex',
     ],
     data: function() {
         return {
@@ -289,6 +307,12 @@ export default {
         // Watch for changes to the options and reset the optionsFilteredBySearch
         options: function(newVal, oldVal) {
             this.optionsFilteredBySearch = newVal
+        },
+        focusOptionIndex(newIndex) {
+            const label = this.$refs.option[newIndex]
+            if (label) {
+                label.focus()
+            }
         },
     },
     methods: {
@@ -349,6 +373,10 @@ export default {
         },
         onSearch(result, searchString) {
             this.searchString = searchString
+        },
+        focusFirstOption() {
+            console.log('focus first option', this.$refs.option[0])
+            this.$refs.option[0].focus()
         },
     },
     mounted() {
@@ -411,6 +439,10 @@ export default {
             font-weight: 500;
             .label {
                 width: 100%;
+            }
+            &.focus {
+                outline: solid $primary;
+                background: $bgModuleActive;
             }
         }
         .description {

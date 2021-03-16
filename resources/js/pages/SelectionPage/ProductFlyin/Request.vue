@@ -51,6 +51,7 @@
 
                 <div class="label-wrapper">
                     <v-popover
+                        v-if="hasLabel || hasTicketControl"
                         ref="labelPopover"
                         trigger="click"
                         :disabled="!hasTicketControl"
@@ -69,6 +70,10 @@
                             @update="$refs.labelPopover.hide()"
                         />
                     </v-popover>
+                </div>
+
+                <div class="timestamp" v-if="request.created_at">
+                    {{ getPrettyTimestamp(request.created_at) }}
                 </div>
 
                 <div class="thread-controls" v-if="isTicket && !disableControls">
@@ -107,7 +112,7 @@
             </button>
         </div>
 
-        <div class="resolve-actions flex-list sm" v-if="hasTicketControl">
+        <div class="resolve-actions flex-list sm" v-if="isTicket && hasTicketControl">
             <BaseButton
                 v-tooltip="'Accept'"
                 :disabled="!hasTicketControl"
@@ -344,6 +349,12 @@ export default {
         z-index: 1;
         transform: translateY(75%);
     }
+    .timestamp {
+        position: absolute;
+        bottom: 2px;
+        font-size: 10px;
+        color: $grey600;
+    }
 }
 .save-controls {
     position: absolute;
@@ -403,6 +414,7 @@ export default {
         flex-direction: column;
         flex: 1;
         overflow: hidden;
+        padding-bottom: 20px;
     }
     .thread-controls {
         display: inline-flex;

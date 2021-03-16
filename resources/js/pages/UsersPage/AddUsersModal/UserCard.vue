@@ -97,12 +97,7 @@ export default {
     },
     watch: {
         userEmail(newEmail) {
-            if (!newEmail || newEmail.length < 3) return
-            // Throttle search
-            if (this.queryUsersTimeout) clearTimeout(this.queryUsersTimeout)
-            this.queryUsersTimeout = setTimeout(() => {
-                this.fetchUserQueryResults(newEmail)
-            }, 500)
+            this.onNewEmail(newEmail)
         },
     },
     methods: {
@@ -110,6 +105,17 @@ export default {
         async fetchUserQueryResults(query) {
             this.userQueryResults = await this.searchForUser(query)
             this.validateUser()
+        },
+        onNewEmail(newEmail, ignoreTimeout) {
+            if (!newEmail || newEmail.length < 3) return
+            // Throttle search
+            if (this.queryUsersTimeout) clearTimeout(this.queryUsersTimeout)
+            this.queryUsersTimeout = setTimeout(
+                () => {
+                    this.fetchUserQueryResults(newEmail)
+                },
+                ignoreTimeout ? 0 : 500
+            )
         },
         onInput() {
             // Throttle search
@@ -183,6 +189,9 @@ export default {
     destroyed() {
         if (this.queryUsersTimeout) clearTimeout(this.queryUsersTimeout)
         if (this.inputTimeout) clearTimeout(this.inputTimeout)
+    },
+    async created() {
+        this.onNewEmail(this.user.email, true)
     },
 }
 </script>

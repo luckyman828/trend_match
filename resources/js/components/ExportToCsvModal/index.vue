@@ -205,7 +205,6 @@ export default {
             'selections',
             'selectionsStatus',
             'getSelections',
-            'getSelectionsAvailableForInputFiltering',
             'getSelectionChapter',
         ]),
         ...mapGetters('selections', {
@@ -213,16 +212,16 @@ export default {
         }),
         ...mapGetters('products', ['productsFiltered', 'getSelectedProducts']),
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
-        ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
+        ...mapGetters('selectionProducts', ['getActiveSelectionInput', 'getSelections']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
             return products
         },
         selectionsToExport() {
-            if (this.getFilterSelectionIds.length <= 0) return this.getSelectionsAvailableForInputFiltering
+            if (this.getFilterSelectionIds.length <= 0) return this.getSelections
             return this.getFilterSelectionIds.map(selectionId => {
-                return this.getSelectionsAvailableForInputFiltering.find(selection => selection.id == selectionId)
+                return this.getSelections.find(selection => selection.id == selectionId)
             })
         },
         availaleCurrencies() {

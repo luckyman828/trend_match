@@ -77,12 +77,12 @@ export default {
         hideCompleted: state => state.hideCompleted,
         noImagesOnly: state => state.noImagesOnly,
         singleVisible: state => state.singleVisible,
-        products: (state, getters, rootState, rootGetters) => rootGetters['selectionProducts/getProducts'],
-        getProducts: (state, getters) => getters.products,
+        products: state => state.products,
+        getProducts: state => state.products,
         getAllProducts: (state, getters) => state.products,
         productsFiltered(state, getters, rootState, rootGetters) {
             // const products = getters.products
-            const products = rootGetters['selectionProducts/getProducts']
+            const products = getters.products
             const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             // Filters
             const categories = rootGetters['productFilters/getFilterCategories']
@@ -97,8 +97,10 @@ export default {
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
             const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
+            const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
+            const purchaseOnly = rootGetters['productFilters/getPurchaseOnly']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -162,12 +164,37 @@ export default {
             }
 
             // Filter by custom values
+
             Object.keys(customDataFilters).map(filterKey => {
+                // Get details about the key
                 const filterValues = customDataFilters[filterKey]
                 if (filterValues.length <= 0) return
-                productsToReturn = productsToReturn.filter(product =>
-                    filterValues.includes(product.extra_data[filterKey])
-                )
+
+                const customField = customFields.find(field => field.name == filterKey)
+                const checkIfObjectShouldBeIncluded = object => {
+                    if (Array.isArray(object.extra_data[filterKey])) {
+                        if (object.extra_data[filterKey].find(x => filterValues.includes(x))) {
+                            return true
+                        }
+                    } else if (filterValues.includes(object.extra_data[filterKey])) {
+                        return true
+                    }
+                    return false
+                }
+
+                productsToReturn = productsToReturn.filter(product => {
+                    let include = false
+                    if (customField.belong_to == 'Variant') {
+                        product.variants.map(variant => {
+                            if (checkIfObjectShouldBeIncluded(variant)) {
+                                include = true
+                            }
+                        })
+                    } else {
+                        include = checkIfObjectShouldBeIncluded(product)
+                    }
+                    return include
+                })
             })
 
             // Filer by unread
@@ -321,8 +348,15 @@ export default {
                 productsToReturn = filteredByAction
             }
 
+            if (purchaseOnly) {
+                productsToReturn = productsToReturn.filter(product =>
+                    ['Focus', 'In'].includes(product.selectionAlignment.action)
+                )
+            }
+
             return productsToReturn
         },
+        getProductsFiltered: (state, getters) => getters.productsFiltered,
     },
 
     actions: {
@@ -498,6 +532,21 @@ export default {
                 eans: [],
                 assortment_sizes: [],
                 extra_data: {},
+                labels: [],
+            }
+        },
+        instantiateNewProductVariant({ commit }) {
+            return {
+                id: null,
+                color: null,
+                variant: null,
+                delivery_dates: [],
+                ean_sizes: [],
+                extra_data: {},
+                min_order: null,
+                labels: [],
+                pictures: [],
+                style_option_id: null,
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -1197,12 +1246,15 @@ export default {
                 })
 
                 // VARIANTS
-                product.variants.forEach(variant => {
+                product.variants.forEach((variant, variantIndex) => {
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
+                    Vue.set(variant, 'index', variantIndex)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
+                    if (!variant.delivery_dates) Vue.set(variant, 'delivery_dates', [])
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
@@ -1225,17 +1277,40 @@ export default {
                             return variant.pictures[variant.imageIndex]
                         },
                     })
-                    Object.defineProperty(variant, 'quantity', {
+                    Object.defineProperty(variant, 'product', {
                         get: function() {
-                            const selectionInput = variant.getActiveSelectionInput
-                            if (!selectionInput) return
-                            return selectionInput.quantity
+                            return product
                         },
-                        set: function(value) {
-                            const selectionInput = variant.getActiveSelectionInput
-                            if (!selectionInput) return
-                            selectionInput.quantity = value
+                    })
+                    Object.defineProperty(variant, 'yourPrice', {
+                        get: function() {
+                            return product.yourPrice
                         },
+                    })
+                    Object.defineProperty(variant, 'getActiveSelectionInput', {
+                        get: function() {
+                            return product.getActiveSelectionInput.variants[variantIndex]
+                        },
+                    })
+                    Object.defineProperty(variant, 'action', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.action
+                        },
+                    })
+                    Object.defineProperty(variant, 'selectionAction', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.selectionAction
+                        },
+                    })
+                    Object.defineProperty(variant, 'deliveries', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.deliveries
+                        },
+                    })
+
+                    // EAN SIZES
+                    variant.ean_sizes.map(x => {
+                        Vue.set(x, 'quantity', 0)
                     })
                 })
             })
@@ -1323,20 +1398,14 @@ export default {
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.action)
                         )
+                        const allVariantsND = !selectionInput.variants.find(variant => variant.action != 'None')
 
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
                             // Check if an action for the variant already exists
-                            if (allVariantsOut) {
+                            if (allVariantsOut || allVariantsND) {
                                 variant.action = newAction //OUT
-                            }
-                            if (allVariantsOut || variant.action == 'None') {
-                                // variant.action = newAction
-                                if (variant.totalChildrenQuantity) {
-                                    variant.quantity = variant.totalChildrenQuantity
-                                } else {
-                                    variant.quantity = variant.totalFeedbackQuantity
-                                }
+                                variant.quantity = variant.totalChildrenQuantity
                             }
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.action = newAction
@@ -1386,16 +1455,12 @@ export default {
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.your_feedback)
                         )
+                        const allVariantsND = !selectionInput.variants.find(variant => variant.your_feedback != 'None')
                         // Update variant actions - if the product is OUT no variant can be IN
                         selectionInput.variants.map(variant => {
-                            if (allVariantsOut) {
-                                variant.action = newAction //OUT
+                            if (allVariantsOut || allVariantsND) {
+                                variant.your_feedback = newAction //OUT
                             }
-                            // Check if an action for the variant already exists
-                            // if (variant.your_feedback == 'None' || allVariantsOut) {
-                            //     variant.your_feedback = newAction
-                            // }
-                            // variant.action = newAction
                             if (['Out', 'None'].includes(newAction)) {
                                 variant.your_feedback = newAction
                                 variant.your_quantity = 0
@@ -1444,6 +1509,27 @@ export default {
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
+        },
+        SET_QUANTITY(state, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
+            if (!alignment) return
+            const existingQuantityDetail = alignment.quantity_details.find(detail => {
+                if (variantId && detail.variant_id != variantId) return false
+                if (deliveryDate && detail.delivery_date != deliveryDate) return false
+                if (size && detail.variant_size != size) return false
+                if (assortment && detail.assortment != assortment) return false
+                return true
+            })
+            if (existingQuantityDetail) {
+                existingQuantityDetail.quantity = quantity
+            } else {
+                alignment.quantity_details.push({
+                    variant_id: variantId,
+                    delivery_date: deliveryDate,
+                    variant_size: size,
+                    assortment,
+                    quantity,
+                })
+            }
         },
     },
 }

@@ -32,7 +32,7 @@
                 >
                 <!-- <BaseTableHeader :sortKey="'owner'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortTeams">Owner</BaseTableHeader> -->
                 <BaseTableHeader
-                    :sortKey="'users'"
+                    :sortKey="'user_count'"
                     :currentSortKey="sortKey"
                     :sortAsc="sortAsc"
                     :descDefault="true"
@@ -384,9 +384,8 @@ export default {
                 this.sortKey = key
                 this.sortAsc = method
             }
-            let sortAsc = this.sortAsc
 
-            this.sortArray(array, this.sortAsc, this.sortKey)
+            this.sortArray(array, this.sortAsc, this.sortKey, true)
         },
         hotkeyHandler(e) {
             const key = e.code
