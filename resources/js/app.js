@@ -75,6 +75,16 @@ import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 Vue.use(DatePicker)
 
+// Purely for testing
+window.scanTest = ean => {
+    ean = ean.toString()
+    for (let i = 0; i < ean.length; i++) {
+        // console.log(ean.substr(i, 1))
+        let keyEvent = new KeyboardEvent('keydown', { code: ean[i] })
+        document.dispatchEvent(keyEvent)
+    }
+}
+
 Vue.component('app', require('./App.vue').default)
 
 // Automatically import base components

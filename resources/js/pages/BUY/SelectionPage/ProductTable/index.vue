@@ -22,6 +22,7 @@
                         <BaseSegmentedControl
                             activeClass="white"
                             sizeClass="sm"
+                            countKey="count"
                             theme="light"
                             v-model="purchaseOnly"
                             :options="[
@@ -257,7 +258,13 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT' || this.singleVisible) return // Don't mess with user input
+            if (
+                !e.target.tagName ||
+                e.target.type == 'textarea' ||
+                e.target.tagName.toUpperCase() == 'INPUT' ||
+                this.singleVisible
+            )
+                return // Don't mess with user input
 
             if (key == 'KeyS') {
                 this.$refs.tableComp.focusSearch()
