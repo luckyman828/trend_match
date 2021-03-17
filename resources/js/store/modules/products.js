@@ -81,15 +81,16 @@ export default {
         getProducts: state => state.products,
         getAllProducts: (state, getters) => state.products,
         productsFiltered(state, getters, rootState, rootGetters) {
-            // const products = getters.products
             const products = getters.products
             const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             // Filters
+            const exactMatch = rootGetters['productFilters/getIsExactMatch']
             const categories = rootGetters['productFilters/getFilterCategories']
             const deliveryDates = rootGetters['productFilters/getFilterDeliveryDates']
             const buyerGroups = rootGetters['productFilters/getFilterBuyerGroups']
             const brands = rootGetters['productFilters/getFilterBrands']
             const productLabels = rootGetters['productFilters/getFilterProductLabels']
+            const variantLabels = rootGetters['productFilters/getFilterVariantLabels']
             const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
             const unreadOnly = rootGetters['productFilters/unreadOnly']
             const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
@@ -138,12 +139,52 @@ export default {
             // Filter by product labels
             if (productLabels.length > 0) {
                 const filteredByProductLabels = productsToReturn.filter(product => {
-                    return productLabels.find(label => {
-                        if (label == 'no label') return product.labels.length <= 0
-                        return product.labels.includes(label)
-                    })
+                    let shouldBeIncluded = true
+                    if (exactMatch) {
+                        productLabels.map(label => {
+                            if (!product.labels.includes(label)) shouldBeIncluded = false
+                        })
+                        product.labels.map(label => {
+                            if (!productLabels.includes(label)) shouldBeIncluded = false
+                        })
+                    } else {
+                        shouldBeIncluded = !!productLabels.find(label => {
+                            if (label == 'no label') return product.labels.length <= 0
+                            return product.labels.includes(label)
+                        })
+                    }
+                    return shouldBeIncluded
                 })
                 productsToReturn = filteredByProductLabels
+            }
+            // Filter by product labels
+            if (variantLabels.length > 0) {
+                const filteredByVariantLabels = productsToReturn.filter(product => {
+                    let shouldBeIncluded = false
+                    product.variants.map(variant => {
+                        if (exactMatch) {
+                            let includeVariant = true
+                            variantLabels.map(label => {
+                                if (!variant.labels.includes(label)) includeVariant = false
+                            })
+                            variant.labels.map(label => {
+                                if (!variantLabels.includes(label)) includeVariant = false
+                            })
+                            if (includeVariant) shouldBeIncluded = true
+                        } else {
+                            if (
+                                !!variantLabels.find(label => {
+                                    if (label == 'no label') return variant.labels.length <= 0
+                                    return variant.labels.includes(label)
+                                })
+                            ) {
+                                shouldBeIncluded = true
+                            }
+                        }
+                    })
+                    return shouldBeIncluded
+                })
+                productsToReturn = filteredByVariantLabels
             }
             // Filter by ticket labels
             if (ticketLabels.length > 0) {

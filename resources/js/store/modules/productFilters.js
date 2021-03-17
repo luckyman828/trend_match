@@ -2,12 +2,14 @@ export default {
     namespaced: true,
 
     state: {
+        isExactMatch: false,
         filterCategories: [],
         filterDeliveryDates: [],
         filterBrands: [],
         filterBuyerGroups: [],
         filterSelectionIds: [],
         filterProductLabels: [],
+        filterVariantLabels: [],
         filterTicketLabels: [],
         advancedFilter: null,
         unreadOnly: false,
@@ -29,6 +31,7 @@ export default {
                 getters.getFilterBuyerGroups.length +
                 getters.getFilterBrands.length +
                 getters.getFilterProductLabels.length +
+                getters.getFilterVariantLabels.length +
                 getters.getFilterTicketLabels.length +
                 getters.getFilterSelectionIds.length +
                 (getters.unreadOnly ? 1 : 0) +
@@ -38,6 +41,7 @@ export default {
                 (getters.noImagesOnly ? 1 : 0)
             return totalFilterCount > 0
         },
+        getIsExactMatch: state => state.isExactMatch,
         getAdvancedFilterCount: (state, getters) => (getters.getAdvancedFilter ? getters.getAdvancedFilter.length : 0),
         getCustomValueFilterCount: (state, getters) => {
             return Object.keys(getters.getAllCustomValueFilters).reduce((acc, curr) => {
@@ -51,6 +55,7 @@ export default {
         getFilterSelectionIds: state => state.filterSelectionIds,
         getHasAdvancedFilter: state => !!state.advancedFilter && state.advancedFilter.length > 0,
         getFilterProductLabels: state => state.filterProductLabels,
+        getFilterVariantLabels: state => state.filterVariantLabels,
         getFilterTicketLabels: state => state.filterTicketLabels,
         getAdvancedFilter: state => state.advancedFilter,
         unreadOnly: state => state.unreadOnly,
@@ -120,6 +125,9 @@ export default {
     actions: {},
 
     mutations: {
+        SET_IS_EXACT_MATCH(state, payload) {
+            state.isExactMatch = payload
+        },
         SET_FILTER_CATEGORIES(state, payload) {
             state.filterCategories = payload
         },
@@ -150,6 +158,9 @@ export default {
         SET_FILTER_PRODUCT_LABELS(state, labels = []) {
             state.filterProductLabels = labels
         },
+        SET_FILTER_VARIANT_LABELS(state, labels = []) {
+            state.filterVariantLabels = labels
+        },
         SET_FILTER_TICKET_LABELS(state, labels = []) {
             state.filterTicketLabels = labels
         },
@@ -177,6 +188,7 @@ export default {
             state.filterBuyerGroups = []
             state.filterSelectionIds = []
             state.filterProductLabels = []
+            state.filterVariantLabels = []
             state.filterTicketLabels = []
             state.advancedFilter = null
             state.unreadOnly = false

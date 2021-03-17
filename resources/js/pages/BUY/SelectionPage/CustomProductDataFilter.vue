@@ -1,5 +1,5 @@
 <template>
-    <div class="item-group">
+    <div class="item-group" v-if="availableCustomFieldValues.length > 0">
         <v-popover trigger="click" :disabled="availableCustomFieldValues.length <= 0" placement="right">
             <BaseContextMenuItem
                 iconClass="far fa-magic"
