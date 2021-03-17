@@ -8,6 +8,14 @@
                     :variant="product.variants[0]"
                     size="sm"
                 />
+                <div
+                    class="sync-wrapper"
+                    :class="{ syncing: product.syncingImage }"
+                    v-if="product.syncingImage != null"
+                >
+                    <i v-if="product.syncingImage" class="sync-icon syncing fad fa-sync md"></i>
+                    <i v-else class="sync-icon success far green fa-check-circle md"></i>
+                </div>
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
@@ -169,11 +177,28 @@ export default {
         border: $borderElSoft;
         height: 100%;
         width: 100%;
+        position: relative;
         // width: 48px;
         img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+        .sync-wrapper {
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            position: absolute;
+            &:not(.Success):not(.Error) {
+                background: rgba(white, 0.8);
+            }
+            .sync-icon {
+                margin: 8px;
+                &.syncing {
+                    animation: spin infinite 2s;
+                }
+            }
         }
     }
 }
@@ -208,6 +233,14 @@ td.title {
     cursor: grab;
     i {
         font-weight: 400 !important;
+    }
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

@@ -115,6 +115,12 @@ export default {
                         return product.selectionAlignment ? product.selectionAlignment.quantity_details : []
                     },
                 })
+                Object.defineProperty(product, 'quantity', {
+                    get() {
+                        return product.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                    },
+                })
+
                 product.alignments.map(alignment => {
                     // Add default variant action to alignments
                     product.variants.map(async variant => {
@@ -138,6 +144,56 @@ export default {
                 })
 
                 // END ACTIONS
+
+                // ASSORTMENTS
+                product.assortments.map(assortment => {
+                    Object.defineProperty(assortment, 'displayName', {
+                        get() {
+                            return assortment.name.split(';')[0]
+                        },
+                    })
+                    Object.defineProperty(assortment, 'sizes', {
+                        get() {
+                            const sizes = assortment.name.split(';').slice(1) // exclude the first result
+                            return sizes.map(size => {
+                                const sizeComponents = size.split(':')
+                                return {
+                                    size: sizeComponents[0],
+                                    quantity: sizeComponents[1],
+                                }
+                            })
+                        },
+                    })
+                    // QTY INPUT
+                    Object.defineProperty(assortment, 'quantityInputs', {
+                        get() {
+                            return product.quantityInputs.filter(detail => {
+                                if (
+                                    assortment.variant_ids &&
+                                    assortment.variant_ids.length > 0 &&
+                                    !assortment.variant_ids.includes(detail.variant_id)
+                                ) {
+                                    return false
+                                }
+                                return detail.assortment == assortment.name
+                            })
+                        },
+                    })
+                    Object.defineProperty(assortment, 'quantity', {
+                        get() {
+                            return assortment.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                        },
+                    })
+                    // Find a specific qty detail belonging to the assortment
+                    assortment.getQtyDetail = qtyDetail =>
+                        assortment.quantityInputs.find(qtyInput => {
+                            if (qtyDetail.deliveryDate && qtyInput.delivery_date != qtyDetail.deliveryDate) return false
+                            return qtyInput.assortment == qtyDetail.assortment
+                            // if (qtyDetail.assortment && qtyInput.assortment == qtyDetail.assortment) return false
+                            // return true
+                        })
+                })
+                // END ASSORTMENTS
 
                 // VARIANTS
                 product.variants.forEach((variant, variantIndex) => {
@@ -207,6 +263,15 @@ export default {
                                     return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
                                 },
                             })
+                            // deliveryObj.getQtyDetail = qtyDetail =>
+                            //     deliveryObj.quantityInputs.find(qtyInput => {
+                            //         if (qtyDetail.deliveryDate && qtyInput.delivery_date != qtyDetail.deliveryDate)
+                            //             return false
+                            //         if (qtyDetail.size && qtyInput.variant_size != qtyDetail.size) return false
+                            //         if (qtyDetail.assortment && qtyInput.assortment != qtyDetail.assortment)
+                            //             return false
+                            //         return true
+                            //     })
                             return deliveryObj
                         })
                     )
@@ -227,6 +292,13 @@ export default {
                         }),
                     ])
                     // END QTY INPUT
+
+                    // ASSORTMETNS
+                    Object.defineProperty(variant, 'assortments', {
+                        get() {
+                            return product.assortments.filter(assortment => assortment.variant_ids.includes(variant.id))
+                        },
+                    })
                 })
                 // END Variants
                 Object.defineProperty(product, 'rawSelectionInput', {

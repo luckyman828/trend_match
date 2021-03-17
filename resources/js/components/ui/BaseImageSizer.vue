@@ -34,7 +34,8 @@ export default {
     &.cover img {
         object-fit: cover;
     }
-    img {
+    img,
+    > * {
         position: absolute;
         left: 0;
         top: 0;

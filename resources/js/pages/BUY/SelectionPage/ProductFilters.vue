@@ -10,6 +10,18 @@
         </button> -->
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
             <div class="item-group">
+                <div class="item-wrapper">
+                    <BaseCheckboxInputField v-model="exactMatch">
+                        <span>Exact match</span>
+                    </BaseCheckboxInputField>
+                </div>
+                <div class="item-wrapper">
+                    <BaseCheckboxInputField v-model="inverseMatch">
+                        <span>Invert match</span>
+                    </BaseCheckboxInputField>
+                </div>
+            </div>
+            <div class="item-group">
                 <v-popover trigger="click" :disabled="availableCategories.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-filter"
@@ -76,7 +88,7 @@
                 </v-popover>
             </div>
 
-            <div class="item-group">
+            <div class="item-group" v-if="availableBuyerGroups.length > 0">
                 <v-popover trigger="click" :disabled="availableBuyerGroups.length <= 0" placement="right">
                     <BaseContextMenuItem
                         iconClass="far fa-box"
@@ -98,8 +110,6 @@
                     </template>
                 </v-popover>
             </div>
-
-            <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
             <div class="item-group" v-if="availableProductLabels.length > 0 || filterableProductLabels.length > 0">
                 <v-popover trigger="click" :disabled="filterableProductLabels.length <= 0" placement="right">
@@ -125,6 +135,33 @@
                     </template>
                 </v-popover>
             </div>
+
+            <div class="item-group" v-if="availableProductLabels.length > 0 || filterableVariantLabels.length > 0">
+                <v-popover trigger="click" :disabled="filterableVariantLabels.length <= 0" placement="right">
+                    <BaseContextMenuItem
+                        iconClass="far fa-tag"
+                        :disabled="filterableVariantLabels.length <= 0"
+                        disabledTooltip="No variant labels available"
+                        @click="showAdvancedFilters = false"
+                    >
+                        <span>Variant label</span>
+                        <span v-if="filterVariantLabels.length > 0" class="filter-counter circle primary xs">
+                            <span>{{ filterVariantLabels.length }}</span>
+                        </span>
+                    </BaseContextMenuItem>
+                    <template slot="popover">
+                        <BaseSelectButtons
+                            submitOnChange="true"
+                            :options="productLabels"
+                            v-model="filterVariantLabels"
+                            optionValueKey="value"
+                            optionNameKey="name"
+                        />
+                    </template>
+                </v-popover>
+            </div>
+
+            <CustomProductDataFilter v-for="(field, index) in customFields" :key="index" :field="field" />
 
             <div class="item-group" v-if="$route.name == 'selection' && (filterableTicketLabels > 0 || ticketsEnabled)">
                 <v-popover trigger="click" :disabled="filterableTicketLabels.length <= 0" placement="right">
@@ -224,7 +261,7 @@ export default {
             return ['no label'].concat(this.filterableTicketLabels)
         },
         productLabels() {
-            return ['no label'].concat(this.filterableProductLabels).map((label, index) => {
+            return ['no label'].concat(this.availableProductLabels).map((label, index) => {
                 return { name: `${index} - ${label}`, value: label }
             })
         },
@@ -241,6 +278,22 @@ export default {
             'getAdvancedFilterCount',
             'getCustomValueFilterCount',
         ]),
+        exactMatch: {
+            get() {
+                return this.$store.getters['productFilters/getIsExactMatch']
+            },
+            set(value) {
+                this.SET_IS_EXACT_MATCH(value)
+            },
+        },
+        inverseMatch: {
+            get() {
+                return this.$store.getters['productFilters/getIsInverseMatch']
+            },
+            set(value) {
+                this.SET_IS_INVERSE_MATCH(value)
+            },
+        },
         filterCategories: {
             get() {
                 return this.$store.getters['productFilters/getFilterCategories']
@@ -279,6 +332,14 @@ export default {
             },
             set(value) {
                 this.SET_FILTER_PRODUCT_LABELS(value)
+            },
+        },
+        filterVariantLabels: {
+            get() {
+                return this.$store.getters['productFilters/getFilterVariantLabels']
+            },
+            set(value) {
+                this.SET_FILTER_VARIANT_LABELS(value)
             },
         },
         filterTicketLabels: {
@@ -324,6 +385,19 @@ export default {
             })
             return labels
         },
+        filterableVariantLabels() {
+            const labels = []
+            this.products.map(product =>
+                product.variants.map(variant => {
+                    if (!variant.labels) return
+                    variant.labels.map(label => {
+                        const alreadyAdded = labels.includes(label)
+                        if (!alreadyAdded) labels.push(label)
+                    })
+                })
+            )
+            return labels
+        },
     },
     methods: {
         ...mapMutations('productFilters', [
@@ -331,21 +405,27 @@ export default {
             'SET_FILTER_DELIVERY_DATES',
             'SET_FILTER_BUYER_GROUPS',
             'SET_FILTER_PRODUCT_LABELS',
+            'SET_FILTER_VARIANT_LABELS',
             'SET_FILTER_TICKET_LABELS',
             'SET_FILTER_BRANDS',
+            'SET_IS_EXACT_MATCH',
+            'SET_IS_INVERSE_MATCH',
             'SET_ADVANCED_FILTER',
             'RESET_CUSTOM_FILTERS',
+            'CLEAR_PRODUCT_FILTERS',
         ]),
         resetFilters() {
-            this.filterCategories = []
-            this.filterDeliveryDates = []
-            this.filterBrands = []
-            this.filterBuyerGroups = []
-            this.filterTicketLabels = []
-            this.filterProductLabels = []
-            this.advancedFilterKey++
-            this.SET_ADVANCED_FILTER()
+            this.CLEAR_PRODUCT_FILTERS()
             this.RESET_CUSTOM_FILTERS()
+            // this.filterCategories = []
+            // this.filterDeliveryDates = []
+            // this.filterBrands = []
+            // this.filterBuyerGroups = []
+            // this.filterTicketLabels = []
+            // this.filterProductLabels = []
+            // this.advancedFilterKey++
+            // this.SET_ADVANCED_FILTER()
+            // this.RESET_CUSTOM_FILTERS()
         },
         toggleShowFilters() {
             this.showFilters = !this.showFilters

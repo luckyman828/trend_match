@@ -10,23 +10,24 @@
                 </div>
             </div>
         </div>
-        <div
-            :key="variant.id"
-            class="square lg variant-color white"
-            :style="{ backgroundImage: `url(${variantImage(variant, { size: 'sm' })})` }"
-        ></div>
+        <div :key="variant.id" class="square lg variant-color white" :style="imageBackground"></div>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../../../mixins/variantImage'
+import { getVariantBackgroundStyle } from '../../../../helpers/dkcIntegration'
 
 export default {
     name: 'variantListItem',
     props: ['variant'],
     mixins: [variantImage],
-    computed: {},
+    computed: {
+        imageBackground() {
+            return getVariantBackgroundStyle(this.variant)
+        },
+    },
     methods: {},
 }
 </script>

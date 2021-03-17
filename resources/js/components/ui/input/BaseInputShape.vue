@@ -11,6 +11,8 @@
             @focus.native="$emit('focus', $event)"
             @blur.native="$emit('blur', $event)"
             @keydown.native="$emit('keydown', $event)"
+            @keydown.up.native="onIncrement"
+            @keydown.down.native="onDecrement"
         />
         <slot />
     </div>
@@ -19,7 +21,7 @@
 <script>
 export default {
     name: 'baseInputShape',
-    props: ['selectOnFocus', 'value'],
+    props: ['selectOnFocus', 'value', 'isNumber'],
     computed: {
         maxWidth() {
             const valueLength = this.value ? this.value.toString().length : 0
@@ -31,6 +33,19 @@ export default {
             this.$emit('input', e.target.value)
             const newInput = e.target.value ? e.target.value : ''
             e.target.size = Math.max(newInput.length, 1)
+        },
+        setFocus() {
+            this.$refs.input.focus()
+        },
+        onDecrement(e) {
+            if (!this.isNumber) return
+            e.preventDefault()
+            this.$emit('input', this.value - 1)
+        },
+        onIncrement(e) {
+            if (!this.isNumber) return
+            e.preventDefault()
+            this.$emit('input', this.value + 1)
         },
     },
 }
