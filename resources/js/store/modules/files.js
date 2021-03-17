@@ -472,6 +472,7 @@ export default {
                 .catch(() => {})
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
+            console.log('sync external images')
             return new Promise(async (resolve, reject) => {
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
@@ -487,6 +488,7 @@ export default {
                                 url: picture.url,
                                 pictureIndex: index,
                             })
+                            Vue.set(product, 'syncingImage', true)
                         })
                     })
                 })
@@ -551,6 +553,10 @@ export default {
                         })
                     chunkIndex++
                 }
+
+                products.map(product => {
+                    Vue.set(product, 'syncingImage', false)
+                })
 
                 // Update the products when we are done uploading
                 await dispatch(

@@ -37,12 +37,14 @@ export default {
         setFocus() {
             this.$refs.input.focus()
         },
-        onDecrement() {
+        onDecrement(e) {
             if (!this.isNumber) return
+            e.preventDefault()
             this.$emit('input', this.value - 1)
         },
-        onIncrement() {
+        onIncrement(e) {
             if (!this.isNumber) return
+            e.preventDefault()
             this.$emit('input', this.value + 1)
         },
     },

@@ -1,5 +1,6 @@
 import { DateTime, Interval } from 'luxon'
 import { parse, v4 as uuidv4 } from 'uuid'
+import variantImage from '../mixins/variantImage'
 import store from '../store/'
 export function cleanUpDKCObj(srcObj, newObj) {
     Object.keys(srcObj).map(key => {
@@ -105,10 +106,12 @@ export async function instantiateDKCProducts(products) {
                       }
                   })
                   // Pictures
+                  const imageUrl = `https://media.dkcompanyshop.com/images/${newProduct.datasource_id}-${newVariant.variant}/010100?w=1300`
+
                   newVariant.pictures = [
                       {
                           name: 'Front',
-                          url: `https://media.dkcompanyshop.com/images/${newProduct.datasource_id}-${newVariant.variant}/010100?w=1300`,
+                          url: imageUrl,
                       },
                   ]
 
@@ -154,7 +157,35 @@ export async function instantiateDKCProducts(products) {
 
         return newProduct
     })
+
+    // // Loop through all pictures and check if they exist
+    // const allPictures = []
+    // newProducts.map(product => {
+    //     product.variants.map(variant => {
+    //         allPictures.push(...variant.pictures)
+    //     })
+    // })
+    // await Promise.all(allPictures.map(picture => {
+    //     // Check if the image exists / is available
+    //     await new Promise((resolve, reject) => {
+    //         const imageTest = new Image()
+    //         imageTest.src = picture.url
+    //         console.log('the image test', imageTest.width, imageUrl)
+    //     })
+    // }))
+
     return newProducts
+}
+
+export function getVariantBackgroundStyle(variant) {
+    const url = variantImage.methods.variantImage(variant, { size: 'sm' })
+    if (url != '/images/placeholder.JPG') {
+        return { backgroundImage: `url(${url})` }
+    }
+    const colorRGB = variant.extra_data.colorRGB
+    if (!colorRGB) return
+    const rgbComponents = colorRGB.split(';')
+    return { backgroundColor: `rgb(${rgbComponents[0]} ${rgbComponents[1]} ${rgbComponents[2]})` }
 }
 
 export default instantiateDKCProducts

@@ -31,8 +31,9 @@
                     ref="input"
                     class="qty-input square lg white"
                     placeholder="0"
-                    :value="assortment.quantity"
+                    v-model="localQuantity"
                     :pattern="/^[0-9]*$/"
+                    :isNumber="true"
                     @focus="editActive = true"
                     @keydown.enter="onSubmitQty"
                     @input="onQtyInput"
@@ -77,6 +78,7 @@ export default {
             editActive: false,
             oldSizeQty: 0,
             showSizes: false,
+            localQuantity: 0,
         }
     },
     computed: {},
@@ -84,6 +86,7 @@ export default {
         ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['SET_QUANTITY']),
         onQtyInput(newQty) {
+            if (!newQty || newQty < 0) newQty = 0
             this.SET_QUANTITY({
                 alignment: this.variant.selectionAlignment.productAlignment,
                 variantId: this.variant.id,
@@ -100,6 +103,7 @@ export default {
             alignment.action = 'In'
             this.variant.selectionAlignment.feedback = 'In'
             this.updateAlignments([alignment])
+            this.localQuantity = this.assortment.quantity
         },
         onClearQty() {
             this.onQtyInput(0)
@@ -117,6 +121,9 @@ export default {
                 this.onSubmitQty()
             }, delay)
         },
+    },
+    created() {
+        this.localQuantity = this.assortment.quantity
     },
 }
 </script>

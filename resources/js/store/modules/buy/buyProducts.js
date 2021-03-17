@@ -115,6 +115,12 @@ export default {
                         return product.selectionAlignment ? product.selectionAlignment.quantity_details : []
                     },
                 })
+                Object.defineProperty(product, 'quantity', {
+                    get() {
+                        return product.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                    },
+                })
+
                 product.alignments.map(alignment => {
                     // Add default variant action to alignments
                     product.variants.map(async variant => {
@@ -161,7 +167,16 @@ export default {
                     // QTY INPUT
                     Object.defineProperty(assortment, 'quantityInputs', {
                         get() {
-                            return product.quantityInputs.filter(detail => detail.assortment == assortment.name)
+                            return product.quantityInputs.filter(detail => {
+                                if (
+                                    assortment.variant_ids &&
+                                    assortment.variant_ids.length > 0 &&
+                                    !assortment.variant_ids.includes(detail.variant_id)
+                                ) {
+                                    return false
+                                }
+                                return detail.assortment == assortment.name
+                            })
                         },
                     })
                     Object.defineProperty(assortment, 'quantity', {

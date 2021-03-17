@@ -18,12 +18,19 @@
             </div>
             <BaseImageSizer fit="contain">
                 <BaseVariantImage
+                    v-if="hasImage"
                     class="main-img hover-shadow clickable"
                     :key="product.id + '-' + variantIndex"
                     :variant="product.variants[variantIndex]"
                     size="sm"
                     @click.native="onViewSingle"
                 />
+                <div
+                    v-else
+                    class="color main-img hover-shadow clickable"
+                    :style="imageBackground"
+                    @click="onViewSingle"
+                ></div>
             </BaseImageSizer>
         </div>
         <div class="flex-list flex-v fill space-md details-section">
@@ -56,7 +63,7 @@
             <div class="variant-list flex-list space-md" v-dragscroll>
                 <VariantListItem
                     :variant="variant"
-                    v-for="variant in product.variants.slice().sort((a, b) => b.quantity - a.quantity)"
+                    v-for="variant in product.variants"
                     :key="variant.id"
                     @click.native="product.expanded = !product.expanded"
                 />
@@ -64,6 +71,10 @@
         </div>
 
         <div class="actions flex-list center-v full-h">
+            <div class="quantity pill invisible sm">
+                <span>{{ product.quantity }}</span>
+                <i class="far fa-box"></i>
+            </div>
             <BaseButton buttonClass="pill" @click="onViewSingle">
                 <i class="far fa-comment"></i>
                 <template v-slot:count>
@@ -83,6 +94,8 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VariantListItem from './VariantListItem'
 import LabelList from '../LabelList'
+import { getVariantBackgroundStyle } from '../../../../helpers/dkcIntegration'
+import variantImage from '../../../../mixins/variantImage'
 
 export default {
     name: 'buy.ProductsRow',
@@ -91,6 +104,7 @@ export default {
         VariantListItem,
         LabelList,
     },
+    mixins: [variantImage],
     filters: {
         truncate: function(text, length) {
             const clamp = '...'
@@ -171,6 +185,16 @@ export default {
             const totalQty = this.selectionInput.quantity
             return totalQty >= this.product.min_order
         },
+        imageBackground() {
+            return getVariantBackgroundStyle(this.product.variants[this.variantIndex])
+        },
+        hasImage() {
+            const url = this.variantImage(this.product.variants[this.variantIndex])
+            return url != '/images/placeholder.JPG'
+        },
+        productQty() {
+            return this.product.quantity
+        },
     },
     watch: {
         // Watch for changes to the current focus index
@@ -178,6 +202,9 @@ export default {
             if (newVal == this.index) {
                 this.$refs.row.$el.focus()
             }
+        },
+        productQty() {
+            this.product.variants.sort((a, b) => b.quantity - a.quantity)
         },
     },
     methods: {
@@ -329,6 +356,9 @@ export default {
             await this.updateProduct(product)
         },
     },
+    created() {
+        this.product.variants.sort((a, b) => b.quantity - a.quantity)
+    },
 }
 </script>
 
@@ -368,6 +398,11 @@ export default {
         overflow-x: auto;
         padding-bottom: 16px;
         padding-top: 4px;
+    }
+    .quantity {
+        position: absolute;
+        right: 0;
+        top: 8px;
     }
 }
 </style>

@@ -86,105 +86,13 @@ export default {
         }
     },
     computed: {
-        getSizeSplitWeights() {
-            return {
-                alphaNumericStandard: [
-                    {
-                        name: 'XS',
-                        weight: 3,
-                    },
-                    {
-                        name: 'S',
-                        weight: 12,
-                    },
-                    {
-                        name: 'M',
-                        weight: 23,
-                    },
-                    {
-                        name: 'L',
-                        weight: 26,
-                    },
-                    {
-                        name: 'XL',
-                        weight: 22,
-                    },
-                    {
-                        name: '2XL',
-                        weight: 14,
-                    },
-                    {
-                        name: '3XL',
-                        weight: 0,
-                    },
-                ],
-                alphaNumericBottoms: [
-                    {
-                        name: 'XS',
-                        weight: 3,
-                    },
-                    {
-                        name: 'S',
-                        weight: 13,
-                    },
-                    {
-                        name: 'M',
-                        weight: 24,
-                    },
-                    {
-                        name: 'L',
-                        weight: 28,
-                    },
-                    {
-                        name: 'XL',
-                        weight: 22,
-                    },
-                    {
-                        name: '2XL',
-                        weight: 11,
-                    },
-                    {
-                        name: '3XL',
-                        weight: 0,
-                    },
-                ],
-                numericStandard: [
-                    {
-                        name: '32',
-                        weight: 0,
-                    },
-                    {
-                        name: '34',
-                        weight: 1,
-                    },
-                    {
-                        name: '36',
-                        weight: 24,
-                    },
-                    {
-                        name: 'L',
-                        weight: 28,
-                    },
-                    {
-                        name: 'XL',
-                        weight: 22,
-                    },
-                    {
-                        name: '2XL',
-                        weight: 11,
-                    },
-                    {
-                        name: '3XL',
-                        weight: 0,
-                    },
-                ],
-            }
-        },
+        getSizeSplitWeights() {},
     },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['SET_QUANTITY']),
         async onQtyInput(newQty) {
+            if (!newQty || newQty < 0) newQty = 0
             const sizes = this.variant.ean_sizes
             const sizeSplit = await getWeightedSplit(
                 newQty,

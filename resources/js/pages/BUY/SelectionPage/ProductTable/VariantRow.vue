@@ -5,7 +5,8 @@
                 <div class="ft-12 ft-bd name">{{ variant.name }}</div>
             </div>
             <BaseImageSizer fit="contain" aspect="1:1">
-                <BaseVariantImage class="main-img" :key="variant.id" :variant="variant" size="sm" />
+                <BaseVariantImage v-if="hasImage" class="main-img" :key="variant.id" :variant="variant" size="sm" />
+                <div v-else class="color main-img" :style="imageBackground"></div>
             </BaseImageSizer>
         </div>
         <div class="flex-list flex-v fill space-md main-section">
@@ -52,18 +53,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="actions flex-list center-v full-h">
-            <BaseButton buttonClass="pill">
-                <i class="far fa-comment"></i>
-                <template v-slot:count>
-                    <div class="circle dark xs"><span>2</span></div>
-                </template>
-            </BaseButton>
-            <button class="pill">
-                <span>View</span>
-            </button>
-        </div>
     </BaseTableInnerRow>
 </template>
 
@@ -72,15 +61,18 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import LabelList from '../LabelList'
 import DeliveryListItem from './DeliveryListItem'
 import AssortmentListItem from './AssortmentListItem'
+import { getVariantBackgroundStyle } from '../../../../helpers/dkcIntegration'
+import variantImage from '../../../../mixins/variantImage'
 
 export default {
     name: 'buy.VariantRow',
-    props: ['variant'],
     components: {
         LabelList,
         DeliveryListItem,
         AssortmentListItem,
     },
+    props: ['variant'],
+    mixins: [variantImage],
     data: function() {
         return {
             selectedDeliveryDate: null,
@@ -109,6 +101,13 @@ export default {
                     count: delivery.quantity,
                 }
             })
+        },
+        imageBackground() {
+            return getVariantBackgroundStyle(this.variant)
+        },
+        hasImage() {
+            const url = this.variantImage(this.variant)
+            return url != '/images/placeholder.JPG'
         },
     },
     methods: {},
