@@ -15,6 +15,11 @@
                         <span>Exact match</span>
                     </BaseCheckboxInputField>
                 </div>
+                <div class="item-wrapper">
+                    <BaseCheckboxInputField v-model="inverseMatch">
+                        <span>Invert match</span>
+                    </BaseCheckboxInputField>
+                </div>
             </div>
             <div class="item-group">
                 <v-popover trigger="click" :disabled="availableCategories.length <= 0" placement="right">
@@ -281,6 +286,14 @@ export default {
                 this.SET_IS_EXACT_MATCH(value)
             },
         },
+        inverseMatch: {
+            get() {
+                return this.$store.getters['productFilters/getIsInverseMatch']
+            },
+            set(value) {
+                this.SET_IS_INVERSE_MATCH(value)
+            },
+        },
         filterCategories: {
             get() {
                 return this.$store.getters['productFilters/getFilterCategories']
@@ -396,6 +409,7 @@ export default {
             'SET_FILTER_TICKET_LABELS',
             'SET_FILTER_BRANDS',
             'SET_IS_EXACT_MATCH',
+            'SET_IS_INVERSE_MATCH',
             'SET_ADVANCED_FILTER',
             'RESET_CUSTOM_FILTERS',
             'CLEAR_PRODUCT_FILTERS',

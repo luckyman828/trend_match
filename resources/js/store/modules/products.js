@@ -84,7 +84,9 @@ export default {
             const products = getters.products
             const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             // Filters
+            const filtersAreActive = rootGetters['productFilters/getFiltersAreActive']
             const exactMatch = rootGetters['productFilters/getIsExactMatch']
+            const invertMatch = rootGetters['productFilters/getIsInverseMatch']
             const categories = rootGetters['productFilters/getFilterCategories']
             const deliveryDates = rootGetters['productFilters/getFilterDeliveryDates']
             const buyerGroups = rootGetters['productFilters/getFilterBuyerGroups']
@@ -393,6 +395,11 @@ export default {
                 productsToReturn = productsToReturn.filter(product =>
                     ['Focus', 'In'].includes(product.selectionAlignment.action)
                 )
+            }
+
+            if (invertMatch && filtersAreActive) {
+                // Invert the match
+                return products.filter(product => !productsToReturn.find(x => x.id == product.id))
             }
 
             return productsToReturn

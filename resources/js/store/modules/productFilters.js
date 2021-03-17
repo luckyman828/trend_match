@@ -3,6 +3,7 @@ export default {
 
     state: {
         isExactMatch: false,
+        isInverseMatch: false,
         filterCategories: [],
         filterDeliveryDates: [],
         filterBrands: [],
@@ -42,6 +43,7 @@ export default {
             return totalFilterCount > 0
         },
         getIsExactMatch: state => state.isExactMatch,
+        getIsInverseMatch: state => state.isInverseMatch,
         getAdvancedFilterCount: (state, getters) => (getters.getAdvancedFilter ? getters.getAdvancedFilter.length : 0),
         getCustomValueFilterCount: (state, getters) => {
             return Object.keys(getters.getAllCustomValueFilters).reduce((acc, curr) => {
@@ -128,6 +130,9 @@ export default {
         SET_IS_EXACT_MATCH(state, payload) {
             state.isExactMatch = payload
         },
+        SET_IS_INVERSE_MATCH(state, payload) {
+            state.isInverseMatch = payload
+        },
         SET_FILTER_CATEGORIES(state, payload) {
             state.filterCategories = payload
         },
@@ -182,6 +187,8 @@ export default {
             state.purchaseOnly = purchaseOnly
         },
         CLEAR_PRODUCT_FILTERS(state) {
+            state.isInverseMatch = false
+            state.isExactMatch = false
             state.filterCategories = []
             state.filterDeliveryDates = []
             state.filterBrands = []
