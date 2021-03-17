@@ -19,7 +19,7 @@
                 <div class="ft-10 col-light">Deliveries</div>
                 <div class="flex-list space-md">
                     <DeliveryListItem
-                        v-for="(delivery, index) in variant.deliveries"
+                        v-for="(delivery, index) in deliveriesSorted"
                         :key="index"
                         :variant="variant"
                         :index="index"
@@ -41,9 +41,7 @@
                     <div class="ft-10 col-light">Assortments ({{ variant.assortments.length }})</div>
                     <div class="flex-list space-md">
                         <AssortmentListItem
-                            v-for="(assortment, index) in variant.assortments.filter(assortment =>
-                                assortment.delivery_dates.includes(selectedDeliveryDate)
-                            )"
+                            v-for="(assortment, index) in assortmentsSorted"
                             :key="index"
                             :variant="variant"
                             :assortment="assortment"
@@ -86,6 +84,8 @@ export default {
     data: function() {
         return {
             selectedDeliveryDate: null,
+            assortmentsSorted: [],
+            deliveriesSorted: [],
         }
     },
     computed: {
@@ -116,6 +116,11 @@ export default {
         if (this.product.delivery_dates.length > 0) {
             this.selectedDeliveryDate = this.product.delivery_dates[0]
         }
+        this.deliveriesSorted = this.variant.deliveries.slice().sort((a, b) => b.quantity - a.quantity)
+        this.assortmentsSorted = this.variant.assortments
+            .filter(assortment => assortment.delivery_dates.includes(this.selectedDeliveryDate))
+            .slice()
+            .sort((a, b) => b.quantity - a.quantity)
     },
 }
 </script>

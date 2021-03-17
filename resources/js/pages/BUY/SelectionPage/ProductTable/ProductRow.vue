@@ -56,7 +56,7 @@
             <div class="variant-list flex-list space-md" v-dragscroll>
                 <VariantListItem
                     :variant="variant"
-                    v-for="variant in product.variants"
+                    v-for="variant in product.variants.slice().sort((a, b) => b.quantity - a.quantity)"
                     :key="variant.id"
                     @click.native="product.expanded = !product.expanded"
                 />

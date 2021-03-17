@@ -32,14 +32,14 @@
                 <BaseInputShape
                     class="qty-input square lg white"
                     ref="input"
-                    placeholder="0"
-                    :value="delivery.quantity"
+                    v-model="localQuantity"
                     :pattern="/^[0-9]*$/"
                     @focus="editActive = true"
                     @blur="onBlurQty"
                     @keydown.enter="onSubmitQty"
                     @input="onQtyInput"
                     :selectOnFocus="true"
+                    :isNumber="true"
                 />
             </div>
         </div>
@@ -71,6 +71,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import DeliveryListItemSizeInput from './DeliveryListItemSizeInput'
+import { getWeightedSplit } from '../../../../helpers/sizeSplit'
 
 export default {
     name: 'DeliveryListItem',
@@ -81,23 +82,127 @@ export default {
             editActive: false,
             oldSizeQty: 0,
             editSplit: false,
+            localQuantity: 0,
         }
     },
-    computed: {},
+    computed: {
+        getSizeSplitWeights() {
+            return {
+                alphaNumericStandard: [
+                    {
+                        name: 'XS',
+                        weight: 3,
+                    },
+                    {
+                        name: 'S',
+                        weight: 12,
+                    },
+                    {
+                        name: 'M',
+                        weight: 23,
+                    },
+                    {
+                        name: 'L',
+                        weight: 26,
+                    },
+                    {
+                        name: 'XL',
+                        weight: 22,
+                    },
+                    {
+                        name: '2XL',
+                        weight: 14,
+                    },
+                    {
+                        name: '3XL',
+                        weight: 0,
+                    },
+                ],
+                alphaNumericBottoms: [
+                    {
+                        name: 'XS',
+                        weight: 3,
+                    },
+                    {
+                        name: 'S',
+                        weight: 13,
+                    },
+                    {
+                        name: 'M',
+                        weight: 24,
+                    },
+                    {
+                        name: 'L',
+                        weight: 28,
+                    },
+                    {
+                        name: 'XL',
+                        weight: 22,
+                    },
+                    {
+                        name: '2XL',
+                        weight: 11,
+                    },
+                    {
+                        name: '3XL',
+                        weight: 0,
+                    },
+                ],
+                numericStandard: [
+                    {
+                        name: '32',
+                        weight: 0,
+                    },
+                    {
+                        name: '34',
+                        weight: 1,
+                    },
+                    {
+                        name: '36',
+                        weight: 24,
+                    },
+                    {
+                        name: 'L',
+                        weight: 28,
+                    },
+                    {
+                        name: 'XL',
+                        weight: 22,
+                    },
+                    {
+                        name: '2XL',
+                        weight: 11,
+                    },
+                    {
+                        name: '3XL',
+                        weight: 0,
+                    },
+                ],
+            }
+        },
+    },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['SET_QUANTITY']),
-        onQtyInput(newQty) {
+        async onQtyInput(newQty) {
             const sizes = this.variant.ean_sizes
-            sizes.map((size, index) => {
-                const indexFromCenter = Math.abs(sizes.length / 2 - index)
-                const total = sizes.length - 0.5
+            const sizeSplit = await getWeightedSplit(
+                newQty,
+                sizes,
+                sizes.map((x, index) => {
+                    return {
+                        name: x.size,
+                        weight: Math.abs(index - sizes.length / 2) + 1,
+                    }
+                })
+            )
+            sizeSplit.map(sizeObj => {
                 this.SET_QUANTITY({
                     alignment: this.variant.selectionAlignment.productAlignment,
                     variantId: this.variant.id,
-                    size: size.size,
+                    size: sizeObj.name,
                     deliveryDate: this.delivery.delivery_date,
-                    quantity: Math.round(newQty * (indexFromCenter / total)),
+                    quantity: sizeObj.qty,
                 })
             })
         },
@@ -109,6 +214,7 @@ export default {
             alignment.action = 'In'
             this.variant.selectionAlignment.feedback = 'In'
             this.updateAlignments([alignment])
+            this.localQuantity = this.delivery.quantity
         },
         onHideSizes() {
             this.editSplit = false
@@ -125,6 +231,9 @@ export default {
         onClearQty() {
             this.onQtyInput(0)
         },
+    },
+    created() {
+        this.localQuantity = this.delivery.quantity
     },
 }
 </script>

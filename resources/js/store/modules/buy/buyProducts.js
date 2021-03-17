@@ -248,6 +248,15 @@ export default {
                                     return deliveryObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
                                 },
                             })
+                            // deliveryObj.getQtyDetail = qtyDetail =>
+                            //     deliveryObj.quantityInputs.find(qtyInput => {
+                            //         if (qtyDetail.deliveryDate && qtyInput.delivery_date != qtyDetail.deliveryDate)
+                            //             return false
+                            //         if (qtyDetail.size && qtyInput.variant_size != qtyDetail.size) return false
+                            //         if (qtyDetail.assortment && qtyInput.assortment != qtyDetail.assortment)
+                            //             return false
+                            //         return true
+                            //     })
                             return deliveryObj
                         })
                     )
