@@ -26,7 +26,7 @@ export default {
     props: {
         options: { default: [] },
         labelKey: { default: 'label' },
-        countKey: { default: 'count' },
+        countKey: {},
         valueKey: {},
         currentOptionIndex: {},
         sizeClass: {},

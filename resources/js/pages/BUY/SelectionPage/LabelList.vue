@@ -19,7 +19,7 @@
                 <div class="item-group">
                     <BaseSelectButtons
                         :options="availableLabels"
-                        v-model="product.labels"
+                        v-model="labelArray"
                         type="select"
                         :submitOnChange="true"
                         ref="selectButtons"
@@ -46,7 +46,7 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'labelList',
-    props: ['product'],
+    props: ['product', 'variant'],
     data: function() {
         return {
             isOpen: false,
@@ -64,9 +64,11 @@ export default {
         ...mapGetters('files', {
             file: 'getCurrentFile',
         }),
-
+        isVariant() {
+            return !!this.variant
+        },
         labelsSorted() {
-            const labels = this.product.labels
+            const labels = this.labelArray
             const sortingArr = this.availableLabels
             // Sort by available labels
             labels.slice().sort((a, b) => {
@@ -75,24 +77,28 @@ export default {
             return labels
         },
         availableLabelsFiltered() {
-            // const labels = this.availableLabels.slice().filter(x => {
-            //     const alreadyAdded = this.product.labels.includes(x)
-            //     return !alreadyAdded
-            // })
             return this.availableLabels
         },
         hasWriteAccess() {
             return this.workspaceRole == 'Admin' || this.file.editable
         },
+        labelArray: {
+            get() {
+                return this.isVariant ? this.variant.labels : this.product.labels
+            },
+            set(newVal) {
+                return this.isVariant ? (this.variant.labels = newVal) : (this.product.labels = newVal)
+            },
+        },
     },
     methods: {
         ...mapActions('products', ['updateProduct']),
         onAddLabel(newLabel) {
-            this.product.labels.push(newLabel)
+            this.labelArray.push(newLabel)
             this.onUpdateProduct()
         },
         onRemoveLabel(index) {
-            this.product.labels.splice(index, 1)
+            this.labelArray.splice(index, 1)
             this.onUpdateProduct()
         },
         getLabelIndex(label) {
