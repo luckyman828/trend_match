@@ -252,7 +252,6 @@ export default {
                 this.availableFiles,
                 this.uploadOptions
             )
-            console.log('I made new products', newProducts)
             this.$emit('submit', newProducts)
         },
         reset() {

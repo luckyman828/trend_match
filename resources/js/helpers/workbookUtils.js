@@ -516,6 +516,5 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         }
     })
     // Remove products with no ID
-    console.log('instantiated products', products)
     return products.filter(x => !!x.datasource_id)
 }
