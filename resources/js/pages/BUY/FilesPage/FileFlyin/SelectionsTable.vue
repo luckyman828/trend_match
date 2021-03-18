@@ -220,11 +220,19 @@
                 </div>
                 <div class="item-group">
                     <BaseContextMenuItem
+                        v-if="contextSelection.type == 'Chapter'"
+                        iconClass="far fa-filter"
+                        hotkey="KeyF"
+                        @click="onShowChapterFilterModal(contextSelection)"
+                    >
+                        <span>Chapter <u>F</u>ilter</span>
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem
                         iconClass="far fa-user-cog"
                         hotkey="KeyM"
                         @click="showSelectionUsersContext({ selection: contextSelection, e: contextMouseEvent })"
                     >
-                        <u>M</u>embers and Access
+                        <u>M</u>embers
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">

@@ -199,7 +199,7 @@
                 <!-- End Loading / Error -->
             </div>
 
-            <tr class="footer">
+            <tr class="footer" v-if="$slots.footer || $scopedSlots.footer">
                 <td class="select"></td>
                 <slot name="footer" />
             </tr>

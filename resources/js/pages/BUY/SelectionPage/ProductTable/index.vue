@@ -67,7 +67,6 @@
 
             <template v-slot:row="rowProps">
                 <ProductRow
-                    v-if="productsFilteredBySearch.length > 0"
                     ref="row"
                     class="product-row flex-table-row"
                     :product="rowProps.item"
@@ -77,11 +76,6 @@
                     @onViewSingle="onViewSingle"
                     @updateAction="(product, action, selection) => $emit('updateAction', product, action, selection)"
                 />
-                <tr v-else>
-                    <p style="padding: 60px 0 100px; text-align: center; width: 100%;">
-                        No products to show. Try changing your filters.
-                    </p>
-                </tr>
             </template>
             <template v-slot:subRow="rowProps">
                 <VariantRow :variant="rowProps.item" />
@@ -216,6 +210,16 @@ export default {
             set(value) {
                 this.SET_UNREAD_ONLY(value)
             },
+        },
+    },
+    watch: {
+        products(newProducts, oldProducts) {
+            console.log('products changed', newProducts, oldProducts)
+            this.localProducts = newProducts
+        },
+        productsFilteredBySearch(newProducts, oldProducts) {
+            console.log('products changed', newProducts, oldProducts)
+            this.localProducts = newProducts
         },
     },
     methods: {

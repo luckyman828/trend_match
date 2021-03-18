@@ -417,15 +417,6 @@ export default {
         resetFilters() {
             this.CLEAR_PRODUCT_FILTERS()
             this.RESET_CUSTOM_FILTERS()
-            // this.filterCategories = []
-            // this.filterDeliveryDates = []
-            // this.filterBrands = []
-            // this.filterBuyerGroups = []
-            // this.filterTicketLabels = []
-            // this.filterProductLabels = []
-            // this.advancedFilterKey++
-            // this.SET_ADVANCED_FILTER()
-            // this.RESET_CUSTOM_FILTERS()
         },
         toggleShowFilters() {
             this.showFilters = !this.showFilters

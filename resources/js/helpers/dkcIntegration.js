@@ -62,15 +62,14 @@ export async function instantiateDKCProducts(products) {
         newProduct.brand = product.brand
         newProduct.extra_data.catalog = product.catalog
         newProduct.composition = product.composition
-        newProduct.description = product.description
-        newProduct.extra_data.designGroup = product.design_group
+        newProduct.description = product.meta_description
         newProduct.extra_data.inventory = product.inventory
         newProduct.title = product.name
         newProduct.datasource_id = product.no
         newProduct.extra_data.quality = product.quality
         newProduct.extra_data.season = product.season
         newProduct.extra_data.sex = product.sex
-        newProduct.category = product.shop_item_group
+        newProduct.category = product.design_group
         newProduct.extra_data.topBottom = product.top_bottom
         if (product.variants.length > 0) {
             product.variants[0].prices.map(price => {
