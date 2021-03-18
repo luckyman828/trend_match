@@ -74,6 +74,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import DeliveryListItemSizeInput from './DeliveryListItemSizeInput'
 import { getWeightedSplit } from '../../../../helpers/sizeSplit'
+import dkcSizeSplit from '../../../../assets/dkc/sizeSplit.json'
 
 export default {
     name: 'DeliveryListItem',
@@ -96,16 +97,16 @@ export default {
         async onQtyInput(newQty) {
             if (!newQty || newQty < 0) newQty = 0
             const sizes = this.variant.ean_sizes
-            const sizeSplit = await getWeightedSplit(
-                newQty,
-                sizes,
-                sizes.map((x, index) => {
-                    return {
-                        name: x.size,
-                        weight: Math.abs(index - sizes.length / 2) + 1,
-                    }
-                })
-            )
+            const brandWeights = dkcSizeSplit[this.variant.product.brand]
+            const sizeType = isFinite(this.variant.sizes[0].size) ? 'numeric' : 'alphanumeric'
+            const sizeSubType =
+                sizeType == 'alphanumeric'
+                    ? 'standard'
+                    : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
+                    ? 'bottomsIn'
+                    : 'standard'
+            const weights = brandWeights[sizeType][sizeSubType]
+            const sizeSplit = await getWeightedSplit(newQty, sizes, weights)
             sizeSplit.map(sizeObj => {
                 this.SET_QUANTITY({
                     alignment: this.variant.selectionAlignment.productAlignment,
@@ -169,9 +170,9 @@ export default {
         }
     }
     &.edit-split {
-        .qty-input {
-            display: none;
-        }
+        // .qty-input {
+        //     display: none;
+        // }
         .size-list {
             opacity: 1;
         }
