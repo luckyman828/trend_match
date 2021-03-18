@@ -491,6 +491,7 @@ export default {
                         )
 
                         // Add the created ID to the products
+                        console.log('products created', response.data)
                         products.map(product => {
                             product.id = response.data.added_product_id_map[product.datasource_id]
                         })
@@ -1047,6 +1048,7 @@ export default {
             return products
         },
         initProducts({ state, rootGetters }, products) {
+            console.log('init products', products)
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
