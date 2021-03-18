@@ -157,10 +157,16 @@ export default {
                             const sizes = assortment.name.split(';').slice(1) // exclude the first result
                             return sizes.map(size => {
                                 const sizeComponents = size.split(':')
-                                return {
+                                const assortmentSizeObj = {
                                     size: sizeComponents[0],
                                     quantity: sizeComponents[1],
                                 }
+                                Object.defineProperty(assortmentSizeObj, 'currentQuantity', {
+                                    get() {
+                                        return assortment.pcs * assortmentSizeObj.quantity
+                                    },
+                                })
+                                return assortmentSizeObj
                             })
                         },
                     })
@@ -182,6 +188,13 @@ export default {
                     Object.defineProperty(assortment, 'quantity', {
                         get() {
                             return assortment.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                        },
+                    })
+                    Object.defineProperty(assortment, 'pcs', {
+                        get() {
+                            return !assortment.box_size || assortment.box_size == 0
+                                ? 0
+                                : Math.round(assortment.quantity / assortment.box_size)
                         },
                     })
                     // Find a specific qty detail belonging to the assortment

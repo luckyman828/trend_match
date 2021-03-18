@@ -270,6 +270,14 @@ $brand-colors: (
         $fontSoft,
         mix($dark05, $bluegrey250, $darkenAmount),
         1
+    ),
+    (
+        'grey',
+        $fontSoft,
+        mix(white, $bluegrey250, $lightenAmount),
+        $fontSoft,
+        mix($dark05, $bluegrey250, $darkenAmount),
+        1
     );
 
 // UI SQUARE SIZES ($name, $height, $padding, $min-width)
