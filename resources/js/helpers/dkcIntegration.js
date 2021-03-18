@@ -13,7 +13,6 @@ export function cleanUpDKCObj(srcObj, newObj) {
         }
 
         // Flatten objects in objects
-        // console.log('before flatten', theKey, keyVal)
         if (!Array.isArray(keyVal) && typeof keyVal == 'object' && Object.keys(keyVal).length == 1) {
             const newKey = Object.keys(keyVal)[0]
             if (!['variant', 'price', 'size', 'assortment'].includes(newKey)) {
@@ -21,7 +20,6 @@ export function cleanUpDKCObj(srcObj, newObj) {
             }
             keyVal = keyVal[newKey]
         }
-        // console.log('after flatten', theKey, keyVal)
 
         if (Array.isArray(keyVal) && keyVal.length > 0) {
             if (keyVal[0].language) {

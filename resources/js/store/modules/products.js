@@ -448,7 +448,6 @@ export default {
             commit('setSingleVisisble', true)
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
-            console.log('insert products')
             // If we have many products. Bundle them
             const chunkSize = 500
             if (products.length > chunkSize) {
@@ -491,7 +490,6 @@ export default {
                         )
 
                         // Add the created ID to the products
-                        console.log('products created', response.data)
                         products.map(product => {
                             product.id = response.data.added_product_id_map[product.datasource_id]
                         })
@@ -1048,7 +1046,6 @@ export default {
             return products
         },
         initProducts({ state, rootGetters }, products) {
-            console.log('init products', products)
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
@@ -1290,6 +1287,19 @@ export default {
                     },
                 })
 
+                Object.defineProperty(product, 'quantity', {
+                    get: function() {
+                        const selectionInput = product.getActiveSelectionInput
+                        if (!selectionInput) return
+                        return selectionInput.quantity
+                    },
+                    set: function(value) {
+                        const selectionInput = product.getActiveSelectionInput
+                        if (!selectionInput) return
+                        selectionInput.quantity = value
+                    },
+                })
+
                 // VARIANTS
                 product.variants.forEach((variant, variantIndex) => {
                     if (variant.imageIndex == null) {
@@ -1302,6 +1312,20 @@ export default {
                     if (!variant.delivery_dates) Vue.set(variant, 'delivery_dates', [])
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
+
+                    Object.defineProperty(variant, 'getActiveSelectionInput', {
+                        get: function() {
+                            const selectionInput = product.getActiveSelectionInput
+                            if (!selectionInput) return
+                            return selectionInput.variants.find(x => x.id == variant.id)
+                        },
+                        set: function(value) {
+                            const selectionInput = product.getActiveSelectionInput
+                            if (!selectionInput) return
+                            const inputVariant = selectionInput.variants.find(x => x.id == variant.id)
+                            return inputVariant.quantity
+                        },
+                    })
 
                     Object.defineProperty(variant, 'currentImg', {
                         get: function() {
