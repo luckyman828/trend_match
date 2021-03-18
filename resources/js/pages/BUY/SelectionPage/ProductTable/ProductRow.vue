@@ -75,6 +75,15 @@
                 <span>{{ product.quantity }}</span>
                 <i class="far fa-box"></i>
             </div>
+            <BaseButton
+                v-if="buyView != 'purchase'"
+                buttonClass="circle"
+                :disabled="product.quantity > 0"
+                disabledTooltip="Product has quantity"
+                @click="onToggleAction"
+            >
+                <i class="fa-heart" :class="product.selectionAlignment.action == 'In' ? 'fas primary' : 'far'"></i>
+            </BaseButton>
             <BaseButton buttonClass="pill" @click="onViewSingle">
                 <i class="far fa-comment"></i>
                 <template v-slot:count>
@@ -128,6 +137,9 @@ export default {
             'currentSelectionMode',
             'getAuthUserSelectionWriteAccess',
         ]),
+        ...mapGetters('productFilters', {
+            buyView: 'getBuyView',
+        }),
         ...mapGetters('products', ['currentFocusRowIndex', 'singleVisible']),
         ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('selections', {
@@ -209,6 +221,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'updateProduct']),
+        ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         onMouseleaveVariant(e) {
             const target = e.relatedTarget
@@ -223,8 +236,10 @@ export default {
                 e.target.removeEventListener('mouseleave', this.onMouseleaveVariant)
             }
         },
-        onUpdateAction(action, selectionInput) {
-            this.$emit('updateAction', action, selectionInput)
+        onToggleAction() {
+            const alignment = this.product.selectionAlignment
+            alignment.action = alignment.action == 'In' ? 'None' : 'In'
+            this.updateAlignments([alignment])
         },
         onViewSingle() {
             this.showSelectionProductPDP({ product: this.product, selection: this.selection })
@@ -314,16 +329,6 @@ export default {
                 document.activeElement.blur()
                 // this.$emit('onViewSingle', this.product)
                 this.onViewSingle()
-            }
-            if (key == 'KeyC' && this.selection.type == 'Master' && this.currentSelectionMode == 'Alignment')
-                this.onToggleCompleted()
-            if (
-                this.currentSelections.length <= 1 && // Check that we are not doing multi selection input
-                this.userWriteAccess.actions.hasAccess // Check if the user has write access
-            ) {
-                if (key == 'KeyI') this.onUpdateAction('In', this.selectionInput)
-                if (key == 'KeyO') this.onUpdateAction('Out', this.selectionInput)
-                if (key == 'KeyF' || key == 'KeyU') this.onUpdateAction('Focus', this.selectionInput)
             }
 
             // Label hotkeys

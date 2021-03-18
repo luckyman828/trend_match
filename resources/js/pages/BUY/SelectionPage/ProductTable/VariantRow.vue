@@ -17,7 +17,7 @@
                 ref="labelList"
             />
             <div class="size-split-section" v-if="!hasAssortments" v-dragscroll>
-                <div class="ft-10 col-light">Deliveries</div>
+                <div class="ft-10 col-grey">Deliveries</div>
                 <div class="flex-list space-md">
                     <DeliveryListItem
                         v-for="(delivery, index) in deliveriesSorted"
@@ -39,7 +39,7 @@
                     />
                 </div>
                 <div class="assortment-list">
-                    <div class="ft-10 col-light">Assortments ({{ variant.assortments.length }})</div>
+                    <div class="ft-10 col-grey">Assortments ({{ variant.assortments.length }})</div>
                     <div class="flex-list space-md">
                         <AssortmentListItem
                             v-for="(assortment, index) in assortmentsSorted"

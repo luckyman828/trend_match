@@ -103,7 +103,7 @@ export default {
             const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
-            const purchaseOnly = rootGetters['productFilters/getPurchaseOnly']
+            const buyView = rootGetters['productFilters/getBuyView']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -391,10 +391,13 @@ export default {
                 productsToReturn = filteredByAction
             }
 
-            if (purchaseOnly) {
-                productsToReturn = productsToReturn.filter(product =>
-                    ['Focus', 'In'].includes(product.selectionAlignment.action)
+            if (buyView == 'tbd') {
+                productsToReturn = productsToReturn.filter(
+                    product => product.quantity <= 0 && ['Focus', 'In'].includes(product.selectionAlignment.action)
                 )
+            }
+            if (buyView == 'purchase') {
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
             }
 
             if (invertMatch && filtersAreActive) {
@@ -1430,6 +1433,19 @@ export default {
         SET_LAST_SORT(state, { method, key }) {
             state.lastSort = { method, key }
         },
+        SET_ALIGNMENTS(state, alignments) {
+            alignments.map(alignment => {
+                // Find the alignment object on the product
+                const product = state.products.find(product => product.id == alignment.product_id)
+                if (!product || !product.alignments) return
+                const productAlignment = product.alignments.find(
+                    productAlignment => productAlignment.selection_id == alignment.selection_id
+                )
+                delete alignment.user
+                delete alignment.selection
+                Object.assign(productAlignment, alignment)
+            })
+        },
         UPDATE_ACTIONS(state, { actions, newAction, user }) {
             // DESC: Sets all actions to the value of new action
             actions.forEach(action => {
@@ -1470,6 +1486,7 @@ export default {
             })
         },
         SET_ACTIONS(state, actions) {
+            console.log('set actions', actions)
             // DESC: Sets all actions matching the provided actions equal to the actions provided
             actions.forEach(action => {
                 // Find the actions product

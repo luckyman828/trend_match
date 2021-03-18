@@ -24,6 +24,7 @@
                         :submitOnChange="true"
                         ref="selectButtons"
                         :focusOptionIndex="popoverOptionIndex"
+                        @input="onLabelChange"
                     >
                         <template v-slot:before="slotProps">
                             <span>{{ getLabelIndex(slotProps.option) + 1 }} - </span>
@@ -91,15 +92,58 @@ export default {
             },
         },
     },
+    watch: {
+        labelArray(newLabels, oldLabels) {
+            if (!this.isVariant && newLabels.length > oldLabels.length) {
+                // If we added a new label to the product
+                // Make sure the new product label exists on every variant
+                const newLabel = newLabels[newLabels.length - 1]
+                this.product.variants.map(variant => {
+                    const isAdded = variant.labels.includes(newLabel)
+                    if (!isAdded) variant.labels.push(newLabel)
+                })
+            }
+        },
+    },
     methods: {
         ...mapActions('products', ['updateProduct']),
-        onAddLabel(newLabel) {
-            this.labelArray.push(newLabel)
-            this.onUpdateProduct()
-        },
         onRemoveLabel(index) {
             this.labelArray.splice(index, 1)
-            this.onUpdateProduct()
+            this.onLabelChange(this.labelArray)
+        },
+        onLabelChange(newLabels) {
+            if (this.isVariant) {
+                // Make sure each label is also on the product
+                newLabels.map(variantLabel => {
+                    const isAdded = this.product.labels.includes(variantLabel)
+                    if (!isAdded) this.product.labels.push(variantLabel)
+                })
+
+                // Remove labels from product that are not on any variant
+                for (let i = this.product.labels.length - 1; i >= 0; i--) {
+                    const productLabel = this.product.labels[i]
+                    const existsOnVariant = !!this.product.variants.find(variant =>
+                        variant.labels.includes(productLabel)
+                    )
+                    if (!existsOnVariant) {
+                        this.product.labels.splice(i, 1)
+                    }
+                }
+                return
+            }
+
+            // PRODUCT LABELS
+            // Remove labels that are no longer on the product from variants
+            this.product.variants.map(variant => {
+                for (let i = variant.labels.length - 1; i >= 0; i--) {
+                    const variantLabel = variant.labels[i]
+                    const existsOnProduct = !!this.product.labels.includes(variantLabel)
+                    if (!existsOnProduct) {
+                        variant.labels.splice(i, 1)
+                    }
+                }
+                return
+            })
         },
         getLabelIndex(label) {
             return this.availableLabels.indexOf(label)

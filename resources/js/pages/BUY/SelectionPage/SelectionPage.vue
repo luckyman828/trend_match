@@ -86,7 +86,7 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
     },
     methods: {
-        ...mapMutations('products', ['setSingleVisisble', 'SET_ACTIONS', 'SET_FEEDBACKS']),
+        ...mapMutations('products', ['setSingleVisisble', 'SET_ALIGNMENTS']),
         ...mapMutations('comments', ['INSERT_OR_UPDATE_COMMENT', 'DELETE_COMMENT']),
         ...mapActions('actions', ['initActions', 'insertOrUpdateActions', 'updateActions', 'updateFeedbacks']),
         ...mapActions('comments', ['initComments']),
@@ -120,12 +120,12 @@ export default {
         },
         bulkAlignmentArrivedHandler(selectionId, alignments) {
             if (alignments[0].user_id != this.authUser.id) {
-                this.SET_ACTIONS(alignments)
+                this.SET_ALIGNMENTS(alignments)
             }
         },
         alignmentArrivedHandler(selectionId, alignment) {
             if (alignment.user_id != this.authUser.id) {
-                this.SET_ACTIONS([alignment])
+                this.SET_ALIGNMENTS([alignment])
             }
         },
 

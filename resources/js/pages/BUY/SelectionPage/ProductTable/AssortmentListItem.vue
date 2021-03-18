@@ -7,12 +7,14 @@
         :autoHide="false"
     >
         <div
-            class="assortment-list-item ui-square"
+            class="assortment-list-item ui-square flex-list space-md"
             :class="[{ active: editActive }, { 'view-sizes': showSizes }]"
             tabindex="0"
         >
-            <div class="inner flex-list flex-v lh-sm space-sm">
-                <div class="ft-10 ft-md">Assortment: {{ assortment.displayName }}</div>
+            <div class="inner flex-list flex-v lh-sm space-sm center-v detail-col">
+                <div class="ft-10 ft-md name" v-tooltip="`Ass.: ${assortment.displayName} (${assortment.pcs} pcs.)`">
+                    Ass.: {{ assortment.displayName }} ({{ assortment.pcs }} pcs.)
+                </div>
 
                 <!-- Edit Active -->
                 <div class="size-list flex-list" v-dragscroll v-horizontal-scroll>
@@ -22,11 +24,13 @@
                         :key="index"
                     >
                         <div class="size-label ft-10">{{ sizeObj.size }}</div>
-                        <div class="size-label ft-12 ft-bd">{{ sizeObj.quantity }}</div>
+                        <div class="size-label ft-12 ft-bd">{{ sizeObj[qtyKey] }}</div>
                     </div>
                 </div>
 
                 <!-- End Edit Active -->
+            </div>
+            <div class="qty-wrapper">
                 <BaseInputShape
                     ref="input"
                     class="qty-input square lg white"
@@ -81,7 +85,11 @@ export default {
             localQuantity: 0,
         }
     },
-    computed: {},
+    computed: {
+        qtyKey() {
+            return this.showSizes ? 'quantity' : 'currentQuantity'
+        },
+    },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['SET_QUANTITY']),
@@ -96,6 +104,12 @@ export default {
             })
         },
         onSubmitQty() {
+            // Make sure the new QTY is divisible by the size of it
+            if (this.assortment.box_size) {
+                const newQty =
+                    Math.round(this.assortment.quantity / this.assortment.box_size) * this.assortment.box_size
+                this.onQtyInput(newQty)
+            }
             this.editActive = false
             document.activeElement.blur()
             if (!this.variant.selectionAlignment) return
@@ -131,12 +145,14 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .assortment-list-item {
-    width: 164px;
+    // width: 164px;
     // overflow: hidden;
     position: relative;
     min-height: 52px;
     flex-shrink: 0;
     border: solid 1px $light;
+    align-items: stretch;
+    padding-right: 4px;
     &:focus-within,
     &.active {
         border-color: $primary300;
@@ -149,6 +165,17 @@ export default {
             opacity: 1;
         }
     }
+    .detail-col {
+        position: relative;
+        padding-top: 16px;
+        .name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            position: absolute;
+            top: 0;
+        }
+    }
     .inner {
         width: 100%;
     }
@@ -159,10 +186,7 @@ export default {
         display: flex;
     }
     .qty-input {
-        height: calc(100% - 8px);
-        position: absolute;
-        top: 0;
-        right: 6px;
+        height: 100%;
         min-width: 42px;
         background: $grey200;
         color: $fontSoft;

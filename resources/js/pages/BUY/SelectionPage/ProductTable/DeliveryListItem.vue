@@ -7,11 +7,11 @@
         :autoHide="false"
     >
         <div
-            class="delivery-list-item ui-square"
+            class="delivery-list-item ui-square flex-list space-md"
             :class="[{ active: editActive }, { 'edit-split': editSplit }]"
             tabindex="0"
         >
-            <div class="inner flex-list flex-v lh-sm space-sm">
+            <div class="inner flex-list flex-v lh-sm space-sm center-v">
                 <div class="ft-10 ft-md">Delivery {{ index + 1 }}</div>
                 <div class="ft-12 ft-bd">{{ getPrettyDate(delivery.delivery_date, 'medium') }}</div>
 
@@ -29,6 +29,8 @@
                     />
                 </div>
                 <!-- End Edit Active -->
+            </div>
+            <div class="qty-wrapper">
                 <BaseInputShape
                     class="qty-input square lg white"
                     ref="input"
@@ -149,11 +151,13 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .delivery-list-item {
-    width: 164px;
+    // width: 164px;
     // overflow: hidden;
     position: relative;
     min-height: 52px;
     border: solid 1px $light;
+    align-items: stretch;
+    padding-right: 4px;
     &:focus-within,
     &.active {
         border-color: $primary300;
@@ -187,10 +191,7 @@ export default {
         opacity: 0.5;
     }
     .qty-input {
-        height: calc(100% - 8px);
-        position: absolute;
-        top: 0;
-        right: 6px;
+        height: 100%;
         min-width: 42px;
         background: $grey200;
         color: $fontSoft;
