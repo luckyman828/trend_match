@@ -115,7 +115,6 @@ export default {
     },
     watch: {
         product(newProduct) {
-            console.log('new product', newProduct)
             if (!newProduct) return
             this.currentVariant = newProduct.variants[0]
         },

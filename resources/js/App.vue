@@ -192,7 +192,6 @@ export default {
             async error => {
                 if (this.$route.name != 'login') {
                     if (!!error.response && error.response.status === 401) {
-                        console.log('log out the user')
                         // if you ever get an unauthorized, logout the user
                         await this.logout()
                         this.error = null

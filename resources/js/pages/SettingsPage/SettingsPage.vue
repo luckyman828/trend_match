@@ -172,7 +172,6 @@ export default {
         async onDeleteWorkspace() {
             // Check if the workspace has users
             if ((await this.$refs.confirmDeleteWorkspace.confirm()) && this.users.length <= 0) {
-                console.log('delete workspace', this.users)
                 this.deleteWorkspace(this.workspace)
             }
         },

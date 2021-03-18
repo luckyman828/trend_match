@@ -9,13 +9,13 @@
 <script>
 export default {
     name: 'hotkeyHandler',
-    props: [
-        'disabled'
-    ],
-    data: function() { return {
-        hotkeysInitialized: false,
-        timeOut: null,
-    }},
+    props: ['disabled'],
+    data: function() {
+        return {
+            hotkeysInitialized: false,
+            timeOut: null,
+        }
+    },
     methods: {
         hotkeyHandler(event) {
             if (this.disabled) return
@@ -23,7 +23,7 @@ export default {
 
             if (key == 'KeyH' && !this.hotkeysInitialized) {
                 this.hotkeysInitialized = true
-                this. timeOut = setTimeout(() => {
+                this.timeOut = setTimeout(() => {
                     this.hotkeysInitialized = false
                 }, 1000)
                 return
@@ -32,7 +32,6 @@ export default {
             if (this.hotkeysInitialized) {
                 this.hotkeysInitialized = false
                 clearTimeout(this.timeOut)
-                console.log('hotkey succes!', event)
             }
         },
     },
@@ -41,7 +40,7 @@ export default {
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
-    }
+    },
 }
 </script>
 

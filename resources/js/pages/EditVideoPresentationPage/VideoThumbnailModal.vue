@@ -66,7 +66,6 @@ export default {
             const file = fileList[0]
             const newUrl = await this.uploadImageToWorkspace(file)
 
-            console.log('uploaded thumbnail', newUrl)
             this.currentVideo.thumbnail = newUrl
             this.uploadingMsg = 'Saving video changes'
             await this.updateVideoThumbnail(this.currentVideo)

@@ -148,7 +148,6 @@ export default {
             if (oldVal == 'Scan') this.removeScanListener()
         },
         selectedCompany(newVal) {
-            console.log('set value selected company', newVal)
             localStorage.setItem('dkcSelectedCompany', JSON.stringify(newVal))
         },
     },
@@ -174,8 +173,6 @@ export default {
                 this.queryValueCount = 0
                 return
             }
-
-            console.log('the fetched products', products)
 
             // Filter out products that already exist in the file
             const productsFiltered = products.filter(

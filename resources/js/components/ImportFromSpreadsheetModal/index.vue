@@ -160,8 +160,6 @@ export default {
             this.uploadInProgress = true
             this.submitStatus = 'Applying update strategy'
 
-            console.log('on submit newPRodc', newProducts)
-
             const productsToCreate = []
             const productsToDelete = this.uploadStrategy.removeExtraProducts
                 ? JSON.parse(JSON.stringify(this.products))
