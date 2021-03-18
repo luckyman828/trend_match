@@ -103,7 +103,7 @@ export default {
             const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
-            const purchaseOnly = rootGetters['productFilters/getPurchaseOnly']
+            const buyView = rootGetters['productFilters/getBuyView']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -391,10 +391,13 @@ export default {
                 productsToReturn = filteredByAction
             }
 
-            if (purchaseOnly) {
-                productsToReturn = productsToReturn.filter(product =>
-                    ['Focus', 'In'].includes(product.selectionAlignment.action)
+            if (buyView == 'tbd') {
+                productsToReturn = productsToReturn.filter(
+                    product => product.quantity <= 0 && ['Focus', 'In'].includes(product.selectionAlignment.action)
                 )
+            }
+            if (buyView == 'purchase') {
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
             }
 
             if (invertMatch && filtersAreActive) {

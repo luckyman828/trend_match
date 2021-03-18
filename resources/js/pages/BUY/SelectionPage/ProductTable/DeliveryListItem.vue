@@ -191,12 +191,7 @@ export default {
         opacity: 0.5;
     }
     .qty-input {
-        // height: calc(100% - 8px);
-        // position: absolute;
-        // top: 0;
-        // right: 6px;
         height: 100%;
-        // margin-right: -4px;
         min-width: 42px;
         background: $grey200;
         color: $fontSoft;

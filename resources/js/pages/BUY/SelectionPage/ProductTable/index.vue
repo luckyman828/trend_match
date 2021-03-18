@@ -3,7 +3,7 @@
         <BaseTable
             ref="tableComp"
             :stickyHeader="true"
-            :items="products"
+            :items="localProducts"
             :itemsTotalCount="allProducts.length"
             itemKey="id"
             subItemsArrayKey="variants"
@@ -24,15 +24,22 @@
                             sizeClass="sm"
                             countKey="count"
                             theme="light"
-                            v-model="purchaseOnly"
+                            v-model="buyView"
                             :options="[
-                                { label: 'Overview', count: allProducts.length, value: false },
+                                { label: 'Grosslist', count: allProducts.length, value: 'all' },
+                                {
+                                    label: 'TBD',
+                                    count: allProducts.filter(
+                                        product =>
+                                            product.quantity <= 0 &&
+                                            ['In', 'Focus'].includes(product.selectionAlignment.action)
+                                    ).length,
+                                    value: 'tbd',
+                                },
                                 {
                                     label: 'Purchase',
-                                    count: allProducts.filter(product =>
-                                        ['In', 'Focus'].includes(product.selectionAlignment.action)
-                                    ).length,
-                                    value: true,
+                                    count: allProducts.filter(product => product.quantity != 0).length,
+                                    value: 'purchase',
                                 },
                             ]"
                         />
@@ -157,6 +164,7 @@ export default {
             sortKey: 'sequence',
             showContextMenu: false,
             contextProduct: null,
+            localProducts: [],
         }
     },
     computed: {
@@ -182,12 +190,15 @@ export default {
                 this.SET_PRODUCTS_FILTERED_BY_SEARCH(value)
             },
         },
-        purchaseOnly: {
+        buyView: {
             get() {
-                return this.$store.getters['productFilters/getPurchaseOnly']
+                return this.$store.getters['productFilters/getBuyView']
             },
             set(value) {
-                this.SET_PURCHASE_ONLY(value)
+                this.SET_BUY_VIEW(value)
+                this.$nextTick(() => {
+                    this.localProducts = this.products
+                })
             },
         },
         filterSelectionIds: {
@@ -217,7 +228,7 @@ export default {
             'SET_SHOW_PDF_MODAL',
             'SET_SHOW_CSV_MODAL',
         ]),
-        ...mapMutations('productFilters', ['SET_PURCHASE_ONLY', 'SET_FILTER_SELECTION_IDS']),
+        ...mapMutations('productFilters', ['SET_BUY_VIEW', 'SET_FILTER_SELECTION_IDS']),
         ...mapActions('products', ['showSelectionProductPDP']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS']),
@@ -282,12 +293,13 @@ export default {
     created() {
         document.addEventListener('keydown', this.hotkeyHandler)
         this.onSort(true, 'sequence')
+        this.localProducts = this.products
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)
         // Reset all filters
         this.resetFilters()
-        this.SET_PURCHASE_ONLY(false)
+        this.SET_BUY_VIEW('all')
         this.selectedProducts = []
     },
 }

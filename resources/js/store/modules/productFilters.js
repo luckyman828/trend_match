@@ -17,7 +17,7 @@ export default {
         hideCompleted: false,
         noImagesOnly: false,
         productActionFilter: 'overview',
-        purchaseOnly: false,
+        buyView: 'all',
         openTicketsOnly: false,
         filterCustomFieldValues: {},
     },
@@ -121,7 +121,7 @@ export default {
             return state.filterCustomFieldValues[key]
         },
         getAllCustomValueFilters: state => state.filterCustomFieldValues,
-        getPurchaseOnly: state => state.purchaseOnly,
+        getBuyView: state => state.buyView,
     },
 
     actions: {},
@@ -183,8 +183,8 @@ export default {
                 state.filterCustomFieldValues[key] = []
             })
         },
-        SET_PURCHASE_ONLY(state, purchaseOnly) {
-            state.purchaseOnly = purchaseOnly
+        SET_BUY_VIEW(state, buyView) {
+            state.buyView = buyView
         },
         CLEAR_PRODUCT_FILTERS(state) {
             state.isInverseMatch = false
