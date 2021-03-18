@@ -134,12 +134,31 @@ export async function instantiateDKCProducts(products) {
                   // ASSORTMENTS
                   variant.assortments &&
                       variant.assortments.map(assortment => {
+                          // Sort assortment sizes in a logical order
+                          const assortmentSizes = assortment.assortment_variant.sort((a, b) => {
+                              const isNumerical = isFinite(a.size_code)
+                              if (isNumerical) return parseInt(b) - parseInt(a)
+
+                              // Alphanumeric
+                              const aCode = a.size_code.toLowerCase()
+                              const bCode = b.size_code.toLowerCase()
+                              if (aCode == 'xxs') return -1
+                              if (aCode == 'xs' && !['xxs'].includes(bCode)) return -1
+                              if (aCode == 's' && !['xxs', 'xs'].includes(bCode)) return -1
+                              if (aCode == 'm' && !['xxs', 'xs', 's'].includes(bCode)) return -1
+                              if (aCode == 'l' && !['xxs', 'xs', 's', 'm'].includes(bCode)) return -1
+                              if (aCode == 'xl' && !['xxs', 'xs', 's', 'm', 'l'].includes(bCode)) return -1
+                              if (aCode == 'xxl' && !['xxs', 'xs', 's', 'm', 'l', 'xl'].includes(bCode)) return -1
+                              if (aCode == 'xxxl' && !['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'].includes(bCode))
+                                  return -1
+                              return 1
+                          })
                           const newAssortment = {
                               variant_ids: [newVariant.id],
                               box_size: assortment.assortment_pieces,
                               box_ean: null,
                               delivery_dates: newVariant.delivery_dates,
-                              name: `${assortment.code}${assortment.assortment_variant
+                              name: `${assortment.code}${assortmentSizes
                                   .map(x => `;${x.size_code}:${x.quantity}`)
                                   .join('')}`,
                           }
@@ -157,22 +176,6 @@ export async function instantiateDKCProducts(products) {
 
         return newProduct
     })
-
-    // // Loop through all pictures and check if they exist
-    // const allPictures = []
-    // newProducts.map(product => {
-    //     product.variants.map(variant => {
-    //         allPictures.push(...variant.pictures)
-    //     })
-    // })
-    // await Promise.all(allPictures.map(picture => {
-    //     // Check if the image exists / is available
-    //     await new Promise((resolve, reject) => {
-    //         const imageTest = new Image()
-    //         imageTest.src = picture.url
-    //         console.log('the image test', imageTest.width, imageUrl)
-    //     })
-    // }))
 
     return newProducts
 }
