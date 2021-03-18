@@ -289,7 +289,9 @@ export default {
                         })
                     )
 
-                    Vue.set(variant, 'sizes', [
+                    Vue.set(
+                        variant,
+                        'sizes',
                         variant.ean_sizes.map(sizeObj => {
                             Object.defineProperty(sizeObj, 'quantityInputs', {
                                 get() {
@@ -302,8 +304,8 @@ export default {
                                 },
                             })
                             return sizeObj
-                        }),
-                    ])
+                        })
+                    )
                     // END QTY INPUT
 
                     // ASSORTMETNS

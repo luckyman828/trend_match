@@ -1459,7 +1459,6 @@ export default {
             })
         },
         SET_ACTIONS(state, actions) {
-            console.log('set actions', actions)
             // DESC: Sets all actions matching the provided actions equal to the actions provided
             actions.forEach(action => {
                 // Find the actions product

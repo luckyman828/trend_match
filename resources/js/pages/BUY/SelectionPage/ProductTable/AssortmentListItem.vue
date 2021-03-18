@@ -159,7 +159,7 @@ export default {
     }
     &.view-sizes {
         .qty-input {
-            display: none;
+            // display: none;
         }
         .size-list {
             opacity: 1;
