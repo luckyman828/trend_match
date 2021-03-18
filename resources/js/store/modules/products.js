@@ -626,15 +626,15 @@ export default {
                 axios
                     .put(apiUrl, product)
                     .then(response => {
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Product updated',
-                                iconClass: 'fa-check',
-                                type: 'success',
-                            },
-                            { root: true }
-                        )
+                        // commit(
+                        //     'alerts/SHOW_SNACKBAR',
+                        //     {
+                        //         msg: 'Product updated',
+                        //         iconClass: 'fa-check',
+                        //         type: 'success',
+                        //     },
+                        //     { root: true }
+                        // )
 
                         commit('updateProduct', product)
                         resolve(response)
