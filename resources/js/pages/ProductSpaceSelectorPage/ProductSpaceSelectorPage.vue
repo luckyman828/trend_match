@@ -1,7 +1,7 @@
 <template>
     <div class="product-space-selector">
         <div class="container">
-            <h1>Hello {{ authUser.name }}</h1>
+            <h1>Hello {{ authUser ? authUser.name : 'Anon' }}</h1>
             <div class="product-list flex-list md">
                 <div class="product-card flex-list flex-v md" @click="onSetSpace('select')">
                     <div class="logo-wrapper">

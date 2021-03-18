@@ -162,7 +162,13 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentFocusRowIndex', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('products', [
+            'currentFocusRowIndex',
+            'getProductsFilteredBySearch',
+            'singleVisible',
+            'getCurrentViewProducts',
+            'getCurrentViewProductsFiltered',
+        ]),
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
         }),
@@ -191,7 +197,7 @@ export default {
             set(value) {
                 this.SET_BUY_VIEW(value)
                 this.$nextTick(() => {
-                    this.localProducts = this.products
+                    this.localProducts = this.getCurrentViewProductsFiltered
                 })
             },
         },
@@ -214,11 +220,9 @@ export default {
     },
     watch: {
         products(newProducts, oldProducts) {
-            console.log('products changed', newProducts, oldProducts)
-            this.localProducts = newProducts
+            this.localProducts = this.getCurrentViewProductsFiltered
         },
         productsFilteredBySearch(newProducts, oldProducts) {
-            console.log('products changed', newProducts, oldProducts)
             this.localProducts = newProducts
         },
     },
@@ -297,7 +301,7 @@ export default {
     created() {
         document.addEventListener('keydown', this.hotkeyHandler)
         this.onSort(true, 'sequence')
-        this.localProducts = this.products
+        this.localProducts = this.getCurrentViewProductsFiltered
     },
     destroyed() {
         document.removeEventListener('keydown', this.hotkeyHandler)

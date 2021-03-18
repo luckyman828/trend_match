@@ -80,8 +80,7 @@ export default {
         products: state => state.products,
         getProducts: state => state.products,
         getAllProducts: (state, getters) => state.products,
-        productsFiltered(state, getters, rootState, rootGetters) {
-            const products = getters.products
+        getFilteredProducts: (state, getters, rootState, rootGetters) => products => {
             const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             // Filters
             const filtersAreActive = rootGetters['productFilters/getFiltersAreActive']
@@ -103,7 +102,6 @@ export default {
             const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
-            const buyView = rootGetters['productFilters/getBuyView']
             // Selection Specific
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
@@ -391,6 +389,22 @@ export default {
                 productsToReturn = filteredByAction
             }
 
+            if (invertMatch && filtersAreActive) {
+                // Invert the match
+                return products.filter(product => !productsToReturn.find(x => x.id == product.id))
+            }
+
+            return productsToReturn
+        },
+        productsFiltered(state, getters, rootState, rootGetters) {
+            const products = getters.products
+            return getters.getFilteredProducts(products)
+        },
+        getProductsFiltered: (state, getters) => getters.productsFiltered,
+        getCurrentViewProducts: (state, getters, rootState, rootGetters) => {
+            const products = getters.products
+            let productsToReturn = [...products]
+            const buyView = rootGetters['productFilters/getBuyView']
             if (buyView == 'tbd') {
                 productsToReturn = productsToReturn.filter(
                     product => product.quantity <= 0 && ['Focus', 'In'].includes(product.selectionAlignment.action)
@@ -399,15 +413,12 @@ export default {
             if (buyView == 'purchase') {
                 productsToReturn = productsToReturn.filter(product => product.quantity > 0)
             }
-
-            if (invertMatch && filtersAreActive) {
-                // Invert the match
-                return products.filter(product => !productsToReturn.find(x => x.id == product.id))
-            }
-
             return productsToReturn
         },
-        getProductsFiltered: (state, getters) => getters.productsFiltered,
+        getCurrentViewProductsFiltered: (state, getters) => {
+            const products = getters.getCurrentViewProducts
+            return getters.getFilteredProducts(products)
+        },
     },
 
     actions: {
