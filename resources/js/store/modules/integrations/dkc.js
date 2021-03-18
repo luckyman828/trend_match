@@ -191,34 +191,48 @@ export default {
     },
 
     actions: {
-        async fetchProducts({ commit }, { seasons, brands }) {
+        async fetchProducts({ commit }, { seasons, brands, progressCallback }) {
+            let pageCount = 0
+            let pagesProcessed = 0
             let products = []
             await Promise.all(
                 seasons.map(async season => {
                     await Promise.all(
                         brands.map(async brand => {
-                            const pageIndex = 1 // Limit to 10
-                            // Fetch how many pages we have
+                            // first fetch number of pages
+                            const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${season.code}&company=${brand.company}&brand=${brand.code}`
+                            await axios.get(pageApiUrl).then(response => {
+                                pageCount += response.data.count
+                                if (progressCallback) progressCallback({ total: pageCount, done: pagesProcessed })
+                            })
 
-                            // Fetch a page at a time
-                            const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${brand.company}&brand=${brand.code}&page=${pageIndex}`
-                            await axios
-                                .get(apiUrl)
-                                .then(response => {
-                                    const seasonProducts = Array.isArray(response.data)
-                                        ? response.data
-                                        : [response.data]
-                                    console.log('seasons products', seasonProducts)
-                                    products.push(...seasonProducts)
-                                })
-                                .catch(err => {
-                                    console.log('error when fetching products', err.response)
-                                })
+                            for (let pageIndex = 1; i <= pageCount; i++) {
+                                // Fetch a page at a time
+                                const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${brand.company}&brand=${brand.code}&page=${pageIndex}`
+                                await axios
+                                    .get(apiUrl)
+                                    .then(response => {
+                                        const seasonProducts = Array.isArray(response.data)
+                                            ? response.data
+                                            : [response.data]
+                                        console.log('seasons products', seasonProducts)
+                                        products.push(...seasonProducts)
+                                        pagesProcessed++
+                                        pageIndex++
+                                        if (progressCallback)
+                                            progressCallback({ total: pageCount, done: pagesProcessed })
+                                    })
+                                    .catch(err => {
+                                        console.log('error when fetching products', err)
+                                        console.dir(err)
+                                    })
+                            }
                         })
                     )
                 })
             ).catch(err => {
-                console.log('error when fetching products', err.response)
+                console.log('error when fetching products', err)
+                console.dir(err)
             })
             // Now we have the products, let's turn them into Kollekt style products.
             const newProducts = await instantiateDKCProducts(products)

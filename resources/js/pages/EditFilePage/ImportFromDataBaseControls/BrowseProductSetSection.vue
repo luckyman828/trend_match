@@ -1,6 +1,14 @@
 <template>
     <div class="browse-product-set-section flex-list flex-v md">
-        <BaseLoader v-if="fetchingProducts" :msg="loadingMsg" />
+        <div class="loading-wrapper" v-if="fetchingProducts">
+            <BaseLoader :msg="loadingMsg" />
+            <div class="flex-list flex-v center-h" v-if="fetchProgress">
+                <div>
+                    <strong>{{ Math.round(fetchProgress.done / fetchProgress.total) }}%</strong>
+                </div>
+                <div>{{ fetchProgress.done }} bundles of {{ fetchProgress.total }}</div>
+            </div>
+        </div>
         <template v-else>
             <BaseDropdownInputField
                 innerLabel="Brand"
@@ -58,6 +66,7 @@ export default {
             selectedBrands: [],
             fetchingSeasons: false,
             fetchingProducts: false,
+            fetchProgress: null,
             // seasonStylesOnly: false,
             loadingMsg: 'Fetching Products',
         }
@@ -87,7 +96,13 @@ export default {
                 const theQuote = quotes[index]
                 this.loadingMsg = `"${theQuote.text}" - ${theQuote.author}`
             }, 10000)
-            const products = await this.fetchProducts({ seasons: this.selectedSeasons, brands: this.selectedBrands })
+            const products = await this.fetchProducts({
+                seasons: this.selectedSeasons,
+                brands: this.selectedBrands,
+                progressCallback: progressObj => {
+                    this.fetchProgress = progressObj
+                },
+            })
             if (!!products && products.length) {
                 await this.insertProducts({ file: this.currentFile, products, addToState: true })
             }

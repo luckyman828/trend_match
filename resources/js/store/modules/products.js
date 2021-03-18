@@ -1048,7 +1048,6 @@ export default {
             return products
         },
         initProducts({ state, rootGetters }, products) {
-            console.log('init products', products)
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)

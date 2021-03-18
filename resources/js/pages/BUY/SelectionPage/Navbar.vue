@@ -52,18 +52,6 @@
                     <BaseContextMenu slot="popover" :inline="true" v-if="exportContextOpen">
                         <div class="item-group">
                             <BaseContextMenuItem
-                                iconClass="far fa-file-pdf"
-                                hotkey="KeyP"
-                                @click="
-                                    $refs.exportPopover.hide()
-                                    onExport()
-                                "
-                            >
-                                <span>Export as <u>P</u>DF</span>
-                            </BaseContextMenuItem>
-                        </div>
-                        <div class="item-group">
-                            <BaseContextMenuItem
                                 iconClass="far fa-file-csv"
                                 hotkey="KeyC"
                                 @click="
