@@ -2,6 +2,7 @@
     <BaseInputShape
         class="size-list-item ui-square white sm"
         placeholder="0"
+        :disabled="!actionWriteAccess"
         v-model.number="quantity"
         :selectOnFocus="true"
         type="number"
@@ -15,11 +16,17 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'deliveryListItemSizeInput',
     props: ['variant', 'deliveryDate', 'sizeObj'],
     computed: {
+        ...mapGetters('selections', {
+            writeAccess: 'getCurrentSelectionWriteAccess',
+        }),
+        actionWriteAccess() {
+            return this.writeAccess && this.writeAccess.actions
+        },
         quantity: {
             get() {
                 const qtyDetail = this.variant.getQtyDetail({

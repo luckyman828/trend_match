@@ -10,6 +10,8 @@
             class="delivery-list-item ui-square flex-list space-md"
             :class="[{ active: editActive }, { 'edit-split': editSplit }]"
             tabindex="0"
+            v-click-outside="onClickOutside"
+            @focus.capture="editActive = true"
         >
             <div class="inner flex-list flex-v lh-sm space-sm center-v">
                 <div class="ft-10 ft-md">Delivery {{ index + 1 }}</div>
@@ -35,6 +37,7 @@
                     class="qty-input square lg white"
                     ref="input"
                     v-model="localQuantity"
+                    :disabled="!actionWriteAccess"
                     :pattern="/^[0-9]*$/"
                     @focus="editActive = true"
                     @blur="onBlurQty"
@@ -47,25 +50,28 @@
         </div>
         <div slot="popover" class="action-list flex-list sm">
             <button class="black sm" v-if="!editSplit" @click="editSplit = !editSplit">
-                <span>Edit split</span>
+                <span v-if="actionWriteAccess">Edit split</span>
+                <span v-else>View split</span>
                 <i class="far fa-pen"></i>
             </button>
             <button class="black sm" v-else @click="onHideSizes">
                 <span>Done</span>
                 <i class="far fa-check"></i>
             </button>
-            <button
-                class="green sm"
-                @click="
-                    onSubmitQty()
-                    editSplit = false
-                "
-            >
-                <i class="fas fa-check"></i>
-            </button>
-            <button class="red sm" v-tooltip="'Clear input'" @click="onClearQty">
-                <i class="far fa-trash-alt"></i>
-            </button>
+            <template v-if="actionWriteAccess">
+                <button
+                    class="green sm"
+                    @click="
+                        onSubmitQty()
+                        editSplit = false
+                    "
+                >
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="red sm" v-tooltip="'Clear input'" @click="onClearQty">
+                    <i class="far fa-trash-alt"></i>
+                </button>
+            </template>
         </div>
     </v-popover>
 </template>
@@ -89,7 +95,12 @@ export default {
         }
     },
     computed: {
-        getSizeSplitWeights() {},
+        ...mapGetters('selections', {
+            writeAccess: 'getCurrentSelectionWriteAccess',
+        }),
+        actionWriteAccess() {
+            return this.writeAccess && this.writeAccess.actions
+        },
     },
     methods: {
         ...mapActions('actions', ['updateAlignments']),
@@ -116,6 +127,9 @@ export default {
                     quantity: sizeObj.qty,
                 })
             })
+        },
+        onClickOutside() {
+            this.editActive = false
         },
         onSubmitQty() {
             this.editActive = false

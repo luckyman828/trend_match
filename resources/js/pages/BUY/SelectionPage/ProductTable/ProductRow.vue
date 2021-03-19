@@ -76,7 +76,7 @@
                 <i class="far fa-box"></i>
             </div>
             <BaseButton
-                v-if="buyView != 'purchase'"
+                v-if="selection.type != 'Summed' && buyView != 'purchase'"
                 buttonClass="circle"
                 :disabled="product.quantity > 0"
                 disabledTooltip="Product has quantity"
@@ -148,6 +148,7 @@ export default {
             displayUnreadBullets: 'getDisplayUnreadBullets',
             isObserver: 'getViewingAsObserver',
             selectionRole: 'getCurrentSelectionMode',
+            writeAccess: 'getCurrentSelectionWriteAccess',
         }),
         ...mapGetters('workspaces', {
             availableLabels: 'getAvailableProductLabels',
@@ -159,14 +160,8 @@ export default {
         labelsEnabled() {
             return this.availableLabels.length > 0
         },
-        hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
-        },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
-        },
-        userWriteAccess() {
-            return this.getAuthUserSelectionWriteAccess(this.selection, this.product)
         },
         localSelectedProducts: {
             get() {
@@ -332,7 +327,7 @@ export default {
             }
 
             // Label hotkeys
-            if (this.hasLabelWriteAccess) {
+            if (this.writeAccess.labels) {
                 // Number hotkey
                 if (parseInt(event.key)) {
                     const pressedNumber = event.key

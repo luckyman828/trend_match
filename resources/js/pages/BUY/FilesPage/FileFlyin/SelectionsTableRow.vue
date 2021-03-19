@@ -250,6 +250,8 @@ export default {
             'togglePresenterMode',
             'updateSelectionBudget',
             'stopPresentation',
+            'updateSelectionSettings',
+            'fetchSelectionSettings',
         ]),
         toggleExpanded() {
             this.childrenExpanded = !this.childrenExpanded
@@ -312,10 +314,26 @@ export default {
             }
             this.updateSelection(selection)
         },
-        onUpdateSelection(selection) {
+        async onUpdateSelection(selection) {
             // Check if we are inserting or updating
             if (!selection.id) {
-                this.insertSelection({ file: this.file, selection, addToState: false })
+                // NEW SELECTION
+                await this.insertSelection({ file: this.file, selection, addToState: false })
+                // Fetch the default settings for the new selection
+                await this.fetchSelectionSettings(selection)
+                // Set default selection settings
+                if (selection.type == 'Summed') {
+                    selection.settings.action.listen.child_level = 'Children'
+                    selection.settings.comment.listen.child_level = 'Children'
+                } else {
+                    selection.settings.action.broadcast.parent_level = 'Parent'
+                    selection.settings.comment.broadcast.parent_level = 'Parent'
+                    selection.settings.comment.broadcast.sibling = true
+                    selection.settings.comment.listen.sibling = true
+                }
+
+                this.updateSelectionSettings({ selections: [selection] })
+                // END default settings
             } else {
                 this.updateSelection(selection)
             }

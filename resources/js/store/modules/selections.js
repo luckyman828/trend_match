@@ -60,6 +60,7 @@ export default {
         currentSelection: state => state.currentSelections[0],
         getCurrentSelectionId: state => state.currentSelectionId,
         getCurrentSelection: state => state.currentSelections[0],
+        getCurrentSelectionType: (state, getters) => getters.getCurrentSelection && getters.getCurrentSelection.type,
         getCurrentSelections: state => state.currentSelections,
         getDisplayUnreadBullets: (state, getters) => {
             return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
@@ -183,6 +184,20 @@ export default {
         },
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
+        },
+        getSelectionWriteAccess: (state, getters, rootState, rootGetters) => selection => {
+            const availableLabels = rootGetters['workspaces/getAvailableProductLabels']
+            const labelsEnabled = availableLabels && availableLabels.length > 0
+            const currentFile = rootGetters['files/getCurrentFile']
+            const workspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
+            return {
+                actions: selection.type != 'Summed',
+                comments: true,
+                labels: labelsEnabled && (currentFile.editable || workspaceRole == 'Admin'),
+            }
+        },
+        getCurrentSelectionWriteAccess: (state, getters) => {
+            return getters.getSelectionWriteAccess(getters.getCurrentSelection)
         },
         getAuthUserHasSelectionEditAccess: (state, getters, rootState, rootGetters) => selection => {
             const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']

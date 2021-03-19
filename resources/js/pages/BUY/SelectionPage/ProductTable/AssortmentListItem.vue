@@ -10,6 +10,8 @@
             class="assortment-list-item ui-square flex-list space-md"
             :class="[{ active: editActive }, { 'view-sizes': showSizes }]"
             tabindex="0"
+            v-click-outside="onClickOutside"
+            @focus.capture="editActive = true"
         >
             <div class="inner flex-list flex-v lh-sm space-sm center-v detail-col">
                 <div class="ft-10 ft-md name" v-tooltip="`Ass.: ${assortment.displayName} (${assortment.pcs} pcs.)`">
@@ -35,6 +37,7 @@
                     ref="input"
                     class="qty-input square lg white"
                     placeholder="0"
+                    :disabled="!actionWriteAccess"
                     v-model="localQuantity"
                     :pattern="/^[0-9]*$/"
                     :isNumber="true"
@@ -55,18 +58,20 @@
                 <span>Hide split</span>
                 <i class="far fa-eye-slash"></i>
             </button>
-            <button
-                class="green sm"
-                @click="
-                    onSubmitQty()
-                    showSizes = false
-                "
-            >
-                <i class="fas fa-check"></i>
-            </button>
-            <button class="red sm" v-tooltip="'Clear input'" @click="onClearQty">
-                <i class="far fa-trash-alt"></i>
-            </button>
+            <template v-if="actionWriteAccess">
+                <button
+                    class="green sm"
+                    @click="
+                        onSubmitQty()
+                        showSizes = false
+                    "
+                >
+                    <i class="fas fa-check"></i>
+                </button>
+                <button class="red sm" v-tooltip="'Clear input'" @click="onClearQty">
+                    <i class="far fa-trash-alt"></i>
+                </button>
+            </template>
         </div>
     </v-popover>
 </template>
@@ -86,6 +91,12 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('selections', {
+            writeAccess: 'getCurrentSelectionWriteAccess',
+        }),
+        actionWriteAccess() {
+            return this.writeAccess && this.writeAccess.actions
+        },
         qtyKey() {
             return this.showSizes ? 'quantity' : 'currentQuantity'
         },
@@ -93,6 +104,7 @@ export default {
     methods: {
         ...mapActions('actions', ['updateAlignments']),
         ...mapMutations('products', ['SET_QUANTITY']),
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onQtyInput(newQty) {
             if (!newQty || newQty < 0) newQty = 0
             this.SET_QUANTITY({
@@ -108,6 +120,13 @@ export default {
             if (this.assortment.box_size) {
                 const newQty =
                     Math.round(this.assortment.quantity / this.assortment.box_size) * this.assortment.box_size
+                if (newQty != this.assortment.quantity) {
+                    this.SHOW_SNACKBAR({
+                        type: 'info',
+                        iconClass: 'far fa-info-circle',
+                        msg: 'Rounded to nearest whole assortment',
+                    })
+                }
                 this.onQtyInput(newQty)
             }
             this.editActive = false
@@ -121,6 +140,7 @@ export default {
         },
         onClearQty() {
             this.onQtyInput(0)
+            this.onSubmitQty()
             this.editActive = false
         },
         onHideSizes() {
@@ -134,6 +154,9 @@ export default {
             setTimeout(() => {
                 this.onSubmitQty()
             }, delay)
+        },
+        onClickOutside() {
+            this.editActive = false
         },
     },
     created() {

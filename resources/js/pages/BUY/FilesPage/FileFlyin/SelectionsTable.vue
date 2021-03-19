@@ -75,9 +75,9 @@
                                     <i class="fas fa-clone"></i>
                                     <span>Copy Setup From Existing File</span>
                                 </button>
-                                <button class="primary ghost lg" @click="onNewSelection({ type: 'Master' })">
+                                <button class="primary ghost lg" @click="onNewSelection({ type: 'Summed' })">
                                     <i class="fas fa-plus"></i>
-                                    <span>Manually add new Master Selection</span>
+                                    <span>Manually add new Overview Selection</span>
                                 </button>
                             </template>
                             <!-- No Access -->
@@ -93,11 +93,40 @@
                     <BaseButton
                         buttonClass="primary invisible"
                         :disabled="authUserWorkspaceRole != 'Admin'"
-                        disabledTooltip="Only admins can create new masters"
-                        tooltip="Create a new Master"
-                        @click="onNewSelection({ type: 'Master' })"
+                        disabledTooltip="Only admins can create overviews"
+                        tooltip="Create overview"
+                        @click="onNewSelection({ type: 'Summed' })"
                     >
-                        <i class="far fa-crown"></i><span>Add Master</span>
+                        <i class="far fa-sigma"></i><span>Add Overview</span>
+                    </BaseButton>
+                </td>
+                <td>
+                    <BaseButton
+                        buttonClass="primary invisible"
+                        :disabled="
+                            authUserWorkspaceRole != 'Admin' ||
+                                (getSelectionsTree.length != 1 && !focusSelection) ||
+                                (!!focusSelection && focusSelection.type != 'Summed')
+                        "
+                        :disabledTooltip="
+                            (getSelectionsTree.length != 1 && !focusSelection) ||
+                            (!!focusSelection && focusSelection.type != 'Summed')
+                                ? 'Chapters must be children of an Overview'
+                                : 'Only admins can create new chapters'
+                        "
+                        tooltip="Create a new chapter. Will be added under the currently focused selection."
+                        @click="
+                            onNewSelection({
+                                type: 'Chapter',
+                                parent: focusSelection
+                                    ? focusSelection
+                                    : getSelectionsTree.length == 1
+                                    ? getSelectionsTree[0]
+                                    : null,
+                            })
+                        "
+                    >
+                        <i class="far fa-project-diagram"></i><span>Add Chapter</span>
                     </BaseButton>
                 </td>
                 <td>
@@ -124,35 +153,6 @@
                         "
                     >
                         <i class="far fa-poll"></i><span>Add Selection</span>
-                    </BaseButton>
-                </td>
-                <td>
-                    <BaseButton
-                        buttonClass="primary invisible"
-                        :disabled="
-                            authUserWorkspaceRole != 'Admin' ||
-                                (getSelectionsTree.length != 1 && !focusSelection) ||
-                                (!!focusSelection && focusSelection.type != 'Master')
-                        "
-                        :disabledTooltip="
-                            (getSelectionsTree.length != 1 && !focusSelection) ||
-                            (!!focusSelection && focusSelection.type != 'Master')
-                                ? 'Chapters must be children of a Master'
-                                : 'Only admins can create new chapters'
-                        "
-                        tooltip="Create a new chapter. Will be added under the currently focused selection."
-                        @click="
-                            onNewSelection({
-                                type: 'Chapter',
-                                parent: focusSelection
-                                    ? focusSelection
-                                    : getSelectionsTree.length == 1
-                                    ? getSelectionsTree[0]
-                                    : null,
-                            })
-                        "
-                    >
-                        <i class="far fa-project-diagram"></i><span>Add Chapter</span>
                     </BaseButton>
                 </td>
             </template>
@@ -208,8 +208,8 @@
                                 <BaseContextMenuItem
                                     iconClass="far fa-project-diagram"
                                     hotkey="KeyC"
-                                    :disabled="contextSelection.type != 'Master'"
-                                    disabledTooltip="Can only create Master sub-selections on another Master selection"
+                                    :disabled="contextSelection.type != 'Summed'"
+                                    disabledTooltip="Chapters must be direct children of an Overview"
                                     @click="onNewSelection({ parent: contextSelection, type: 'Chapter' })"
                                 >
                                     <span><u>C</u>hapter</span>
@@ -712,7 +712,14 @@ export default {
             const newSelection = {
                 id: null,
                 file_id: this.currentFile.id,
-                name: type == 'Master' ? 'New Master' : type == 'Chapter' ? 'New Chapter' : 'New Selection',
+                name:
+                    type == 'Master'
+                        ? 'New Master'
+                        : type == 'Chapter'
+                        ? 'New Chapter'
+                        : type == 'Summed'
+                        ? 'Overview'
+                        : 'New Selection',
                 type,
                 currency: null,
                 user_count: 0,
@@ -728,6 +735,7 @@ export default {
                 budget: 0,
                 budget_spend: 0,
             }
+
             // Push new selection to the parent
             if (parent) {
                 // If we are creating a sbu selection
@@ -744,6 +752,7 @@ export default {
                 // this.selections.push(newSelection)
                 this.insertSelections({ selections: [newSelection], method: 'add' })
             }
+
             // Wait for changes to the dom to take effect
             this.$nextTick(() => {
                 // Activate title edit of new folder

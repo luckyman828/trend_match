@@ -39,7 +39,7 @@ export default {
                 })
             return products
         },
-        async initProducts({ getters, dispatch }, { products, selectionId }) {
+        async initProducts({ getters, dispatch, rootGetters }, { products, selectionId }) {
             products.map(product => {
                 // Cast datasource_id to a number
                 product.datasource_id = parseInt(product.datasource_id)
@@ -112,6 +112,12 @@ export default {
                 // })
                 Object.defineProperty(product, 'quantityInputs', {
                     get() {
+                        // If we are summing, get them all
+                        if (rootGetters['selections/getCurrentSelectionType'] == 'Summed')
+                            return product.alignments.reduce(
+                                (acc, alignment) => [...acc, ...alignment.quantity_details],
+                                []
+                            )
                         return product.selectionAlignment ? product.selectionAlignment.quantity_details : []
                     },
                 })
