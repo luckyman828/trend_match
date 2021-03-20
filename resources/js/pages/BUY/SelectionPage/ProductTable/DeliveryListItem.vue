@@ -10,12 +10,15 @@
             class="delivery-list-item ui-square flex-list space-md"
             :class="[{ active: editActive }, { 'edit-split': editSplit }]"
             tabindex="0"
+            @focus.self="onFocus"
             v-click-outside="onClickOutside"
             @focus.capture="editActive = true"
         >
-            <div class="inner flex-list flex-v lh-sm space-sm center-v">
-                <div class="ft-10 ft-md">Delivery {{ index + 1 }}</div>
-                <div class="ft-12 ft-bd">{{ getPrettyDate(delivery.delivery_date, 'medium') }}</div>
+            <div class="inner flex-list flex-v lh-sm center-v">
+                <div class="flex-list flex v space-xs">
+                    <div class="ft-10 ft-md">Delivery {{ index + 1 }}</div>
+                    <div class="ft-12 ft-bd lh-min">{{ getPrettyDate(delivery.delivery_date, 'medium') }}</div>
+                </div>
 
                 <!-- Edit Active -->
                 <div class="size-list flex-list" v-dragscroll v-horizontal-scroll>
@@ -130,10 +133,16 @@ export default {
         },
         onClickOutside() {
             this.editActive = false
+            this.editSplit = false
         },
         onSubmitQty() {
             this.editActive = false
-            document.activeElement.blur()
+            if (
+                document.activeElement == this.$refs.input.$el ||
+                this.$refs.input.$el.contains(document.activeElement)
+            ) {
+                document.activeElement.blur()
+            }
             if (!this.variant.selectionAlignment) return
             const alignment = this.variant.selectionAlignment.productAlignment
             alignment.action = 'In'
@@ -152,6 +161,9 @@ export default {
             setTimeout(() => {
                 this.onSubmitQty()
             }, delay)
+        },
+        onFocus() {
+            this.$refs.input.setFocus()
         },
         onClearQty() {
             this.onQtyInput(0)
@@ -178,11 +190,11 @@ export default {
         border-color: $primary300;
     }
     &.active,
-    &.edit-split {
-        .size-list {
-            display: flex;
-        }
-    }
+    // &.edit-split {
+    //     .size-list {
+    //         display: flex;
+    //     }
+    // }
     &.edit-split {
         // .qty-input {
         //     display: none;
@@ -200,7 +212,7 @@ export default {
         right: -28px;
     }
     .size-list {
-        display: none;
+        // display: none;
         max-width: 100%;
         overflow-x: auto;
         opacity: 0.5;

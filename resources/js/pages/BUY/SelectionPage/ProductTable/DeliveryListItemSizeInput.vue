@@ -58,6 +58,7 @@ export default {
     opacity: 0.7;
     transition: width 0.1s ease-out, min-width 0.1s ease-out;
     flex-shrink: 0;
+    padding: 4px 1px;
     &:focus-within {
         opacity: 1;
         min-width: 40px;
@@ -74,7 +75,8 @@ export default {
     }
     ::v-deep {
         input {
-            padding-top: 12px;
+            padding-top: 16px;
+            font-size: 12px;
             font-weight: 700;
             text-align: center;
             margin: auto;

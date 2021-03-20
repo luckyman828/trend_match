@@ -81,6 +81,7 @@
                     >
                         <BaseTableRow
                             v-for="(item, index) in localItemsReOrdered"
+                            class="main-row"
                             ref="tableRow"
                             :key="itemKey ? item[itemKey] : index"
                             :item="item"
@@ -110,8 +111,9 @@
                         :key-field="itemKey"
                         v-slot="{ item, index }"
                     >
-                        <div class="row-wrapper">
+                        <div class="row-wrapper" tabindex="0">
                             <BaseTableRow
+                                class="main-row"
                                 ref="tableRow"
                                 :key="itemKey ? item[itemKey] : index"
                                 :item="item"
@@ -133,11 +135,12 @@
                             <template v-if="subItemsArrayKey && item.expanded">
                                 <BaseTableRow
                                     v-for="(subItem, subItemIndex) in item[subItemsArrayKey]"
+                                    class="sub-row"
                                     :key="subItemKey ? subItem[subItemKey] : subItemIndex"
                                     ref="tableSubRow"
                                     :item="subItem"
                                     :index="index"
-                                    :showSelect="showSelect"
+                                    :showSelect="false"
                                     :selected.sync="localSelected"
                                     :items="item[subItemsArrayKey]"
                                     :contextItem="contextItem"

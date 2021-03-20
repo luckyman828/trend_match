@@ -9,7 +9,7 @@
                 <div v-else class="color main-img" :style="imageBackground"></div>
             </BaseImageSizer>
         </div>
-        <div class="flex-list flex-v fill space-md main-section">
+        <div class="flex-list flex-v fill main-section">
             <LabelList
                 v-if="labelsEnabled || variant.labels.length > 0"
                 :variant="variant"
@@ -28,7 +28,7 @@
                     />
                 </div>
             </div>
-            <div class="assortment-section flex-list flex-v" v-else v-dragscroll>
+            <div class="assortment-section flex-list flex-v" v-else>
                 <div class="delivery-selector">
                     <BaseSegmentedControl
                         activeClass="white"
@@ -38,17 +38,19 @@
                         :options="assortmentDeliveries"
                     />
                 </div>
-                <div class="assortment-list">
+                <div class="flex-list flex-v space-xxs">
                     <div class="ft-10 col-grey">Assortments ({{ variant.assortments.length }})</div>
-                    <div class="flex-list space-md">
-                        <AssortmentListItem
-                            v-for="(assortment, index) in assortmentsSorted"
-                            :key="index"
-                            :variant="variant"
-                            :assortment="assortment"
-                            :index="index"
-                            :deliveryDate="selectedDeliveryDate"
-                        />
+                    <div class="assortment-list" v-dragscroll>
+                        <div class="flex-list space-md">
+                            <AssortmentListItem
+                                v-for="(assortment, index) in assortmentsSorted"
+                                :key="index"
+                                :variant="variant"
+                                :assortment="assortment"
+                                :index="index"
+                                :deliveryDate="selectedDeliveryDate"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -127,7 +129,7 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .variant-row {
-    padding: 8px 16px 8px 8px;
+    padding: 8px 16px 8px 46px;
     align-items: flex-start;
     height: 177px;
     overflow: hidden;
@@ -150,10 +152,10 @@ export default {
         border: $borderElSoft;
         border-radius: $borderRadiusEl;
     }
-    .assortment-section,
+    .assortment-list,
     .size-split-section {
-        overflow-x: auto;
         padding-bottom: 6px;
+        overflow-x: auto;
     }
 }
 </style>

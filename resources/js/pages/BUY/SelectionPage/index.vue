@@ -47,7 +47,7 @@ export default {
         async initProducts() {
             this.products.map(product => {
                 const productRowHeight = 216
-                const variantRowHeight = 178
+                const variantRowHeight = 190
                 const dist = 20
                 Vue.set(product, 'expanded', false)
                 Object.defineProperty(product, 'size', {

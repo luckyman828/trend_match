@@ -11,6 +11,7 @@
             :class="[{ active: editActive }, { 'view-sizes': showSizes }]"
             tabindex="0"
             v-click-outside="onClickOutside"
+            @focus.self="onFocus"
             @focus.capture="editActive = true"
         >
             <div class="inner flex-list flex-v lh-sm space-sm center-v detail-col">
@@ -130,7 +131,12 @@ export default {
                 this.onQtyInput(newQty)
             }
             this.editActive = false
-            document.activeElement.blur()
+            if (
+                document.activeElement == this.$refs.input.$el ||
+                this.$refs.input.$el.contains(document.activeElement)
+            ) {
+                document.activeElement.blur()
+            }
             if (!this.variant.selectionAlignment) return
             const alignment = this.variant.selectionAlignment.productAlignment
             alignment.action = 'In'
@@ -157,6 +163,10 @@ export default {
         },
         onClickOutside() {
             this.editActive = false
+            this.showSizes = false
+        },
+        onFocus() {
+            this.$refs.input.setFocus()
         },
     },
     created() {
@@ -168,8 +178,6 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .assortment-list-item {
-    // width: 164px;
-    // overflow: hidden;
     position: relative;
     min-height: 52px;
     flex-shrink: 0;
@@ -179,6 +187,9 @@ export default {
     &:focus-within,
     &.active {
         border-color: $primary300;
+        .size-list {
+            opacity: 1;
+        }
     }
     &.view-sizes {
         .qty-input {

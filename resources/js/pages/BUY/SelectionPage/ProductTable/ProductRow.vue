@@ -86,7 +86,7 @@
             </BaseButton>
             <BaseButton buttonClass="pill" @click="onViewSingle">
                 <i class="far fa-comment"></i>
-                <template v-slot:count>
+                <template v-if="product.comments.length > 0" v-slot:count>
                     <div class="circle dark xs">
                         <span>{{ product.comments.length }}</span>
                     </div>
