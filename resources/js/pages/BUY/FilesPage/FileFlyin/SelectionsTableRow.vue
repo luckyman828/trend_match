@@ -61,11 +61,19 @@
                 </div>
             </td>
             <td class="budget">
-                <v-popover trigger="click" @apply-show="onShowBudgetInput" ref="budgetInputPopover">
-                    <button v-if="userHasEditAccess" class="ghost editable sm">
-                        <span>{{ selection.budget || 'Set budget' | thousandSeparated }}</span>
-                    </button>
-                    <span v-else>{{ selection.budget || 'Set budget' | thousandSeparated }}</span>
+                <v-popover
+                    trigger="click"
+                    @apply-show="onShowBudgetInput"
+                    ref="budgetInputPopover"
+                    :disabled="selection.type == 'Summed'"
+                >
+                    <BaseButton
+                        v-if="userHasEditAccess"
+                        buttonClass="ghost editable sm"
+                        :disabled="selection.type == 'Summed' || !userHasEditAccess"
+                    >
+                        <span>{{ theSelectionBudget || 'Set budget' | thousandSeparated }}</span>
+                    </BaseButton>
                     <div slot="popover" class="budget-input-wrapper">
                         <BaseInputField
                             ref="budgetInput"
@@ -93,8 +101,8 @@
             </td>
             <td class="budget-spend" :class="{ over: budgetSpendPercentage > 100 }">
                 <span
-                    v-if="selection.budget > 0"
-                    v-tooltip="`${separateThousands(selection.budget_spend.toFixed(0))} ${selection.currency}`"
+                    v-if="theSelectionBudget > 0"
+                    v-tooltip="`${separateThousands(theSelectionSpend.toFixed(0))} ${selection.currency}`"
                 >
                     {{ budgetSpendPercentage }}%
                 </span>
@@ -227,7 +235,7 @@ export default {
             return this.getAuthUserHasSelectionEditAccess(this.selection)
         },
         budgetSpendPercentage() {
-            return ((this.selection.budget_spend / this.selection.budget) * 100).toFixed(1)
+            return ((this.theSelectionSpend / this.theSelectionBudget) * 100).toFixed(1)
         },
         presentationGroupIndex() {
             return this.getSelectionPresentationGroups.findIndex(x => x == this.selection.presentation_id)
@@ -241,6 +249,16 @@ export default {
         },
         hasFocus() {
             return this.selection.id == this.focusId
+        },
+        theSelectionBudget() {
+            return this.selection.type == 'Summed'
+                ? this.allSelections.reduce((total, curr) => (total += curr.budget), 0)
+                : this.selection.budget
+        },
+        theSelectionSpend() {
+            return this.selection.type == 'Summed'
+                ? this.allSelections.reduce((total, curr) => (total += curr.budget_spend), 0)
+                : this.selection.budget_spend
         },
     },
     methods: {

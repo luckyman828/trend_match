@@ -19,8 +19,8 @@
                     rx="4px"
                     v-tooltip.bottom="
                         `            
-                    Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
-                    <br>Remaining: <strong>${seperateThousands(selection.budget - totalSpend)} ${
+                    Budget: <strong>${seperateThousands(theSelectionBudget)} ${selection.currency}</strong>
+                    <br>Remaining: <strong>${seperateThousands(theSelectionBudget - totalSpend)} ${
                             selection.currency
                         }</strong>
                 `
@@ -34,12 +34,12 @@
                     rx="4px"
                     v-tooltip.bottom="
                         `
-                    Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
+                    Budget: <strong>${seperateThousands(theSelectionBudget)} ${selection.currency}</strong>
                     <br>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
                     ${
                         spendPercentage > 100
                             ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(
-                                  selection.budget - totalSpend
+                                  theSelectionBudget - totalSpend
                               )} ${selection.currency}</strong>`
                             : ''
                     }`
@@ -57,7 +57,7 @@
         v-tooltip="`${seperateThousands(totalSpend)} ${selection.currency}`">
         </div> -->
         <div class="indicator budget" v-if="!hideLabel">
-            <span>{{ selection.budget | thousandSeparated }} {{ selection.currency }}</span>
+            <span>{{ theSelectionBudget | thousandSeparated }} {{ selection.currency }}</span>
         </div>
     </div>
 </template>
@@ -76,6 +76,9 @@ export default {
         ...mapGetters('products', {
             products: 'getProducts',
         }),
+        ...mapGetters('selections', {
+            allSelections: 'getSelections',
+        }),
         totalSpend() {
             let total = 0
             this.products.map(product => {
@@ -89,11 +92,16 @@ export default {
             return total
         },
         spendPercentage() {
-            if (!this.selection.budget) return 0
-            return (this.totalSpend / this.selection.budget) * 100
+            if (!this.theSelectionBudget) return 0
+            return (this.totalSpend / this.theSelectionBudget) * 100
         },
         spendPercentageCapped() {
             return Math.min(this.spendPercentage, 100)
+        },
+        theSelectionBudget() {
+            return this.selection.type == 'Summed'
+                ? this.allSelections.reduce((total, curr) => (total += curr.budget), 0)
+                : this.selection.budget
         },
     },
     methods: {
