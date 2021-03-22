@@ -99,7 +99,7 @@ export default {
             return this.writeAccess && this.writeAccess.actions
         },
         qtyKey() {
-            return this.showSizes ? 'quantity' : 'currentQuantity'
+            return !this.assortment.quantity || this.showSizes ? 'quantity' : 'currentQuantity'
         },
     },
     methods: {
