@@ -19,7 +19,7 @@
                     </div>
                 </div>
 
-                <div class="form-section">
+                <!-- <div class="form-section">
                     <h4>Choose export type</h4>
                     <BaseRadioInputField
                         class="form-element"
@@ -39,9 +39,9 @@
                             v-tooltip="'Can be used to upload a new file to Kollekt, based on the results'"
                         ></i>
                     </BaseRadioInputField>
-                </div>
+                </div> -->
 
-                <div class="form-element" v-if="displayCurrencySelector">
+                <!-- <div class="form-element" v-if="displayCurrencySelector">
                     <label for="currency-selector">Choose Currency to export</label>
                     <BaseInputField
                         id="currency-selector"
@@ -52,10 +52,10 @@
                     >
                         <i class="far fa-chevron-down"></i>
                     </BaseInputField>
-                </div>
+                </div> -->
 
                 <!-- START Export results only -->
-                <template v-if="exportType == 'results'">
+                <!-- <template v-if="exportType == 'results'">
                     <div class="form-section">
                         <h4>Choose what to export</h4>
                         <div class="form-element">
@@ -92,15 +92,8 @@
                                 <span>Export variants</span>
                             </BaseCheckboxInputField>
                         </div>
-
-                        <!-- <div class="form-element">
-                            <BaseCheckboxInputField v-if="exportVariants"
-                                v-model="excludeProductRows">
-                                <span>Variant rows only</span>
-                            </BaseCheckboxInputField>
-                        </div> -->
                     </div>
-                </template>
+                </template> -->
                 <!-- END Export results only -->
 
                 <CustomExportSection v-if="exportType == 'template'" :exportTemplate.sync="exportTemplate" />
@@ -161,9 +154,9 @@ export default {
 
             exportType: this.$route.name == 'editFile' ? 'dump' : 'results',
 
-            exportAlignment: true,
-            exportFeedback: true,
-            exportRequests: true,
+            exportAlignment: false,
+            exportFeedback: false,
+            exportRequests: false,
             exportComments: true,
             exportQuantity: true,
             exportVariants: true,
@@ -212,7 +205,7 @@ export default {
         }),
         ...mapGetters('products', ['productsFiltered', 'getSelectedProducts']),
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
-        ...mapGetters('selectionProducts', ['getActiveSelectionInput', 'getSelections']),
+        ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
             const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
@@ -274,7 +267,6 @@ export default {
             }
 
             // Add additional headers based on settings
-            const firstProductInput = this.getActiveSelectionInput(this.productsToExport[0])
 
             const uniqueAlignmentOrigins = []
             const uniqueFeedbackOrigins = []
@@ -282,11 +274,11 @@ export default {
             // START FIND UNIQUE INPUT HEADERS
             // Loop through all products to find all input authors
             this.productsToExport.map(product => {
-                const selectionInput = this.getActiveSelectionInput(product)
+                const selectionInput = product
 
                 if (this.exportRequests || this.exportAlignment) {
                     if (this.exportAlignment) {
-                        selectionInput.actions.map(action => {
+                        selectionInput.alignments.map(action => {
                             const originExists = uniqueAlignmentOrigins.find(x => x.selection_id == action.selection_id)
                             if (!originExists)
                                 uniqueAlignmentOrigins.push({
@@ -363,10 +355,10 @@ export default {
                     const chapterName = chapter ? `[${chapter.name}] ` : ''
                     if (this.exportAlignment) {
                         headers.push(`${chapterName}${origin.selection.name} (Alignment)`)
-                        if (this.exportQuantity) {
-                            headers.push(`${chapterName}${origin.selection.name} (QTY)`)
-                            headers.push(`${chapterName}${origin.selection.name} (Spend)`)
-                        }
+                        // if (this.exportQuantity) {
+                        //     headers.push(`${chapterName}${origin.selection.name} (QTY)`)
+                        //     headers.push(`${chapterName}${origin.selection.name} (Spend)`)
+                        // }
                     }
                     if (this.exportRequests) {
                         for (let i = -1; i < origin.labels.length; i++) {
@@ -389,18 +381,18 @@ export default {
                                 origin.user ? origin.user.name : 'Anonymous'
                             } (Feedback)`
                         )
-                        if (this.exportQuantity) {
-                            headers.push(
-                                `${chapterName}${origin.selection.name} - ${
-                                    origin.author ? origin.author.name : 'Anonymous'
-                                } (QTY)`
-                            )
-                            headers.push(
-                                `${chapterName}${origin.selection.name} - ${
-                                    origin.author ? origin.author.name : 'Anonymous'
-                                } (Spend)`
-                            )
-                        }
+                        // if (this.exportQuantity) {
+                        //     headers.push(
+                        //         `${chapterName}${origin.selection.name} - ${
+                        //             origin.author ? origin.author.name : 'Anonymous'
+                        //         } (QTY)`
+                        //     )
+                        //     headers.push(
+                        //         `${chapterName}${origin.selection.name} - ${
+                        //             origin.author ? origin.author.name : 'Anonymous'
+                        //         } (Spend)`
+                        //     )
+                        // }
                     }
                     if (this.exportComments) {
                         headers.push(
@@ -418,7 +410,7 @@ export default {
             // START ROW DATA
             const rows = []
             this.productsToExport.forEach(product => {
-                const selectionInput = this.getActiveSelectionInput(product)
+                const selectionInput = product
                 const productPrice = this.getProductPrice(product)
                 const productPriceWhs = productPrice && productPrice.wholesale_price ? productPrice.wholesale_price : 0
                 const currentRow = this.getDefaultProductRowData(product)
@@ -457,20 +449,20 @@ export default {
                     uniqueAlignmentOrigins.map(origin => {
                         if (this.exportAlignment) {
                             // Find the origin Action
-                            const originAction = selectionInput.actions.find(
+                            const originAction = selectionInput.alignments.find(
                                 action => action.selection_id == origin.selection_id
                             )
                             currentRow.push(originAction ? originAction.action : 'None')
 
-                            if (this.exportQuantity) {
-                                if (!originAction) {
-                                    currentRow.push(...['', ''])
-                                } else {
-                                    const quantity = originAction.quantity ? originAction.quantity : 0
-                                    currentRow.push(quantity)
-                                    currentRow.push(quantity * productPriceWhs)
-                                }
-                            }
+                            // if (this.exportQuantity) {
+                            //     if (!originAction) {
+                            //         currentRow.push(...['', ''])
+                            //     } else {
+                            //         const quantity = originAction.quantity ? originAction.quantity : 0
+                            //         currentRow.push(quantity)
+                            //         currentRow.push(quantity * productPriceWhs)
+                            //     }
+                            // }
                         }
 
                         if (this.exportRequests) {
@@ -518,15 +510,15 @@ export default {
                             )
                             currentRow.push(originFeedback ? originFeedback.action : 'None')
 
-                            if (this.exportQuantity) {
-                                if (!originFeedback) {
-                                    currentRow.push(...['', ''])
-                                } else {
-                                    const quantity = originFeedback.quantity ? originFeedback.quantity : 0
-                                    currentRow.push(quantity)
-                                    currentRow.push(quantity * productPriceWhs)
-                                }
-                            }
+                            // if (this.exportQuantity) {
+                            //     if (!originFeedback) {
+                            //         currentRow.push(...['', ''])
+                            //     } else {
+                            //         const quantity = originFeedback.quantity ? originFeedback.quantity : 0
+                            //         currentRow.push(quantity)
+                            //         currentRow.push(quantity * productPriceWhs)
+                            //     }
+                            // }
                         }
 
                         if (this.exportComments) {
@@ -592,7 +584,7 @@ export default {
                             uniqueAlignmentOrigins.map(origin => {
                                 if (this.exportAlignment) {
                                     // Find the origin Action
-                                    const originAction = variant.actions.find(
+                                    const originAction = variant.alignments.find(
                                         action => action.selection_id == origin.selection_id
                                     )
                                     variantRow.push(originAction ? originAction.action : 'None')

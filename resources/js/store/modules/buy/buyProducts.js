@@ -239,6 +239,16 @@ export default {
                     // END INSTANTIATE BASE VARIANT
 
                     // ACTIONS
+                    Object.defineProperty(variant, 'alignments', {
+                        get() {
+                            const alignments = []
+                            product.alignments.map(alignment => {
+                                const variantAlignment = alignment.variants.find(x => x.id == variant.id)
+                                if (variantAlignment) alignments.push(variantAlignment)
+                            })
+                            return alignments
+                        },
+                    })
                     Object.defineProperty(variant, 'selectionAlignment', {
                         get() {
                             return product.selectionAlignment.variants.find(x => x.id == variant.id)
