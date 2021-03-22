@@ -500,7 +500,7 @@ export default {
         ]),
         ...mapMutations('selections', ['insertSelections', 'DELETE_SELECTION']),
         ...mapActions('presentation', ['fetchFilePresentations']),
-        ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections']),
+        ...mapActions('files', ['fetchAllFiles', 'cloneFileSelections', 'addUsersToFile', 'removeUsersFromFile']),
         ...mapActions('users', ['fetchUsers']),
         ...mapMutations('files', ['SET_CURRENT_FILE_CHANGED']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
@@ -585,9 +585,14 @@ export default {
                     }),
                     ignoreRole: false,
                 })
+                // Add as editor to file
+                this.addUsersToFile({ file: this.currentFile, users: usersToAdd, displaySnackbar: false })
             }
             if (usersToRemove.length > 0) {
                 this.removeUsersFromSelection({ selection: this.contextSelection, users: usersToRemove })
+
+                // // Check if the user is no longer on any selection on the file
+                // this.removeUsersFromFile({ file: this.currentFile, users: usersToRemove, displaySnackbar: false })
             }
         },
         showSelectionCurrencyContext({ selection, e }) {

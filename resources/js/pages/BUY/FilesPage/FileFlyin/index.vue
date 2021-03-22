@@ -2,6 +2,7 @@
     <BaseFlyin
         ref="fileSingleFlyin"
         :show="show"
+        :status="loading ? 'loading' : 'success'"
         :disableKeyHandler="SelectionUsersFlyinVisible"
         @close="$emit('close')"
     >
@@ -61,7 +62,9 @@ export default {
         SelectionUsersFlyin,
     },
     data: function() {
-        return {}
+        return {
+            loading: true,
+        }
     },
     computed: {
         ...mapGetters('files', ['nextFile', 'prevFile', 'currentFile']),
@@ -81,8 +84,14 @@ export default {
             },
         },
     },
+    watch: {
+        file(newFile) {
+            this.onNewFile(newFile)
+        },
+    },
     methods: {
         ...mapActions('selections', ['updateSelection']),
+        ...mapActions('files', ['fetchFileUsers']),
         ...mapMutations('files', ['SET_CURRENT_FILE']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTIONS', 'SET_SELECTION_USERS_FLYIN_VISIBLE']),
         showSelectionUsersFlyin(selection) {
@@ -97,6 +106,13 @@ export default {
         },
         goToEditSingle() {
             this.$router.push({ name: 'buy.editFile', params: { fileId: this.file.id } })
+        },
+        async onNewFile(newFile) {
+            if (!newFile.users) {
+                this.loading = true
+                await this.fetchFileUsers(newFile)
+                this.loading = false
+            }
         },
     },
 }
