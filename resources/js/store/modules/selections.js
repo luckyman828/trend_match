@@ -104,12 +104,14 @@ export default {
             getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
+            console.log('get current selectionMode', selection)
             if (selection) return getters.getSelectionCurrentMode(selection)
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
-            return selection.your_job
-            return selection.your_roles.includes('Member')
+            return selection.your_job && selection.your_job != 'None'
+                ? selection.your_job
+                : selection.your_roles.includes('Member')
                 ? 'Feedback'
                 : selection.your_roles.includes('Approver')
                 ? 'Approval'
