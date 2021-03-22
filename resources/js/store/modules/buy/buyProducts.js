@@ -3,7 +3,36 @@ import Vue from 'vue'
 export default {
     namespaced: true,
     state: {},
-    getters: {},
+    getters: {
+        getProductViews: (state, getters, rootState, rootGetters) => {
+            const products = rootGetters['products/getProducts']
+            let productsToReturn = [...products]
+            const selection = rootGetters['selections/getCurrentSelection']
+
+            if (selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
+            }
+
+            return {
+                get overview() {
+                    return productsToReturn
+                },
+                get tbd() {
+                    let tbdProducts = [...productsToReturn]
+                    tbdProducts = tbdProducts.filter(
+                        product => product.quantity <= 0 && ['Focus', 'In'].includes(product.selectionAlignment.action)
+                    )
+                    return tbdProducts
+                },
+                get purchase() {
+                    let purchaseProducts = [...productsToReturn]
+                    purchaseProducts = purchaseProducts.filter(product => product.quantity > 0)
+                    return purchaseProducts
+                },
+            }
+        },
+    },
     actions: {
         async fetchProducts({ commit, dispatch }, selectionId) {
             // Fetch the selection input for the products
@@ -215,6 +244,11 @@ export default {
                 // END ASSORTMENTS
 
                 // VARIANTS
+                Object.defineProperty(product, 'variantsFiltered', {
+                    get: function() {
+                        return rootGetters['products/getFilteredVariants'](product.variants)
+                    },
+                })
                 product.variants.forEach((variant, variantIndex) => {
                     // INSTANTIATE BASE VARIANT
                     if (variant.imageIndex == null) {

@@ -3,10 +3,10 @@
         <BaseTable
             ref="tableComp"
             :stickyHeader="true"
-            :items="localProducts"
+            :items="products"
             :itemsTotalCount="allProducts.length"
             itemKey="id"
-            subItemsArrayKey="variants"
+            subItemsArrayKey="variantsFiltered"
             subItemKey="id"
             :itemSize="null"
             :selected.sync="selectedProducts"
@@ -26,19 +26,15 @@
                             theme="light"
                             v-model="buyView"
                             :options="[
-                                { label: 'Grosslist', count: allProducts.length, value: 'all' },
+                                { label: 'Grosslist', count: productViews.overview.length, value: 'all' },
                                 {
                                     label: 'TBD',
-                                    count: allProducts.filter(
-                                        product =>
-                                            product.quantity <= 0 &&
-                                            ['In', 'Focus'].includes(product.selectionAlignment.action)
-                                    ).length,
+                                    count: productViews.tbd.length,
                                     value: 'tbd',
                                 },
                                 {
                                     label: 'Purchase',
-                                    count: allProducts.filter(product => product.quantity != 0).length,
+                                    count: productViews.purchase.length,
                                     value: 'purchase',
                                 },
                             ]"
@@ -144,8 +140,6 @@ import ProductSort from '../ProductSort'
 
 export default {
     name: 'buy.ProductTable',
-    props: ['products', 'file', 'selection', 'currentAction'],
-    mixins: [sortArray],
     components: {
         ProductRow,
         ProductFilters,
@@ -153,6 +147,8 @@ export default {
         BudgetCounter,
         VariantRow,
     },
+    mixins: [sortArray],
+    props: ['file', 'selection', 'currentAction'],
     data: function() {
         return {
             sortKey: 'sequence',
@@ -169,10 +165,16 @@ export default {
             'getCurrentViewProducts',
             'getCurrentViewProductsFiltered',
         ]),
+        products() {
+            return this.allProducts.length == this.productsFilteredBySearch.length
+                ? this.localProducts
+                : this.productsFilteredBySearch
+        },
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
         }),
         ...mapGetters('products', { allProducts: 'getProducts' }),
+        ...mapGetters('buyProducts', { productViews: 'getProductViews' }),
         ...mapGetters('auth', ['authUser']),
         selectedProducts: {
             get() {
@@ -218,14 +220,6 @@ export default {
             },
         },
     },
-    watch: {
-        products(newProducts, oldProducts) {
-            this.localProducts = this.getCurrentViewProductsFiltered
-        },
-        productsFilteredBySearch(newProducts, oldProducts) {
-            this.localProducts = newProducts
-        },
-    },
     methods: {
         ...mapMutations('products', [
             'setSingleVisisble',
@@ -263,7 +257,7 @@ export default {
         onSort(sortAsc, sortKey) {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
-            this.sortArray(this.products, sortAsc, sortKey)
+            this.sortArray(this.localProducts, sortAsc, sortKey)
         },
         onViewSearchProduct() {
             if (this.productsFilteredBySearch.length > 0) {
@@ -297,6 +291,10 @@ export default {
                 }
             }
         },
+    },
+    mounted() {
+        console.log('mounted', this.getCurrentViewProductsFiltered.length)
+        this.localProducts = this.getCurrentViewProductsFiltered
     },
     created() {
         document.addEventListener('keydown', this.hotkeyHandler)

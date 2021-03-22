@@ -39,12 +39,7 @@
 
         <!-- Access granted -->
         <template v-else>
-            <ProductTable
-                ref="productsComponent"
-                :file="currentFile"
-                :products="productsFiltered"
-                :selection="selection"
-            />
+            <ProductTable ref="productsComponent" :file="currentFile" :selection="selection" />
 
             <ProductFlyin :show="singleVisible" :selection="selection" @close="setSingleVisisble(false)" />
         </template>

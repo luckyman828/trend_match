@@ -107,7 +107,7 @@ export default {
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
             const selectionMode = rootGetters['selections/currentSelectionMode']
-            let productsToReturn = products
+            let productsToReturn = [...products]
 
             // First filter by category
             if (categories.length > 0) {
@@ -406,6 +406,13 @@ export default {
             const products = getters.products
             let productsToReturn = [...products]
             const buyView = rootGetters['productFilters/getBuyView']
+            const selection = rootGetters['selections/getCurrentSelection']
+
+            if (selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
+            }
+
             if (buyView == 'tbd') {
                 productsToReturn = productsToReturn.filter(
                     product => product.quantity <= 0 && ['Focus', 'In'].includes(product.selectionAlignment.action)
@@ -419,6 +426,15 @@ export default {
         getCurrentViewProductsFiltered: (state, getters) => {
             const products = getters.getCurrentViewProducts
             return getters.getFilteredProducts(products)
+        },
+        getFilteredVariants: (state, getters, rootState, rootGetters) => variants => {
+            let variantsFiltered = [...variants]
+            const selection = rootGetters['selections/getCurrentSelection']
+            if (selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                variantsFiltered = variantsFiltered.filter(variant => variant.quantity > 0)
+            }
+            return variantsFiltered
         },
     },
 
