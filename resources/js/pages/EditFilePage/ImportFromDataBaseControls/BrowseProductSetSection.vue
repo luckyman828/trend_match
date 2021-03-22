@@ -4,7 +4,7 @@
             <BaseLoader :msg="loadingMsg" />
             <div class="flex-list flex-v center-h" v-if="fetchProgress">
                 <div>
-                    <strong>{{ Math.round(fetchProgress.done / fetchProgress.total) }}%</strong>
+                    <strong>{{ Math.round((fetchProgress.done / fetchProgress.total) * 100) }}%</strong>
                 </div>
                 <div>{{ fetchProgress.done }} bundles of {{ fetchProgress.total }}</div>
             </div>
@@ -79,6 +79,9 @@ export default {
         ...mapGetters('files', {
             currentFile: 'getCurrentFile',
         }),
+        ...mapGetters('products', {
+            allProducts: 'getProducts',
+        }),
     },
     methods: {
         ...mapActions('integrationDkc', ['fetchAvailableSeasonsByBrand', 'fetchProducts']),
@@ -104,6 +107,27 @@ export default {
                 },
             })
             if (!!products && products.length) {
+                // Fix delivery dates for NOOS and RERUN styles
+                // First, find the delivery dates on our none NOOS styles
+                const seasonDeliveries = []
+                const allProducts = this.allProducts
+                allProducts.map(product => {
+                    if (product.delivery_dates.length >= 12) return
+                    product.delivery_dates.map(deliveryDate => {
+                        if (!seasonDeliveries.includes(deliveryDate)) seasonDeliveries.push(deliveryDate)
+                    })
+                })
+                products.map(product => {
+                    if (product.delivery_dates.length < 12) {
+                        return
+                    }
+
+                    product.delivery_dates = seasonDeliveries
+                    product.variants.map(variant => {
+                        variant.delivery_dates = seasonDeliveries
+                    })
+                })
+
                 await this.insertProducts({ file: this.currentFile, products, addToState: true })
             }
             clearInterval(msgFetcher)

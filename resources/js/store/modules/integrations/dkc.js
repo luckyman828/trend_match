@@ -1,4 +1,5 @@
 import axios from 'axios'
+import chunkArray from '../../../helpers/chunkArray'
 import { instantiateDKCProducts } from '../../../helpers/dkcIntegration'
 
 export default {
@@ -196,9 +197,9 @@ export default {
             let pagesProcessed = 0
             let products = []
             await Promise.all(
-                seasons.map(async season => {
+                await seasons.map(async season => {
                     await Promise.all(
-                        brands.map(async brand => {
+                        await brands.map(async brand => {
                             // first fetch number of pages
                             const pageApiUrl = `/dkc-adapter/season-products/page-count?season_code=${season.code}&company=${brand.company}&brand=${brand.code}`
                             await axios.get(pageApiUrl).then(response => {
@@ -206,7 +207,7 @@ export default {
                                 if (progressCallback) progressCallback({ total: pageCount, done: pagesProcessed })
                             })
 
-                            for (let pageIndex = 1; i <= pageCount; i++) {
+                            for (let pageIndex = 1; pageIndex <= pageCount; pageIndex++) {
                                 // Fetch a page at a time
                                 const apiUrl = `/dkc-adapter/season-products?season_code=${season.code}&company=${brand.company}&brand=${brand.code}&page=${pageIndex}`
                                 await axios
@@ -215,10 +216,9 @@ export default {
                                         const seasonProducts = Array.isArray(response.data)
                                             ? response.data
                                             : [response.data]
-                                        console.log('seasons products', seasonProducts)
+                                        console.log('season products', seasonProducts)
                                         products.push(...seasonProducts)
                                         pagesProcessed++
-                                        pageIndex++
                                         if (progressCallback)
                                             progressCallback({ total: pageCount, done: pagesProcessed })
                                     })
@@ -301,11 +301,17 @@ export default {
             return availableSeasons
         },
         async testImageAvailability({}, imageUrls) {
-            let result
-            const apiUrl = `dkc-adapter/check-dkc-images`
-            await axios.post(apiUrl, imageUrls).then(response => {
-                result = response.data
-            })
+            let result = {}
+            // If we have more than 50 images, chunk them
+            const chunks = chunkArray(imageUrls, 50)
+            for (let i = 0; i < chunks.length; i++) {
+                const chunk = chunks[i]
+                const apiUrl = `dkc-adapter/check-dkc-images`
+                await axios.post(apiUrl, chunk).then(response => {
+                    Object.assign(result, response.data)
+                })
+            }
+
             return result
         },
     },

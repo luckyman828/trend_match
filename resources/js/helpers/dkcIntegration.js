@@ -11,9 +11,18 @@ export function cleanUpDKCObj(srcObj, newObj) {
         if (key == 'variants' && !Array.isArray(keyVal.variant)) {
             keyVal = [keyVal.variant]
         }
+        if (key == 'prices' && !Array.isArray(keyVal.prices)) {
+            keyVal = [keyVal.price]
+        }
+        if (key == 'assortments' && !Array.isArray(keyVal.assortments)) {
+            if (Array.isArray(keyVal.assortment)) {
+                keyVal = [...keyVal.assortment]
+            } else {
+                keyVal = [keyVal.assortment]
+            }
+        }
 
         // Flatten objects in objects
-        // console.log('before flatten', theKey, keyVal)
         if (!Array.isArray(keyVal) && typeof keyVal == 'object' && Object.keys(keyVal).length == 1) {
             const newKey = Object.keys(keyVal)[0]
             if (!['variant', 'price', 'size', 'assortment'].includes(newKey)) {
@@ -21,10 +30,9 @@ export function cleanUpDKCObj(srcObj, newObj) {
             }
             keyVal = keyVal[newKey]
         }
-        // console.log('after flatten', theKey, keyVal)
 
         if (Array.isArray(keyVal) && keyVal.length > 0) {
-            if (keyVal[0].language) {
+            if (keyVal.length > 1 && keyVal[0].language) {
                 keyVal = keyVal.find(x => x.language == 'ENU').value
             }
 

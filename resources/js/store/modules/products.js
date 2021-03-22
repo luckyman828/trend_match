@@ -459,7 +459,6 @@ export default {
             commit('setSingleVisisble', true)
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
-            console.log('insert products')
             // If we have many products. Bundle them
             const chunkSize = 500
             if (products.length > chunkSize) {
