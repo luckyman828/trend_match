@@ -63,7 +63,7 @@ export default {
     },
     data: function() {
         return {
-            loading: true,
+            loading: false,
         }
     },
     computed: {

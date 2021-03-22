@@ -2,6 +2,7 @@ import axios from 'axios'
 import sortArray from '../../mixins/sortArray'
 import Compressor from 'compressorjs'
 import { instantiateProductsFromMappedFields, parseCSVStringToRowsAndCells } from '../../helpers/workbookUtils'
+import chunkArray from '../../helpers/chunkArray'
 
 export default {
     namespaced: true,
@@ -459,82 +460,61 @@ export default {
             commit('setSingleVisisble', true)
         },
         async insertProducts({ commit, dispatch }, { file, products, addToState }) {
-            // If we have many products. Bundle them
-            const chunkSize = 500
-            if (products.length > chunkSize) {
-                const array = products
-                const chunkedArr = []
-                const size = chunkSize
-                for (let i = 0; i < array.length; i++) {
-                    const last = chunkedArr[chunkedArr.length - 1]
-                    if (!last || last.length === size) {
-                        chunkedArr.push([array[i]])
-                    } else {
-                        last.push(array[i])
-                    }
-                }
-                chunkedArr.map(async productChunk => {
-                    await dispatch('insertProducts', { file, products: productChunk, addToState })
-                })
-                return
-            }
+            // Chunk products to avoid too big requests
+            const productChunks = chunkArray(products, 50)
 
-            return new Promise((resolve, reject) => {
-                const apiUrl = `/files/${file.id}/products`
-                axios
-                    .post(apiUrl, {
+            await Promise.all(
+                productChunks.map(async productChunk => {
+                    const apiUrl = `/files/${file.id}/products`
+                    await axios.post(apiUrl, {
                         method: 'Add',
-                        products: products,
+                        products: productChunk,
                     })
-                    .then(async response => {
-                        // Alert the user
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: `${products.length > 1 ? products.length + ' ' : ''}Product${
-                                    products.length > 1 ? 's' : ''
-                                } created`,
-                                iconClass: 'fa-check',
-                                type: 'success',
-                            },
-                            { root: true }
-                        )
+                })
+            )
+                .then(async response => {
+                    // Alert the user
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${products.length > 1 ? products.length + ' ' : ''}Product${
+                                products.length > 1 ? 's' : ''
+                            } created`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
 
-                        // Add the created ID to the products
-                        console.log('products created', response.data)
-                        products.map(product => {
-                            product.id = response.data.added_product_id_map[product.datasource_id]
-                        })
-
-                        if (addToState) {
-                            commit('insertProducts', { products, method: 'add' })
-                            await dispatch('initProducts', products)
-                            commit('SORT_PRODUCTS')
-                        }
-
-                        // SYNC IMAGES
-                        dispatch('files/syncExternalImages', { file, products }, { root: true })
-
-                        resolve(response)
+                    // Add the created ID to the products
+                    console.log('products created', response.data)
+                    products.map(product => {
+                        product.id = response.data.added_product_id_map[product.datasource_id]
                     })
-                    .catch(err => {
-                        reject(err)
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Something went wrong when creating the product. Please try again.',
-                                iconClass: 'fa-exclamation-triangle',
-                                type: 'warning',
-                                callback: () => dispatch('insertProducts', { file, products, addToState }),
-                                callbackLabel: 'Retry',
-                                duration: 0,
-                            },
-                            { root: true }
-                        )
-                    })
-            }).catch(err => {
-                console.log(err)
-            })
+
+                    if (addToState) {
+                        commit('insertProducts', { products, method: 'add' })
+                        await dispatch('initProducts', products)
+                        commit('SORT_PRODUCTS')
+                    }
+
+                    // SYNC IMAGES
+                    dispatch('files/syncExternalImages', { file, products }, { root: true })
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong when creating the product. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertProducts', { file, products, addToState }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async updateFileProducts({ commit, dispatch }, { fileId, products }) {
             const apiUrl = `/files/${fileId}/products`

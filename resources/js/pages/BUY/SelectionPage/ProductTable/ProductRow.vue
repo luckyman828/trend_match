@@ -20,8 +20,8 @@
                 <BaseVariantImage
                     v-if="hasImage"
                     class="main-img hover-shadow clickable"
-                    :key="product.id + '-' + variantIndex"
-                    :variant="product.variants[variantIndex]"
+                    :key="product.id + '-' + mainImageVariantIndex"
+                    :variant="product.variants[mainImageVariantIndex]"
                     size="sm"
                     @click.native="onViewSingle"
                 />
@@ -196,11 +196,17 @@ export default {
             return getVariantBackgroundStyle(this.product.variants[this.variantIndex])
         },
         hasImage() {
-            const url = this.variantImage(this.product.variants[this.variantIndex])
+            const url = this.variantImage(this.product.variants[this.mainImageVariantIndex])
             return url != '/images/placeholder.JPG'
         },
         productQty() {
             return this.product.quantity
+        },
+        mainImageVariantIndex() {
+            // if (this.product.variants.length <= 1) return 0
+            // const firstVariant = this.product.variants[0]
+            // if (firstVariant.pictures.length > 0 && firstVariant.pictures[0].url) return 0
+            return this.product.variants.findIndex(variant => variant.pictures.length > 0 && !!variant.pictures[0].url)
         },
     },
     watch: {
