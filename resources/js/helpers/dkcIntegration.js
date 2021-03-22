@@ -57,16 +57,14 @@ export async function instantiateDKCProducts(products) {
 
     const newProducts = prettyProducts.map(product => {
         const newProduct = JSON.parse(JSON.stringify(baseProduct))
-        newProduct.extra_data.aninalOrigin = product.animal_origin
         newProduct.extra_data.blocked = product.blocked
-        newProduct.brand = product.brand
-        newProduct.extra_data.catalog = product.catalog
+        newProduct.brand = product.product_group_code
         newProduct.composition = product.composition
+        newProduct.sale_description = product.meta_description
         newProduct.description = product.meta_description
         newProduct.extra_data.inventory = product.inventory
         newProduct.title = product.name
         newProduct.datasource_id = product.no
-        newProduct.extra_data.quality = product.quality
         newProduct.extra_data.season = product.season
         newProduct.extra_data.sex = product.sex
         newProduct.category = product.design_group
@@ -95,7 +93,7 @@ export async function instantiateDKCProducts(products) {
                   const newVariant = JSON.parse(JSON.stringify(baseVariant))
                   newVariant.id = uuidv4()
                   newVariant.variant = variant.color
-                  newVariant.color = variant.color_name
+                  newVariant.color = variant.variant_color_name
                   newVariant.extra_data.colorRGB = variant.color_rgb
                   newVariant.ean_sizes = variant.ea_ns.split(';').map(sizeEan => {
                       const sizeComponents = sizeEan.split(':')
@@ -174,6 +172,20 @@ export async function instantiateDKCProducts(products) {
               })
 
         return newProduct
+    })
+
+    //Check if all images exist or not
+    const allPictures = []
+    newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
+    const imageAvailabilityMap = await store.dispatch(
+        'integrationDkc/testImageAvailability',
+        allPictures.map(picture => picture.url)
+    )
+    allPictures.map(picture => {
+        const imageExists = imageAvailabilityMap[picture.url] == true
+        if (!imageExists) {
+            picture.url = null
+        }
     })
 
     return newProducts

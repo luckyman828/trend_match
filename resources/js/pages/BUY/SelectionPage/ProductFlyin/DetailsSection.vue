@@ -94,7 +94,7 @@
         <div class="form-element flex-list md center-v">
             <i class="fal fa-info-circle md"></i>
             <BaseValueDisplay label="Description">
-                <span>{{ product.description }}</span>
+                <span>{{ product.sale_description }}</span>
             </BaseValueDisplay>
         </div>
     </BaseFlyinColumn>

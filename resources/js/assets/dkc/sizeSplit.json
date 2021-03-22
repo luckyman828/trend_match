@@ -23,11 +23,11 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 16
                 },
                 {
-                    "name": "3XL",
+                    "name": "XXXL",
                     "weight": 0
                 }
             ]
@@ -93,11 +93,11 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 16
                 },
                 {
-                    "name": "3XL",
+                    "name": "XXXL",
                     "weight": 0
                 }
             ]
@@ -163,7 +163,7 @@
                     "weight": 19
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 14
                 }
             ]
@@ -289,7 +289,7 @@
                     "weight": 23
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 15
                 }
             ]
@@ -345,7 +345,7 @@
                     "weight": 20
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 15
                 }
             ]
@@ -407,7 +407,7 @@
                     "weight": 22
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 17
                 }
             ]
@@ -473,7 +473,7 @@
                     "weight": 22
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 17
                 }
             ]
@@ -585,11 +585,11 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 18
                 },
                 {
-                    "name": "3XL",
+                    "name": "XXXL",
                     "weight": 6
                 }
             ]
@@ -659,7 +659,7 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 15
                 }
             ]
@@ -721,7 +721,7 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 14
                 }
             ]
@@ -833,7 +833,7 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 16
                 }
             ]
@@ -945,7 +945,7 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 16
                 }
             ]
@@ -1007,7 +1007,7 @@
                     "weight": 25
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 15
                 }
             ]
@@ -1065,7 +1065,7 @@
                     "weight": 23
                 },
                 {
-                    "name": "2XL",
+                    "name": "XXL",
                     "weight": 15
                 }
             ]

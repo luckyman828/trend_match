@@ -300,6 +300,14 @@ export default {
             commit('SET_AVAILABLE_SEASONS', availableSeasons)
             return availableSeasons
         },
+        async testImageAvailability({}, imageUrls) {
+            let result
+            const apiUrl = `dkc-adapter/check-dkc-images`
+            await axios.post(apiUrl, imageUrls).then(response => {
+                result = response.data
+            })
+            return result
+        },
     },
 
     mutations: {
