@@ -182,19 +182,19 @@ export async function instantiateDKCProducts(products) {
         return newProduct
     })
 
-    //Check if all images exist or not
-    const allPictures = []
-    newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
-    const imageAvailabilityMap = await store.dispatch(
-        'integrationDkc/testImageAvailability',
-        allPictures.map(picture => picture.url)
-    )
-    allPictures.map(picture => {
-        const imageExists = imageAvailabilityMap[picture.url] == true
-        if (!imageExists) {
-            picture.url = null
-        }
-    })
+    // //Check if all images exist or not
+    // const allPictures = []
+    // newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
+    // const imageAvailabilityMap = await store.dispatch(
+    //     'integrationDkc/testImageAvailability',
+    //     allPictures.map(picture => picture.url)
+    // )
+    // allPictures.map(picture => {
+    //     const imageExists = imageAvailabilityMap[picture.url] == true
+    //     if (!imageExists) {
+    //         picture.url = null
+    //     }
+    // })
 
     return newProducts
 }
