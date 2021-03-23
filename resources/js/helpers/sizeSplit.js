@@ -24,23 +24,30 @@ export async function getWeightedSplit(qty, sizes, weights) {
         const total = split.reduce((acc, curr) => (acc += curr.qty), 0)
         return total - qty
     }
-    let leftover = calculateLeftover()
-    if (leftover > 0) {
-        // Subtract the leftover from the size with the lowest weight
-        const lowestWeight = split.reduce((currentLowest, curr) => {
-            return curr.weight < currentLowest.weight && curr.qty > 0 ? curr : currentLowest
-        }, split[0])
-        lowestWeight.qty -= leftover
+    const splitLeftover = leftover => {
+        if (leftover > 0) {
+            // Subtract the leftover from the size with the lowest weight
+            const lowestWeight = split.reduce((currentLowest, curr) => {
+                return curr.weight < currentLowest.weight && curr.qty >= 1 ? curr : currentLowest
+            }, split[0])
+            lowestWeight.qty -= 1
+        }
+        if (leftover < 0) {
+            // Subtract the leftover from the size with the lowest weight
+            const highestWeight = split.reduce((currentHighest, curr) => {
+                return curr.weight > currentHighest.weight ? curr : currentHighest
+            }, split[0])
+            highestWeight.qty += Math.abs(leftover)
+        }
     }
-    if (leftover < 0) {
-        // Subtract the leftover from the size with the lowest weight
-        const highestWeight = split.reduce((currentHighest, curr) => {
-            return curr.weight > currentHighest.weight ? curr : currentHighest
-        }, split[0])
-        highestWeight.qty += Math.abs(leftover)
+    let leftover = calculateLeftover()
+    let tryCount = 0
+    while (leftover != 0 && tryCount < 5) {
+        splitLeftover(leftover)
+        leftover = calculateLeftover()
+        tryCount++
     }
     // Leftover should be 0 now
-    leftover = calculateLeftover()
     if (leftover != 0) {
         console.log('Error in size split! Leftover not equal to 0. Leftover:', leftover)
     }

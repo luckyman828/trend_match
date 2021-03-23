@@ -293,7 +293,6 @@ export default {
         },
     },
     mounted() {
-        console.log('mounted', this.getCurrentViewProductsFiltered.length)
         this.localProducts = this.getCurrentViewProductsFiltered
     },
     created() {

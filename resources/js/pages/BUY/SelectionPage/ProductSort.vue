@@ -3,19 +3,17 @@
         <slot :activate="toggleShow" />
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="onHide">
             <SortListItem
-                v-if="enabledSortKeys.includes('labels')"
-                icon="far fa-tag"
-                :sortKey="'labels'"
-                label="Labels"
+                v-for="(sortItem, index) in availableSortItems"
+                :key="index"
+                :icon="sortItem.icon"
+                :sortKey="sortItem.key"
+                :label="sortItem.label"
+                :sortAsc="sortItem.sortAsc"
                 :currentSortKey="currentSortKey"
+                detaultKey="sequence"
+                :defaultAsc="true"
                 @sort="onSort"
             />
-            <div class="item-wrapper" v-if="enabledSortKeys.length <= 0">
-                <div class="icon-wrapper">
-                    <i class="far fa-info-circle"></i>
-                </div>
-                <p>Your workspace doesn't have any keys enabled to sort by.</p>
-            </div>
         </BaseContextMenu>
     </v-popover>
 </template>
@@ -25,7 +23,7 @@ import { mapGetters } from 'vuex'
 import SortListItem from './SortListItem'
 
 export default {
-    name: 'productFilters',
+    name: 'productSort',
     components: { SortListItem },
     props: ['currentSortKey'],
     data: function() {
@@ -37,13 +35,72 @@ export default {
         ...mapGetters('workspaces', {
             availableProductLabels: 'getAvailableProductLabels',
         }),
-        enabledSortKeys() {
+        disabledSortKeys() {
             const keys = []
-            if (this.labelsEnabled) keys.push('labels')
+            if (!this.labelsEnabled) keys.push('labels')
             return keys
         },
         labelsEnabled() {
             return this.availableProductLabels.length > 0
+        },
+        availableSortItems() {
+            let labels = [
+                {
+                    key: 'sequence',
+                    sortAsc: true,
+                    label: 'Order',
+                    icon: 'far fa-sort-numeric-up',
+                },
+                {
+                    key: 'datasource_id',
+                    sortAsc: true,
+                    label: 'ID',
+                    icon: 'far fa-sort-numeric-up',
+                },
+                {
+                    key: 'name',
+                    sortAsc: true,
+                    label: 'Name',
+                    icon: 'far fa-sort-alpha-up',
+                },
+                {
+                    key: 'labels',
+                    sortAsc: false,
+                    label: 'Labels',
+                    icon: 'far fa-tag',
+                },
+                {
+                    key: 'quantity',
+                    sortAsc: false,
+                    label: 'Quantity',
+                    icon: 'far fa-box',
+                },
+                {
+                    key: 'category',
+                    sortAsc: true,
+                    label: 'Category',
+                    icon: 'far fa-filter',
+                },
+                {
+                    key: 'wholesale_price',
+                    sortAsc: true,
+                    label: 'WHS',
+                    icon: 'far fa-dollar-sign',
+                },
+                {
+                    key: 'recommended_retail_price',
+                    sortAsc: true,
+                    label: 'RRP',
+                    icon: 'far fa-dollar-sign',
+                },
+                {
+                    key: 'mark_up',
+                    sortAsc: true,
+                    label: 'Mark up',
+                    icon: 'far fa-dollar-sign',
+                },
+            ]
+            return labels.filter(label => !this.disabledSortKeys.includes(label.key))
         },
     },
     methods: {

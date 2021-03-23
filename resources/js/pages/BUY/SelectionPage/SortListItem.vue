@@ -3,7 +3,14 @@
         <BaseContextMenuItem class="sort-list-item" :iconClass="icon" :class="{ active: isActive }" @click="onSort">
             <div class="flex-list justify full-width">
                 <span>{{ label }}</span>
-                <i class="far sort-icon md" :class="sortAsc ? `fa-sort-amount-down-alt` : `fa-sort-amount-down`"></i>
+                <i
+                    class="far sort-icon md"
+                    :class="
+                        (isActive && currentSortAsc) || (!isActive && sortAsc)
+                            ? `fa-sort-amount-down-alt`
+                            : `fa-sort-amount-down`
+                    "
+                ></i>
             </div>
         </BaseContextMenuItem>
     </div>
@@ -12,11 +19,10 @@
 <script>
 export default {
     name: 'sortListItem',
-    props: ['sortKey', 'label', 'icon', 'currentSortKey'],
+    props: ['sortKey', 'label', 'icon', 'currentSortKey', 'detaultKey', 'sortAsc', 'defaultAsc'],
     data() {
         return {
-            sortAsc: false,
-            defaultAsc: false,
+            currentSortAsc: false,
         }
     },
     computed: {
@@ -26,8 +32,13 @@ export default {
     },
     methods: {
         onSort() {
-            const sortAsc = this.isActive ? !this.sortAsc : this.defaultAsc
-            this.sortAsc = sortAsc
+            if (this.detaultKey && this.isActive && this.currentSortAsc != this.sortAsc) {
+                this.$emit('sort', this.detaultKey, this.defaultAsc)
+                this.currentSortAsc = this.defaultAsc
+                return
+            }
+            const sortAsc = this.isActive ? !this.currentSortAsc : this.sortAsc
+            this.currentSortAsc = sortAsc
             this.$emit('sort', this.sortKey, sortAsc)
         },
     },
