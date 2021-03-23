@@ -29,10 +29,13 @@ export default {
     computed: {
         ...mapGetters('products', ['productsStatus']),
         ...mapGetters('files', ['currentFile', 'filesStatus']),
+        ...mapGetters('liveUpdates', {
+            liveUpdateIsConnected: 'getIsConnected',
+        }),
         status() {
             if (this.loadingData) return 'loading'
             if (this.filesStatus == 'error') return 'error'
-            if (this.filesStatus == 'loading' || !this.currentFile) return 'loading'
+            if (this.filesStatus == 'loading' || !this.currentFile || !this.liveUpdateIsConnected) return 'loading'
             return 'success'
         },
     },

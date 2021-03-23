@@ -50,6 +50,21 @@
             </div>
         </div>
         <div class="bottom-nav">
+            <v-popover placement="right" v-if="jobs.length > 0" trigger="click" popoverClass="auto-width">
+                <div class="sidebar-item">
+                    <a class="inner background-sync">
+                        <i class="fad fa-sync"></i>
+                        <span>Sync</span>
+                        <div
+                            class="pill count xs"
+                            :class="jobStatus == 'success' ? 'green' : jobStatus == 'failed' ? 'yellow' : ''"
+                        >
+                            <span>{{ remainingSyncCount > 0 ? remainingSyncCount : 'Done' }}</span>
+                        </div>
+                    </a>
+                </div>
+                <ImageSyncPopover slot="popover" />
+            </v-popover>
             <div class="sidebar-item">
                 <div
                     class="inner"
@@ -105,6 +120,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import TheNavbarLogo from './TheNavbarLogo'
+import ImageSyncPopover from '../common/ImageSyncPopover/'
 
 import SignoutButton from './SignoutButton'
 
@@ -113,6 +129,7 @@ export default {
     components: {
         SignoutButton,
         TheNavbarLogo,
+        ImageSyncPopover,
     },
     data: function() {
         return {
@@ -130,6 +147,11 @@ export default {
             'getRealWorkspaceRole',
         ]),
         ...mapGetters('changelog', ['getLatestChangelogUpdateDate']),
+        ...mapGetters('backgroundJobs', {
+            jobs: 'getImageSyncJobs',
+            jobStatus: 'getImageSyncJobStatus',
+            remainingSyncCount: 'getRemainingImageSyncCount',
+        }),
         displayTooltips() {
             return window.innerWidth <= 1400
         },
@@ -200,6 +222,10 @@ export default {
             background: white;
             color: $font;
         }
+        > .count {
+            position: absolute;
+            top: -24px;
+        }
     }
     &.logo {
         height: 60px;
@@ -234,6 +260,11 @@ export default {
         }
         span {
             display: none;
+        }
+        .background-sync {
+            span {
+                display: block;
+            }
         }
         .unread-circle {
             position: absolute;

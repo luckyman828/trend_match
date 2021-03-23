@@ -83,9 +83,19 @@ export default {
         },
         getCurrentTiming: (state, getters, rootState, rootGetters) => {
             const timings = rootGetters['videoPresentation/getVideoTimings']
-            if (!timings) return
+            if (!timings || timings.length <= 0) return
+            const isLive = getters.getIsLive
             const timestamp = getters.getTimestamp
-            return timings.find(x => x.start <= timestamp && x.end > timestamp)
+            // If LIVE, return the last timing, if that timing
+            if (isLive) {
+                const lastTiming = timings[timings.length - 1]
+                const lastIsCurrent = lastTiming.start <= timestamp && lastTiming.end >= timestamp
+                if (lastIsCurrent) return lastTiming
+            }
+            return timings
+                .slice()
+                .reverse()
+                .find(x => x.start <= timestamp && x.end > timestamp)
         },
         getCurrentProduct: (state, getters) => {
             const currentTiming = getters.getCurrentTiming
@@ -154,6 +164,21 @@ export default {
             const providerMap = getters.getProviderMap
             const timestamp = await player[providerMap.getTimestamp]()
             return timestamp
+        },
+        makeLastTimingCurrent({ getters, rootGetters }) {
+            const timings = rootGetters['videoPresentation/getVideoTimings']
+            if (timings.length <= 0) return
+            const lastTiming = timings[timings.length - 1]
+
+            const presentedProductId = rootGetters['presentation/getCurrentProductId']
+            if (lastTiming.product_id == presentedProductId) {
+                const videoDuration = getters.getDuration
+                lastTiming.end_at_ms = Math.ceil(videoDuration + 5000)
+                // Make sure the last timing is the current timing
+                if (lastTiming.start_at_ms > videoDuration) {
+                    lastTiming.start_at_ms = Math.floor(videoDuration - 5000)
+                }
+            }
         },
     },
 

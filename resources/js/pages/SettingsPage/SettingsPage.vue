@@ -84,6 +84,13 @@
             </div>
 
             <div class="form-section" v-if="isSystemAdmin">
+                <h3>System admin settings</h3>
+                <h4>Enabled features</h4>
+                <div class="form-element">
+                    <BaseCheckboxInputField v-model="workspace.style_option_enabled" @input="onUpdateWorkspaceDetails">
+                        <span>Style option API</span>
+                    </BaseCheckboxInputField>
+                </div>
                 <div class="form-element">
                     <button class="ghost" @click="showDangerousOptions = !showDangerousOptions">
                         <i class="far fa-eye"></i>

@@ -187,6 +187,31 @@ export default {
             // },
             {
                 scope: 'variants',
+                name: 'eans',
+                displayName: 'EANs',
+                type: 'number',
+                headersToMatch: ['eans', 'ean', 'variant ean', 'style ean', 'ean_no'],
+            },
+            {
+                scope: 'variants',
+                name: 'style_option_id',
+                displayName: 'Option ID',
+                type: 'number',
+                headersToMatch: [
+                    'style_option_id',
+                    'option_id',
+                    'variant_id',
+                    'variant id',
+                    'style option id',
+                    'option id',
+                    'style option number',
+                    'option number',
+                    'style_option_number',
+                    'option_number',
+                ],
+            },
+            {
+                scope: 'variants',
                 name: 'color',
                 displayName: 'Color',
                 type: 'string',
@@ -335,7 +360,11 @@ export default {
                     })
                 })
 
-            const fields = allFields.filter(x => x.scope == scope)
+            let fields = allFields.filter(x => x.scope == scope)
+
+            // Filter out style_option_id if it is not enabled on the workspace
+            const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
+            if (!enabledFeatures.style_option_api) fields = fields.filter(x => x.name != 'style_option_id')
 
             return fields.map(x => {
                 x.file = null

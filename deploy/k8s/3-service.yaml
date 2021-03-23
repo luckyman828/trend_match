@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${CONTAINER_IMAGE}
+  name: ${SERVICE_NAME}
   labels:
-    app: ${CONTAINER_IMAGE}
+    app: ${SERVICE_NAME}
 spec:
   ports:
     - port: 80
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: ${CONTAINER_IMAGE}  
+    app: ${SERVICE_NAME}  

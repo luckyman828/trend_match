@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: ${CONTAINER_IMAGE}
+  name: ${SERVICE_NAME}
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
@@ -16,5 +16,5 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: ${CONTAINER_IMAGE}
+              serviceName: ${SERVICE_NAME}
               servicePort: 80

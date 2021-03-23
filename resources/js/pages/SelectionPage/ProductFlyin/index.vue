@@ -439,7 +439,7 @@ export default {
             },
         },
         showLabels() {
-            return this.labelsEnabled || this.product.labels.length > 0
+            return this.labelsEnabled || this.product && this.product.labels && this.product.labels.length > 0
         },
         broadcastActive() {
             return this.selection.is_presenting

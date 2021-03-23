@@ -83,7 +83,6 @@ export default {
         },
         commentArrivedHandler(comment) {
             if (this.authUser.id == comment.user.id) return
-            // console.log('comment arrived', comment)
             this.INSERT_OR_UPDATE_COMMENT(comment)
             this.$nextTick(() => {
                 this.scrollToBottom()

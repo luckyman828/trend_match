@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="square white price sm">
-                        <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+                        <span>{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span>
                     </div>
                 </div>
 

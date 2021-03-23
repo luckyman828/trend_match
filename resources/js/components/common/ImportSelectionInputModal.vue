@@ -108,6 +108,11 @@
                     </BaseTableV2Row>
                 </BaseTableV2>
             </div>
+            <div class="form-element">
+                <BaseCheckboxInputField v-model="deleteOriginal">
+                    <span>Remove input from source</span>
+                </BaseCheckboxInputField>
+            </div>
             <div class="form-section" v-if="userIsRequired">
                 <h3>Choose user to convert from</h3>
                 <template v-if="!loadingSelections">
@@ -151,6 +156,7 @@ export default {
                 AlignmentToAlignment: false,
                 RequestToRequest: false,
             },
+            deleteOriginal: false,
             isSubmitting: false,
         }
     },
@@ -160,7 +166,11 @@ export default {
         }),
         ...mapGetters('selections', ['getSelectionChapter', 'getCurrentSelection']),
         userIsRequired() {
-            return this.importOptions.CommentToRequest || this.importOptions.FeedbackToAlignment
+            return (
+                this.importOptions.CommentToRequest ||
+                this.importOptions.FeedbackToAlignment ||
+                this.importOptions.RequestToRequest
+            )
         },
         currentSelection() {
             return this.destinationSelection ? this.destinationSelection : this.getCurrentSelection
@@ -214,7 +224,7 @@ export default {
             this.selectedUser = null
             this.loadingUsers = true
             const selection = await this.fetchSelection({ selectionId: this.selectedSelection.id, addToState: false })
-            this.availableUsers = selection.users.filter(user => user.role == 'Member')
+            this.availableUsers = selection.users
             this.loadingUsers = false
         },
         async onSubmit() {
@@ -224,6 +234,7 @@ export default {
                 sourceSelection: this.selectedSelection,
                 sourceUser: this.selectedUser,
                 importOptions: this.importOptions,
+                isCopy: !this.deleteOriginal,
             })
             this.isSubmitting = false
             this.$emit('close')

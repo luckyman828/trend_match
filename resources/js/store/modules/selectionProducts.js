@@ -116,7 +116,6 @@ export default {
 
                 Object.defineProperty(selection, 'chapter', {
                     get: () => {
-                        console.log('get selection chatper')
                         return rootGetters['selections/getSelectionChapter'](selection)
                     },
                 })

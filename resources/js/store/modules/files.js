@@ -488,7 +488,7 @@ export default {
                                 url: picture.url,
                                 pictureIndex: index,
                             })
-                            Vue.set(product, 'syncingImage', true)
+                            Vue.set(product, 'imageSyncStatus', 'syncing')
                         })
                     })
                 })
@@ -555,7 +555,7 @@ export default {
                 }
 
                 products.map(product => {
-                    Vue.set(product, 'syncingImage', false)
+                    Vue.set(product, 'imageSyncStatus', 'success')
                 })
 
                 // Update the products when we are done uploading

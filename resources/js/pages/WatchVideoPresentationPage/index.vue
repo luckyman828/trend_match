@@ -33,12 +33,16 @@ export default {
         ...mapGetters('presentation', {
             presentationIsActive: 'getPresentationIsActive',
         }),
+        ...mapGetters('liveUpdates', {
+            liveUpdateIsConnected: 'getIsConnected',
+        }),
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('files', ['filesStatus']),
         status() {
             if (this.productsStatus == 'error' || this.currentSelectionStatus == 'error' || this.filesStatus == 'error')
                 return 'error'
             if (
+                !this.liveUpdateIsConnected ||
                 this.productsStatus == 'loading' ||
                 this.currentSelectionStatus == 'loading' ||
                 this.filesStatus == 'loading' ||

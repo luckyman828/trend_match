@@ -13,7 +13,9 @@
             <div class="requests-wrapper">
                 <div
                     class="selection-request"
-                    v-for="request in requests.filter(x => x.selection_id == currentSelection.id)"
+                    v-for="request in requests
+                        .filter(x => x.selection_id == currentSelection.id)
+                        .sort((a, b) => (a.created_at > b.created_at ? -1 : 1))"
                     :key="request.id"
                 >
                     <request
@@ -32,7 +34,7 @@
                     :class="{ 'thread-open': currentRequestThread && currentRequestThread.id == request.id }"
                     v-for="request in requests
                         .filter(x => x.selection_id != selectionInput.selection_id)
-                        .sort((a, b) => (a.selection.type == 'Master' ? -1 : 1))"
+                        .sort((a, b) => (a.created_at > b.created_at ? -1 : 1))"
                 />
             </div>
 

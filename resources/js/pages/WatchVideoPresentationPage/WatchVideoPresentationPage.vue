@@ -128,22 +128,14 @@ export default {
             if (newVal == 'playing' && this.isLive && this.videoTimings.length > 0) {
                 // Wait a little, so we have fetched the correct duration in case of a livestream
                 setTimeout(() => {
-                    // Check if a product is currently being presented. If so, make sure we make it our current
-                    const lastTiming = this.videoTimings[this.videoTimings.length - 1]
-                    if (lastTiming.product_id == this.presentedProductId) {
-                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 5000)
-                        // Make sure the last timing is the current timing
-                        if (lastTiming.start_at_ms > this.videoDuration) {
-                            lastTiming.start_at_ms = Math.floor(this.videoDuration - 5000)
-                        }
-                    }
+                    this.makeLastTimingCurrent()
                 }, 500)
             }
         },
     },
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
-        ...mapActions('videoPlayer', ['togglePlaying']),
+        ...mapActions('videoPlayer', ['togglePlaying', 'makeLastTimingCurrent']),
         ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_VIDEO_TIMINGS']),
         onEnterFullscreen() {
             const elem = document.documentElement
@@ -196,7 +188,7 @@ export default {
             await this.initTimings(newTimings)
             this.videoTimings.splice(this.videoTimings.length - 1, 1, ...newTimings)
         },
-        connectToLiveUpdates() {
+        async connectToLiveUpdates() {
             const connection = this.$connection
 
             // Subscribe to our selections

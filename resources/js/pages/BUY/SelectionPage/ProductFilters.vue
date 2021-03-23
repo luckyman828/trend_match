@@ -10,12 +10,12 @@
         </button> -->
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
             <div class="item-group">
-                <div class="item-wrapper">
+                <div class="item-wrapper" v-tooltip="'Currently only works with label filters'">
                     <BaseCheckboxInputField v-model="exactMatch">
                         <span>Exact match</span>
                     </BaseCheckboxInputField>
                 </div>
-                <div class="item-wrapper">
+                <div class="item-wrapper" v-tooltip="'Currently only works with label filters'">
                     <BaseCheckboxInputField v-model="inverseMatch">
                         <span>Invert match</span>
                     </BaseCheckboxInputField>

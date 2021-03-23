@@ -8,13 +8,10 @@
                     :variant="product.variants[0]"
                     size="sm"
                 />
-                <div
-                    class="sync-wrapper"
-                    :class="{ syncing: product.syncingImage }"
-                    v-if="product.syncingImage != null"
-                >
-                    <i v-if="product.syncingImage" class="sync-icon syncing fad fa-sync md"></i>
-                    <i v-else class="sync-icon success far green fa-check-circle md"></i>
+                <div class="sync-wrapper" :class="syncStatus" v-if="syncStatus">
+                    <i v-if="syncStatus == 'Success'" class="sync-icon success far green fa-check-circle md"></i>
+                    <i v-else-if="syncStatus == 'Failed'" class="sync-icon error far red fa-times-circle md"></i>
+                    <i v-else class="sync-icon syncing fad fa-sync md"></i>
                 </div>
             </div>
         </td>
@@ -129,6 +126,12 @@ export default {
         ...mapGetters('files', {
             currentFile: 'getCurrentFile',
         }),
+        ...mapGetters('files', {
+            file: 'getCurrentFile',
+        }),
+        ...mapGetters('backgroundJobs', {
+            syncJobs: 'getImageSyncJobs',
+        }),
         localSelectedProducts: {
             get() {
                 return this.selectedProducts
@@ -146,14 +149,12 @@ export default {
         hasLabelWriteAccess() {
             return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
         },
+        syncStatus() {
+            return this.product.imageSyncStatus
+        },
     },
     methods: {
-        productImg(variant) {
-            if (!variant || (!variant.blob_id && !variant.image)) return `/images/placeholder.JPG`
-            if (variant.blob_id)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
-        },
+        ...mapActions('products', ['fetchProduct']),
         onViewSingle() {
             this.$emit('view-single-product', this.product)
         },

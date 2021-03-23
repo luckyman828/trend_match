@@ -105,24 +105,19 @@ export default {
             getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
-            if (selection) {
-                return selection.your_role == 'Member'
-                    ? 'Feedback'
-                    : selection.your_role == 'Owner'
-                    ? 'Alignment'
-                    : selection.your_role == 'Approver'
-                    ? 'Approval'
-                    : 'No Access'
-            }
+            console.log('get current selectionMode', selection)
+            if (selection) return getters.getSelectionCurrentMode(selection)
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
-            return selection.your_role == 'Member'
+            return selection.your_job && selection.your_job != 'None'
+                ? selection.your_job
+                : selection.your_roles.includes('Member')
                 ? 'Feedback'
-                : selection.your_role == 'Owner'
-                ? 'Alignment'
-                : selection.your_role == 'Approver'
+                : selection.your_roles.includes('Approver')
                 ? 'Approval'
+                : selection.your_roles.includes('Owner')
+                ? 'Alignment'
                 : 'No Access'
         },
         currentSelectionModeAction: (state, getters) =>
@@ -1352,7 +1347,7 @@ export default {
         },
         async importSelectionInput(
             { commit, dispatch, rootGetters },
-            { destinationSelection, sourceSelection, sourceUser, importOptions }
+            { destinationSelection, sourceSelection, sourceUser, importOptions, isCopy }
         ) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             const apiUrl = `workspaces/${workspaceId}/convert-user-inputs`
@@ -1370,7 +1365,7 @@ export default {
                     source_selection_id: sourceSelection.id,
                     destination_selection_id: destinationSelection.id,
                     actions,
-                    is_copy: true,
+                    is_copy: isCopy,
                 })
                 .then(response => {
                     const showCallback = router.currentRoute.name == 'selection'
@@ -1402,6 +1397,7 @@ export default {
                                     sourceSelection,
                                     sourceUser,
                                     importOptions,
+                                    isCopy,
                                 })
                             },
                         },

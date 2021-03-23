@@ -61,16 +61,6 @@ export default {
                 import_from_integration: getters.getWorkspaceDatabases.length > 0 || dkc_api_enabled,
             }
         },
-        // getEnabledProductSpaces: (state, getters) => {
-        //     const workspace = getters.currentWorkspace
-        //     const dkc_api_enabled =
-        //         (workspace && workspace.title.toLowerCase().search('dkc') >= 0) ||
-        //         workspace.title == 'Internal Test Space'
-        //     return {
-        //         select: true,
-        //         buy:
-        //     }
-        // },
     },
 
     actions: {

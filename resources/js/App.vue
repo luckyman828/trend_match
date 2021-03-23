@@ -62,6 +62,9 @@ export default {
         ...mapGetters('presentation', {
             presentations: 'getPresentations',
         }),
+        ...mapGetters('liveUpdates', {
+            liveUpdateIsConnected: 'getIsConnected',
+        }),
         dragActive() {
             return this.isDragging
         },
@@ -75,6 +78,7 @@ export default {
                 this.initWorkspace()
                 this.initSignalR()
                 this.initCrispChat()
+                this.getActiveJobs()
             }
         },
         // Watch for workspace changes
@@ -90,9 +94,11 @@ export default {
         ...mapActions('auth', ['getAuthUser', 'logout']),
         ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
+        ...mapActions('backgroundJobs', ['getActiveJobs']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
+        ...mapMutations('liveUpdates', ['SET_IS_CONNECTED']),
         async initWorkspace() {
             // Get workspaces
             const fetchedWorkspaces = await this.fetchWorkspaces()
@@ -120,18 +126,37 @@ export default {
                     `${process.env.MIX_API_BASE_URL.substr(
                         0,
                         process.env.MIX_API_BASE_URL.lastIndexOf('/')
-                    )}/live-update`
+                    )}/live-update`,
+                    {
+                        skipNegotiation: true,
+                        transport: signalR.HttpTransportType.WebSockets,
+                    }
                 )
                 .configureLogging(signalR.LogLevel.Information)
                 .build()
             const connection = this.$connection
-            await connection.start().catch(err => {
-                console.log(err)
-            })
+
+            // Attempt to connect to signalR
+            let failCount = 0
+            while (!this.liveUpdateIsConnected) {
+                try {
+                    await connection.start().then(response => {
+                        this.SET_IS_CONNECTED(true)
+                    })
+                } catch (err) {
+                    const delay = 300
+                    failCount++
+                    console.log(`error connecting to SignalR. Retrying in ${delay} ms. Fail number: ${failCount}`)
+                    await new Promise(resolve => {
+                        setTimeout(() => resolve(), delay)
+                    })
+                    continue
+                }
+            }
 
             // Authenticate our connection
-            connection.invoke('Authenticate', this.getAuthUserToken).catch(function(err) {
-                return console.error(err.toString())
+            connection.invoke('Authenticate', this.getAuthUserToken).catch(err => {
+                console.log('error authenticating SignalR', err)
             })
 
             connection.on('AuthenticatedSuccess', message => {})
@@ -179,6 +204,7 @@ export default {
                     }
                 })
             })
+            this.connectedToSignalR = true
         },
         initCrispChat() {
             $crisp.push(['set', 'user:email', this.authUser.email])

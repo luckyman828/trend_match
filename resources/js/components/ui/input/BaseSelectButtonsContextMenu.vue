@@ -21,9 +21,10 @@
                     :optionGroupNameKey="optionGroupNameKey"
                     :optionGroupOptionsKey="optionGroupOptionsKey"
                     :optionNameKey="optionNameKey"
+                    :allowManualEntry="allowManualEntry"
                     :search="search"
                     :uniqueKey="uniqueKey"
-                    @submit="submit"
+                    @submit="onSubmit($event)"
                     @unset="$emit('unset')"
                 />
             </div>
@@ -35,7 +36,7 @@
                     :class="{ disabled: submitDisabled }"
                     style="margin-right: 8px;"
                     @click="
-                        submit()
+                        onSubmit()
                         slotProps.hide()
                     "
                 >
@@ -79,6 +80,7 @@ export default {
         'emitOnChange',
         'inline',
         'loading',
+        'allowManualEntry',
     ],
     // data: function() {return {
     //     currentValue
@@ -100,9 +102,10 @@ export default {
         hide() {
             this.$refs.contextMenu.hide()
         },
-        submit() {
-            this.$emit('input', this.$refs.selectButtons.selection)
-            this.$emit('submit', this.$refs.selectButtons.selection)
+        onSubmit(input) {
+            this.$refs.selectButtons.submit()
+            this.$emit('input', input)
+            this.$emit('submit', input)
             this.hide()
         },
     },

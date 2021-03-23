@@ -1,12 +1,18 @@
 <template>
     <div class="action-list-item">
-        <SelectionChapterPill class="chapter" :selection="action.selection" />
+        <SelectionChapterPill
+            class="chapter"
+            :selection="action.selection"
+            v-tooltip="action.selection.chapter && action.selection.chapter.name"
+        />
         <i
             v-if="action.selection.type == 'Master'"
             :selection="action.selection"
             class="selection-icon fas fa-crown primary"
         />
-        <span class="selection-name" v-if="action.selection.type != 'Chapter'">{{ action.selection.name }}</span>
+        <span class="selection-name" v-if="action.selection.type != 'Chapter'" v-tooltip="action.selection.name">{{
+            action.selection.name
+        }}</span>
         <span class="action" v-if="!showQty || ['None', 'Out'].includes(action.action)">{{ action.action }}</span>
         <div class="quantity pill ghost xs" v-else>
             <i class="fas fa-box"></i>
@@ -40,12 +46,17 @@ export default {
     display: flex;
     align-items: center;
     padding-right: 0px;
+    > * {
+        flex: 1;
+    }
     .chapter {
         margin-right: 4px;
+        white-space: nowrap;
     }
     .selection-icon {
         margin-right: 6px;
         font-size: 12px;
+        flex-grow: 0;
     }
     .selection-name {
         font-size: 12px;
@@ -53,16 +64,18 @@ export default {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+        margin-right: 4px;
     }
     .action {
         margin-left: auto;
         text-transform: uppercase;
         font-size: 11px;
+        flex-grow: 0;
         flex-shrink: 0;
     }
     .quantity {
         margin-left: auto;
-        flex-shrink: 0;
+        flex: 0 1 auto;
         i {
             margin-left: 4px;
         }
@@ -74,6 +87,8 @@ export default {
         margin-left: 8px;
         background: $grey500;
         flex-shrink: 0;
+        flex-grow: 0;
+        min-width: 8px;
         &.Focus {
             background: $primary;
         }
