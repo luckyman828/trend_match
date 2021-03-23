@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import TheSidebar from '../../components/layout/TheSidebar'
+import TheSidebar from './TheSidebar'
 import TheNavbar from '../../components/layout/TheNavbar'
 import TheImageLightbox from '../../components/layout/TheImageLightbox'
 import TheSnackbarSpawner from '../../components/layout/TheSnackbarSpawner'
@@ -65,22 +65,12 @@ export default {
     overflow: hidden;
     &:not(.full-screen) {
         display: grid;
-        grid-template-columns: 80px auto;
-        grid-template-rows: 60px auto;
+        grid-template-columns: $sidebarWidth auto;
+        grid-template-rows: $navbarHeight auto;
         grid-template-areas:
             'sidebar navbar'
             'sidebar main';
-        @media only screen and (-webkit-min-device-pixel-ratio: 1.3),
-            only screen and (-o-min-device-pixel-ratio: 13/10),
-            only screen and (min-resolution: 120dpi) {
-            .app {
-                grid-template-columns: 200px auto;
-            }
-        }
-        @media screen and (max-width: $screenSm) {
-            grid-template-columns: 52px auto;
-            grid-template-rows: 52px auto;
-        }
+
         .main {
             max-height: calc(100vh - #{$navbarHeight});
             overflow-y: scroll;

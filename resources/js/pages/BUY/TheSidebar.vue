@@ -2,14 +2,7 @@
     <div class="vue-component-sidebar sidebar theme-dark">
         <div class="nav">
             <div class="top-items">
-                <div class="sidebar-item logo inactive">
-                    <img class="hide-screen-sm" src="/images/kollekt_logo_small.svg" />
-                    <img
-                        class="show-screen-sm"
-                        style="height: 100%; width: 52px; margin-left: -8px"
-                        src="/images/kollekt_logo_00_1024x1024.svg"
-                    />
-                </div>
+                <TheSidebarSpaceLogo />
 
                 <div class="sidebar-item">
                     <router-link :to="{ name: 'buy.files' }" class="inner" v-tooltip.right="displayTooltips && 'Files'">
@@ -116,11 +109,13 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 import SignoutButton from '../../components/layout/SignoutButton'
+import TheSidebarSpaceLogo from '../../components/layout/TheSidebarSpaceLogo'
 
 export default {
     name: 'buy.TheSidebar',
     components: {
         SignoutButton,
+        TheSidebarSpaceLogo,
     },
     data: function() {
         return {
@@ -171,6 +166,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     background: $bgDark;
+    padding-top: 8px;
 }
 
 .sidebar-item {

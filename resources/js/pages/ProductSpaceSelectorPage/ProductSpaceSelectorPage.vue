@@ -3,12 +3,17 @@
         <div class="container">
             <h1>Hello {{ authUser ? authUser.name : 'Anon' }}</h1>
             <div class="product-list flex-list md">
-                <div class="product-card flex-list flex-v md" @click="onSetSpace('select')">
+                <div
+                    class="product-card flex-list flex-v md"
+                    v-for="(space, index) in availableSpaces"
+                    :key="index"
+                    @click="onSetSpace(space.name)"
+                >
                     <div class="logo-wrapper">
-                        <img src="/images/kollekt_logo_00_1024x1024-color.svg" alt="SELECT logo" />
+                        <img src="space.logo" />
                     </div>
-                    <div class="name ft-bd ft-20">Kollekt SELECT</div>
-                    <div class="dscription ft-md ft-16">Collaborative estimates</div>
+                    <div class="name ft-bd ft-20">{{ space.name }}</div>
+                    <div class="dscription ft-md ft-16">{{ space.byline }}</div>
                     <button class="dark fullw-width">
                         <span>Go</span>
                     </button>
@@ -36,12 +41,15 @@ export default {
         ...mapGetters('auth', {
             authUser: 'authUser',
         }),
+        ...mapGetters('workspaces', {
+            availableSpaces: 'getEnabledSpaces',
+        }),
     },
     methods: {
-        ...mapMutations('kollekt', ['SET_KOLLEKT_SPACE']),
+        ...mapMutations('kollekt', ['SET_KOLLEKT_SPACE', 'NAVIGATE_TO_CURRENT_SPACE']),
         onSetSpace(space) {
             this.SET_KOLLEKT_SPACE(space)
-            this.$router.push({ name: space })
+            this.NAVIGATE_TO_CURRENT_SPACE()
         },
     },
 }
@@ -82,6 +90,9 @@ export default {
     padding: 32px;
     border-radius: $borderRadiusModule;
     flex: 1;
+    .name {
+        text-transform: uppercase;
+    }
     &.disabled {
         background: $bluegrey400;
         cursor: default;

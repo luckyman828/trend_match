@@ -7,6 +7,7 @@ Vue.use(VueRouter)
 // Define route components
 
 const routes = [
+    // LOGIN / AUTH ROUTES
     {
         path: '/login',
         name: 'login',
@@ -42,130 +43,63 @@ const routes = [
         component: () =>
             import(/* webpackChunkName: "SetNewPasswordScreen" */ './pages/LoginPage/SetNewPasswordScreen'),
     },
-    {
-        path: '/file/:fileId/edit',
-        name: 'editFile',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "EditFilePage" */ './pages/EditFilePage'),
-    },
+
+    // SELECT REDIRECT ROUTES
     {
         path: '/files',
-        name: 'files',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "FilesPage" */ './pages/FilesPage'),
+        redirect: 'select/files',
+    },
+    {
+        path: '/file/:fileId/edit',
+        redirect: 'select/file/:fileId/edit',
     },
     {
         path: '/teams',
-        name: 'teams',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "TeamsPage" */ './pages/TeamsPage'),
+        redirect: 'select/teams',
     },
     {
         path: '/users',
-        name: 'users',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "UsersPage" */ './pages/UsersPage'),
+        redirect: 'select/users',
     },
     {
         path: '/file/:fileId/selection/:selectionId',
-        name: 'selection',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "SelectionPage" */ './pages/SelectionPage'),
+        redirect: 'select/file/:fileId/selection/:selectionId',
     },
     {
         path: '/file/:fileId/video/edit',
-        name: 'editVideoPresentation',
-        meta: {
-            root: 'select',
-            hideCrisp: true,
-        },
-        component: () =>
-            import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
+        redirect: 'select/file/:fileId/video/edit',
     },
     {
         path: '/file/:fileId/livestream/create',
-        name: 'createLivestream',
-        meta: {
-            root: 'select',
-            hideCrisp: true,
-        },
-        component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/CreateLivestreamPage'),
+        redirect: 'select/file/:fileId/livestream/create',
     },
     {
         path: '/file/:fileId/selection/:selectionId/video/watch',
-        name: 'watchVideoPresentation',
-        meta: {
-            root: 'select',
-            isFullscreen: true,
-            hideCrisp: true,
-        },
-        component: () =>
-            import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/WatchVideoPresentationPage'),
+        redirect: 'select/file/:fileId/selection/:selectionId/video/watch',
     },
     {
         path: '/file/:fileId/selection/:selectionId/video/watch/mobile',
-        name: 'mobileVideoPresentation',
-        meta: {
-            root: 'select',
-            isFullscreen: true,
-            hideCrisp: true,
-        },
-        component: () =>
-            import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage'),
+        redirect: 'select/file/:fileId/selection/:selectionId/video/watch/mobile',
     },
     {
         path: '/join/:linkHash',
-        name: 'joinSelection',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+        redirect: 'select/join/:linkHash',
     },
     {
         path: '/settings',
-        name: 'settings',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SettingsPage'),
+        redirect: 'select/settings',
     },
     {
         path: '/system-admin',
-        name: 'systemAdmin',
-        meta: {
-            root: 'select',
-        },
-        component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SystemAdminPage'),
+        redirect: 'select/system-admin',
     },
     {
         path: '/file/:fileId/result',
-        name: 'results',
-        meta: {
-            root: 'select',
-            isFullscreen: true,
-            hideCrisp: true,
-        },
-        component: () => import(/* webpackChunkName: "resultsPage" */ './pages/ResultsPage'),
+        redirect: 'select/file/:fileId/result',
     },
     {
         path: '/file/:fileId/live-results',
-        name: 'liveResults',
-        meta: {
-            root: 'select',
-            isFullscreen: true,
-            hideCrisp: true,
-        },
-        component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
+        redirect: 'select/file/:fileId/live-results',
     },
 
     // Root Routes
@@ -179,11 +113,141 @@ const routes = [
     {
         path: '/select',
         name: 'select',
-        redirect: 'files',
+        redirect: 'select/',
+        meta: {
+            root: 'select',
+            isRoot: true,
+        },
+        component: () => import(/* webpackChunkName: "buyRoot" */ './pages/SELECT/'),
         children: [
             {
+                path: 'files',
+                name: 'files',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "FilesPage" */ './pages/FilesPage'),
+            },
+            {
+                path: 'file/:fileId/edit',
+                name: 'editFile',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "EditFilePage" */ './pages/EditFilePage'),
+            },
+            {
+                path: 'teams',
+                name: 'teams',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "TeamsPage" */ './pages/TeamsPage'),
+            },
+            {
+                path: 'users',
+                name: 'users',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "UsersPage" */ './pages/UsersPage'),
+            },
+            {
+                path: 'file/:fileId/selection/:selectionId',
+                name: 'selection',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "SelectionPage" */ './pages/SelectionPage'),
+            },
+            {
+                path: 'file/:fileId/video/edit',
+                name: 'editVideoPresentation',
+                meta: {
+                    root: 'select',
+                    hideCrisp: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
+            },
+            {
+                path: 'file/:fileId/livestream/create',
+                name: 'createLivestream',
+                meta: {
+                    root: 'select',
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/CreateLivestreamPage'),
+            },
+            {
+                path: 'file/:fileId/selection/:selectionId/video/watch',
+                name: 'watchVideoPresentation',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/WatchVideoPresentationPage'),
+            },
+            {
+                path: 'file/:fileId/selection/:selectionId/video/watch/mobile',
+                name: 'mobileVideoPresentation',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage'),
+            },
+            {
+                path: 'join/:linkHash',
+                name: 'joinSelection',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+            },
+            {
+                path: 'settings',
+                name: 'settings',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SettingsPage'),
+            },
+            {
+                path: 'system-admin',
+                name: 'systemAdmin',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SystemAdminPage'),
+            },
+            {
+                path: 'file/:fileId/result',
+                name: 'results',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "resultsPage" */ './pages/ResultsPage'),
+            },
+            {
+                path: 'file/:fileId/live-results',
+                name: 'liveResults',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
+            },
+            {
                 path: '*',
-                redirect: '/files',
+                redirect: 'files',
             },
         ],
     },

@@ -2,15 +2,7 @@
     <div class="vue-component-sidebar sidebar theme-dark">
         <div class="nav">
             <div class="top-items">
-                <!-- <TheNavbarLogo class="sidebar-item"/> -->
-                <div class="sidebar-item logo inactive">
-                    <img class="hide-screen-sm" src="/images/kollekt_logo_small.svg" />
-                    <img
-                        class="show-screen-sm"
-                        style="height: 100%; width: 52px; margin-left: -8px"
-                        src="/images/kollekt_logo_00_1024x1024.svg"
-                    />
-                </div>
+                <TheSidebarSpaceLogo />
 
                 <div class="sidebar-item">
                     <router-link to="/files" class="inner" v-tooltip.right="displayTooltips && 'Files'">
@@ -119,17 +111,17 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import TheNavbarLogo from './TheNavbarLogo'
-import ImageSyncPopover from '../common/ImageSyncPopover/'
+import ImageSyncPopover from '../../components/common/ImageSyncPopover/'
+import TheSidebarSpaceLogo from '../../components/layout/TheSidebarSpaceLogo'
 
-import SignoutButton from './SignoutButton'
+import SignoutButton from '../../components/layout/SignoutButton'
 
 export default {
-    name: 'sidebar',
+    name: 'select.TheSidebar',
     components: {
         SignoutButton,
-        TheNavbarLogo,
         ImageSyncPopover,
+        TheSidebarSpaceLogo,
     },
     data: function() {
         return {
@@ -244,6 +236,21 @@ export default {
     @media screen and (max-width: $screenSm) {
         flex-direction: row;
         justify-content: flex-start;
+        // &:not(.inactive):hover {
+        //     width: 160px;
+        //     position: relative;
+        //     z-index: 99;
+        //     box-shadow: 0 3px 6px rgba(0,0,0,.2);
+        //     span {
+        //         display: inline;
+        //     }
+        // }
+        i {
+            // margin-bottom: 0;
+            // margin-right: 8px;
+            // width: 36px;
+            // min-width: 36px;
+        }
         span {
             display: none;
         }

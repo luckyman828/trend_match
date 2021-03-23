@@ -3,8 +3,8 @@
         <RootLoader v-if="isLoading" />
         <template v-else>
             <template v-if="!$route.meta.isFullscreen">
-                <TheSidebar />
                 <TheNavbar />
+                <TheSidebar />
             </template>
             <div class="main" id="main" ref="main" :class="{ 'hide-crisp': $route.meta.hideCrisp }">
                 <transition name="fade">
@@ -65,22 +65,12 @@ export default {
     overflow: hidden;
     &:not(.full-screen) {
         display: grid;
-        grid-template-columns: 80px auto;
-        grid-template-rows: 60px auto;
+        grid-template-columns: $sidebarWidth auto;
+        grid-template-rows: $navbarHeight auto;
         grid-template-areas:
             'sidebar navbar'
             'sidebar main';
-        @media only screen and (-webkit-min-device-pixel-ratio: 1.3),
-            only screen and (-o-min-device-pixel-ratio: 13/10),
-            only screen and (min-resolution: 120dpi) {
-            .app {
-                grid-template-columns: 200px auto;
-            }
-        }
-        @media screen and (max-width: $screenSm) {
-            grid-template-columns: 52px auto;
-            grid-template-rows: 52px auto;
-        }
+
         .main {
             max-height: calc(100vh - #{$navbarHeight});
             overflow-y: scroll;

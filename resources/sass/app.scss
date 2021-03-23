@@ -303,7 +303,8 @@ textarea {
 
 // COLORS
 @each $color in $brand-colors {
-    .col-#{nth($color,1)} {
+    .col-#{nth($color,1)},
+    .color-#{nth($color,1)} {
         color: nth($color, 2) !important;
     }
     .bg-#{nth($color,1)} {
@@ -650,7 +651,7 @@ input[type='submit'] {
         &.#{nth($size,1)} {
             min-width: nth($size, 2) * 1.5;
             &.fixed-width {
-                width: nth($size, 2) * 2;
+                width: nth($size, 2) * 2.5;
             }
         }
     }
@@ -1075,7 +1076,7 @@ i.has-tooltip {
         }
     }
     .tooltip-inner {
-        border-radius: 4px;
+        border-radius: $borderRadiusEl;
         border: 1px solid $divider;
         background-color: white;
         // box-shadow: 0 10px 10px rgba($dark, 20%);

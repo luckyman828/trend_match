@@ -61,6 +61,9 @@ export default {
                 import_from_integration: getters.getWorkspaceDatabases.length > 0 || dkc_api_enabled,
             }
         },
+        getEnabledSpaces: (state, getters, rootState, rootGetters) => {
+            return rootGetters['kollekt/getSpaces']
+        },
     },
 
     actions: {

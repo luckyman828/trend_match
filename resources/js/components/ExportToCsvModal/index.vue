@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <!-- <div class="form-section">
+                <div class="form-section">
                     <h4>Choose export type</h4>
                     <BaseRadioInputField
                         class="form-element"
@@ -44,7 +44,7 @@
                             v-tooltip="'Can be used to upload a new file to Kollekt, based on the results'"
                         ></i>
                     </BaseRadioInputField>
-                </div> -->
+                </div>
 
                 <!-- <div class="form-element" v-if="displayCurrencySelector">
                     <label for="currency-selector">Choose Currency to export</label>
@@ -60,7 +60,7 @@
                 </div> -->
 
                 <!-- START Export results only -->
-                <!-- <template v-if="exportType == 'results'">
+                <template v-if="exportType == 'results'">
                     <div class="form-section">
                         <h4>Choose what to export</h4>
                         <div class="form-element">
@@ -98,7 +98,7 @@
                             </BaseCheckboxInputField>
                         </div>
                     </div>
-                </template> -->
+                </template>
                 <!-- END Export results only -->
 
                 <CustomExportSection v-if="exportType == 'template'" :exportTemplate.sync="exportTemplate" />
