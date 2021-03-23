@@ -107,6 +107,12 @@
             </div>
 
             <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-tag" hotkey="KeyL" @click="onEditSelectedProductLabels">
+                    <span>Edit <u>l</u>abels</span>
+                </BaseContextMenuItem>
+            </div>
+
+            <div class="item-group">
                 <BaseContextMenuItem iconClass="far fa-file-export" hotkey="KeyE">
                     <template>
                         <span><u>E</u>xport selected</span>
@@ -114,16 +120,35 @@
 
                     <template v-slot:submenu>
                         <div class="item-group">
-                            <BaseContextMenuItem iconClass="far fa-file-pdf" hotkey="KeyP" @click="onExportToPdf">
-                                <span><u>P</u>DF</span>
-                            </BaseContextMenuItem>
-
                             <BaseContextMenuItem iconClass="far fa-file-csv" hotkey="KeyC" @click="onExportToCsv">
                                 <span><u>C</u>SV</span>
                             </BaseContextMenuItem>
                         </div>
                     </template>
                 </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuLabels" @hide="onUpdateSelectedProducts">
+            <div class="item-group">
+                <BaseSelectButtons
+                    :options="availableLabels"
+                    v-model="localLabels"
+                    type="select"
+                    :submitOnChange="true"
+                    ref="selectButtons"
+                >
+                    <template v-slot:before="slotProps">
+                        <span>{{ getLabelIndex(slotProps.option) + 1 }} - </span>
+                    </template>
+                </BaseSelectButtons>
+            </div>
+            <div class="item-group">
+                <div class="item-wrapper">
+                    <button class="primary full-width" @click="$refs.contextMenuLabels.hide()">
+                        <span>Done</span>
+                    </button>
+                </div>
             </div>
         </BaseContextMenu>
     </div>
@@ -155,6 +180,7 @@ export default {
             showContextMenu: false,
             contextProduct: null,
             localProducts: [],
+            localLabels: [],
         }
     },
     computed: {
@@ -165,6 +191,9 @@ export default {
             'getCurrentViewProducts',
             'getCurrentViewProductsFiltered',
         ]),
+        ...mapGetters('workspaces', {
+            availableLabels: 'getAvailableProductLabels',
+        }),
         products() {
             return this.allProducts.length == this.productsFilteredBySearch.length
                 ? this.localProducts
@@ -220,6 +249,11 @@ export default {
             },
         },
     },
+    watch: {
+        localLabels(newLabels, oldLabels) {
+            this.onLabelChange(newLabels, oldLabels)
+        },
+    },
     methods: {
         ...mapMutations('products', [
             'setSingleVisisble',
@@ -231,7 +265,7 @@ export default {
             'SET_SHOW_CSV_MODAL',
         ]),
         ...mapMutations('productFilters', ['SET_BUY_VIEW', 'SET_FILTER_SELECTION_IDS']),
-        ...mapActions('products', ['showSelectionProductPDP']),
+        ...mapActions('products', ['showSelectionProductPDP', 'updateManyProducts']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         ...mapMutations('productFilters', ['CLEAR_PRODUCT_FILTERS']),
         onExportToCsv() {
@@ -290,6 +324,42 @@ export default {
                     this.setCurrentFocusRowIndex(0)
                 }
             }
+        },
+        getLabelIndex(label) {
+            return this.availableLabels.indexOf(label)
+        },
+        onEditSelectedProductLabels(mouseEvent) {
+            this.localLabels = []
+            this.$refs.contextMenuLabels.show(mouseEvent)
+        },
+        onLabelChange(newLabels, oldLabels) {
+            console.log('on label change', newLabels, oldLabels)
+            const labelsToAdd = newLabels
+            const labelsToRemove = oldLabels.filter(label => !newLabels.includes(label))
+            console.log('labels to add/remove', labelsToAdd, labelsToRemove)
+
+            this.selectedProducts.map(product => {
+                // Add the label if it was not already there
+                const labelsToAddToProduct = labelsToAdd.filter(label => !product.labels.includes(label))
+                product.labels.push(...labelsToAddToProduct)
+                product.labels = product.labels.filter(label => !labelsToRemove.includes(label))
+
+                // PRODUCT LABELS
+                // Remove labels that are no longer on the product from variants
+                product.variants.map(variant => {
+                    for (let i = variant.labels.length - 1; i >= 0; i--) {
+                        const variantLabel = variant.labels[i]
+                        const existsOnProduct = !!product.labels.includes(variantLabel)
+                        if (!existsOnProduct) {
+                            variant.labels.splice(i, 1)
+                        }
+                    }
+                    return
+                })
+            })
+        },
+        async onUpdateSelectedProducts() {
+            await this.updateManyProducts({ file: this.file, products: this.selectedProducts })
         },
     },
     mounted() {
