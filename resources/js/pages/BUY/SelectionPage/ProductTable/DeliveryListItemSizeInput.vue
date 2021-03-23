@@ -1,5 +1,6 @@
 <template>
     <BaseInputShape
+        v-tooltip="{ content: `${sizeWeights.name}<br>Weight: ${weight}`, delay: { show: 500 } }"
         class="size-list-item ui-square white sm"
         placeholder="0"
         :disabled="!actionWriteAccess"
@@ -19,13 +20,17 @@
 import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'deliveryListItemSizeInput',
-    props: ['variant', 'deliveryDate', 'sizeObj'],
+    props: ['variant', 'deliveryDate', 'sizeObj', 'sizeWeights'],
     computed: {
         ...mapGetters('selections', {
             writeAccess: 'getCurrentSelectionWriteAccess',
         }),
         actionWriteAccess() {
             return this.writeAccess && this.writeAccess.actions
+        },
+        weight() {
+            const weightObj = this.sizeWeights.weights.find(x => x.name == this.sizeObj.size)
+            return weightObj ? weightObj.weight : 'not found'
         },
         quantity: {
             get() {

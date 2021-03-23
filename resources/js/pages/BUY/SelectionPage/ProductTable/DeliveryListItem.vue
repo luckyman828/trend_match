@@ -25,6 +25,7 @@
                     <DeliveryListItemSizeInput
                         class="size-list-item ui-square white sm"
                         v-for="(size, index) in variant.ean_sizes"
+                        :sizeWeights="sizeWeights"
                         :key="index"
                         :sizeObj="size"
                         :deliveryDate="delivery.delivery_date"
@@ -104,15 +105,11 @@ export default {
         actionWriteAccess() {
             return this.writeAccess && this.writeAccess.actions
         },
-    },
-    methods: {
-        ...mapActions('actions', ['updateAlignments']),
-        ...mapMutations('products', ['SET_QUANTITY']),
-        async onQtyInput(newQty) {
-            if (!newQty || newQty < 0) newQty = 0
+        sizeWeights() {
             const sizes = this.variant.ean_sizes
-            const brandWeights = dkcSizeSplit[this.variant.product.brand]
-            const sizeType = isFinite(this.variant.sizes[0].size) ? 'numeric' : 'alphanumeric'
+            const brand = this.variant.product.brand
+            const brandWeights = dkcSizeSplit[brand]
+            const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
             const sizeSubType =
                 sizeType == 'alphanumeric'
                     ? 'standard'
@@ -120,6 +117,19 @@ export default {
                     ? 'bottomsIn'
                     : 'standard'
             const weights = brandWeights[sizeType][sizeSubType]
+            return {
+                name: `${brand}: ${sizeType} - ${sizeSubType}`,
+                weights,
+            }
+        },
+    },
+    methods: {
+        ...mapActions('actions', ['updateAlignments']),
+        ...mapMutations('products', ['SET_QUANTITY']),
+        async onQtyInput(newQty) {
+            if (!newQty || newQty < 0) newQty = 0
+            const sizes = this.variant.ean_sizes
+            const weights = this.sizeWeights.weights
             const sizeSplit = await getWeightedSplit(newQty, sizes, weights)
             sizeSplit.map(sizeObj => {
                 this.SET_QUANTITY({

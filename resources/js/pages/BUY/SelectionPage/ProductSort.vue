@@ -79,7 +79,7 @@ export default {
                     key: 'category',
                     sortAsc: true,
                     label: 'Category',
-                    icon: 'far fa-filter',
+                    icon: 'far fa-tshirt',
                 },
                 {
                     key: 'wholesale_price',
