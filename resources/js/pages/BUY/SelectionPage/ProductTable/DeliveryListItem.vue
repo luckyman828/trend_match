@@ -46,6 +46,7 @@
                     @focus="editActive = true"
                     @blur="onBlurQty"
                     @keydown.enter="onSubmitQty"
+                    @keydown.tab.native="$emit('tab', $event)"
                     @input="onQtyInput"
                     :selectOnFocus="true"
                     :isNumber="true"
@@ -177,6 +178,9 @@ export default {
         },
         onClearQty() {
             this.onQtyInput(0)
+        },
+        onTab(e) {
+            console.log('on tab', e)
         },
     },
     created() {

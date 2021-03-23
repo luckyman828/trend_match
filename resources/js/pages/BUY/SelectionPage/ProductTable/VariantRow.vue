@@ -21,10 +21,12 @@
                 <div class="flex-list space-md">
                     <DeliveryListItem
                         v-for="(delivery, index) in deliveriesSorted"
+                        ref="deliveryListItem"
                         :key="index"
                         :variant="variant"
                         :index="index"
                         :delivery="delivery"
+                        @tab="onTab($event, index, 'deliveryListItem')"
                     />
                 </div>
             </div>
@@ -44,11 +46,13 @@
                         <div class="flex-list space-md">
                             <AssortmentListItem
                                 v-for="(assortment, index) in assortmentsSorted"
+                                ref="assortmentListItem"
                                 :key="index"
                                 :variant="variant"
                                 :assortment="assortment"
                                 :index="index"
                                 :deliveryDate="selectedDeliveryDate"
+                                @tab="onTab($event, index, 'assortmentListItem')"
                             />
                         </div>
                     </div>
@@ -112,7 +116,21 @@ export default {
             return url != '/images/placeholder.JPG'
         },
     },
-    methods: {},
+    methods: {
+        onTab(e, index, ref) {
+            const refArray = this.$refs[ref]
+            if (!e.shiftKey && index != refArray.length - 1) {
+                // GO Forward
+                e.preventDefault()
+                refArray[index + 1].onFocus()
+            }
+            if (e.shiftKey && index > 0) {
+                // GO Back
+                e.preventDefault()
+                refArray[index - 1].onFocus()
+            }
+        },
+    },
     mounted() {
         if (this.product.delivery_dates.length > 0) {
             this.selectedDeliveryDate = this.product.delivery_dates[0]

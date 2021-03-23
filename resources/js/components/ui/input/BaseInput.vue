@@ -106,6 +106,7 @@ export default {
             const passesPattern = !this.pattern || this.pattern.test(key)
             // If we fail the check
             if (!allowedKeys.includes(key) && !passesPattern) {
+                console.log('stop prop')
                 e.preventDefault()
                 e.stopPropagation()
                 return

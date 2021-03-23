@@ -44,6 +44,7 @@
                     :isNumber="true"
                     @focus="editActive = true"
                     @keydown.enter="onSubmitQty"
+                    @keydown.tab.native="$emit('tab', $event)"
                     @input="onQtyInput"
                     @blur="onBlurQty"
                     :selectOnFocus="true"

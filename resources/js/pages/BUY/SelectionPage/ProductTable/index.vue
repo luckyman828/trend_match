@@ -333,10 +333,8 @@ export default {
             this.$refs.contextMenuLabels.show(mouseEvent)
         },
         onLabelChange(newLabels, oldLabels) {
-            console.log('on label change', newLabels, oldLabels)
             const labelsToAdd = newLabels
             const labelsToRemove = oldLabels.filter(label => !newLabels.includes(label))
-            console.log('labels to add/remove', labelsToAdd, labelsToRemove)
 
             this.selectedProducts.map(product => {
                 // Add the label if it was not already there
