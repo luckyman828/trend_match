@@ -24,83 +24,6 @@
                     </div>
                 </div>
 
-                <!-- <div class="form-section">
-                    <h4>Choose export type</h4>
-                    <BaseRadioInputField
-                        class="form-element"
-                        v-model="exportType"
-                        value="results"
-                        v-if="$route.name != 'editFile'"
-                    >
-                        Export results
-                    </BaseRadioInputField>
-                    <BaseRadioInputField class="form-element" v-model="exportType" value="template">
-                        Custom Export
-                    </BaseRadioInputField>
-                    <BaseRadioInputField class="form-element" v-model="exportType" value="dump">
-                        <span>Export CSV dump</span>
-                        <i
-                            class="far fa-info-circle"
-                            v-tooltip="'Can be used to upload a new file to Kollekt, based on the results'"
-                        ></i>
-                    </BaseRadioInputField>
-                </div> -->
-
-                <!-- <div class="form-element" v-if="displayCurrencySelector">
-                    <label for="currency-selector">Choose Currency to export</label>
-                    <BaseInputField
-                        id="currency-selector"
-                        type="select"
-                        :disabled="true"
-                        :value="currencyToExport || 'Choose currency to export'"
-                        @click="showCurrencyContext($event)"
-                    >
-                        <i class="far fa-chevron-down"></i>
-                    </BaseInputField>
-                </div> -->
-
-                <!-- START Export results only -->
-                <!-- <template v-if="exportType == 'results'">
-                    <div class="form-section">
-                        <h4>Choose what to export</h4>
-                        <div class="form-element">
-                            <BaseCheckboxInputField v-model="exportAlignment">
-                                <span>Alignment</span>
-                            </BaseCheckboxInputField>
-                        </div>
-                        <div class="form-element">
-                            <BaseCheckboxInputField v-model="exportFeedback">
-                                <span>Feedback</span>
-                            </BaseCheckboxInputField>
-                        </div>
-                        <div class="form-element">
-                            <BaseCheckboxInputField v-model="exportRequests">
-                                <span>Requests</span>
-                            </BaseCheckboxInputField>
-                        </div>
-                        <div class="form-element">
-                            <BaseCheckboxInputField v-model="exportComments">
-                                <span>Comments</span>
-                            </BaseCheckboxInputField>
-                        </div>
-                        <div class="form-element" v-if="quantityEnabled">
-                            <BaseCheckboxInputField v-model="exportQuantity">
-                                <span>Quantity</span>
-                            </BaseCheckboxInputField>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h4>Export variants?</h4>
-                        <div class="form-element">
-                            <BaseCheckboxInputField v-model="exportVariants">
-                                <span>Export variants</span>
-                            </BaseCheckboxInputField>
-                        </div>
-                    </div>
-                </template> -->
-                <!-- END Export results only -->
-
                 <CustomExportSection v-if="exportType == 'template'" :exportTemplate.sync="exportTemplate" />
 
                 <BaseButton
@@ -142,7 +65,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import exportToCsv from '../../mixins/exportToCsv'
+import exportToCsv from '../../../mixins/exportToCsv'
 import CustomExportSection from './CustomExportSection'
 
 export default {
@@ -152,7 +75,6 @@ export default {
     mixins: [exportToCsv],
     data: function() {
         return {
-            // selectionsToExport: [],
             exportSelected: false,
             currencyToExport: null,
             exportTemplate: null,

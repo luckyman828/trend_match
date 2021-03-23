@@ -92,7 +92,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import ExportProductsModal from '../../../components/ExportProductsModal'
-import ExportToCsvModal from '../../../components/ExportToCsvModal'
+import ExportToCsvModal from '../../../components/BUY/ExportToCsvModal/'
 import ExportToFileModal from '../../../components/common/ExportToFileModal'
 import BudgetCounter from './BudgetCounter'
 
