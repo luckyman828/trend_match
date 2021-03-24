@@ -47,7 +47,6 @@
                     @blur="onBlurQty"
                     @keydown.enter="onSubmitQty"
                     @keydown.tab.native="$emit('tab', $event)"
-                    @input="onQtyInput"
                     :selectOnFocus="true"
                     :isNumber="true"
                 />
@@ -153,7 +152,8 @@ export default {
             this.editActive = false
             this.editSplit = false
         },
-        onSubmitQty() {
+        async onSubmitQty() {
+            await this.onQtyInput(this.localQuantity)
             this.editActive = false
             if (
                 document.activeElement == this.$refs.input.$el ||

@@ -45,7 +45,6 @@
                     @focus="editActive = true"
                     @keydown.enter="onSubmitQty"
                     @keydown.tab.native="$emit('tab', $event)"
-                    @input="onQtyInput"
                     @blur="onBlurQty"
                     :selectOnFocus="true"
                 />
@@ -118,6 +117,7 @@ export default {
             })
         },
         onSubmitQty() {
+            this.onQtyInput(this.localQuantity)
             // Make sure the new QTY is divisible by the size of it
             if (this.assortment.box_size) {
                 const newQty =
