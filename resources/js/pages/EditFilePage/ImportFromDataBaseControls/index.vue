@@ -206,6 +206,28 @@ export default {
                 iconClass: 'far fa-info-circle',
             })
             if (productsFiltered.length > 0) {
+                // Fix delivery dates for NOOS and RERUN styles
+                // First, find the delivery dates on our none NOOS styles
+                const seasonDeliveries = []
+                const allProducts = this.products
+                allProducts.map(product => {
+                    if (product.delivery_dates.length >= 12) return
+                    product.delivery_dates.map(deliveryDate => {
+                        if (!seasonDeliveries.includes(deliveryDate)) seasonDeliveries.push(deliveryDate)
+                    })
+                })
+
+                products.map(product => {
+                    if (product.delivery_dates.length < 12) {
+                        return
+                    }
+
+                    product.delivery_dates = seasonDeliveries
+                    product.variants.map(variant => {
+                        variant.delivery_dates = seasonDeliveries
+                    })
+                })
+
                 // Show variants with images first
                 productsFiltered.map(product => {
                     product.variants.sort((a, b) => {
