@@ -28,7 +28,9 @@ export async function getWeightedSplit(qty, sizes, weights) {
         if (leftover > 0) {
             // Subtract the leftover from the size with the lowest weight
             const lowestWeight = split.reduce((currentLowest, curr) => {
-                return curr.weight < currentLowest.weight && curr.qty >= 1 ? curr : currentLowest
+                return (curr.weight < currentLowest.weight && curr.qty >= 1) || currentLowest.qty == 0
+                    ? curr
+                    : currentLowest
             }, split[0])
             lowestWeight.qty -= 1
         }
