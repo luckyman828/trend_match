@@ -12,7 +12,11 @@ export function cleanUpDKCObj(srcObj, newObj) {
             keyVal = [keyVal.variant]
         }
         if (key == 'prices' && !Array.isArray(keyVal.prices)) {
-            keyVal = [keyVal.price]
+            if (keyVal.price && Array.isArray(keyVal.price)) {
+                keyVal = keyVal.price
+            } else {
+                keyVal = [keyVal.price]
+            }
         }
         if (key == 'assortments' && !Array.isArray(keyVal.assortments)) {
             if (Array.isArray(keyVal.assortment)) {
