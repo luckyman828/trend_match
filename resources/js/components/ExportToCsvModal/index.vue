@@ -215,7 +215,11 @@ export default {
         ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
-            const products = this.exportSelected ? this.getSelectedProducts : this.getCurrentViewProductsFiltered
+            const products = this.exportSelected
+                ? this.getSelectedProducts
+                : this.$route.name == 'editFile'
+                ? this.productsFiltered
+                : this.getCurrentViewProductsFiltered
             return products
         },
         selectionsToExport() {
@@ -226,7 +230,7 @@ export default {
         },
         availaleCurrencies() {
             const currenciesToReturn = []
-            const products = this.getCurrentViewProductsFiltered
+            const products = this.products
             products.forEach(product => {
                 product.prices.forEach(price => {
                     if (!!price.currency && !currenciesToReturn.includes(price.currency))

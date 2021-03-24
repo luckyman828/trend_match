@@ -128,6 +128,15 @@ export default {
                     })
                 })
 
+                // Show variants with images first
+                products.map(product => {
+                    console.log('show variant with image first', JSON.parse(JSON.stringify(product.variants)))
+                    product.variants.sort((a, b) => {
+                        if (!!a.pictures.find(x => !!x.url) && !b.pictures.find(x => !!x.url)) return -1
+                        if (!!b.pictures.find(x => !!x.url) && !a.pictures.find(x => !!x.url)) return 1
+                    })
+                })
+
                 await this.insertProducts({ file: this.currentFile, products, addToState: true })
             }
             clearInterval(msgFetcher)

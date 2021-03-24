@@ -75,7 +75,7 @@ export async function instantiateDKCProducts(products) {
         newProduct.datasource_id = product.no
         newProduct.extra_data.season = product.season
         newProduct.extra_data.sex = product.sex
-        newProduct.category = product.design_group
+        newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
         if (product.variants.length > 0) {
             product.variants[0].prices.map(price => {
@@ -182,19 +182,21 @@ export async function instantiateDKCProducts(products) {
         return newProduct
     })
 
-    // //Check if all images exist or not
-    // const allPictures = []
-    // newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
-    // const imageAvailabilityMap = await store.dispatch(
-    //     'integrationDkc/testImageAvailability',
-    //     allPictures.map(picture => picture.url)
-    // )
-    // allPictures.map(picture => {
-    //     const imageExists = imageAvailabilityMap[picture.url] == true
-    //     if (!imageExists) {
-    //         picture.url = null
-    //     }
-    // })
+    //Check if all images exist or not
+    const allPictures = []
+    newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
+    const imageAvailabilityMap = await store.dispatch(
+        'integrationDkc/testImageAvailability',
+        allPictures.map(picture => picture.url)
+    )
+    allPictures.map(picture => {
+        const imageExists = imageAvailabilityMap[picture.url] == true
+        if (!imageExists) {
+            picture.url = null
+        }
+    })
+
+    console.log('new products', newProducts)
 
     return newProducts
 }

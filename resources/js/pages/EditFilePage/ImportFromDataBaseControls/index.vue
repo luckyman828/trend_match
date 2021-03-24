@@ -184,6 +184,14 @@ export default {
                 iconClass: 'far fa-info-circle',
             })
             if (productsFiltered.length > 0) {
+                // Show variants with images first
+                productsFiltered.map(product => {
+                    product.variants.sort((a, b) => {
+                        if (!!a.pictures.find(x => !!x.url) && !b.pictures.find(x => !!x.url)) return -1
+                        if (!!b.pictures.find(x => !!x.url) && !a.pictures.find(x => !!x.url)) return 1
+                    })
+                })
+
                 await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
                 // SCROLL TO THE BOTTOM OF THE PAGE
                 const scrollContainer = document.getElementById('main')

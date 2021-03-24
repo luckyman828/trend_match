@@ -103,14 +103,22 @@ export default {
         ...mapGetters('selections', {
             writeAccess: 'getCurrentSelectionWriteAccess',
         }),
+        ...mapGetters('integrationDkc', {
+            brandMap: 'getBrandMap',
+        }),
         actionWriteAccess() {
             return this.writeAccess && this.writeAccess.actions
         },
         sizeWeights() {
             const sizes = this.variant.ean_sizes
-            const brand = this.variant.product.brand
+            // If the brand is just 2 characters long we have the code and should get the full brandname instead
+            const productBrand = this.variant.product.brand
+            const brand =
+                productBrand.length == 2 ? this.brandMap.find(brand => brand.code == productBrand).name : productBrand
+
             const brandWeights = dkcSizeSplit[brand]
             const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
+            console.log('get size weights', brand, brandWeights, sizeType)
             const sizeSubType =
                 sizeType == 'alphanumeric'
                     ? 'standard'
