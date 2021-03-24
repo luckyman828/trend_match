@@ -44,6 +44,14 @@
                 </button>
             </BaseDropdownInputField>
 
+            <!-- SEASON -->
+            <BaseInputField
+                class="form-element"
+                innerLabel="Season"
+                v-model="selectedSeason"
+                placeholder="Enter Season Code"
+            />
+
             <!-- SCAN BARCODES -->
             <div v-if="mode == 'Scan'" class="flex-list center-h">
                 <i class="fal fa-barcode-read dark xl"></i>
@@ -126,6 +134,9 @@ export default {
                 (localStorage.getItem('dkcSelectedCompany') &&
                     JSON.parse(localStorage.getItem('dkcSelectedCompany'))) ||
                 null,
+            selectedSeason:
+                (localStorage.getItem('dkcSelectedSeason') && JSON.parse(localStorage.getItem('dkcSelectedSeason'))) ||
+                null,
         }
     },
     computed: {
@@ -150,6 +161,9 @@ export default {
         selectedCompany(newVal) {
             localStorage.setItem('dkcSelectedCompany', JSON.stringify(newVal))
         },
+        selectedSeason(newVal) {
+            localStorage.setItem('dkcSelectedSeason', JSON.stringify(newVal))
+        },
     },
     methods: {
         ...mapActions('products', ['fetchProductsFromDatabase', 'insertProducts']),
@@ -163,9 +177,17 @@ export default {
 
             let products = []
             if (isEAN) {
-                products = await this.fetchProductsByEAN({ EANs: queryValues, company: this.selectedCompany })
+                products = await this.fetchProductsByEAN({
+                    EANs: queryValues,
+                    company: this.selectedCompany,
+                    season: this.selectedSeason,
+                })
             } else {
-                products = await this.fetchProductsById({ productIds: queryValues, company: this.selectedCompany })
+                products = await this.fetchProductsById({
+                    productIds: queryValues,
+                    company: this.selectedCompany,
+                    season: this.selectedSeason,
+                })
             }
 
             if (!products) {

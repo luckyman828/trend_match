@@ -372,7 +372,7 @@ export default {
             const key = e.code
             if (
                 e.target.type == 'textarea' ||
-                (e.target && e.target.tagName.toUpperCase() == 'INPUT') ||
+                (e.target.tagName && e.target.tagName.toUpperCase() == 'INPUT') ||
                 this.singleVisible
             )
                 return // Don't mess with user input

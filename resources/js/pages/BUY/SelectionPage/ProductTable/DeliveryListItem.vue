@@ -118,7 +118,6 @@ export default {
 
             const brandWeights = dkcSizeSplit[brand]
             const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
-            console.log('get size weights', brand, brandWeights, sizeType)
             const sizeSubType =
                 sizeType == 'alphanumeric'
                     ? 'standard'

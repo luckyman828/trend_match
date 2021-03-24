@@ -239,11 +239,13 @@ export default {
             console.log('pnew products', newProducts)
             return newProducts
         },
-        async fetchProductsById({}, { productIds, company }) {
+        async fetchProductsById({}, { productIds, company, season }) {
             let products = []
             await Promise.all(
                 productIds.map(async productId => {
-                    const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${company.code}`
+                    const apiUrl = `/dkc-adapter/get-product?product_no=${productId}&company=${company.code}${
+                        season ? `&season_code=${season}` : ''
+                    }`
                     await axios
                         .get(apiUrl)
                         .then(response => {
@@ -260,11 +262,13 @@ export default {
             const newProducts = await instantiateDKCProducts(products)
             return newProducts
         },
-        async fetchProductsByEAN({ dispatch, getters }, { EANs, company }) {
+        async fetchProductsByEAN({ dispatch, getters }, { EANs, company, season }) {
             let products = []
             await Promise.all(
                 EANs.map(async ean => {
-                    const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${company.code}`
+                    const apiUrl = `/dkc-adapter/find-ean?ean_code=${ean}&company=${company.code}${
+                        season ? `&season_code=${season}` : ''
+                    }`
                     await axios
                         .get(apiUrl)
                         .then(async response => {
