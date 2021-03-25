@@ -47,7 +47,6 @@
                     @blur="onBlurQty"
                     @keydown.enter="onSubmitQty"
                     @keydown.tab.native="$emit('tab', $event)"
-                    @input="onQtyInput"
                     :selectOnFocus="true"
                     :isNumber="true"
                 />
@@ -103,12 +102,19 @@ export default {
         ...mapGetters('selections', {
             writeAccess: 'getCurrentSelectionWriteAccess',
         }),
+        ...mapGetters('integrationDkc', {
+            brandMap: 'getBrandMap',
+        }),
         actionWriteAccess() {
             return this.writeAccess && this.writeAccess.actions
         },
         sizeWeights() {
             const sizes = this.variant.ean_sizes
-            const brand = this.variant.product.brand
+            // If the brand is just 2 characters long we have the code and should get the full brandname instead
+            const productBrand = this.variant.product.brand
+            const brand =
+                productBrand.length == 2 ? this.brandMap.find(brand => brand.code == productBrand).name : productBrand
+
             const brandWeights = dkcSizeSplit[brand]
             const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
             const sizeSubType =
@@ -146,7 +152,8 @@ export default {
             this.editActive = false
             this.editSplit = false
         },
-        onSubmitQty() {
+        async onSubmitQty() {
+            await this.onQtyInput(this.localQuantity)
             this.editActive = false
             if (
                 document.activeElement == this.$refs.input.$el ||

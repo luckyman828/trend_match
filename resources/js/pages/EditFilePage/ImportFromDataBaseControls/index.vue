@@ -44,6 +44,28 @@
                 </button>
             </BaseDropdownInputField>
 
+            <!-- SEASON -->
+            <BaseInputField
+                class="form-element"
+                innerLabel="Season"
+                v-model="selectedSeason"
+                placeholder="Enter Season Code"
+            />
+
+            <!-- LABELS -->
+            <BaseDropdownInputField
+                class="form-element"
+                innerLabel="Labels to add"
+                placeholder="(Optional) Select labels to add"
+                :options="availableLabels"
+                v-model="selectedLabels"
+                :resize="false"
+            >
+                <button class="primary full-width" v-close-popover>
+                    <span>Done</span>
+                </button>
+            </BaseDropdownInputField>
+
             <!-- SCAN BARCODES -->
             <div v-if="mode == 'Scan'" class="flex-list center-h">
                 <i class="fal fa-barcode-read dark xl"></i>
@@ -126,6 +148,10 @@ export default {
                 (localStorage.getItem('dkcSelectedCompany') &&
                     JSON.parse(localStorage.getItem('dkcSelectedCompany'))) ||
                 null,
+            selectedSeason:
+                (localStorage.getItem('dkcSelectedSeason') && JSON.parse(localStorage.getItem('dkcSelectedSeason'))) ||
+                null,
+            selectedLabels: [],
         }
     },
     computed: {
@@ -134,6 +160,7 @@ export default {
         }),
         ...mapGetters('workspaces', {
             databases: 'getWorkspaceDatabases',
+            availableLabels: 'getAvailableProductLabels',
         }),
         ...mapGetters('files', {
             file: 'currentFile',
@@ -150,6 +177,9 @@ export default {
         selectedCompany(newVal) {
             localStorage.setItem('dkcSelectedCompany', JSON.stringify(newVal))
         },
+        selectedSeason(newVal) {
+            localStorage.setItem('dkcSelectedSeason', JSON.stringify(newVal))
+        },
     },
     methods: {
         ...mapActions('products', ['fetchProductsFromDatabase', 'insertProducts']),
@@ -163,9 +193,17 @@ export default {
 
             let products = []
             if (isEAN) {
-                products = await this.fetchProductsByEAN({ EANs: queryValues, company: this.selectedCompany })
+                products = await this.fetchProductsByEAN({
+                    EANs: queryValues,
+                    company: this.selectedCompany,
+                    season: this.selectedSeason,
+                })
             } else {
-                products = await this.fetchProductsById({ productIds: queryValues, company: this.selectedCompany })
+                products = await this.fetchProductsById({
+                    productIds: queryValues,
+                    company: this.selectedCompany,
+                    season: this.selectedSeason,
+                })
             }
 
             if (!products) {
@@ -184,6 +222,39 @@ export default {
                 iconClass: 'far fa-info-circle',
             })
             if (productsFiltered.length > 0) {
+                // Find delivery dates on our non-NOOS styles
+                const seasonDeliveries = []
+                const allProducts = this.products
+                allProducts.map(product => {
+                    if (product.delivery_dates.length >= 12) return
+                    product.delivery_dates.map(deliveryDate => {
+                        if (!seasonDeliveries.includes(deliveryDate)) seasonDeliveries.push(deliveryDate)
+                    })
+                })
+
+                // Process the fetched products
+                products.map(product => {
+                    // Fix delivery dates for NOOS and RERUN styles
+                    if (product.delivery_dates.length >= 12) {
+                        product.delivery_dates = seasonDeliveries
+                        product.variants.map(variant => {
+                            variant.delivery_dates = seasonDeliveries
+                        })
+                    }
+
+                    // Show variants with images first
+                    product.variants.sort((a, b) => {
+                        if (!!a.pictures.find(x => !!x.url) && !b.pictures.find(x => !!x.url)) return -1
+                        if (!!b.pictures.find(x => !!x.url) && !a.pictures.find(x => !!x.url)) return 1
+                    })
+
+                    // Add selected labels if any
+                    product.labels = this.selectedLabels
+                    product.variants.map(variant => {
+                        variant.labels = this.selectedLabels
+                    })
+                })
+
                 await this.insertProducts({ file: this.file, products: productsFiltered, addToState: true })
                 // SCROLL TO THE BOTTOM OF THE PAGE
                 const scrollContainer = document.getElementById('main')

@@ -12,7 +12,11 @@ export function cleanUpDKCObj(srcObj, newObj) {
             keyVal = [keyVal.variant]
         }
         if (key == 'prices' && !Array.isArray(keyVal.prices)) {
-            keyVal = [keyVal.price]
+            if (keyVal.price && Array.isArray(keyVal.price)) {
+                keyVal = keyVal.price
+            } else {
+                keyVal = [keyVal.price]
+            }
         }
         if (key == 'assortments' && !Array.isArray(keyVal.assortments)) {
             if (Array.isArray(keyVal.assortment)) {
@@ -58,8 +62,6 @@ export async function instantiateDKCProducts(products) {
         return prettyProduct
     })
 
-    console.log('pretty products', prettyProducts)
-
     const baseProduct = await store.dispatch('products/instantiateNewProduct')
     const baseVariant = await store.dispatch('products/instantiateNewProductVariant')
 
@@ -75,7 +77,7 @@ export async function instantiateDKCProducts(products) {
         newProduct.datasource_id = product.no
         newProduct.extra_data.season = product.season
         newProduct.extra_data.sex = product.sex
-        newProduct.category = product.design_group
+        newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
         if (product.variants.length > 0) {
             product.variants[0].prices.map(price => {
@@ -182,19 +184,21 @@ export async function instantiateDKCProducts(products) {
         return newProduct
     })
 
-    // //Check if all images exist or not
-    // const allPictures = []
-    // newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
-    // const imageAvailabilityMap = await store.dispatch(
-    //     'integrationDkc/testImageAvailability',
-    //     allPictures.map(picture => picture.url)
-    // )
-    // allPictures.map(picture => {
-    //     const imageExists = imageAvailabilityMap[picture.url] == true
-    //     if (!imageExists) {
-    //         picture.url = null
-    //     }
-    // })
+    //Check if all images exist or not
+    const allPictures = []
+    newProducts.map(product => product.variants.map(variant => allPictures.push(...variant.pictures)))
+    const imageAvailabilityMap = await store.dispatch(
+        'integrationDkc/testImageAvailability',
+        allPictures.map(picture => picture.url)
+    )
+    allPictures.map(picture => {
+        const imageExists = imageAvailabilityMap[picture.url] == true
+        if (!imageExists) {
+            picture.url = null
+        }
+    })
+
+    console.log('new products', newProducts)
 
     return newProducts
 }

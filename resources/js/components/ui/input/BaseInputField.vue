@@ -197,7 +197,7 @@ export default {
     }
     &.has-inner-label {
         .input-wrapper {
-            padding-top: 14px;
+            padding-top: 16px;
             input {
                 font-weight: 700;
                 font-size: 12px;
@@ -207,6 +207,7 @@ export default {
         .inner-label {
             color: $primary;
             position: absolute;
+            left: 8px;
             top: 2px;
             z-index: 1;
             font-size: 10px;

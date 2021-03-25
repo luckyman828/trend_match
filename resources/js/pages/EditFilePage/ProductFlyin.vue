@@ -1149,7 +1149,10 @@ export default {
             const key = event.code
 
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            if (
+                (!event.target || (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT')) &&
+                this.show
+            ) {
                 if (key == 'KeyS' && this.saveActive) this.onUpdateProduct()
 
                 // Label hotkeys

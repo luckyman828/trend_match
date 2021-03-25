@@ -136,14 +136,13 @@ export default {
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
         ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
-        productsFiltered() {
+        products() {
             if (this.$route.name.search('editFile') >= 0) {
-                console.log('route name checks put')
                 return this.productsFiltered
             } else return this.getCurrentViewProductsFiltered
         },
         productsToExport() {
-            const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
+            const products = this.exportSelected ? this.getSelectedProducts : this.products
             return products
         },
         selectionsToExport() {

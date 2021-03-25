@@ -117,6 +117,7 @@ export default {
                         if (!seasonDeliveries.includes(deliveryDate)) seasonDeliveries.push(deliveryDate)
                     })
                 })
+
                 products.map(product => {
                     if (product.delivery_dates.length < 12) {
                         return
@@ -125,6 +126,14 @@ export default {
                     product.delivery_dates = seasonDeliveries
                     product.variants.map(variant => {
                         variant.delivery_dates = seasonDeliveries
+                    })
+                })
+
+                // Show variants with images first
+                products.map(product => {
+                    product.variants.sort((a, b) => {
+                        if (!!a.pictures.find(x => !!x.url) && !b.pictures.find(x => !!x.url)) return -1
+                        if (!!b.pictures.find(x => !!x.url) && !a.pictures.find(x => !!x.url)) return 1
                     })
                 })
 

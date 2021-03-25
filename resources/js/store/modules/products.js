@@ -404,9 +404,12 @@ export default {
         getProductsFiltered: (state, getters) => getters.productsFiltered,
         getCurrentViewProducts: (state, getters, rootState, rootGetters) => {
             const products = getters.products
-            let productsToReturn = [...products]
             const buyView = rootGetters['productFilters/getBuyView']
             const selection = rootGetters['selections/getCurrentSelection']
+
+            if (!selection) return products
+
+            let productsToReturn = [...products]
 
             if (selection.type == 'Summed') {
                 // Filter out variats with no QTY
@@ -484,20 +487,27 @@ export default {
             // Show the single PDP
             commit('setSingleVisisble', true)
         },
-        async insertProducts({ commit, dispatch }, { file, products, addToState }) {
+        async insertProducts({ commit, dispatch, getters }, { file, products, addToState }) {
             // Chunk products to avoid too big requests
             const productChunks = chunkArray(products, 50)
 
             await Promise.all(
                 productChunks.map(async productChunk => {
                     const apiUrl = `/files/${file.id}/products`
-                    await axios.post(apiUrl, {
-                        method: 'Add',
-                        products: productChunk,
-                    })
+                    await axios
+                        .post(apiUrl, {
+                            method: 'Add',
+                            products: productChunk,
+                        })
+                        .then(response => {
+                            // Add the created ID to the products
+                            products.map(product => {
+                                product.id = response.data.added_product_id_map[product.datasource_id]
+                            })
+                        })
                 })
             )
-                .then(async response => {
+                .then(async () => {
                     // Alert the user
                     commit(
                         'alerts/SHOW_SNACKBAR',
@@ -511,11 +521,6 @@ export default {
                         { root: true }
                     )
 
-                    // Add the created ID to the products
-                    products.map(product => {
-                        product.id = response.data.added_product_id_map[product.datasource_id]
-                    })
-                    
                     // Start image sync job
                     const syncJobId = response.data.download_image_progress_id
                     if (syncJobId != 0) {
@@ -523,6 +528,17 @@ export default {
                     }
 
                     if (addToState) {
+                        let sequenceIndex = getters.products
+                            ? getters.products.reduce(
+                                  (highestSequence, product) =>
+                                      product.sequence > highestSequence ? product.sequence : highestSequence,
+                                  0
+                              )
+                            : 0
+                        products.map(product => {
+                            product.sequence = sequenceIndex + 1
+                            sequenceIndex++
+                        })
                         commit('insertProducts', { products, method: 'add' })
                         await dispatch('initProducts', products)
                         commit('SORT_PRODUCTS')
