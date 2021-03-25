@@ -4,27 +4,17 @@
             <h1>Hello {{ authUser ? authUser.name : 'Anon' }}</h1>
             <div class="product-list flex-list md">
                 <div
-                    class="product-card flex-list flex-v md"
+                    class="product-card flex-list flex-v md wrap"
                     v-for="(space, index) in availableSpaces"
                     :key="index"
                     @click="onSetSpace(space.name)"
                 >
                     <div class="logo-wrapper">
-                        <img src="space.logo" />
+                        <img :src="space.logo" />
                     </div>
                     <div class="name ft-bd ft-20">{{ space.name }}</div>
                     <div class="dscription ft-md ft-16">{{ space.byline }}</div>
                     <button class="dark fullw-width">
-                        <span>Go</span>
-                    </button>
-                </div>
-                <div class="product-card flex-list flex-v md" @click="onSetSpace('buy')">
-                    <div class="logo-wrapper">
-                        <img src="/images/kollekt_logo_00_1024x1024-color.svg" alt="BUY logo" />
-                    </div>
-                    <div class="name ft-bd ft-20">Kollekt BUY</div>
-                    <div class="dscription ft-md ft-16">Multi-brand purchasing</div>
-                    <button class="dark full-width go-button">
                         <span>Go</span>
                     </button>
                 </div>
@@ -66,15 +56,14 @@ export default {
         margin-bottom: 60px;
     }
     .logo-wrapper {
-        height: 68px;
-        width: 68px;
+        height: 100px;
+        width: 100px;
         margin: 0 auto 16px;
-        background: $bg;
-        border-radius: 16px;
         img {
             height: 100%;
             width: 100%;
             object-fit: contain;
+            filter: drop-shadow($shadowXs);
         }
     }
     .go-button {

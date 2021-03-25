@@ -69,7 +69,7 @@ import exportToCsv from '../../../mixins/exportToCsv'
 import CustomExportSection from './CustomExportSection'
 
 export default {
-    name: 'exportCSVModal',
+    name: 'buy.ExportCSVModal',
     components: { CustomExportSection },
     props: ['show'],
     mixins: [exportToCsv],
@@ -136,8 +136,14 @@ export default {
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
         ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
+        productsFiltered() {
+            if (this.$route.name.search('editFile') >= 0) {
+                console.log('route name checks put')
+                return this.productsFiltered
+            } else return this.getCurrentViewProductsFiltered
+        },
         productsToExport() {
-            const products = this.exportSelected ? this.getSelectedProducts : this.getCurrentViewProductsFiltered
+            const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
             return products
         },
         selectionsToExport() {
@@ -148,7 +154,7 @@ export default {
         },
         availaleCurrencies() {
             const currenciesToReturn = []
-            const products = this.getCurrentViewProductsFiltered
+            const products = this.products
             products.forEach(product => {
                 product.prices.forEach(price => {
                     if (!!price.currency && !currenciesToReturn.includes(price.currency))

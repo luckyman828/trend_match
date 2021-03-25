@@ -8,12 +8,12 @@ export default {
             {
                 name: 'select',
                 byline: 'Trim Collections',
-                logo: '/images/kollekt_logo_00_1024x1024-color.svg',
+                logo: '/images/logo/logo_select_blue-on-white.svg',
             },
             {
                 name: 'buy',
                 byline: 'Multi-brand purchasing',
-                logo: '/images/logo/kollekt-buy-logo.png',
+                logo: '/images/logo/logo_kollekt-buy_white-on-blue.svg',
             },
         ],
     },
