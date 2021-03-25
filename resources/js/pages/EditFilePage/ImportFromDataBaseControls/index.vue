@@ -52,6 +52,20 @@
                 placeholder="Enter Season Code"
             />
 
+            <!-- LABELS -->
+            <BaseDropdownInputField
+                class="form-element"
+                innerLabel="Labels to add"
+                placeholder="(Optional) Select labels to add"
+                :options="availableLabels"
+                v-model="selectedLabels"
+                :resize="false"
+            >
+                <button class="primary full-width" v-close-popover>
+                    <span>Done</span>
+                </button>
+            </BaseDropdownInputField>
+
             <!-- SCAN BARCODES -->
             <div v-if="mode == 'Scan'" class="flex-list center-h">
                 <i class="fal fa-barcode-read dark xl"></i>
@@ -137,6 +151,7 @@ export default {
             selectedSeason:
                 (localStorage.getItem('dkcSelectedSeason') && JSON.parse(localStorage.getItem('dkcSelectedSeason'))) ||
                 null,
+            selectedLabels: [],
         }
     },
     computed: {
@@ -145,6 +160,7 @@ export default {
         }),
         ...mapGetters('workspaces', {
             databases: 'getWorkspaceDatabases',
+            availableLabels: 'getAvailableProductLabels',
         }),
         ...mapGetters('files', {
             file: 'currentFile',
@@ -206,8 +222,7 @@ export default {
                 iconClass: 'far fa-info-circle',
             })
             if (productsFiltered.length > 0) {
-                // Fix delivery dates for NOOS and RERUN styles
-                // First, find the delivery dates on our none NOOS styles
+                // Find delivery dates on our non-NOOS styles
                 const seasonDeliveries = []
                 const allProducts = this.products
                 allProducts.map(product => {
@@ -217,22 +232,26 @@ export default {
                     })
                 })
 
+                // Process the fetched products
                 products.map(product => {
-                    if (product.delivery_dates.length < 12) {
-                        return
+                    // Fix delivery dates for NOOS and RERUN styles
+                    if (product.delivery_dates.length >= 12) {
+                        product.delivery_dates = seasonDeliveries
+                        product.variants.map(variant => {
+                            variant.delivery_dates = seasonDeliveries
+                        })
                     }
 
-                    product.delivery_dates = seasonDeliveries
-                    product.variants.map(variant => {
-                        variant.delivery_dates = seasonDeliveries
-                    })
-                })
-
-                // Show variants with images first
-                productsFiltered.map(product => {
+                    // Show variants with images first
                     product.variants.sort((a, b) => {
                         if (!!a.pictures.find(x => !!x.url) && !b.pictures.find(x => !!x.url)) return -1
                         if (!!b.pictures.find(x => !!x.url) && !a.pictures.find(x => !!x.url)) return 1
+                    })
+
+                    // Add selected labels if any
+                    product.labels = this.selectedLabels
+                    product.variants.map(variant => {
+                        variant.labels = this.selectedLabels
                     })
                 })
 

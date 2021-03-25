@@ -62,8 +62,6 @@ export async function instantiateDKCProducts(products) {
         return prettyProduct
     })
 
-    console.log('pretty products', prettyProducts)
-
     const baseProduct = await store.dispatch('products/instantiateNewProduct')
     const baseVariant = await store.dispatch('products/instantiateNewProductVariant')
 
