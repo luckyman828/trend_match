@@ -1,5 +1,5 @@
 <template>
-    <div class="settings-page">
+    <div class="settings-page container sm">
         <Breadcrumbs />
         <h1>Settings</h1>
         <div class="form-wrapper">
@@ -86,9 +86,13 @@
             <div class="form-section" v-if="isSystemAdmin">
                 <h3>System admin settings</h3>
                 <h4>Enabled features</h4>
-                <div class="form-element">
-                    <BaseCheckboxInputField v-model="workspace.style_option_enabled" @input="onUpdateWorkspaceDetails">
-                        <span>Style option API</span>
+                <div class="form-element" v-for="(feature, index) in allFeatures" :key="index">
+                    <BaseCheckboxInputField
+                        v-model="workspace.feature_flags"
+                        :modelValue="feature"
+                        @input="onUpdateWorkspaceDetails"
+                    >
+                        <span>{{ feature }}</span>
                     </BaseCheckboxInputField>
                 </div>
                 <div class="form-element">
@@ -124,7 +128,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Breadcrumbs from '../../components/common/Breadcrumbs'
+import Breadcrumbs from '../../../components/common/Breadcrumbs'
 import CustomProductFieldsForm from './CustomProductFieldsForm'
 import ProductLabelsForm from './ProductLabelsForm'
 export default {
@@ -144,6 +148,9 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('kollektFeatures', {
+            allFeatures: 'getFeatureFlags',
+        }),
         ...mapGetters('workspaces', {
             workspace: 'currentWorkspace',
             realRole: 'getRealWorkspaceRole',

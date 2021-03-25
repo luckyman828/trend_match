@@ -24,7 +24,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import PageLoader from '../../components/common/PageLoader'
+import PageLoader from '../../../components/common/PageLoader'
 import NewWorkspaceModal from './NewWorkspaceModal'
 
 export default {

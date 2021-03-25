@@ -7,7 +7,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SettingsPage from './SettingsPage'
-import PageLoader from '../../components/common/PageLoader'
+import PageLoader from '../../../components/common/PageLoader'
 
 export default {
     name: 'filesLoader',

@@ -34,6 +34,7 @@ export default {
                 : state.availableWorkspaceRoles.filter(x => x.role != 'Owner'),
         currentWorkspaceIndex: state => state.currentWorkspaceIndex,
         currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
+        getCurrentWorkspace: (state, getters) => getters.currentWorkspace,
         authUserWorkspaceRole: (state, getters) => {
             if (!getters.currentWorkspace) return 'Undefined'
             if (getters.currentWorkspace.role == 'Owner') return 'Admin'
@@ -50,19 +51,18 @@ export default {
             getters.currentWorkspace && getters.currentWorkspace.available_labels
                 ? getters.currentWorkspace.available_labels
                 : [],
+        getFeatureFlags: (state, getters) => (getters.currentWorkspace ? getters.currentWorkspace.feature_flags : []),
         getEnabledFeatures: (state, getters) => {
-            const workspace = getters.currentWorkspace
-            const dkc_api_enabled =
-                (workspace && workspace.title.toLowerCase().search('dkc') >= 0) ||
-                workspace.title == 'Internal Test Space'
-            return {
-                style_option_api: workspace.style_option_enabled,
-                dkc_api: dkc_api_enabled,
-                import_from_integration: getters.getWorkspaceDatabases.length > 0 || dkc_api_enabled,
-            }
+            const enabledFeaturues = Object.fromEntries(getters.getFeatureFlags.map(flag => [flag, true]))
+            Object.defineProperty(enabledFeaturues, 'import_from_integration', {
+                get: () => enabledFeaturues.dkc_integration || getters.getWorkspaceDatabases.length > 0,
+            })
+            return enabledFeaturues
         },
         getEnabledSpaces: (state, getters, rootState, rootGetters) => {
-            return rootGetters['kollekt/getSpaces']
+            return rootGetters['kollektSpaces/getSpaces'].filter(space => {
+                return getters.getFeatureFlags.includes(space.featureFlag)
+            })
         },
     },
 
@@ -93,12 +93,13 @@ export default {
             }
             return workspaces
         },
-        async setCurrentWorkspaceIndex({ commit }, index) {
+        async SET_CURRENT_WORKSPACE_INDEX({ commit }, index) {
             // Reset the current folder ID
             commit('files/SET_CURRENT_FOLDER', null, { root: true })
-            commit('setCurrentWorkspaceIndex', index)
+            commit('SET_CURRENT_WORKSPACE_INDEX', index)
         },
-        async fetchWorkspace({ state, dispatch, rootGetters }, workspaceId) {
+        async fetchWorkspace({ state, dispatch, rootGetters, commit }, workspaceId) {
+            commit('setLoading', true)
             let apiUrl = `workspaces/${workspaceId}`
             // If we are super admin, use the admin endpoint
             const isSystemAdmin = rootGetters['auth/getIsSystemAdmin']
@@ -112,6 +113,7 @@ export default {
                     Object.assign(stateWorkspace, workspace)
                 }
             })
+            commit('setLoading', false)
             return workspace
         },
         async uploadWorkspaceCoverImage({ getters, dispatch }, image) {
@@ -350,7 +352,7 @@ export default {
                 // Redirect the user to another worksapce.
                 const index = state.workspaces.findIndex(x => x.id == workspace.id)
                 state.workspaces.splice(index, 1)
-                commit('setCurrentWorkspaceIndex', 0)
+                commit('SET_CURRENT_WORKSPACE_INDEX', 0)
             })
         },
     },
@@ -363,7 +365,7 @@ export default {
         setWorkspaces(state, workspaces) {
             state.workspaces = workspaces
         },
-        setCurrentWorkspaceIndex(state, index) {
+        SET_CURRENT_WORKSPACE_INDEX(state, index) {
             // Save the current workspace index in local storage
             localStorage.setItem('workspace-index', index)
             state.currentWorkspaceIndex = index

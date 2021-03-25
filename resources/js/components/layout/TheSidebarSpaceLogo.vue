@@ -42,12 +42,12 @@ export default {
         ...mapGetters('workspaces', {
             availableSpaces: 'getEnabledSpaces',
         }),
-        ...mapGetters('kollekt', {
+        ...mapGetters('kollektSpaces', {
             currentSpace: 'getCurrentSpace',
         }),
     },
     methods: {
-        ...mapMutations('kollekt', ['SET_KOLLEKT_SPACE', 'NAVIGATE_TO_CURRENT_SPACE']),
+        ...mapMutations('kollektSpaces', ['SET_KOLLEKT_SPACE', 'NAVIGATE_TO_CURRENT_SPACE']),
         onSetSpace(space) {
             this.SET_KOLLEKT_SPACE(space.name)
             this.NAVIGATE_TO_CURRENT_SPACE()

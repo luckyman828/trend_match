@@ -105,8 +105,28 @@ const routes = [
     // Root Routes
     {
         path: '/',
-        name: 'selectSpace',
-        component: () => import(/* webpackChunkName: "selectSpace" */ './pages/ProductSpaceSelectorPage/'),
+        name: 'root',
+        component: () => import(/* webpackChunkName: "rootRoot" */ './pages/ROOT/'),
+        children: [
+            {
+                path: '/',
+                name: 'selectSpace',
+                meta: {
+                    isFullscreen: true,
+                },
+                component: () => import(/* webpackChunkName: "selectSpace" */ './pages/ROOT/ProductSpaceSelectorPage/'),
+            },
+            {
+                path: 'settings/:workspaceId',
+                name: 'workspaceSettings',
+                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/ROOT/SettingsPage'),
+            },
+            {
+                path: 'system-admin',
+                name: 'systemAdmin',
+                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/ROOT/SystemAdminPage'),
+            },
+        ],
     },
 
     // SELECT Routes
@@ -116,6 +136,7 @@ const routes = [
         redirect: 'select/',
         meta: {
             root: 'select',
+            space: 'select',
             isRoot: true,
         },
         component: () => import(/* webpackChunkName: "buyRoot" */ './pages/SELECT/'),
@@ -210,22 +231,6 @@ const routes = [
                 component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
             },
             {
-                path: 'settings',
-                name: 'settings',
-                meta: {
-                    root: 'select',
-                },
-                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SettingsPage'),
-            },
-            {
-                path: 'system-admin',
-                name: 'systemAdmin',
-                meta: {
-                    root: 'select',
-                },
-                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SystemAdminPage'),
-            },
-            {
                 path: 'file/:fileId/result',
                 name: 'results',
                 meta: {
@@ -256,6 +261,11 @@ const routes = [
     {
         path: '/play',
         name: 'play',
+        meta: {
+            root: 'play',
+            space: 'play',
+            isRoot: true,
+        },
         component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
         children: [
             {
@@ -286,6 +296,7 @@ const routes = [
         redirect: 'buy/',
         meta: {
             root: 'buy',
+            space: 'buy',
             isRoot: true,
         },
         component: () => import(/* webpackChunkName: "buyRoot" */ './pages/BUY/'),
@@ -325,17 +336,52 @@ const router = new VueRouter({
     // link here: https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
 })
 
+const onRedirectSpace = next => {
+    // Tell the user they are getting redirected
+    store.commit('alerts/SHOW_SNACKBAR', {
+        type: 'info',
+        icon: 'far fa-info-circle',
+        msg: "Redirected: You don' have access to this route.",
+    })
+    // Redirect to a space the user has access to
+    const availableSpaces = store.getters['workspaces/getEnabledSpaces']
+    if (availableSpaces.length > 0) next({ name: availableSpaces[0].name })
+    else next('/')
+}
+
 router.beforeEach(async (to, from, next) => {
+    // Make sure we are done initing before we start applying guards
+    const initDone = store.getters['persist/getInitDone']
+    if (!initDone) {
+        await new Promise(resolve => {
+            const tester = setInterval(() => {
+                if (store.getters['persist/getInitDone']) {
+                    resolve()
+                    clearInterval(tester)
+                }
+            }, 100)
+        })
+    }
+
     // Reset current folder
     if (!['files', 'editFile', 'selection'].includes(to.name)) {
         // If we are not going to a file related path --> reset the current folder
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
 
-    // if (to.name == 'login' && from && from.name) {
-    //     store.commit('routes/SET_NEXT_URL', from.fullPath)
-    // }
+    // GUARD SPACES
+    // Find if the current root route
+    const root = to.matched[0]
+    if (
+        root.meta &&
+        root.meta.space &&
+        !store.getters['workspaces/getEnabledSpaces'].find(space => space.name == root.meta.space)
+    ) {
+        onRedirectSpace(next)
+    }
+    // END GUARD SPACES
 
+    // AUTH
     if (to.path.startsWith('/login') && store.getters['auth/isAuthenticated']) {
         next({ name: 'files' })
         return
@@ -346,6 +392,7 @@ router.beforeEach(async (to, from, next) => {
     } else if (to.name == 'setNewPassword' && !store.getters['auth/getPasswordRecoverySessionId']) {
         next({ name: 'login' })
     }
+    // END AUTH
 
     if (to.name == 'watchVideoPresentation' && window.innerWidth < 1000) {
         next({ name: 'mobileVideoPresentation', params: to.params })

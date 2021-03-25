@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import PageLoader from '../../components/common/PageLoader'
+import PageLoader from '../../../components/common/PageLoader'
 import ProductSpaceSelectorPage from './ProductSpaceSelectorPage'
 export default {
     name: 'productSpaceSelectorPageLoader',

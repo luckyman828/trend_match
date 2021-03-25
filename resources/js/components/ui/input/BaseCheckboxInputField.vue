@@ -4,8 +4,8 @@
             ref="input"
             class="checkbox"
             :disabled="disabled"
-            :value="value"
-            :modelValue="true"
+            :value="modelValue ? modelValue : value"
+            :modelValue="modelValue ? value : true"
             @change="onChange"
         />
         <span><slot /></span>
@@ -15,7 +15,7 @@
 <script>
 export default {
     name: 'baseCheckboxInputField',
-    props: ['value', 'disabled'],
+    props: ['value', 'disabled', 'modelValue'],
     methods: {
         onChange(value) {
             this.$emit('input', value)

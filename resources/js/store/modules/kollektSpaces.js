@@ -7,11 +7,13 @@ export default {
         spaces: [
             {
                 name: 'select',
+                featureFlag: 'space_select',
                 byline: 'Trim Collections',
                 logo: '/images/logo/logo_select_blue-on-white.svg',
             },
             {
                 name: 'buy',
+                featureFlag: 'space_buy',
                 byline: 'Multi-brand purchasing',
                 logo: '/images/logo/logo_kollekt-buy_white-on-blue.svg',
             },

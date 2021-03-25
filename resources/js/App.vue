@@ -12,22 +12,20 @@
     >
         <LoginRoot v-if="!isAuthenticated" />
 
-        <transition name="fade" v-else-if="true">
+        <!-- <transition name="fade" v-else-if="!loadingWorkspace">
             <router-view :key="$route.path"></router-view>
-        </transition>
+        </transition> -->
+        <router-view v-else-if="!loadingWorkspace" :key="$route.path"></router-view>
 
-        <!-- <PLAYB2CRoot v-else-if="$route.path && $route.path.startsWith('/play')" /> -->
-
-        <!-- <RootLoader v-else-if="!$route.meta.root" />
-        <SELECTRoot v-else-if="$route.meta.root == 'select'" /> -->
-
-        <div class="error-wrapper" v-else>
+        <div class="error-wrapper" v-else-if="error">
             <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
             <i class="xl far fa-exclamation-triangle"></i>
             <h3>There was an error connecting to Kollekt.</h3>
             <p>Please try refreshing the page, or checking your connection.</p>
             <p>Contact Kollekt Support if the error persists.</p>
         </div>
+
+        <BaseLoader class="app-loader loading-wrapper" v-else />
     </div>
     <!-- END NEW -->
 </template>
@@ -50,6 +48,7 @@ export default {
     data: function() {
         return {
             error: false,
+            loadingWorkspace: true,
         }
     },
     computed: {
@@ -92,14 +91,16 @@ export default {
     methods: {
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
-        ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex', 'fetchWorkspace']),
+        ...mapActions('workspaces', ['fetchWorkspaces', 'SET_CURRENT_WORKSPACE_INDEX', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapActions('backgroundJobs', ['getActiveJobs']),
         ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
         ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapMutations('liveUpdates', ['SET_IS_CONNECTED']),
+        ...mapMutations('persist', ['SET_INIT_DONE']),
         async initWorkspace() {
+            this.loadingWorkspace = true
             // Get workspaces
             const fetchedWorkspaces = await this.fetchWorkspaces()
             if (fetchedWorkspaces.length <= 0) {
@@ -114,9 +115,11 @@ export default {
             // Set the current workspace
             // If we don't have a current workspace saved, then set index to 0
             if (!this.currentWorkspaceIndex || this.currentWorkspaceIndex < 0) {
-                this.setCurrentWorkspaceIndex(0)
+                this.SET_CURRENT_WORKSPACE_INDEX(0)
             }
             await this.fetchWorkspace(this.currentWorkspace.id)
+            this.loadingWorkspace = false
+            this.SET_INIT_DONE(true)
         },
         async initSignalR() {
             // Connect to SignalR
