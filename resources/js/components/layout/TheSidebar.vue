@@ -45,7 +45,7 @@
                 :to="{ name: 'workspaceSettings' }"
             />
 
-            <SidebarItem @click="drawerExpanded = !drawerExpanded" v-tooltip.right="'Click for more options'">
+            <SidebarItem @click.native="drawerExpanded = !drawerExpanded" v-tooltip.right="'Click for more options'">
                 <div class="circle auth-user-icon">
                     <div class="user">
                         {{
@@ -67,7 +67,7 @@
                 :class="[{ collapsed: !drawerExpanded }, { 'system-admin': getIsSystemAdmin }]"
             >
                 <SidebarItem label="System Admin" :to="{ name: 'systemAdmin' }" iconClass="fas fa-user-secret" />
-                <SidebarItem label="Sign ou" iconClass="far fa-sign-out fa-flip-horizontal" @click="logout" />
+                <SidebarItem label="Sign ou" iconClass="far fa-sign-out fa-flip-horizontal" @click.native="logout" />
             </div>
         </div>
     </div>
@@ -81,7 +81,7 @@ import SignoutButton from './SignoutButton'
 import TheSidebarSpaceLogo from './TheSidebarSpaceLogo'
 
 export default {
-    name: 'buy.TheSidebar',
+    name: 'TheSidebar',
     components: {
         SignoutButton,
         TheSidebarSpaceLogo,
@@ -223,9 +223,9 @@ export default {
     transition: 0.2s;
     position: relative;
     overflow: hidden;
-    height: 80px;
+    height: 60px;
     &.system-admin {
-        height: 160px;
+        height: 120px;
     }
     &.collapsed {
         height: 0;

@@ -8,40 +8,59 @@ Vue.use(VueRouter)
 
 const routes = [
     // LOGIN / AUTH ROUTES
+
     {
         path: '/login',
-        name: 'login',
+        name: 'loginRoot',
+        redirect: 'login/',
         meta: {
             root: 'login',
+            isRoot: true,
         },
-        component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/LoginPage/LoginScreen'),
-    },
-    {
-        path: '/login/recover-password',
-        name: 'recoverPassword',
-        meta: {
-            root: 'login',
-        },
-        component: () =>
-            import(/* webpackChunkName: "RecoverPasswordScreen" */ './pages/LoginPage/RecoverPasswordScreen'),
-    },
-    {
-        path: '/login/verification-code',
-        name: 'verificationCode',
-        meta: {
-            root: 'login',
-        },
-        component: () =>
-            import(/* webpackChunkName: "VerificationCodeScreen" */ './pages/LoginPage/VerificationCodeScreen'),
-    },
-    {
-        path: '/login/set-new-password',
-        name: 'setNewPassword',
-        meta: {
-            root: 'login',
-        },
-        component: () =>
-            import(/* webpackChunkName: "SetNewPasswordScreen" */ './pages/LoginPage/SetNewPasswordScreen'),
+        component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/Login/'),
+        children: [
+            {
+                path: '/login',
+                name: 'login',
+                meta: {
+                    root: 'login',
+                },
+                component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/Login/LoginPage/LoginScreen'),
+            },
+            {
+                path: '/login/recover-password',
+                name: 'recoverPassword',
+                meta: {
+                    root: 'login',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "RecoverPasswordScreen" */ './pages/Login/LoginPage/RecoverPasswordScreen'
+                    ),
+            },
+            {
+                path: '/login/verification-code',
+                name: 'verificationCode',
+                meta: {
+                    root: 'login',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "VerificationCodeScreen" */ './pages/Login/LoginPage/VerificationCodeScreen'
+                    ),
+            },
+            {
+                path: '/login/set-new-password',
+                name: 'setNewPassword',
+                meta: {
+                    root: 'login',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "SetNewPasswordScreen" */ './pages/Login/LoginPage/SetNewPasswordScreen'
+                    ),
+            },
+        ],
     },
 
     // SELECT REDIRECT ROUTES
@@ -115,6 +134,13 @@ const routes = [
                     isFullscreen: true,
                 },
                 component: () => import(/* webpackChunkName: "selectSpace" */ './pages/ROOT/ProductSpaceSelectorPage/'),
+                beforeEnter: (to, from, next) => {
+                    const availableSpaces = store.getters['workspaces/getEnabledSpaces']
+                    if (!store.getters['auth/getIsSystemAdmin'] && availableSpaces.length == 1) {
+                        next({ name: availableSpaces[0].name })
+                    }
+                    next()
+                },
             },
             {
                 path: 'settings/:workspaceId',
@@ -372,6 +398,7 @@ router.beforeEach(async (to, from, next) => {
     // GUARD SPACES
     // Find if the current root route
     const root = to.matched[0]
+    console.log('to', root, to)
     if (
         root.meta &&
         root.meta.space &&
