@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import applyRouteGuards from './helpers/applyRouteGuards'
 import store from './store'
 
 Vue.use(VueRouter)
@@ -11,24 +12,24 @@ const routes = [
 
     {
         path: '/login',
-        name: 'loginRoot',
+        name: 'login',
         redirect: 'login/',
         meta: {
             root: 'login',
             isRoot: true,
         },
-        component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/Login/'),
+        component: () => import(/* webpackChunkName: "LoginRoot" */ './pages/Login/'),
         children: [
             {
-                path: '/login',
-                name: 'login',
+                path: '/',
+                name: 'loginForm',
                 meta: {
                     root: 'login',
                 },
                 component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/Login/LoginPage/LoginScreen'),
             },
             {
-                path: '/login/recover-password',
+                path: 'recover-password',
                 name: 'recoverPassword',
                 meta: {
                     root: 'login',
@@ -39,7 +40,7 @@ const routes = [
                     ),
             },
             {
-                path: '/login/verification-code',
+                path: 'verification-code',
                 name: 'verificationCode',
                 meta: {
                     root: 'login',
@@ -50,7 +51,7 @@ const routes = [
                     ),
             },
             {
-                path: '/login/set-new-password',
+                path: 'set-new-password',
                 name: 'setNewPassword',
                 meta: {
                     root: 'login',
@@ -362,94 +363,29 @@ const router = new VueRouter({
     // link here: https://router.vuejs.org/guide/essentials/history-mode.html#example-server-configurations
 })
 
-const onRedirectSpace = next => {
-    // Tell the user they are getting redirected
-    store.commit('alerts/SHOW_SNACKBAR', {
-        type: 'info',
-        icon: 'far fa-info-circle',
-        msg: "Redirected: You don' have access to this route.",
-    })
-    // Redirect to a space the user has access to
-    const availableSpaces = store.getters['workspaces/getEnabledSpaces']
-    if (availableSpaces.length > 0) next({ name: availableSpaces[0].name })
-    else next('/')
-}
-
 router.beforeEach(async (to, from, next) => {
-    // Make sure we are done initing before we start applying guards
-    const initDone = store.getters['persist/getInitDone']
-    if (!initDone) {
-        await new Promise(resolve => {
-            const tester = setInterval(() => {
-                if (store.getters['persist/getInitDone']) {
-                    resolve()
-                    clearInterval(tester)
-                }
-            }, 100)
-        })
-    }
-
     // Reset current folder
     if (!['files', 'editFile', 'selection'].includes(to.name)) {
         // If we are not going to a file related path --> reset the current folder
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
-
+    console.log('beofre')
     // GUARD SPACES
-    // Find if the current root route
-    const root = to.matched[0]
-    console.log('to', root, to)
-    if (
-        root.meta &&
-        root.meta.space &&
-        !store.getters['workspaces/getEnabledSpaces'].find(space => space.name == root.meta.space)
-    ) {
-        onRedirectSpace(next)
-    }
-    // END GUARD SPACES
+    applyRouteGuards(to, from, next)
+    return
 
-    // AUTH
-    if (to.path.startsWith('/login') && store.getters['auth/isAuthenticated']) {
-        next({ name: 'files' })
-        return
-    }
-
-    if (to.name == 'verificationCode' && !store.getters['auth/getPasswordRecoveryEmail']) {
-        next({ name: 'login' })
-    } else if (to.name == 'setNewPassword' && !store.getters['auth/getPasswordRecoverySessionId']) {
-        next({ name: 'login' })
-    }
-    // END AUTH
-
+    // Redirect PLAY
     if (to.name == 'watchVideoPresentation' && window.innerWidth < 1000) {
         next({ name: 'mobileVideoPresentation', params: to.params })
     }
     if (to.name == 'mobileVideoPresentation' && window.innerWidth >= 1000) {
         next({ name: 'watchVideoPresentation', params: to.params })
     }
-
-    // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
-    if (to.name == 'joinSelection' && to.params.linkHash) {
-        next()
-    }
-
-    // Check that the user is not going to the login page already
-    else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {
-        store.commit('routes/SET_NEXT_URL', to.fullPath)
-        next({
-            name: 'login',
-        })
-    } else {
-        next()
-    }
 })
 
 router.afterEach((to, from) => {
     // Reset current selections on route leave
-    // const selectionRouteNames = ['selection', 'createLivestream']
-    // if (selectionRouteNames.includes(from.name)) {
     store.commit('selections/SET_CURRENT_SELECTIONS', [])
-    // }
 })
 
 export default router

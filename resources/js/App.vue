@@ -10,12 +10,14 @@
             { public: !isAuthenticated },
         ]"
     >
-        <LoginRoot v-if="!isAuthenticated" />
+        <!-- <LoginRoot v-if="!isAuthenticated" /> -->
 
-        <!-- <transition name="fade" v-else-if="!loadingWorkspace">
-            <router-view :key="$route.path"></router-view>
-        </transition> -->
-        <router-view v-else-if="!loadingWorkspace" :key="$route.path"></router-view>
+        <!-- <transition name="fade" v-if="!isAuthenticated">
+            <router-view></router-view>
+        </transition>
+        <router-view v-else-if="!!isAuthenticated && !loadingWorkspace" :key="$route.path"></router-view> -->
+
+        <router-view v-if="!isAuthenticated || (!!isAuthenticated && !loadingWorkspace)"></router-view>
 
         <div class="error-wrapper" v-else-if="error">
             <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
@@ -36,6 +38,7 @@ import SELECTRoot from './pages/SELECT/'
 import PLAYB2CRoot from './pages/PLAYB2C/'
 import LoginRoot from './pages/Login/'
 import RootLoader from './components/common/RootLoader'
+import applyRouteGuards from './helpers/applyRouteGuards'
 
 export default {
     name: 'app',
@@ -70,14 +73,16 @@ export default {
     },
     watch: {
         // Watch for changes to the authStatus
-        authStatus: function(newVal) {
+        authStatus: async function(newVal) {
+            console.log('auth status')
             // When our auth status changes to success
             // -> initialize the workspace
             if (newVal == 'success') {
-                this.initWorkspace()
                 this.initSignalR()
                 this.initCrispChat()
                 this.getActiveJobs()
+                await this.initWorkspace()
+                applyRouteGuards
             }
         },
         // Watch for workspace changes
@@ -213,6 +218,12 @@ export default {
             $crisp.push(['set', 'user:email', this.authUser.email])
             $crisp.push(['set', 'user:nickname', this.authUser.name])
         },
+    },
+    mounted() {
+        console.log('authenticated', this.isAuthenticated)
+        if (!this.isAuthenticated) {
+            this.SET_INIT_DONE(true)
+        }
     },
     async created() {
         // Set up a request intercepter that checks if the user is still authenticated

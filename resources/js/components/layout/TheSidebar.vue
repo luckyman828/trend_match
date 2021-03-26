@@ -66,7 +66,12 @@
                 class="bottom-drawer flex-list flex-v space-lg"
                 :class="[{ collapsed: !drawerExpanded }, { 'system-admin': getIsSystemAdmin }]"
             >
-                <SidebarItem label="System Admin" :to="{ name: 'systemAdmin' }" iconClass="fas fa-user-secret" />
+                <SidebarItem
+                    v-if="getIsSystemAdmin"
+                    label="System Admin"
+                    :to="{ name: 'systemAdmin' }"
+                    iconClass="fas fa-user-secret"
+                />
                 <SidebarItem label="Sign ou" iconClass="far fa-sign-out fa-flip-horizontal" @click.native="logout" />
             </div>
         </div>
