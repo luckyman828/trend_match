@@ -67,8 +67,30 @@
             </BaseDropdownInputField>
 
             <!-- SCAN BARCODES -->
-            <div v-if="mode == 'Scan'" class="flex-list center-h">
+            <div v-if="mode == 'Scan'" class="flex-list center-h flex-v space-md">
                 <i class="fal fa-barcode-read dark xl"></i>
+                <div class="scan-log-wrapper">
+                    <div class="ft-bd ft-12">Scan Log</div>
+                    <div class="scan-log flex-list flex-v">
+                        <div
+                            class="scan-log-item flex-list center-v lh-sm"
+                            v-for="(logItem, index) in scanLog"
+                            :key="index"
+                        >
+                            <i
+                                class="far"
+                                :class="
+                                    logItem.type == 'success'
+                                        ? 'green fa-check-circle'
+                                        : logItem.type == 'error'
+                                        ? 'red fa-exclamation-triangle'
+                                        : 'fa-info-circle'
+                                "
+                            />
+                            <span class="msg" v-html="logItem.msg"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- SEARCH -->
@@ -152,6 +174,7 @@ export default {
                 (localStorage.getItem('dkcSelectedSeason') && JSON.parse(localStorage.getItem('dkcSelectedSeason'))) ||
                 null,
             selectedLabels: [],
+            scanLog: [],
         }
     },
     computed: {
@@ -206,9 +229,13 @@ export default {
                 })
             }
 
-            if (!products) {
+            if (!products || products.length == 0) {
                 this.isFetching = false
                 this.queryValueCount = 0
+                this.scanLog.push({
+                    type: 'error',
+                    msg: `Product with ${isEAN ? 'EAN' : 'ID'}: <strong>${queryValues.join(',')}</strong> not found.`,
+                })
                 return
             }
 
@@ -259,6 +286,19 @@ export default {
                 // SCROLL TO THE BOTTOM OF THE PAGE
                 const scrollContainer = document.getElementById('main')
                 scrollContainer.scroll(0, scrollContainer.scrollHeight)
+
+                this.scanLog.push({
+                    type: 'success',
+                    msg: `Product with ${isEAN ? 'EAN' : 'ID'}: <strong>${queryValues.join(',')}</strong> added.`,
+                })
+            } else {
+                // If products already exists
+                this.scanLog.push({
+                    type: 'info',
+                    msg: `Product with ${isEAN ? 'EAN' : 'ID'}: <strong>${queryValues.join(
+                        ','
+                    )}</strong> ignored. It already exists in file.`,
+                })
             }
             this.isFetching = false
             this.queryValueCount = 0
@@ -354,6 +394,19 @@ export default {
     }
     .choose-mode {
         margin-top: 32px;
+    }
+    .scan-log-wrapper {
+        width: 100%;
+        .scan-log {
+            width: 100%;
+            height: 200px;
+            border-radius: $borderRadiusEl;
+            border: $borderEl;
+            background: $bg;
+            padding: 8px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
     }
 }
 </style>
