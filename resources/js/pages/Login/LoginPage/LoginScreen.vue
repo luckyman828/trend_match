@@ -44,7 +44,7 @@
         </div>
 
         <BaseButton
-            type="submit"
+            :type="submitDisabled ? 'button' : 'submit'"
             :disabled="submitDisabled"
             class="submit-button full-width"
             buttonClass="button primary full-width lg"
@@ -115,19 +115,19 @@ export default {
         margin-left: 14px !important;
         margin-right: 14px !important;
     }
-    form {
-        .error-wrapper {
+
+    .error-wrapper {
+        color: $fail;
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
             color: $fail;
-            font-weight: 500;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            i {
-                color: $fail;
-                margin-right: 8px;
-            }
+            margin-right: 8px;
         }
     }
+
     .show-pass {
         cursor: pointer;
         &:hover {

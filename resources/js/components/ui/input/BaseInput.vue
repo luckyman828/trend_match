@@ -100,7 +100,8 @@ export default {
                 'Escape',
                 'Tab',
             ]
-            if (e.key == 'a' && e.ctrlKey) {
+            const allowedCtrlCombinationKeys = ['a', 'c', 'v']
+            if (e.ctrlKey && allowedCtrlCombinationKeys.includes(e.key)) {
                 return
             }
             const passesPattern = !this.pattern || this.pattern.test(key)

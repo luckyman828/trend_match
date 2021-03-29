@@ -369,7 +369,6 @@ router.beforeEach(async (to, from, next) => {
         // If we are not going to a file related path --> reset the current folder
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
-    console.log('beofre')
     // GUARD SPACES
     applyRouteGuards(to, from, next)
     return
