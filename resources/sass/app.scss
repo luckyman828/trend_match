@@ -656,6 +656,20 @@ input[type='submit'] {
             &.fixed-width {
                 width: nth($size, 2) * 2.5;
             }
+            > i {
+                &:first-child {
+                    margin-left: nth($size, 4) * 2;
+                }
+                &:last-child {
+                    margin-right: nth($size, 4) * 2;
+                }
+            }
+            > span:first-child {
+                margin-left: nth($size, 4) * 2;
+            }
+            > span:last-child {
+                margin-right: nth($size, 4) * 2;
+            }
         }
     }
 }

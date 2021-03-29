@@ -76,7 +76,7 @@
                     :to="{ name: 'systemAdmin' }"
                     iconClass="fas fa-user-secret"
                 />
-                <SidebarItem label="Sign ou" iconClass="far fa-sign-out fa-flip-horizontal" @click.native="logout" />
+                <SidebarItem label="Sign out" iconClass="far fa-sign-out fa-flip-horizontal" @click.native="logout" />
             </div>
         </div>
     </div>

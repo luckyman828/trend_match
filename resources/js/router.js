@@ -364,7 +364,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    console.log('change route', to, from)
     // Reset current folder
     if (!['files', 'editFile', 'selection'].includes(to.name)) {
         // If we are not going to a file related path --> reset the current folder
