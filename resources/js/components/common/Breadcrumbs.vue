@@ -26,15 +26,17 @@
 import { mapActions, mapGetters } from 'vuex'
 export default {
     name: 'breadcrumbs',
-    props: ['root'],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
         ...mapGetters('files', ['getCurrentFilePath', 'currentFolder']),
+        ...mapGetters('routes', {
+            routeRoot: 'getCurrentRouteRoot',
+        }),
     },
     methods: {
         ...mapActions('files', ['setCurrentFolder']),
         onGoToHome() {
-            const toName = this.root ? `${this.root}.files` : 'files'
+            const toName = this.routeRoot ? `${this.routeRoot.name}` : 'files'
             if (this.$route.name != toName) this.$router.push({ name: toName })
             this.setCurrentFolder(null)
         },

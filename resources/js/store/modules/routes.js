@@ -11,7 +11,7 @@ export default {
 
     getters: {
         getNextUrl: state => state.nextUrl,
-        getCurrentRouteRoot: state => router.currentRoute.matched.find(route => route.isRoot && route.root),
+        getCurrentRouteRoot: state => router.currentRoute.matched[0],
     },
 
     actions: {},
