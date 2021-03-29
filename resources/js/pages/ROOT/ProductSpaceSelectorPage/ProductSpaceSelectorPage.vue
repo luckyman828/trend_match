@@ -33,7 +33,7 @@
                     @click="onSetSpace(space.name)"
                 >
                     <div class="logo-wrapper">
-                        <img :src="space.logo" />
+                        <img :src="space.logo.color" />
                     </div>
                     <div class="name ft-bd ft-20">{{ space.name }}</div>
                     <div class="dscription ft-md ft-16">{{ space.byline }}</div>

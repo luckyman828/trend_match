@@ -6,7 +6,7 @@
     >
         <div class="flex-list">
             <BaseImageSizer class="logo-sizer" aspect="1:1" fit="contain">
-                <img class="logo" :src="space.logo" />
+                <img class="logo" :src="getSpaceLogo" />
             </BaseImageSizer>
             <div class="flex-list flex-v lh-xs space-sm">
                 <div class="name ft-12 ft-bd">{{ space.name }}</div>
@@ -14,8 +14,7 @@
             </div>
         </div>
         <BaseButton
-            buttonClass="pill sm"
-            :class="isCurrent ? 'invisible' : 'white'"
+            :buttonClass="['pill sm', isCurrent ? 'invisible grey' : 'white']"
             :disabled="isDisabled"
             @click="onSetSpace()"
         >
@@ -31,6 +30,9 @@ import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'spaceListItem',
     props: ['space'],
+    data() {
+        return {}
+    },
     computed: {
         ...mapGetters('auth', {
             isSystemAdmin: 'getIsSystemAdmin',
@@ -51,6 +53,10 @@ export default {
         isUnavailable() {
             return !this.availableSpaces.find(space => space.name == this.space.name)
         },
+        getSpaceLogo() {
+            const spaceLogo = this.space.logo
+            return this.isCurrent ? spaceLogo.whiteOnColor : spaceLogo.colorOnWhite
+        },
     },
     methods: {
         ...mapMutations('kollektSpaces', ['SET_KOLLEKT_SPACE', 'NAVIGATE_TO_CURRENT_SPACE']),
@@ -70,10 +76,11 @@ export default {
     width: 280px;
     border: solid 2px transparent;
     border-radius: $borderRadiusEl;
-    &:not(.disabled) {
+    &:not(.current):not(.disabled) {
         cursor: pointer;
     }
-    &:hover {
+    &:hover,
+    &.current {
         background: $bg;
     }
     .name {

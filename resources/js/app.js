@@ -46,6 +46,8 @@ import tooltipTriggerDirective from './directives/tooltipTriggerDirective'
 Vue.use(tooltipTriggerDirective)
 import horizontalScrollDirective from './directives/horizontalScrollDirective'
 Vue.use(horizontalScrollDirective)
+import hoverDirective from './directives/hoverDirective'
+Vue.use(hoverDirective)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'

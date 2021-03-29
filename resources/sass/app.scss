@@ -510,6 +510,8 @@ input[type='submit'] {
                 i {
                     color: nth($color, 2);
                 }
+            }
+            &.ghost {
                 &:not(.ghost-hover):hover,
                 .button-hover-trigger:hover &:not(.ghost-hover) {
                     border-color: nth($color, 2);
@@ -584,11 +586,7 @@ input[type='submit'] {
         }
         &:not(.ghost-hover):hover,
         .button-hover-trigger:hover &:not(.ghost-hover) {
-            background: $light1;
-            color: $font;
-            i {
-                color: $font;
-            }
+            background: transparent;
         }
     }
     &.disabled,
