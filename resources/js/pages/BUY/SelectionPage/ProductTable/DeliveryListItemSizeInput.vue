@@ -48,6 +48,7 @@ export default {
                     deliveryDate: this.deliveryDate,
                     quantity,
                 })
+                this.$emit('input', quantity)
             },
         },
     },

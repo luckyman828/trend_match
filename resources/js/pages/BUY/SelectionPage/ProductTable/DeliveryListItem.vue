@@ -30,8 +30,9 @@
                         :sizeObj="size"
                         :deliveryDate="delivery.delivery_date"
                         :variant="variant"
-                        @submit="onSubmitQty"
+                        @submit="onSubmitSize"
                         @focus="editSplit = true"
+                        @input="onSizeInput"
                     />
                 </div>
                 <!-- End Edit Active -->
@@ -66,7 +67,8 @@
                 <button
                     class="green sm"
                     @click="
-                        onSubmitQty()
+                        onUpdateQuantity()
+                        editActive = false
                         editSplit = false
                     "
                 >
@@ -148,6 +150,17 @@ export default {
                 })
             })
         },
+        async onUpdateQuantity() {
+            if (this.localQuantity != this.delivery.quantity) {
+                await this.onQtyInput(this.localQuantity)
+            }
+            if (!this.variant.selectionAlignment) return
+            const alignment = this.variant.selectionAlignment.productAlignment
+            alignment.action = 'In'
+            this.variant.selectionAlignment.feedback = 'In'
+            this.updateAlignments([alignment])
+            this.localQuantity = this.delivery.quantity
+        },
         onClickOutside() {
             this.editActive = false
             this.editSplit = false
@@ -161,12 +174,16 @@ export default {
             ) {
                 document.activeElement.blur()
             }
-            if (!this.variant.selectionAlignment) return
-            const alignment = this.variant.selectionAlignment.productAlignment
-            alignment.action = 'In'
-            this.variant.selectionAlignment.feedback = 'In'
-            this.updateAlignments([alignment])
+            await this.onUpdateQuantity()
+        },
+        onSizeInput() {
             this.localQuantity = this.delivery.quantity
+        },
+        onSubmitSize() {
+            this.onUpdateQuantity()
+            document.activeElement.blur()
+            this.editSplit = false
+            this.editActive = false
         },
         onHideSizes() {
             this.editSplit = false
@@ -177,7 +194,7 @@ export default {
         onBlurQty() {
             const delay = 300
             setTimeout(() => {
-                this.onSubmitQty()
+                this.onUpdateQuantity()
             }, delay)
         },
         onFocus() {
