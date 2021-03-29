@@ -1,49 +1,53 @@
 <template>
     <div class="vue-component-sidebar sidebar theme-dark">
         <div class="nav">
-            <div class="top-items flex-list flex-v space-lg">
-                <TheSidebarSpaceLogo />
+            <template v-if="type != 'min'">
+                <div class="top-items flex-list flex-v space-lg">
+                    <TheSidebarSpaceLogo />
 
-                <v-popover placement="right" trigger="click">
-                    <SidebarItem :label="currentWorkspace.title" iconClass="fas fa-building" />
-                    <BaseSelectButtons
-                        :search="workspaces.length > 5"
-                        :focusSearchOnMount="workspaces.length > 5"
-                        slot="popover"
-                        type="radio"
-                        :options="workspaces"
-                        :value="currentWorkspaceIndex"
-                        optionNameKey="title"
-                        optionValueKey="index"
-                        :submitOnChange="true"
-                        @submit="SET_CURRENT_WORKSPACE_INDEX($event)"
-                        v-close-popover
-                    />
-                </v-popover>
+                    <v-popover placement="right" trigger="click">
+                        <SidebarItem :label="currentWorkspace.title" iconClass="fas fa-building" />
+                        <BaseSelectButtons
+                            :search="workspaces.length > 5"
+                            :focusSearchOnMount="workspaces.length > 5"
+                            slot="popover"
+                            type="radio"
+                            :options="workspaces"
+                            :value="currentWorkspaceIndex"
+                            optionNameKey="title"
+                            optionValueKey="index"
+                            :submitOnChange="true"
+                            @submit="SET_CURRENT_WORKSPACE_INDEX($event)"
+                            v-close-popover
+                        />
+                    </v-popover>
 
-                <slot name="top" />
-            </div>
+                    <slot name="top" />
+                </div>
+            </template>
         </div>
         <div class="bottom-nav flex-list flex-v space-lg">
-            <slot name="bottom" />
-            <SidebarItem
-                class="changelog-item"
-                label="News"
-                iconClass="fas fa-gift"
-                @click="
-                    SHOW_CHANGELOG(true)
-                    onReadChangelog()
-                "
-            >
-                <div class="unread-circle circle xxs red" v-if="changelogUnread" />
-            </SidebarItem>
+            <template v-if="type != 'min'">
+                <slot name="bottom" />
+                <SidebarItem
+                    class="changelog-item"
+                    label="News"
+                    iconClass="fas fa-gift"
+                    @click="
+                        SHOW_CHANGELOG(true)
+                        onReadChangelog()
+                    "
+                >
+                    <div class="unread-circle circle xxs red" v-if="changelogUnread" />
+                </SidebarItem>
 
-            <SidebarItem
-                v-if="getRealWorkspaceRole == 'Owner' || getIsSystemAdmin"
-                label="Settings"
-                iconClass="fas fa-cog"
-                :to="{ name: 'workspaceSettings' }"
-            />
+                <SidebarItem
+                    v-if="getRealWorkspaceRole == 'Owner' || getIsSystemAdmin"
+                    label="Settings"
+                    iconClass="fas fa-cog"
+                    :to="{ name: 'workspaceSettings' }"
+                />
+            </template>
 
             <SidebarItem @click.native="drawerExpanded = !drawerExpanded" v-tooltip.right="'Click for more options'">
                 <div class="circle auth-user-icon">
@@ -92,6 +96,7 @@ export default {
         TheSidebarSpaceLogo,
         SidebarItem,
     },
+    props: ['type'],
     data: function() {
         return {
             drawerExpanded: false,
@@ -142,6 +147,7 @@ export default {
     justify-content: space-between;
     background: $bgDark;
     padding: 8px 8px 0;
+    height: 100%;
 }
 
 .sidebar-item {

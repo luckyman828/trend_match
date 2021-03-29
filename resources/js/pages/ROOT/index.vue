@@ -8,7 +8,8 @@
                 </div>
                 <div class="sidebar-wrapper">
                     <SidebarSelect v-if="currentSpace && currentSpace.name == 'select'" />
-                    <SidebarBuy v-if="currentSpace && currentSpace.name == 'buy'" />
+                    <SidebarBuy v-else-if="currentSpace && currentSpace.name == 'buy'" />
+                    <TheSidebar v-else type="min" />
                 </div>
             </template>
             <div class="main" id="main" ref="main" :class="{ 'hide-crisp': $route.meta.hideCrisp }">
@@ -72,11 +73,15 @@ export default {
             overflow-x: auto;
         }
     }
+    .sidebar-wrapper {
+        grid-area: sidebar;
+        height: 100%;
+    }
     .navbar-wrapper {
-        grid-area: 'navbar';
+        grid-area: navbar;
     }
     .main {
-        grid-area: 'main';
+        grid-area: main;
         background: $bg;
         position: relative;
         height: 100%;

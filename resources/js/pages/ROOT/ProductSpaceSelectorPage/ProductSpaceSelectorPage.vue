@@ -88,6 +88,10 @@ export default {
             await this.updateWorkspaceDetails(this.currentWorkspace)
         },
     },
+    created() {
+        console.log('created space selector')
+        this.SET_KOLLEKT_SPACE()
+    },
 }
 </script>
 

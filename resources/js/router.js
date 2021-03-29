@@ -132,7 +132,7 @@ const routes = [
                 path: '/',
                 name: 'selectSpace',
                 meta: {
-                    isFullscreen: true,
+                    isFullscreen: false,
                 },
                 component: () => import(/* webpackChunkName: "selectSpace" */ './pages/ROOT/ProductSpaceSelectorPage/'),
                 beforeEnter: (to, from, next) => {
@@ -364,6 +364,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
+    console.log('change route', to, from)
     // Reset current folder
     if (!['files', 'editFile', 'selection'].includes(to.name)) {
         // If we are not going to a file related path --> reset the current folder

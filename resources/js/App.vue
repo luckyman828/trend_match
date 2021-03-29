@@ -17,7 +17,7 @@
         </transition>
         <router-view v-else-if="!!isAuthenticated && !loadingWorkspace" :key="$route.path"></router-view> -->
 
-        <router-view v-if="!isAuthenticated || (!!isAuthenticated && !loadingWorkspace)"></router-view>
+        <router-view v-if="!isAuthenticated || (!!isAuthenticated && !!authenticatedInitDone)"></router-view>
 
         <div class="error-wrapper" v-else-if="error">
             <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
@@ -27,7 +27,7 @@
             <p>Contact Kollekt Support if the error persists.</p>
         </div>
 
-        <BaseLoader class="app-loader loading-wrapper" v-else />
+        <BaseLoader class="app-loader loading-wrapper" msg="Getting Kollekt ready" v-else />
     </div>
     <!-- END NEW -->
 </template>
@@ -38,7 +38,6 @@ import SELECTRoot from './pages/SELECT/'
 import PLAYB2CRoot from './pages/PLAYB2C/'
 import LoginRoot from './pages/Login/'
 import RootLoader from './components/common/RootLoader'
-import applyRouteGuards from './helpers/applyRouteGuards'
 
 export default {
     name: 'app',
@@ -52,6 +51,7 @@ export default {
         return {
             error: false,
             loadingWorkspace: true,
+            loadingIsAuthInit: true,
         }
     },
     computed: {
@@ -67,6 +67,9 @@ export default {
         ...mapGetters('liveUpdates', {
             liveUpdateIsConnected: 'getIsConnected',
         }),
+        ...mapGetters('persist', {
+            authenticatedInitDone: 'getAuthenticatedInitDone',
+        }),
         dragActive() {
             return this.isDragging
         },
@@ -74,7 +77,6 @@ export default {
     watch: {
         // Watch for changes to the authStatus
         authStatus: async function(newVal) {
-            console.log('auth status')
             // When our auth status changes to success
             // -> initialize the workspace
             if (newVal == 'success') {
@@ -82,7 +84,7 @@ export default {
                 this.initCrispChat()
                 this.getActiveJobs()
                 await this.initWorkspace()
-                applyRouteGuards
+                this.SET_AUTHENTICATED_INIT_DONE(true)
             }
         },
         // Watch for workspace changes
@@ -103,7 +105,7 @@ export default {
         ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapMutations('liveUpdates', ['SET_IS_CONNECTED']),
-        ...mapMutations('persist', ['SET_INIT_DONE']),
+        ...mapMutations('persist', ['SET_AUTHENTICATED_INIT_DONE']),
         async initWorkspace() {
             this.loadingWorkspace = true
             // Get workspaces
@@ -124,7 +126,6 @@ export default {
             }
             await this.fetchWorkspace(this.currentWorkspace.id)
             this.loadingWorkspace = false
-            this.SET_INIT_DONE(true)
         },
         async initSignalR() {
             // Connect to SignalR
@@ -218,12 +219,6 @@ export default {
             $crisp.push(['set', 'user:email', this.authUser.email])
             $crisp.push(['set', 'user:nickname', this.authUser.name])
         },
-    },
-    mounted() {
-        console.log('authenticated', this.isAuthenticated)
-        if (!this.isAuthenticated) {
-            this.SET_INIT_DONE(true)
-        }
     },
     async created() {
         // Set up a request intercepter that checks if the user is still authenticated
@@ -322,7 +317,7 @@ export default {
 
     &.public {
         display: block;
-        background: $dark05;
+        background: #b08818;
         min-height: 100vh;
         position: relative;
         scroll-behavior: smooth;
