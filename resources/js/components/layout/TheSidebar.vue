@@ -38,7 +38,7 @@
                     class="changelog-item"
                     label="News"
                     iconClass="fas fa-gift"
-                    @click="
+                    @click.native="
                         SHOW_CHANGELOG(true)
                         onReadChangelog()
                     "
@@ -84,6 +84,7 @@
                 <SidebarItem label="Sign out" iconClass="far fa-sign-out fa-flip-horizontal" @click.native="logout" />
             </div>
         </div>
+        <TheChangelogModal v-if="getShowChangelog" />
     </div>
 </template>
 
@@ -100,6 +101,7 @@ export default {
         SignoutButton,
         TheSidebarSpaceLogo,
         SidebarItem,
+        TheChangelogModal: () => import('./TheChangelogModal/'),
     },
     props: ['type'],
     data: function() {
@@ -119,7 +121,7 @@ export default {
         ...mapGetters('workspaces', {
             currentWorkspaceId: 'getCurrentWorkspaceId',
         }),
-        ...mapGetters('changelog', ['getLatestChangelogUpdateDate']),
+        ...mapGetters('changelog', ['getLatestChangelogUpdateDate', 'getShowChangelog']),
         displayTooltips() {
             return window.innerWidth <= 1400
         },

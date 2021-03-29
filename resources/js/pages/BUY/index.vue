@@ -13,7 +13,6 @@
             </div>
             <TheImageLightbox v-if="getLightboxIsVisible" />
             <TheSnackbarSpawner />
-            <TheChangelogModal v-if="getShowChangelog" />
         </template>
     </div>
 </template>
@@ -33,12 +32,10 @@ export default {
         TheImageLightbox,
         TheSnackbarSpawner,
         RootLoader,
-        TheChangelogModal: () => import('../../components/layout/TheChangelogModal/index'),
     },
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
-        ...mapGetters('changelog', ['getShowChangelog']),
         isLoading() {
             return !this.currentWorkspace //Check if we have a workspace
         },
