@@ -39,7 +39,7 @@ export default {
         SidebarBuy,
     },
     computed: {
-        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
+        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
         ...mapGetters('kollektSpaces', {
             currentSpace: 'getCurrentSpace',
         }),

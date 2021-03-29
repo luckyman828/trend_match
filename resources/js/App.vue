@@ -38,6 +38,7 @@ import SELECTRoot from './pages/SELECT/'
 import PLAYB2CRoot from './pages/PLAYB2C/'
 import LoginRoot from './pages/Login/'
 import RootLoader from './components/common/RootLoader'
+import { triggerRouteGuards } from './helpers/routeGuards'
 
 export default {
     name: 'app',
@@ -55,7 +56,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
+        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'getCurrentWorkspaceId']),
+        ...mapGetters('workspaces', {
+            currentWorkspaceId: 'getCurrentWorkspaceId',
+        }),
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
         ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
         ...mapGetters('videoPlayer', {
@@ -88,7 +92,19 @@ export default {
             }
         },
         // Watch for workspace changes
-        currentWorkspaceIndex(newVal, oldVal) {
+        currentWorkspaceId: async function(newVal, oldVal) {
+            if (oldVal != null && newVal != oldVal) {
+                this.SET_CURRENT_FILE(null)
+                this.SET_CURRENT_FOLDER(null)
+                this.SET_CURRENT_SELECTION_ID(null)
+                this.SET_CURRENT_SELECTIONS([])
+
+                // Trigger route auth
+                const newRoute = await triggerRouteGuards(this.$route)
+                if (newRoute) {
+                    this.$router.push(newRoute)
+                }
+            }
             // If we are in a selection -> send us back to files
             if (oldVal != null && (this.$route.name == 'selection' || this.$route.name == 'editFile')) {
                 this.$router.push({ name: 'files' })
@@ -98,13 +114,19 @@ export default {
     methods: {
         ...mapActions('persist', ['getUids']),
         ...mapActions('auth', ['getAuthUser', 'logout']),
-        ...mapActions('workspaces', ['fetchWorkspaces', 'SET_CURRENT_WORKSPACE_INDEX', 'fetchWorkspace']),
+        ...mapActions('workspaces', ['fetchWorkspaces', 'fetchWorkspace']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapActions('backgroundJobs', ['getActiveJobs']),
-        ...mapMutations('selections', ['SET_SELECTION_PRESENTATION_MODE_ACTIVE']),
+        ...mapMutations('selections', [
+            'SET_SELECTION_PRESENTATION_MODE_ACTIVE',
+            'SET_CURRENT_SELECTIONS',
+            'SET_CURRENT_SELECTION_ID',
+        ]),
+        ...mapMutations('files', ['SET_CURRENT_FILE', 'SET_CURRENT_FOLDER']),
         ...mapMutations('routes', ['SET_NEXT_URL']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         ...mapMutations('liveUpdates', ['SET_IS_CONNECTED']),
+        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_ID']),
         ...mapMutations('persist', ['SET_AUTHENTICATED_INIT_DONE']),
         async initWorkspace() {
             this.loadingWorkspace = true
@@ -121,8 +143,8 @@ export default {
             }
             // Set the current workspace
             // If we don't have a current workspace saved, then set index to 0
-            if (!this.currentWorkspaceIndex || this.currentWorkspaceIndex < 0) {
-                this.SET_CURRENT_WORKSPACE_INDEX(0)
+            if (!this.getCurrentWorkspaceId && fetchedWorkspaces.length > 0) {
+                this.SET_CURRENT_WORKSPACE_ID(fetchedWorkspaces[0].id)
             }
             await this.fetchWorkspace(this.currentWorkspace.id)
             this.loadingWorkspace = false

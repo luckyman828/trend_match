@@ -7,7 +7,7 @@ export default {
     state: {
         workspaces: [],
         databases: [],
-        currentWorkspaceIndex: localStorage.getItem('workspace-index') || null,
+        currentWorkspaceId: localStorage.getItem('workspace-id') || null,
         loading: true,
         availableWorkspaceRoles: [
             {
@@ -27,13 +27,13 @@ export default {
 
     getters: {
         loadingWorkspaces: state => state.loading,
+        getCurrentWorkspaceId: state => state.currentWorkspaceId,
         workspaces: state => state.workspaces,
         availableWorkspaceRoles: (state, getters, rootState, rootGetters) =>
             rootGetters['auth/getIsSystemAdmin']
                 ? state.availableWorkspaceRoles
                 : state.availableWorkspaceRoles.filter(x => x.role != 'Owner'),
-        currentWorkspaceIndex: state => state.currentWorkspaceIndex,
-        currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
+        currentWorkspace: (state, getters) => state.workspaces.find(x => x.id == getters.getCurrentWorkspaceId),
         getCurrentWorkspace: (state, getters) => getters.currentWorkspace,
         authUserWorkspaceRole: (state, getters) => {
             if (!getters.currentWorkspace) return 'Undefined'
@@ -92,11 +92,6 @@ export default {
                 }
             }
             return workspaces
-        },
-        async SET_CURRENT_WORKSPACE_INDEX({ commit }, index) {
-            // Reset the current folder ID
-            commit('files/SET_CURRENT_FOLDER', null, { root: true })
-            commit('SET_CURRENT_WORKSPACE_INDEX', index)
         },
         async fetchWorkspace({ state, dispatch, rootGetters, commit }, workspaceId) {
             commit('setLoading', true)
@@ -337,7 +332,7 @@ export default {
                 )
             })
         },
-        async deleteWorkspace({ commit, state }, workspace) {
+        async deleteWorkspace({ commit, state, getters }, workspace) {
             const apiUrl = `admins/workspaces/${workspace.id}`
             axios.delete(apiUrl).then(response => {
                 commit(
@@ -352,7 +347,9 @@ export default {
                 // Redirect the user to another worksapce.
                 const index = state.workspaces.findIndex(x => x.id == workspace.id)
                 state.workspaces.splice(index, 1)
-                commit('SET_CURRENT_WORKSPACE_INDEX', 0)
+                if (getters.currentWorkspaceId == workspace.id) {
+                    commit('SET_CURRENT_WORKSPACE_ID', getters.workspaces[0] && getters.workspaces[0].id)
+                }
             })
         },
     },
@@ -365,10 +362,10 @@ export default {
         setWorkspaces(state, workspaces) {
             state.workspaces = workspaces
         },
-        SET_CURRENT_WORKSPACE_INDEX(state, index) {
+        SET_CURRENT_WORKSPACE_ID(state, newId) {
             // Save the current workspace index in local storage
-            localStorage.setItem('workspace-index', index)
-            state.currentWorkspaceIndex = index
+            localStorage.setItem('workspace-id', newId)
+            state.currentWorkspaceId = newId
         },
     },
 }

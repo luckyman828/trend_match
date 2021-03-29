@@ -105,7 +105,6 @@ export default {
             getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
-            console.log('get current selectionMode', selection)
             if (selection) return getters.getSelectionCurrentMode(selection)
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,

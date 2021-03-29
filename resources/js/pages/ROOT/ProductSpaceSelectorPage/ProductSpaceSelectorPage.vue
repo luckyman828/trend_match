@@ -70,15 +70,14 @@ export default {
                 return this.getCurrentWorkspace
             },
             set(newWorkspace) {
-                const index = this.availableWorkspaces.findIndex(workspace => workspace.id == newWorkspace.id)
-                this.SET_CURRENT_WORKSPACE_INDEX(index)
+                this.SET_CURRENT_WORKSPACE_ID(newWorkspace.id)
             },
         },
     },
     methods: {
         ...mapActions('workspaces', ['updateWorkspaceDetails']),
         ...mapMutations('kollektSpaces', ['SET_KOLLEKT_SPACE', 'NAVIGATE_TO_CURRENT_SPACE']),
-        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_INDEX']),
+        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_ID']),
         onSetSpace(space) {
             this.SET_KOLLEKT_SPACE(space)
             this.NAVIGATE_TO_CURRENT_SPACE()
@@ -89,7 +88,6 @@ export default {
         },
     },
     created() {
-        console.log('created space selector')
         this.SET_KOLLEKT_SPACE()
     },
 }

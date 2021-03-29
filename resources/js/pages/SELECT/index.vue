@@ -36,7 +36,7 @@ export default {
         TheChangelogModal: () => import('../../components/layout/TheChangelogModal/index'),
     },
     computed: {
-        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'currentWorkspaceIndex']),
+        ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
         ...mapGetters('lightbox', ['getLightboxIsVisible']),
         ...mapGetters('changelog', ['getShowChangelog']),
         isLoading() {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import applyRouteGuards from './helpers/applyRouteGuards'
+import { triggerRouteGuards } from './helpers/routeGuards'
 import store from './store'
 
 Vue.use(VueRouter)
@@ -370,7 +370,8 @@ router.beforeEach(async (to, from, next) => {
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
     // GUARD SPACES
-    applyRouteGuards(to, from, next)
+    const nextRoute = await triggerRouteGuards(to)
+    next(nextRoute)
     return
 
     // Redirect PLAY

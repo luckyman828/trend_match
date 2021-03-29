@@ -56,7 +56,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { redirectSpace } from '../../../helpers/applyRouteGuards'
+import { triggerSpaceRedirection } from '../../../helpers/routeGuards'
 import LoginInputField from './LoginInputField'
 
 export default {
@@ -82,15 +82,16 @@ export default {
         ...mapActions('auth', ['login']),
         attemptLogin() {
             this.login({ email: this.email, password: this.password })
-                .then(success => {
+                .then(async success => {
                     if (success) {
                         // Go to the url the user attempted to go to (nextUrl), if any
                         if (this.nextUrl) {
-                            this.$router.push(urlToGoTo)
+                            this.$router.push(this.nextUrl)
                         }
                         // Else redirect to the available space if any
                         else {
-                            redirectSpace()
+                            const newRoute = await triggerSpaceRedirection()
+                            this.$router.push(newRoute)
                         }
                     } else {
                         this.error = 'Wrong e-mail or password'

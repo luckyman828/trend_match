@@ -5,19 +5,24 @@
                 <div class="top-items flex-list flex-v space-lg">
                     <TheSidebarSpaceLogo />
 
-                    <v-popover placement="right" trigger="click">
+                    <v-popover
+                        placement="right"
+                        trigger="click"
+                        @apply-show="workspaces.length > 5 && $nextTick(() => $refs.workspaceSelect.focusSearch())"
+                    >
                         <SidebarItem :label="currentWorkspace.title" iconClass="fas fa-building" />
                         <BaseSelectButtons
+                            ref="workspaceSelect"
                             :search="workspaces.length > 5"
                             :focusSearchOnMount="workspaces.length > 5"
                             slot="popover"
                             type="radio"
                             :options="workspaces"
-                            :value="currentWorkspaceIndex"
+                            :value="currentWorkspaceId"
+                            optionValueKey="id"
                             optionNameKey="title"
-                            optionValueKey="index"
                             :submitOnChange="true"
-                            @submit="SET_CURRENT_WORKSPACE_INDEX($event)"
+                            @submit="SET_CURRENT_WORKSPACE_ID($event)"
                             v-close-popover
                         />
                     </v-popover>
@@ -109,9 +114,11 @@ export default {
             'workspaces',
             'authUserWorkspaceRole',
             'currentWorkspace',
-            'currentWorkspaceIndex',
             'getRealWorkspaceRole',
         ]),
+        ...mapGetters('workspaces', {
+            currentWorkspaceId: 'getCurrentWorkspaceId',
+        }),
         ...mapGetters('changelog', ['getLatestChangelogUpdateDate']),
         displayTooltips() {
             return window.innerWidth <= 1400
@@ -124,7 +131,7 @@ export default {
     },
     methods: {
         ...mapActions('auth', ['logout']),
-        ...mapActions('workspaces', ['SET_CURRENT_WORKSPACE_INDEX']),
+        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_ID']),
         ...mapMutations('changelog', ['SHOW_CHANGELOG']),
         onReadChangelog() {
             this.changelogReadDate = new Date()

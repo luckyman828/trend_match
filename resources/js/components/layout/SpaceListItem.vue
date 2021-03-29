@@ -8,7 +8,7 @@
             <BaseImageSizer class="logo-sizer" aspect="1:1" fit="contain">
                 <img class="logo" :src="space.logo" />
             </BaseImageSizer>
-            <div class="flex-list flex-v lh-xs space-xs">
+            <div class="flex-list flex-v lh-xs space-sm">
                 <div class="name ft-12 ft-bd">{{ space.name }}</div>
                 <div class="ft-10 ft-md color-grey">{{ space.byline }}</div>
             </div>
