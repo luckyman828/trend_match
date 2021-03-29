@@ -249,7 +249,8 @@ export default {
                     await axios
                         .get(apiUrl)
                         .then(response => {
-                            products.push(response.data)
+                            const product = response.data
+                            products.push(product)
                         })
                         .catch(err => {
                             console.log('error when fetching products', err.response)
@@ -272,7 +273,8 @@ export default {
                     await axios
                         .get(apiUrl)
                         .then(async response => {
-                            products.push(response.data)
+                            const product = response.data
+                            products.push(product)
                         })
                         .catch(err => {
                             console.log('error when fetching products', err.response)

@@ -18,7 +18,7 @@
             </div>
             <BaseImageSizer fit="contain">
                 <BaseVariantImage
-                    v-if="hasImage"
+                    v-if="hasImage || !product.variants || product.variants.length <= 0"
                     class="main-img hover-shadow clickable"
                     :key="product.id + '-' + mainImageVariantIndex"
                     :variant="product.variants[mainImageVariantIndex]"

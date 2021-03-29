@@ -56,11 +56,13 @@ export function cleanUpDKCObj(srcObj, newObj) {
 }
 
 export async function instantiateDKCProducts(products) {
+    console.log('instantiate products from this:', products)
     const prettyProducts = products.map(product => {
         const prettyProduct = {}
         cleanUpDKCObj(product, prettyProduct)
         return prettyProduct
     })
+    console.log('prettyProducts:', prettyProducts)
 
     const baseProduct = await store.dispatch('products/instantiateNewProduct')
     const baseVariant = await store.dispatch('products/instantiateNewProductVariant')
@@ -79,7 +81,7 @@ export async function instantiateDKCProducts(products) {
         newProduct.extra_data.sex = product.sex
         newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
-        if (product.variants.length > 0) {
+        if (product.variants && product.variants.length > 0) {
             product.variants[0].prices.map(price => {
                 if (!!newProduct.prices.find(x => x.currency == price.currency)) return
                 const wholesale_price = price.value_whl ? parseFloat(price.value_whl.replace(/,/g, '')) : null
