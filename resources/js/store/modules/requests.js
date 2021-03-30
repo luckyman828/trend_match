@@ -133,13 +133,14 @@ export default {
                 )
             })
         },
-        async insertOrUpdateRequestComment({ commit }, { request, comment }) {
+        async insertOrUpdateRequestComment({ commit, dispatch }, { request, comment }) {
             let apiUrl = `/requests/${request.id}/discussions`
             let requestMethod = 'post'
             if (comment.id) {
                 apiUrl = `/discussions/${comment.id}`
                 requestMethod = 'put'
             } else {
+                dispatch('initRequestComments', [comment])
                 commit('INSERT_OR_UPDATE_REQUEST_COMMENT', { request, comment })
             }
 
@@ -211,7 +212,7 @@ export default {
                 })
                 .then(response => {})
         },
-        initRequests({ rootGetters }, requests) {
+        initRequests({ rootGetters, dispatch }, requests) {
             requests.map(request => {
                 if (request.hasBeenInitialized) return
 
@@ -263,19 +264,28 @@ export default {
                 })
 
                 // START THREAD COMMENTS
-                request.discussions.map(comment => {
-                    Object.defineProperty(comment, 'author', {
-                        get: function() {
-                            return rootGetters['selectionProducts/getSelectionUsers'].find(
-                                user => user.id == request.author_id
-                            )
-                        },
-                    })
-                })
-
+                dispatch('initRequestComments', request.discussions)
                 // END THREAD COMMENTS
 
                 request.hasBeenInitialized = true
+            })
+        },
+        initRequestComments({ rootGetters }, comments) {
+            comments.map(comment => {
+                Object.defineProperty(comment, 'author', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                            user => user.id == comment.author_id
+                        )
+                    },
+                })
+                Object.defineProperty(comment, 'selection', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelections'].find(
+                            selection => selection.id == comment.selection_id
+                        )
+                    },
+                })
             })
         },
     },

@@ -1,23 +1,13 @@
 <template>
     <div class="presenter-mode-button-wrapper">
-        <!-- <v-popover :disabled="selection.your_job != 'Alignment' || !selection.is_presenting"> -->
-        <v-popover :disabled="true">
-            <BaseToggle
-                v-if="selection"
-                :disabled="selection.your_job != 'Alignment'"
-                disabledTooltip="Only Selection Owners can activate Presentation Mode"
-                :label="showLabel ? 'Presentation' : ''"
-                sizeClass="xs"
-                :isActive="selection && selection.is_presenting"
-                @toggle="onTogglePresenterMode(selection)"
-            />
-            <!-- <div class="selection-list" slot="popover">
-                <div class="selection-list-item" v-for="selection in currentPresentation.selections">
-                    <i class="far fa-poll"></i>
-                    <span>{{selection.name}}</span>
-                </div>
-            </div> -->
-        </v-popover>
+        <BaseToggle
+            v-if="selection"
+            :disabled="!hasEditAccess"
+            :label="showLabel ? 'Presentation' : ''"
+            sizeClass="xs"
+            :isActive="selection && selection.is_presenting"
+            @toggle="onTogglePresenterMode(selection)"
+        />
 
         <!-- Confirm dialog -->
         <BaseDialog
@@ -34,11 +24,6 @@
             </div>
             <h3>You are about to enter Presentation Mode</h3>
             <p>In Presentation Mode, You decide what product is shown in the app.</p>
-            <!-- <p>
-                When a selection is in Presentation Mode, noone can access the selection or any of its sub-selections
-                outside of Presentation Mode.
-            </p> -->
-            <!-- <p><strong>The selected selection will be unlocked and made visible.</strong></p> -->
 
             <div class="available-selection-list">
                 <h4>Choose selections to present for:</h4>
@@ -106,6 +91,19 @@ export default {
             availableSelections: 'getSelectionsAvailableForPresentation',
             allSelections: 'getSelections',
         }),
+        ...mapGetters('files', {
+            currentFile: 'getCurrentFile',
+        }),
+        ...mapGetters('auth', {
+            authUser: 'authUser',
+        }),
+        hasEditAccess() {
+            return (
+                (!this.selection.is_presenting && this.selection.your_job == 'Alignment') ||
+                (this.selection.is_presenting && this.currentFile.editable) ||
+                this.selection.presentation.presenter.id == this.authUser.id
+            )
+        },
     },
     methods: {
         ...mapActions('selections', [
