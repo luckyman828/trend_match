@@ -56,7 +56,8 @@
         <!-- <div class="indicator circle xs spend primary" :style="{left: `calc(${spendPercentageCapped}% - 4px - ${(76 * spendPercentageCapped) / 100}px)`}"
         v-tooltip="`${seperateThousands(totalSpend)} ${selection.currency}`">
         </div> -->
-        <div class="indicator budget" v-if="!hideLabel">
+        <div class="indicator budget flex-list justify" v-if="!hideLabel">
+            <span>{{ separateThousands(totalSpend.toFixed(0)) }} {{ selection.currency }} ({{ totalQty }} pcs.)</span>
             <span>{{ theSelectionBudget | thousandSeparated }} {{ selection.currency }}</span>
         </div>
     </div>
@@ -79,6 +80,15 @@ export default {
         ...mapGetters('selections', {
             allSelections: 'getSelections',
         }),
+        totalQty() {
+            let total = 0
+            this.products.map(product => {
+                product.variants.map(variant => {
+                    total += variant.quantity
+                })
+            })
+            return total
+        },
         totalSpend() {
             let total = 0
             this.products.map(product => {
