@@ -439,7 +439,7 @@ export default {
             },
         },
         showLabels() {
-            return this.labelsEnabled || this.product && this.product.labels && this.product.labels.length > 0
+            return this.labelsEnabled || (this.product && this.product.labels && this.product.labels.length > 0)
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -610,8 +610,8 @@ export default {
             }
         },
         keydownHandler(e) {
-            const key = event.code
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            const key = e.code
+            if (e.target.type != 'textarea' && e.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
                 if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
                 // Label hotkeys

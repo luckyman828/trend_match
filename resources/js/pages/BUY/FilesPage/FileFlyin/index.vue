@@ -108,6 +108,7 @@ export default {
             this.$router.push({ name: 'buy.editFile', params: { fileId: this.file.id } })
         },
         async onNewFile(newFile) {
+            if (!newFile) return
             if (!newFile.users) {
                 this.loading = true
                 await this.fetchFileUsers(newFile)

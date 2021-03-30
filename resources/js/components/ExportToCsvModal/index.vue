@@ -230,7 +230,7 @@ export default {
         },
         availaleCurrencies() {
             const currenciesToReturn = []
-            const products = this.products
+            const products = this.productsToExport
             products.forEach(product => {
                 product.prices.forEach(price => {
                     if (!!price.currency && !currenciesToReturn.includes(price.currency))

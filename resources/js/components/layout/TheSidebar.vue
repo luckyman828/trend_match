@@ -50,7 +50,7 @@
                     v-if="getRealWorkspaceRole == 'Owner' || getIsSystemAdmin"
                     label="Settings"
                     iconClass="fas fa-cog"
-                    :to="{ name: 'workspaceSettings' }"
+                    :to="{ name: 'workspaceSettings', params: { workspaceId: currentWorkspaceId } }"
                 />
             </template>
 

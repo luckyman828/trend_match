@@ -504,6 +504,11 @@ export default {
                             products.map(product => {
                                 product.id = response.data.added_product_id_map[product.datasource_id]
                             })
+                            // Start image sync job
+                            const syncJobId = response.data.download_image_progress_id
+                            if (syncJobId != 0) {
+                                dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
+                            }
                         })
                 })
             )
@@ -520,12 +525,6 @@ export default {
                         },
                         { root: true }
                     )
-
-                    // Start image sync job
-                    const syncJobId = response.data.download_image_progress_id
-                    if (syncJobId != 0) {
-                        dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
-                    }
 
                     if (addToState) {
                         let sequenceIndex = getters.products

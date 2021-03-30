@@ -1158,7 +1158,7 @@ export default {
                 // Label hotkeys
                 if (this.hasLabelWriteAccess) {
                     // Number hotkey
-                    if (parseInt(e.key)) {
+                    if (parseInt(event.key)) {
                         const pressedNumber = e.key
                         const label = this.availableLabels[pressedNumber - 1]
                         if (!label) return
@@ -1173,7 +1173,7 @@ export default {
                         this.onUpdateProduct()
                     }
                     // Hashtag
-                    if (e.key == '#') {
+                    if (event.key == '#') {
                         // Open labels menu
                         this.$refs.labelList.$refs.popover.show()
                     }
