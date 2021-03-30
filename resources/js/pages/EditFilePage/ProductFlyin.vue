@@ -74,7 +74,11 @@
                         :key="index"
                         :class="{ 'is-current': currentVariant && currentVariant.id == variant.id }"
                         @contextmenu.prevent="showVariantContext($event, index)"
-                        @click="currentVariant = variant"
+                        @click="
+                            currentVariant && currentVariant.id == variant.id
+                                ? (currentVariant = null)
+                                : (currentVariant = variant)
+                        "
                     >
                         <div
                             class="img-wrapper"
@@ -327,17 +331,17 @@
 
             <BaseFlyinColumn>
                 <div class="deliveries form-section">
-                    <h3>Delivery</h3>
+                    <h3>{{ currentVariant ? 'Variant' : 'Product' }} Delivery</h3>
                     <div
                         class="col-2 form-element"
-                        v-for="(delivery, index) in product.delivery_dates"
+                        v-for="(delivery, index) in deliveryArray"
                         :key="'delivery-' + index"
                     >
                         <BaseDatePicker
                             :type="'month'"
                             :formatIn="'YYYY-MM-DD'"
                             :formatOut="'MMMM YYYY'"
-                            v-model="product.delivery_dates[index]"
+                            v-model="deliveryArray[index]"
                             @submit="onSubmitField"
                         />
 
@@ -877,6 +881,9 @@ export default {
                 }
             })
             return filesToDelete
+        },
+        deliveryArray() {
+            return this.currentVariant ? this.currentVariant.delivery_dates : this.product.delivery_dates
         },
         labelsEnabled() {
             return this.availableLabels.length > 0
