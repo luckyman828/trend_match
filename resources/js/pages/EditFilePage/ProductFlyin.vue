@@ -1355,10 +1355,10 @@ export default {
             this.currentVariant.ean_sizes.splice(index, 1)
         },
         onAddDelivery() {
-            this.product.delivery_dates.push(new Date().toLocaleDateString({}, { month: 'long', year: 'numeric' }))
+            this.deliveryArray.push(new Date().toLocaleDateString({}, { month: 'long', year: 'numeric' }))
         },
         onRemoveDelivery(index) {
-            this.product.delivery_dates.splice(index, 1)
+            this.deliveryArray.splice(index, 1)
         },
     },
     created() {

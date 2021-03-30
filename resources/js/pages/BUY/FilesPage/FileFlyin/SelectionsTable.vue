@@ -30,9 +30,10 @@
                 </BaseTableHeader>
                 <BaseTableHeader class="expand"></BaseTableHeader>
                 <BaseTableHeader class="title">Name</BaseTableHeader>
-                <BaseTableHeader class="budget">Budget</BaseTableHeader>
                 <BaseTableHeader class="currency">Currency</BaseTableHeader>
+                <BaseTableHeader class="budget">Budget</BaseTableHeader>
                 <BaseTableHeader class="budget-spend">Spend</BaseTableHeader>
+                <BaseTableHeader class="qty">QTY</BaseTableHeader>
                 <BaseTableHeader class="users">Users</BaseTableHeader>
                 <BaseTableHeader class="action">Action</BaseTableHeader>
             </template>
@@ -907,51 +908,38 @@ export default {
                     margin-left: auto;
                 }
                 &.budget {
-                    min-width: 100px;
-                    max-width: 100px;
-                    margin-left: auto;
-                    text-align: right;
-                }
-                &.budget-spend {
-                    min-width: 64px;
-                    max-width: 64px;
+                    min-width: 80px;
+                    max-width: 80px;
                     text-align: right;
                     padding-right: 8px;
                 }
+                &.budget-spend {
+                    min-width: 180px;
+                    max-width: 180px;
+                    text-align: right;
+                    padding-right: 8px;
+                }
+                &.qty {
+                    min-width: 80px;
+                    max-width: 80px;
+                    text-align: right;
+                }
                 &.currency {
-                    min-width: 100px;
-                    max-width: 100px;
+                    margin-left: auto;
+                    min-width: 60px;
+                    max-width: 60px;
                     // margin-left: auto;
                 }
                 &.teams,
                 &.users {
                     min-width: 76px;
                     max-width: 76px;
-                }
-                &.status {
-                    // Status
-                    min-width: 156px;
-                    max-width: 156px;
-                    margin-left: auto;
-                    // display: flex;
-                    // align-items: center;
-                    // > *:not(:first-child) {
-                    //     margin-left: 4px;
-                    // }
-                }
-                &.presentation {
-                    min-width: 116px;
-                    max-width: 116px;
                     margin-left: auto;
                 }
-                // &.items, &.in, &.out, &.nd {
-                //     min-width: 72px;
-                //     max-width: 72px;
-                // }
                 &.action {
                     // Actions
-                    min-width: 112px;
-                    max-width: 112px;
+                    min-width: 140px;
+                    max-width: 140px;
                     margin-left: auto;
                 }
             }

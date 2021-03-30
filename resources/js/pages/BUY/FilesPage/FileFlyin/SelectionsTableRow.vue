@@ -60,6 +60,16 @@
                     <span>{{ selection.name }}</span>
                 </div>
             </td>
+            <td class="currency">
+                <button
+                    class="ghost editable sm"
+                    @click="$event => $emit('showSelectionCurrencyContext', { selection, e: $event })"
+                    v-if="userHasEditAccess"
+                >
+                    <span>{{ selection.currency || 'Set currency' }}</span>
+                </button>
+                <span v-else>{{ selection.currency || 'No currency set' }}</span>
+            </td>
             <td class="budget">
                 <v-popover
                     trigger="click"
@@ -89,24 +99,19 @@
                     </div>
                 </v-popover>
             </td>
-            <td class="currency">
-                <button
-                    class="ghost editable sm"
-                    @click="$event => $emit('showSelectionCurrencyContext', { selection, e: $event })"
-                    v-if="userHasEditAccess"
-                >
-                    <span>{{ selection.currency || 'Set currency' }}</span>
-                </button>
-                <span v-else>{{ selection.currency || 'No currency set' }}</span>
-            </td>
+
             <td class="budget-spend" :class="{ over: budgetSpendPercentage > 100 }">
-                <span
-                    v-if="theSelectionBudget > 0"
-                    v-tooltip="`${separateThousands(theSelectionSpend.toFixed(0))} ${selection.currency}`"
-                >
-                    {{ budgetSpendPercentage }}%
+                <span v-if="theSelectionBudget > 0">
+                    {{ separateThousands(theSelectionSpend.toFixed(0)) }} {{ selection.currency }} ({{
+                        budgetSpendPercentage
+                    }}%)
                 </span>
             </td>
+
+            <td class="qty">
+                <span>{{ selection.total_quantity }} pcs.</span>
+            </td>
+
             <td class="users">
                 <button
                     class="ghost editable sm"
