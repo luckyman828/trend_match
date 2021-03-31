@@ -24,7 +24,7 @@
                     :allowManualEntry="allowManualEntry"
                     :search="search"
                     :uniqueKey="uniqueKey"
-                    @submit="onSubmit($event)"
+                    @submit="emitSubmit($event)"
                     @unset="$emit('unset')"
                 />
             </div>
@@ -104,9 +104,11 @@ export default {
         },
         onSubmit(input) {
             this.$refs.selectButtons.submit()
+            this.hide()
+        },
+        emitSubmit(input) {
             this.$emit('input', input)
             this.$emit('submit', input)
-            this.hide()
         },
     },
 }
