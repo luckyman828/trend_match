@@ -13,9 +13,10 @@
             ]"
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />
-            <span v-if="labelKey"
-                >{{ option[labelKey] }}<template v-if="countKey"> ({{ option[countKey] }})</template></span
-            >
+            <span v-if="labelKey">{{ option[labelKey] }} </span>
+            <div class="dark xxs pill count" v-if="countKey">
+                <span>{{ option[countKey] }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -68,8 +69,19 @@ export default {
     cursor: pointer;
     .option {
         display: flex;
+        opacity: 0.5;
+        .count {
+            opacity: 0.5;
+        }
         &:not(:first-child) {
             margin-left: 4px;
+        }
+        &:hover,
+        &.active {
+            opacity: 1;
+            .count {
+                opacity: 1;
+            }
         }
         &.active {
             box-shadow: 0 3px 6px rgba($dark, 0.2);
