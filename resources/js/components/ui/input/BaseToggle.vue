@@ -46,7 +46,7 @@ export default {
         .pill {
             background: $green400;
             .circle {
-                transform: translateX(100%);
+                transform: translateX(16px);
             }
             + span {
                 color: $font;
@@ -86,6 +86,7 @@ export default {
         background: white;
         border: $borderElHard;
         transition: transform 0.2s;
+        margin: 0;
     }
     + span {
         margin-left: 4px;
