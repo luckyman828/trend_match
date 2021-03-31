@@ -651,8 +651,20 @@ input[type='submit'] {
     @each $size in $button-sizes {
         &.#{nth($size,1)} {
             min-width: nth($size, 2) * 1.5;
-            &.fixed-width {
-                width: nth($size, 2) * 2.5;
+            &.w-xs {
+                width: nth($size, 2) * 1.8;
+            }
+            &.w-sm {
+                width: nth($size, 2) * 2;
+            }
+            &.w-md {
+                width: nth($size, 2) * 3;
+            }
+            &.w-lg {
+                width: nth($size, 2) * 4;
+            }
+            &.w-xl {
+                width: nth($size, 2) * 6;
             }
             > i {
                 &:first-child {
