@@ -44,6 +44,7 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .sidebar-item {
+    position: relative;
     cursor: pointer;
 
     .pill {

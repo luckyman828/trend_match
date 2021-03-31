@@ -43,7 +43,7 @@
                         onReadChangelog()
                     "
                 >
-                    <div class="unread-circle circle xxs red" v-if="changelogUnread" />
+                    <div class="unread-circle circle min red" v-if="changelogUnread" />
                 </SidebarItem>
 
                 <SidebarItem
