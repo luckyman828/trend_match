@@ -1,9 +1,9 @@
 <template>
     <div class="settings-page sm">
-        <router-link class="button pill ghost primary sm" :to="prevRoute != null ? prevRoute : { name: 'root' }">
+        <button class="pill ghost primary sm" @click="$router.go(-1)">
             <i class="far fa-arrow-left"></i>
             <span>Back</span>
-        </router-link>
+        </button>
         <h1>Settings</h1>
         <div class="form-wrapper">
             <div class="form-section">
@@ -199,9 +199,6 @@ export default {
     },
     created() {
         if (this.realRole != 'Owner' && !this.isSystemAdmin) this.$router.push({ name: 'files' })
-    },
-    beforeRouteEnter(to, from, next) {
-        this.prevRoute = from
     },
 }
 </script>

@@ -81,7 +81,7 @@
                 </div>
                 <div class="role">
                     <div class="pill secondary sm">
-                        <span>Workspace {{ workspaceRole }}</span>
+                        <span>Workspace {{ realWorkspaceRole }}</span>
                     </div>
                 </div>
                 <div class="action-list flex-list" @click="signOut">
