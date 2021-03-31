@@ -17,7 +17,7 @@
                             Export selected products only
                         </BaseCheckboxInputField>
                     </div>
-                    <div class="form-element">
+                    <div class="form-element" v-if="$route.name.search('edit') < 0">
                         <BaseCheckboxInputField v-model="excludeNoQtyVariants">
                             Exclude variants with no quantity
                         </BaseCheckboxInputField>
@@ -30,7 +30,7 @@
                         class="form-element"
                         v-model="exportType"
                         value="results"
-                        v-if="$route.name != 'editFile'"
+                        v-if="$route.name.search('edit') < 0"
                     >
                         Export results
                     </BaseRadioInputField>
@@ -163,10 +163,10 @@ export default {
             exportFeedback: false,
             exportRequests: false,
             exportComments: true,
-            exportQuantity: true,
-            exportVariants: true,
+            exportQuantity: false,
+            exportVariants: false,
 
-            excludeNoQtyVariants: true,
+            excludeNoQtyVariants: false,
 
             excludeProductRows: false,
 
