@@ -482,10 +482,15 @@ export default {
 }
 .budget-input-wrapper {
     position: relative;
+    ::v-deep {
+        .input-wrapper {
+            border-radius: $borderRadiusEl;
+        }
+    }
     .currency {
         position: absolute;
         right: 8px;
-        bottom: 5px;
+        bottom: 7px;
     }
 }
 .budget-spend {
