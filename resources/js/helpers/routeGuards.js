@@ -41,7 +41,7 @@ export async function triggerRouteGuards(to) {
         authenticatedInitDone &&
         toRoot.meta &&
         toRoot.meta.space &&
-        !store.getters['workspaces/getEnabledSpaces'].find(space => space.name == toRoot.meta.space)
+        !store.getters['workspaces/getEnabledApps'].find(space => space.name == toRoot.meta.space)
     ) {
         // Tell the user they are getting redirected
         store.commit('alerts/SHOW_SNACKBAR', {
@@ -57,14 +57,14 @@ export async function triggerRouteGuards(to) {
 export async function triggerSpaceRedirection() {
     await awaitAuthInit()
     // Redirect to a space the user has access to
-    const availableSpaces = store.getters['workspaces/getEnabledSpaces']
-    if (availableSpaces.length > 0) {
-        const newSpace = availableSpaces[0]
-        store.commit('kollektSpaces/SET_KOLLEKT_SPACE', newSpace.name)
+    const availableApps = store.getters['workspaces/getEnabledApps']
+    if (availableApps.length > 0) {
+        const newSpace = availableApps[0]
+        store.commit('kollektApps/SET_KOLLEKT_APP', newSpace.name)
         return { name: newSpace.name }
     } else {
         await router.push('/')
-        store.commit('kollektSpaces/SET_KOLLEKT_SPACE', null)
+        store.commit('kollektApps/SET_KOLLEKT_APP', null)
         return false
     }
 }

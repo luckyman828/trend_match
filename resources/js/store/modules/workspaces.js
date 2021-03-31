@@ -59,8 +59,8 @@ export default {
             })
             return enabledFeaturues
         },
-        getEnabledSpaces: (state, getters, rootState, rootGetters) => {
-            return rootGetters['kollektSpaces/getSpaces'].filter(space => {
+        getEnabledApps: (state, getters, rootState, rootGetters) => {
+            return rootGetters['kollektApps/getApps'].filter(space => {
                 return getters.getFeatureFlags.includes(space.featureFlag)
             })
         },

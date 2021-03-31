@@ -1,6 +1,9 @@
 <template>
-    <div class="settings-page container sm">
-        <Breadcrumbs />
+    <div class="settings-page sm">
+        <router-link class="button pill ghost primary sm" :to="prevRoute != null ? prevRoute : { name: 'root' }">
+            <i class="far fa-arrow-left"></i>
+            <span>Back</span>
+        </router-link>
         <h1>Settings</h1>
         <div class="form-wrapper">
             <div class="form-section">
@@ -145,6 +148,7 @@ export default {
             uploadingCoverImage: false,
             uploadingLogo: false,
             showDangerousOptions: false,
+            prevRoute: null,
         }
     },
     computed: {
@@ -195,6 +199,9 @@ export default {
     },
     created() {
         if (this.realRole != 'Owner' && !this.isSystemAdmin) this.$router.push({ name: 'files' })
+    },
+    beforeRouteEnter(to, from, next) {
+        this.prevRoute = from
     },
 }
 </script>

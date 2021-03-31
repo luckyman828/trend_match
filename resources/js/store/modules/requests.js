@@ -150,6 +150,7 @@ export default {
                 // data: request,
                 data: {
                     content: comment.content,
+                    selection_id: comment.selection_id,
                 },
             }).then(response => {
                 if (!comment.id) {

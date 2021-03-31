@@ -64,7 +64,7 @@ $danger: $red;
 $warning: $yellow;
 $info: $blue;
 
-$secondary: #69e4a6;
+$secondary: #42e794;
 $secondaryLight: rgba($secondary, 0.35);
 
 $dark: #1c293b;
@@ -258,6 +258,7 @@ $brand-colors: (
     ),
     ('dark', $dark, mix(white, $dark, $lightenAmount), white, $dark, 1),
     ('green', $green500, $green400, white, $green600, 1),
+    ('secondary', $secondary, mix(white, $secondary, $lightenAmount), $dark, mix($dark05, $secondary, $darkenAmount), 1),
     ('red', $red, mix(white, $red, $lightenAmount), white, mix($dark05, $red, $darkenAmount), 1),
     ('yellow', $yellow, mix(white, $yellow, $lightenAmount), $dark05, mix($dark05, $yellow, $darkenAmount), 1),
     ('orange', $orange, mix(white, $orange, $lightenAmount), $dark05, mix($dark05, $orange, $darkenAmount), 1),

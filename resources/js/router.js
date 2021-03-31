@@ -127,18 +127,19 @@ const routes = [
         path: '/',
         name: 'root',
         component: () => import(/* webpackChunkName: "rootRoot" */ './pages/ROOT/'),
+        redirect: '/',
         children: [
             {
                 path: '/',
-                name: 'selectSpace',
+                name: 'selectApp',
                 meta: {
-                    isFullscreen: false,
+                    isFullscreen: true,
                 },
-                component: () => import(/* webpackChunkName: "selectSpace" */ './pages/ROOT/ProductSpaceSelectorPage/'),
+                component: () => import(/* webpackChunkName: "selectApp" */ './pages/ROOT/KollektAppSelectorPage/'),
                 beforeEnter: (to, from, next) => {
-                    const availableSpaces = store.getters['workspaces/getEnabledSpaces']
-                    if (!store.getters['auth/getIsSystemAdmin'] && availableSpaces.length == 1) {
-                        next({ name: availableSpaces[0].name })
+                    const availableApps = store.getters['workspaces/getEnabledApps']
+                    if (!store.getters['auth/getIsSystemAdmin'] && availableApps.length == 1) {
+                        next({ name: availableApps[0].name })
                     }
                     next()
                 },
@@ -163,7 +164,7 @@ const routes = [
         redirect: 'select/',
         meta: {
             root: 'select',
-            space: 'select',
+            app: 'select',
             isRoot: true,
         },
         component: () => import(/* webpackChunkName: "buyRoot" */ './pages/SELECT/'),
@@ -290,7 +291,7 @@ const routes = [
         name: 'play',
         meta: {
             root: 'play',
-            space: 'play',
+            app: 'play',
             isRoot: true,
         },
         component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
@@ -323,7 +324,7 @@ const routes = [
         redirect: 'buy/',
         meta: {
             root: 'buy',
-            space: 'buy',
+            app: 'buy',
             isRoot: true,
         },
         component: () => import(/* webpackChunkName: "buyRoot" */ './pages/BUY/'),

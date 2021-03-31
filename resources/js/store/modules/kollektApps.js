@@ -3,8 +3,8 @@ import router from '../../router'
 export default {
     namespaced: true,
     state: {
-        currentSpace: localStorage.getItem('kollektSpace') || null,
-        spaces: [
+        currentApp: localStorage.getItem('kollektApp') || null,
+        apps: [
             {
                 name: 'select',
                 featureFlag: 'space_select',
@@ -30,17 +30,17 @@ export default {
         ],
     },
     getters: {
-        getSpaces: state => state.spaces,
-        getCurrentSpace: (state, getters) => getters.getSpaces.find(x => x.name == state.currentSpace),
+        getApps: state => state.apps,
+        getCurrentApp: (state, getters) => getters.getApps.find(x => x.name == state.currentApp),
     },
     actions: {},
     mutations: {
-        SET_KOLLEKT_SPACE(state, space) {
-            state.currentSpace = space
-            localStorage.setItem('kollektSpace', space)
+        SET_KOLLEKT_APP(state, app) {
+            state.currentApp = app
+            localStorage.setItem('kollektApp', app)
         },
-        NAVIGATE_TO_CURRENT_SPACE(state) {
-            router.push({ name: state.currentSpace })
+        NAVIGATE_TO_CURRENT_APP(state) {
+            router.push({ name: state.currentApp })
         },
     },
 }

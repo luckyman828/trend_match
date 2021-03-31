@@ -30,7 +30,7 @@ import display from './modules/display'
 import videoComments from './modules/videoComments'
 import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
-import kollektSpaces from './modules/kollektSpaces'
+import kollektApps from './modules/kollektApps'
 import kollektFeatures from './modules/kollektFeatures'
 import wishlist from './modules/playb2c/wishlist'
 import basket from './modules/playb2c/basket'
@@ -79,7 +79,7 @@ export const initialStoreModules = {
     wishlist,
     basket,
     videos,
-    kollektSpaces,
+    kollektApps,
     kollektFeatures,
     buyProducts,
     integrationDkc,

@@ -1,21 +1,24 @@
 <template>
-    <div class="root" :class="[{ 'full-screen': $route.meta.isFullscreen }]">
+    <div class="root-home" :class="[{ 'full-screen': $route.meta.isFullscreen }]" :style="backgroundStyle">
         <RootLoader v-if="isLoading" />
         <template v-else>
             <template v-if="!$route.meta.isFullscreen">
-                <div class="navbar-wrapper">
+                <!-- <div class="navbar-wrapper">
                     <portal-target name="navbar" />
-                </div>
+                </div> -->
                 <div class="sidebar-wrapper">
-                    <SidebarSelect v-if="currentSpace && currentSpace.name == 'select'" />
-                    <SidebarBuy v-else-if="currentSpace && currentSpace.name == 'buy'" />
-                    <TheSidebar v-else type="min" />
+                    <SidebarSelect v-if="currentApp && currentApp.name == 'select'" />
+                    <SidebarBuy v-else-if="currentApp && currentApp.name == 'buy'" />
                 </div>
             </template>
             <div class="main" id="main" ref="main" :class="{ 'hide-crisp': $route.meta.hideCrisp }">
-                <transition name="fade">
-                    <router-view :key="$route.path"></router-view>
-                </transition>
+                <div class="root-card">
+                    <div class="inner">
+                        <transition name="fade">
+                            <router-view :key="$route.path"></router-view>
+                        </transition>
+                    </div>
+                </div>
             </div>
             <TheSnackbarSpawner />
         </template>
@@ -40,9 +43,19 @@ export default {
     },
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
-        ...mapGetters('kollektSpaces', {
-            currentSpace: 'getCurrentSpace',
+        ...mapGetters('kollektApps', {
+            currentApp: 'getCurrentApp',
         }),
+        ...mapGetters('auth', ['getLoginBackgroundImage', 'getLoginLogo']),
+        backgroundStyle() {
+            return {
+                backgroundImage: `url(${
+                    this.currentWorkspace.cover_image
+                        ? this.currentWorkspace.cover_image
+                        : '/images/pexels-godisable-jacob-794064.jpg'
+                })`,
+            }
+        },
         isLoading() {
             return !this.currentWorkspace //Check if we have a workspace
         },
@@ -52,39 +65,61 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.root {
-    scroll-behavior: smooth;
+.root-home {
+    background: #b08818;
     min-height: 100vh;
+    position: relative;
+    scroll-behavior: smooth;
     min-width: 100vw;
     max-height: 100vh;
-    height: 100vh;
     overflow: hidden;
+    background-position: center;
+    background-size: cover;
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(black, 0.7);
+    }
     &:not(.full-screen) {
         display: grid;
         grid-template-columns: $sidebarWidth auto;
-        grid-template-rows: $navbarHeight auto;
-        grid-template-areas:
-            'sidebar navbar'
-            'sidebar main';
-
-        .main {
-            max-height: calc(100vh - #{$navbarHeight});
-            overflow-y: scroll;
-            overflow-x: auto;
-        }
+        grid-template-areas: 'sidebar main';
+    }
+    .main {
+        grid-area: main;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        height: 100%;
+        padding: 32px;
+        width: 100%;
     }
     .sidebar-wrapper {
         grid-area: sidebar;
-        height: 100%;
     }
     .navbar-wrapper {
         grid-area: navbar;
     }
-    .main {
-        grid-area: main;
-        background: $bg;
-        position: relative;
-        height: 100%;
+    .root-card {
+        height: 620px;
+        min-width: 600px;
+        background: white;
+        z-index: 1;
+        box-shadow: $shadowModule;
+        border-radius: $borderRadiusModule;
+        border: $borderModule;
+        overflow: hidden;
+        .inner {
+            height: 100%;
+            padding: 32px;
+            overflow-y: auto;
+        }
     }
 }
 </style>
