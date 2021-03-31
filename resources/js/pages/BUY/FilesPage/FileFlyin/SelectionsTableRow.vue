@@ -62,13 +62,13 @@
             </td>
             <td class="currency">
                 <button
-                    class="ghost editable sm"
+                    class="ghost pill editable sm"
                     @click="$event => $emit('showSelectionCurrencyContext', { selection, e: $event })"
                     v-if="userHasEditAccess"
                 >
-                    <span>{{ selection.currency || 'Set currency' }}</span>
+                    <span>{{ selection.currency || 'Not set' }}</span>
                 </button>
-                <span v-else>{{ selection.currency || 'No currency set' }}</span>
+                <span v-else>{{ selection.currency || 'Not set' }}</span>
             </td>
             <td class="budget">
                 <v-popover
@@ -79,7 +79,7 @@
                 >
                     <BaseButton
                         v-if="userHasEditAccess"
-                        buttonClass="ghost editable sm"
+                        buttonClass="ghost pill editable sm"
                         :disabled="selection.type == 'Summed' || !userHasEditAccess"
                     >
                         <span>{{ theSelectionBudget || 'Set budget' | thousandSeparated }}</span>
@@ -114,7 +114,7 @@
 
             <td class="users">
                 <button
-                    class="ghost editable sm"
+                    class="ghost pill sm"
                     v-if="userHasEditAccess"
                     @click="$emit('showSelectionUsersContext', { selection, e: $event })"
                 >
@@ -123,12 +123,12 @@
                 <span v-else>-</span>
             </td>
             <td class="action">
-                <BaseButton buttonClass="invisible ghost-hover primary sm" @click="onGoToSelection">
-                    <span>Go to Overview</span>
+                <BaseButton buttonClass="invisible pill ghost-hover primary sm" @click="onGoToSelection">
+                    <span>Open</span>
                     <!-- <span v-else>Join Presentation</span> -->
                 </BaseButton>
-                <button v-if="userHasEditAccess" class="invisible ghost-hover" @click="emitShowContext">
-                    <i class="fas fa-ellipsis-h"></i>
+                <button v-if="userHasEditAccess" class="invisible circle ghost-hover sm" @click="emitShowContext">
+                    <i class="far fa-ellipsis-h"></i>
                 </button>
             </td>
         </tr>

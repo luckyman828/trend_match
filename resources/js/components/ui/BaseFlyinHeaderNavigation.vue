@@ -1,9 +1,9 @@
 <template>
     <div class="navigation">
-        <button class="circle md prev" :disabled="!prev" @click="$emit('prev')">
+        <button class="circle prev" :disabled="!prev" @click="$emit('prev')">
             <i class="fas fa-angle-left"></i>
         </button>
-        <button class="circle md next" :disabled="!next" @click="$emit('next')">
+        <button class="circle next" :disabled="!next" @click="$emit('next')">
             <i class="fas fa-angle-right"></i>
         </button>
     </div>

@@ -157,15 +157,11 @@ export default {
     position: fixed;
     height: 100vh;
     box-shadow: -2px 0 10px #0000001a;
-    background: $bg;
-    // transition-timing-function: ease-out;
     transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
     transition: 0.2s;
-    // &.animate {
-    //     animation-name: flyin;
-    //     animation-duration: .2s;
-    //     animation-iteration-count: 1;
-    // }
+    background: $bg;
+    overflow: hidden;
+    border-radius: 16px 0 0 0;
     &.placement-left {
         right: auto;
         left: 0;

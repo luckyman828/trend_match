@@ -21,7 +21,7 @@
                 <template v-slot:right>
                     <div class="item-group">
                         <BaseButton
-                            buttonClass="ghost"
+                            buttonClass="ghost pill"
                             :disabled="authUserWorkspaceRole != 'Admin' && !file.editable"
                             disabledTooltip="Only admins and editors can edit files"
                             @click="goToEditSingle"
