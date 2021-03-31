@@ -126,23 +126,27 @@
         <template v-slot v-if="show">
             <BaseFlyinColumn class="details">
                 <div class="main-img" @click="cycleImage(true)">
-                    <BaseVariantImage
-                        :key="product.id + '-' + currentImgIndex"
-                        :variant="currentVariant"
-                        size="sm"
-                        :index="currentVariant ? currentVariant.imageIndex : 0"
-                    />
+                    <BaseImageSizer>
+                        <BaseVariantImage
+                            :key="product.id + '-' + currentImgIndex"
+                            :variant="currentVariant"
+                            size="sm"
+                            :index="currentVariant ? currentVariant.imageIndex : 0"
+                        />
+                    </BaseImageSizer>
                     <button class="white controls" v-tooltip="'View large images'" @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
                     </button>
 
                     <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
-                        <div class="square white trigger">
+                        <BaseShape shapeClass="square white">
                             <i class="far fa-images"></i>
-                            <div class="count circle xxs dark">
-                                <span>{{ currentVariant.pictures.length }}</span>
-                            </div>
-                        </div>
+                            <template v-slot:outside>
+                                <div class="count circle xxs dark top-right">
+                                    <span>{{ currentVariant.pictures.length }}</span>
+                                </div>
+                            </template>
+                        </BaseShape>
                         <div class="drawer">
                             <div
                                 class="image-wrapper"
@@ -763,8 +767,8 @@ export default {
             }
             .main-img {
                 cursor: pointer;
-                width: 225px;
-                height: 300px;
+                width: 100%;
+                // height: 300px;
                 overflow: hidden;
                 border: $borderElHard;
                 border-radius: $borderRadiusEl;
@@ -817,20 +821,6 @@ export default {
                 display: none;
             }
         }
-        .trigger {
-            border: $borderElSoft;
-            margin-right: -4px;
-            margin-top: -4px;
-            position: relative;
-            .count {
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                height: 16px;
-                width: 16px;
-                font-size: 10px;
-            }
-        }
         .drawer {
             display: none;
             overflow-y: auto;
@@ -843,12 +833,13 @@ export default {
             margin-bottom: 4px;
         }
         .image-wrapper {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: $borderElSoft;
-            border-radius: $borderRadiusEl;
+            border-radius: 4px;
             position: relative;
             cursor: pointer;
+            overflow: hidden;
             img {
                 width: 100%;
                 height: 100%;
