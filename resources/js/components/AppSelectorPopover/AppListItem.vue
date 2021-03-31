@@ -1,7 +1,12 @@
 <template>
     <div
-        class="app-list-item flex-list justify full-width center-v"
-        :class="[{ disabled: isDisabled }, { unavailable: isUnavailable }, { current: isCurrent }]"
+        class="app-list-item flex-list justify full-width center-v bg-theme-white interactablee"
+        :class="[
+            { disabled: isDisabled },
+            { unavailable: isUnavailable },
+            { active: isCurrent },
+            { clickable: !isDisabled },
+        ]"
         @click="!isDisabled && onSetSpace(app)"
     >
         <div class="flex-list">
@@ -78,10 +83,6 @@ export default {
     border-radius: $borderRadiusEl;
     &:not(.current):not(.disabled) {
         cursor: pointer;
-    }
-    &:hover,
-    &.current {
-        background: $bg;
     }
     .name {
         text-transform: uppercase;

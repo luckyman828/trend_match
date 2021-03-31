@@ -36,28 +36,6 @@ $green500: #42e794;
 $green600: #30c68a;
 $green700: #21a67d;
 
-$grey100: #fafcfd;
-$grey200: #f5fafb;
-$grey300: #f0f3f4; //#ccdbef
-$grey400: #dfe7ea;
-$grey450: #cfd8dd;
-$grey500: #c7d3db;
-$grey600: #a7b2c2;
-$grey700: #68849f;
-$grey800: #425e80;
-$grey900: #27416a;
-
-$bluegrey100: #edf8fc;
-$bluegrey200: #e1ebf1;
-$bluegrey250: #e4eef5;
-$bluegrey300: #cddde8;
-$bluegrey400: #adc9db;
-$bluegrey500: #8dabc4;
-$bluegrey600: #6787a8;
-$bluegrey700: #445f7b;
-$bluegrey800: #2c3f59;
-$bluegrey900: #1c293b;
-
 $success: $primary;
 $error: $orange;
 $danger: $red;
@@ -66,6 +44,8 @@ $info: $blue;
 
 $secondary: #42e794;
 $secondaryLight: rgba($secondary, 0.35);
+
+$almostBlack: #0d131c;
 
 $dark: #1c293b;
 $dark100: #0d131c;
@@ -91,6 +71,28 @@ $button: $grey;
 $success: $green;
 $fail: $red;
 $warming: $yellow;
+
+$grey100: rgba($dark, 0.04);
+$grey200: rgba($dark, 0.08);
+$grey300: rgba($dark, 0.12);
+$grey400: #dfe7ea;
+$grey450: #cfd8dd;
+$grey500: #c7d3db;
+$grey600: #a7b2c2;
+$grey700: #68849f;
+$grey800: #425e80;
+$grey900: #27416a;
+
+$bluegrey100: #edf8fc;
+$bluegrey200: #e1ebf1;
+$bluegrey250: #e4eef5;
+$bluegrey300: #cddde8;
+$bluegrey400: #adc9db;
+$bluegrey500: #8dabc4;
+$bluegrey600: #6787a8;
+$bluegrey700: #445f7b;
+$bluegrey800: #2c3f59;
+$bluegrey900: #1c293b;
 
 // $divider: $grey500;
 $divider: $grey600;
@@ -172,6 +174,7 @@ $shadowModuleHard: 0 3px 6px 0 rgba(black, 0.3);
 $shadowEl: 0 3px 4px 0 rgba(117, 134, 156, 0.1);
 $shadowElSoft: 0 1px 2px 0 rgba(117, 134, 156, 0.3);
 $shadowElHard: 0 3px 4px 0 rgba(black, 0.4);
+$shadowSoft: 0 8px 12px 0 rgba(black, 0.3);
 
 // Borders
 $borderRadiusSm: 4px;
@@ -280,6 +283,27 @@ $brand-colors: (
         mix($dark05, $bluegrey250, $darkenAmount),
         1
     );
+
+$bgWhite: white;
+$bgWhiteHover: $grey200;
+$bgWhiteActive: $grey100;
+
+// Light on white
+$bgLight: $grey100;
+$bgLightHover: $grey200;
+$bgLightActive: $grey200;
+
+// Grey on white
+$bgGrey: $grey200;
+$bgGreyHover: $grey300;
+$bgGreyActive: $grey300;
+
+// BG THEMES ($colorName, $bg, $bgHover, $bgActive)
+$bg-themes: ('white', $bgWhite, $bgWhiteHover, $bgWhiteActive), ('light', $bgLight, $bgLightHover, $bgLightActive),
+    ('grey', $bgGrey, $bgGreyHover, $bgGreyActive);
+
+// CARD SIZES ($sizeName, $padding; $borderRadius)
+$card-sizes: ('xs', 4px, 4px), ('sm', 8px, 8px), ('md', 16px, 16px);
 
 // UI SQUARE SIZES ($name, $height, $padding, $min-width)
 $ui-square-sizes: ('xs', 24px, 12px, 8px), ('sm', 40px, 6px, 24px), ('md', 44px, 14px, 16px), ('lg', 48px, 14px, 20px);

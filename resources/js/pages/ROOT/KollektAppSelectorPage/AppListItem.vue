@@ -1,8 +1,14 @@
 <template>
     <div
-        class="app-list-item flex-list justify full-width center-v"
-        :class="[{ disabled: isDisabled }, { unavailable: isUnavailable }, { current: isCurrent }]"
-        @click="!isDisabled && onSetSpace(app)"
+        class="app-list-item flex-list justify full-width center-v card card-sm interactable"
+        :class="[
+            { disabled: isDisabled },
+            { unavailable: isUnavailable },
+            { current: isCurrent },
+            { clickable: !isDisabled },
+            isUnavailable ? 'bg-theme-white' : 'bg-theme-light ',
+        ]"
+        @click="!!isUnavailable && app.isReleased ? onUprade(app) : !isDisabled && onSetApp(app)"
     >
         <div class="flex-list">
             <BaseImageSizer class="logo-sizer" aspect="1:1" fit="contain">
@@ -14,13 +20,18 @@
             </div>
         </div>
         <BaseButton
-            :buttonClass="['pill sm', isCurrent ? 'invisible grey' : 'white']"
+            v-if="!isUnavailable"
+            :buttonClass="['pill sm w-md', isCurrent ? 'invisible grey' : 'white']"
             :disabled="isDisabled"
-            @click="onSetSpace()"
         >
             <span v-if="isCurrent">Active</span>
-            <span v-else-if="isUnavailable">Not activated</span>
             <span v-else class="color-primary">Open</span>
+        </BaseButton>
+        <BaseButton v-else-if="!app.isReleased" :disabled="true" :buttonClass="'pill sm w-lg'">
+            <span>Coming soon</span>
+        </BaseButton>
+        <BaseButton v-else :buttonClass="'pill sm w-md secondary'">
+            <span>Upgrade</span>
         </BaseButton>
     </div>
 </template>
@@ -44,8 +55,7 @@ export default {
             availableApps: 'getEnabledApps',
         }),
         isDisabled() {
-            if (this.isSystemAdmin) return false
-            return this.isCurrent || this.isUnavailable
+            return this.isCurrent || !this.app.isReleased
         },
         isCurrent() {
             return this.currentApp && this.currentApp.name == this.app.name
@@ -60,10 +70,13 @@ export default {
     },
     methods: {
         ...mapMutations('kollektApps', ['SET_KOLLEKT_APP', 'NAVIGATE_TO_CURRENT_APP']),
-        onSetSpace() {
+        onSetApp() {
             if (this.isDisabled) return
             this.SET_KOLLEKT_APP(this.app.name)
             this.NAVIGATE_TO_CURRENT_APP()
+        },
+        onUprade(app) {
+            this.$emit('upgrade', app)
         },
     },
 }
@@ -72,17 +85,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .app-list-item {
-    padding: 8px;
-    border: solid 2px transparent;
-    border-radius: $borderRadiusEl;
-    background: $bg;
-    &:not(.current):not(.disabled) {
-        cursor: pointer;
-    }
-    &:hover,
-    &.current {
-        background: $bg;
-    }
     .name {
         text-transform: uppercase;
         letter-spacing: 2px;

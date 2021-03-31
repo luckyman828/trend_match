@@ -572,7 +572,6 @@ export default {
         }
         &:not(.header):not(.footer):not(.table-top-bar):not(.last) {
             &:hover {
-                background: $bgModuleHover;
                 td {
                     &.title {
                         i {

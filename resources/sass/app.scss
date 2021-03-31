@@ -1010,6 +1010,7 @@ i {
         }
     }
 }
+
 // POPOVER
 .popover {
     min-width: 200px;
@@ -1033,93 +1034,30 @@ i {
         max-width: none;
     }
 }
-.v-popover {
-    .trigger {
-        &:hover {
-            i.fa-circle-info {
-                font-weight: 900;
-                color: $font;
-            }
-        }
-    }
-}
 
-// V-TOOLTIP
-i.has-tooltip {
-    &:hover {
-        font-weight: 900;
-        color: $font;
+// TOOLTIPS AND POPOVERS
+.popover {
+    z-index: 99999999;
+    .popover-inner {
+        border-radius: $borderRadiusEl;
+        border: $borderEl;
+        background: white;
+        box-shadow: $shadowSoft;
     }
 }
 .tooltip {
-    // min-width: 200px;
-    max-width: 300px;
-    font-size: 12px;
-
     z-index: 99999999;
-    // strong,
-    // span,
-    // p,
-    // i,
-    // u {
-    //     color: white;
-    // }
-    .item-group {
-        > .header {
-            padding: 8px 16px;
-            line-height: 1;
-        }
-        padding: 8px 0;
-        &:not(:first-child) {
-            border-top: solid 1px $divider;
-        }
-        &.actions {
-            display: flex;
-            padding: 8px 16px;
-            > *:not(:first-child) {
-                margin-left: 8px;
-            }
-        }
-    }
-    .item,
-    .item-wrapper {
-        padding: 8px 16px;
-        color: $dark05;
+    .tooltip-inner {
+        font-size: 11px;
+        border-radius: 6px;
+        background-color: $dark100;
+        box-shadow: $shadowEl;
+        padding: 0 8px;
+        color: white;
         display: flex;
         align-items: center;
-        &:not(.item-wrapper):not(.context-menu-item) {
-            cursor: pointer;
-            &:hover {
-                background: $light1;
-            }
-        }
-        .icon-wrapper {
-            width: 32px;
-            display: block;
-            color: $dark15;
-            i {
-                font-size: 16px;
-                i {
-                    font-size: 9px;
-                }
-            }
-        }
-    }
-    .tooltip-inner {
-        border-radius: $borderRadiusEl;
-        border: 1px solid $divider;
-        background-color: white;
-        // box-shadow: 0 10px 10px rgba($dark, 20%);
-        box-shadow: $shadowElHard;
-        max-height: 70vh;
-        overflow-y: auto;
-        &.allow-overflow {
-            overflow: visible;
-        }
-    }
-
-    &-inner:not(.popover-inner) {
-        padding: 8px 12px;
+        height: 24px;
+        font-weight: 500;
     }
 
     &-arrow {
@@ -1145,13 +1083,13 @@ i.has-tooltip {
         > .wrapper > .tooltip-arrow,
         > .tooltip-arrow {
             border-bottom-width: 0;
-            border-top-color: $divider;
+            border-top-color: $dark100;
             bottom: 3px;
             left: 0;
 
             &::after {
                 border-bottom-width: 0;
-                border-top-color: white;
+                border-top-color: $dark100;
                 bottom: 1px;
                 left: -5px;
             }
@@ -1165,13 +1103,13 @@ i.has-tooltip {
         > .wrapper > .tooltip-arrow,
         > .tooltip-arrow {
             border-top-width: 0;
-            border-bottom-color: $divider;
+            border-bottom-color: $dark100;
             top: 3px;
             left: 0;
 
             &::after {
                 border-top-width: 0;
-                border-bottom-color: white;
+                border-bottom-color: $dark100;
                 top: 2px;
                 left: -5px;
             }
@@ -1185,13 +1123,13 @@ i.has-tooltip {
         > .wrapper > .tooltip-arrow,
         > .tooltip-arrow {
             border-left-width: 0;
-            border-right-color: $divider;
+            border-right-color: $dark100;
             top: 0;
             left: 3px;
 
             &::after {
                 border-left-width: 0;
-                border-right-color: white;
+                border-right-color: $dark100;
                 top: -5px;
                 left: 1px;
             }
@@ -1205,73 +1143,18 @@ i.has-tooltip {
         > .wrapper > .tooltip-arrow,
         > .tooltip-arrow {
             border-right-width: 0;
-            border-left-color: $divider;
+            border-left-color: $dark100;
             top: 0;
             right: 3px;
 
             &::after {
                 border-right-width: 0;
-                border-left-color: white;
+                border-left-color: $dark100;
                 top: -5px;
                 right: 1px;
             }
         }
     }
-
-    // DARK
-    &.dark {
-        .tooltip-inner {
-            background: none;
-        }
-        &[x-placement^='top'],
-        &[data-popper-placement^='top'] {
-            > .wrapper > .tooltip-arrow,
-            > .tooltip-arrow {
-                border-top-color: $dark;
-
-                &::after {
-                    border-top-color: $dark;
-                }
-            }
-        }
-
-        &[x-placement^='bottom'],
-        &[data-popper-placement^='bottom'] {
-            > .wrapper > .tooltip-arrow,
-            > .tooltip-arrow {
-                border-bottom-color: $dark;
-
-                &::after {
-                    border-bottom-color: $dark;
-                }
-            }
-        }
-
-        &[x-placement^='right'],
-        &[data-popper-placement^='right'] {
-            > .wrapper > .tooltip-arrow,
-            > .tooltip-arrow {
-                border-right-color: $dark;
-                &::after {
-                    border-right-color: $dark;
-                }
-            }
-        }
-
-        &[x-placement^='left'],
-        &[data-popper-placement^='left'] {
-            > .wrapper > .tooltip-arrow,
-            > .tooltip-arrow {
-                border-left-color: $dark;
-                &::after {
-                    border-left-color: $dark;
-                }
-            }
-        }
-    }
-}
-.tooltip-target:hover i {
-    font-weight: 900;
 }
 .v-popover > .trigger {
     display: inherit !important;
@@ -1663,22 +1546,47 @@ input::placeholder {
 }
 
 // LAYOUT / COLUMNS
-.col-5 {
+.grid {
+    display: grid;
+    &.gap-xs {
+        gap: 8px;
+    }
+    &.gap-sm {
+        gap: 8px;
+    }
+    &.gap-md {
+        gap: 16px 12px;
+    }
+    &.col-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    &.col-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    &.col-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    &.col-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+// DEPRECERATED -- USE ABOVE
+.col-5:not(.grid) {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-gap: 8px;
 }
-.col-4 {
+.col-4:not(.grid) {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-gap: 8px;
 }
-.col-3 {
+.col-3:not(.grid) {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-gap: 8px;
 }
-.col-2 {
+.col-2:not(.grid) {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-gap: 8px;
@@ -1859,6 +1767,39 @@ input::placeholder {
     }
     .group-border-color-#{$i} {
         border-color: nth($color, 1) !important;
+    }
+}
+
+// COLOR THEME
+@each $theme in $bg-themes {
+    .bg-theme-#{nth($theme,1)} {
+        transition: background 0.2s ease-in;
+        background: nth($theme, 2);
+        &.interactable:not(.disabled) {
+            // cursor: pointer;
+            &:hover {
+                background: nth($theme, 3);
+            }
+        }
+        &.disabled {
+            background: transparent;
+        }
+        &.active {
+            background: nth($theme, 4);
+        }
+    }
+}
+
+// CARDS
+.card {
+    @each $size in $card-sizes {
+        &.card-#{nth($size,1)} {
+            padding: nth($size, 2);
+            border-radius: nth($size, 3);
+            &.card-round {
+                border-radius: 24px;
+            }
+        }
     }
 }
 

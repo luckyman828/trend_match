@@ -65,8 +65,12 @@ Vue.use(VueObserveVisibility)
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip, {
     defaultBoundariesElement: 'window',
+    defaultOffset: 4,
+    defaultDelay: { show: 100, hide: 0 },
     popover: {
         defaultTrigger: 'hover focus',
+        defaultBaseClass: 'base-popover popover',
+        defaultOffset: 8,
     },
 })
 

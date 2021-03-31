@@ -144,7 +144,7 @@ export default {
     flex-direction: column;
     justify-content: space-between;
     background: $bgDark;
-    padding: 8px 8px 0;
+    padding: 8px 6px 0;
     height: 100%;
 }
 

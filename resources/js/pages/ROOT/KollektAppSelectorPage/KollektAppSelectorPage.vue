@@ -1,7 +1,7 @@
 <template>
     <div class="kollekt-app-selector">
         <h1>Welcome {{ authUser ? authUser.name.split(' ')[0] : 'Anon' }}</h1>
-        <div class="flex-list flex-v card details space-md">
+        <div class="flex-list flex-v card card-md details space-md bg-theme-grey">
             <div class="flex-list workspace-selector center-v space-md">
                 <div class="logo-wrapper">
                     <BaseImageSizer v-if="currentWorkspace.logo" class="logo-sizer" aspect="1:1">
@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <div class="long-pill flex-list justify user-details center-v">
+            <div class="card card-sm card-round bg-theme-white flex-list justify user-details center-v">
                 <div class="user flex-list">
                     <AuthUserIcon />
                     <div class="flex-list flex-v lh-xs space-sm">
@@ -95,22 +95,29 @@
 
         <div class="app-section">
             <div class="square light xs"><span class="color-dark">APPS</span></div>
-            <div class="app-list flex-list md col-2">
-                <AppListItem v-for="(app, index) in availableApps" :key="index" :app="app" />
+            <div class="app-list grid col-2 gap-md">
+                <AppListItem v-for="(app, index) in allApps" :key="index" :app="app" @upgrade="appToBuy = app" />
             </div>
-            <div v-if="availableApps.length == 0">No apps enabled for this workspace.</div>
         </div>
+
+        <BuyAppModal :show="!!appToBuy" @close="appToBuy = null" :app="appToBuy" />
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import AuthUserIcon from '../../../components/AuthUserIcon'
+import BuyAppModal from '../../../components/BuyAppModal'
 import AppListItem from './AppListItem'
 
 export default {
     name: 'kollektAppSelectorPage',
-    components: { AuthUserIcon, AppListItem },
+    components: { AuthUserIcon, AppListItem, BuyAppModal },
+    data() {
+        return {
+            appToBuy: null,
+        }
+    },
     computed: {
         ...mapGetters('auth', {
             authUser: 'authUser',
@@ -125,6 +132,9 @@ export default {
         }),
         ...mapGetters('kollektFeatures', {
             allFeatures: 'getFeatureFlags',
+        }),
+        ...mapGetters('kollektApps', {
+            allApps: 'getApps',
         }),
         currentWorkspace: {
             get() {
@@ -161,16 +171,13 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .kollekt-app-selector {
-    width: 840px;
+    width: 608px;
     h1 {
         font-size: 20px;
         margin: 0;
         margin-bottom: 16px;
     }
     .details {
-        background: $bg;
-        border-radius: 16px;
-        padding: 16px;
         .workspace-selector {
             position: relative;
             .action-list {

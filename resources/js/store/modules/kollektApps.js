@@ -7,8 +7,9 @@ export default {
         apps: [
             {
                 name: 'select',
-                featureFlag: 'space_select',
+                featureFlag: 'app_select',
                 byline: 'Trim Collections',
+                isReleased: true,
                 logo: {
                     white: '/images/logo/logo_select_white.svg',
                     color: '/images/logo/logo_select_blue.svg',
@@ -18,13 +19,38 @@ export default {
             },
             {
                 name: 'buy',
-                featureFlag: 'space_buy',
+                featureFlag: 'app_buy',
                 byline: 'Multi-brand purchasing',
+                isReleased: true,
                 logo: {
                     white: '/images/logo/logo_kollekt-buy_white.svg',
                     color: '/images/logo/logo_kollekt-buy_blue.svg',
                     colorOnWhite: '/images/logo/logo_kollekt-buy_blue-on-white.svg',
                     whiteOnColor: '/images/logo/logo_kollekt-buy_white-on-blue.svg',
+                },
+            },
+            {
+                name: 'play',
+                featureFlag: 'app_play',
+                byline: 'Video and Livestream',
+                isReleased: false,
+                logo: {
+                    white: '/images/logo/logo_kollekt-play_white.svg',
+                    color: '/images/logo/logo_kollekt-play_blue.svg',
+                    colorOnWhite: '/images/logo/logo_kollekt-play_blue-on-white.svg',
+                    whiteOnColor: '/images/logo/logo_kollekt-play_white-on-blue.svg',
+                },
+            },
+            {
+                name: 'performance',
+                featureFlag: 'app_performance',
+                byline: 'Datadriven Decisions',
+                isReleased: false,
+                logo: {
+                    white: '/images/logo/logo_kollekt-performance_white.svg',
+                    color: '/images/logo/logo_kollekt-performance_blue.svg',
+                    colorOnWhite: '/images/logo/logo_kollekt-performance_blue-on-white.svg',
+                    whiteOnColor: '/images/logo/logo_kollekt-performance_white-on-blue.svg',
                 },
             },
         ],
