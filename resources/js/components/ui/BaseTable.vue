@@ -509,7 +509,7 @@ export default {
     }
     .tabs-wrapper {
         display: flex;
-        margin-bottom: -$borderRadiusModule;
+        margin-bottom: -16px;
         width: 100%;
     }
     .sticky-bg {
@@ -538,7 +538,7 @@ export default {
         }
         .tabs-wrapper {
             display: flex;
-            margin-bottom: -$borderRadiusModule;
+            margin-bottom: -16px;
         }
     }
     &.fixed {
