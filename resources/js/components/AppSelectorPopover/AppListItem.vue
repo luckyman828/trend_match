@@ -1,6 +1,6 @@
 <template>
     <div
-        class="app-list-item flex-list justify full-width center-v bg-theme-white interactablee"
+        class="app-list-item flex-list justify full-width center-v bg-theme-white interactable"
         :class="[
             { disabled: isDisabled },
             { unavailable: isUnavailable },

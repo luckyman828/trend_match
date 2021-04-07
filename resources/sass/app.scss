@@ -1773,10 +1773,10 @@ input::placeholder {
 // COLOR THEME
 @each $theme in $bg-themes {
     .bg-theme-#{nth($theme,1)} {
-        transition: background 0.2s ease-in;
         background: nth($theme, 2);
         &.interactable:not(.disabled) {
-            // cursor: pointer;
+            transition: background 0.2s ease-in;
+            cursor: pointer;
             &:hover {
                 background: nth($theme, 3);
             }
@@ -1786,6 +1786,11 @@ input::placeholder {
         }
         &.active {
             background: nth($theme, 4);
+        }
+        &.bg-theme-hover {
+            &:hover {
+                background: nth($theme, 3);
+            }
         }
     }
 }

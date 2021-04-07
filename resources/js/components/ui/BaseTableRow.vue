@@ -1,6 +1,6 @@
 <template>
     <tr
-        class="table-row bg-theme-white interactable"
+        class="table-row bg-theme-white bg-theme-hover"
         :class="[{ active: contextMenuIsActive }, { self: isSelf }, { 'has-focus': hasFocus }]"
         :key="itemKey ? item[itemKey] : index"
         :style="rowHeight"
