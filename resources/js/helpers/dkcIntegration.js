@@ -81,6 +81,7 @@ export async function instantiateDKCProducts(products) {
         newProduct.extra_data.sex = product.sex
         newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
+        // PRICES
         if (product.variants && product.variants.length > 0) {
             product.variants[0].prices.map(price => {
                 if (!!newProduct.prices.find(x => x.currency == price.currency)) return
@@ -90,11 +91,15 @@ export async function instantiateDKCProducts(products) {
                     currency: price._country ? `${price.country} ${price.currency}` : price.currency,
                     wholesale_price,
                     recommended_retail_price,
-                    mark_up:
-                        wholesale_price != null && !!recommended_retail_price
-                            ? Number(Math.round(recommended_retail_price / wholesale_price + 'e' + 2) + 'e-' + 2)
-                            : 0,
+                    mark_up: 0,
                 }
+                if (newPrice.currency == 'DKK') {
+                    newPrice.wholesale_price = parseFloat(product.variants[0].retail_costprice.replace(/,/g, ''))
+                }
+                newPrice.mark_up =
+                    newPrice.wholesale_price != null && !!recommended_retail_price
+                        ? Number(Math.round(recommended_retail_price / newPrice.wholesale_price + 'e' + 2) + 'e-' + 2)
+                        : 0
                 newProduct.prices.push(newPrice)
             })
         }
