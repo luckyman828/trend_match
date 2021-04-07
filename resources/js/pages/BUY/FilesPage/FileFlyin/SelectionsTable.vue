@@ -366,7 +366,7 @@
             ref="contextUsers"
             header="Add users to selection"
             v-model="selectedUsers"
-            :options="users"
+            :options="usersSorted"
             optionNameKey="name"
             optionDescriptionKey="email"
             uniqueKey="id"
@@ -467,6 +467,7 @@ export default {
             'getSelectionsStatus',
             'getSelections',
         ]),
+        ...mapGetters('auth', { authUser: 'authUser' }),
         allSelections() {
             return this.selections
         },
@@ -478,6 +479,13 @@ export default {
         loadingMsg() {
             if (this.cloningSetup) return 'Cloning selections'
             return 'Loading selections'
+        },
+        usersSorted() {
+            if (!this.users) return []
+            return this.users.sort((a, b) => {
+                if (a.id == this.authUser.id) return -1
+                if (b.id == this.authUser.id) return 1
+            })
         },
     },
     watch: {
