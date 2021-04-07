@@ -7,7 +7,7 @@
             { active: isCurrent },
             { clickable: !isDisabled },
         ]"
-        @click="!isDisabled && onSetSpace(app)"
+        @click="!!isUnavailable && app.isReleased ? onUprade(app) : !isDisabled && onSetApp(app)"
     >
         <div class="flex-list">
             <BaseImageSizer class="logo-sizer" aspect="1:1" fit="contain">
@@ -19,13 +19,18 @@
             </div>
         </div>
         <BaseButton
+            v-if="!isUnavailable"
             :buttonClass="['pill sm', isCurrent ? 'invisible grey' : 'white']"
             :disabled="isDisabled"
-            @click="onSetSpace()"
         >
             <span v-if="isCurrent">Active</span>
-            <span v-else-if="isUnavailable">Not activated</span>
             <span v-else class="color-primary">Open</span>
+        </BaseButton>
+        <BaseButton v-else-if="!app.isReleased" :disabled="true" :buttonClass="'pill sm w-lg'">
+            <span>Coming soon</span>
+        </BaseButton>
+        <BaseButton v-else :buttonClass="'pill sm secondary'">
+            <span>Upgrade</span>
         </BaseButton>
     </div>
 </template>
@@ -49,8 +54,7 @@ export default {
             availableApps: 'getEnabledApps',
         }),
         isDisabled() {
-            if (this.isSystemAdmin) return false
-            return this.isCurrent || this.isUnavailable
+            return this.isCurrent || !this.app.isReleased
         },
         isCurrent() {
             return this.currentApp && this.currentApp.name == this.app.name
@@ -65,7 +69,7 @@ export default {
     },
     methods: {
         ...mapMutations('kollektApps', ['SET_KOLLEKT_APP', 'NAVIGATE_TO_CURRENT_APP']),
-        onSetSpace() {
+        onSetApp() {
             if (this.isDisabled) return
             this.SET_KOLLEKT_APP(this.app.name)
             this.NAVIGATE_TO_CURRENT_APP()
