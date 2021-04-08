@@ -101,6 +101,9 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getEnabledFeatures',
+        }),
         ...mapGetters('selections', {
             writeAccess: 'getCurrentSelectionWriteAccess',
         }),
@@ -111,25 +114,30 @@ export default {
             return this.writeAccess && this.writeAccess.actions
         },
         sizeWeights() {
-            const sizes = this.variant.ean_sizes
-            // If the brand is just 2 characters long we have the code and should get the full brandname instead
-            const productBrand = this.variant.product.brand
-            const brand =
-                productBrand.length == 2 ? this.brandMap.find(brand => brand.code == productBrand).name : productBrand
+            if (this.enabledFeatures.dkc_integration) {
+                const sizes = this.variant.ean_sizes
+                // If the brand is just 2 characters long we have the code and should get the full brandname instead
+                const productBrand = this.variant.product.brand
+                const brand =
+                    productBrand.length == 2
+                        ? this.brandMap.find(brand => brand.code == productBrand).name
+                        : productBrand
 
-            const brandWeights = dkcSizeSplit[brand]
-            const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
-            const sizeSubType =
-                sizeType == 'alphanumeric'
-                    ? 'standard'
-                    : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
-                    ? 'bottomsIn'
-                    : 'standard'
-            const weights = brandWeights[sizeType][sizeSubType]
-            return {
-                name: `${brand}: ${sizeType} - ${sizeSubType}`,
-                weights,
+                const brandWeights = dkcSizeSplit[brand]
+                const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
+                const sizeSubType =
+                    sizeType == 'alphanumeric'
+                        ? 'standard'
+                        : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
+                        ? 'bottomsIn'
+                        : 'standard'
+                const weights = brandWeights[sizeType][sizeSubType]
+                return {
+                    name: `${brand}: ${sizeType} - ${sizeSubType}`,
+                    weights,
+                }
             }
+            return { name: 'no weights found', weights: [] }
         },
     },
     methods: {
