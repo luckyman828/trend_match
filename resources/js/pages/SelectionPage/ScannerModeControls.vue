@@ -109,7 +109,7 @@ export default {
                     }
                     this.scanStr = ''
                     this.scanStarted = false
-                }, 50)
+                }, 1000)
             }
         },
         onScan(scanCode) {
