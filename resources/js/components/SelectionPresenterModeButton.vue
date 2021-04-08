@@ -98,10 +98,11 @@ export default {
             authUser: 'authUser',
         }),
         hasEditAccess() {
+            if (!this.selection) return false
             return (
                 (!this.selection.is_presenting && this.selection.your_job == 'Alignment') ||
                 (this.selection.is_presenting && this.currentFile.editable) ||
-                this.selection.presentation.presenter.id == this.authUser.id
+                (this.selection.presentation && this.selection.presentation.presenter.id == this.authUser.id)
             )
         },
     },

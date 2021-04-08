@@ -1,6 +1,6 @@
 <template>
     <v-popover trigger="manual" :open="showFilters" :autoHide="false" class="product-filters">
-        <slot :activeFiltersCount="activeFiltersCount" :activate="toggleShowFilters" />
+        <slot :activeFiltersCount="activeFilterCount" :activate="toggleShowFilters" />
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
             <div class="item-group" v-if="filtersActive">
                 <BaseContextMenuItem
@@ -58,12 +58,8 @@ export default {
         ...mapGetters('productFilters', {
             productFilters: 'getProductFilters',
             filtersActive: 'getFiltersAreActive',
+            activeFilterCount: 'getFiltersAreActive',
         }),
-        activeFiltersCount() {
-            return this.productFilters.reduce((total, filter) => {
-                return filter.selected.length > 0 ? total++ : total
-            }, 0)
-        },
         exactMatch: {
             get() {
                 return this.$store.getters['productFilters/getIsExactMatch']
@@ -90,20 +86,23 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('productFilters', ['SET_IS_EXACT_MATCH', 'SET_IS_INVERSE_MATCH', 'SET_FILTER_VARIANTS']),
+        ...mapMutations('productFilters', [
+            'SET_IS_EXACT_MATCH',
+            'SET_IS_INVERSE_MATCH',
+            'SET_FILTER_VARIANTS',
+            'CLEAR_PRODUCT_FILTERS',
+        ]),
         ...mapActions('productFilters', ['fetchAvailableProductFilters']),
         resetFilters() {
-            this.productFilters.map(filter => (filter.selected = []))
-            // this.CLEAR_PRODUCT_FILTERS()
-            // this.RESET_CUSTOM_FILTERS()
+            this.CLEAR_PRODUCT_FILTERS()
         },
         toggleShowFilters() {
             console.log('toggle show filters')
             this.showFilters = !this.showFilters
         },
-        hideFilters() {
-            console.log('hide filters')
-            // this.showFilters = false
+        hideFilters(e) {
+            if (e && (e.target.classList.contains('popover') || !!e.target.closest('.popover'))) return
+            this.showFilters = false
         },
     },
     created() {

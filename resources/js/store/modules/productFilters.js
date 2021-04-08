@@ -9,18 +9,12 @@ export default {
         filterVariants: false,
         isExactMatch: false,
         isInverseMatch: false,
-        filterCategories: [],
-        filterDeliveryDates: [],
-        filterBrands: [],
-        filterBuyerGroups: [],
-        filterSelectionIds: [],
-        filterProductLabels: [],
-        filterVariantLabels: [],
-        filterTicketLabels: [],
         advancedFilter: null,
         unreadOnly: false,
         hideCompleted: false,
         noImagesOnly: false,
+        filterTicketLabels: [],
+        filterSelectionIds: [],
         productActionFilter: 'overview',
         buyView: 'all',
         openTicketsOnly: false,
@@ -30,42 +24,35 @@ export default {
     getters: {
         getProductFilters: (state, getters) => state.productFilters,
         getFiltersAreActive: (state, getters) => {
+            return getters.getActiveFilterCount > 0
+        },
+        getActiveFilterCount: (state, getters) => {
             const totalFilterCount =
                 getters.getAdvancedFilterCount +
-                getters.getCustomValueFilterCount +
-                getters.getFilterCategories.length +
-                getters.getFilterDeliveryDates.length +
-                getters.getFilterBuyerGroups.length +
-                getters.getFilterBrands.length +
-                getters.getFilterProductLabels.length +
-                getters.getFilterVariantLabels.length +
-                getters.getFilterTicketLabels.length +
                 getters.getFilterSelectionIds.length +
+                getters.getFilterTicketLabels.length +
                 (getters.unreadOnly ? 1 : 0) +
                 (getters.openTicketsOnly ? 1 : 0) +
                 (getters.hideCompleted ? 1 : 0) +
                 (getters.openTicketsOnly ? 1 : 0) +
-                (getters.noImagesOnly ? 1 : 0)
-            return totalFilterCount > 0 || getters.getProductFilters.find(filter => filter.selected.length > 0)
+                (getters.noImagesOnly ? 1 : 0) +
+                getters.getProductFilters.reduce((total, filter) => {
+                    return (total += filter.selected.length)
+                }, 0)
+            return totalFilterCount
         },
         getFilterVariants: state => state.filterVariants,
         getIsExactMatch: state => state.isExactMatch,
         getIsInverseMatch: state => state.isInverseMatch,
+        getFilterTicketLabels: state => state.filterTicketLabels,
         getAdvancedFilterCount: (state, getters) => (getters.getAdvancedFilter ? getters.getAdvancedFilter.length : 0),
         getCustomValueFilterCount: (state, getters) => {
             return Object.keys(getters.getAllCustomValueFilters).reduce((acc, curr) => {
                 return (acc += getters.getAllCustomValueFilters[curr].length)
             }, 0)
         },
-        getFilterCategories: state => state.filterCategories,
-        getFilterDeliveryDates: state => state.filterDeliveryDates,
-        getFilterBuyerGroups: state => state.filterBuyerGroups,
-        getFilterBrands: state => state.filterBrands,
         getFilterSelectionIds: state => state.filterSelectionIds,
         getHasAdvancedFilter: state => !!state.advancedFilter && state.advancedFilter.length > 0,
-        getFilterProductLabels: state => state.filterProductLabels,
-        getFilterVariantLabels: state => state.filterVariantLabels,
-        getFilterTicketLabels: state => state.filterTicketLabels,
         getAdvancedFilter: state => state.advancedFilter,
         unreadOnly: state => state.unreadOnly,
         openTicketsOnly: state => state.openTicketsOnly,
@@ -234,15 +221,6 @@ export default {
         SET_IS_INVERSE_MATCH(state, payload) {
             state.isInverseMatch = payload
         },
-        SET_FILTER_CATEGORIES(state, payload) {
-            state.filterCategories = payload
-        },
-        SET_FILTER_DELIVERY_DATES(state, payload) {
-            state.filterDeliveryDates = payload
-        },
-        SET_FILTER_BUYER_GROUPS(state, payload) {
-            state.filterBuyerGroups = payload
-        },
         SET_FILTER_SELECTION_IDS(state, payload) {
             state.filterSelectionIds = payload
         },
@@ -255,34 +233,17 @@ export default {
         SET_HIDE_COMPLETED(state, payload) {
             state.hideCompleted = payload
         },
+        SET_FILTER_TICKET_LABELS(state, labels = []) {
+            state.filterTicketLabels = labels
+        },
         SET_OPEN_TICKETS_ONLY(state, payload) {
             state.openTicketsOnly = payload
         },
         SET_PRODUCT_ACTION_FILTER(state, payload) {
             state.productActionFilter = payload
         },
-        SET_FILTER_PRODUCT_LABELS(state, labels = []) {
-            state.filterProductLabels = labels
-        },
-        SET_FILTER_VARIANT_LABELS(state, labels = []) {
-            state.filterVariantLabels = labels
-        },
-        SET_FILTER_TICKET_LABELS(state, labels = []) {
-            state.filterTicketLabels = labels
-        },
         SET_NO_IMAGES_ONLY(state, boolean) {
             state.noImagesOnly = boolean
-        },
-        SET_FILTER_BRANDS(state, brands) {
-            state.filterBrands = brands
-        },
-        SET_FILTER_CUSTOM_FIELD_VALUES(state, { field, value }) {
-            Vue.set(state.filterCustomFieldValues, field, value)
-        },
-        RESET_CUSTOM_FILTERS(state) {
-            Object.keys(state.filterCustomFieldValues).map(key => {
-                state.filterCustomFieldValues[key] = []
-            })
         },
         SET_BUY_VIEW(state, buyView) {
             state.buyView = buyView
@@ -290,21 +251,15 @@ export default {
         CLEAR_PRODUCT_FILTERS(state) {
             state.isInverseMatch = false
             state.isExactMatch = false
-            state.filterCategories = []
-            state.filterDeliveryDates = []
-            state.filterBrands = []
-            state.filterBuyerGroups = []
-            state.filterSelectionIds = []
-            state.filterProductLabels = []
-            state.filterVariantLabels = []
-            state.filterTicketLabels = []
+            state.filterVariants = false
             state.advancedFilter = null
             state.unreadOnly = false
+            state.filterTicketLabels = []
             state.hideCompleted = false
             state.noImagesOnly = false
             state.productActionFilter = 'overview'
             state.openTicketsOnly = false
-            state.filterCustomFieldValues = {}
+            state.productFilters.map(filter => (filter.selected = []))
         },
     },
 }

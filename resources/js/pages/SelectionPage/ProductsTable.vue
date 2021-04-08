@@ -509,7 +509,12 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentFocusRowIndex', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('products', [
+            'currentFocusRowIndex',
+            'getProductsFilteredBySearch',
+            'singleVisible',
+            'getProductsFiltered',
+        ]),
         ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
@@ -533,6 +538,11 @@ export default {
             if (!this.contextProduct) return
             return this.getActiveSelectionInput(this.contextProduct)
         },
+        // products() {
+        //     return this.allProducts.length == this.productsFilteredBySearch.length
+        //         ? this.getProductsFiltered
+        //         : this.productsFilteredBySearch
+        // },
         selectedProducts: {
             get() {
                 return this.$store.getters['products/getSelectedProducts']

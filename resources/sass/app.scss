@@ -1413,13 +1413,14 @@ input::placeholder {
     border-radius: 4px;
     padding: 8px;
     background: white;
-    // width: 100%;
+    max-width: 100%;
     position: relative;
     transition: box-shadow 0.3s;
     &:not(.active):not(:focus):not(.disabled):not(:disabled):not(.read-only):hover {
         box-shadow: 0 3px 6px rgba($dark, 10%);
     }
-    &.full-width, &.full-w {
+    &.full-width,
+    &.full-w {
         width: 100%;
     }
     @at-root {
