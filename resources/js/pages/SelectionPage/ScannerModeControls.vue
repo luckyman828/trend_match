@@ -97,23 +97,23 @@ export default {
             // Check that the digit is actually a numberc
             const regex = /[0-9]/
             const isNumber = !!regex.exec(digit)
-            console.log('scanHandler: Input code:', e.code, 'digit:', digit, 'is number:', isNumber, 'full event:', e)
+            // console.log('scanHandler: Input code:', e.code, 'digit:', digit, 'is number:', isNumber, 'full event:', e)
             if (isNumber) this.scanStr += digit
-            console.log('scan string so far:', this.scanStr)
+            // console.log('scan string so far:', this.scanStr)
             if (!this.scanStarted) {
                 this.scanStarted = true
                 setTimeout(() => {
-                    console.log('scan ended', this.scanStr)
+                    // console.log('scan ended', this.scanStr)
                     if (this.scanStr.length >= 10) {
                         this.onScan(this.scanStr)
                     }
                     this.scanStr = ''
                     this.scanStarted = false
-                }, 1000)
+                }, 250)
             }
         },
         onScan(scanCode) {
-            console.log('on scan', scanCode)
+            // console.log('on scan', scanCode)
             const succesAudio = new Audio('/assets/SFX/pling.mp3')
             const failAudio = new Audio('/assets/SFX/error.mp3')
             if (!this.scannerMode) {
