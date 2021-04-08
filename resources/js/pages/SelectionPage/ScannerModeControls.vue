@@ -89,6 +89,7 @@ export default {
             // Prevent default to avoid quirky behaviour from carriage or similar
             if (e.code == 'Enter') {
                 e.preventDefault()
+                return
             }
             // Check if we get at least 12 concecutive inputs with very small interval
             // If that is the case, we have a scan
@@ -98,9 +99,11 @@ export default {
             const isNumber = !!regex.exec(digit)
             console.log('scanHandler: Input code:', e.code, 'digit:', digit, 'is number:', isNumber, 'full event:', e)
             if (isNumber) this.scanStr += digit
+            console.log('scan string so far:', this.scanStr)
             if (!this.scanStarted) {
                 this.scanStarted = true
                 setTimeout(() => {
+                    console.log('scan ended', this.scanStr)
                     if (this.scanStr.length >= 10) {
                         this.onScan(this.scanStr)
                     }
