@@ -1,7 +1,12 @@
+import Vue from 'vue'
+import getUniqueObjectValuesByKey from '../../helpers/getUniqueObjectValuesByKey'
+
 export default {
     namespaced: true,
 
     state: {
+        productFilters: [],
+        filterVariants: false,
         isExactMatch: false,
         isInverseMatch: false,
         filterCategories: [],
@@ -23,6 +28,7 @@ export default {
     },
 
     getters: {
+        getProductFilters: (state, getters) => state.productFilters,
         getFiltersAreActive: (state, getters) => {
             const totalFilterCount =
                 getters.getAdvancedFilterCount +
@@ -40,8 +46,9 @@ export default {
                 (getters.hideCompleted ? 1 : 0) +
                 (getters.openTicketsOnly ? 1 : 0) +
                 (getters.noImagesOnly ? 1 : 0)
-            return totalFilterCount > 0
+            return totalFilterCount > 0 || getters.getProductFilters.find(filter => filter.selected.length > 0)
         },
+        getFilterVariants: state => state.filterVariants,
         getIsExactMatch: state => state.isExactMatch,
         getIsInverseMatch: state => state.isInverseMatch,
         getAdvancedFilterCount: (state, getters) => (getters.getAdvancedFilter ? getters.getAdvancedFilter.length : 0),
@@ -124,9 +131,103 @@ export default {
         getBuyView: state => state.buyView,
     },
 
-    actions: {},
+    actions: {
+        async fetchAvailableProductFilters({ rootGetters, dispatch, commit }) {
+            const filters = []
+            // Fake an API response
+            const response = [
+                {
+                    key: 'category',
+                    displayName: 'Category',
+                    icon: 'far fa-filter',
+                    type: 'array',
+                    scope: 'product',
+                },
+                {
+                    key: 'delivery_dates',
+                    displayName: 'Delivery',
+                    icon: 'far fa-calendar-week',
+                    type: 'array',
+                    scope: 'product',
+                },
+                {
+                    key: 'brand',
+                    displayName: 'Brand',
+                    icon: 'far fa-building',
+                    type: 'array',
+                    scope: 'product',
+                },
+                {
+                    key: 'buying_group',
+                    displayName: 'Buyer group',
+                    icon: 'far fa-box',
+                    type: 'array',
+                    scope: 'product',
+                },
+                {
+                    key: 'labels',
+                    displayName: 'Product label',
+                    icon: 'far fa-tag',
+                    type: 'array',
+                    scope: 'product',
+                },
+                {
+                    key: 'variants.labels',
+                    displayName: 'Variant label',
+                    icon: 'far fa-tag',
+                    type: 'array',
+                    scope: 'variant',
+                },
+            ]
+            filters.push(...response)
+
+            // // Get custom field filters
+            // const customFields = rootGetters['workspaces/getCustomProductFields']
+            // const customFieldFilters = customFields.map(field => {
+            //     const keyBase = field.belong_to == 'Variant' ? 'variants.' : ''
+            //     return {
+            //         key: `${keyBase}extra_data.${field.name}`,
+            //         displayName: field.display_name,
+            //         icon: 'far fa-magic',
+            //         type: field.type.toLowerCase(),
+            //         scope: field.belong_to.toLowerCase(),
+            //     }
+            // })
+            // filters.push(...customFieldFilters)
+
+            await dispatch('initFilters', filters)
+            commit('SET_PRODUCT_FILTERS', filters)
+        },
+        initFilters({ rootGetters }, filters) {
+            filters.map(filter => {
+                Vue.set(filter, 'selected', [])
+
+                Object.defineProperty(filter, 'options', {
+                    get: function() {
+                        const products = rootGetters['products/getAllProducts']
+                        const options = products.reduce((options, product) => {
+                            const productOptions = getUniqueObjectValuesByKey(product, filter.key)
+
+                            // Test if the options are already added
+                            const productOptionsFiltered = productOptions.filter(
+                                option => option != null && !options.includes(option)
+                            )
+                            return [...options, ...productOptionsFiltered]
+                        }, [])
+                        return ['N/A - Not set', ...options]
+                    },
+                })
+            })
+        },
+    },
 
     mutations: {
+        SET_PRODUCT_FILTERS(state, payload) {
+            state.productFilters = payload
+        },
+        SET_FILTER_VARIANTS(state, payload) {
+            state.filterVariants = payload
+        },
         SET_IS_EXACT_MATCH(state, payload) {
             state.isExactMatch = payload
         },

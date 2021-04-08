@@ -42,7 +42,6 @@ export default {
         &.sm {
             min-height: 32px;
             padding-left: 8px;
-            width: auto;
         }
     }
     .checkbox {

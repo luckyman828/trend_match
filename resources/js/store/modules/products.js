@@ -3,6 +3,7 @@ import sortArray from '../../mixins/sortArray'
 import Compressor from 'compressorjs'
 import { instantiateProductsFromMappedFields, parseCSVStringToRowsAndCells } from '../../helpers/workbookUtils'
 import chunkArray from '../../helpers/chunkArray'
+import getUniqueObjectValuesByKey from '../../helpers/getUniqueObjectValuesByKey'
 
 export default {
     namespaced: true,
@@ -82,321 +83,356 @@ export default {
         getProducts: state => state.products,
         getAllProducts: (state, getters) => state.products,
         getFilteredProducts: (state, getters, rootState, rootGetters) => products => {
-            const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
-            // Filters
-            const filtersAreActive = rootGetters['productFilters/getFiltersAreActive']
-            const exactMatch = rootGetters['productFilters/getIsExactMatch']
             const invertMatch = rootGetters['productFilters/getIsInverseMatch']
-            const categories = rootGetters['productFilters/getFilterCategories']
-            const deliveryDates = rootGetters['productFilters/getFilterDeliveryDates']
-            const buyerGroups = rootGetters['productFilters/getFilterBuyerGroups']
-            const brands = rootGetters['productFilters/getFilterBrands']
-            const productLabels = rootGetters['productFilters/getFilterProductLabels']
-            const variantLabels = rootGetters['productFilters/getFilterVariantLabels']
-            const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
-            const unreadOnly = rootGetters['productFilters/unreadOnly']
-            const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
-            const hideCompleted = rootGetters['productFilters/hideCompleted']
-            const noImagesOnly = rootGetters['productFilters/noImagesOnly']
-            const actionFilter = rootGetters['productFilters/getProductActionFilter']
-            const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
-            const customFields = rootGetters['workspaces/getCustomProductFields']
-            const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
-            const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
-            // Selection Specific
-            const distributionScope = rootGetters['selectionProducts/getDistributionScope']
-            const currentAction = rootGetters['selections/currentSelectionModeAction']
-            const selectionMode = rootGetters['selections/currentSelectionMode']
+            const exactMatch = rootGetters['productFilters/getIsExactMatch']
+            const filters = rootGetters['productFilters/getProductFilters']
+            const filtersActive = filters.find(filter => filter.selected.length > 0)
             let productsToReturn = [...products]
 
-            // First filter by category
-            if (categories.length > 0) {
-                const filteredByCategory = productsToReturn.filter(product => {
-                    return product.category && Array.from(categories).includes(product.category.toLowerCase())
-                })
-                productsToReturn = filteredByCategory
-            }
-            // Filter by delivery date
-            if (deliveryDates.length > 0) {
-                const filteredByDeliveryDate = productsToReturn.filter(product => {
-                    return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
-                })
-                productsToReturn = filteredByDeliveryDate
-            }
-            // Filter by brand
-            if (brands.length > 0) {
-                const filteredByBrands = productsToReturn.filter(product => {
-                    return product.brand && Array.from(brands).includes(product.brand.toLowerCase())
-                })
-                productsToReturn = filteredByBrands
-            }
-            // Filter by buyer group
-            if (buyerGroups.length > 0) {
-                const filteredByBuyerGroups = productsToReturn.filter(product => {
-                    return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
-                })
-                productsToReturn = filteredByBuyerGroups
-            }
-            // Filter by product labels
-            if (productLabels.length > 0) {
-                const filteredByProductLabels = productsToReturn.filter(product => {
-                    let shouldBeIncluded = true
-                    if (exactMatch) {
-                        productLabels.map(label => {
-                            if (!product.labels.includes(label)) shouldBeIncluded = false
-                        })
-                        product.labels.map(label => {
-                            if (!productLabels.includes(label)) shouldBeIncluded = false
-                        })
-                    } else {
-                        shouldBeIncluded = !!productLabels.find(label => {
-                            if (label == 'no label') return product.labels.length <= 0
-                            return product.labels.includes(label)
-                        })
-                    }
-                    return shouldBeIncluded
-                })
-                productsToReturn = filteredByProductLabels
-            }
-            // Filter by product labels
-            if (variantLabels.length > 0) {
-                const filteredByVariantLabels = productsToReturn.filter(product => {
-                    let shouldBeIncluded = false
-                    product.variants.map(variant => {
-                        if (exactMatch) {
-                            let includeVariant = true
-                            variantLabels.map(label => {
-                                if (!variant.labels.includes(label)) includeVariant = false
-                            })
-                            variant.labels.map(label => {
-                                if (!variantLabels.includes(label)) includeVariant = false
-                            })
-                            if (includeVariant) shouldBeIncluded = true
-                        } else {
-                            if (
-                                !!variantLabels.find(label => {
-                                    if (label == 'no label') return variant.labels.length <= 0
-                                    return variant.labels.includes(label)
-                                })
-                            ) {
-                                shouldBeIncluded = true
-                            }
-                        }
-                    })
-                    return shouldBeIncluded
-                })
-                productsToReturn = filteredByVariantLabels
-            }
-            // Filter by ticket labels
-            if (ticketLabels.length > 0) {
-                const filteredByTicketLabels = productsToReturn.filter(product => {
-                    return ticketLabels.find(label => {
-                        if (label == 'no label') {
-                            return product.requests.find(
-                                request => request.type == 'Ticket' && request.labels.length <= 0
-                            )
-                        } else {
-                            return product.requests.find(
-                                request => request.type == 'Ticket' && request.labels.includes(label)
-                            )
-                        }
-                    })
-                })
-                productsToReturn = filteredByTicketLabels
-            }
-
-            // Filter by custom values
-
-            Object.keys(customDataFilters).map(filterKey => {
-                // Get details about the key
-                const filterValues = customDataFilters[filterKey]
-                if (filterValues.length <= 0) return
-
-                const customField = customFields.find(field => field.name == filterKey)
-                const checkIfObjectShouldBeIncluded = object => {
-                    if (Array.isArray(object.extra_data[filterKey])) {
-                        if (object.extra_data[filterKey].find(x => filterValues.includes(x))) {
-                            return true
-                        }
-                    } else if (filterValues.includes(object.extra_data[filterKey])) {
-                        return true
-                    }
-                    return false
-                }
-
+            // Filter by regular filters
+            filters.map(filter => {
+                // if (filter.selected.length <= 0 || filter.scope != 'product') return true
+                if (filter.selected.length <= 0) return true
                 productsToReturn = productsToReturn.filter(product => {
-                    let include = false
-                    if (customField.belong_to == 'Variant') {
-                        product.variants.map(variant => {
-                            if (checkIfObjectShouldBeIncluded(variant)) {
-                                include = true
-                            }
-                        })
-                    } else {
-                        include = checkIfObjectShouldBeIncluded(product)
-                    }
-                    return include
+                    const productOptions = getUniqueObjectValuesByKey(product, filter.key)
+                    const optionsToMatch = productOptions.map(option => option.toString().toLowerCase())
+
+                    return !!filter.selected.find(selectedOption => {
+                        // If we are looking for objects with no values
+                        if (selectedOption == 'N/A - Not set') return optionsToMatch.length <= 0
+
+                        // Else
+                        const toMatch = selectedOption.toString().toLowerCase()
+                        return optionsToMatch.includes(toMatch)
+                    })
                 })
             })
 
-            // Filer by unread
-            if (unreadOnly) {
-                if (selectionMode == 'Approval') {
-                    productsToReturn = productsToReturn.filter(
-                        product => !product.is_completed && getSelectionInput(product).hasUnreadAlignerComment
-                    )
-                }
-                if (selectionMode == 'Alignment') {
-                    productsToReturn = productsToReturn.filter(
-                        product => !product.is_completed && getSelectionInput(product).hasUnreadApproverComment
-                    )
-                }
-            }
-            if (hideCompleted) {
-                productsToReturn = productsToReturn.filter(x => !x.is_completed)
-            }
+            // End filter by regular filters
 
-            if (openTicketsOnly) {
-                productsToReturn = productsToReturn.filter(x =>
-                    x.requests.find(request => request.type == 'Ticket' && request.status == 'Open')
-                )
-            }
-
-            // Filter by advanced filters
-            if (hasAdvancedFilter) {
-                productsToReturn = productsToReturn.filter(product => {
-                    let include = true
-                    advancedFilters.forEach((filter, index) => {
-                        // FILTER BY USER / SELECTION INPUT
-                        if (filter.type == 'author') {
-                            if (!filter.filter.filterType) return
-
-                            const operator = filter.operator
-                            const type = filter.filter.filterType
-                            const selectionInput = getSelectionInput(product)
-
-                            if (type == 'user') {
-                                const userId = filter.filter.user_id
-
-                                if (filter.key == 'Comment') {
-                                    if (operator == '=' && !selectionInput.comments.find(x => x.user_id == userId))
-                                        include = false
-                                    if (operator == '!=' && !!selectionInput.comments.find(x => x.user_id == userId))
-                                        include = false
-                                } else if (filter.key == 'Request') {
-                                    if (operator == '=' && !selectionInput.requests.find(x => x.author_id == userId))
-                                        include = false
-                                    if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId))
-                                        include = false
-                                } else {
-                                    const actionArray = distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
-                                    const userFeedback = selectionInput[actionArray].find(
-                                        action => action.user_id == userId
-                                    )
-                                    if (operator == '=' && (!userFeedback || userFeedback.action != filter.key))
-                                        include = false
-                                    if (operator == '!=' && !!userFeedback && userFeedback.action == filter.key)
-                                        include = false
-                                }
-                            }
-
-                            if (type == 'selection') {
-                                const selectionId = filter.filter.id
-
-                                if (filter.key == 'Comment') {
-                                    if (
-                                        operator == '=' &&
-                                        !selectionInput.comments.find(x => x.selection_id == selectionId)
-                                    )
-                                        include = false
-                                    if (
-                                        operator == '!=' &&
-                                        !!selectionInput.comments.find(x => x.selection_id == selectionId)
-                                    )
-                                        include = false
-                                } else if (filter.key == 'Request') {
-                                    if (
-                                        operator == '=' &&
-                                        !selectionInput.requests.find(x => x.selection_id == selectionId)
-                                    )
-                                        include = false
-                                    if (
-                                        operator == '!=' &&
-                                        !!selectionInput.requests.find(x => x.selection_id == selectionId)
-                                    )
-                                        include = false
-                                } else {
-                                    const selectionAction = selectionInput.actions.find(
-                                        action => action.selection_id == selectionId
-                                    )
-                                    if (operator == '=' && (!selectionAction || selectionAction.action != filter.key))
-                                        include = false
-                                    if (operator == '!=' && !!selectionAction && selectionAction.action == filter.key)
-                                        include = false
-                                }
-                            }
-                        }
-
-                        // FILTER BY KEY
-                        else {
-                            if (filter.key.value == null) return
-                            let filterKey = filter.key.value
-                            if (distributionScope == 'Alignment' && filterKey == 'ins') filterKey = 'alignmentIns'
-                            if (distributionScope == 'Alignment' && filterKey == 'outs') filterKey = 'alignmentOuts'
-                            if (distributionScope == 'Alignment' && filterKey == 'focus') filterKey = 'alignmentFocus'
-                            if (distributionScope == 'Alignment' && filterKey == 'nds') filterKey = 'alignmentNds'
-                            const keyValue = Array.isArray(product[filterKey])
-                                ? product[filterKey].length
-                                : product[filterKey]
-                            const operator = filter.operator
-                            const value = filter.value
-                            if (operator == '>' && keyValue <= value) include = false
-                            if (operator == '>=' && keyValue < value) include = false
-                            if (operator == '=' && keyValue != value) include = false
-                            if (operator == '!=' && keyValue == value) include = false
-                            if (operator == '<=' && keyValue > value) include = false
-                            if (operator == '<' && keyValue >= value) include = false
-                        }
-                    })
-                    return include
-                })
-            }
-
-            // Filter by no images
-            if (noImagesOnly) {
-                const filteredByNoImages = productsToReturn.filter(
-                    product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
-                )
-                productsToReturn = filteredByNoImages
-            }
-
-            // Filter by actions
-            if (['ins', 'outs', 'nds', 'focus', 'tickets'].includes(actionFilter)) {
-                const filteredByAction = productsToReturn.filter(product => {
-                    if (actionFilter == 'nds')
-                        return (
-                            !getSelectionInput(product)[currentAction] ||
-                            getSelectionInput(product)[currentAction] == 'None'
-                        )
-                    if (actionFilter == 'outs') return getSelectionInput(product)[currentAction] == 'Out'
-                    if (actionFilter == 'focus') return getSelectionInput(product)[currentAction] == 'Focus'
-                    if (actionFilter == 'ins')
-                        return (
-                            getSelectionInput(product)[currentAction] == 'In' ||
-                            getSelectionInput(product)[currentAction] == 'Focus'
-                        )
-                    if (actionFilter == 'tickets') return product.hasTicket
-                })
-                productsToReturn = filteredByAction
-            }
-
-            if (invertMatch && filtersAreActive) {
+            if (invertMatch && filtersActive) {
                 // Invert the match
                 return products.filter(product => !productsToReturn.find(x => x.id == product.id))
             }
 
             return productsToReturn
         },
+        // getFilteredProducts: (state, getters, rootState, rootGetters) => products => {
+        //     const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
+        //     // Filters
+        //     const filtersAreActive = rootGetters['productFilters/getFiltersAreActive']
+        //     const exactMatch = rootGetters['productFilters/getIsExactMatch']
+        //     const invertMatch = rootGetters['productFilters/getIsInverseMatch']
+        //     const categories = rootGetters['productFilters/getFilterCategories']
+        //     const deliveryDates = rootGetters['productFilters/getFilterDeliveryDates']
+        //     const buyerGroups = rootGetters['productFilters/getFilterBuyerGroups']
+        //     const brands = rootGetters['productFilters/getFilterBrands']
+        //     const productLabels = rootGetters['productFilters/getFilterProductLabels']
+        //     const variantLabels = rootGetters['productFilters/getFilterVariantLabels']
+        //     const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
+        //     const unreadOnly = rootGetters['productFilters/unreadOnly']
+        //     const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
+        //     const hideCompleted = rootGetters['productFilters/hideCompleted']
+        //     const noImagesOnly = rootGetters['productFilters/noImagesOnly']
+        //     const actionFilter = rootGetters['productFilters/getProductActionFilter']
+        //     const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
+        //     const customFields = rootGetters['workspaces/getCustomProductFields']
+        //     const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
+        //     const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
+        //     // Selection Specific
+        //     const distributionScope = rootGetters['selectionProducts/getDistributionScope']
+        //     const currentAction = rootGetters['selections/currentSelectionModeAction']
+        //     const selectionMode = rootGetters['selections/currentSelectionMode']
+        //     let productsToReturn = [...products]
+
+        //     // First filter by category
+        //     if (categories.length > 0) {
+        //         const filteredByCategory = productsToReturn.filter(product => {
+        //             return product.category && Array.from(categories).includes(product.category.toLowerCase())
+        //         })
+        //         productsToReturn = filteredByCategory
+        //     }
+        //     // Filter by delivery date
+        //     if (deliveryDates.length > 0) {
+        //         const filteredByDeliveryDate = productsToReturn.filter(product => {
+        //             return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
+        //         })
+        //         productsToReturn = filteredByDeliveryDate
+        //     }
+        //     // Filter by brand
+        //     if (brands.length > 0) {
+        //         const filteredByBrands = productsToReturn.filter(product => {
+        //             return product.brand && Array.from(brands).includes(product.brand.toLowerCase())
+        //         })
+        //         productsToReturn = filteredByBrands
+        //     }
+        //     // Filter by buyer group
+        //     if (buyerGroups.length > 0) {
+        //         const filteredByBuyerGroups = productsToReturn.filter(product => {
+        //             return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
+        //         })
+        //         productsToReturn = filteredByBuyerGroups
+        //     }
+        //     // Filter by product labels
+        //     if (productLabels.length > 0) {
+        //         const filteredByProductLabels = productsToReturn.filter(product => {
+        //             let shouldBeIncluded = true
+        //             if (exactMatch) {
+        //                 productLabels.map(label => {
+        //                     if (!product.labels.includes(label)) shouldBeIncluded = false
+        //                 })
+        //                 product.labels.map(label => {
+        //                     if (!productLabels.includes(label)) shouldBeIncluded = false
+        //                 })
+        //             } else {
+        //                 shouldBeIncluded = !!productLabels.find(label => {
+        //                     if (label == 'no label') return product.labels.length <= 0
+        //                     return product.labels.includes(label)
+        //                 })
+        //             }
+        //             return shouldBeIncluded
+        //         })
+        //         productsToReturn = filteredByProductLabels
+        //     }
+        //     // Filter by product labels
+        //     if (variantLabels.length > 0) {
+        //         const filteredByVariantLabels = productsToReturn.filter(product => {
+        //             let shouldBeIncluded = false
+        //             product.variants.map(variant => {
+        //                 if (exactMatch) {
+        //                     let includeVariant = true
+        //                     variantLabels.map(label => {
+        //                         if (!variant.labels.includes(label)) includeVariant = false
+        //                     })
+        //                     variant.labels.map(label => {
+        //                         if (!variantLabels.includes(label)) includeVariant = false
+        //                     })
+        //                     if (includeVariant) shouldBeIncluded = true
+        //                 } else {
+        //                     if (
+        //                         !!variantLabels.find(label => {
+        //                             if (label == 'no label') return variant.labels.length <= 0
+        //                             return variant.labels.includes(label)
+        //                         })
+        //                     ) {
+        //                         shouldBeIncluded = true
+        //                     }
+        //                 }
+        //             })
+        //             return shouldBeIncluded
+        //         })
+        //         productsToReturn = filteredByVariantLabels
+        //     }
+        //     // Filter by ticket labels
+        //     if (ticketLabels.length > 0) {
+        //         const filteredByTicketLabels = productsToReturn.filter(product => {
+        //             return ticketLabels.find(label => {
+        //                 if (label == 'no label') {
+        //                     return product.requests.find(
+        //                         request => request.type == 'Ticket' && request.labels.length <= 0
+        //                     )
+        //                 } else {
+        //                     return product.requests.find(
+        //                         request => request.type == 'Ticket' && request.labels.includes(label)
+        //                     )
+        //                 }
+        //             })
+        //         })
+        //         productsToReturn = filteredByTicketLabels
+        //     }
+
+        //     // Filter by custom values
+
+        //     Object.keys(customDataFilters).map(filterKey => {
+        //         // Get details about the key
+        //         const filterValues = customDataFilters[filterKey]
+        //         if (filterValues.length <= 0) return
+
+        //         const customField = customFields.find(field => field.name == filterKey)
+        //         const checkIfObjectShouldBeIncluded = object => {
+        //             if (Array.isArray(object.extra_data[filterKey])) {
+        //                 if (object.extra_data[filterKey].find(x => filterValues.includes(x))) {
+        //                     return true
+        //                 }
+        //             } else if (filterValues.includes(object.extra_data[filterKey])) {
+        //                 return true
+        //             }
+        //             return false
+        //         }
+
+        //         productsToReturn = productsToReturn.filter(product => {
+        //             let include = false
+        //             if (customField.belong_to == 'Variant') {
+        //                 product.variants.map(variant => {
+        //                     if (checkIfObjectShouldBeIncluded(variant)) {
+        //                         include = true
+        //                     }
+        //                 })
+        //             } else {
+        //                 include = checkIfObjectShouldBeIncluded(product)
+        //             }
+        //             return include
+        //         })
+        //     })
+
+        //     // Filer by unread
+        //     if (unreadOnly) {
+        //         if (selectionMode == 'Approval') {
+        //             productsToReturn = productsToReturn.filter(
+        //                 product => !product.is_completed && getSelectionInput(product).hasUnreadAlignerComment
+        //             )
+        //         }
+        //         if (selectionMode == 'Alignment') {
+        //             productsToReturn = productsToReturn.filter(
+        //                 product => !product.is_completed && getSelectionInput(product).hasUnreadApproverComment
+        //             )
+        //         }
+        //     }
+        //     if (hideCompleted) {
+        //         productsToReturn = productsToReturn.filter(x => !x.is_completed)
+        //     }
+
+        //     if (openTicketsOnly) {
+        //         productsToReturn = productsToReturn.filter(x =>
+        //             x.requests.find(request => request.type == 'Ticket' && request.status == 'Open')
+        //         )
+        //     }
+
+        //     // Filter by advanced filters
+        //     if (hasAdvancedFilter) {
+        //         productsToReturn = productsToReturn.filter(product => {
+        //             let include = true
+        //             advancedFilters.forEach((filter, index) => {
+        //                 // FILTER BY USER / SELECTION INPUT
+        //                 if (filter.type == 'author') {
+        //                     if (!filter.filter.filterType) return
+
+        //                     const operator = filter.operator
+        //                     const type = filter.filter.filterType
+        //                     const selectionInput = getSelectionInput(product)
+
+        //                     if (type == 'user') {
+        //                         const userId = filter.filter.user_id
+
+        //                         if (filter.key == 'Comment') {
+        //                             if (operator == '=' && !selectionInput.comments.find(x => x.user_id == userId))
+        //                                 include = false
+        //                             if (operator == '!=' && !!selectionInput.comments.find(x => x.user_id == userId))
+        //                                 include = false
+        //                         } else if (filter.key == 'Request') {
+        //                             if (operator == '=' && !selectionInput.requests.find(x => x.author_id == userId))
+        //                                 include = false
+        //                             if (operator == '!=' && !!selectionInput.requests.find(x => x.author_id == userId))
+        //                                 include = false
+        //                         } else {
+        //                             const actionArray = distributionScope == 'Alignment' ? 'actions' : 'feedbacks'
+        //                             const userFeedback = selectionInput[actionArray].find(
+        //                                 action => action.user_id == userId
+        //                             )
+        //                             if (operator == '=' && (!userFeedback || userFeedback.action != filter.key))
+        //                                 include = false
+        //                             if (operator == '!=' && !!userFeedback && userFeedback.action == filter.key)
+        //                                 include = false
+        //                         }
+        //                     }
+
+        //                     if (type == 'selection') {
+        //                         const selectionId = filter.filter.id
+
+        //                         if (filter.key == 'Comment') {
+        //                             if (
+        //                                 operator == '=' &&
+        //                                 !selectionInput.comments.find(x => x.selection_id == selectionId)
+        //                             )
+        //                                 include = false
+        //                             if (
+        //                                 operator == '!=' &&
+        //                                 !!selectionInput.comments.find(x => x.selection_id == selectionId)
+        //                             )
+        //                                 include = false
+        //                         } else if (filter.key == 'Request') {
+        //                             if (
+        //                                 operator == '=' &&
+        //                                 !selectionInput.requests.find(x => x.selection_id == selectionId)
+        //                             )
+        //                                 include = false
+        //                             if (
+        //                                 operator == '!=' &&
+        //                                 !!selectionInput.requests.find(x => x.selection_id == selectionId)
+        //                             )
+        //                                 include = false
+        //                         } else {
+        //                             const selectionAction = selectionInput.actions.find(
+        //                                 action => action.selection_id == selectionId
+        //                             )
+        //                             if (operator == '=' && (!selectionAction || selectionAction.action != filter.key))
+        //                                 include = false
+        //                             if (operator == '!=' && !!selectionAction && selectionAction.action == filter.key)
+        //                                 include = false
+        //                         }
+        //                     }
+        //                 }
+
+        //                 // FILTER BY KEY
+        //                 else {
+        //                     if (filter.key.value == null) return
+        //                     let filterKey = filter.key.value
+        //                     if (distributionScope == 'Alignment' && filterKey == 'ins') filterKey = 'alignmentIns'
+        //                     if (distributionScope == 'Alignment' && filterKey == 'outs') filterKey = 'alignmentOuts'
+        //                     if (distributionScope == 'Alignment' && filterKey == 'focus') filterKey = 'alignmentFocus'
+        //                     if (distributionScope == 'Alignment' && filterKey == 'nds') filterKey = 'alignmentNds'
+        //                     const keyValue = Array.isArray(product[filterKey])
+        //                         ? product[filterKey].length
+        //                         : product[filterKey]
+        //                     const operator = filter.operator
+        //                     const value = filter.value
+        //                     if (operator == '>' && keyValue <= value) include = false
+        //                     if (operator == '>=' && keyValue < value) include = false
+        //                     if (operator == '=' && keyValue != value) include = false
+        //                     if (operator == '!=' && keyValue == value) include = false
+        //                     if (operator == '<=' && keyValue > value) include = false
+        //                     if (operator == '<' && keyValue >= value) include = false
+        //                 }
+        //             })
+        //             return include
+        //         })
+        //     }
+
+        //     // Filter by no images
+        //     if (noImagesOnly) {
+        //         const filteredByNoImages = productsToReturn.filter(
+        //             product => !product.variants.find(variant => variant.pictures.find(picture => !!picture.url))
+        //         )
+        //         productsToReturn = filteredByNoImages
+        //     }
+
+        //     // Filter by actions
+        //     if (['ins', 'outs', 'nds', 'focus', 'tickets'].includes(actionFilter)) {
+        //         const filteredByAction = productsToReturn.filter(product => {
+        //             if (actionFilter == 'nds')
+        //                 return (
+        //                     !getSelectionInput(product)[currentAction] ||
+        //                     getSelectionInput(product)[currentAction] == 'None'
+        //                 )
+        //             if (actionFilter == 'outs') return getSelectionInput(product)[currentAction] == 'Out'
+        //             if (actionFilter == 'focus') return getSelectionInput(product)[currentAction] == 'Focus'
+        //             if (actionFilter == 'ins')
+        //                 return (
+        //                     getSelectionInput(product)[currentAction] == 'In' ||
+        //                     getSelectionInput(product)[currentAction] == 'Focus'
+        //                 )
+        //             if (actionFilter == 'tickets') return product.hasTicket
+        //         })
+        //         productsToReturn = filteredByAction
+        //     }
+
+        //     if (invertMatch && filtersAreActive) {
+        //         // Invert the match
+        //         return products.filter(product => !productsToReturn.find(x => x.id == product.id))
+        //     }
+
+        //     return productsToReturn
+        // },
         productsFiltered(state, getters, rootState, rootGetters) {
             const products = getters.products
             return getters.getFilteredProducts(products)
@@ -431,8 +467,33 @@ export default {
             return getters.getFilteredProducts(products)
         },
         getFilteredVariants: (state, getters, rootState, rootGetters) => variants => {
-            let variantsFiltered = [...variants]
             const selection = rootGetters['selections/getCurrentSelection']
+            const filters = rootGetters['productFilters/getProductFilters']
+            const filterVariants = rootGetters['productFilters/getFilterVariants']
+
+            let variantsFiltered = [...variants]
+
+            if (filterVariants) {
+                filters.map(filter => {
+                    if (filter.selected.length <= 0 || filter.scope != 'variant') return true
+                    variantsFiltered = variantsFiltered.filter(variant => {
+                        // remove `variants` from the key
+                        const key = filter.key.slice(9)
+                        const variantOptions = getUniqueObjectValuesByKey(variant, key)
+                        const optionsToMatch = variantOptions.map(option => option.toString().toLowerCase())
+
+                        return !!filter.selected.find(selectedOption => {
+                            // If we are looking for objects with no values
+                            if (selectedOption == 'N/A - Not set') return optionsToMatch.length <= 0
+
+                            // Else
+                            const toMatch = selectedOption.toString().toLowerCase()
+                            return optionsToMatch.includes(toMatch)
+                        })
+                    })
+                })
+            }
+
             if (selection.type == 'Summed') {
                 // Filter out variats with no QTY
                 variantsFiltered = variantsFiltered.filter(variant => variant.quantity > 0)
