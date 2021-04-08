@@ -182,6 +182,8 @@ export default {
 
                 // ASSORTMENTS
                 product.assortments.map(assortment => {
+                    if (!assortment.variant_ids) Vue.set(assortment, 'variant_ids', [])
+                    if (!assortment.delivery_dates) Vue.set(assortment, 'delivery_dates', [])
                     Object.defineProperty(assortment, 'displayName', {
                         get() {
                             return assortment.name.split(';')[0]

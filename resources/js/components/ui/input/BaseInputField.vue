@@ -252,6 +252,7 @@ export default {
 .input-wrapper {
     position: relative;
     text-overflow: ellipsis;
+    width: 100%;
     input {
         border: none;
         background: inherit;

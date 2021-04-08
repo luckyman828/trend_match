@@ -7,6 +7,7 @@
                 <BaseInputField
                     v-model="fileName"
                     placeholder="New file name. Finish with ENTER"
+                    inputClass="full-width"
                     :focusOnMount="true"
                     :selectOnFocus="true"
                     @submit="onSubmit"
