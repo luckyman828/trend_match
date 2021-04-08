@@ -1041,7 +1041,115 @@
             ]
         }
     },
-    "Pulz": {
+    "MEW": {
+        "alphanumeric": {
+            "standard": [
+                {
+                    "name": "XS",
+                    "weight": 3
+                },
+                {
+                    "name": "S",
+                    "weight": 12
+                },
+                {
+                    "name": "M",
+                    "weight": 22
+                },
+                {
+                    "name": "L",
+                    "weight": 25
+                },
+                {
+                    "name": "XL",
+                    "weight": 23
+                },
+                {
+                    "name": "XXL",
+                    "weight": 15
+                }
+            ]
+        },
+        "numeric": {
+            "standard": [
+                {
+                    "name": "34",
+                    "weight": 2
+                },
+                {
+                    "name": "36",
+                    "weight": 10
+                },
+                {
+                    "name": "38",
+                    "weight": 18
+                },
+                {
+                    "name": "40",
+                    "weight": 21
+                },
+                {
+                    "name": "42",
+                    "weight": 21
+                },
+                {
+                    "name": "44",
+                    "weight": 16
+                },
+                {
+                    "name": "46",
+                    "weight": 12
+                }
+            ],
+            "bottomsIn": [
+                {
+                    "name": "25",
+                    "weight": 1
+                },
+                {
+                    "name": "26",
+                    "weight": 2
+                },
+                {
+                    "name": "27",
+                    "weight": 7
+                },
+                {
+                    "name": "28",
+                    "weight": 12
+                },
+                {
+                    "name": "29",
+                    "weight": 15
+                },
+                {
+                    "name": "30",
+                    "weight": 15
+                },
+                {
+                    "name": "31",
+                    "weight": 15
+                },
+                {
+                    "name": "32",
+                    "weight": 15
+                },
+                {
+                    "name": "33",
+                    "weight": 10
+                },
+                {
+                    "name": "34",
+                    "weight": 7
+                },
+                {
+                    "name": "35",
+                    "weight": 1
+                }
+            ]
+        }
+    },
+    "Denim Hunter": {
         "alphanumeric": {
             "standard": [
                 {

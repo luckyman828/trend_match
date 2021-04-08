@@ -62,6 +62,11 @@ export default {
                     company: 'DkCompany',
                 },
                 {
+                    name: 'MEW',
+                    code: 'mw',
+                    company: 'DkCompany',
+                },
+                {
                     name: 'Lounge Nine',
                     code: 'LN',
                     company: 'DkCompany',

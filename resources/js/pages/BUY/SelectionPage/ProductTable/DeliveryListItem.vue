@@ -122,9 +122,9 @@ export default {
             const sizeSubType =
                 sizeType == 'alphanumeric'
                     ? 'standard'
-                    : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
-                    ? 'bottomsIn'
-                    : 'standard'
+                    : // : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
+                      // ? 'bottomsIn'
+                      'standard'
             const weights = brandWeights[sizeType][sizeSubType]
             return {
                 name: `${brand}: ${sizeType} - ${sizeSubType}`,
