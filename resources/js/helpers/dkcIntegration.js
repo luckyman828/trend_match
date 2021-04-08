@@ -111,6 +111,7 @@ export async function instantiateDKCProducts(products) {
                   newVariant.id = uuidv4()
                   newVariant.variant = variant.color
                   newVariant.color = variant.variant_color_name
+                  if (variant.length) newVariant.color = `L: ${variant.length} ${newVariant.color}`
                   newVariant.extra_data.colorRGB = variant.color_rgb
                   newVariant.ean_sizes = variant.ea_ns.split(';').map(sizeEan => {
                       const sizeComponents = sizeEan.split(':')

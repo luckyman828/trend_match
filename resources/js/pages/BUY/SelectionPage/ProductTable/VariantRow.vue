@@ -2,7 +2,7 @@
     <BaseTableInnerRow class="variant-row flex-list lg justify full-w flex-start-v" tabindex="0">
         <div class="flex-list flex-v space-md image-col">
             <div class="flex-list flex-v min lh-xs">
-                <div class="ft-12 ft-bd name">{{ variant.name }}</div>
+                <div class="ft-12 ft-bd name" v-tooltip="variant.name">{{ variant.name }}</div>
             </div>
             <BaseImageSizer fit="contain" aspect="1:1">
                 <BaseVariantImage v-if="hasImage" class="main-img" :key="variant.id" :variant="variant" size="sm" />
