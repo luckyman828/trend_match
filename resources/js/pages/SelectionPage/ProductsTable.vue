@@ -729,7 +729,14 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT' || this.singleVisible) return // Don't mess with user input
+            if (
+                !e.target ||
+                !e.target.tagName ||
+                e.target.type == 'textarea' ||
+                e.target.tagName.toUpperCase() == 'INPUT' ||
+                this.singleVisible
+            )
+                return // Don't mess with user input
 
             if (key == 'KeyS') {
                 this.$refs.tableComp.focusSearch()
