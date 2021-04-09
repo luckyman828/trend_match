@@ -19,10 +19,10 @@
                     rx="4px"
                     v-tooltip.bottom="
                         `            
-                    Budget: <strong>${seperateThousands(theSelectionBudget)} ${selection.currency}</strong>
-                    <br>Remaining: <strong>${seperateThousands(theSelectionBudget - totalSpend)} ${
+                    <div>Budget: <strong>${seperateThousands(theSelectionBudget)} ${selection.currency}</strong></div>
+                    <div>Remaining: <strong>${seperateThousands(theSelectionBudget - totalSpend)} ${
                             selection.currency
-                        }</strong>
+                        }</strong></div>
                 `
                     "
                 />
@@ -34,13 +34,13 @@
                     rx="4px"
                     v-tooltip.bottom="
                         `
-                    Budget: <strong>${seperateThousands(theSelectionBudget)} ${selection.currency}</strong>
-                    <br>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
+                    <div>Budget: <strong>${seperateThousands(theSelectionBudget)} ${selection.currency}</strong></div>
+                    <div>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
                     ${
                         spendPercentage > 100
-                            ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(
+                            ? `Remaining: <strong class='over-tooltip'>${seperateThousands(
                                   theSelectionBudget - totalSpend
-                              )} ${selection.currency}</strong>`
+                              )} ${selection.currency}</strong></div>`
                             : ''
                     }`
                     "

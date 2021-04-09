@@ -285,6 +285,7 @@ export default {
 .search {
     position: relative;
     input.input-wrapper {
+        width: 100%;
         padding-right: 32px;
         box-sizing: border-box;
     }
