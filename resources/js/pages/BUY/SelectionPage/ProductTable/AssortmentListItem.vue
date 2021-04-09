@@ -146,9 +146,8 @@ export default {
             this.localQuantity = this.assortment.quantity
         },
         onClearQty() {
+            this.localQuantity = 0
             this.onQtyInput(0)
-            this.onSubmitQty()
-            this.editActive = false
         },
         onHideSizes() {
             this.showSizes = false

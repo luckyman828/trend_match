@@ -209,6 +209,7 @@ export default {
             this.$refs.input.setFocus()
         },
         onClearQty() {
+            this.localQuantity = 0
             this.onQtyInput(0)
         },
         onTab(e) {
