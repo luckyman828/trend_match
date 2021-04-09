@@ -10,7 +10,7 @@
             }"
         />
 
-        <BaseTooltip ref="timingTooltip" @show="onShowTooltip" class="min">
+        <BasePopover ref="timingTooltip" @show="onShowTooltip" class="min">
             <div class="product-card" v-if="tooltipTiming">
                 <span class="name">
                     {{ tooltipTiming.product ? tooltipTiming.product.name : 'Not found' }}
@@ -21,7 +21,7 @@
                     size="sm"
                 />
             </div>
-        </BaseTooltip>
+        </BasePopover>
     </div>
 </template>
 

@@ -1,17 +1,17 @@
 <template>
-    <div class="tooltip popover">
+    <div class="base-popover popover vue-popover-theme">
         <div class="wrapper">
-            <div class="tooltip-inner" v-if="visible">
+            <div class="popover-inner" v-if="visible">
                 <slot />
             </div>
-            <div class="tooltip-arrow popover-arrow" data-popper-arrow></div>
+            <!-- <div class="tooltip-arrow popover-arrow" data-popper-arrow></div> -->
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'baseTooltip',
+    name: 'basePopover',
     data() {
         return {
             visible: false,
@@ -31,16 +31,17 @@ export default {
 </script>
 
 <style scoped land="scss">
-.tooltip {
+.popover {
     position: absolute;
     top: 0;
     left: 0;
     /* overflow-x: hidden;
     overflow-y: auto; */
 }
-.tooltip-inner {
+.popover-inner {
     padding: 0;
     height: 100%;
     overflow-y: auto;
+    font-size: 12px;
 }
 </style>

@@ -390,8 +390,8 @@
                     <h3>Prices</h3>
                     <div class="col-5 form-element">
                         <label>Currency name</label>
-                        <label>WHS <BaseTooltipButton msg="Wholesale Price"/></label>
-                        <label>RRP <BaseTooltipButton msg="Recommended Retail Price"/></label>
+                        <label>WHS <BasePopoverButton msg="Wholesale Price"/></label>
+                        <label>RRP <BasePopoverButton msg="Recommended Retail Price"/></label>
                         <label>Mark up</label>
                     </div>
                     <div class="col-5 form-element" v-for="(price, index) in product.prices" :key="index">

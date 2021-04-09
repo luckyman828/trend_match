@@ -187,14 +187,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>WHS ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Wholesale price">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Wholesale price">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.wholesale_price"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.wholesale_price" />
@@ -203,14 +203,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>RRP ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Recommended retail price">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Recommended retail price">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.recommended_retail_price"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.recommended_retail_price" />
@@ -219,14 +219,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>Mark up <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Mark up">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Mark up">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.mark_up"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.mark_up" />
@@ -303,7 +303,7 @@
                 <p>Press any product to access your queue again</p>
             </BaseDialog>
 
-            <BaseTooltip ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
+            <BasePopover ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
                 <VariantTooltip
                     :variant="tooltipVariant"
                     :selection="selection"
@@ -312,7 +312,7 @@
                     :selectionInput="selectionInput"
                     @changeTab="tab => (actionDistributionTooltipTab = tab)"
                 />
-            </BaseTooltip>
+            </BasePopover>
 
             <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection" />
         </template>

@@ -448,16 +448,16 @@
             </div>
         </BaseContextMenu>
 
-        <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip" @show="showDistributionTooltip">
+        <BasePopover id="action-distribution-tooltip" ref="actionDistributionTooltip" @show="showDistributionTooltip">
             <ActionDistributionTooltip
                 :selectionInput="tooltipSelectionInput"
                 :type="distributionTooltipType"
                 :actionDistributionTooltipTab="actionDistributionTooltipTab"
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
-        </BaseTooltip>
+        </BasePopover>
 
-        <BaseTooltip id="variant-tooltip" ref="variantTooltip" @show="showVariantTooltip">
+        <BasePopover id="variant-tooltip" ref="variantTooltip" @show="showVariantTooltip">
             <VariantTooltip
                 :variant="tooltipVariant"
                 :selection="selection"
@@ -466,7 +466,7 @@
                 :actionDistributionTooltipTab="actionDistributionTooltipTab"
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
-        </BaseTooltip>
+        </BasePopover>
     </div>
 </template>
 
