@@ -134,8 +134,7 @@ export default {
 .budget-counter {
     width: 100%;
     max-width: 400px;
-    margin: auto;
-    margin-top: 12px;
+    margin: 0 auto;
     svg {
         display: block;
         &.over {

@@ -54,15 +54,15 @@
             </div>
         </div>
         <div slot="popover" class="action-list flex-list sm">
-            <button class="black sm" v-if="!editSplit" @click="editSplit = !editSplit">
+            <!-- <button class="black sm" v-if="!editSplit" @click="editSplit = !editSplit">
                 <span v-if="actionWriteAccess">Edit split</span>
                 <span v-else>View split</span>
                 <i class="far fa-pen"></i>
-            </button>
-            <button class="black sm" v-else @click="onHideSizes">
+            </button> -->
+            <!-- <button class="black sm" v-else @click="onHideSizes">
                 <span>Done</span>
                 <i class="far fa-check"></i>
-            </button>
+            </button> -->
             <template v-if="actionWriteAccess">
                 <button
                     class="green sm"

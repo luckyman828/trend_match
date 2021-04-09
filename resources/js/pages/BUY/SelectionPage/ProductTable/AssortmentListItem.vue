@@ -50,13 +50,13 @@
                 />
             </div>
         </div>
-        <div slot="popover" class="action-list flex-list sm">
+        <div slot="popover" class="action-list flex-list sm" ref="actionPopover">
             <button v-if="!showSizes" class="black sm" @click="showSizes = !showSizes">
                 <span>View split</span>
                 <i class="far fa-eye"></i>
             </button>
             <button v-else class="black sm" @click="onHideSizes">
-                <span>Hide split</span>
+                <span>Hide spli assat</span>
                 <i class="far fa-eye-slash"></i>
             </button>
             <template v-if="actionWriteAccess">
@@ -161,7 +161,8 @@ export default {
                 this.onSubmitQty()
             }, delay)
         },
-        onClickOutside() {
+        onClickOutside(e) {
+            if (e.target == this.$refs.actionPopover || this.$refs.actionPopover.contains(e.target)) return
             this.editActive = false
             this.showSizes = false
         },
