@@ -45,6 +45,7 @@ export default {
                             const selectionInputVariant = product.getActiveSelectionInput.variants.find(
                                 x => x.id == variant.id
                             )
+                            if (!selectionInputVariant) continue
                             const actionKey = store.getters['selections/getCurrentActionKey']
                             const variantAction = selectionInputVariant[actionKey]
                             if (!['In', 'Focus'].includes(variantAction)) continue
