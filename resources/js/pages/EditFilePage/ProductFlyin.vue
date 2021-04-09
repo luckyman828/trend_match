@@ -44,10 +44,7 @@
                             <i class="far fa-trash-alt"></i>
                             <span>Delete</span>
                         </button>
-                        <div
-                            class="hotkey-wrapper"
-                            v-tooltip="{ content: !productToEdit.datasource_id && 'Product must have an ID' }"
-                        >
+                        <div v-tooltip="{ content: !productToEdit.datasource_id && 'Product must have an ID' }">
                             <button
                                 class="ghost save-button"
                                 :class="{ disabled: !saveActive }"
@@ -55,7 +52,6 @@
                             >
                                 <i class="far fa-save"> </i><span>Save</span>
                             </button>
-                            <span class="hotkey"><span class="key">S</span> Save</span>
                         </div>
                     </div>
                 </template>
@@ -1389,7 +1385,7 @@ export default {
             }
         }
         .label-list {
-            top: 68px;
+            top: 56px;
             left: 0;
             overflow-x: auto;
             overflow-y: hidden;

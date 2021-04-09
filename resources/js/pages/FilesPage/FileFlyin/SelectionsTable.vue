@@ -284,7 +284,7 @@
                                     iconClass="far fa-project-diagram"
                                     hotkey="KeyC"
                                     :disabled="contextSelection.type != 'Master'"
-                                    disabledTooltip="Can only create Master sub-selections on another Master selection"
+                                    disabledTooltip="Chapters must be direct children of a Master selection"
                                     @click="onNewSelection({ parent: contextSelection, type: 'Chapter' })"
                                 >
                                     <span><u>C</u>hapter</span>

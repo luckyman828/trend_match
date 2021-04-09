@@ -116,7 +116,7 @@ export default {
         &.has-labels {
             &.has-budget {
                 .label-list {
-                    top: 76px;
+                    top: 64px;
                 }
             }
             .flyin-header {
@@ -135,7 +135,7 @@ export default {
             }
             .label-list {
                 position: absolute;
-                top: 68px;
+                top: 56px;
                 left: 0;
                 overflow-x: auto;
                 overflow-y: hidden;
@@ -191,7 +191,7 @@ export default {
 
 .the-budget-counter {
     position: absolute;
-    top: 60px;
+    top: 48px;
     margin: 0;
     left: 0;
     max-width: none;
