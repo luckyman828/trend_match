@@ -11,7 +11,7 @@ export function cleanUpDKCObj(srcObj, newObj) {
         if (key == 'variants' && !Array.isArray(keyVal.variant)) {
             keyVal = [keyVal.variant]
         }
-        if (key == 'assortment_variant' && !Array.isArray(keyVal.assortment_variant)) {
+        if (key == 'assortment_variants' && !Array.isArray(keyVal.assortment_variant)) {
             keyVal = [keyVal.assortment_variant]
         }
         if (key == 'prices' && !Array.isArray(keyVal.prices)) {
@@ -153,9 +153,10 @@ export async function instantiateDKCProducts(products) {
                   variant.assortments &&
                       variant.assortments.map(assortment => {
                           // Sort assortment sizes in a logical order
-                          const assortmentSizes = !assortment.assortment_variant
+                          console.log('assortment', assortment)
+                          const assortmentSizes = !assortment.assortment_variants
                               ? []
-                              : assortment.assortment_variant.sort((a, b) => {
+                              : assortment.assortment_variants.sort((a, b) => {
                                     const isNumerical = isFinite(a.size_code)
                                     if (isNumerical) return parseInt(b) - parseInt(a)
 
