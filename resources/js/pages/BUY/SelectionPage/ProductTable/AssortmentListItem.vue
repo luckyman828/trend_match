@@ -56,7 +56,7 @@
                 <i class="far fa-eye"></i>
             </button>
             <button v-else class="black sm" @click="onHideSizes">
-                <span>Hide spli assat</span>
+                <span>Hide split</span>
                 <i class="far fa-eye-slash"></i>
             </button>
             <template v-if="actionWriteAccess">

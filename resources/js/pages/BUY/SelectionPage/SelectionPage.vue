@@ -50,7 +50,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 // Import Components
-import ProductTable from './ProductTable'
+import ProductTable from './ProductTable/'
 import ProductFlyin from './ProductFlyin'
 import ScannerModeControls from './ScannerModeControls'
 

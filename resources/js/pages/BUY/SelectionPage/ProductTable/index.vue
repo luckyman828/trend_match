@@ -45,7 +45,7 @@
                         <button class="invisible primary sm pill" v-if="filtersActive" @click="resetFilters">
                             <span>Clear filter</span>
                         </button>
-                        <ProductFilters v-slot="slotProps">
+                        <ProductFilters v-slot="slotProps" @clear="onClearFilters">
                             <button class="col-primary sm pill" @click="slotProps.activate()">
                                 <span>Filter</span>
                                 <i class="fas fa-filter"></i>
@@ -276,6 +276,10 @@ export default {
         },
         resetFilters() {
             this.CLEAR_PRODUCT_FILTERS()
+            this.onClearFilters()
+        },
+        onClearFilters() {
+            this.localProducts = this.getCurrentViewProducts
         },
         onViewSingle(product) {
             document.activeElement.blur()

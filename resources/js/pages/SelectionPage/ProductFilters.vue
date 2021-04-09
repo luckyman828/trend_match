@@ -185,6 +185,7 @@ export default {
             this.advancedFilterKey++
             this.SET_ADVANCED_FILTER()
             this.CLEAR_PRODUCT_FILTERS()
+            this.$emit('clear')
         },
         toggleShowFilters() {
             this.showFilters = !this.showFilters

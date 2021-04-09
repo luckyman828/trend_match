@@ -97,7 +97,6 @@ export default {
             this.CLEAR_PRODUCT_FILTERS()
         },
         toggleShowFilters() {
-            console.log('toggle show filters')
             this.showFilters = !this.showFilters
         },
         hideFilters(e) {
