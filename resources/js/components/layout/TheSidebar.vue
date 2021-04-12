@@ -151,15 +151,8 @@ export default {
 .sidebar-item {
     .unread-circle {
         position: absolute;
-        top: 2px;
-        right: 16px;
-    }
-    @media screen and (max-width: $screenSm) {
-        .unread-circle {
-            position: absolute;
-            top: 12px;
-            right: 4px;
-        }
+        top: 12px;
+        right: 4px;
     }
     &:hover {
         .auth-user-icon .bg::after {
