@@ -349,9 +349,9 @@ export default {
             this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
         },
-        onSaveOrder() {
+        async onSaveOrder() {
             const allProducts = this.products
-            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.productsFilteredBySearch
+            const productsReOrdered = this.editOrderModeActive ? [...this.localProducts] : this.productsFilteredBySearch
 
             // Sort the reordered products first
             productsReOrdered.map((reOrdered, index) => {
@@ -359,8 +359,9 @@ export default {
                 const product = allProducts.find(x => x.id == reOrdered.id)
                 product.sequence = index - productsReOrdered.length
             })
+
             // Sort by sequence
-            this.onSort(true, 'sequence')
+            await this.sortArray(allProducts, true, 'sequence')
 
             // Set the new sequence of all products
             allProducts.map((product, index) => {

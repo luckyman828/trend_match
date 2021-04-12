@@ -89,8 +89,8 @@ export default {
                             }
 
                             // Check if type is string
-                            if (aKey == 'string') aKey = aKey.toLowerCase()
-                            if (bKey == 'string') bKey = bKey.toLowerCase()
+                            if (typeof aKey == 'string') aKey = aKey.toLowerCase()
+                            if (typeof bKey == 'string') bKey = bKey.toLowerCase()
 
                             // Check if type is date
                             if (key == 'delivery_date') aKey = new Date(aKey)
@@ -110,6 +110,7 @@ export default {
                     }
                 }
             })
+            console.log('done sorting', [...dataSorted])
             return dataSorted
         },
     },

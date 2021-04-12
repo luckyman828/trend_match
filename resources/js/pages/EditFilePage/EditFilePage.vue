@@ -83,6 +83,7 @@ export default {
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onSort(method, key) {
             this.sortKey = key
+            console.log('sortArray')
             this.sortArray(this.products, method, key)
             // Save a reference to our last sort
             this.SET_LAST_SORT({ method, key })
