@@ -250,6 +250,21 @@ export default {
                     'variant size',
                 ],
             },
+            {
+                scope: 'variants',
+                name: 'delivery_dates',
+                displayName: 'Delivery (date/month)',
+                type: 'date',
+                headersToMatch: [
+                    'delivery',
+                    'delivery date',
+                    'delivery month',
+                    'del. date',
+                    'del. month',
+                    'del. period',
+                    'delivery period',
+                ],
+            },
             // IMAGES
             {
                 scope: 'images',

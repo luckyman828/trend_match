@@ -32,6 +32,7 @@ i {
     > span {
         overflow: hidden;
         text-overflow: ellipsis;
+        font-size: 10px;
     }
 }
 </style>

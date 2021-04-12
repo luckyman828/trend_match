@@ -375,7 +375,6 @@ export default {
             this.searchString = searchString
         },
         focusFirstOption() {
-            console.log('focus first option', this.$refs.option[0])
             this.$refs.option[0].focus()
         },
     },

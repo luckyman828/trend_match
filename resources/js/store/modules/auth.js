@@ -57,6 +57,7 @@ export default {
             localStorage.removeItem('user-token')
             localStorage.removeItem('workspace-index')
             commit('RESET_STATE', null, { root: true })
+            commit('persist/SET_INIT_DONE', true, { root: true })
             // Redirect the user
             router.push({ name: 'login' })
         },

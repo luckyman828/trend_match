@@ -284,7 +284,7 @@
                                     iconClass="far fa-project-diagram"
                                     hotkey="KeyC"
                                     :disabled="contextSelection.type != 'Master'"
-                                    disabledTooltip="Can only create Master sub-selections on another Master selection"
+                                    disabledTooltip="Chapters must be direct children of a Master selection"
                                     @click="onNewSelection({ parent: contextSelection, type: 'Chapter' })"
                                 >
                                     <span><u>C</u>hapter</span>
@@ -607,7 +607,7 @@ export default {
             }
         },
         async onGetSelectionLink(selectionId) {
-            const link = await this.getSelectionLink({selectionId})
+            const link = await this.getSelectionLink({ selectionId })
             this.copyToClipboard(link)
             this.SHOW_SNACKBAR({
                 msg: 'Link copied',
@@ -945,8 +945,8 @@ export default {
                     margin-left: auto;
                 }
                 &.budget {
-                    min-width: 100px;
-                    max-width: 100px;
+                    min-width: 88px;
+                    max-width: 88px;
                     margin-left: auto;
                     text-align: right;
                 }
@@ -957,35 +957,27 @@ export default {
                     padding-right: 8px;
                 }
                 &.currency {
-                    min-width: 100px;
-                    max-width: 100px;
+                    min-width: 80px;
+                    max-width: 80px;
                     // margin-left: auto;
                 }
                 &.teams,
                 &.users {
-                    min-width: 76px;
-                    max-width: 76px;
+                    min-width: 60px;
+                    max-width: 60px;
                 }
                 &.status {
                     // Status
                     min-width: 156px;
                     max-width: 156px;
                     margin-left: auto;
-                    // display: flex;
-                    // align-items: center;
-                    // > *:not(:first-child) {
-                    //     margin-left: 4px;
-                    // }
                 }
                 &.presentation {
-                    min-width: 116px;
-                    max-width: 116px;
+                    min-width: 80px;
+                    max-width: 80px;
                     margin-left: auto;
                 }
-                // &.items, &.in, &.out, &.nd {
-                //     min-width: 72px;
-                //     max-width: 72px;
-                // }
+
                 &.action {
                     // Actions
                     min-width: 112px;

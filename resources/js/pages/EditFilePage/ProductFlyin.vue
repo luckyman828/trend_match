@@ -44,10 +44,7 @@
                             <i class="far fa-trash-alt"></i>
                             <span>Delete</span>
                         </button>
-                        <div
-                            class="hotkey-wrapper"
-                            v-tooltip="{ content: !productToEdit.datasource_id && 'Product must have an ID' }"
-                        >
+                        <div v-tooltip="{ content: !productToEdit.datasource_id && 'Product must have an ID' }">
                             <button
                                 class="ghost save-button"
                                 :class="{ disabled: !saveActive }"
@@ -55,7 +52,6 @@
                             >
                                 <i class="far fa-save"> </i><span>Save</span>
                             </button>
-                            <span class="hotkey"><span class="key">S</span> Save</span>
                         </div>
                     </div>
                 </template>
@@ -74,7 +70,11 @@
                         :key="index"
                         :class="{ 'is-current': currentVariant && currentVariant.id == variant.id }"
                         @contextmenu.prevent="showVariantContext($event, index)"
-                        @click="currentVariant = variant"
+                        @click="
+                            currentVariant && currentVariant.id == variant.id
+                                ? (currentVariant = null)
+                                : (currentVariant = variant)
+                        "
                     >
                         <div
                             class="img-wrapper"
@@ -327,17 +327,17 @@
 
             <BaseFlyinColumn>
                 <div class="deliveries form-section">
-                    <h3>Delivery</h3>
+                    <h3>{{ currentVariant ? 'Variant' : 'Product' }} Delivery</h3>
                     <div
                         class="col-2 form-element"
-                        v-for="(delivery, index) in product.delivery_dates"
+                        v-for="(delivery, index) in deliveryArray"
                         :key="'delivery-' + index"
                     >
                         <BaseDatePicker
                             :type="'month'"
                             :formatIn="'YYYY-MM-DD'"
                             :formatOut="'MMMM YYYY'"
-                            v-model="product.delivery_dates[index]"
+                            v-model="deliveryArray[index]"
                             @submit="onSubmitField"
                         />
 
@@ -386,8 +386,8 @@
                     <h3>Prices</h3>
                     <div class="col-5 form-element">
                         <label>Currency name</label>
-                        <label>WHS <BaseTooltipButton msg="Wholesale Price"/></label>
-                        <label>RRP <BaseTooltipButton msg="Recommended Retail Price"/></label>
+                        <label>WHS <BasePopoverButton msg="Wholesale Price"/></label>
+                        <label>RRP <BasePopoverButton msg="Recommended Retail Price"/></label>
                         <label>Mark up</label>
                     </div>
                     <div class="col-5 form-element" v-for="(price, index) in product.prices" :key="index">
@@ -878,6 +878,9 @@ export default {
             })
             return filesToDelete
         },
+        deliveryArray() {
+            return this.currentVariant ? this.currentVariant.delivery_dates : this.product.delivery_dates
+        },
         labelsEnabled() {
             return this.availableLabels.length > 0
         },
@@ -1149,13 +1152,16 @@ export default {
             const key = event.code
 
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            if (
+                (!event.target || (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT')) &&
+                this.show
+            ) {
                 if (key == 'KeyS' && this.saveActive) this.onUpdateProduct()
 
                 // Label hotkeys
                 if (this.hasLabelWriteAccess) {
                     // Number hotkey
-                    if (parseInt(e.key)) {
+                    if (parseInt(event.key)) {
                         const pressedNumber = e.key
                         const label = this.availableLabels[pressedNumber - 1]
                         if (!label) return
@@ -1170,7 +1176,7 @@ export default {
                         this.onUpdateProduct()
                     }
                     // Hashtag
-                    if (e.key == '#') {
+                    if (event.key == '#') {
                         // Open labels menu
                         this.$refs.labelList.$refs.popover.show()
                     }
@@ -1345,10 +1351,10 @@ export default {
             this.currentVariant.ean_sizes.splice(index, 1)
         },
         onAddDelivery() {
-            this.product.delivery_dates.push(new Date().toLocaleDateString({}, { month: 'long', year: 'numeric' }))
+            this.deliveryArray.push(new Date().toLocaleDateString({}, { month: 'long', year: 'numeric' }))
         },
         onRemoveDelivery(index) {
-            this.product.delivery_dates.splice(index, 1)
+            this.deliveryArray.splice(index, 1)
         },
     },
     created() {
@@ -1379,7 +1385,7 @@ export default {
             }
         }
         .label-list {
-            top: 68px;
+            top: 56px;
             left: 0;
             overflow-x: auto;
             overflow-y: hidden;

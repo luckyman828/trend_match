@@ -16,6 +16,9 @@
                     <div class="tabs-wrapper" v-if="$slots.tabs">
                         <slot name="tabs" />
                     </div>
+                    <div class="over-table">
+                        <slot name="overTable" />
+                    </div>
                     <div class="rounded-top">
                         <BaseTableTopBar v-if="!hideTopBar">
                             <template v-slot:left>
@@ -27,7 +30,6 @@
                                     @input="$emit('update:searchResult', $event)"
                                     @keydown.enter.native="$emit('search-enter')"
                                 />
-                                <slot name="topBar" />
                                 <slot name="topBarLeft" />
                             </template>
 
@@ -79,6 +81,7 @@
                     >
                         <BaseTableRow
                             v-for="(item, index) in localItemsReOrdered"
+                            class="main-row"
                             ref="tableRow"
                             :key="itemKey ? item[itemKey] : index"
                             :item="item"
@@ -108,26 +111,56 @@
                         :key-field="itemKey"
                         v-slot="{ item, index }"
                     >
-                        <BaseTableRow
-                            ref="tableRow"
-                            class="draggable-row"
-                            :key="itemKey ? item[itemKey] : index"
-                            :item="item"
-                            :index="index"
-                            :showSelect="showSelect"
-                            :selected.sync="localSelected"
-                            :items="items"
-                            :contextItem="contextItem"
-                            :itemKey="itemKey"
-                            :showContextButton="!hideContextButton"
-                            :itemType="itemType"
-                            :itemSize="itemSize"
-                            :hasFocus="focusIndex == index"
-                            @select-range="selectRange(index, items, selected)"
-                            @show-contextmenu="onContextMenu($event, item)"
-                        >
-                            <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
-                        </BaseTableRow>
+                        <div class="row-wrapper" tabindex="0">
+                            <BaseTableRow
+                                class="main-row"
+                                ref="tableRow"
+                                :key="itemKey ? item[itemKey] : index"
+                                :item="item"
+                                :index="index"
+                                :showSelect="showSelect"
+                                :selected.sync="localSelected"
+                                :items="items"
+                                :contextItem="contextItem"
+                                :itemKey="itemKey"
+                                :showContextButton="!hideContextButton"
+                                :itemType="itemType"
+                                :itemSize="itemSize"
+                                :hasFocus="focusIndex == index"
+                                @select-range="selectRange(index, items, selected)"
+                                @show-contextmenu="onContextMenu($event, item)"
+                            >
+                                <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
+                            </BaseTableRow>
+                            <template v-if="subItemsArrayKey && item.expanded">
+                                <BaseTableRow
+                                    v-for="(subItem, subItemIndex) in item[subItemsArrayKey]"
+                                    class="sub-row"
+                                    :key="subItemKey ? subItem[subItemKey] : subItemIndex"
+                                    ref="tableSubRow"
+                                    :item="subItem"
+                                    :index="index"
+                                    :showSelect="false"
+                                    :selected.sync="localSelected"
+                                    :items="item[subItemsArrayKey]"
+                                    :contextItem="contextItem"
+                                    :itemKey="itemKey"
+                                    :showContextButton="!hideContextButton"
+                                    :itemType="itemType"
+                                    :itemSize="itemSize"
+                                    :hasFocus="focusIndex == index"
+                                    @select-range="selectRange(index, items, selected)"
+                                    @show-contextmenu="onContextMenu($event, item)"
+                                >
+                                    <slot
+                                        name="subRow"
+                                        :item="subItem"
+                                        :index="subItemIndex"
+                                        :rowComponent="$refs.tableSubRow"
+                                    />
+                                </BaseTableRow>
+                            </template>
+                        </div>
                     </RecycleScroller>
 
                     <BaseTableRow
@@ -169,7 +202,7 @@
                 <!-- End Loading / Error -->
             </div>
 
-            <tr class="footer">
+            <tr class="footer" v-if="$slots.footer || $scopedSlots.footer">
                 <td class="select"></td>
                 <slot name="footer" />
             </tr>
@@ -188,28 +221,6 @@ export default {
         Draggable,
     },
     mixins: [selectRange],
-    props: [
-        'stickyHeader',
-        'contentStatus',
-        'loadingMsg',
-        'errorCallback',
-        'errorMsg',
-        'hideSelect',
-        'items',
-        'selected',
-        'itemKey',
-        'contextItem',
-        'itemSize',
-        'hideContextButton',
-        'searchResult',
-        'searchKey',
-        'hideTopBar',
-        'itemType',
-        'focusIndex',
-        'itemsTotalCount',
-        'isDraggable',
-        'itemsReOrdered',
-    ],
     props: {
         stickyHeader: {},
         contentStatus: {},
@@ -232,6 +243,8 @@ export default {
         isDraggable: {},
         itemsReOrdered: {},
         useVirtualScroller: { default: true },
+        subItemsArrayKey: {},
+        subItemKey: {},
     },
     data: function() {
         return {
@@ -478,9 +491,12 @@ export default {
             }
         }
     }
+    .over-table {
+        margin-bottom: 8px;
+    }
     .body {
         border: $borderModule;
-        border-radius: $borderRadiusModule;
+        // border-radius: $borderRadiusModule;
         border-top: none;
         border-bottom: none;
         box-shadow: $shadowModule;
@@ -493,7 +509,7 @@ export default {
     }
     .tabs-wrapper {
         display: flex;
-        margin-bottom: -$borderRadiusModule;
+        margin-bottom: -16px;
         width: 100%;
     }
     .sticky-bg {
@@ -522,7 +538,7 @@ export default {
         }
         .tabs-wrapper {
             display: flex;
-            margin-bottom: -$borderRadiusModule;
+            margin-bottom: -16px;
         }
     }
     &.fixed {
@@ -556,7 +572,6 @@ export default {
         }
         &:not(.header):not(.footer):not(.table-top-bar):not(.last) {
             &:hover {
-                background: $bgModuleHover;
                 td {
                     &.title {
                         i {

@@ -103,6 +103,17 @@ export default {
             top: 8px;
         }
     }
+    &.min {
+        .modal {
+            max-width: none;
+            min-width: 0;
+            background: white;
+        }
+        .close {
+            right: 8px;
+            top: 8px;
+        }
+    }
 }
 .overlay {
     z-index: 0;
@@ -124,7 +135,7 @@ export default {
     text-align: left;
     margin: 10vh auto 5vh;
     background: white;
-    border-radius: 6px;
+    border-radius: 16px;
     overflow: hidden;
     .header {
         display: flex;

@@ -93,9 +93,9 @@ export default {
             this.$emit('update:submenuVisible', false)
             el.closest('.context-menu').classList.remove('submenu-open')
         },
-        onClick() {
+        onClick(e) {
             if (this.hasSubmenu) return
-            this.onFireAction()
+            this.onFireAction(e)
         },
         hotkeyHandler(e) {
             if (e.code == this.hotkey || (Array.isArray(this.hotkey) && this.hotkey.includes(e.code))) {
@@ -183,6 +183,9 @@ export default {
         border: $borderModule;
         box-shadow: $shadowModuleHard;
         flex-direction: column;
+        .item-group {
+            padding: 8px 0;
+        }
         &.flip {
             left: auto;
             right: 100%;

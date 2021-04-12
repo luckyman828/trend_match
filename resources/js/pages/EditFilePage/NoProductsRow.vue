@@ -19,22 +19,22 @@
 
                 <div
                     class="card"
-                    :class="{ disabled: databases.length <= 0 }"
-                    @click="databases.length > 0 && onImportFromDatabase()"
+                    :class="{ disabled: !workspaceFeatures.import_from_integration }"
+                    @click="!!workspaceFeatures.import_from_integration && onImportFromDatabase()"
                     v-tooltip="
-                        databases.length <= 0 &&
+                        !workspaceFeatures.import_from_integration &&
                             'No databases available. Ask your admin to get an integration to Kollekt.'
                     "
                 >
                     <i class="fas fa-database icon"></i>
                     <h4 class="title">
-                        Database
+                        Integration
                     </h4>
-                    <div class="white ghost pill" :class="{ disabled: databases.length <= 0 }">
-                        <span>Import from database</span>
+                    <div class="white ghost pill" :class="{ disabled: !workspaceFeatures.import_from_integration }">
+                        <span>Import from integration</span>
                         <i class="far fa-arrow-right"></i>
                     </div>
-                    <span class="description">Get products from a connected Database</span>
+                    <span class="description">Get products from a connected Integration</span>
                 </div>
 
                 <div class="card" @click="onImportFromKollekt">
@@ -60,6 +60,7 @@ export default {
     computed: {
         ...mapGetters('workspaces', {
             databases: 'getWorkspaceDatabases',
+            workspaceFeatures: 'getEnabledFeatures',
         }),
     },
     methods: {

@@ -11,7 +11,7 @@
         <div class="product-details">
             <div
                 v-if="displayUnreadBullets && product.hasNewComment"
-                class="unread-indicator circle xxs primary"
+                class="unread-indicator circle min primary"
                 v-tooltip.right="'A message needs a reply'"
             />
 

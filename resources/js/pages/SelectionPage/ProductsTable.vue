@@ -448,16 +448,16 @@
             </div>
         </BaseContextMenu>
 
-        <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip" @show="showDistributionTooltip">
+        <BasePopover id="action-distribution-tooltip" ref="actionDistributionTooltip" @show="showDistributionTooltip">
             <ActionDistributionTooltip
                 :selectionInput="tooltipSelectionInput"
                 :type="distributionTooltipType"
                 :actionDistributionTooltipTab="actionDistributionTooltipTab"
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
-        </BaseTooltip>
+        </BasePopover>
 
-        <BaseTooltip id="variant-tooltip" ref="variantTooltip" @show="showVariantTooltip">
+        <BasePopover id="variant-tooltip" ref="variantTooltip" @show="showVariantTooltip">
             <VariantTooltip
                 :variant="tooltipVariant"
                 :selection="selection"
@@ -466,7 +466,7 @@
                 :actionDistributionTooltipTab="actionDistributionTooltipTab"
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
-        </BaseTooltip>
+        </BasePopover>
     </div>
 </template>
 
@@ -509,7 +509,12 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentFocusRowIndex', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('products', [
+            'currentFocusRowIndex',
+            'getProductsFilteredBySearch',
+            'singleVisible',
+            'getProductsFiltered',
+        ]),
         ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
@@ -533,6 +538,11 @@ export default {
             if (!this.contextProduct) return
             return this.getActiveSelectionInput(this.contextProduct)
         },
+        // products() {
+        //     return this.allProducts.length == this.productsFilteredBySearch.length
+        //         ? this.getProductsFiltered
+        //         : this.productsFilteredBySearch
+        // },
         selectedProducts: {
             get() {
                 return this.$store.getters['products/getSelectedProducts']

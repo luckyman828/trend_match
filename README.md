@@ -2,7 +2,7 @@
 
 Our readme. Mostly used for forcing redeploys.
 Redeploy with live DB
-ss.redeploy
+rss.redeploy
 bukd
 Redeploy v1.1
 new env

@@ -1,0 +1,52 @@
+<template>
+    <div class="product-preview flex-list flex-v min" v-if="product" @click="SET_SIDEBAR_PRODUCT(product)">
+        <div class="img-wrapper">
+            <BaseVariantImage :variant="product.variants[0]" size="sm" />
+        </div>
+        <div class="price-wrapper">
+            <span class="price">{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+        </div>
+    </div>
+</template>
+
+<script>
+import { mapGetters, mapMutations } from 'vuex'
+export default {
+    name: 'productPreview',
+    computed: {
+        ...mapGetters('videoPlayer', {
+            product: 'getCurrentProduct',
+        }),
+    },
+    methods: {
+        ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
+    },
+}
+</script>
+
+<style lang="scss" scoped>
+@import '~@/_variables.scss';
+
+.product-preview {
+    width: 80px;
+    background: white;
+    border-radius: 2px;
+    overflow: hidden;
+    .img-wrapper {
+        width: 100%;
+        height: 106px;
+        img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+        }
+    }
+    .price-wrapper {
+        padding: 0 4px;
+    }
+    .price {
+        font-size: 12px;
+        font-weight: 500;
+    }
+}
+</style>

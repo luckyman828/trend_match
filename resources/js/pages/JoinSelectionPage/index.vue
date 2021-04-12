@@ -40,8 +40,9 @@ export default {
     methods: {
         ...mapActions('selections', ['fetchSelection', 'joinSelection', 'fetchPublicSelectionInfo']),
         ...mapActions('files', ['fetchFile']),
-        ...mapActions('workspaces', ['fetchWorkspaces', 'setCurrentWorkspaceIndex']),
+        ...mapActions('workspaces', ['fetchWorkspaces']),
         ...mapMutations('selections', ['SET_CURRENT_SELECTION_ID']),
+        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_ID']),
         ...mapMutations('auth', ['SET_BACKGROUND_IMAGE', 'SET_LOGO', 'SET_WORKSPACE_NAME']),
         async init() {
             await this.handleLink()
@@ -77,9 +78,8 @@ export default {
 
                     // Check that we are on the workspace that the new selection belongs to
                     if (!this.currentWorkspace || this.currentWorkspace.id != joinResponse.workspace_id) {
-                        const workspaces = await this.fetchWorkspaces()
-                        const newWorkspaceIndex = workspaces.findIndex(x => x.id == joinResponse.workspace_id)
-                        await this.setCurrentWorkspaceIndex(newWorkspaceIndex)
+                        await this.fetchWorkspaces()
+                        await this.SET_CURRENT_WORKSPACE_ID(joinResponse.workspace_id)
                     }
 
                     // Fetch workspaces again to check if we have been added to a new one

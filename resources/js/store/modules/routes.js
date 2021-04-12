@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Vue from 'vue'
+import router from '../../router'
 
 export default {
     namespaced: true,
@@ -10,6 +11,7 @@ export default {
 
     getters: {
         getNextUrl: state => state.nextUrl,
+        getCurrentRouteRoot: state => router.currentRoute.matched[0],
     },
 
     actions: {},

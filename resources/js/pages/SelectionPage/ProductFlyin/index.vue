@@ -126,23 +126,27 @@
         <template v-slot v-if="show">
             <BaseFlyinColumn class="details">
                 <div class="main-img" @click="cycleImage(true)">
-                    <BaseVariantImage
-                        :key="product.id + '-' + currentImgIndex"
-                        :variant="currentVariant"
-                        size="sm"
-                        :index="currentVariant ? currentVariant.imageIndex : 0"
-                    />
+                    <BaseImageSizer>
+                        <BaseVariantImage
+                            :key="product.id + '-' + currentImgIndex"
+                            :variant="currentVariant"
+                            size="sm"
+                            :index="currentVariant ? currentVariant.imageIndex : 0"
+                        />
+                    </BaseImageSizer>
                     <button class="white controls" v-tooltip="'View large images'" @click.stop="onShowLightbox">
                         <i class="far fa-search-plus"></i>
                     </button>
 
                     <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
-                        <div class="square white trigger">
+                        <BaseShape shapeClass="square white">
                             <i class="far fa-images"></i>
-                            <div class="count circle xxs dark">
-                                <span>{{ currentVariant.pictures.length }}</span>
-                            </div>
-                        </div>
+                            <template v-slot:outside>
+                                <div class="count circle xxs dark top-right">
+                                    <span>{{ currentVariant.pictures.length }}</span>
+                                </div>
+                            </template>
+                        </BaseShape>
                         <div class="drawer">
                             <div
                                 class="image-wrapper"
@@ -183,14 +187,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>WHS ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Wholesale price">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Wholesale price">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.wholesale_price"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.wholesale_price" />
@@ -199,14 +203,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>RRP ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Recommended retail price">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Recommended retail price">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.recommended_retail_price"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.recommended_retail_price" />
@@ -215,14 +219,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>Mark up <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Mark up">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Mark up">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.mark_up"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.mark_up" />
@@ -299,7 +303,7 @@
                 <p>Press any product to access your queue again</p>
             </BaseDialog>
 
-            <BaseTooltip ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
+            <BasePopover ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
                 <VariantTooltip
                     :variant="tooltipVariant"
                     :selection="selection"
@@ -308,7 +312,7 @@
                     :selectionInput="selectionInput"
                     @changeTab="tab => (actionDistributionTooltipTab = tab)"
                 />
-            </BaseTooltip>
+            </BasePopover>
 
             <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection" />
         </template>
@@ -439,7 +443,7 @@ export default {
             },
         },
         showLabels() {
-            return this.labelsEnabled || this.product && this.product.labels && this.product.labels.length > 0
+            return this.labelsEnabled || (this.product && this.product.labels && this.product.labels.length > 0)
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -610,8 +614,8 @@ export default {
             }
         },
         keydownHandler(e) {
-            const key = event.code
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            const key = e.code
+            if (e.target.type != 'textarea' && e.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
                 if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
                 // Label hotkeys
@@ -663,7 +667,7 @@ export default {
         &.has-labels {
             &.has-budget {
                 .label-list {
-                    top: 76px;
+                    top: 64px;
                 }
             }
             .flyin-header {
@@ -676,7 +680,7 @@ export default {
                 }
             }
             .label-list {
-                top: 68px;
+                top: 56px;
                 left: 0;
                 overflow-x: auto;
                 overflow-y: hidden;
@@ -733,7 +737,7 @@ export default {
 
 .the-budget-counter {
     position: absolute;
-    top: 60px;
+    top: 48px;
     margin: 0;
     left: 0;
     max-width: none;
@@ -763,8 +767,8 @@ export default {
             }
             .main-img {
                 cursor: pointer;
-                width: 225px;
-                height: 300px;
+                width: 100%;
+                // height: 300px;
                 overflow: hidden;
                 border: $borderElHard;
                 border-radius: $borderRadiusEl;
@@ -817,20 +821,6 @@ export default {
                 display: none;
             }
         }
-        .trigger {
-            border: $borderElSoft;
-            margin-right: -4px;
-            margin-top: -4px;
-            position: relative;
-            .count {
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                height: 16px;
-                width: 16px;
-                font-size: 10px;
-            }
-        }
         .drawer {
             display: none;
             overflow-y: auto;
@@ -843,12 +833,13 @@ export default {
             margin-bottom: 4px;
         }
         .image-wrapper {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: $borderElSoft;
-            border-radius: $borderRadiusEl;
+            border-radius: 4px;
             position: relative;
             cursor: pointer;
+            overflow: hidden;
             img {
                 width: 100%;
                 height: 100%;

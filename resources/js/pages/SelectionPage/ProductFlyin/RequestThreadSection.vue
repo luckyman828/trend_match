@@ -46,7 +46,9 @@
                         :request="request"
                         :displayAuthor="
                             !request.discussions[index + 1] ||
-                                request.discussions[index + 1].role != request.discussions[index].role ||
+                                request.discussions[index + 1].selection_id !=
+                                    request.discussions[index].selection_id ||
+                                    request.discussions[index + 1].author_id != request.discussions[index].author_id ||
                                 new Date(request.discussions[index + 1].created_at).toDateString() !=
                                     new Date(request.discussions[index].created_at).toDateString()
                         "
@@ -206,12 +208,10 @@ export default {
             // Instantiate the comment to post
             const commentToPost = {
                 author_id: this.authUser.id,
-                author: this.authUser,
                 request_id: this.request.id,
                 content: this.newComment.content,
                 role: this.getCurrentSelection.your_role,
-                selection_id: this.request.selection_id,
-                selection: this.request.selection,
+                selection_id: this.getCurrentSelection.id,
                 created_at: new Date().toISOString(),
             }
 

@@ -319,7 +319,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import UsersTableRow from '../UsersPage/UsersTableRow'
+import UsersTableRow from './UsersTableRow'
 import sortArray from '../../mixins/sortArray'
 
 export default {

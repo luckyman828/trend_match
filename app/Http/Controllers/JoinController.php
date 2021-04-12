@@ -60,7 +60,7 @@ class JoinController extends Controller
         $apiURL = $apiBaseUrl . '/public-internal/join-selection';
         $appEnv = \Config::get('app.env');
         if ($appEnv == 'production') {
-            $apiURL = 'http://kollekt-api-prod.kollekt-prod:16969/v1/internal/join-selection';
+            $apiURL = 'http://kollekt-api.kollekt-prod:16969/v1/internal/join-selection';
         }
         
 

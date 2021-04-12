@@ -1,5 +1,5 @@
 <template>
-    <div class="page-loader" :class="{ 'fit-page': fitPage }">
+    <div class="page-loader" :class="[{ 'fit-page': fitPage || $route.meta.isFullscreen }]">
         <!-- Error  -->
         <BaseContentLoadError
             v-if="status == 'error'"
@@ -8,11 +8,13 @@
         />
 
         <!-- Loading -->
-        <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
+        <BaseLoader class="loader" v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
 
         <!-- Success -->
         <div class="page-wrapper" :class="`theme-${theme}`" v-else>
             <slot />
+            <slot v-if="isMobile" name="mobile" />
+            <slot v-else name="desktop" />
         </div>
     </div>
 </template>
@@ -25,6 +27,7 @@ export default {
     props: ['loading', 'error', 'status', 'loadingMsg', 'errorMsg', 'errorCallback', 'fitPage', 'theme'],
     computed: {
         ...mapGetters('workspaces', ['currentWorkspace']),
+        ...mapGetters('responsive', { isMobile: 'getIsMobile' }),
     },
     watch: {
         currentWorkspace: function(newVal, oldVal) {
@@ -43,6 +46,12 @@ export default {
     height: 500px;
     &.fit-page {
         height: 100%;
+        .loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
         @include mobile {
             overflow: hidden;
         }
@@ -55,6 +64,7 @@ export default {
         padding: 20px 60px 100px;
         @media screen and (max-width: $screenSm) {
             padding: 20px;
+            padding-bottom: 80px;
         }
     }
 }

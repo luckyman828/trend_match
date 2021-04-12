@@ -1,25 +1,25 @@
 <template>
-    <tr class="table-row" 
-    :class="[
-        {active: contextMenuIsActive}, 
-        {'self': isSelf}, 
-        {'has-focus': hasFocus}
-    ]"
-    :key="itemKey ? item[itemKey] : index"
-    :style="rowHeight"
-    @click.ctrl.exact.capture.stop.prevent="$refs.selectBox.check()"
-    @click.ctrl.shift.capture.stop.prevent="onCtrlShiftClick"
-    @contextmenu.prevent="$emit('show-contextmenu', $event)">
+    <tr
+        class="table-row bg-theme-white bg-theme-hover"
+        :class="[{ active: contextMenuIsActive }, { self: isSelf }, { 'has-focus': hasFocus }]"
+        :key="itemKey ? item[itemKey] : index"
+        :style="rowHeight"
+        @click.ctrl.exact.capture.stop.prevent="$refs.selectBox.check()"
+        @click.ctrl.shift.capture.stop.prevent="onCtrlShiftClick"
+        @contextmenu.prevent="$emit('show-contextmenu', $event)"
+    >
         <td class="select" v-if="showSelect">
-            <BaseCheckbox ref="selectBox" :value="item" :modelValue="selected" 
-            @change="$emit('update:selected', $event)"
-            @checkRange="$emit('select-range')"
+            <BaseCheckbox
+                ref="selectBox"
+                :value="item"
+                :modelValue="selected"
+                @change="$emit('update:selected', $event)"
+                @checkRange="$emit('select-range')"
             />
         </td>
-        <slot/>
+        <slot />
         <td class="context-button" v-if="showContextButton">
-            <button class="invisible ghost-hover" 
-            @click.stop="$emit('show-contextmenu', $event)">
+            <button class="invisible ghost-hover" @click.stop="$emit('show-contextmenu', $event)">
                 <i class="far fa-ellipsis-h medium"></i>
             </button>
         </td>
@@ -41,12 +41,12 @@ export default {
         'showContextButton',
         'itemType',
         'itemSize',
-        'hasFocus'
+        'hasFocus',
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('contextMenu', {
-            contextMenuVisible: 'getContextMenuIsVisible'
+            contextMenuVisible: 'getContextMenuIsVisible',
         }),
         contextMenuIsActive() {
             if (!this.contextMenuVisible) return false
@@ -60,15 +60,15 @@ export default {
             return this.itemType == 'user' && this.authUser.id == this.item.id
         },
         rowHeight() {
-            return this.itemSize ? {height: `${this.itemSize}px`} : null
-        }
+            return this.itemSize ? { height: `${this.itemSize}px` } : null
+        },
     },
     methods: {
         onCtrlShiftClick() {
             this.$emit('select-range')
             document.getSelection().empty()
         },
-    }
+    },
 }
 </script>
 
@@ -89,5 +89,4 @@ tr {
         outline-offset: -2px;
     }
 }
-
 </style>
