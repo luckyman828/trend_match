@@ -118,6 +118,7 @@ export default {
                 productBrand.length == 2 ? this.brandMap.find(brand => brand.code == productBrand).name : productBrand
 
             const brandWeights = dkcSizeSplit[brand]
+            if (!brandWeights) return { name: 'no weights found', weights: [] }
             const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
             const sizeSubType =
                 sizeType == 'alphanumeric'
