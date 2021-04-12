@@ -927,17 +927,14 @@ export default {
                 this.idError = null
             }
         },
-        initProduct() {
+        initProduct(isSameProduct) {
             // Make a copy of the product, so we can check for changes compared to the original
             const productClone = JSON.parse(JSON.stringify(this.currentProduct))
             this.productToEdit = productClone
             this.initProducts([this.productToEdit])
-            this.currentVariant = null
-
-            // Check if the product has any currencies, else add a default currency
-            // if (this.productToEdit.prices.length < 1) {
-            //     this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
-            // }
+            if (!isSameProduct) {
+                this.currentVariant = null
+            }
 
             // Create an empty variant if no variants are present
             const variants = this.productToEdit.variants
@@ -1125,7 +1122,7 @@ export default {
                         // Resort the products to include the new product
                         this.$emit('onSort')
                     } else {
-                        this.initProduct()
+                        this.initProduct(true)
                     }
                 })
                 .catch(err => {})
