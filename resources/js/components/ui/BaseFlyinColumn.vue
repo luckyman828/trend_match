@@ -33,7 +33,7 @@ export default {
     padding: 0 16px;
 
     border-bottom: $borderDivider;
-    background: $grey100;
+    background: white;
 }
 .body {
     padding: 16px 16px 64px;

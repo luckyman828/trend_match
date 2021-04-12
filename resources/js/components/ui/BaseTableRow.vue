@@ -1,6 +1,6 @@
 <template>
     <tr
-        class="table-row bg-theme-white bg-theme-hover"
+        class="table-row"
         :class="[{ active: contextMenuIsActive }, { self: isSelf }, { 'has-focus': hasFocus }]"
         :key="itemKey ? item[itemKey] : index"
         :style="rowHeight"
@@ -19,7 +19,10 @@
         </td>
         <slot />
         <td class="context-button" v-if="showContextButton">
-            <button class="invisible ghost-hover" @click.stop="$emit('show-contextmenu', $event)">
+            <button
+                :class="contextButtonClass ? contextButtonClass : 'invisible ghost-hover'"
+                @click.stop="$emit('show-contextmenu', $event)"
+            >
                 <i class="far fa-ellipsis-h medium"></i>
             </button>
         </td>
@@ -42,6 +45,7 @@ export default {
         'itemType',
         'itemSize',
         'hasFocus',
+        'contextButtonClass',
     ],
     computed: {
         ...mapGetters('auth', ['authUser']),

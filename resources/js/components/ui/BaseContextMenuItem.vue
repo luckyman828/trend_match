@@ -160,9 +160,9 @@ export default {
         display: flex;
         color: $dark15;
         i {
-            font-size: 16px;
+            font-size: 14px;
             i {
-                font-size: 9px;
+                font-size: 7px;
             }
         }
     }

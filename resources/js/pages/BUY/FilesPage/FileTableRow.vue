@@ -30,7 +30,7 @@
             </td>
         </Draggable>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="onShowSingleFile(file)">
+            <button class="invisible ghost-hover primary pill sm" @click="onShowSingleFile(file)">
                 <span>View file</span>
             </button>
         </td>

@@ -17,6 +17,7 @@
             :contextItem.sync="contextMenuItem"
             :contextMouseEvent.sync="contextMouseEvent"
             :useVirtualScroller="false"
+            contextButtonClass="invisible ghost-hover sm circle"
             @show-contextmenu="showContextMenu"
         >
             <template v-slot:header>

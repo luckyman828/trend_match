@@ -39,7 +39,7 @@
             </td>
         </Draggable>
         <td class="action">
-            <button class="invisible ghost-hover primary" @click="setCurrentFolder(folder)">
+            <button class="invisible ghost-hover primary pill sm" @click="setCurrentFolder(folder)">
                 <span>Open folder</span>
             </button>
         </td>

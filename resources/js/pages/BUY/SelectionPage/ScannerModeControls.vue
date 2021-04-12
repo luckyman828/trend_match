@@ -41,9 +41,9 @@
 
             <div class="action-list-item" :class="{ active: scannerMode == 'purchase' }">
                 <button class="white circle" @click="SET_SCANNER_MODE('purchase')">
-                    <i class="far fa-shopping-bag primary"></i>
+                    <i class="far fa-heart primary"></i>
                 </button>
-                <span>Purchase</span>
+                <span>Set TBD</span>
             </div>
         </div>
     </div>

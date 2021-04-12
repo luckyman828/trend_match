@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-tags md"></i>
+            <i class="row-icon fal fa-tags md"></i>
             <BaseValueDisplay label="WHS">
                 <span> {{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }} </span>
             </BaseValueDisplay>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-calendar md"></i>
+            <i class="row-icon fal fa-calendar md"></i>
             <BaseValueDisplay
                 :label="`Delivery ${index + 1}`"
                 v-for="(delivery, index) in product.delivery_dates"
@@ -54,7 +54,7 @@
             class="form-element flex-list md center-v"
             v-if="product.min_order != null || product.min_variant_order != null"
         >
-            <i class="fal fa-boxes md"></i>
+            <i class="row-icon fal fa-boxes md"></i>
             <BaseValueDisplay label="Order min." v-if="product.min_order != null">
                 <span>{{ product.min_order }}</span>
             </BaseValueDisplay>
@@ -64,35 +64,35 @@
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-flower md"></i>
+            <i class="row-icon fal fa-flower md"></i>
             <BaseValueDisplay label="Composition">
                 <span>{{ product.composition }}</span>
             </BaseValueDisplay>
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-ruler md"></i>
+            <i class="row-icon fal fa-ruler md"></i>
             <BaseValueDisplay label="Box Sizes">
                 <span>{{ product.assortment_sizes.join(', ') }}</span>
             </BaseValueDisplay>
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-tshirt md"></i>
+            <i class="row-icon fal fa-tshirt md"></i>
             <BaseValueDisplay label="Category">
                 <span>{{ product.category }}</span>
             </BaseValueDisplay>
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-palette md"></i>
+            <i class="row-icon fal fa-palette md"></i>
             <BaseValueDisplay label="Assortments">
                 <span>{{ product.assortments.map(x => `${x.name}`).join(',\n') }}</span>
             </BaseValueDisplay>
         </div>
 
         <div class="form-element flex-list md center-v">
-            <i class="fal fa-info-circle md"></i>
+            <i class="row-icon fal fa-info-circle md"></i>
             <BaseValueDisplay label="Description">
                 <span>{{ product.sale_description }}</span>
             </BaseValueDisplay>
@@ -172,6 +172,12 @@ export default {
                 opacity: 1;
             }
         }
+    }
+
+    .row-icon {
+        display: block;
+        width: 24px;
+        flex-shrink: 0;
     }
 
     .form-element {

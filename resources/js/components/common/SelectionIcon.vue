@@ -23,6 +23,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 i {
-    font-size: 16px;
+    font-size: 14px;
 }
 </style>

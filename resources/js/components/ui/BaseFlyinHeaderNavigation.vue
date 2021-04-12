@@ -56,7 +56,7 @@ export default {
         margin-right: 8px;
     }
     i {
-        font-size: 16px;
+        font-size: 14px;
     }
 }
 </style>

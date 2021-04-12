@@ -96,7 +96,7 @@ export default {
         border-radius: 16px;
         padding: 48px 20px 20px;
         width: 260px;
-        transition: 0.1s ease-out;
+        transition: background 0.1s ease-out, transform 0.2s ease-out;
         cursor: pointer;
         &.disabled {
             background: $bluegrey400;

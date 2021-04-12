@@ -81,8 +81,9 @@
                     >
                         <BaseTableRow
                             v-for="(item, index) in localItemsReOrdered"
-                            class="main-row"
+                            class="main-row bg-theme-white bg-theme-hover"
                             ref="tableRow"
+                            :contextButtonClass="contextButtonClass"
                             :key="itemKey ? item[itemKey] : index"
                             :item="item"
                             :index="index"
@@ -113,8 +114,9 @@
                     >
                         <div class="row-wrapper" tabindex="0">
                             <BaseTableRow
-                                class="main-row"
+                                class="main-row bg-theme-white bg-theme-hover"
                                 ref="tableRow"
+                                :contextButtonClass="contextButtonClass"
                                 :key="itemKey ? item[itemKey] : index"
                                 :item="item"
                                 :index="index"
@@ -135,7 +137,8 @@
                             <template v-if="subItemsArrayKey && item.expanded">
                                 <BaseTableRow
                                     v-for="(subItem, subItemIndex) in item[subItemsArrayKey]"
-                                    class="sub-row"
+                                    :contextButtonClass="contextButtonClass"
+                                    class="sub-row bg-theme-white bg-theme-hover"
                                     :key="subItemKey ? subItem[subItemKey] : subItemIndex"
                                     ref="tableSubRow"
                                     :item="subItem"
@@ -165,8 +168,10 @@
 
                     <BaseTableRow
                         ref="tableRow"
+                        class="bg-theme-white bg-theme-hover"
                         v-else
                         v-for="(item, index) in itemsSorted"
+                        :contextButtonClass="contextButtonClass"
                         :key="itemKey ? item[itemKey] : index"
                         :item="item"
                         :index="index"
@@ -185,7 +190,7 @@
                         <slot name="row" :item="item" :index="index" :rowComponent="$refs.tableRow" />
                     </BaseTableRow>
 
-                    <BaseTableRow v-if="$scopedSlots.last" class="last">
+                    <BaseTableRow v-if="$scopedSlots.last" class="last bg-theme-white">
                         <slot name="last" />
                     </BaseTableRow>
                 </template>
@@ -245,6 +250,7 @@ export default {
         useVirtualScroller: { default: true },
         subItemsArrayKey: {},
         subItemKey: {},
+        contextButtonClass: {},
     },
     data: function() {
         return {

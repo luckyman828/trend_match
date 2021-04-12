@@ -35,7 +35,9 @@ export default {
         object-fit: cover;
     }
     img,
-    > * {
+    > .image,
+    .img,
+    .resize-target {
         position: absolute;
         left: 0;
         top: 0;

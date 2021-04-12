@@ -72,9 +72,12 @@ $success: $green;
 $fail: $red;
 $warming: $yellow;
 
-$grey100: rgba($dark, 0.04);
-$grey200: rgba($dark, 0.08);
-$grey300: rgba($dark, 0.12);
+$grey100: mix($dark, white, 4%);
+$grey200: mix($dark, white, 8%);
+$grey300: mix($dark, white, 12%);
+// $grey100: rgba($dark, 0.04);
+// $grey200: rgba($dark, 0.08);
+// $grey300: rgba($dark, 0.12);
 $grey400: #dfe7ea;
 $grey450: #cfd8dd;
 $grey500: #c7d3db;
