@@ -17,7 +17,17 @@
         </transition>
         <router-view v-else-if="!!isAuthenticated && !loadingWorkspace" :key="$route.path"></router-view> -->
 
-        <router-view v-if="!isAuthenticated || (!!isAuthenticated && !!authenticatedInitDone)"></router-view>
+        <router-view
+            v-if="!noWorkspaceAvailable && (!isAuthenticated || (!!isAuthenticated && !!authenticatedInitDone))"
+        ></router-view>
+
+        <div class="error-wrapper" v-else-if="noWorkspaceAvailable">
+            <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
+            <i class="xl far fa-exclamation-triangle"></i>
+            <h3>No workspaces available</h3>
+            <p>You have not been added to any workspaces.</p>
+            <p>Contact your Kollekt responsible to gain access.</p>
+        </div>
 
         <div class="error-wrapper" v-else-if="error">
             <img class="logo" src="/images/kollekt-logo-color-2.svg" alt="Kollekt logo" />
@@ -53,6 +63,7 @@ export default {
             error: false,
             loadingWorkspace: true,
             loadingIsAuthInit: true,
+            noWorkspaceAvailable: false,
         }
     },
     computed: {
@@ -141,12 +152,21 @@ export default {
                 })
                 this.logout()
             }
+            if (fetchedWorkspaces.length <= 0) {
+                this.noWorkspaceAvailable = true
+                return
+            }
+
             // Set the current workspace
             // If we don't have a current workspace saved, then set index to 0
-            if (!this.getCurrentWorkspaceId && fetchedWorkspaces.length > 0) {
+            if (
+                !this.currentWorkspaceId ||
+                !fetchedWorkspaces.find(workspace => workspace.id == this.currentWorkspaceId)
+            ) {
                 this.SET_CURRENT_WORKSPACE_ID(fetchedWorkspaces[0].id)
             }
-            await this.fetchWorkspace(this.currentWorkspace.id)
+
+            await this.fetchWorkspace(this.currentWorkspaceId)
             this.loadingWorkspace = false
         },
         async initSignalR() {

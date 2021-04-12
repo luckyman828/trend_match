@@ -56,7 +56,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { triggerSpaceRedirection } from '../../../helpers/routeGuards'
+import { triggerAppRedirection } from '../../../helpers/routeGuards'
 import LoginInputField from './LoginInputField'
 
 export default {
@@ -85,12 +85,12 @@ export default {
                 .then(async success => {
                     if (success) {
                         // Go to the url the user attempted to go to (nextUrl), if any
-                        if (this.nextUrl) {
+                        if (this.nextUrl && this.nextUrl.search('login') < 0) {
                             this.$router.push(this.nextUrl)
                         }
                         // Else redirect to the available space if any
                         else {
-                            const newRoute = await triggerSpaceRedirection()
+                            const newRoute = await triggerAppRedirection()
                             this.$router.push(newRoute)
                         }
                     } else {

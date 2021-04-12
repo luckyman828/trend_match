@@ -32,7 +32,7 @@ export async function triggerRouteGuards(to) {
         return { name: 'login' }
     }
     if (toRoot.name == 'login' && isAuthenticated) {
-        return triggerSpaceRedirection()
+        return triggerAppRedirection()
     }
     // END GUARD AUTH
 
@@ -49,19 +49,19 @@ export async function triggerRouteGuards(to) {
             icon: 'far fa-info-circle',
             msg: "Redirected: You don' have access to this route.",
         })
-        return triggerSpaceRedirection()
+        return triggerAppRedirection()
     }
     // END GUARD SPACES
 }
 
-export async function triggerSpaceRedirection() {
+export async function triggerAppRedirection() {
     await awaitAuthInit()
     // Redirect to a space the user has access to
     const availableApps = store.getters['workspaces/getEnabledApps']
-    if (availableApps.length > 0) {
-        const newSpace = availableApps[0]
-        store.commit('kollektApps/SET_KOLLEKT_APP', newSpace.name)
-        return { name: newSpace.name }
+    if (availableApps.length == 1) {
+        const newApp = availableApps[0]
+        store.commit('kollektApps/SET_KOLLEKT_APP', newApp.name)
+        return { name: newApp.name }
     } else {
         await router.push('/')
         store.commit('kollektApps/SET_KOLLEKT_APP', null)
