@@ -83,10 +83,10 @@ export default {
         right: 0;
         bottom: 0;
         transform: translate(35%, 35%);
-        i {
-            margin: 0;
-            font-size: 10px;
-        }
+        // i {
+        //     margin: 0;
+        //     font-size: 10px;
+        // }
     }
 }
 </style>

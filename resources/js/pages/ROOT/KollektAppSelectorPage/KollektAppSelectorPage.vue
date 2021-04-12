@@ -1,9 +1,9 @@
 <template>
-    <div class="kollekt-app-selector">
+    <div class="kollekt-app-selector home">
         <h1>Welcome {{ authUser ? authUser.name.split(' ')[0] : 'Anon' }}</h1>
         <div class="flex-list flex-v card card-md details space-md bg-theme-grey">
             <div class="flex-list workspace-selector center-v space-md">
-                <div class="logo-wrapper">
+                <div class="logo-wrapper" :class="{ 'has-logo': !!currentWorkspace.logo }">
                     <BaseImageSizer v-if="currentWorkspace.logo" class="logo-sizer" aspect="1:1">
                         <img :src="currentWorkspace.logo" />
                     </BaseImageSizer>
@@ -189,13 +189,15 @@ export default {
         .logo-wrapper {
             width: 92px;
             height: 92px;
-            background: $dark100;
             color: white;
             border-radius: 16px;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            &:not(.has-logo) {
+                background: $dark100;
+            }
             .logo-text {
                 font-size: 10px;
                 color: white;

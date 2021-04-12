@@ -496,7 +496,7 @@ export default {
     }
     .body {
         border: $borderModule;
-        border-radius: $borderRadiusModule;
+        // border-radius: $borderRadiusModule;
         border-top: none;
         border-bottom: none;
         box-shadow: $shadowModule;

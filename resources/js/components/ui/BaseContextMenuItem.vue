@@ -183,6 +183,9 @@ export default {
         border: $borderModule;
         box-shadow: $shadowModuleHard;
         flex-direction: column;
+        .item-group {
+            padding: 8px 0;
+        }
         &.flip {
             left: auto;
             right: 100%;
