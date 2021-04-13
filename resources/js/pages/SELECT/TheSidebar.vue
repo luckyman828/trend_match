@@ -2,7 +2,12 @@
     <TheSidebar>
         <template v-slot:top>
             <SidebarItem label="Files" :to="{ name: 'files' }" iconClass="fas fa-folder" />
-            <SidebarItem label="Teams" :to="{ name: 'teams' }" iconClass="fas fa-users" />
+            <SidebarItem
+                v-if="workspaceRole == 'Admin'"
+                label="Teams"
+                :to="{ name: 'teams' }"
+                iconClass="fas fa-users"
+            />
             <SidebarItem label="Users" :to="{ name: 'users' }" iconClass="fas fa-user" />
         </template>
         <template v-slot:bottom>
@@ -39,6 +44,9 @@ export default {
             jobs: 'getImageSyncJobs',
             jobStatus: 'getImageSyncJobStatus',
             remainingSyncCount: 'getRemainingImageSyncCount',
+        }),
+        ...mapGetters('workspaces', {
+            workspaceRole: 'authUserWorkspaceRole',
         }),
     },
 }
