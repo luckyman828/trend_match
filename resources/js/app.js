@@ -70,7 +70,7 @@ Vue.use(VTooltip, {
     popover: {
         defaultTrigger: 'hover focus',
         defaultBaseClass: 'base-popover popover',
-        defaultOffset: 8,
+        defaultOffset: 0,
     },
 })
 

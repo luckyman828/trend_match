@@ -1036,6 +1036,10 @@ i {
 }
 
 // TOOLTIPS AND POPOVERS
+.popover,
+.tooltip {
+    padding: 8px; // Offset from target
+}
 .popover {
     z-index: 99999999;
     .popover-inner {

@@ -615,6 +615,7 @@ export default {
                                 const currentAction = selectionInput.actionsRaw.find(
                                     action => action.selection_id == selectionInput.selection_id
                                 )
+                                if (!currentAction) return 0
                                 const currentVariantActionIndex = currentAction.variants.findIndex(
                                     x => x.id == variant.id
                                 )

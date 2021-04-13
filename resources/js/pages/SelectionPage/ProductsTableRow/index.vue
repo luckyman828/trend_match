@@ -696,7 +696,7 @@ td.action {
             &:hover {
                 overflow: visible;
                 .fly-over .inner {
-                    background: $bgModuleHover;
+                    background: $bgWhiteHover;
                 }
                 button.options {
                     display: none;
@@ -724,7 +724,7 @@ td.action {
                 top: 0;
                 left: -40px;
                 width: 40px;
-                background: linear-gradient(90deg, transparent, $bgModuleHover);
+                background: linear-gradient(90deg, transparent, $bgWhiteHover);
                 pointer-events: none;
             }
         }
