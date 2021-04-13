@@ -32,7 +32,7 @@
                                     <span>Edit workspace <u>S</u>ettings</span>
                                 </BaseContextMenuItem>
                             </div>
-                            <div class="item-group">
+                            <div class="item-group" v-if="isSystemAdmin">
                                 <v-popover trigger="click">
                                     <BaseContextMenuItem iconClass="fas fa-tasks" hotkey="keyF">
                                         <span>Edit enabled workspace <u>F</u>eatures</span>

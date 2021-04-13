@@ -1043,6 +1043,7 @@ i {
         border: $borderEl;
         background: white;
         box-shadow: $shadowSoft;
+        overflow: hidden;
     }
 }
 .tooltip {
