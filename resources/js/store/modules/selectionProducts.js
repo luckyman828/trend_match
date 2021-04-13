@@ -42,6 +42,7 @@ export default {
                 .get(apiUrl)
                 .then(async response => {
                     const selections = response.data.selections
+                    Vue.set(selection, 'settings', response.data.metadata)
                     await dispatch('initSelections', selections)
                     commit('INSERT_SELECTIONS', selections)
                     commit('INSERT_SELECTION_USERS', response.data.users)
@@ -434,8 +435,16 @@ export default {
 
                     // PROCESS INPUT TYPES
                     await Promise.all([
-                        dispatch('actions/initActions', selectionInput.actions, { root: 'true' }),
-                        dispatch('actions/initActions', selectionInput.feedbacks, { root: 'true' }),
+                        dispatch(
+                            'actions/initActions',
+                            { actions: selectionInput.actions, type: 'action' },
+                            { root: 'true' }
+                        ),
+                        dispatch(
+                            'actions/initActions',
+                            { actions: selectionInput.feedbacks, type: 'feedback' },
+                            { root: 'true' }
+                        ),
                         dispatch('requests/initRequests', selectionInput.requests, { root: 'true' }),
                         dispatch('comments/initComments', selectionInput.comments, { root: 'true' }),
                     ])

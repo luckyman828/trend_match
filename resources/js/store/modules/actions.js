@@ -288,13 +288,28 @@ export default {
                 actions: [actionObject],
             })
         },
-        async initActions({ rootGetters, dispatch }, actions) {
+        async initActions({ rootGetters, dispatch }, { actions, type }) {
             actions.map(async action => {
                 if (!action.quantity_details) Vue.set(action, 'quantity_details', [])
                 if (!action.variants) Vue.set(action, 'variants', [])
 
                 Object.defineProperty(action, 'user', {
                     get: function() {
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel =
+                            type == 'action'
+                                ? currentSelection.settings.anonymize_action
+                                : currentSelection.settings.anonymize_feedback
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+                        if (anonymized) {
+                            return {
+                                name: 'Anomynous',
+                            }
+                        }
+
                         return rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == action.user_id
                         )
@@ -302,6 +317,20 @@ export default {
                 })
                 Object.defineProperty(action, 'selection', {
                     get: function() {
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel =
+                            type == 'action'
+                                ? currentSelection.settings.anonymize_action
+                                : currentSelection.settings.anonymize_feedback
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+                        if (anonymized) {
+                            return {
+                                name: 'Anomynous',
+                            }
+                        }
                         return rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == action.selection_id
                         )

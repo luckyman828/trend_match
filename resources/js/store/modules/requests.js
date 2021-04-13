@@ -251,6 +251,17 @@ export default {
                 })
                 Object.defineProperty(request, 'author', {
                     get: function() {
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel = currentSelection.settings.anonymize_comment
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+                        if (anonymized) {
+                            return {
+                                name: 'Anomynous',
+                            }
+                        }
                         return rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == request.author_id
                         )
@@ -258,6 +269,17 @@ export default {
                 })
                 Object.defineProperty(request, 'selection', {
                     get: function() {
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel = currentSelection.settings.anonymize_comment
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+                        if (anonymized) {
+                            return {
+                                name: 'Anomynous',
+                            }
+                        }
                         return rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == request.selection_id
                         )
