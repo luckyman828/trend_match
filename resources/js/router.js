@@ -136,13 +136,13 @@ const routes = [
                     isFullscreen: true,
                 },
                 component: () => import(/* webpackChunkName: "selectApp" */ './pages/ROOT/KollektAppSelectorPage/'),
-                beforeEnter: (to, from, next) => {
-                    const availableApps = store.getters['workspaces/getEnabledApps']
-                    if (!store.getters['auth/getIsSystemAdmin'] && availableApps.length == 1) {
-                        next({ name: availableApps[0].name })
-                    }
-                    next()
-                },
+                // beforeEnter: (to, from, next) => {
+                //     const availableApps = store.getters['workspaces/getEnabledApps']
+                //     if (!store.getters['auth/getIsSystemAdmin'] && availableApps.length == 1) {
+                //         next({ name: availableApps[0].name })
+                //     }
+                //     next()
+                // },
             },
             {
                 path: 'settings/:workspaceId',

@@ -23,7 +23,7 @@ import TheNavbar from '../../components/layout/TheNavbar'
 import TheImageLightbox from '../../components/layout/TheImageLightbox'
 import TheSnackbarSpawner from '../../components/layout/TheSnackbarSpawner'
 import RootLoader from '../../components/common/RootLoader'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'SELECTRoot',
     components: {
@@ -47,6 +47,12 @@ export default {
                 this.$refs.main.scrollTo(0, 0)
             }
         },
+    },
+    methods: {
+        ...mapMutations('kollektApps', ['SET_KOLLEKT_APP']),
+    },
+    created() {
+        this.SET_KOLLEKT_APP('select')
     },
 }
 </script>
