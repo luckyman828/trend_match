@@ -1512,6 +1512,7 @@ export default {
             }
         }
         .drop-area {
+            border-radius: $borderRadiusEl;
             input[type='file'] {
                 pointer-events: none;
             }

@@ -162,7 +162,7 @@ var Timer = function(callback, delay, resetCallback) {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 4px 0 0 4px;
+        border-radius: $borderRadiusEl 0 0 $borderRadiusEl;
         &.success {
             background: $success;
             i {

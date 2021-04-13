@@ -111,7 +111,7 @@
                     :descDefault="true"
                     >MU</BaseTableHeader
                 >
-                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
+                <BaseTableHeader class="currency"></BaseTableHeader>
                 <BaseTableHeader
                     class="minimum"
                     :sortKey="['min_order', 'min_variant_order']"

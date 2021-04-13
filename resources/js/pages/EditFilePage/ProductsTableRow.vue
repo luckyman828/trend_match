@@ -66,16 +66,16 @@
         </td>
 
         <!-- Start Prices -->
-        <td class="wholesale-price hide-screen-xs">
+        <td class="wholesale-price">
             <span>{{ product.yourPrice.wholesale_price }}</span>
         </td>
-        <td class="recommended-retail-price hide-screen-xs">
+        <td class="recommended-retail-price">
             <span>{{ product.yourPrice.recommended_retail_price }}</span>
         </td>
-        <td class="mark-up hide-screen-xs">
+        <td class="mark-up">
             <span>{{ product.yourPrice.mark_up }}</span>
         </td>
-        <td class="currency hide-screen-xs">
+        <td class="currency">
             <span>{{ product.yourPrice.currency }}</span>
         </td>
         <!-- End Prices -->
