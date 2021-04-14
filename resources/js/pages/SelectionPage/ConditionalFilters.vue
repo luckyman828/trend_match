@@ -1,5 +1,5 @@
 <template>
-    <div class="conditional-filters" ref="filterWrapper" v-click-outside="onClose">
+    <div class="conditional-filters" ref="filterWrapper">
         <h3>Advanced filters</h3>
 
         <template></template>
@@ -467,7 +467,7 @@ export default {
             )
             this.SET_ADVANCED_FILTER(JSON.parse(JSON.stringify(filtersToSet)))
         },
-        onClose() {
+        onClose(e) {
             this.$emit('close')
         },
     },

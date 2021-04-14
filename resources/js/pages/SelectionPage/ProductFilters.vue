@@ -195,6 +195,7 @@ export default {
         },
         hideFilters(e) {
             if (e && (e.target.classList.contains('popover') || !!e.target.closest('.popover'))) return
+            this.showAdvancedFilters = false
             this.showFilters = false
         },
     },
