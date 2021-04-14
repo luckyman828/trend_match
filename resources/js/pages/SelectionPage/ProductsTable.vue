@@ -27,21 +27,21 @@
                     <BaseTableTab
                         :label="`In`"
                         :count="
-                            allProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction]))
-                                .length
+                            allProducts.filter(product =>
+                                ['In', 'Focus'].includes(product.getActiveSelectionInput[currentAction])
+                            ).length
                         "
                         v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         :modelValue="insTabValue"
                     />
-                    <!-- <BaseTableTab :label="`In`" :count="allProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
-                    v-model="productActionFilter" :disabled="currentSelections.length > 1"
-                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                    :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
                     <BaseTableTab
                         :label="`Out`"
-                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length"
+                        :count="
+                            allProducts.filter(product => product.getActiveSelectionInput[currentAction] == 'Out')
+                                .length
+                        "
                         v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -49,7 +49,10 @@
                     />
                     <BaseTableTab
                         :label="`Nds`"
-                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length"
+                        :count="
+                            allProducts.filter(product => product.getActiveSelectionInput[currentAction] == 'None')
+                                .length
+                        "
                         v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -526,7 +529,7 @@ export default {
             'getAuthUserSelectionWriteAccess',
             'getSelectionsAvailableForInputFiltering',
         ]),
-        ...mapGetters('products', { allProducts: 'products' }),
+        ...mapGetters('selectionProducts', { allProducts: 'getProducts' }),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selection)

@@ -193,7 +193,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['productsFiltered', 'singleVisible']),
+        ...mapGetters('products', ['getFilteredProducts', 'singleVisible']),
         ...mapGetters('selectionProducts', {
             products: 'getProducts',
             getActiveSelectionInput: 'getActiveSelectionInput',
@@ -212,6 +212,9 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         selection() {
             return this.currentSelection
+        },
+        productsFiltered() {
+            return this.getFilteredProducts(this.products)
         },
         currentSelections() {
             return this.getCurrentSelections

@@ -1088,6 +1088,7 @@ export default {
 
                 Object.defineProperty(product, 'getActiveSelectionInput', {
                     get: function() {
+                        // console.log('get active selection input', product, rootGetters['selections/currentSelection'])
                         if (product.selectionInputList.length <= 0) return
                         if (product.selectionInputList.length == 1) return product.selectionInputList[0]
                         const currentSelection = rootGetters['selections/currentSelection']
@@ -1189,7 +1190,7 @@ export default {
                 // SELECTION INPUT
                 Object.defineProperty(product, 'ins', {
                     get: function() {
-                        // console.log('get ins')
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).ins
@@ -1197,6 +1198,7 @@ export default {
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).outs
@@ -1204,6 +1206,7 @@ export default {
                 })
                 Object.defineProperty(product, 'focus', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).focus
@@ -1211,6 +1214,7 @@ export default {
                 })
                 Object.defineProperty(product, 'nds', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).nds
@@ -1218,6 +1222,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentIns', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentIns
@@ -1225,6 +1230,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentOuts
@@ -1232,6 +1238,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentFocus
@@ -1239,6 +1246,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentNds', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentNds
@@ -1246,6 +1254,7 @@ export default {
                 })
                 Object.defineProperty(product, 'comments', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).comments
@@ -1253,6 +1262,7 @@ export default {
                 })
                 Object.defineProperty(product, 'requests', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).requests
