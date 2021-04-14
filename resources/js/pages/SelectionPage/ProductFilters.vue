@@ -1,5 +1,5 @@
 <template>
-    <v-popover trigger="manual" :open="showFilters" :autoHide="false" class="product-filters">
+    <v-popover trigger="manual" :open="showFilters" :autoHide="false" class="product-filters" :handleResize="false">
         <button class="ghost trigger" @click="toggleShowFilters">
             <i class="far fa-filter"></i>
             <span>Filters</span>

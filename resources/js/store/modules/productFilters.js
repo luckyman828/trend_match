@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import getPrettyDate from '../../helpers/getPrettyDate'
 import getUniqueObjectValuesByKey from '../../helpers/getUniqueObjectValuesByKey'
 
 export default {
@@ -136,6 +137,8 @@ export default {
                     icon: 'far fa-calendar-week',
                     type: 'array',
                     scope: 'product',
+                    optionNameKey: 'name',
+                    optionValueKey: 'value',
                 },
                 {
                     key: 'brand',
@@ -192,7 +195,7 @@ export default {
                 Object.defineProperty(filter, 'options', {
                     get: function() {
                         const products = rootGetters['products/getAllProducts']
-                        const options = products.reduce((options, product) => {
+                        let options = products.reduce((options, product) => {
                             const productOptions = getUniqueObjectValuesByKey(product, filter.key)
 
                             // Test if the options are already added
@@ -201,7 +204,20 @@ export default {
                             )
                             return [...options, ...productOptionsFiltered]
                         }, [])
-                        return ['N/A - Not set', ...options]
+
+                        const unsetText = 'N/A - Not set'
+
+                        // Pretty format delivery dates
+                        if (filter.key.search('delivery') >= 0) {
+                            options = options.map(option => {
+                                return {
+                                    name: getPrettyDate(option),
+                                    value: option,
+                                }
+                            })
+                            return [{ name: unsetText, value: unsetText }, ...options]
+                        }
+                        return [unsetText, ...options]
                     },
                 })
             })

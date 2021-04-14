@@ -16,7 +16,8 @@
                 style="width: 200px; padding-top: 8px;"
                 submitOnChange="true"
                 :options="filter.options"
-                :displayFunction="filter.key.search('delivery') >= 0 ? getPrettyDate : null"
+                :optionNameKey="filter.optionNameKey"
+                :optionValueKey="filter.optionValueKey"
                 v-model="filter.selected"
             />
         </template>

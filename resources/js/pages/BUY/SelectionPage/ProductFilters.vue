@@ -1,5 +1,5 @@
 <template>
-    <v-popover trigger="manual" :open="showFilters" :autoHide="false" class="product-filters">
+    <v-popover trigger="manual" :open="showFilters" :autoHide="false" class="product-filters" :handleResize="false">
         <slot :activeFiltersCount="activeFilterCount" :activate="toggleShowFilters" />
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="hideFilters">
             <div class="item-group" v-if="filtersActive">
