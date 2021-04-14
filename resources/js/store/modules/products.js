@@ -168,13 +168,12 @@ export default {
                 const filteredByTicketLabels = productsToReturn.filter(product => {
                     return ticketLabels.find(label => {
                         if (label == 'no label') {
-                            return product.requests.find(
-                                request => request.type == 'Ticket' && request.labels.length <= 0
+                            return (
+                                product.requests.length <= 0 ||
+                                !!product.requests.find(request => request.labels.length <= 0)
                             )
                         } else {
-                            return product.requests.find(
-                                request => request.type == 'Ticket' && request.labels.includes(label)
-                            )
+                            return product.requests.find(request => request.labels.includes(label))
                         }
                     })
                 })
