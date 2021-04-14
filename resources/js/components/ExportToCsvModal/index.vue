@@ -285,11 +285,11 @@ export default {
             // START FIND UNIQUE INPUT HEADERS
             // Loop through all products to find all input authors
             this.productsToExport.map(product => {
-                const selectionInput = product
+                const selectionInput = product.getActiveSelectionInput
 
                 if (this.exportRequests || this.exportAlignment) {
                     if (this.exportAlignment) {
-                        selectionInput.alignments.map(action => {
+                        selectionInput.actions.map(action => {
                             const originExists = uniqueAlignmentOrigins.find(x => x.selection_id == action.selection_id)
                             if (!originExists)
                                 uniqueAlignmentOrigins.push({
@@ -421,7 +421,7 @@ export default {
             // START ROW DATA
             const rows = []
             this.productsToExport.forEach(product => {
-                const selectionInput = product
+                const selectionInput = product.getActiveSelectionInput
                 const productPrice = this.getProductPrice(product)
                 const productPriceWhs = productPrice && productPrice.wholesale_price ? productPrice.wholesale_price : 0
                 const currentRow = this.getDefaultProductRowData(product)
@@ -460,7 +460,7 @@ export default {
                     uniqueAlignmentOrigins.map(origin => {
                         if (this.exportAlignment) {
                             // Find the origin Action
-                            const originAction = selectionInput.alignments.find(
+                            const originAction = selectionInput.actions.find(
                                 action => action.selection_id == origin.selection_id
                             )
                             currentRow.push(originAction ? originAction.action : 'None')
@@ -597,7 +597,7 @@ export default {
                                 uniqueAlignmentOrigins.map(origin => {
                                     if (this.exportAlignment) {
                                         // Find the origin Action
-                                        const originAction = variant.alignments.find(
+                                        const originAction = variant.actions.find(
                                             action => action.selection_id == origin.selection_id
                                         )
                                         variantRow.push(originAction ? originAction.action : 'None')
