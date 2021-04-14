@@ -24,6 +24,10 @@ export default {
 
     getters: {
         getProductFilters: (state, getters) => state.productFilters,
+        getCurrentAppProductFilters: (state, getters, rootState, rootGetters) => {
+            const currentApp = rootGetters['kollektApps/getCurrentApp']
+            return state.productFilters.filter(filter => filter.apps.includes(currentApp.name))
+        },
         getFiltersAreActive: (state, getters) => {
             return getters.getActiveFilterCount > 0
         },
@@ -130,6 +134,7 @@ export default {
                     icon: 'far fa-filter',
                     type: 'array',
                     scope: 'product',
+                    apps: ['select', 'buy'],
                 },
                 {
                     key: 'delivery_dates',
@@ -139,6 +144,7 @@ export default {
                     scope: 'product',
                     optionNameKey: 'name',
                     optionValueKey: 'value',
+                    apps: ['select', 'buy'],
                 },
                 {
                     key: 'brand',
@@ -146,6 +152,7 @@ export default {
                     icon: 'far fa-building',
                     type: 'array',
                     scope: 'product',
+                    apps: ['select', 'buy'],
                 },
                 {
                     key: 'buying_group',
@@ -153,6 +160,7 @@ export default {
                     icon: 'far fa-box',
                     type: 'array',
                     scope: 'product',
+                    apps: ['select', 'buy'],
                 },
                 {
                     key: 'labels',
@@ -160,6 +168,7 @@ export default {
                     icon: 'far fa-tag',
                     type: 'array',
                     scope: 'product',
+                    apps: ['select', 'buy'],
                 },
                 {
                     key: 'variants.labels',
@@ -167,6 +176,7 @@ export default {
                     icon: 'far fa-tag',
                     type: 'array',
                     scope: 'variant',
+                    apps: ['buy'],
                 },
             ]
             filters.push(...response)

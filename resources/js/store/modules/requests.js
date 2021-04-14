@@ -254,17 +254,19 @@ export default {
                         // Check if the user is anonymized
                         const currentSelection = rootGetters['selections/getCurrentSelection']
                         const currentSelectionRole = currentSelection.your_role
-                        const anonymizeLevel = currentSelection.settings.anonymize_comment
+                        const anonymizeLevel = currentSelection.settings.anonymize_request
                         const anonymized =
                             anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
-                        if (anonymized) {
-                            return {
-                                name: 'Anomynous',
-                            }
-                        }
-                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+
+                        const user = rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == request.author_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, user)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return user
                     },
                 })
                 Object.defineProperty(request, 'selection', {
@@ -272,17 +274,19 @@ export default {
                         // Check if the user is anonymized
                         const currentSelection = rootGetters['selections/getCurrentSelection']
                         const currentSelectionRole = currentSelection.your_role
-                        const anonymizeLevel = currentSelection.settings.anonymize_comment
+                        const anonymizeLevel = currentSelection.settings.anonymize_request
                         const anonymized =
                             anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
-                        if (anonymized) {
-                            return {
-                                name: 'Anomynous',
-                            }
-                        }
-                        return rootGetters['selectionProducts/getSelections'].find(
+
+                        const selection = rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == request.selection_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, selection)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return selection
                     },
                 })
 

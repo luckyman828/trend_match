@@ -78,7 +78,7 @@
                 <!-- Selection Selector Ends -->
             </template>
             <template v-slot:topBarLeft>
-                <ProductFilters :distributionScope="distributionScope" :ticketsEnabled="ticketsEnabled" />
+                <ProductFilters :distributionScope="distributionScope" />
                 <ProductSort :currentSortKey="sortKey" @sort="onSort" />
 
                 <!-- Temp. disabled until the functionality gets hooked up -->

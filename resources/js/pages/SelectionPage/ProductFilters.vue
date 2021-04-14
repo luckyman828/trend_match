@@ -103,7 +103,7 @@ export default {
         ConditionalFilters,
         ProductFilterItem,
     },
-    props: ['distributionScope', 'ticketsEnabled'],
+    props: ['distributionScope'],
     data: function() {
         return {
             advancedFilterKey: 0,
@@ -113,7 +113,7 @@ export default {
     },
     computed: {
         ...mapGetters('productFilters', {
-            productFilters: 'getProductFilters',
+            productFilters: 'getCurrentAppProductFilters',
             filtersActive: 'getFiltersAreActive',
             activeFiltersCount: 'getActiveFilterCount',
         }),
@@ -133,6 +133,9 @@ export default {
             set(value) {
                 this.SET_FILTER_TICKET_LABELS(value)
             },
+        },
+        ticketsEnabled() {
+            return this.filterableTicketLabels.length > 0
         },
         filterableTicketLabels() {
             const labels = []

@@ -304,15 +304,16 @@ export default {
                                 : currentSelection.settings.anonymize_feedback
                         const anonymized =
                             anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
-                        if (anonymized) {
-                            return {
-                                name: 'Anomynous',
-                            }
-                        }
 
-                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                        const user = rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == action.user_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, user)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return user
                     },
                 })
                 Object.defineProperty(action, 'selection', {
@@ -326,14 +327,16 @@ export default {
                                 : currentSelection.settings.anonymize_feedback
                         const anonymized =
                             anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
-                        if (anonymized) {
-                            return {
-                                name: 'Anomynous',
-                            }
-                        }
-                        return rootGetters['selectionProducts/getSelections'].find(
+
+                        const selection = rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == action.selection_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, selection)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return selection
                     },
                 })
                 await dispatch('initVariantActions', { productAction: action, variantActions: action.variants })
