@@ -191,7 +191,7 @@
                         <u>R</u>ename
                     </BaseContextMenuItem>
 
-                    <BaseContextMenuItem iconClass="far fa-plus" hotkey="KeyC">
+                    <BaseContextMenuItem iconClass="far fa-plus" hotkey="KeyC" :hasSubmenu="true">
                         <template>
                             <span><u>C</u>reate</span>
                         </template>

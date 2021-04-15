@@ -431,7 +431,7 @@
             </div>
 
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-file-export" hotkey="KeyE">
+                <BaseContextMenuItem iconClass="far fa-file-export" hotkey="KeyE" :hasSubmenu="true">
                     <template>
                         <span><u>E</u>xport selected</span>
                     </template>
