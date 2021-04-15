@@ -205,6 +205,7 @@ export default {
             return this.request.status
         },
         hasTicketControl() {
+            if (this.request.product.is_completed) return false
             return (
                 ['Owner', 'Approver'].includes(this.request.selection.your_role) ||
                 this.currentSelection.your_role == 'Approver' ||
