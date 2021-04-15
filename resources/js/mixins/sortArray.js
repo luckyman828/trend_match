@@ -25,7 +25,7 @@ export default {
                                 let aKey = a[theKey]
                                 let bKey = b[theKey]
 
-                                if (naturalSort && aKey == 'string' && bKey == 'string') {
+                                if (naturalSort && typeof aKey == 'string' && typeof bKey == 'string') {
                                     const localCompareResult = aKey.localeCompare(bKey, undefined, {
                                         numeric: true,
                                         sensitivity: 'base',
@@ -79,8 +79,7 @@ export default {
                         else {
                             let aKey = a[key]
                             let bKey = b[key]
-
-                            if (naturalSort && aKey == 'string' && bKey == 'string') {
+                            if (naturalSort && typeof aKey == 'string' && typeof bKey == 'string') {
                                 const localCompareResult = aKey.localeCompare(bKey, undefined, {
                                     numeric: true,
                                     sensitivity: 'base',
