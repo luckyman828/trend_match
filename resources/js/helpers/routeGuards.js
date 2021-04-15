@@ -28,7 +28,9 @@ export async function triggerRouteGuards(to) {
     await awaitAuthInit()
     // GUARD REQUIRES AUTH
     if (toRoot.name != 'login' && !isAuthenticated) {
-        store.commit('routes/SET_NEXT_URL', to.fullPath)
+        if (to.fullPath != '/') {
+            store.commit('routes/SET_NEXT_URL', to.fullPath)
+        }
         return { name: 'login' }
     }
     if (toRoot.name == 'login' && isAuthenticated) {

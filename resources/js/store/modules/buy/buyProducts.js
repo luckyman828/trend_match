@@ -51,7 +51,10 @@ export default {
                     await Promise.all([
                         await dispatch(
                             'actions/initActions',
-                            products.reduce((acc, curr) => [...acc, ...curr.alignments], []),
+                            {
+                                actions: products.reduce((acc, curr) => [...acc, ...curr.alignments], []),
+                                type: 'action',
+                            },
                             { root: true }
                         ),
                         await dispatch(

@@ -181,19 +181,21 @@ export default {
             ]
             filters.push(...response)
 
-            // // Get custom field filters
-            // const customFields = rootGetters['workspaces/getCustomProductFields']
-            // const customFieldFilters = customFields.map(field => {
-            //     const keyBase = field.belong_to == 'Variant' ? 'variants.' : ''
-            //     return {
-            //         key: `${keyBase}extra_data.${field.name}`,
-            //         displayName: field.display_name,
-            //         icon: 'far fa-magic',
-            //         type: field.type.toLowerCase(),
-            //         scope: field.belong_to.toLowerCase(),
-            //     }
-            // })
-            // filters.push(...customFieldFilters)
+            // Get custom field filters
+            const customFields = rootGetters['workspaces/getCustomProductFields']
+            const customFieldFilters = customFields.map(field => {
+                const keyBase = field.belong_to == 'Variant' ? 'variants.' : ''
+                return {
+                    key: `${keyBase}extra_data.${field.name}`,
+                    displayName: field.display_name,
+                    icon: 'far fa-magic',
+                    type: field.type.toLowerCase(),
+                    scope: field.belong_to.toLowerCase(),
+                    isCustom: true,
+                    apps: ['select', 'buy'],
+                }
+            })
+            filters.push(...customFieldFilters)
 
             await dispatch('initFilters', filters)
             commit('SET_PRODUCT_FILTERS', filters)

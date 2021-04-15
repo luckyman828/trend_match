@@ -13,6 +13,7 @@
         </BaseContextMenuItem>
         <template slot="popover">
             <BaseSelectButtons
+                :header="filter.displayName"
                 style="width: 200px; padding-top: 8px;"
                 submitOnChange="true"
                 :options="filter.options"

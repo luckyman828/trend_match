@@ -16,6 +16,9 @@ const chunkFilename = process.env.NODE_ENV == 'production' ? 'js/[name].[hash].j
 mix.js('resources/js/app.js', 'public/js')
     .js('resources/js/public-scripts/play.js', 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
+    .options({
+        processCssUrls: false,
+    })
     .webpackConfig({
         resolve: {
             alias: {

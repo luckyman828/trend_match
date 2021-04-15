@@ -17,7 +17,31 @@
             </div>
 
             <div class="item-group">
-                <ProductFilterItem v-for="filter in productFilters" :key="filter.key" :filter="filter" />
+                <ProductFilterItem
+                    v-for="filter in productFilters.filter(x => !x.isCustom)"
+                    :key="filter.key"
+                    :filter="filter"
+                />
+            </div>
+
+            <div class="item-group">
+                <BaseContextMenuItem
+                    v-if="customFields.length > 0"
+                    hotkey="KeyC"
+                    iconClass="far fa-magic"
+                    :hasSubmenu="true"
+                >
+                    <span>Custom properties</span>
+                    <template v-slot:submenu>
+                        <div class="item-group">
+                            <ProductFilterItem
+                                v-for="filter in productFilters.filter(x => x.isCustom)"
+                                :key="filter.key"
+                                :filter="filter"
+                            />
+                        </div>
+                    </template>
+                </BaseContextMenuItem>
             </div>
 
             <div class="item-group">
@@ -59,6 +83,10 @@ export default {
             productFilters: 'getProductFilters',
             filtersActive: 'getFiltersAreActive',
             activeFilterCount: 'getFiltersAreActive',
+        }),
+        ...mapGetters('workspaces', {
+            customFields: 'getCustomProductFields',
+            availableProductLabels: 'getAvailableProductLabels',
         }),
         exactMatch: {
             get() {
