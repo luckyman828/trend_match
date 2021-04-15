@@ -15,13 +15,8 @@
                     :filter="filter"
                 />
             </div>
-            <div class="item-group">
-                <BaseContextMenuItem
-                    v-if="customFields.length > 0"
-                    hotkey="KeyC"
-                    iconClass="far fa-magic"
-                    :hasSubmenu="true"
-                >
+            <div class="item-group" v-if="customFields.length > 0">
+                <BaseContextMenuItem hotkey="KeyC" iconClass="far fa-magic" :hasSubmenu="true">
                     <span>Custom properties</span>
                     <template v-slot:submenu>
                         <div class="item-group">

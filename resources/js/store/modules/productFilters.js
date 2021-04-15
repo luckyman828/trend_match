@@ -179,7 +179,15 @@ export default {
                     apps: ['buy'],
                 },
             ]
-            filters.push(...response)
+            // Filter our filters
+            const filteredFilters = response.filter(filter => {
+                // Check if the workspace has labels
+                const labels = rootGetters['workspaces/getAvailableProductLabels']
+                const hasLabels = labels && labels.length > 0
+                if (!hasLabels && filter.key.search('labels') >= 0) return false
+                return true
+            })
+            filters.push(...filteredFilters)
 
             // Get custom field filters
             const customFields = rootGetters['workspaces/getCustomProductFields']
