@@ -6,6 +6,7 @@
             tabindex="0"
             ref="contextMenuItem"
             :id="id"
+            @click="onClick"
             v-tooltip="{ content: (disabled && disabledTooltip) || tooltip, container: `#${id}` }"
         >
             <!-- Item content -->
