@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="visible || inline"
-        v-click-outside="hide"
+        v-click-outside="onClickOutside"
         class="context-menu"
         ref="contextMenu"
         :style="menuWidth"
@@ -127,6 +127,10 @@ export default {
             // Add event listeners
             document.body.addEventListener('keyup', this.hotkeyHandler)
             document.body.addEventListener('click', this.clickHandler)
+        },
+        onClickOutside(e) {
+            if (e.target.classList.contains('submenu') || e.target.closest('.submenu')) return
+            this.hide()
         },
         hide() {
             if (this.visible) {
