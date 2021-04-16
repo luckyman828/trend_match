@@ -142,8 +142,11 @@ export default {
             await axios
                 .post(apiUrl, newVideo)
                 .then(response => {
-                    Object.assign(newVideo, response.data)
-                    commit('SET_CURRENT_VIDEO', newVideo)
+                    const video = response.data.video
+                    video.timings = response.data.timings
+                    // Sort the timings
+                    video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
+                    commit('SET_CURRENT_VIDEO', video)
                     commit('videoComments/SET_VIDEO_COMMENTS', [], { root: true })
                 })
                 .catch(err => {

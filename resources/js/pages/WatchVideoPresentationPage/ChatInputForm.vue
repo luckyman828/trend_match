@@ -31,11 +31,11 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('videoPresentation', {
-            currentVideo: 'getCurrentVideo',
+            video: 'getCurrentVideo',
         }),
-        video() {
-            return this.currentVideo && this.currentVideo.video
-        },
+        // video() {
+        //     return this.currentVideo && this.currentVideo.video
+        // },
     },
     methods: {
         ...mapActions('videoComments', ['insertVideoComment']),

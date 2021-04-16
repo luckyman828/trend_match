@@ -61,6 +61,14 @@ const routes = [
                         /* webpackChunkName: "SetNewPasswordScreen" */ './pages/Login/LoginPage/SetNewPasswordScreen'
                     ),
             },
+            {
+                path: 'join',
+                name: 'join',
+                meta: {
+                    root: 'login',
+                },
+                component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+            },
         ],
     },
 
@@ -103,7 +111,8 @@ const routes = [
     },
     {
         path: '/join/:linkHash',
-        redirect: 'select/join/:linkHash',
+        // redirect: 'select/join/:linkHash',
+        redirect: { name: 'join' },
     },
     {
         path: '/settings',

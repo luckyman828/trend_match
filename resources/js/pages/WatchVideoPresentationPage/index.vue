@@ -83,7 +83,8 @@ export default {
             const selections = await this.fetchSelections({ fileId })
 
             const fileVideo = await this.fetchFileVideo(fileId)
-            const video = await this.fetchVideo(fileVideo.video.id)
+            console.log('fetch file video', fileVideo)
+            const video = await this.fetchVideo(fileVideo.id)
             this.SET_CURRENT_VIDEO(video)
 
             if (this.presentationIsActive) {
