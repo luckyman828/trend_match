@@ -112,8 +112,6 @@ const routes = [
     {
         path: '/join/:linkHash',
         redirect: 'login/join/:linkHash',
-
-        // redirect: { name: 'join', parems: {linkHash: linkHash} },
     },
     {
         path: '/settings',

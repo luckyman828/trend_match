@@ -55,29 +55,8 @@
                 <a href="" target="_blank">Read terms</a>
             </BaseCheckboxInputField>
 
-            <!-- V2 -->
-            <!-- <vue-recaptcha
-                class="form-element"
-                sitekey="6LfCa9kZAAAAALX6qHy872UuYkYVhz_tnfdu7HA7"
-                :loadRecaptchaScript="true"
-                @verify="onCaptchaVerified"
-                @expired="onCaptchaExpired"
-            /> -->
-
-            <!-- V2 INVISIBLE -->
-            <vue-recaptcha
-                ref="recaptcha"
-                sitekey="6Lc-PEgaAAAAAFhgxCaYbmLFaX_vwpAX6yGlt9Hh"
-                class="form-element"
-                type="invisible"
-                size="invisible"
-                badge="bottomleft"
-                :loadRecaptchaScript="true"
-                @verify="onCaptchaVerified"
-                @expired="onCaptchaExpired"
-            />
-
             <BaseButton
+                v-if="!verifyingCaptcha"
                 :type="submitDisabled ? 'button' : 'submit'"
                 :disabled="submitDisabled"
                 :disabledTooltip="disabledMsg"
@@ -87,6 +66,18 @@
                 <span class="ft-bd ft-14">Join Selection</span>
             </BaseButton>
         </template>
+
+        <vue-recaptcha
+            ref="recaptcha"
+            class="form-element"
+            sitekey="6Lc-PEgaAAAAAFhgxCaYbmLFaX_vwpAX6yGlt9Hh"
+            type="invisible"
+            size="invisible"
+            badge="bottomleft"
+            :loadRecaptchaScript="true"
+            @verify="onCaptchaVerified"
+            @expired="onCaptchaExpired"
+        />
     </form>
 </template>
 
@@ -143,7 +134,6 @@ export default {
             return isValid
         },
         async onCaptchaVerified(token) {
-            console.log('on chaptcha verified')
             this.captchaToken = token
 
             // Veirify catpcha and send API request
@@ -187,7 +177,6 @@ export default {
         async onSubmit() {
             // Make sure that submit should actually have been available
             if (this.submitDisabled) return
-            console.log('on submit')
 
             if (this.accountExists) {
                 this.attemptLogin()
@@ -195,7 +184,6 @@ export default {
             }
 
             this.verifyingCaptcha = true
-            console.log('execute recatpcha', this.$refs.recaptcha)
             await this.$refs.recaptcha.execute()
         },
 
