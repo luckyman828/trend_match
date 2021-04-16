@@ -31,8 +31,11 @@ export default {
     computed: {
         ...mapGetters('auth', ['authUser']),
         ...mapGetters('videoPresentation', {
-            video: 'getCurrentVideo',
+            currentVideo: 'getCurrentVideo',
         }),
+        video() {
+            return this.currentVideo && this.currentVideo.video
+        },
     },
     methods: {
         ...mapActions('videoComments', ['insertVideoComment']),
@@ -109,6 +112,7 @@ export default {
         }
     }
     .input-wrapper {
+        width: 100%;
         border-radius: 16px;
         min-height: 0;
         transition: padding-left 0.1s ease-out, padding-right 0.1s ease-out;

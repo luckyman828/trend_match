@@ -44,12 +44,12 @@ export default {
         getProvider: (state, getters, rootState, rootGetters) => {
             const currentVideo = rootGetters['videoPresentation/getCurrentVideo']
             if (!currentVideo) return
-            return currentVideo.provider
+            return currentVideo.video.provider
         },
         getProviderVideoId: (state, getters, rootState, rootGetters) => {
             const currentVideo = rootGetters['videoPresentation/getCurrentVideo']
             if (!currentVideo) return
-            return currentVideo.identifier
+            return currentVideo.video.identifier
         },
         getVideoType: state => state.videoType,
         getIsLive: state => state.videoType == 'live',
