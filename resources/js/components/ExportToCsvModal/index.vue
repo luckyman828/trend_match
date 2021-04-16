@@ -17,11 +17,6 @@
                             Export selected products only
                         </BaseCheckboxInputField>
                     </div>
-                    <div class="form-element" v-if="$route.name.search('edit') < 0">
-                        <BaseCheckboxInputField v-model="excludeNoQtyVariants">
-                            Exclude variants with no quantity
-                        </BaseCheckboxInputField>
-                    </div>
                 </div>
 
                 <div class="form-section">
