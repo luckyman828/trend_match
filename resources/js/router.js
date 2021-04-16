@@ -62,7 +62,7 @@ const routes = [
                     ),
             },
             {
-                path: 'join',
+                path: 'join/:linkHash',
                 name: 'join',
                 meta: {
                     root: 'login',
@@ -111,8 +111,9 @@ const routes = [
     },
     {
         path: '/join/:linkHash',
-        // redirect: 'select/join/:linkHash',
-        redirect: { name: 'join' },
+        redirect: 'login/join/:linkHash',
+
+        // redirect: { name: 'join', parems: {linkHash: linkHash} },
     },
     {
         path: '/settings',

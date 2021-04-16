@@ -1,43 +1,58 @@
 <template>
-    <div class="join-selection-page">
-        <h3>Enter your e-mail to join the selection</h3>
-        <form @submit.prevent class="join-form">
-            <BaseInputField
+    <form @submit.prevent="onSubmit" class="join-form login-form flex-list flex-v space-md">
+        <div class="flex-list space-md center-v">
+            <div class="square lg rounded">
+                <i class="key-icon fas fa-poll primary"></i>
+            </div>
+            <div class="flex-list flex-v lh-xs space-sm">
+                <div class="ft-20 ft-bd color-dark">Join Selection</div>
+                <div class="color-grey ft-12 ft-md">
+                    {{
+                        selectionInfo
+                            ? selectionInfo.workspace_title + ': ' + selectionInfo.selection_name
+                            : 'Fetching..'
+                    }}
+                </div>
+            </div>
+        </div>
+
+        <BaseLoader msg="Veryfying" v-if="verifyingCaptcha" />
+
+        <template v-else>
+            <LoginInputField
                 v-model="newEmail"
-                class="form-element"
                 label="E-mail"
+                type="email"
+                autocomplete="email"
                 placeholder="your-email@example.com"
                 name="email"
+                required
                 @input="checkEmailIsValid"
             />
 
-            <div class="form-element" v-if="accountExists">
-                <label for="password">Password</label>
-                <BaseInputField
-                    ref="passwordInput"
-                    id="password"
-                    :type="showPassword ? 'text' : 'password'"
-                    name="password"
-                    required
-                    autocomplete="current-password"
-                    v-model="password"
-                    :focusOnMount="true"
-                >
-                    <i
-                        class="far show-pass"
-                        :class="showPassword ? 'fa-eye' : 'fa-eye-slash'"
-                        @click="showPassword = !showPassword"
-                    ></i>
-                </BaseInputField>
-            </div>
+            <LoginInputField
+                v-if="accountExists"
+                label="Password"
+                id="password"
+                :type="showPassword ? 'text' : 'password'"
+                name="password"
+                required
+                autocomplete="current-password"
+                v-model="password"
+            >
+                <button class="white" type="button" @click="showPassword = !showPassword">
+                    <i class="fas" :class="showPassword ? 'fa-eye' : 'fa-eye-slash'" />
+                </button>
+            </LoginInputField>
 
-            <div class="error-wrapper form-element" v-if="error">
+            <div class="error-wrapper" v-if="error">
                 <i class="far fa-exclamation-triangle"></i>
                 <span>{{ error }}</span>
             </div>
 
-            <BaseCheckboxInputField class="form-element" v-model="acceptTerms">
-                <span>I accept the terms & conditions</span>
+            <BaseCheckboxInputField class="checkbox-input-field" v-model="acceptTerms">
+                <span>I Accept the terms</span>
+                <a href="" target="_blank">Read terms</a>
             </BaseCheckboxInputField>
 
             <!-- V2 -->
@@ -52,8 +67,8 @@
             <!-- V2 INVISIBLE -->
             <vue-recaptcha
                 ref="recaptcha"
-                class="form-element"
                 sitekey="6Lc-PEgaAAAAAFhgxCaYbmLFaX_vwpAX6yGlt9Hh"
+                class="form-element"
                 type="invisible"
                 size="invisible"
                 badge="bottomleft"
@@ -63,30 +78,30 @@
             />
 
             <BaseButton
-                v-if="!verifyingCaptcha"
-                buttonClass="form-element primary full-width lg"
-                class="full-width"
+                :type="submitDisabled ? 'button' : 'submit'"
                 :disabled="submitDisabled"
                 :disabledTooltip="disabledMsg"
-                @click="onSubmit"
+                class="submit-button full-width"
+                buttonClass="button primary full-width lg"
             >
-                <span>Go to Selection</span>
+                <span class="ft-bd ft-14">Join Selection</span>
             </BaseButton>
-
-            <BaseLoader msg="Veryfying" v-else />
-        </form>
-    </div>
+        </template>
+    </form>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import VueRecaptcha from 'vue-recaptcha'
+import LoginInputField from '../Login/LoginPage/LoginInputField'
 
 export default {
     name: 'joinSelectionPage',
     components: {
         VueRecaptcha,
+        LoginInputField,
     },
+    props: ['selectionInfo'],
     data: function() {
         return {
             newEmail: '',
@@ -128,6 +143,7 @@ export default {
             return isValid
         },
         async onCaptchaVerified(token) {
+            console.log('on chaptcha verified')
             this.captchaToken = token
 
             // Veirify catpcha and send API request
@@ -163,6 +179,7 @@ export default {
             }
         },
         onCaptchaExpired() {
+            this.verifyingCaptcha = false
             this.captchaToken = null
         },
         // verifyCaptcha
@@ -170,6 +187,7 @@ export default {
         async onSubmit() {
             // Make sure that submit should actually have been available
             if (this.submitDisabled) return
+            console.log('on submit')
 
             if (this.accountExists) {
                 this.attemptLogin()
@@ -177,6 +195,7 @@ export default {
             }
 
             this.verifyingCaptcha = true
+            console.log('execute recatpcha', this.$refs.recaptcha)
             await this.$refs.recaptcha.execute()
         },
 
@@ -204,25 +223,65 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-.join-selection-page {
-    padding-top: 32px;
-}
 .join-form {
-    text-align: left;
-    max-width: 302px;
-    margin: auto;
-}
-.error-wrapper {
-    color: $fail;
-    font-weight: 500;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    // margin-top: -14px;
-    // margin-bottom: -10px;
-    i {
+    height: 100%;
+    .key-icon {
+        font-size: 18px !important;
+        margin-left: 14px !important;
+        margin-right: 14px !important;
+    }
+    .error-wrapper {
         color: $fail;
-        margin-right: 8px;
+        font-weight: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        i {
+            color: $fail;
+            margin-right: 8px;
+        }
+    }
+    .show-pass {
+        cursor: pointer;
+        &:hover {
+            color: $font;
+        }
+    }
+    .submit-button {
+        margin-top: auto !important;
+    }
+    .checkbox-input-field {
+        position: relative;
+        height: 48px !important;
+        width: 100%;
+        padding: 4px 16px;
+        background: $bluegrey250;
+        border-radius: $borderRadiusEl;
+        border: solid 2px $bluegrey250;
+        overflow: hidden;
+        &::v-deep {
+            > span {
+                display: flex;
+                flex: 1;
+                justify-content: space-between;
+                color: $fontSoft;
+                font-weight: 700;
+                font-size: 12px;
+                padding-left: 8px;
+                a {
+                    color: $primary;
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
+            .checkbox .checkmark,
+            .checkbox input[type='checkbox']:checked + .checkmark {
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;
+            }
+        }
     }
 }
 </style>

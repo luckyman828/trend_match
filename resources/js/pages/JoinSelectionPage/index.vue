@@ -6,7 +6,7 @@
         :fitPage="true"
         :errorCallback="() => fetchData()"
     >
-        <JoinSelectionPage />
+        <JoinSelectionPage :selectionInfo="selectionInfo" />
     </PageLoader>
 </template>
 
@@ -24,6 +24,7 @@ export default {
     data: function() {
         return {
             status: 'loading',
+            selectionInfo: null,
         }
     },
     computed: {
@@ -51,6 +52,7 @@ export default {
         async handleLink() {
             const linkHash = this.$route.params.linkHash
             const selectionInfo = await this.fetchPublicSelectionInfo(linkHash)
+            this.selectionInfo = selectionInfo
             // await store.dispatch('selections/readSelectionLinkHash', this.$route.params.linkHash)
             this.SET_CURRENT_SELECTION_ID(selectionInfo.selection_id)
             let coverImage = selectionInfo.workspace_cover
