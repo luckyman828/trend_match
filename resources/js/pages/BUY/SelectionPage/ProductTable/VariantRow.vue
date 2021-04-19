@@ -30,7 +30,7 @@
                     />
                 </div>
             </div>
-            <div class="assortment-section flex-list flex-v" v-else>
+            <div class="assortment-section flex-list flex-v space-sm" v-else>
                 <div class="delivery-selector">
                     <BaseSegmentedControl
                         activeClass="white"

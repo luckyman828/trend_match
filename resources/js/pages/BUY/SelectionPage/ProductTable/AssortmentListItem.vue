@@ -15,8 +15,17 @@
             @focus.capture="editActive = true"
         >
             <div class="inner flex-list flex-v lh-sm space-sm center-v detail-col">
-                <div class="ft-10 ft-md name" v-tooltip="`Ass.: ${assortment.displayName} (${assortment.pcs} pcs.)`">
-                    Ass.: {{ assortment.displayName }} ({{ assortment.pcs }} pcs.)
+                <div
+                    class="name-wrapper flex-list space-xs center-v"
+                    v-tooltip="
+                        `Ass.: ${assortment.displayName} (box size: ${assortment.box_size}) (${assortment.pcs} pcs.)`
+                    "
+                >
+                    <div class="box-size">
+                        <i class="far fa-box"></i>
+                        <span>{{ assortment.box_size }}</span>
+                    </div>
+                    <span class="ft-12 ft-bd name"> Ass.: {{ assortment.displayName }} </span>
                 </div>
 
                 <!-- Edit Active -->
@@ -48,6 +57,12 @@
                     @blur="onBlurQty"
                     :selectOnFocus="true"
                 />
+                <div class="pieces-wrapper" v-if="assortment.pcs > 0 || editActive">
+                    <div class="pill xs box-pieces" :class="editActive ? 'primary' : 'invisible'">
+                        <span>{{ assortment.pcs }}</span>
+                        <i class="far fa-box"></i>
+                    </div>
+                </div>
             </div>
         </div>
         <div slot="popover" class="action-list flex-list sm" ref="actionPopover">
@@ -202,17 +217,35 @@ export default {
     }
     .detail-col {
         position: relative;
-        padding-top: 16px;
-        .name {
+        padding-top: 24px;
+        .name-wrapper {
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
             position: absolute;
-            top: 0;
+            top: 2px;
+            .box-size {
+                font-size: 12px;
+                margin-right: 8px;
+                color: $font;
+                i {
+                    font-size: 14px;
+                }
+            }
         }
     }
     .inner {
         width: 100%;
+    }
+    .qty-wrapper {
+        position: relative;
+        .pieces-wrapper {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            .box-pieces {
+            }
+        }
     }
     .size-list {
         max-width: 100%;
@@ -225,6 +258,7 @@ export default {
         min-width: 42px;
         background: $grey200;
         color: $fontSoft;
+        background: rgba(white, 0.8);
         &:focus-within {
             background: white;
             color: $font;

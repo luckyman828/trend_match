@@ -355,7 +355,16 @@ export default {
                             })
                             Object.defineProperty(sizeObj, 'quantity', {
                                 get() {
-                                    return sizeObj.quantityInputs.reduce((acc, curr) => (acc += curr.quantity), 0)
+                                    const sizeInputSum = sizeObj.quantityInputs.reduce(
+                                        (acc, curr) => (acc += curr.quantity),
+                                        0
+                                    )
+                                    const assortmentInputSum = variant.assortments.reduce((total, assortment) => {
+                                        // Find the corresponding size
+                                        const assortmentSize = assortment.sizes.find(size => size.size == sizeObj.size)
+                                        return (total += assortmentSize ? assortmentSize.currentQuantity : 0)
+                                    }, 0)
+                                    return sizeInputSum + assortmentInputSum
                                 },
                             })
                             return sizeObj
