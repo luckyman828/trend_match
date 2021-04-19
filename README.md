@@ -5,4 +5,4 @@ Redeploy with live DB
 rss.redeploy
 bukd
 Redeploy v1.1
-new env
+snew env
