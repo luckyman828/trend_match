@@ -77,9 +77,24 @@ export default {
         return {
             exportSelected: false,
             currencyToExport: null,
-            exportTemplate: null,
+            exportTemplate: {
+                name: 'DKC Export',
+                rowScope: 'Variant',
+                inVariantsOnly: true,
+                headers: [
+                    { name: 'Brand', key: 'brand' },
+                    { name: 'Season', key: 'extra_data.season' },
+                    { name: 'Style Number', key: 'datasource_id' },
+                    { name: 'Style Name', key: 'name' },
+                    { name: 'Color Name', key: 'variant.color' },
+                    { name: 'Color Code', key: 'variant.variant' },
+                    { name: 'Labels', key: 'variant.labels' },
+                    { name: 'Comments', key: 'comments.content' },
+                    { name: 'Total', key: 'variant.quantity' },
+                ],
+            },
 
-            exportType: this.$route.name == 'editFile' ? 'dump' : 'results',
+            exportType: this.$route.name == 'editFile' ? 'dump' : 'template',
 
             exportAlignment: false,
             exportFeedback: false,

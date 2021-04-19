@@ -41,13 +41,22 @@ export default {
                         const variant = product.variants[i]
                         if (template.inVariantsOnly) {
                             if (!variant) continue
-                            // Find the variant in our selectionInput
-                            const selectionInputVariant = product.getActiveSelectionInput.variants.find(
-                                x => x.id == variant.id
-                            )
-                            const actionKey = store.getters['selections/getCurrentActionKey']
-                            const variantAction = selectionInputVariant[actionKey]
-                            if (!['In', 'Focus'].includes(variantAction)) continue
+                            // BUY
+                            if (variant.selectionAlignment) {
+                                if (!['In', 'Focus'].includes(variant.selectionAlignment.feedback)) {
+                                    continue
+                                }
+                            }
+                            // SELECT
+                            else {
+                                // Find the variant in our selectionInput
+                                const selectionInputVariant = product.getActiveSelectionInput.variants.find(
+                                    x => x.id == variant.id
+                                )
+                                const actionKey = store.getters['selections/getCurrentActionKey']
+                                const variantAction = selectionInputVariant[actionKey]
+                                if (!['In', 'Focus'].includes(variantAction)) continue
+                            }
                         }
                         getRowData(product, variant)
                     }
@@ -71,6 +80,7 @@ export default {
                         if (keyScope == 'variant') {
                             const variantScopeIndex = scopeKey.indexOf('.')
                             const variantKeyScope = variantScopeIndex >= 0 && scopeKey.slice(0, variantScopeIndex)
+
                             if (variantKeyScope) {
                                 const variantScopeKey = scopeKey.slice(variantScopeIndex + 1)
                                 if (variantKeyScope == 'extra_data') {
@@ -104,7 +114,10 @@ export default {
                                         row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
                                     )
                                 } else {
-                                    productRows.map(row => row.push(variant ? variant[scopeKey] : ''))
+                                    const keyValue = Array.isArray(variant[scopeKey])
+                                        ? variant[scopeKey].join(', ')
+                                        : variant[scopeKey]
+                                    productRows.map(row => row.push(variant ? keyValue : ''))
                                 }
                             }
                             return
