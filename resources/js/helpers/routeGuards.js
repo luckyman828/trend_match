@@ -33,7 +33,7 @@ export async function triggerRouteGuards(to) {
         }
         return { name: 'login' }
     }
-    if (toRoot.name == 'login' && isAuthenticated) {
+    if (toRoot.name == 'login' && isAuthenticated && !to.name == 'join') {
         return triggerAppRedirection()
     }
     // END GUARD AUTH
@@ -57,6 +57,7 @@ export async function triggerRouteGuards(to) {
 }
 
 export async function triggerAppRedirection() {
+    console.log('trigger app redirect')
     await awaitAuthInit()
     // Redirect to a space the user has access to
     const availableApps = store.getters['workspaces/getEnabledApps']
