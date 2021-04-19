@@ -89,7 +89,7 @@ export default {
                 // Fetch the currently presented product
                 this.SET_VIDEO_TYPE('live')
                 await this.fetchPresentationDetails(selection.presentation_id)
-                await this.fetchVideoComments({ fileVideo })
+                await this.fetchVideoComments({ video: fileVideo })
             } else {
                 this.SET_VIDEO_TYPE('static')
             }
