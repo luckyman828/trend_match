@@ -229,7 +229,10 @@
                             <div class="inner">
                                 <BaseButton
                                     class=""
-                                    :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                                    :buttonClass="[
+                                        'true-square',
+                                        selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary',
+                                    ]"
                                     :disabled="!userWriteAccess.actions.hasAccess"
                                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                                     @click="onUpdateAction('Focus', selectionInput)"

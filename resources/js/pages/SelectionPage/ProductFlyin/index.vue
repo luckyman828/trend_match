@@ -61,7 +61,7 @@
                     </div>
                     <div class="item-group">
                         <v-popover>
-                            <button class="ghost">
+                            <button class="ghost true-square">
                                 <i class="far fa-ellipsis-h"></i>
                             </button>
                             <div slot="popover">
@@ -94,7 +94,10 @@
                     </div>
                     <div class="item-group">
                         <BaseButton
-                            :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                            :buttonClass="[
+                                'true-square',
+                                selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary',
+                            ]"
                             :disabled="!userWriteAccess.actions.hasAccess"
                             v-tooltip="userWriteAccess.actions.msg"
                             @click="onUpdateAction('Focus')"

@@ -50,7 +50,7 @@
                     <BaseButton
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new folders'"
-                        buttonClass="primary invisible"
+                        buttonClass="primary invisible ghost-hover"
                         @click="onNewFile('Folder')"
                     >
                         <i class="far fa-folder-plus"></i><span>Add folder</span>
@@ -58,7 +58,7 @@
                     <BaseButton
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create new files'"
-                        buttonClass="primary invisible"
+                        buttonClass="primary invisible ghost-hover"
                         @click="onNewFile('File')"
                     >
                         <i class="far fa-file-plus"></i><span>Add file</span>

@@ -2,7 +2,7 @@
     <div class="button-wrapper" :class="{ disabled: disabled }">
         <button
             v-bind="$attrs"
-            :class="[buttonClass, { disabled: disabled }, { 'has-target-area': !!targetAreaPadding }]"
+            :class="[buttonClass, { disabled: disabled }]"
             v-tooltip="disabled ? disabledTooltip : tooltip"
             @click="!disabled && $emit('click', $event)"
         >

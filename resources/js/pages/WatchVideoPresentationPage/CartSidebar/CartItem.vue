@@ -1,5 +1,5 @@
 <template>
-    <v-popover placement="right" popoverClass="min dark">
+    <v-popover placement="right" popoverClass="min theme-dark">
         <div class="cart-item" :class="`action-${selectionInput[currentAction]}`">
             <div class="action-indicator"></div>
             <div class="img-wrapper" @click="SET_SIDEBAR_PRODUCT(product)">

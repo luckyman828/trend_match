@@ -14,9 +14,9 @@
         >
             <slot :option="option" :isActive="theCurrentOptionIndex == index" />
             <span v-if="labelKey">{{ option[labelKey] }} </span>
-            <div class="dark xxs pill count" v-if="countKey">
+            <span class="dark xxs pill count" v-if="countKey">
                 <span>{{ option[countKey] }}</span>
-            </div>
+            </span>
         </div>
     </div>
 </template>

@@ -139,7 +139,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary invisible ghost-hover"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         disabledTooltip="Only admins can create new masters"
                         tooltip="Create a new Master"
@@ -150,7 +150,7 @@
                 </td>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary invisible ghost-hover"
                         :disabled="
                             authUserWorkspaceRole != 'Admin' || (getSelectionsTree.length != 1 && !focusSelection)
                         "
@@ -176,7 +176,7 @@
                 </td>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary invisible ghost-hover"
                         :disabled="
                             authUserWorkspaceRole != 'Admin' ||
                                 (getSelectionsTree.length != 1 && !focusSelection) ||
