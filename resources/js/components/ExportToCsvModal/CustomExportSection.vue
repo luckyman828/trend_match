@@ -185,7 +185,7 @@ export default {
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
                 { name: 'Labels', key: 'labels' },
-                { name: 'Action', key: 'getActiveSelectionInput.action' },
+                { name: 'Action', key: 'variant.action' },
             ]
 
             const customHeaders = this.customFields
