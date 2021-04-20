@@ -50,10 +50,10 @@
                 <span>{{ error }}</span>
             </div>
 
-            <BaseCheckboxInputField class="checkbox-input-field" v-model="acceptTerms">
+            <!-- <BaseCheckboxInputField class="checkbox-input-field" v-model="acceptTerms">
                 <span>I Accept the terms</span>
                 <a href="" target="_blank">Read terms</a>
-            </BaseCheckboxInputField>
+            </BaseCheckboxInputField> -->
 
             <BaseButton
                 v-if="!verifyingCaptcha"
@@ -97,7 +97,7 @@ export default {
         return {
             newEmail: '',
             emailValid: false,
-            acceptTerms: false,
+            acceptTerms: true,
             captchaToken: null,
             accountExists: false,
             showPassword: false,
