@@ -137,7 +137,11 @@
                             :index="currentVariant ? currentVariant.imageIndex : 0"
                         />
                     </BaseImageSizer>
-                    <button class="white controls" v-tooltip="'View large images'" @click.stop="onShowLightbox">
+                    <button
+                        class="white controls true-square"
+                        v-tooltip="'View large images'"
+                        @click.stop="onShowLightbox"
+                    >
                         <i class="far fa-search-plus"></i>
                     </button>
 

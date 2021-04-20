@@ -48,7 +48,10 @@
                 <div class="middle">
                     <div class="button-list" v-if="product">
                         <BaseButton
-                            :buttonClass="selectionInput[currentAction] != 'Focus' ? 'white' : 'primary'"
+                            :buttonClass="[
+                                'true-square',
+                                selectionInput[currentAction] != 'Focus' ? 'white' : 'primary',
+                            ]"
                             :disabled="!userWriteAccess.actions.hasAccess"
                             v-tooltip="userWriteAccess.actions.msg"
                             @click="onUpdateAction('Focus')"

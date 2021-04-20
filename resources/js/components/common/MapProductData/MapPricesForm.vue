@@ -9,7 +9,7 @@
             <h4>
                 <button
                     v-if="index > 0"
-                    class="dark ghost"
+                    class="dark ghost true-square"
                     style="margin-left: -36px; margin-right: 4px"
                     @click="onRemovePriceMap(currencyMap[0].groupId)"
                 >

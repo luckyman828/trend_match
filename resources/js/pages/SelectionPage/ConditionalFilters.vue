@@ -53,7 +53,7 @@
 
             <BaseInputField class="value-input" inputClass="small" v-model.number="keyFilter.value" type="number" />
 
-            <button class="ghost remove" @click="onRemoveFilter(index, 'key')">
+            <button class="ghost remove true-square" @click="onRemoveFilter(index, 'key')">
                 <i class="far fa-trash"></i>
             </button>
         </div>
@@ -137,7 +137,7 @@
                 </template>
             </v-popover>
 
-            <button class="ghost remove" @click="onRemoveFilter(index, 'author')">
+            <button class="ghost remove true-square" @click="onRemoveFilter(index, 'author')">
                 <i class="far fa-trash"></i>
             </button>
         </div>
