@@ -7,7 +7,7 @@
             ref="contextMenuItem"
             :id="id"
             @click="onClick"
-            v-tooltip="{ content: (disabled && disabledTooltip) || tooltip, container: `#${id}` }"
+            v-tooltip="{ content: (disabled && disabledTooltip) || tooltip }"
         >
             <!-- Item content -->
 
