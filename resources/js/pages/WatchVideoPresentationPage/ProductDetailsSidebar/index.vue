@@ -1,6 +1,6 @@
 <template>
-    <div class="product-details-sidebar" v-if="product" tabindex="-1">
-        <ProductPreview :product="product" @click.native="SET_SIDEBAR_PRODUCT(product)" />
+    <div class="product-details-sidebar" tabindex="-1">
+        <ProductPreview v-if="product" :product="product" @click.native="SET_SIDEBAR_PRODUCT(product)" />
         <ProductDetailsSidebar :product="sidebarProduct" :show="!!sidebarProduct" @close="SET_SIDEBAR_PRODUCT(null)" />
     </div>
 </template>
@@ -21,15 +21,17 @@ export default {
     computed: {
         ...mapGetters('videoPlayer', {
             product: 'getCurrentProduct',
+            currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('videoPresentation', {
             sidebarProduct: 'getSidebarProduct',
         }),
     },
     watch: {
-        product(newVal, oldVal) {
-            if (!newVal) return
-            if (!!this.sidebarProduct && this.sidebarProduct.id != newVal.id) this.SET_SIDEBAR_PRODUCT(newVal)
+        currentTiming(newVal, oldVal) {
+            if (!newVal || (!!oldVal && newVal.product_id == oldVal.product_id)) return
+            if (!!this.sidebarProduct && this.sidebarProduct.id != newVal.product_id)
+                this.SET_SIDEBAR_PRODUCT(newVal.product)
         },
     },
     methods: {
