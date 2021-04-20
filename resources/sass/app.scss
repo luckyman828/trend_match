@@ -1047,7 +1047,7 @@ i {
         border: $borderEl;
         background: white;
         box-shadow: $shadowSoft;
-        overflow: hidden;
+        // overflow: hidden;
     }
     &.theme-dark {
         background: none;
