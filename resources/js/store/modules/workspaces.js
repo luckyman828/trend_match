@@ -60,8 +60,8 @@ export default {
             return enabledFeaturues
         },
         getEnabledApps: (state, getters, rootState, rootGetters) => {
-            return rootGetters['kollektApps/getApps'].filter(space => {
-                return getters.getFeatureFlags.includes(space.featureFlag)
+            return rootGetters['kollektApps/getApps'].filter(app => {
+                return getters.getFeatureFlags.includes(app.featureFlag)
             })
         },
     },
@@ -79,11 +79,12 @@ export default {
             while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
+                    workspaces = response.data
+                    dispatch('initWorkspaces', workspaces)
+
                     commit('setWorkspaces', response.data)
                     commit('setLoading', false)
                     success = true
-                    workspaces = response.data
-                    // dispatch('initWorkspaces', workspaces)
                 } catch (err) {
                     console.log('API error in workspaces.js :')
                     console.log(err)
@@ -102,7 +103,8 @@ export default {
             let workspace
             await axios.get(apiUrl).then(response => {
                 workspace = response.data
-                // dispatch('initWorkspaces', [workspace])
+                dispatch('initWorkspaces', [workspace])
+                commit('UPDATE_WORKSPACE', workspace)
                 const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
                 if (stateWorkspace) {
                     Object.assign(stateWorkspace, workspace)
@@ -300,13 +302,14 @@ export default {
             })
         },
         async initWorkspaces({}, workspaces) {
-            // workspaces.map(workspace => {
-            //     Object.defineProperty(workspace, 'logoUrl', {
-            //         get: function() {
-            //             return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`
-            //         },
-            //     })
-            // })
+            workspaces.map(workspace => {
+                if (!workspace.feature_flags) Vue.set(workspace, 'feature_flags', [])
+                // Object.defineProperty(workspace, 'logoUrl', {
+                //     get: function() {
+                //         return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`
+                //     },
+                // })
+            })
         },
         async fetchWorkspaceDatabases({ state }, workspace) {
             const apiUrl = `workspaces/${workspace.id}/databases`
@@ -366,6 +369,10 @@ export default {
             // Save the current workspace index in local storage
             localStorage.setItem('workspace-id', newId)
             state.currentWorkspaceId = newId
+        },
+        UPDATE_WORKSPACE(state, workspace) {
+            const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
+            Object.assign(stateWorkspace, workspace)
         },
     },
 }

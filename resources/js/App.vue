@@ -110,6 +110,9 @@ export default {
                 this.SET_CURRENT_SELECTION_ID(null)
                 this.SET_CURRENT_SELECTIONS([])
 
+                // Fetch data for the new workspace
+                await this.fetchWorkspace(newVal)
+
                 // Trigger route auth
                 const newRoute = await triggerRouteGuards(this.$route)
                 if (newRoute) {

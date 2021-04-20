@@ -28,7 +28,7 @@
             autocomplete="current-password"
             v-model="password"
         >
-            <button class="white" type="button" @click="showPassword = !showPassword">
+            <button class="white true-square" type="button" @click="showPassword = !showPassword">
                 <i class="fas" :class="showPassword ? 'fa-eye' : 'fa-eye-slash'" />
             </button>
         </LoginInputField>

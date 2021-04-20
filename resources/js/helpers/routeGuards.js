@@ -38,12 +38,12 @@ export async function triggerRouteGuards(to) {
     }
     // END GUARD AUTH
 
-    // GUARD SPACES
+    // GUARD APPS
     if (
         authenticatedInitDone &&
         toRoot.meta &&
-        toRoot.meta.space &&
-        !store.getters['workspaces/getEnabledApps'].find(space => space.name == toRoot.meta.space)
+        toRoot.meta.app &&
+        !store.getters['workspaces/getEnabledApps'].find(app => app.name == toRoot.meta.app)
     ) {
         // Tell the user they are getting redirected
         store.commit('alerts/SHOW_SNACKBAR', {
@@ -53,7 +53,7 @@ export async function triggerRouteGuards(to) {
         })
         return triggerAppRedirection()
     }
-    // END GUARD SPACES
+    // END GUARD APPS
 }
 
 export async function triggerAppRedirection() {
