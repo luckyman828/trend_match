@@ -376,7 +376,6 @@ input[type='submit'] {
     text-decoration: none;
     user-select: none;
     border: solid 1px transparent;
-    // padding: 0 1px;
     padding: 0 13px;
     font-weight: 500;
     font-size: 12px;
@@ -393,12 +392,6 @@ input[type='submit'] {
     &.true-square {
         max-width: 32px;
     }
-    // > span:first-child {
-    //     margin-left: 12px;
-    // }
-    // > span:last-child {
-    //     margin-right: 12px;
-    // }
     > span,
     > i {
         &:not(:first-child) {
@@ -416,12 +409,6 @@ input[type='submit'] {
             font-size: 14px;
             color: inherit;
         }
-        // &:first-child {
-        //     margin-left: 12px;
-        // }
-        // &:last-child {
-        //     margin-right: 12px;
-        // }
         &:first-child:last-child {
             margin: 0;
         }
@@ -443,12 +430,7 @@ input[type='submit'] {
             &.ghost-hover {
                 &:hover,
                 .button-hover-trigger:hover & {
-                    // padding: 0;
                     padding: 0 nth($size, 4);
-                    // border: solid 2px $primary;
-                    // i:not(.fa-times):not(.fa-ellipsis-h) {
-                    //     font-weight: 900;
-                    // }
                 }
             }
             > i {
@@ -459,19 +441,8 @@ input[type='submit'] {
                 &.fad,
                 &.fab {
                     font-size: nth($size, 5);
+                    padding-bottom: nth($size, 8);
                 }
-                &:first-child {
-                    // margin-left: nth($size, 4);
-                }
-                &:last-child {
-                    // margin-right: nth($size, 4);
-                }
-            }
-            > span:first-child {
-                // margin-left: nth($size, 4);
-            }
-            > span:last-child {
-                // margin-right: nth($size, 4);
             }
             > i,
             > span {
