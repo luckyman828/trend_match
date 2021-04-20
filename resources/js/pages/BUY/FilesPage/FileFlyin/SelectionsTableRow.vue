@@ -1,7 +1,7 @@
 <template>
     <div class="selections-table-row">
         <tr
-            class="selection"
+            class="selection bg-theme-white bg-theme-hover"
             :class="[{ 'is-hidden': isHidden }, { 'has-focus': hasFocus }]"
             @contextmenu="
                 emitShowContext($event)
