@@ -257,8 +257,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', {
-            products: 'products',
+        ...mapGetters('selectionProducts', {
+            products: 'getProducts',
         }),
         ...mapGetters('selectionProducts', {
             getActiveSelectionInput: 'getActiveSelectionInput',
