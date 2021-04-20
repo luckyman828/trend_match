@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="onSubmit" class="join-form login-form flex-list flex-v space-md">
         <div class="flex-list space-md center-v">
-            <div class="square lg rounded">
+            <div class="true-square lg rounded">
                 <i class="key-icon fas fa-poll primary"></i>
             </div>
             <div class="flex-list flex-v lh-xs space-sm">
@@ -24,7 +24,6 @@
                 label="E-mail"
                 type="email"
                 autocomplete="email"
-                placeholder="your-email@example.com"
                 name="email"
                 required
                 @input="checkEmailIsValid"

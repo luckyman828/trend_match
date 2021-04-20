@@ -1,7 +1,7 @@
 <template>
     <form class="verification-code-form flex-list flex-v space-md" @submit.prevent="onSubmit">
         <div class="flex-list space-md center-v">
-            <div class="square lg rounded">
+            <div class="true-square lg rounded">
                 <i class="key-icon fas fa-key primary"></i>
             </div>
             <div class="flex-list flex-v lh-xs space-sm">
