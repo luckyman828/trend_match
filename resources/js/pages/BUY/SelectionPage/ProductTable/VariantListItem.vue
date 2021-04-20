@@ -47,7 +47,6 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .variant-list-item {
-    min-width: 164px;
     overflow: hidden;
     flex-shrink: 0;
     cursor: pointer;
