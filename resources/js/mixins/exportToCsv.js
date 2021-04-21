@@ -45,9 +45,11 @@ export default {
                 const generateRowKeys = (obj, keyObj, path) => {
                     // Find the array
                     const array = obj[keyObj.key]
-                    // if (!array || array.length <= 0) {
-                    //     rowKeys.push(path.slice(0, path.lastIndexOf('.')))
-                    // }
+                    if (!array || array.length <= 0) {
+                        rowKeys.push(path.slice(0, path.lastIndexOf('.')))
+                    }
+
+                    if (!Array.isArray(array)) return
                     array.map((arrayObj, index) => {
                         const arrayObjPath = `${path}:${index}`
                         // console.log('what should we do?', keyObj, path)
@@ -63,6 +65,7 @@ export default {
                 }
 
                 const getRowKeyObj = (obj, rowKeySplit, headerKeySplit) => {
+                    // console.log('rowkey obj', obj, rowKeySplit, headerKeySplit)
                     // Test if the row key matches the headerkey
                     let keyObj = obj
 
@@ -109,7 +112,8 @@ export default {
                 }
 
                 // First generate unique keys for each row necessary to express the product data
-                template.rowKeys.map(rowKey => {
+                const templateRowKeys = template.rowKeys ? template.rowKeys : [{ key: 'product' }]
+                templateRowKeys.map(rowKey => {
                     generateRowKeys(product, rowKey, rowKey.key)
                 })
 

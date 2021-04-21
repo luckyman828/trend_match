@@ -1300,6 +1300,22 @@ export default {
                 })
 
                 // VARIANTS
+                Vue.set(product, 'variantsRaw', [...product.variants])
+                Object.defineProperty(product, 'variants', {
+                    get: function() {
+                        // Filter out variants that are not in chapters
+                        if (!product.getActiveSelectionInput) return product.variantsRaw
+                        return product.variantsRaw.filter(
+                            variant => !!product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
+                        )
+                    },
+                })
+                // Object.defineProperty(product, 'variantsFiltered', {
+                //     get: function() {
+                //         return getters.getFilteredVariants(product.variants)
+                //     },
+                // })
+
                 product.variants.forEach((variant, variantIndex) => {
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
