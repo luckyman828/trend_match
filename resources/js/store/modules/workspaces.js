@@ -1,5 +1,7 @@
 import axios from 'axios'
 import Compressor from 'compressorjs'
+import { triggerRouteGuards } from '../../helpers/routeGuards'
+import router from '../../router'
 
 export default {
     namespaced: true,
@@ -29,6 +31,7 @@ export default {
         loadingWorkspaces: state => state.loading,
         getCurrentWorkspaceId: state => state.currentWorkspaceId,
         workspaces: state => state.workspaces,
+        getWorkspaces: state => state.workspaces,
         availableWorkspaceRoles: (state, getters, rootState, rootGetters) =>
             rootGetters['auth/getIsSystemAdmin']
                 ? state.availableWorkspaceRoles
@@ -354,6 +357,20 @@ export default {
                     commit('SET_CURRENT_WORKSPACE_ID', getters.workspaces[0] && getters.workspaces[0].id)
                 }
             })
+        },
+        async changeWorkspace({ commit, dispatch }, workspaceId) {
+            commit('files/SET_CURRENT_FILE', null, { root: true })
+            commit('files/SET_CURRENT_FOLDER', null, { root: true })
+            commit('selections/SET_CURRENT_SELECTION_ID', null, { root: true })
+            commit('selections/SET_CURRENT_SELECTIONS', [], { root: true })
+            commit('SET_CURRENT_WORKSPACE_ID', workspaceId)
+            // Fetch data for the new workspace
+            await dispatch('fetchWorkspace', workspaceId)
+            // Trigger route auth
+            const newRoute = await triggerRouteGuards(router.currentRoute)
+            if (newRoute) {
+                router.push(newRoute)
+            }
         },
     },
 

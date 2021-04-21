@@ -104,25 +104,23 @@ export default {
         },
         // Watch for workspace changes
         currentWorkspaceId: async function(newVal, oldVal) {
-            if (oldVal != null && newVal != oldVal) {
-                this.SET_CURRENT_FILE(null)
-                this.SET_CURRENT_FOLDER(null)
-                this.SET_CURRENT_SELECTION_ID(null)
-                this.SET_CURRENT_SELECTIONS([])
-
-                // Fetch data for the new workspace
-                await this.fetchWorkspace(newVal)
-
-                // Trigger route auth
-                const newRoute = await triggerRouteGuards(this.$route)
-                if (newRoute) {
-                    this.$router.push(newRoute)
-                }
-            }
-            // If we are in a selection -> send us back to files
-            if (oldVal != null && (this.$route.name == 'selection' || this.$route.name == 'editFile')) {
-                this.$router.push({ name: 'files' })
-            }
+            // if (oldVal != null && newVal != oldVal) {
+            //     this.SET_CURRENT_FILE(null)
+            //     this.SET_CURRENT_FOLDER(null)
+            //     this.SET_CURRENT_SELECTION_ID(null)
+            //     this.SET_CURRENT_SELECTIONS([])
+            //     // Fetch data for the new workspace
+            //     await this.fetchWorkspace(newVal)
+            //     // Trigger route auth
+            //     // const newRoute = await triggerRouteGuards(this.$route)
+            //     // if (newRoute) {
+            //     //     this.$router.push(newRoute)
+            //     // }
+            // }
+            // // If we are in a selection -> send us back to files
+            // if (oldVal != null && (this.$route.name == 'selection' || this.$route.name == 'editFile')) {
+            //     this.$router.push({ name: 'files' })
+            // }
         },
     },
     methods: {

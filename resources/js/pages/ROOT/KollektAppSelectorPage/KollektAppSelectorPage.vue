@@ -141,15 +141,14 @@ export default {
                 return this.getCurrentWorkspace
             },
             set(newWorkspace) {
-                this.SET_CURRENT_WORKSPACE_ID(newWorkspace.id)
+                this.changeWorkspace(newWorkspace.id)
             },
         },
     },
     methods: {
         ...mapActions('auth', ['logout']),
-        ...mapActions('workspaces', ['updateWorkspaceDetails']),
+        ...mapActions('workspaces', ['updateWorkspaceDetails', 'changeWorkspace']),
         ...mapMutations('kollektApps', ['SET_KOLLEKT_APP', 'NAVIGATE_TO_CURRENT_APP']),
-        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_ID']),
         onSetApp(app) {
             this.SET_KOLLEKT_APP(app)
             this.NAVIGATE_TO_CURRENT_APP()

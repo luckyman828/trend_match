@@ -22,7 +22,7 @@
                             optionValueKey="id"
                             optionNameKey="title"
                             :submitOnChange="true"
-                            @submit="SET_CURRENT_WORKSPACE_ID($event)"
+                            @submit="onSetWorkspace"
                             v-close-popover
                         />
                     </v-popover>
@@ -122,11 +122,14 @@ export default {
     },
     methods: {
         ...mapActions('auth', ['logout']),
-        ...mapMutations('workspaces', ['SET_CURRENT_WORKSPACE_ID']),
+        ...mapActions('workspaces', ['changeWorkspace']),
         ...mapMutations('changelog', ['SHOW_CHANGELOG']),
         onReadChangelog() {
             this.changelogReadDate = new Date()
             localStorage.setItem('changelogReadDate', new Date())
+        },
+        async onSetWorkspace(workspaceId) {
+            this.changeWorkspace(workspaceId)
         },
     },
     created() {

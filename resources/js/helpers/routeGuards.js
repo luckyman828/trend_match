@@ -19,6 +19,23 @@ const awaitAuthInit = async () => {
     }
 }
 
+const fetchRouteWorkspace = async ({ fileId, selectionId }) => {
+    let workspaceId
+    if (selectionId && !fileId) {
+        const selection = await store.dispatch(
+            'selections/fetchSelection',
+            { selectionId, addToState: false },
+            { root: true }
+        )
+        // fileId = selection.file_id
+    }
+    if (fileId) {
+        const file = await store.dispatch('files/fetchFile', fileId, { root: true })
+        workspaceId = file.workspace_id
+    }
+    return workspaceId
+}
+
 export async function triggerRouteGuards(to) {
     const toRoot = to.matched[0]
     const isAuthenticated = store.getters['auth/isAuthenticated']
@@ -37,6 +54,25 @@ export async function triggerRouteGuards(to) {
         return triggerAppRedirection()
     }
     // END GUARD AUTH
+
+    // GUARD WORKSPACE
+    if (to.params.fileId || to.params.selectionId) {
+        const workspaceId = await fetchRouteWorkspace({ fileId: to.params.fileId, selectionId: to.params.selectionId })
+
+        // Test that the user has access to that workspace
+        const workspaces = store.getters['workspaces/getWorkspaces']
+        if (!workspaces.find(workspace => workspace.id == workspaceId)) {
+            store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
+            // Show info message
+            store.commit('alerts/SHOW_SNACKBAR', {
+                type: 'info',
+                icon: 'far fa-info-circle',
+                msg: "Redirected: You don' have access to this workspace.",
+            })
+            return triggerAppRedirection()
+        }
+        store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
+    }
 
     // GUARD APPS
     if (
@@ -57,7 +93,6 @@ export async function triggerRouteGuards(to) {
 }
 
 export async function triggerAppRedirection() {
-    console.log('trigger app redirect')
     await awaitAuthInit()
     // Redirect to a space the user has access to
     const availableApps = store.getters['workspaces/getEnabledApps']
