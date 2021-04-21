@@ -4,7 +4,7 @@
         <div class="flex-list flex-v card card-md details space-md bg-theme-grey">
             <div class="flex-list workspace-selector center-v space-md">
                 <div class="logo-wrapper" :class="{ 'has-logo': !!currentWorkspace.logo }">
-                    <BaseImageSizer v-if="currentWorkspace.logo" class="logo-sizer" aspect="1:1">
+                    <BaseImageSizer v-if="currentWorkspace.logo" class="logo-sizer" aspect="1:1" fit="contain">
                         <img :src="currentWorkspace.logo" />
                     </BaseImageSizer>
                     <span class="logo-text" v-else>{{ currentWorkspace.title }}</span>

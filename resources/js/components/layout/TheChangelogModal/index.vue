@@ -1,6 +1,71 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Jersey: Blue Green"
+            date="April 2021 Release"
+            featuredImgUrl="/images/blog/undraw_shopping_eii3.svg"
+        >
+            <template v-slot:lead>
+                <p>Introducing BUY! The first addition to the Kollekt product family.</p>
+                <p>
+                    This is only the first step towards our goal of helping you all the way from sketch, to loom, to
+                    consumer.
+                </p>
+                <p>Of course this release has lots of other tweaks and fixes as well. Enjoy!</p>
+            </template>
+            <template v-slot:body>
+                <h3>What is SELECT?</h3>
+                <p>SELECT is what we call Kollekt as you have known it so far.</p>
+                <p>
+                    SELECT will continue being your tool for collaborating on collections. Whether that is to do trim,
+                    gather feedback from key partners, or something entirely different enabled by the feedback and
+                    alignment tools of SELECT.
+                </p>
+
+                <h3>What is BUY?</h3>
+                <p>What about BUY then? BUY is a new tool developed to empower purchasers.</p>
+                <p>Buy alows purchasers to handle their purhcase in 1 place.</p>
+                <p>The BUY process is split into 3 steps</p>
+                <ol>
+                    <li>The purchaser looks through the available products, deciding which ones to buy</li>
+                    <li>The purchaser decides how many to buy</li>
+                    <li>The order is reviewed to ensure that it contains no gaps</li>
+                </ol>
+
+                <p><strong>Interested in hearing more about BUY?</strong></p>
+                <p>
+                    Get in touch with CEO Simon (<a href="mailto:simon@kollekt.dk">mailto:simon@kollekt.dk</a>) or phone
+                    (<a href="tel:004523381938">+45 23 38 19 38</a>)
+                </p>
+
+                <h3>Dashboard style overhaul</h3>
+                <p>You will probably notice that the dashboard has gotten a bit of a facelift.</p>
+                <p>
+                    Most things should still look familiar, with the only new feature added being the app-switcher,
+                    which can be accessed when clicking the app-logo in the top left corner of the screen.
+                </p>
+
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>Tickets can no longer be accepted/rejected on products marked as "Complete".</li>
+                    <li>Added "Exact" function to filters (useful for labels for instance)</li>
+                    <li>
+                        You can now stop presentations started by someone else, if you have rights to the same
+                        selections.
+                    </li>
+                    <li>You can now be logged in on the dashboard and the iOS app at the same time!</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Gingham: Blue"
             date="March 2021, 1st Bonus Release"
             featuredImgUrl="/images/blog/undraw_fireworks_q5ji.svg"
