@@ -34,8 +34,10 @@
 
                 <p><strong>Interested in hearing more about BUY?</strong></p>
                 <p>
-                    Get in touch with CEO Simon (<a href="mailto:simon@kollekt.dk">mailto:simon@kollekt.dk</a>) or phone
-                    (<a href="tel:004523381938">+45 23 38 19 38</a>)
+                    Get in touch with CEO Simon (<a href="mailto:simon@kollekt.dk">simon@kollekt.dk</a>) or phone (<a
+                        href="tel:004523381938"
+                        >+45 23 38 19 38</a
+                    >)
                 </p>
 
                 <h3>Dashboard style overhaul</h3>
