@@ -134,14 +134,14 @@ export default {
             // if (this.variant[this.currentAction] == newAction) return
 
             // Loop through all the variants. If their action is None, then give them a default action
-            this.product.variants.forEach(variant => {
-                if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
-                    if (newAction == 'Out') variant[this.currentAction] = 'Out'
-                    else {
-                        variant[this.currentAction] = 'In'
-                    }
-                }
-            })
+            // this.product.variants.forEach(variant => {
+            //     if (variant.id != this.variant.id && variant[this.currentAction] == 'None') {
+            //         if (newAction == 'Out') variant[this.currentAction] = 'Out'
+            //         else {
+            //             variant[this.currentAction] = 'In'
+            //         }
+            //     }
+            // })
 
             // If the old action as None and the variant is set IN, preset it's quantity
             if (
