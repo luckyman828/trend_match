@@ -980,6 +980,52 @@
                     "name": "46",
                     "weight": 13
                 }
+            ],
+            "bottomsIn": [
+                {
+                    "name": "25",
+                    "weight": 1
+                },
+                {
+                    "name": "26",
+                    "weight": 1
+                },
+                {
+                    "name": "27",
+                    "weight": 6
+                },
+                {
+                    "name": "28",
+                    "weight": 12
+                },
+                {
+                    "name": "29",
+                    "weight": 15
+                },
+                {
+                    "name": "30",
+                    "weight": 15
+                },
+                {
+                    "name": "31",
+                    "weight": 15
+                },
+                {
+                    "name": "32",
+                    "weight": 15
+                },
+                {
+                    "name": "33",
+                    "weight": 11
+                },
+                {
+                    "name": "34",
+                    "weight": 7
+                },
+                {
+                    "name": "35",
+                    "weight": 1
+                }
             ]
         }
     },
