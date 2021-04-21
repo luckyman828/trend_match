@@ -1,8 +1,8 @@
 <template>
     <div class="action-list flex-list sm">
-        <product-action-button action="Focus" :product="product" displayStyle="iconOnly" />
-        <product-action-button action="In" :product="product" displayStyle="iconOnly" />
-        <product-action-button action="Out" :product="product" displayStyle="iconOnly" />
+        <product-action-button action="Focus" :product="product" displayStyle="iconOnly" buttonClass="true-square" />
+        <product-action-button action="In" :product="product" displayStyle="iconOnly" buttonClass="true-square" />
+        <product-action-button action="Out" :product="product" displayStyle="iconOnly" buttonClass="true-square" />
     </div>
 </template>
 
@@ -18,7 +18,6 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .action-list {
-    background: $dark;
     padding: 8px;
 }
 </style>

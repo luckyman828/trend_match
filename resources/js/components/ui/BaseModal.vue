@@ -6,16 +6,13 @@
                 <div class="modal" ref="modal">
                     <div class="header" v-if="$slots['header'] || $scopedSlots['header'] || header">
                         <div class="left" v-if="goBack">
-                            <button class="go-bacl md circle" @click="$emit('goBack')">
+                            <button class="go-back circle" @click="$emit('goBack')">
                                 <i class="far fa-arrow-left"></i>
                             </button>
                         </div>
                         <h2 v-if="header" v-html="header"></h2>
                         <div class="sub-header" v-html="subHeader"></div>
                         <slot name="header" />
-                        <!-- <div class="right">
-                            <button class="close md circle" @click="close"><i class="fal fa-times"></i></button>
-                        </div> -->
                     </div>
                     <div class="body">
                         <slot :close="close" />
@@ -103,6 +100,17 @@ export default {
             top: 8px;
         }
     }
+    &.min {
+        .modal {
+            max-width: none;
+            min-width: 0;
+            background: white;
+        }
+        .close {
+            right: 8px;
+            top: 8px;
+        }
+    }
 }
 .overlay {
     z-index: 0;
@@ -124,7 +132,7 @@ export default {
     text-align: left;
     margin: 10vh auto 5vh;
     background: white;
-    border-radius: 6px;
+    border-radius: 16px;
     overflow: hidden;
     .header {
         display: flex;

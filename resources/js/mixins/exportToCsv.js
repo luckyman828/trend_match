@@ -39,9 +39,10 @@ export default {
                     const variantCount = Math.max(product.variants.length, 1)
                     for (let i = 0; i < variantCount; i++) {
                         const variant = product.variants[i]
-                        const selectionInputVariant =
-                            product.getActiveSelectionInput &&
-                            product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
+                        const selectionInputVariant = variant.selectionAlignment
+                            ? variant.selectionAlignment
+                            : product.getActiveSelectionInput &&
+                              product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
 
                         if (template.inVariantsOnly && selectionInputVariant) {
                             const actionKey = store.getters['selections/getCurrentActionKey']
@@ -70,6 +71,7 @@ export default {
                         if (keyScope == 'variant') {
                             const variantScopeIndex = scopeKey.indexOf('.')
                             const variantKeyScope = variantScopeIndex >= 0 && scopeKey.slice(0, variantScopeIndex)
+
                             if (variantKeyScope) {
                                 const variantScopeKey = scopeKey.slice(variantScopeIndex + 1)
                                 if (variantKeyScope == 'extra_data') {
@@ -103,7 +105,10 @@ export default {
                                         row.push(variant ? variant.ean_sizes.map(x => x.size).join(', ') : '')
                                     )
                                 } else {
-                                    productRows.map(row => row.push(variant ? variant[scopeKey] : ''))
+                                    const keyValue = Array.isArray(variant[scopeKey])
+                                        ? variant[scopeKey].join(', ')
+                                        : variant[scopeKey]
+                                    productRows.map(row => row.push(variant ? keyValue : ''))
                                 }
                             }
                             return

@@ -1,17 +1,16 @@
 <template>
     <div class="table-wrapper" ref="tableWrapper">
-        <table class="flex-table" ref="table" 
-        :class="[{'sticky': sticky}, {'has-tabs': $slots.tabs}]">
+        <table class="flex-table" ref="table" :class="[{ sticky: sticky }, { 'has-tabs': $slots.tabs }]">
             <div ref="stickyHeader" class="sticky-header">
-                <div ref="stickyBg" class="sticky-bg" :style="{width: tableWidth + 32+'px'}"></div>
+                <div ref="stickyBg" class="sticky-bg" :style="{ width: tableWidth + 32 + 'px' }"></div>
                 <div ref="stickyInner" class="inner">
                     <div class="tabs-wrapper" v-if="$slots.tabs">
-                        <slot name="tabs"/>
+                        <slot name="tabs" />
                     </div>
                     <div class="rounded-top">
-                        <slot name="topBar"/>
+                        <slot name="topBar" />
                         <tr class="header">
-                            <slot name="header"/>
+                            <slot name="header" />
                         </tr>
                     </div>
                 </div>
@@ -19,22 +18,23 @@
             <div ref="stickyPlaceholder" class="sticky-placeholder"></div>
             <div class="body">
                 <!-- Content -->
-                <slot v-if="isReady" name="body"/>
+                <slot v-if="isReady" name="body" />
                 <!-- End content -->
 
                 <!-- Loading / Error -->
                 <tr class="load-wrapper" v-else>
                     <!-- Loading -->
-                    <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'"/>
+                    <BaseLoader v-if="contentStatus != 'error'" :msg="loadingMsg || 'loading content'" />
 
                     <!-- Error  -->
-                    <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback"/>
+                    <BaseContentLoadError v-else :msg="errorMsg || 'error loading content'" :callback="errorCallback" />
                 </tr>
                 <!-- End Loading / Error -->
             </div>
+
             <tr class="footer">
                 <td class="select"></td>
-                <slot name="footer"/>
+                <slot name="footer" />
             </tr>
         </table>
     </div>
@@ -43,30 +43,25 @@
 <script>
 export default {
     name: 'flexTable',
-    data: function() { return {
-        sticky: false,
-        distToTop: null,
-        scrollParent: null,
-        scrollTable: null,
-        scrollHeaderInitialized: false,
-        tableWidth: null,
-        statusTimeout: null,
-        isReady: true,
-    }},
-    props: [
-        'stickyHeader',
-        'contentStatus',
-        'loadingMsg',
-        'errorCallback',
-        'errorMsg',
-    ],
+    data: function() {
+        return {
+            sticky: false,
+            distToTop: null,
+            scrollParent: null,
+            scrollTable: null,
+            scrollHeaderInitialized: false,
+            tableWidth: null,
+            statusTimeout: null,
+            isReady: true,
+        }
+    },
+    props: ['stickyHeader', 'contentStatus', 'loadingMsg', 'errorCallback', 'errorMsg'],
     watch: {
         contentStatus: function(newVal, oldVal) {
             if (newVal == 'loading') {
                 // Wait before setting the current folder status as loading
-                this.statusTimeout = setTimeout(() => this.isReady = false, 100)
-            } 
-            else if (this.statusTimeout) {
+                this.statusTimeout = setTimeout(() => (this.isReady = false), 100)
+            } else if (this.statusTimeout) {
                 clearTimeout(this.statusTimeout)
             }
 
@@ -77,7 +72,7 @@ export default {
             if (newVal == 'success') {
                 this.isReady = true
             }
-        }
+        },
     },
     computed: {
         // isReady() {
@@ -86,33 +81,33 @@ export default {
     },
     methods: {
         getYPos(element) {
-            var yPosition = 0;
+            var yPosition = 0
 
-            while(element) {
-                yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-                element = element.offsetParent;
+            while (element) {
+                yPosition += element.offsetTop - element.scrollTop + element.clientTop
+                element = element.offsetParent
             }
 
-            return yPosition;
+            return yPosition
         },
         getScrollParent(element, includeHidden) {
             // Helper function to find the nearest parent that can be scrolled
-            var style = getComputedStyle(element);
-            var excludeStaticParent = style.position === "absolute";
-            var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
+            var style = getComputedStyle(element)
+            var excludeStaticParent = style.position === 'absolute'
+            var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/
 
-            if (style.position === "fixed") return document.body;
-            for (var parent = element; (parent = parent.parentElement);) {
-                style = getComputedStyle(parent);
-                if (excludeStaticParent && style.position === "static") {
-                    continue;
+            if (style.position === 'fixed') return document.body
+            for (var parent = element; (parent = parent.parentElement); ) {
+                style = getComputedStyle(parent)
+                if (excludeStaticParent && style.position === 'static') {
+                    continue
                 }
-                if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent;
+                if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent
             }
 
-            return document.body;
+            return document.body
         },
-        handleScroll (event) {
+        handleScroll(event) {
             // Fix table header to screen
             // Initialize the header
             this.initScrollHeader()
@@ -131,11 +126,13 @@ export default {
                     stickyThis.style.top = `${desiredOffset + parentTopDist + tabsHeight}px`
                     this.$refs.stickyPlaceholder.style.height = `${this.$refs.stickyInner.scrollHeight}px`
                     // Set the position and size of the scroll bg
-                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight + desiredOffset + tabsHeight}px`
+                    this.$refs.stickyBg.style.height = `${this.$refs.stickyInner.scrollHeight +
+                        desiredOffset +
+                        tabsHeight}px`
                     this.$refs.stickyBg.style.top = `${parentTopDist}px`
 
                     const tableWidth = this.scrollTable.getBoundingClientRect().width
-                    stickyThis.style.width = tableWidth+'px'
+                    stickyThis.style.width = tableWidth + 'px'
                     this.tableWidth = tableWidth
                 }
                 this.sticky = true
@@ -159,18 +156,18 @@ export default {
         },
         initScrollHeader() {
             if (this.stickyHeader && !this.scrollHeaderInitialized) {
-                this.distToTop =  this.getYPos(this.$refs.stickyHeader)
+                this.distToTop = this.getYPos(this.$refs.stickyHeader)
                 this.scrollHeaderInitialized = true
             }
-        }
+        },
     },
-    created () {
+    created() {
         if (this.stickyHeader) {
             window.addEventListener('resize', this.resizeHeader)
         }
         if (this.contentStatus && this.contentStatus != 'success') this.isReady = false
     },
-    destroyed () {
+    destroyed() {
         if (this.stickyHeader) {
             this.scrollParent.removeEventListener('scroll', this.handleScroll)
             window.removeEventListener('resize', this.handleScroll)
@@ -182,7 +179,7 @@ export default {
             this.scrollTable = this.$refs.table
             this.scrollParent.addEventListener('scroll', this.handleScroll)
         }
-    }
+    },
 }
 </script>
 
@@ -271,7 +268,7 @@ export default {
         }
         &:not(.header):not(.footer):not(.table-top-bar) {
             &:hover {
-                background: $bgModuleHover;
+                // background: $bgModuleHover;
                 td {
                     &.title {
                         i {
@@ -282,7 +279,8 @@ export default {
                 }
             }
         }
-        &.header, &.footer {
+        &.header,
+        &.footer {
             color: $fontTableHeader;
         }
         &.header {
@@ -298,7 +296,8 @@ export default {
     td {
         // overflow: hidden;
     }
-    th, td {
+    th,
+    td {
         padding: 0 4px;
         &:first-child:not(.select) {
             margin-left: 8px;
@@ -317,7 +316,7 @@ export default {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            >*:not(:last-child) {
+            > *:not(:last-child) {
                 margin-right: 4px;
             }
         }
@@ -342,5 +341,4 @@ export default {
         min-height: 200px;
     }
 }
-
 </style>

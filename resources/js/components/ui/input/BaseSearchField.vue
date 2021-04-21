@@ -260,7 +260,16 @@ export default {
         },
     },
     mounted() {
-        if (this.focusOnMount) this.setFocus()
+        if (this.focusOnMount) {
+            this.setFocus()
+            // const focusSearchTester = setInterval(() => {
+            //     if (document.activeElement.type == 'search') {
+            //         clearInterval(focusSearchTester)
+            //         return
+            //     }
+            //     this.setFocus()
+            // }, 100)
+        }
     },
     created() {
         if (this.arrayToSearch) {
@@ -276,6 +285,7 @@ export default {
 .search {
     position: relative;
     input.input-wrapper {
+        width: 100%;
         padding-right: 32px;
         box-sizing: border-box;
     }

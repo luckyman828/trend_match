@@ -1,29 +1,39 @@
 <template>
     <BaseFlyinColumn class="distribution">
         <template v-slot:header>
-            <div class="tab-headers">
-                <div :class="{ active: currentTab == 'All' }" class="tab" @click="currentTab = 'All'">
-                    ALL
-                    <span class="count">{{ totalInputCount }}</span>
-                </div>
-                <div :class="{ active: currentTab == 'In' }" class="tab" @click="currentTab = 'In'">
-                    IN
-                    <span class="count">{{
-                        selectionInput.ins.length +
+            <BaseSegmentedControl
+                activeClass="white"
+                sizeClass="sm"
+                countKey="count"
+                theme="light"
+                v-model="currentTab"
+                :options="[
+                    {
+                        label: 'All',
+                        count: totalInputCount,
+                        value: 'All',
+                    },
+                    {
+                        label: 'In',
+                        count:
+                            selectionInput.ins.length +
                             selectionInput.focus.length +
                             selectionInput.alignmentIns.length +
-                            selectionInput.alignmentFocus.length
-                    }}</span>
-                </div>
-                <div :class="{ active: currentTab == 'Out' }" class="tab" @click="currentTab = 'Out'">
-                    OUT
-                    <span class="count">{{ selectionInput.outs.length + selectionInput.alignmentOuts.length }}</span>
-                </div>
-                <div :class="{ active: currentTab == 'None' }" class="tab" @click="currentTab = 'None'">
-                    ND
-                    <span class="count">{{ selectionInput.nds.length + selectionInput.alignmentNds.length }}</span>
-                </div>
-            </div>
+                            selectionInput.alignmentFocus.length,
+                        value: 'In',
+                    },
+                    {
+                        label: 'Out',
+                        count: selectionInput.outs.length + selectionInput.alignmentOuts.length,
+                        value: 'Out',
+                    },
+                    {
+                        label: 'ND',
+                        count: selectionInput.nds.length + selectionInput.alignmentNds.length,
+                        value: 'None',
+                    },
+                ]"
+            />
         </template>
         <template v-slot>
             <div class="tab-body">
@@ -199,6 +209,14 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+::v-deep {
+    &.distribution {
+        > .header {
+            padding: 0;
+            justify-content: center;
+        }
+    }
+}
 .distribution {
     background: $bg;
     .tab-headers {

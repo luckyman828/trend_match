@@ -53,7 +53,7 @@ export default {
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
-        ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapActions('videoPresentation', ['fetchFileVideo', 'fetchVideo']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
         ...mapMutations('videoPlayer', ['SET_VIDEO_TYPE']),
@@ -79,9 +79,10 @@ export default {
             const selections = await this.fetchSelections({ fileId })
 
             const fileVideo = await this.fetchFileVideo(fileId)
-            this.SET_CURRENT_VIDEO(fileVideo)
+            const video = await this.fetchVideo(fileVideo.video.id)
+            this.SET_CURRENT_VIDEO(video)
 
-            await this.fetchVideoComments({ video: fileVideo.video })
+            await this.fetchVideoComments({ video })
 
             if (this.presentationIsActive) {
                 this.SET_VIDEO_TYPE('live')

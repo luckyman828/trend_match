@@ -12,10 +12,10 @@
                     rx="4px"
                     v-tooltip.bottom="
                         `            
-                    Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
-                    <br>Remaining: <strong>${seperateThousands(selection.budget - totalSpend)} ${
+                    <div>Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong></div>
+                    <div>Remaining: <strong>${seperateThousands(selection.budget - totalSpend)} ${
                             selection.currency
-                        }</strong>
+                        }</strong></div>
                 `
                     "
                 />
@@ -28,13 +28,13 @@
                     :class="spendPercentage > 100 ? 'over' : 'under'"
                     v-tooltip.bottom="
                         `
-                    Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong>
-                    <br>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
+                    <div>Budget: <strong>${seperateThousands(selection.budget)} ${selection.currency}</strong></div>
+                    <div>Spend: <strong>${seperateThousands(totalSpend)} ${selection.currency}</strong>
                     ${
                         spendPercentage > 100
-                            ? `<br>Remaining: <strong class='over-tooltip'>${seperateThousands(
+                            ? `Remaining: <strong class='over-tooltip'>${seperateThousands(
                                   selection.budget - totalSpend
-                              )} ${selection.currency}</strong>`
+                              )} ${selection.currency}</strong></div>`
                             : ''
                     }`
                     "

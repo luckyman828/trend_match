@@ -107,6 +107,7 @@ export default {
 
     actions: {
         async togglePlayerMuted({ commit, getters }, muteOverride) {
+            console.log('set player muted', muteOverride)
             const player = getters.getPlayer
             if (!player) return
             const providerMap = getters.getProviderMap
@@ -119,6 +120,7 @@ export default {
             }
         },
         async setVolume({ commit, getters }, newVolume) {
+            console.log('set player volume')
             const player = getters.getPlayer
             if (!player) return
             const providerMap = getters.getProviderMap

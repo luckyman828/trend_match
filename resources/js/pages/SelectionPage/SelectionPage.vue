@@ -1,10 +1,5 @@
 <template>
-    <div class="subfile">
-        <!-- <ThePageHeader :title="`${currentFile.name}: 
-        ${!currentSelection.is_open ? '[Locked]' : ''} ${currentSelection.name || 'Untitled Selection'
-        }${currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}: 
-        ${currentSelectionMode || 'Access Denied'}`"/> -->
-
+    <div class="selection-page">
         <h1>
             {{ currentFile.name }}: {{ !currentSelection.is_open ? '[Locked]' : '' }}
             {{ currentSelection.name || 'Untitled Selection' }}
@@ -90,9 +85,6 @@
                 >
                     <span>'OUT' styles with no IN ({{ productsNoIn.length }})</span>
                 </button>
-                <!-- <button class="invisible ghost-hover md" @click="setHideQuickIn(); setHideQuickOut()">
-                    <span>Hide quick actions</span><i class="far fa-times-circle"></i>
-                </button> -->
             </div>
 
             <ProductsTable
@@ -193,7 +185,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['productsFiltered', 'singleVisible']),
+        ...mapGetters('products', ['getFilteredProducts', 'singleVisible']),
         ...mapGetters('selectionProducts', {
             products: 'getProducts',
             getActiveSelectionInput: 'getActiveSelectionInput',
@@ -212,6 +204,9 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         selection() {
             return this.currentSelection
+        },
+        productsFiltered() {
+            return this.getFilteredProducts(this.products)
         },
         currentSelections() {
             return this.getCurrentSelections

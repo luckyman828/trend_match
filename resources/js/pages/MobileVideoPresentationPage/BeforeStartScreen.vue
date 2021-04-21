@@ -1,7 +1,7 @@
 <template>
     <div class="before-start" :style="video.thumbnail && `background-image: url(${video.thumbnail})`">
         <div class="overlay"></div>
-        <button class="xxl circle black blur" @click="$emit('start')">
+        <button class="xxl circle bg-blur" @click="$emit('start')">
             <i class="far fa-play"></i>
         </button>
     </div>
@@ -42,8 +42,8 @@ export default {
         color: white;
     }
     button {
-        background: rgba(black, 0.8);
-        backdrop-filter: blur(5px);
+        // background: rgba(black, 0.8);
+        // backdrop-filter: blur(5px);
         border: none;
         width: 72px;
         height: 72px;

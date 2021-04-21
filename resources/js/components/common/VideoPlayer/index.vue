@@ -134,7 +134,7 @@ export default {
 
             this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
             // Pre-mute the player
-            if (!['watchVideoPresentation', 'mobileVideoPresentation'].includes(this.$route.name)) {
+            if (['editVideoPresentation'].includes(this.$route.name)) {
                 this.togglePlayerMuted(true)
             }
             this.startTimerListener()

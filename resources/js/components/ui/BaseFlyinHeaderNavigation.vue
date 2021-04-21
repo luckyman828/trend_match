@@ -1,10 +1,10 @@
 <template>
     <div class="navigation">
-        <button class="circle md primary prev" :disabled="!prev" @click="$emit('prev')">
-            <i class="far fa-angle-left"></i>
+        <button class="circle prev" :disabled="!prev" @click="$emit('prev')">
+            <i class="fas fa-angle-left"></i>
         </button>
-        <button class="circle md primary next" :disabled="!next" @click="$emit('next')">
-            <i class="far fa-angle-right"></i>
+        <button class="circle next" :disabled="!next" @click="$emit('next')">
+            <i class="fas fa-angle-right"></i>
         </button>
     </div>
 </template>
@@ -56,7 +56,7 @@ export default {
         margin-right: 8px;
     }
     i {
-        font-size: 16px;
+        font-size: 14px;
     }
 }
 </style>

@@ -57,7 +57,7 @@ export default {
         ...mapActions('products', ['fetchProducts']),
         ...mapActions('selectionProducts', ['fetchSelectionProducts']),
         ...mapActions('selections', ['fetchSelection', 'fetchSelections', 'fetchSelectionSettings']),
-        ...mapActions('videoPresentation', ['fetchFileVideo']),
+        ...mapActions('videoPresentation', ['fetchFileVideo', 'fetchVideo']),
         ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('presentation', ['fetchPresentationDetails']),
         ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
@@ -89,7 +89,7 @@ export default {
                 // Fetch the currently presented product
                 this.SET_VIDEO_TYPE('live')
                 await this.fetchPresentationDetails(selection.presentation_id)
-                await this.fetchVideoComments({ video: fileVideo.video })
+                await this.fetchVideoComments({ video: fileVideo })
             } else {
                 this.SET_VIDEO_TYPE('static')
             }

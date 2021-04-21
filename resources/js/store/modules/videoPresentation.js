@@ -35,7 +35,7 @@ export default {
 
     getters: {
         getCurrentVideoRootobject: state => state.currentVideo,
-        getCurrentVideo: state => state.currentVideo && state.currentVideo.video,
+        getCurrentVideo: state => state.currentVideo,
         getStatus: state => state.status,
         getTimingStatus: state => state.timingStatus,
         getSearchItemDragActive: state => state.searchItemDragActive,
@@ -64,13 +64,36 @@ export default {
         async fetchFileVideo({ dispatch }, fileId) {
             const apiUrl = `/files/${fileId}/video`
             let video
-            await axios.get(apiUrl).then(response => {
-                video = response.data
-                // Sort the timings
-                video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
-                // Init the videos timings
-                dispatch('initTimings', video.timings)
-            })
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    video = response.data.video
+                    video.timings = response.data.timings
+                    // Sort the timings
+                    video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
+                    // Init the videos timings
+                    dispatch('initTimings', video.timings)
+                })
+                .catch(err => {
+                    commit('SET_STATUS', err.status)
+                })
+            return video
+        },
+        async fetchVideo({ commit, dispatch }, videoId) {
+            const apiUrl = `videos/${videoId}/detail`
+            let video
+            await axios
+                .get(apiUrl)
+                .then(response => {
+                    video = response.data
+                    // Sort the timings
+                    video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
+                    // Init the videos timings
+                    dispatch('initTimings', video.timings)
+                })
+                .catch(err => {
+                    commit('SET_STATUS', err.status)
+                })
             return video
         },
         async setVideoByURL({ getters, commit }, { file, url }) {
@@ -119,8 +142,11 @@ export default {
             await axios
                 .post(apiUrl, newVideo)
                 .then(response => {
-                    Object.assign(newVideo, response.data)
-                    commit('SET_CURRENT_VIDEO', newVideo)
+                    const video = response.data.video
+                    video.timings = response.data.timings
+                    // Sort the timings
+                    video.timings.sort((a, b) => (a.start_at_ms > b.start_at_ms ? 1 : -1))
+                    commit('SET_CURRENT_VIDEO', video)
                     commit('videoComments/SET_VIDEO_COMMENTS', [], { root: true })
                 })
                 .catch(err => {
@@ -129,7 +155,7 @@ export default {
         },
         async updateCurrentVideo({ getters, rootGetters, commit }) {
             const file = rootGetters['files/currentFile']
-            const video = getters.getCurrentVideoRootobject
+            const video = getters.getCurrentVideo
             const apiUrl = `/files/${file.id}/video`
 
             // Set the curent video status
@@ -147,7 +173,10 @@ export default {
             })
 
             await axios
-                .post(apiUrl, video)
+                .post(apiUrl, {
+                    video,
+                    timings: video.timings,
+                })
                 .then(response => {
                     commit('SET_STATUS', 'success')
                 })

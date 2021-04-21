@@ -59,7 +59,6 @@ export default {
             var el = this.$el
             var range = document.createRange()
             var sel = window.getSelection()
-            console.log('set caret', el.childNodes)
             const lastNode = el.childNodes[el.childNodes.length - 1]
 
             range.setStart(lastNode, pos ? pos : lastNode.length)

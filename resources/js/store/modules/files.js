@@ -472,6 +472,7 @@ export default {
                 .catch(() => {})
         },
         async syncExternalImages({ commit, state, dispatch }, { file, products, progressCallback }) {
+            console.log('sync external images')
             return new Promise(async (resolve, reject) => {
                 // Get owners for file
                 const apiUrl = `/media/sync-bestseller-images?file_id=${file.id}`
@@ -487,6 +488,7 @@ export default {
                                 url: picture.url,
                                 pictureIndex: index,
                             })
+                            Vue.set(product, 'imageSyncStatus', 'syncing')
                         })
                     })
                 })
@@ -552,6 +554,10 @@ export default {
                     chunkIndex++
                 }
 
+                products.map(product => {
+                    Vue.set(product, 'imageSyncStatus', 'success')
+                })
+
                 // Update the products when we are done uploading
                 await dispatch(
                     'products/updateManyProducts',
@@ -572,10 +578,10 @@ export default {
                 })
                 .then(response => {})
         },
-        fetchFileUsers({ commit }, file) {
+        async fetchFileUsers({ commit }, file) {
             commit('SET_FILE_USERS_STATUS', 'loading')
             const apiUrl = `/files/${file.id}/users`
-            axios
+            await axios
                 .get(apiUrl)
                 .then(response => {
                     Vue.set(file, 'users', response.data)
@@ -585,7 +591,7 @@ export default {
                     commit('SET_FILE_USERS_STATUS', 'error')
                 })
         },
-        async addUsersToFile({ commit }, { file, users }) {
+        async addUsersToFile({ commit }, { file, users, displaySnackbar }) {
             commit('ADD_USERS_TO_FILE', { file, users })
 
             await Promise.all(
@@ -595,21 +601,23 @@ export default {
                 })
             )
                 .then(() => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${users.length} users added`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
+                    if (displaySnackbar) {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${users.length} users added`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     commit('REMOVE_USERS_FROM_FILE', { file, users })
                 })
         },
-        async removeUsersFromFile({ commit }, { file, users }) {
+        async removeUsersFromFile({ commit }, { file, users, displaySnackbar }) {
             commit('REMOVE_USERS_FROM_FILE', { file, users })
 
             await Promise.all(
@@ -619,15 +627,17 @@ export default {
                 })
             )
                 .then(() => {
-                    commit(
-                        'alerts/SHOW_SNACKBAR',
-                        {
-                            msg: `${users.length} users removed`,
-                            iconClass: 'fa-check',
-                            type: 'success',
-                        },
-                        { root: true }
-                    )
+                    if (displaySnackbar) {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `${users.length} users removed`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
                 })
                 .catch(err => {
                     commit('ADD_USERS_TO_FILE', { file, users })
@@ -817,9 +827,11 @@ export default {
             }
         },
         ADD_USERS_TO_FILE(state, { file, users }) {
+            if (!file.users) return
             file.users.push(...users)
         },
         REMOVE_USERS_FROM_FILE(state, { file, users }) {
+            if (!file.users) return
             for (let i = users.length - 1; i >= 0; i--) {
                 const user = users[i]
                 const index = file.users.findIndex(x => x.id == user.id)

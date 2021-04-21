@@ -73,7 +73,7 @@
         </div>
 
         <div class="sender" v-if="displayAuthor && !editActive">
-            <strong>{{ comment.role == 'Approver' ? 'Approval' : request.selection.name }}</strong> |
+            <strong>{{ comment.role == 'Approver' ? 'Approval' : comment.selection.name }}</strong> |
             {{ comment.author_id == authUser.id ? 'You' : comment.author ? comment.author.name : 'Anonymous' }}
             <div class="timestamp" v-if="comment.created_at">
                 {{ getPrettyTimestamp(comment.created_at) }}

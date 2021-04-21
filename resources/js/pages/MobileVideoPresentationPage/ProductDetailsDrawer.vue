@@ -128,7 +128,6 @@ export default {
     methods: {
         cycleVariantPicture(variant, forwards) {
             const newIndex = this.getNextArrayIndex(variant.pictures, variant.imageIndex, forwards)
-            console.log('get new index', variant, forwards, newIndex)
             variant.imageIndex = newIndex
         },
     },

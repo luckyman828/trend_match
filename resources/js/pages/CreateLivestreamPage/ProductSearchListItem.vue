@@ -16,7 +16,7 @@
             <div class="actions">
                 <BaseButton
                     v-if="!isCurrent"
-                    buttonClass="ghost"
+                    buttonClass="ghost true-square"
                     targetAreaPadding="20px"
                     tabindex="-1"
                     @click="onAddTiming"

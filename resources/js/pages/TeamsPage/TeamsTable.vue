@@ -57,7 +57,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        :buttonClass="'primary invisible'"
+                        :buttonClass="'primary invisible ghost-hover'"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'"
                         @click="onNewTeam"

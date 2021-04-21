@@ -1,13 +1,19 @@
 <template>
-    <div class="toggle-wrapper" :class="[{active: isActive}, {disabled: disabled}]"
-    @click="!disabled && toggle()" v-tooltip="disabled ? disabledTooltip : ''">
-        <span class="label" v-if="label">{{label}}</span>
+    <div
+        class="toggle-wrapper"
+        :class="[{ active: isActive }, { disabled: disabled }]"
+        @click="!disabled && toggle()"
+        v-tooltip="disabled ? disabledTooltip : ''"
+    >
+        <span class="label" v-if="label">{{ label }}</span>
         <div class="toggle">
-            <div class="pill fixed-width" :class="sizeClass">
+            <div class="pill w-xs" :class="sizeClass">
                 <div class="circle" :class="sizeClass"></div>
             </div>
-            <span v-if="isActive">On</span>
-            <span v-else>Off</span>
+            <template v-if="showStateLabel">
+                <span v-if="isActive">On</span>
+                <span v-else>Off</span>
+            </template>
         </div>
     </div>
 </template>
@@ -15,18 +21,12 @@
 <script>
 export default {
     name: 'baseToggle',
-    props: [
-        'isActive',
-        'label',
-        'sizeClass',
-        'disabled',
-        'disabledTooltip',
-    ],
+    props: ['isActive', 'label', 'sizeClass', 'disabled', 'disabledTooltip', 'showStateLabel'],
     methods: {
-        toggle () {
+        toggle() {
             this.$emit('toggle', !this.isActive)
             this.$emit('input', !this.isActive)
-        }
+        },
     },
 }
 </script>
@@ -40,13 +40,13 @@ export default {
     cursor: pointer;
     &.disabled {
         cursor: default;
-        opacity: .5;
+        opacity: 0.5;
     }
     &.active {
         .pill {
             background: $green400;
             .circle {
-                transform: translateX(100%);
+                transform: translateX(16px);
             }
             + span {
                 color: $font;
@@ -85,7 +85,8 @@ export default {
         left: -1px;
         background: white;
         border: $borderElHard;
-        transition: transform .2s;
+        transition: transform 0.2s;
+        margin: 0;
     }
     + span {
         margin-left: 4px;

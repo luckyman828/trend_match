@@ -23,7 +23,7 @@
             </div>
             <div class="actions">
                 <!-- If the product is not already in the queue -->
-                <BaseButton buttonClass="ghost" targetAreaPadding="20px" @click="onAddTiming" tabindex="-1">
+                <BaseButton buttonClass="ghost true-square" targetAreaPadding="20px" @click="onAddTiming" tabindex="-1">
                     <i class="fas fa-plus"></i>
                 </BaseButton>
             </div>

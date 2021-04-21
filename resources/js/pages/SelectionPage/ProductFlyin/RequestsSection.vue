@@ -66,7 +66,10 @@ export default {
         ...mapGetters('requests', {
             currentRequestThread: 'getCurrentRequestThread',
         }),
-        ...mapGetters('selections', ['currentSelection', 'getSelectionCurrentMode']),
+        ...mapGetters('selections', ['getSelectionCurrentMode']),
+        ...mapGetters('selections', {
+            currentSelection: 'getCurrentPDPSelection',
+        }),
         currentSelectionMode() {
             return this.getSelectionCurrentMode(this.selectionInput.selection)
         },

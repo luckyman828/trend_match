@@ -4,6 +4,8 @@ export default {
     namespaced: true,
 
     state: {
+        initDone: false,
+        authenticatedInitDone: false,
         currentTeamId: -1,
         teamFilterId: -1,
         currentWorkspaceId: null,
@@ -221,6 +223,8 @@ export default {
     },
 
     getters: {
+        getInitDone: state => state.initDone,
+        getAuthenticatedInitDone: state => state.authenticatedInitDone,
         uids: state => state.uids,
         currentTeamId: state => {
             return state.currentTeamId
@@ -382,6 +386,12 @@ export default {
     },
 
     mutations: {
+        SET_INIT_DONE(state, payload) {
+            state.initDone = payload
+        },
+        SET_AUTHENTICATED_INIT_DONE(state, payload) {
+            state.authenticatedInitDone = payload
+        },
         SET_CURRENT_TEAM(state, id) {
             state.currentTeamId = id
         },

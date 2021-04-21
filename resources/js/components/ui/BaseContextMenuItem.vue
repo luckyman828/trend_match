@@ -1,43 +1,41 @@
 <template>
-    <div
-        class="item context-menu-item"
-        :class="[disabled && 'disabled no-close', { 'has-submenu': hasSubmenu }]"
-        tabindex="0"
-        ref="contextMenuItem"
-        :id="id"
-        v-tooltip="{ content: (disabled && disabledTooltip) || tooltip, container: `#${id}` }"
-        @click="onClick"
-        @mouseenter="onMouseEnter"
-        @mouseleave="onMouseLeave"
-    >
-        <!-- Item content -->
-        <div class="item-content">
-            <div class="icon-wrapper"><i :class="iconClass"></i></div>
-            <slot />
-        </div>
+    <v-popover :disabled="!hasSubmenu" placement="right" ref="popover">
+        <div
+            class="item context-menu-item"
+            :class="[disabled && 'disabled no-close', { 'has-submenu': hasSubmenu }]"
+            tabindex="0"
+            ref="contextMenuItem"
+            :id="id"
+            @click="onClick"
+            v-tooltip="{ content: (disabled && disabledTooltip) || tooltip }"
+        >
+            <!-- Item content -->
 
-        <!-- Submenu -->
-        <div class="submenu" v-if="submenuVisible" ref="submenu">
-            <slot name="submenu" />
+            <div class="item-content">
+                <div class="icon-wrapper"><i :class="iconClass"></i></div>
+                <slot />
+                <i v-if="hasSubmenu" class="submenu-icon far fa-angle-right"></i>
+            </div>
         </div>
-    </div>
+        <div class="submenu" ref="submenu" slot="popover" v-if="hasSubmenu">
+            <div class="item-group">
+                <slot name="submenu" />
+            </div>
+        </div>
+    </v-popover>
 </template>
 
 <script>
 export default {
     name: 'BaseContextMenuItem',
-    props: ['iconClass', 'disabled', 'disabledTooltip', 'tooltip', 'hotkey'],
+    props: ['iconClass', 'disabled', 'disabledTooltip', 'tooltip', 'hotkey', 'hasSubmenu'],
     data: function() {
         return {
-            submenuVisible: false,
             id: 'id-' + this.$uuid.v4(),
             contextMenuParent: null,
         }
     },
     computed: {
-        hasSubmenu() {
-            return !!this.$scopedSlots.submenu
-        },
         parentPopover() {
             return this.$el.closest('.popover')
         },
@@ -72,38 +70,20 @@ export default {
                 this.contextMenuParent.hide()
             }
         },
-        showSubmenu() {
-            this.submenuVisible = true
-            const el = this.$refs.contextMenuItem
-            el.focus()
-            el.closest('.context-menu').classList.add('submenu-open')
-            this.$nextTick(() => {
-                const submenu = this.$refs.submenu
-                const submenuOffsetRight = submenu.getBoundingClientRect().right
-                const windowWidth = window.innerWidth
-                const offset = 12
-                if (windowWidth - submenuOffsetRight < offset) submenu.classList.add('flip')
-                else submenu.classList.remove('flip')
-            })
-        },
-        hideSubmenu() {
-            this.submenuVisible = false
-            const el = this.$refs.contextMenuItem
-            el.blur()
-            this.$emit('update:submenuVisible', false)
-            el.closest('.context-menu').classList.remove('submenu-open')
-        },
-        onClick() {
+        onClick(e) {
             if (this.hasSubmenu) return
-            this.onFireAction()
+            this.onFireAction(e)
         },
         hotkeyHandler(e) {
             if (e.code == this.hotkey || (Array.isArray(this.hotkey) && this.hotkey.includes(e.code))) {
                 if (this.hasSubmenu) {
-                    if (!this.submenuVisible) {
-                        this.showSubmenu()
+                    const popover = this.$refs.popover
+                    console.log('hotkey', popover)
+                    if (!popover.isOpen) {
+                        popover.show()
                     } else {
-                        this.hideSubmenu()
+                        console.log('hide popover')
+                        popover.hide()
                     }
                 } else {
                     // If the parent container has a submenu open, only listen for hotkeys of the items inside the submenu
@@ -114,14 +94,6 @@ export default {
                     this.onFireAction()
                 }
             }
-        },
-        onMouseEnter(e) {
-            if (!this.hasSubmenu) return
-            this.showSubmenu()
-        },
-        onMouseLeave(e) {
-            if (!this.hasSubmenu) return
-            this.hideSubmenu()
         },
     },
     created() {
@@ -146,6 +118,7 @@ export default {
         display: flex;
         align-items: center;
         width: 100%;
+        position: relative;
     }
     &:not(.item-wrapper) {
         cursor: pointer;
@@ -160,9 +133,9 @@ export default {
         display: flex;
         color: $dark15;
         i {
-            font-size: 16px;
+            font-size: 14px;
             i {
-                font-size: 9px;
+                font-size: 7px;
             }
         }
     }
@@ -173,20 +146,14 @@ export default {
             opacity: 0.7;
         }
     }
-    .submenu {
-        display: flex;
+    .submenu-icon {
         position: absolute;
-        left: 100%;
-        width: 100%;
-        background: white;
-        border-radius: $borderRadiusModule;
-        border: $borderModule;
-        box-shadow: $shadowModuleHard;
-        flex-direction: column;
-        &.flip {
-            left: auto;
-            right: 100%;
-        }
+        right: 0;
+    }
+}
+.submenu {
+    .item-group {
+        padding: 8px 0;
     }
 }
 </style>

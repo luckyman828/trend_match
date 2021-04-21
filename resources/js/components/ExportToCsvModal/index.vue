@@ -25,7 +25,7 @@
                         class="form-element"
                         v-model="exportType"
                         value="results"
-                        v-if="$route.name != 'editFile'"
+                        v-if="$route.name.search('edit') < 0"
                     >
                         Export results
                     </BaseRadioInputField>
@@ -41,7 +41,7 @@
                     </BaseRadioInputField>
                 </div>
 
-                <div class="form-element" v-if="displayCurrencySelector">
+                <!-- <div class="form-element" v-if="displayCurrencySelector">
                     <label for="currency-selector">Choose Currency to export</label>
                     <BaseInputField
                         id="currency-selector"
@@ -52,7 +52,7 @@
                     >
                         <i class="far fa-chevron-down"></i>
                     </BaseInputField>
-                </div>
+                </div> -->
 
                 <!-- START Export results only -->
                 <template v-if="exportType == 'results'">
@@ -92,13 +92,6 @@
                                 <span>Export variants</span>
                             </BaseCheckboxInputField>
                         </div>
-
-                        <!-- <div class="form-element">
-                            <BaseCheckboxInputField v-if="exportVariants"
-                                v-model="excludeProductRows">
-                                <span>Variant rows only</span>
-                            </BaseCheckboxInputField>
-                        </div> -->
                     </div>
                 </template>
                 <!-- END Export results only -->
@@ -161,12 +154,14 @@ export default {
 
             exportType: this.$route.name == 'editFile' ? 'dump' : 'results',
 
-            exportAlignment: true,
-            exportFeedback: true,
-            exportRequests: true,
+            exportAlignment: false,
+            exportFeedback: false,
+            exportRequests: false,
             exportComments: true,
-            exportQuantity: true,
-            exportVariants: true,
+            exportQuantity: false,
+            exportVariants: false,
+
+            excludeNoQtyVariants: false,
 
             excludeProductRows: false,
 
@@ -210,12 +205,16 @@ export default {
         ...mapGetters('selections', {
             quantityEnabled: 'getQuantityModeActive',
         }),
-        ...mapGetters('products', ['productsFiltered', 'getSelectedProducts']),
+        ...mapGetters('products', ['productsFiltered', 'getSelectedProducts', 'getCurrentViewProductsFiltered']),
         ...mapGetters('productFilters', ['getFilterSelectionIds']),
-        ...mapGetters('selectionProducts', ['getActiveSelectionInput', 'getSelections']),
+        ...mapGetters('selectionProducts', ['getSelections']),
         ...mapGetters('files', ['currentFile']),
         productsToExport() {
-            const products = this.exportSelected ? this.getSelectedProducts : this.productsFiltered
+            const products = this.exportSelected
+                ? this.getSelectedProducts
+                : this.$route.name == 'editFile'
+                ? this.productsFiltered
+                : this.getCurrentViewProductsFiltered
             return products
         },
         selectionsToExport() {
@@ -226,7 +225,7 @@ export default {
         },
         availaleCurrencies() {
             const currenciesToReturn = []
-            const products = this.productsFiltered
+            const products = this.productsToExport
             products.forEach(product => {
                 product.prices.forEach(price => {
                     if (!!price.currency && !currenciesToReturn.includes(price.currency))
@@ -274,7 +273,6 @@ export default {
             }
 
             // Add additional headers based on settings
-            const firstProductInput = this.getActiveSelectionInput(this.productsToExport[0])
 
             const uniqueAlignmentOrigins = []
             const uniqueFeedbackOrigins = []
@@ -282,7 +280,7 @@ export default {
             // START FIND UNIQUE INPUT HEADERS
             // Loop through all products to find all input authors
             this.productsToExport.map(product => {
-                const selectionInput = this.getActiveSelectionInput(product)
+                const selectionInput = product.getActiveSelectionInput
 
                 if (this.exportRequests || this.exportAlignment) {
                     if (this.exportAlignment) {
@@ -363,10 +361,10 @@ export default {
                     const chapterName = chapter ? `[${chapter.name}] ` : ''
                     if (this.exportAlignment) {
                         headers.push(`${chapterName}${origin.selection.name} (Alignment)`)
-                        if (this.exportQuantity) {
-                            headers.push(`${chapterName}${origin.selection.name} (QTY)`)
-                            headers.push(`${chapterName}${origin.selection.name} (Spend)`)
-                        }
+                        // if (this.exportQuantity) {
+                        //     headers.push(`${chapterName}${origin.selection.name} (QTY)`)
+                        //     headers.push(`${chapterName}${origin.selection.name} (Spend)`)
+                        // }
                     }
                     if (this.exportRequests) {
                         for (let i = -1; i < origin.labels.length; i++) {
@@ -389,18 +387,18 @@ export default {
                                 origin.user ? origin.user.name : 'Anonymous'
                             } (Feedback)`
                         )
-                        if (this.exportQuantity) {
-                            headers.push(
-                                `${chapterName}${origin.selection.name} - ${
-                                    origin.author ? origin.author.name : 'Anonymous'
-                                } (QTY)`
-                            )
-                            headers.push(
-                                `${chapterName}${origin.selection.name} - ${
-                                    origin.author ? origin.author.name : 'Anonymous'
-                                } (Spend)`
-                            )
-                        }
+                        // if (this.exportQuantity) {
+                        //     headers.push(
+                        //         `${chapterName}${origin.selection.name} - ${
+                        //             origin.author ? origin.author.name : 'Anonymous'
+                        //         } (QTY)`
+                        //     )
+                        //     headers.push(
+                        //         `${chapterName}${origin.selection.name} - ${
+                        //             origin.author ? origin.author.name : 'Anonymous'
+                        //         } (Spend)`
+                        //     )
+                        // }
                     }
                     if (this.exportComments) {
                         headers.push(
@@ -418,7 +416,7 @@ export default {
             // START ROW DATA
             const rows = []
             this.productsToExport.forEach(product => {
-                const selectionInput = this.getActiveSelectionInput(product)
+                const selectionInput = product.getActiveSelectionInput
                 const productPrice = this.getProductPrice(product)
                 const productPriceWhs = productPrice && productPrice.wholesale_price ? productPrice.wholesale_price : 0
                 const currentRow = this.getDefaultProductRowData(product)
@@ -462,15 +460,15 @@ export default {
                             )
                             currentRow.push(originAction ? originAction.action : 'None')
 
-                            if (this.exportQuantity) {
-                                if (!originAction) {
-                                    currentRow.push(...['', ''])
-                                } else {
-                                    const quantity = originAction.quantity ? originAction.quantity : 0
-                                    currentRow.push(quantity)
-                                    currentRow.push(quantity * productPriceWhs)
-                                }
-                            }
+                            // if (this.exportQuantity) {
+                            //     if (!originAction) {
+                            //         currentRow.push(...['', ''])
+                            //     } else {
+                            //         const quantity = originAction.quantity ? originAction.quantity : 0
+                            //         currentRow.push(quantity)
+                            //         currentRow.push(quantity * productPriceWhs)
+                            //     }
+                            // }
                         }
 
                         if (this.exportRequests) {
@@ -518,15 +516,15 @@ export default {
                             )
                             currentRow.push(originFeedback ? originFeedback.action : 'None')
 
-                            if (this.exportQuantity) {
-                                if (!originFeedback) {
-                                    currentRow.push(...['', ''])
-                                } else {
-                                    const quantity = originFeedback.quantity ? originFeedback.quantity : 0
-                                    currentRow.push(quantity)
-                                    currentRow.push(quantity * productPriceWhs)
-                                }
-                            }
+                            // if (this.exportQuantity) {
+                            //     if (!originFeedback) {
+                            //         currentRow.push(...['', ''])
+                            //     } else {
+                            //         const quantity = originFeedback.quantity ? originFeedback.quantity : 0
+                            //         currentRow.push(quantity)
+                            //         currentRow.push(quantity * productPriceWhs)
+                            //     }
+                            // }
                         }
 
                         if (this.exportComments) {
@@ -550,108 +548,110 @@ export default {
 
                 // START VARIANT
                 if (this.exportVariants) {
-                    selectionInput.variants.map(variant => {
-                        const variantRow = this.getDefaultProductRowData(product)
+                    selectionInput.variants
+                        .filter(variant => !this.excludeNoQtyVariants || variant.quantity > 0)
+                        .map(variant => {
+                            const variantRow = this.getDefaultProductRowData(product)
 
-                        // Push the variant name
-                        variantRow.push(variant.color)
-                        variantRow.push(variant.variant)
+                            // Push the variant name
+                            variantRow.push(variant.color)
+                            variantRow.push(variant.variant)
 
-                        // Push the variant EANS
-                        const allVariantEans = []
-                        if (variant.ean) allVariantEans.push(variant.ean)
-                        variant.ean_sizes.map(size => {
-                            const existsInArr = allVariantEans.find(x => x == size.ean)
-                            if (!existsInArr) allVariantEans.push(size.ean)
-                        })
-                        variantRow.push(allVariantEans.join(', '))
+                            // Push the variant EANS
+                            const allVariantEans = []
+                            if (variant.ean) allVariantEans.push(variant.ean)
+                            variant.ean_sizes.map(size => {
+                                const existsInArr = allVariantEans.find(x => x == size.ean)
+                                if (!existsInArr) allVariantEans.push(size.ean)
+                            })
+                            variantRow.push(allVariantEans.join(', '))
 
-                        // Push custom properties
-                        const extraFields = this.getCustomProductFields
-                        variantRow.push(
-                            ...extraFields
-                                .filter(x => x.belong_to == 'Variant')
-                                .map(extraField => {
-                                    const propValue = variant.extra_data && variant.extra_data[extraField.name]
-                                    return Array.isArray(propValue) ? propValue.join(', ') : propValue
-                                })
-                        )
+                            // Push custom properties
+                            const extraFields = this.getCustomProductFields
+                            variantRow.push(
+                                ...extraFields
+                                    .filter(x => x.belong_to == 'Variant')
+                                    .map(extraField => {
+                                        const propValue = variant.extra_data && variant.extra_data[extraField.name]
+                                        return Array.isArray(propValue) ? propValue.join(', ') : propValue
+                                    })
+                            )
 
-                        // START QUANTITY DATA
-                        if (this.exportQuantity) {
-                            const quantity = variant.quantity ? variant.quantity : 0
-                            variantRow.push(quantity) // Product total qty
-                            variantRow.push(quantity * productPriceWhs) // Product total spend
-                            variantRow.push(quantity) // Variant total quantity
-                            variantRow.push(quantity * productPriceWhs) // Variant total spend
-                        }
-                        // END QUANTITY
+                            // START QUANTITY DATA
+                            if (this.exportQuantity) {
+                                const quantity = variant.quantity ? variant.quantity : 0
+                                variantRow.push(quantity) // Product total qty
+                                variantRow.push(quantity * productPriceWhs) // Product total spend
+                                variantRow.push(quantity) // Variant total quantity
+                                variantRow.push(quantity * productPriceWhs) // Variant total spend
+                            }
+                            // END QUANTITY
 
-                        // START ALIGNMENT & REQUESTS
-                        if (this.exportAlignment || this.exportRequests) {
-                            uniqueAlignmentOrigins.map(origin => {
-                                if (this.exportAlignment) {
-                                    // Find the origin Action
-                                    const originAction = variant.actions.find(
-                                        action => action.selection_id == origin.selection_id
-                                    )
-                                    variantRow.push(originAction ? originAction.action : 'None')
+                            // START ALIGNMENT & REQUESTS
+                            if (this.exportAlignment || this.exportRequests) {
+                                uniqueAlignmentOrigins.map(origin => {
+                                    if (this.exportAlignment) {
+                                        // Find the origin Action
+                                        const originAction = variant.actions.find(
+                                            action => action.selection_id == origin.selection_id
+                                        )
+                                        variantRow.push(originAction ? originAction.action : 'None')
 
-                                    if (this.exportQuantity) {
-                                        if (!originAction) {
-                                            variantRow.push(...['', ''])
-                                        } else {
-                                            const quantity = originAction.quantity ? originAction.quantity : 0
-                                            variantRow.push(quantity)
-                                            variantRow.push(quantity * productPriceWhs)
+                                        if (this.exportQuantity) {
+                                            if (!originAction) {
+                                                variantRow.push(...['', ''])
+                                            } else {
+                                                const quantity = originAction.quantity ? originAction.quantity : 0
+                                                variantRow.push(quantity)
+                                                variantRow.push(quantity * productPriceWhs)
+                                            }
                                         }
                                     }
-                                }
 
-                                if (this.exportRequests) {
-                                    // If we are exporting requests, push a blank
-                                    for (let i = -1; i < origin.labels.length; i++) {
+                                    if (this.exportRequests) {
+                                        // If we are exporting requests, push a blank
+                                        for (let i = -1; i < origin.labels.length; i++) {
+                                            variantRow.push('')
+                                        }
+                                    }
+                                })
+                            }
+                            // END ALIGNMENT & REQUESTS
+
+                            // START FEEDBACK & COMMENTS
+                            if (this.exportFeedback || this.exportComments) {
+                                uniqueFeedbackOrigins.map(origin => {
+                                    if (this.exportFeedback) {
+                                        // Find the origin Feedback
+                                        const originFeedback = variant.feedbacks.find(
+                                            feedback =>
+                                                feedback.selection_id == origin.selection_id &&
+                                                feedback.user_id == origin.user_id
+                                        )
+                                        variantRow.push(originFeedback ? originFeedback.action : 'None')
+
+                                        if (this.exportQuantity) {
+                                            if (!originFeedback) {
+                                                variantRow.push(...['', ''])
+                                            } else {
+                                                const quantity = originFeedback.quantity ? originFeedback.quantity : 0
+                                                variantRow.push(quantity)
+                                                variantRow.push(quantity * productPriceWhs)
+                                            }
+                                        }
+                                    }
+
+                                    if (this.exportComments) {
+                                        // If we are exporting comments, push a blank
                                         variantRow.push('')
                                     }
-                                }
-                            })
-                        }
-                        // END ALIGNMENT & REQUESTS
+                                })
+                            }
+                            // END FEEDBACK & COMMENTS
 
-                        // START FEEDBACK & COMMENTS
-                        if (this.exportFeedback || this.exportComments) {
-                            uniqueFeedbackOrigins.map(origin => {
-                                if (this.exportFeedback) {
-                                    // Find the origin Feedback
-                                    const originFeedback = variant.feedbacks.find(
-                                        feedback =>
-                                            feedback.selection_id == origin.selection_id &&
-                                            feedback.user_id == origin.user_id
-                                    )
-                                    variantRow.push(originFeedback ? originFeedback.action : 'None')
-
-                                    if (this.exportQuantity) {
-                                        if (!originFeedback) {
-                                            variantRow.push(...['', ''])
-                                        } else {
-                                            const quantity = originFeedback.quantity ? originFeedback.quantity : 0
-                                            variantRow.push(quantity)
-                                            variantRow.push(quantity * productPriceWhs)
-                                        }
-                                    }
-                                }
-
-                                if (this.exportComments) {
-                                    // If we are exporting comments, push a blank
-                                    variantRow.push('')
-                                }
-                            })
-                        }
-                        // END FEEDBACK & COMMENTS
-
-                        // Push variant row
-                        rows.push(variantRow)
-                    })
+                            // Push variant row
+                            rows.push(variantRow)
+                        })
                 }
                 // END VARIANT
             })

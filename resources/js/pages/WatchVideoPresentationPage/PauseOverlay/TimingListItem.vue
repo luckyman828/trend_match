@@ -4,7 +4,7 @@
         :class="{ current: index == currentTimingIndex }"
         @click="seekTo(timing.start)"
     >
-        <v-popover placement="top" popoverClass="min dark">
+        <v-popover placement="top" popoverClass="min theme-dark">
             <div class="card">
                 <div class="name-wrapper">
                     <span class="name">{{ product ? product.name : 'Not found' }}</span>

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -14,6 +15,34 @@ export default {
     },
 
     actions: {
+        async updateAlignments({ commit, rootGetters }, alignments) {
+            const apiUrl = `/selections/${alignments[0].selection_id}/actions`
+            await axios
+                .post(apiUrl, {
+                    actions: alignments.map(x => {
+                        x.user_id = rootGetters['auth/authUser'].id
+                        const action = Object.assign({}, x)
+                        action.variants = x.variants.filter(variantAction => variantAction.feedback != 'None')
+                        return action
+                    }),
+                })
+                .then(response => {
+                    if (alignments.length > 1) {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Updated ${actions.length} actions`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
+                })
+                .catch(err => {
+                    console.log('error in update alignments', err)
+                })
+        },
         async updateActions({ commit, dispatch, rootGetters }, { actions, newAction }) {
             // Complete the product if it was IN but now is OUT
             const selection = rootGetters['selections/getCurrentSelection']
@@ -48,7 +77,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         action: newAction,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -124,7 +153,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         action: action.action,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -167,7 +196,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         feedback: newAction,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -231,7 +260,7 @@ export default {
                     return {
                         product_id: action.product_id,
                         feedback: action.action,
-                        variants: action.variants,
+                        variants: action.variants.filter(x => x.feedback != 'None'),
                     }
                 }),
             }
@@ -259,21 +288,64 @@ export default {
                 actions: [actionObject],
             })
         },
-        async initActions({ rootGetters }, actions) {
-            actions.map(action => {
+        async initActions({ rootGetters, dispatch }, { actions, type }) {
+            actions.map(async action => {
+                if (!action.quantity_details) Vue.set(action, 'quantity_details', [])
+                if (!action.variants) Vue.set(action, 'variants', [])
+
                 Object.defineProperty(action, 'user', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel =
+                            type == 'action'
+                                ? currentSelection.settings.anonymize_action
+                                : currentSelection.settings.anonymize_feedback
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+
+                        const user = rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == action.user_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, user)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return user
                     },
                 })
                 Object.defineProperty(action, 'selection', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelections'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel =
+                            type == 'action'
+                                ? currentSelection.settings.anonymize_action
+                                : currentSelection.settings.anonymize_feedback
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+
+                        const selection = rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == action.selection_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, selection)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return selection
                     },
+                })
+                await dispatch('initVariantActions', { productAction: action, variantActions: action.variants })
+            })
+        },
+        async initVariantActions({}, { productAction, variantActions }) {
+            variantActions.map(variantAction => {
+                Object.defineProperty(variantAction, 'productAlignment', {
+                    get: () => productAction,
                 })
             })
         },

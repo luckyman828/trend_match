@@ -1,12 +1,12 @@
 <template>
     <div class="tab-header-list">
-        <slot/>
+        <slot />
     </div>
 </template>
 
 <script>
 export default {
-    name: 'tabHeaderList'
+    name: 'tabHeaderList',
 }
 </script>
 
@@ -19,5 +19,4 @@ export default {
     border-radius: $borderRadiusEl;
     border: $borderElSoft;
 }
-
 </style>
