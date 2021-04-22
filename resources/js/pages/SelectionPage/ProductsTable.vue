@@ -1003,12 +1003,12 @@ export default {
 }
 .filter-button {
     @media screen and (max-width: $screenMd) {
-        > span {
-            margin-right: 8px;
-            &:first-child {
-                margin-left: 8px;
-            }
-        }
+        // > span {
+        //     margin-right: 8px;
+        //     &:first-child {
+        //         margin-left: 8px;
+        //     }
+        // }
         .fa-chevron-down {
             display: none;
         }

@@ -399,6 +399,9 @@ router.beforeEach(async (to, from, next) => {
 router.afterEach((to, from) => {
     // Reset current selections on route leave
     store.commit('selections/SET_CURRENT_SELECTIONS', [])
+    store.commit('productFilters/CLEAR_PRODUCT_FILTERS')
+    store.commit('productFilters/SET_FILTER_SELECTION_IDS', [])
+    store.commit('selectionProducts/SET_SELECTIONS', [])
 })
 
 export default router

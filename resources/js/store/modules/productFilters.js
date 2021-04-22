@@ -34,7 +34,7 @@ export default {
         getActiveFilterCount: (state, getters) => {
             const totalFilterCount =
                 getters.getAdvancedFilterCount +
-                getters.getFilterSelectionIds.length +
+                // getters.getFilterSelectionIds.length +
                 getters.getFilterTicketLabels.length +
                 (getters.unreadOnly ? 1 : 0) +
                 (getters.openTicketsOnly ? 1 : 0) +
@@ -293,6 +293,7 @@ export default {
             state.filterTicketLabels = []
             state.hideCompleted = false
             state.noImagesOnly = false
+            // state.filterSelectionIds = []
             state.productActionFilter = 'overview'
             state.openTicketsOnly = false
             state.productFilters.map(filter => (filter.selected = []))
