@@ -15,7 +15,7 @@
 
         <div class="form-element" v-if="$route.name == 'selection' && exportTemplate">
             <label>Filter variants</label>
-            <BaseCheckboxInputField v-model="exportTemplate.inVariantsOnly">
+            <BaseCheckboxInputField v-model="inVariantsOnly">
                 <span>IN-variants only</span>
             </BaseCheckboxInputField>
         </div>
@@ -96,7 +96,6 @@ export default {
             availableTemplates: [
                 {
                     name: 'Custom',
-                    inVariantsOnly: false,
                     rowKeys: [
                         {
                             key: 'variants',
@@ -106,7 +105,6 @@ export default {
                 },
                 {
                     name: 'Assortment Export',
-                    inVariantsOnly: true,
                     rowKeys: [
                         {
                             key: 'variants',
@@ -140,7 +138,6 @@ export default {
                 },
                 {
                     name: 'Delivery Export',
-                    inVariantsOnly: true,
                     rowKeys: [
                         {
                             key: 'variants',
@@ -175,7 +172,6 @@ export default {
                 },
                 {
                     name: 'Buy Export',
-                    inVariantsOnly: true,
                     rowKeys: [
                         {
                             key: 'variants',
@@ -220,6 +216,46 @@ export default {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
         }),
+        inVariantsOnly: {
+            get() {
+                return (
+                    !!this.exportTemplate.rowKeys &&
+                    this.exportTemplate.rowKeys.find(
+                        rowKey =>
+                            rowKey.key == 'Variants' &&
+                            rowKey.filters.find(filter => filter.key == 'YourAction' && filter.values.includes('In'))
+                    )
+                )
+                // rowFilters: [{ key: 'yourAction', values: ['In', 'Focus'], type: 'include' }]
+            },
+            set(shouldBeAdded) {
+                const filterObj = { key: 'yourAction', values: ['In', 'Focus'], type: 'include' }
+                const keyObj = { key: 'variants', rowFilters: [filterObj] }
+                const templateRowKeys = this.exportTemplate.rowKeys
+                if (shouldBeAdded) {
+                    if (!templateRowKeys || templateRowKeys.length <= 0) {
+                        Vue.set(this.exportTemplate, 'rowKeys', [keyObj])
+                        return
+                    }
+                    const variantKey = templateRowKeys.find(rowKey => rowKey.key == 'variants')
+                    if (!variantKey) {
+                        templateRowKeys.push(keyObj)
+                        return
+                    } else {
+                        if (!variantKey.rowFilters || variantKey.rowFilters.length <= 0) {
+                            Vue.set(variantKey, 'rowFilters', [filterObj])
+                        } else {
+                            variantKey.rowFilters.push(filterObj)
+                        }
+                    }
+                } else {
+                    const variantKey = templateRowKeys.find(rowKey => rowKey.key == 'variants')
+                    variantKey.rowFilters = variantKey.rowFilters.filter(
+                        filter => !(filter.key == 'YourAction' && filter.values.includes('In'))
+                    )
+                }
+            },
+        },
         availableCsvHeaders() {
             const baseHeaders = [
                 { name: 'ID', key: 'datasource_id' },
@@ -237,10 +273,10 @@ export default {
                 { name: 'RRP', key: 'price.recommended_retail_price' },
                 { name: 'MU', key: 'price.mark_up' },
                 { name: 'EANs', key: 'eans' },
-                { name: 'Variant Color', key: 'variant.color' },
-                { name: 'Variant Variant', key: 'variant.variant' },
-                { name: 'Variant Sizes', key: 'variant.sizes' },
-                { name: 'Variant EAN', key: 'variant.eans' },
+                { name: 'Variant Color', key: 'variants.color' },
+                { name: 'Variant Variant', key: 'variants.variant' },
+                { name: 'Variant Sizes', key: 'variants.sizes' },
+                { name: 'Variant EAN', key: 'variants.eans' },
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
                 { name: 'Labels', key: 'labels' },
@@ -252,7 +288,7 @@ export default {
                           name: field.display_name,
                           key:
                               field.belong_to == 'Variant'
-                                  ? `variant.extra_data.${field.name}`
+                                  ? `variants.extra_data.${field.name}`
                                   : `extra_data.${field.name}`,
                       }
                   })

@@ -47,7 +47,7 @@ export default {
                     const keyPath = path.slice(0, path.lastIndexOf('.'))
 
                     if (!keyValue) {
-                        if (keyObj.rowFilters.find(filter => filter.type == 'include')) {
+                        if (keyObj.rowFilters && keyObj.rowFilters.find(filter => filter.type == 'include')) {
                             return
                         }
                         rowKeys.push(keyPath)
@@ -57,7 +57,7 @@ export default {
                     // Key is array
                     if (Array.isArray(keyValue)) {
                         if (keyValue.length <= 0) {
-                            if (keyObj.rowFilters.find(filter => filter.type == 'include')) {
+                            if (keyObj.rowFilters && keyObj.rowFilters.find(filter => filter.type == 'include')) {
                                 return
                             }
                             rowKeys.push(keyPath)
@@ -70,7 +70,7 @@ export default {
                             const arrayObjPath = `${path}:${index}`
                             // console.log('what should we do?', keyObj, path)
                             if (!keyObj.children || keyObj.children.length <= 0) {
-                                console.log('push array child')
+                                // console.log('push array child')
                                 rowKeys.push(arrayObjPath)
                             } else {
                                 // console.log('llop throguh children', keyObj)
@@ -88,7 +88,7 @@ export default {
                     let excludeRow = false
                     for (const rowFilter of rowKeyObj.rowFilters) {
                         // console.log('passes row filter', rowFilter, rowKeyValueObject, rowKeyObj)
-                        console.log('get filter key value', rowKeyValueObject, rowFilter)
+                        // console.log('get filter key value', rowKeyValueObject, rowFilter)
                         const filterKeyValue =
                             typeof rowKeyValueObject != 'object'
                                 ? [rowKeyValueObject]
@@ -169,7 +169,7 @@ export default {
                     generateRowKeys(product, rowKey, rowKey.key)
                 })
 
-                console.log('Result row keys', rowKeys)
+                // console.log('Result row keys', rowKeys)
 
                 // Loop through the unique product rows and populate the corresponding rows with data
                 rowKeys.map(rowKey => {
