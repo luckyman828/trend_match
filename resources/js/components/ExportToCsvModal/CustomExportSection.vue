@@ -13,12 +13,12 @@
             />
         </div>
 
-        <div class="form-element" v-if="$route.name == 'selection' && exportTemplate">
+        <!-- <div class="form-element" v-if="$route.name == 'selection' && exportTemplate">
             <label>Filter variants</label>
             <BaseCheckboxInputField v-model="exportTemplate.inVariantsOnly">
                 <span>IN-variants only</span>
             </BaseCheckboxInputField>
-        </div>
+        </div> -->
 
         <div class="csv-headers-section form-section" v-if="exportTemplate">
             <h4>Template headers</h4>
@@ -94,23 +94,43 @@ export default {
         return {
             editIndex: null,
             availableTemplates: [
+                // {
+                //     name: 'Test',
+                //     printRowKey: true,
+                //     rowKeys: [
+                //         {
+                //             key: 'variants',
+                //             children: [
+                //                 {
+                //                     key: 'extra_data.variant_arrray_prop',
+                //                     rowFilters: [{ values: ['BBB'], type: 'include' }],
+                //                 },
+                //             ],
+                //         },
+                //     ],
+                //     headers: [
+                //         { name: 'STYLE_NUMBER', key: 'datasource_id' },
+                //         { name: 'COLOUR_NAME', key: 'variants.color' },
+                //         { name: 'Custom Prop', key: 'variants.extra_data.variant_arrray_prop' },
+                //         { name: 'Action', key: 'variants.yourAction' },
+                //     ],
+                // },
                 {
                     name: 'Custom',
-                    inVariantsOnly: false,
-                    headers: [{ name: 'STYLE_NAME', key: 'title' }],
+                    headers: [],
                 },
                 {
                     name: 'Gross list',
-                    inVariantsOnly: false,
                     rowKeys: [
                         {
                             key: 'variants',
-                            // children: [
-                            //     {
-                            //         key: 'extra_data.sample_location_name',
-                            //         // children: [{ key: 'quantityInputs' }],
-                            //     },
-                            // ],
+                            rowFilters: [{ key: 'yourAction', values: ['Out', 'None'], type: 'exclude' }],
+                            children: [
+                                {
+                                    key: 'extra_data.sample_location_name',
+                                    // children: [{ key: 'quantityInputs' }],
+                                },
+                            ],
                         },
                     ],
                     headers: [

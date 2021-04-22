@@ -452,6 +452,7 @@ export default {
                     // PROCESS VARIANTS
                     selectionInput.variants.forEach(variant => {
                         // VARIANTS
+                        Vue.set(variant, 'isInit', true)
                         Vue.set(variant, 'imageIndex', 0)
                         if (!variant.pictures) Vue.set(variant, 'pictures', [])
                         if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
@@ -657,6 +658,19 @@ export default {
                                 }
                             },
                         })
+
+                        Object.defineProperty(variant, 'yourAction', {
+                            get: function() {
+                                console.log('get selection varaint youraction')
+                                const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                                return variant[actionKey]
+                            },
+                            set: function(value) {
+                                const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                                variant[actionKey] = value
+                            },
+                        })
+
                         // Get the user's feedback quantity
                         Object.defineProperty(variant, 'your_quantity', {
                             get: function() {

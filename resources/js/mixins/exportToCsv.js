@@ -33,9 +33,8 @@ export default {
 
             // Add headers
             const headers = template.headers.filter(x => !!x.key) // filter out blank headers
-            rows.push({ key: 'headers', cells: headers.map(x => x.name) })
-            // rows.push({ key: 'headers', cells: ['rowKey', ...headers.map(x => x.name)] })
-            // rows.push(headers.map(x => x.name))
+            const headerCells = headers.map(x => x.name)
+            rows.push({ key: 'headers', cells: template.printRowKey ? ['rowKey', ...headerCells] : headerCells })
 
             // Loop through our products to generate row data
             products.map(product => {
@@ -43,25 +42,69 @@ export default {
 
                 // Helper method to generate unique row keys
                 const generateRowKeys = (obj, keyObj, path) => {
-                    // Find the array
-                    const array = obj[keyObj.key]
-                    if (!array || array.length <= 0) {
-                        rowKeys.push(path.slice(0, path.lastIndexOf('.')))
+                    // console.log('generate row key', obj, keyObj, path)
+                    const keyValue = getUniqueObjectValuesByKey(obj, keyObj.key)
+                    const keyPath = path.slice(0, path.lastIndexOf('.'))
+
+                    if (!keyValue) {
+                        if (keyObj.rowFilters.find(filter => filter.type == 'include')) {
+                            return
+                        }
+                        rowKeys.push(keyPath)
+                        return
                     }
 
-                    if (!Array.isArray(array)) return
-                    array.map((arrayObj, index) => {
-                        const arrayObjPath = `${path}:${index}`
-                        // console.log('what should we do?', keyObj, path)
-                        if (!keyObj.children || keyObj.children.length <= 0) {
-                            rowKeys.push(arrayObjPath)
-                        } else {
-                            // console.log('llop throguh children', keyObj)
-                            keyObj.children.map(childKeyObj => {
-                                generateRowKeys(arrayObj, childKeyObj, `${arrayObjPath}.${childKeyObj.key}`)
-                            })
+                    // Key is array
+                    if (Array.isArray(keyValue)) {
+                        if (keyValue.length <= 0) {
+                            if (keyObj.rowFilters.find(filter => filter.type == 'include')) {
+                                return
+                            }
+                            rowKeys.push(keyPath)
+                            return
                         }
-                    })
+                        keyValue.map((arrayObj, index) => {
+                            // console.log('loop through array', arrayObj, keyObj)
+                            if (!passesRowKeyFilter(keyObj, arrayObj)) return
+
+                            const arrayObjPath = `${path}:${index}`
+                            // console.log('what should we do?', keyObj, path)
+                            if (!keyObj.children || keyObj.children.length <= 0) {
+                                console.log('push array child')
+                                rowKeys.push(arrayObjPath)
+                            } else {
+                                // console.log('llop throguh children', keyObj)
+                                keyObj.children.map(childKeyObj => {
+                                    generateRowKeys(arrayObj, childKeyObj, `${arrayObjPath}.${childKeyObj.key}`)
+                                })
+                            }
+                        })
+                        return
+                    }
+                }
+
+                const passesRowKeyFilter = (rowKeyObj, rowKeyValueObject) => {
+                    if (!rowKeyObj.rowFilters) return true
+                    let excludeRow = false
+                    for (const rowFilter of rowKeyObj.rowFilters) {
+                        // console.log('passes row filter', rowFilter, rowKeyValueObject, rowKeyObj)
+                        console.log('get filter key value', rowKeyValueObject, rowFilter)
+                        const filterKeyValue =
+                            typeof rowKeyValueObject != 'object'
+                                ? [rowKeyValueObject]
+                                : getUniqueObjectValuesByKey(rowKeyValueObject, rowFilter.key)
+
+                        const matchesFilter = !!filterKeyValue.find(x => rowFilter.values.includes(x))
+                        if (
+                            (rowFilter.type == 'exclude' && matchesFilter) ||
+                            (rowFilter.type == 'include' && !matchesFilter)
+                        ) {
+                            excludeRow = true
+                            break
+                        }
+                    }
+                    // console.log('passes rowFilter', !excludeRow)
+                    return !excludeRow
                 }
 
                 const getRowKeyObj = (obj, rowKeySplit, headerKeySplit) => {
@@ -74,10 +117,17 @@ export default {
                         const rowKey = rowKeySplit[index]
                         // Check if there is a match
                         if (rowKey && rowKey.key == headerKey) {
-                            keyObj = keyObj[headerKey][rowKey.index]
+                            // console.log('get row key value ', keyObj, headerKey, rowKey)
+                            if (rowKey.index != null) {
+                                keyObj = keyObj[headerKey][rowKey.index]
+                            } else {
+                                keyObj = keyObj[headerKey]
+                            }
                             remainingHeaderKeys.splice(0, 1)
                         }
                     })
+
+                    // console.log('key obj so far', keyObj)
 
                     // Test that the current rowKey is the best match
                     const currentRowKeySplit = rowKeySplit.map(x => x.key)
@@ -108,6 +158,8 @@ export default {
                     }
                     if (!currentRowKeyIsBestMatch) keyObj = null
 
+                    // console.log('rowKey obj result', keyObj, remainingHeaderKeys.join('.'))
+
                     return { obj: keyObj, valueKey: remainingHeaderKeys.join('.') }
                 }
 
@@ -117,10 +169,11 @@ export default {
                     generateRowKeys(product, rowKey, rowKey.key)
                 })
 
+                console.log('Result row keys', rowKeys)
+
                 // Loop through the unique product rows and populate the corresponding rows with data
                 rowKeys.map(rowKey => {
-                    const row = { key: rowKey, cells: [] }
-                    // const row = { key: rowKey, cells: [rowKey] }
+                    const row = { key: rowKey, cells: template.printRowKey ? [rowKey] : [] }
                     const rowKeySplit = rowKey
                         .split('.')
                         .map(scope => ({ key: scope.split(':')[0], index: scope.split(':')[1] }))
@@ -137,7 +190,8 @@ export default {
                         }
                         const keyObj = rowKeyObj.obj
                         const ObjValueKey = rowKeyObj.valueKey
-                        let cellValue = getUniqueObjectValuesByKey(keyObj, ObjValueKey)
+                        let cellValue =
+                            typeof keyObj == 'object' ? getUniqueObjectValuesByKey(keyObj, ObjValueKey) : keyObj
 
                         // DKC CUSTOM CODE: Format assortment name
                         if (ObjValueKey == 'assortment') {
@@ -155,9 +209,10 @@ export default {
                 if (index <= 0) return true
                 let keepRow = true
 
-                for (let i = 0; i < headers.length; i++) {
-                    const header = headers[i]
-                    const cellValue = row.cells[i]
+                for (let headerIndex = 0; headerIndex < headers.length; headerIndex++) {
+                    const header = headers[headerIndex]
+                    const cellIndex = template.printRowKey ? headerIndex + 1 : headerIndex
+                    const cellValue = row.cells[cellIndex]
                     if (header.filterValues) {
                         for (const filterValue of header.filterValues) {
                             if (filterValue == cellValue) {
