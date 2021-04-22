@@ -17,11 +17,11 @@
                             Export selected products only
                         </BaseCheckboxInputField>
                     </div>
-                    <div class="form-element">
+                    <!-- <div class="form-element">
                         <BaseCheckboxInputField v-model="excludeNoQtyVariants">
                             Exclude variants with no quantity
                         </BaseCheckboxInputField>
-                    </div>
+                    </div> -->
                 </div>
 
                 <CustomExportSection v-if="exportType == 'template'" :exportTemplate.sync="exportTemplate" />
@@ -87,8 +87,6 @@ export default {
             exportComments: true,
             exportQuantity: true,
             exportVariants: true,
-
-            excludeNoQtyVariants: true,
 
             excludeProductRows: false,
 
@@ -476,110 +474,108 @@ export default {
 
                 // START VARIANT
                 if (this.exportVariants) {
-                    selectionInput.variants
-                        .filter(variant => !this.excludeNoQtyVariants || variant.quantity > 0)
-                        .map(variant => {
-                            const variantRow = this.getDefaultProductRowData(product)
+                    selectionInput.variants.map(variant => {
+                        const variantRow = this.getDefaultProductRowData(product)
 
-                            // Push the variant name
-                            variantRow.push(variant.color)
-                            variantRow.push(variant.variant)
+                        // Push the variant name
+                        variantRow.push(variant.color)
+                        variantRow.push(variant.variant)
 
-                            // Push the variant EANS
-                            const allVariantEans = []
-                            if (variant.ean) allVariantEans.push(variant.ean)
-                            variant.ean_sizes.map(size => {
-                                const existsInArr = allVariantEans.find(x => x == size.ean)
-                                if (!existsInArr) allVariantEans.push(size.ean)
-                            })
-                            variantRow.push(allVariantEans.join(', '))
+                        // Push the variant EANS
+                        const allVariantEans = []
+                        if (variant.ean) allVariantEans.push(variant.ean)
+                        variant.ean_sizes.map(size => {
+                            const existsInArr = allVariantEans.find(x => x == size.ean)
+                            if (!existsInArr) allVariantEans.push(size.ean)
+                        })
+                        variantRow.push(allVariantEans.join(', '))
 
-                            // Push custom properties
-                            const extraFields = this.getCustomProductFields
-                            variantRow.push(
-                                ...extraFields
-                                    .filter(x => x.belong_to == 'Variant')
-                                    .map(extraField => {
-                                        const propValue = variant.extra_data && variant.extra_data[extraField.name]
-                                        return Array.isArray(propValue) ? propValue.join(', ') : propValue
-                                    })
-                            )
-
-                            // START QUANTITY DATA
-                            if (this.exportQuantity) {
-                                const quantity = variant.quantity ? variant.quantity : 0
-                                variantRow.push(quantity) // Product total qty
-                                variantRow.push(quantity * productPriceWhs) // Product total spend
-                                variantRow.push(quantity) // Variant total quantity
-                                variantRow.push(quantity * productPriceWhs) // Variant total spend
-                            }
-                            // END QUANTITY
-
-                            // START ALIGNMENT & REQUESTS
-                            if (this.exportAlignment || this.exportRequests) {
-                                uniqueAlignmentOrigins.map(origin => {
-                                    if (this.exportAlignment) {
-                                        // Find the origin Action
-                                        const originAction = variant.alignments.find(
-                                            action => action.selection_id == origin.selection_id
-                                        )
-                                        variantRow.push(originAction ? originAction.action : 'None')
-
-                                        if (this.exportQuantity) {
-                                            if (!originAction) {
-                                                variantRow.push(...['', ''])
-                                            } else {
-                                                const quantity = originAction.quantity ? originAction.quantity : 0
-                                                variantRow.push(quantity)
-                                                variantRow.push(quantity * productPriceWhs)
-                                            }
-                                        }
-                                    }
-
-                                    if (this.exportRequests) {
-                                        // If we are exporting requests, push a blank
-                                        for (let i = -1; i < origin.labels.length; i++) {
-                                            variantRow.push('')
-                                        }
-                                    }
+                        // Push custom properties
+                        const extraFields = this.getCustomProductFields
+                        variantRow.push(
+                            ...extraFields
+                                .filter(x => x.belong_to == 'Variant')
+                                .map(extraField => {
+                                    const propValue = variant.extra_data && variant.extra_data[extraField.name]
+                                    return Array.isArray(propValue) ? propValue.join(', ') : propValue
                                 })
-                            }
-                            // END ALIGNMENT & REQUESTS
+                        )
 
-                            // START FEEDBACK & COMMENTS
-                            if (this.exportFeedback || this.exportComments) {
-                                uniqueFeedbackOrigins.map(origin => {
-                                    if (this.exportFeedback) {
-                                        // Find the origin Feedback
-                                        const originFeedback = variant.feedbacks.find(
-                                            feedback =>
-                                                feedback.selection_id == origin.selection_id &&
-                                                feedback.user_id == origin.user_id
-                                        )
-                                        variantRow.push(originFeedback ? originFeedback.action : 'None')
+                        // START QUANTITY DATA
+                        if (this.exportQuantity) {
+                            const quantity = variant.quantity ? variant.quantity : 0
+                            variantRow.push(quantity) // Product total qty
+                            variantRow.push(quantity * productPriceWhs) // Product total spend
+                            variantRow.push(quantity) // Variant total quantity
+                            variantRow.push(quantity * productPriceWhs) // Variant total spend
+                        }
+                        // END QUANTITY
 
-                                        if (this.exportQuantity) {
-                                            if (!originFeedback) {
-                                                variantRow.push(...['', ''])
-                                            } else {
-                                                const quantity = originFeedback.quantity ? originFeedback.quantity : 0
-                                                variantRow.push(quantity)
-                                                variantRow.push(quantity * productPriceWhs)
-                                            }
+                        // START ALIGNMENT & REQUESTS
+                        if (this.exportAlignment || this.exportRequests) {
+                            uniqueAlignmentOrigins.map(origin => {
+                                if (this.exportAlignment) {
+                                    // Find the origin Action
+                                    const originAction = variant.alignments.find(
+                                        action => action.selection_id == origin.selection_id
+                                    )
+                                    variantRow.push(originAction ? originAction.action : 'None')
+
+                                    if (this.exportQuantity) {
+                                        if (!originAction) {
+                                            variantRow.push(...['', ''])
+                                        } else {
+                                            const quantity = originAction.quantity ? originAction.quantity : 0
+                                            variantRow.push(quantity)
+                                            variantRow.push(quantity * productPriceWhs)
                                         }
                                     }
+                                }
 
-                                    if (this.exportComments) {
-                                        // If we are exporting comments, push a blank
+                                if (this.exportRequests) {
+                                    // If we are exporting requests, push a blank
+                                    for (let i = -1; i < origin.labels.length; i++) {
                                         variantRow.push('')
                                     }
-                                })
-                            }
-                            // END FEEDBACK & COMMENTS
+                                }
+                            })
+                        }
+                        // END ALIGNMENT & REQUESTS
 
-                            // Push variant row
-                            rows.push(variantRow)
-                        })
+                        // START FEEDBACK & COMMENTS
+                        if (this.exportFeedback || this.exportComments) {
+                            uniqueFeedbackOrigins.map(origin => {
+                                if (this.exportFeedback) {
+                                    // Find the origin Feedback
+                                    const originFeedback = variant.feedbacks.find(
+                                        feedback =>
+                                            feedback.selection_id == origin.selection_id &&
+                                            feedback.user_id == origin.user_id
+                                    )
+                                    variantRow.push(originFeedback ? originFeedback.action : 'None')
+
+                                    if (this.exportQuantity) {
+                                        if (!originFeedback) {
+                                            variantRow.push(...['', ''])
+                                        } else {
+                                            const quantity = originFeedback.quantity ? originFeedback.quantity : 0
+                                            variantRow.push(quantity)
+                                            variantRow.push(quantity * productPriceWhs)
+                                        }
+                                    }
+                                }
+
+                                if (this.exportComments) {
+                                    // If we are exporting comments, push a blank
+                                    variantRow.push('')
+                                }
+                            })
+                        }
+                        // END FEEDBACK & COMMENTS
+
+                        // Push variant row
+                        rows.push(variantRow)
+                    })
                 }
                 // END VARIANT
             })

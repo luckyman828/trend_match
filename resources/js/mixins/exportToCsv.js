@@ -213,11 +213,16 @@ export default {
                     const header = headers[headerIndex]
                     const cellIndex = template.printRowKey ? headerIndex + 1 : headerIndex
                     const cellValue = row.cells[cellIndex]
-                    if (header.filterValues) {
-                        for (const filterValue of header.filterValues) {
-                            if (filterValue == cellValue) {
-                                keepRow = false
-                                break
+                    if (header.filters) {
+                        for (const filter of header.filters) {
+                            for (const filterValue of filter.values) {
+                                if (
+                                    (filter.type == 'exclude' && filterValue == cellValue) ||
+                                    (filter.type == 'include' && filterValue != cellValue)
+                                ) {
+                                    keepRow = false
+                                    break
+                                }
                             }
                         }
                     }

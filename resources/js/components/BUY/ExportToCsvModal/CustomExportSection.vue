@@ -99,6 +99,8 @@ export default {
                     rowKeys: [
                         {
                             key: 'variants',
+                            children: [],
+                            rowFilters: [],
                         },
                     ],
                     headers: [],
@@ -108,9 +110,11 @@ export default {
                     rowKeys: [
                         {
                             key: 'variants',
+                            rowFilters: [],
                             children: [
                                 {
                                     key: 'assortments',
+                                    rowFilters: [],
                                     children: [{ key: 'quantityInputs' }],
                                 },
                             ],
@@ -131,7 +135,7 @@ export default {
                         {
                             name: 'Assortment Quantity',
                             key: 'variants.assortments.quantityInputs.quantity',
-                            filterValues: ['', 0],
+                            filters: [{ values: ['', 0], type: 'exclude' }],
                         },
                         { name: 'Variant Total', key: 'variants.quantity' },
                     ],
@@ -141,9 +145,11 @@ export default {
                     rowKeys: [
                         {
                             key: 'variants',
+                            rowFilters: [],
                             children: [
                                 {
                                     key: 'deliveries',
+                                    rowFilters: [],
                                     children: [{ key: 'quantityInputs' }],
                                 },
                             ],
@@ -165,47 +171,8 @@ export default {
                         {
                             name: 'Size Quantity',
                             key: 'variants.deliveries.quantityInputs.quantity',
-                            filterValues: ['', 0],
+                            filters: [{ values: ['', 0], type: 'exclude' }],
                         },
-                        { name: 'Variant Total', key: 'variants.quantity' },
-                    ],
-                },
-                {
-                    name: 'Buy Export',
-                    rowKeys: [
-                        {
-                            key: 'variants',
-                            children: [
-                                {
-                                    key: 'deliveries',
-                                    children: [{ key: 'quantityInputs' }],
-                                },
-                                {
-                                    key: 'assortments',
-                                    children: [{ key: 'sizes' }],
-                                },
-                            ],
-                        },
-                    ],
-                    headers: [
-                        { name: 'Brand', key: 'brand' },
-                        { name: 'Season', key: 'extra_data.season' },
-                        { name: 'Style Number', key: 'datasource_id' },
-                        { name: 'Style Name', key: 'name' },
-                        { name: 'Color Name', key: 'variants.color' },
-                        { name: 'Color Code', key: 'variants.variant' },
-                        { name: 'Labels', key: 'variants.labels' },
-                        { name: 'Comments', key: 'comments.content' },
-                        { name: 'Variant Name', key: 'variants.name' },
-                        { name: 'Delivery', key: 'variants.deliveries.delivery_date' },
-                        { name: 'Delivery Total', key: 'variants.deliveries.quantity' },
-                        { name: 'Size', key: 'variants.deliveries.quantityInputs.variant_size' },
-                        { name: 'Size Quantity', key: 'variants.deliveries.quantityInputs.quantity' },
-                        { name: 'Assortment', key: 'variants.assortments.name' },
-                        { name: 'Assortment Delivery', key: 'variants.assortments.delivery_dates' },
-                        { name: 'Assortment Size', key: 'variants.assortments.sizes.size' },
-                        { name: 'Assortment Quantity', key: 'variants.assortments.sizes.currentQuantity' },
-                        { name: 'Assortment Total', key: 'variants.assortments.quantity' },
                         { name: 'Variant Total', key: 'variants.quantity' },
                     ],
                 },
