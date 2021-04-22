@@ -21,16 +21,17 @@ const awaitAuthInit = async () => {
 
 const fetchRouteWorkspace = async ({ fileId, selectionId }) => {
     let workspaceId
+    let theFileId = fileId
     if (selectionId && !fileId) {
         const selection = await store.dispatch(
             'selections/fetchSelection',
             { selectionId, addToState: false },
             { root: true }
         )
-        // fileId = selection.file_id
+        theFileId = selection.file_id
     }
-    if (fileId) {
-        const file = await store.dispatch('files/fetchFile', fileId, { root: true })
+    if (theFileId) {
+        const file = await store.dispatch('files/fetchFile', theFileId, { root: true })
         workspaceId = file.workspace_id
     }
     return workspaceId
@@ -60,6 +61,8 @@ export async function triggerRouteGuards(to) {
     // GUARD WORKSPACE
     if (to.params.fileId || to.params.selectionId) {
         const workspaceId = await fetchRouteWorkspace({ fileId: to.params.fileId, selectionId: to.params.selectionId })
+
+        // console.log('guard workspace', workspaceId)
 
         // Test that the user has access to that workspace
         const workspaces = store.getters['workspaces/getWorkspaces']
@@ -96,6 +99,8 @@ export async function triggerRouteGuards(to) {
 }
 
 export async function triggerAppRedirection() {
+    // console.log('trigger app redirect')
+
     await awaitAuthInit()
     // Redirect to a space the user has access to
     const availableApps = store.getters['workspaces/getEnabledApps']
