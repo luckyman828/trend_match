@@ -190,9 +190,12 @@ export default {
 
             // Attempt to connect to signalR
             let failCount = 0
+            console.log('connec to SignalR')
             while (!this.liveUpdateIsConnected) {
                 try {
+                    console.log('attempt ' + (1 + failCount))
                     await connection.start().then(response => {
+                        console.log('success connecting!')
                         this.SET_IS_CONNECTED(true)
                     })
                 } catch (err) {

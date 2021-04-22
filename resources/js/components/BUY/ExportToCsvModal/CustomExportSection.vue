@@ -15,7 +15,7 @@
 
         <div class="form-element" v-if="$route.name == 'selection' && exportTemplate">
             <label>Filter variants</label>
-            <BaseCheckboxInputField v-model="exportTemplate.inVariantsOnly">
+            <BaseCheckboxInputField v-model="inVariantsOnly">
                 <span>IN-variants only</span>
             </BaseCheckboxInputField>
         </div>
@@ -96,62 +96,84 @@ export default {
             availableTemplates: [
                 {
                     name: 'Custom',
-                    rowScope: 'Variant',
-                    inVariantsOnly: false,
+                    rowKeys: [
+                        {
+                            key: 'variants',
+                            children: [],
+                            rowFilters: [],
+                        },
+                    ],
                     headers: [],
                 },
                 {
-                    name: 'Gross list',
-                    rowScope: 'Variant',
-                    inVariantsOnly: false,
-                    headers: [
-                        { name: 'EAN_NO', key: 'variant.ean' },
-                        { name: 'STYLE_NUMBER', key: 'datasource_id' },
-                        { name: 'STYLE_NAME', key: 'title' },
-                        { name: 'COLLECTION_NAME', key: 'extra_data.collection_name' },
-                        { name: 'CATEGORY', key: 'category' },
-                        { name: 'STYLE_VARIANT_NAME', key: 'variant.variant' },
-                        { name: 'COLOUR_NAME', key: 'variant.color' },
+                    name: 'Assortment Export',
+                    rowKeys: [
                         {
-                            name: 'SAMPLE_LOCATION_NAME',
-                            key: 'variant.extra_data.sample_location_name',
-                            isRowKey: true,
+                            key: 'variants',
+                            rowFilters: [],
+                            children: [
+                                {
+                                    key: 'assortments',
+                                    rowFilters: [],
+                                    children: [{ key: 'quantityInputs' }],
+                                },
+                            ],
                         },
-                        { name: 'DESCRIPTION', key: 'sale_description' },
-                        { name: 'BRAND_NAME', key: 'brand' },
-                        { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.country_of_origin' },
+                    ],
+                    headers: [
+                        { name: 'Brand', key: 'brand' },
+                        { name: 'Season', key: 'extra_data.season' },
+                        { name: 'Style Number', key: 'datasource_id' },
+                        { name: 'Style Name', key: 'name' },
+                        { name: 'Color Name', key: 'variants.color' },
+                        { name: 'Color Code', key: 'variants.variant' },
+                        { name: 'Labels', key: 'variants.labels' },
+                        { name: 'Comments', key: 'comments.content' },
+                        { name: 'Variant Name', key: 'variants.name' },
+                        { name: 'Assortment', key: 'variants.assortments.quantityInputs.assortment' },
+                        { name: 'Assortment Delivery', key: 'variants.assortments.quantityInputs.delivery_date' },
+                        {
+                            name: 'Assortment Quantity',
+                            key: 'variants.assortments.quantityInputs.quantity',
+                            filters: [{ values: ['', 0], type: 'exclude' }],
+                        },
+                        { name: 'Variant Total', key: 'variants.quantity' },
                     ],
                 },
                 {
-                    name: 'Full export',
-                    rowScope: 'Variant',
-                    inVariantsOnly: false,
+                    name: 'Delivery Export',
+                    rowKeys: [
+                        {
+                            key: 'variants',
+                            rowFilters: [],
+                            children: [
+                                {
+                                    key: 'deliveries',
+                                    rowFilters: [],
+                                    children: [{ key: 'quantityInputs' }],
+                                },
+                            ],
+                        },
+                    ],
                     headers: [
-                        { name: 'ID', key: 'datasource_id' },
-                        { name: 'Name', key: 'title' },
-                        { name: 'Category', key: 'category' },
                         { name: 'Brand', key: 'brand' },
-                        { name: 'Buying Gruop', key: 'buying_group' },
-                        { name: 'Composition', key: 'composition' },
-                        { name: 'Description', key: 'sale_description' },
-                        { name: 'Product Minimum', key: 'min_order' },
-                        { name: 'Variant Minimum', key: 'min_variant_order' },
-                        { name: 'Deliveries', key: 'delivery_dates' },
-                        { name: 'Currency', key: 'price.currency' },
-                        { name: 'WHS', key: 'price.wholesale_price' },
-                        { name: 'RRP', key: 'price.recommended_retail_price' },
-                        { name: 'MU', key: 'price.mark_up' },
-                        { name: 'EANs', key: 'eans' },
-                        { name: 'Variant Color', key: 'variant.color' },
-                        { name: 'Variant Variant', key: 'variant.variant' },
-                        { name: 'Variant Sizes', key: 'variant.sizes' },
-                        { name: 'Variant EAN', key: 'variant.eans' },
-                        { name: 'Image URL', key: 'image_url' },
-                        { name: 'Assortment Name', key: 'assortments.name' },
-                        { name: 'Labels', key: 'labels' },
-
-                        // { name: 'Assortment EAN', key: 'assortments.ean' },
-                        // { name: 'Assortment Size', key: 'assortments.size' },
+                        { name: 'Season', key: 'extra_data.season' },
+                        { name: 'Style Number', key: 'datasource_id' },
+                        { name: 'Style Name', key: 'name' },
+                        { name: 'Color Name', key: 'variants.color' },
+                        { name: 'Color Code', key: 'variants.variant' },
+                        { name: 'Labels', key: 'variants.labels' },
+                        { name: 'Comments', key: 'comments.content' },
+                        { name: 'Variant Name', key: 'variants.name' },
+                        { name: 'Delivery', key: 'variants.deliveries.delivery_date' },
+                        { name: 'Delivery Total', key: 'variants.deliveries.quantity' },
+                        { name: 'Size', key: 'variants.deliveries.quantityInputs.variant_size' },
+                        {
+                            name: 'Size Quantity',
+                            key: 'variants.deliveries.quantityInputs.quantity',
+                            filters: [{ values: ['', 0], type: 'exclude' }],
+                        },
+                        { name: 'Variant Total', key: 'variants.quantity' },
                     ],
                 },
             ],
@@ -161,6 +183,46 @@ export default {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
         }),
+        inVariantsOnly: {
+            get() {
+                return (
+                    !!this.exportTemplate.rowKeys &&
+                    this.exportTemplate.rowKeys.find(
+                        rowKey =>
+                            rowKey.key == 'Variants' &&
+                            rowKey.filters.find(filter => filter.key == 'YourAction' && filter.values.includes('In'))
+                    )
+                )
+                // rowFilters: [{ key: 'yourAction', values: ['In', 'Focus'], type: 'include' }]
+            },
+            set(shouldBeAdded) {
+                const filterObj = { key: 'yourAction', values: ['In', 'Focus'], type: 'include' }
+                const keyObj = { key: 'variants', rowFilters: [filterObj] }
+                const templateRowKeys = this.exportTemplate.rowKeys
+                if (shouldBeAdded) {
+                    if (!templateRowKeys || templateRowKeys.length <= 0) {
+                        Vue.set(this.exportTemplate, 'rowKeys', [keyObj])
+                        return
+                    }
+                    const variantKey = templateRowKeys.find(rowKey => rowKey.key == 'variants')
+                    if (!variantKey) {
+                        templateRowKeys.push(keyObj)
+                        return
+                    } else {
+                        if (!variantKey.rowFilters || variantKey.rowFilters.length <= 0) {
+                            Vue.set(variantKey, 'rowFilters', [filterObj])
+                        } else {
+                            variantKey.rowFilters.push(filterObj)
+                        }
+                    }
+                } else {
+                    const variantKey = templateRowKeys.find(rowKey => rowKey.key == 'variants')
+                    variantKey.rowFilters = variantKey.rowFilters.filter(
+                        filter => !(filter.key == 'YourAction' && filter.values.includes('In'))
+                    )
+                }
+            },
+        },
         availableCsvHeaders() {
             const baseHeaders = [
                 { name: 'ID', key: 'datasource_id' },
@@ -178,10 +240,10 @@ export default {
                 { name: 'RRP', key: 'price.recommended_retail_price' },
                 { name: 'MU', key: 'price.mark_up' },
                 { name: 'EANs', key: 'eans' },
-                { name: 'Variant Color', key: 'variant.color' },
-                { name: 'Variant Variant', key: 'variant.variant' },
-                { name: 'Variant Sizes', key: 'variant.sizes' },
-                { name: 'Variant EAN', key: 'variant.eans' },
+                { name: 'Variant Color', key: 'variants.color' },
+                { name: 'Variant Variant', key: 'variants.variant' },
+                { name: 'Variant Sizes', key: 'variants.sizes' },
+                { name: 'Variant EAN', key: 'variants.eans' },
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
                 { name: 'Labels', key: 'labels' },
@@ -193,7 +255,7 @@ export default {
                           name: field.display_name,
                           key:
                               field.belong_to == 'Variant'
-                                  ? `variant.extra_data.${field.name}`
+                                  ? `variants.extra_data.${field.name}`
                                   : `extra_data.${field.name}`,
                       }
                   })

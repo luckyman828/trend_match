@@ -1300,7 +1300,24 @@ export default {
                 })
 
                 // VARIANTS
+                Vue.set(product, 'variantsRaw', [...product.variants])
+                Object.defineProperty(product, 'variants', {
+                    get: function() {
+                        // Filter out variants that are not in chapters
+                        if (!product.getActiveSelectionInput) return product.variantsRaw
+                        return product.variantsRaw.filter(
+                            variant => !!product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
+                        )
+                    },
+                })
+                // Object.defineProperty(product, 'variantsFiltered', {
+                //     get: function() {
+                //         return getters.getFilteredVariants(product.variants)
+                //     },
+                // })
+
                 product.variants.forEach((variant, variantIndex) => {
+                    Vue.set(variant, 'isInit', true)
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
@@ -1329,7 +1346,7 @@ export default {
                     })
                     Object.defineProperty(variant, 'getActiveSelectionInput', {
                         get: function() {
-                            return product.getActiveSelectionInput.variants[variantIndex]
+                            return product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
                         },
                     })
                     Object.defineProperty(variant, 'action', {
@@ -1345,6 +1362,36 @@ export default {
                     Object.defineProperty(variant, 'deliveries', {
                         get: function() {
                             return variant.getActiveSelectionInput.deliveries
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'yourAction', {
+                        get: function() {
+                            if (!variant.getActiveSelectionInput) return
+                            const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                            const selectionInput = variant.getActiveSelectionInput
+                            return selectionInput[actionKey]
+                        },
+                        set: function(value) {
+                            const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                            const selectionInput = variant.getActiveSelectionInput
+                            return (selectionInput[actionKey] = value)
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'yourActionObject', {
+                        get: function() {
+                            if (!variant.getActiveSelectionInput) return
+                            const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+                            const acitonObjectKey =
+                                selectionMode == 'Feedback' ? 'yourSelectionFeedback' : 'selectionAction'
+                            const selectionInput = variant.getActiveSelectionInput
+                            return selectionInput[acitonObjectKey]
+                        },
+                        set: function(value) {
+                            const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                            const selectionInput = variant.getActiveSelectionInput
+                            return (selectionInput[actionKey] = value)
                         },
                     })
 
