@@ -112,8 +112,8 @@
                                 <td style="font-size: 10px;">
                                     <span style="font-size: 10px;">{{
                                         `${
-                                            getSelectionChapter(action.selection)
-                                                ? `[${getSelectionChapter(action.selection).name}] `
+                                            getSelectionChapterName(action.selection)
+                                                ? `[${getSelectionChapterName(action.selection)}] `
                                                 : ''
                                         }${action.selection.name}` | truncate(16)
                                     }}</span>
@@ -319,7 +319,27 @@ export default {
                     }
                 })
             }
-            return usersToReturn
+
+            // Sort by chapter
+            const usersSorted = usersToReturn.sort((a, b) => {
+                const aVal = parseInt(a.selection.chapterId) || 0
+                const bVal = parseInt(b.selection.chapterId) || 0
+
+                return aVal - bVal
+            })
+            return usersSorted
+        },
+    },
+    methods: {
+        getSelectionChapterName(selection) {
+            const chapter = this.getSelectionChapter(selection)
+            if (!chapter) return
+            let name = chapter.name
+            if (selection.type == 'Chapter') return name
+            const nameParts = name.split(' ')
+            name = nameParts.length > 1 ? `${nameParts[0].slice(0, 1)}${nameParts[1].slice(0, 1)}` : name.slice(0, 2)
+            name = name.toUpperCase()
+            return name
         },
     },
 }
