@@ -706,7 +706,6 @@ export default {
             this.sortArray(this.products, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
-            console.log('on update action PRODUCTS TABLE', action, selectionInput)
             this.$emit('updateAction', action, selectionInput)
         },
         onUpdateMultipleActions(products, newAction) {
