@@ -302,7 +302,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 if (typeof fieldValue == 'number') fieldValue = Math.round((fieldValue + Number.EPSILON) * 100) / 100
 
                 // Dont have null values
-                if (fieldValue == 'null') fieldValue = null
+                if (fieldValue == 'null' || fieldValue == null) {
+                    fieldValue = null
+                    return
+                }
 
                 // Format date values
                 if (field.type == 'date' && fieldValue != null) {
