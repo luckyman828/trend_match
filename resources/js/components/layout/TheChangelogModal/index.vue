@@ -1,6 +1,42 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
         <ChangelogPost
+            title="Jersey: Blue Violet"
+            date="April 2021 Tweaks Release"
+            featuredImgUrl="/images/blog/undraw_Environmental_study_re_q4q8.svg"
+        >
+            <template v-slot:lead>
+                <p>Tweaks and fixes for the grand release of BUY are here.</p>
+            </template>
+            <template v-slot:body>
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>Export CSV Dump has been fixed.</li>
+                    <li>Alignment is now grouped by chapter in the product flyin and on PDF exports</li>
+                    <li>
+                        Alignment input is now sorted logically in the product flyin, always starting with the chapter
+                        first (if any).
+                    </li>
+                    <li>Notification bullets and various buttons have had their sizes / aspect ratios fixed.</li>
+                    <li>The "Selection Input" filter is no longer persistent between files and workspaces.</li>
+                    <li>
+                        Kollekt's CSV export engine has been upgraded, making it easier to create new csv export
+                        templates for you.
+                    </li>
+                    <li>Fixed hotkeys triggering actions in context menus, even when they weren't visible.</li>
+                    <li>Fixed no search results being returned when setting selection currency.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
+        <ChangelogPost
             title="Jersey: Blue Green"
             date="April 2021 Release"
             featuredImgUrl="/images/blog/undraw_shopping_eii3.svg"
