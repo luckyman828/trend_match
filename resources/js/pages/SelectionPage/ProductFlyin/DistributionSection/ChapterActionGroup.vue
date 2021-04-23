@@ -24,7 +24,10 @@ export default {
     },
     computed: {
         actionsFiltered() {
-            return this.expanded ? this.actions : this.actions.filter(action => action.selection.type == 'Chapter')
+            const filtered = this.expanded
+                ? this.actions
+                : this.actions.filter(action => action.selection.type == 'Chapter')
+            return filtered.sort((a, b) => (a.selection.type == 'Chapter' ? -1 : 1))
         },
     },
 }
