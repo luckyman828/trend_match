@@ -33,34 +33,44 @@ export default {
         return {
             id: 'id-' + this.$uuid.v4(),
             contextMenuParent: null,
+            popoverParent: null,
         }
     },
     computed: {
         parentPopover() {
             return this.$el.closest('.popover')
         },
+        actionDisabled() {
+            return this.disabled || this.contextMenuParentHidden || this.parentPopoverHidden
+        },
+        parentPopoverHidden() {
+            return this.popoverParent && !this.popoverParent.isOpen
+        },
+        contextMenuParentHidden() {
+            return this.contextMenuParent && !this.contextMenuParent.visible && !this.contextMenuParent.inline
+        },
     },
     methods: {
         findParentContextMenu($vm) {
             const parent = $vm.$parent
+            if (!parent) return
             if (parent.$options.name == 'contextMenu') {
                 this.contextMenuParent = parent
                 return
             }
             this.findParentContextMenu(parent)
         },
-        findParentContextMenu($vm) {
+        findPopoverParent($vm) {
             const parent = $vm.$parent
-            if (parent.$options.name == 'contextMenu') {
-                this.contextMenuParent = parent
+            if (!parent) return
+            if (parent.$options.name == 'VPopover') {
+                this.popoverParent = parent
                 return
             }
-            this.findParentContextMenu(parent)
+            this.findPopoverParent(parent)
         },
         onFireAction(e) {
-            if (this.disabled) return
-            if (this.contextMenuParent && !this.contextMenuParent.visible && !this.contextMenuParent.inline) return
-            if (this.parentPopover && !this.parentPopover.classList.contains('open')) return
+            if (this.actionDisabled) return
             this.$emit('click', e)
             this.$emit('action', e)
             this.closeContextMenu()
@@ -75,14 +85,13 @@ export default {
             this.onFireAction(e)
         },
         hotkeyHandler(e) {
+            if (this.actionDisabled) return
             if (e.code == this.hotkey || (Array.isArray(this.hotkey) && this.hotkey.includes(e.code))) {
                 if (this.hasSubmenu) {
                     const popover = this.$refs.popover
-                    console.log('hotkey', popover)
                     if (!popover.isOpen) {
                         popover.show()
                     } else {
-                        console.log('hide popover')
                         popover.hide()
                     }
                 } else {
@@ -99,6 +108,7 @@ export default {
     created() {
         if (this.hotkey) document.addEventListener('keyup', this.hotkeyHandler)
         this.findParentContextMenu(this)
+        this.findPopoverParent(this)
     },
     destroyed() {
         if (this.hotkey) document.removeEventListener('keyup', this.hotkeyHandler)

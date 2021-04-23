@@ -298,7 +298,6 @@
                         "
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        hotkey="KeyI"
                         @click="onUpdateAction('In', contextSelectionInput)"
                     >
                         <span><u>I</u>n</span>
@@ -308,7 +307,6 @@
                         :iconClass="contextSelectionInput[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        hotkey="KeyO"
                         @click="onUpdateAction('Out', contextSelectionInput)"
                     >
                         <span><u>O</u>ut</span>
@@ -320,7 +318,6 @@
                         "
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        :hotkey="['KeyF', 'KeyU']"
                         @click="onUpdateAction('Focus', contextSelectionInput)"
                     >
                         <span><u>F</u>oc<u>u</u>s</span>
@@ -709,6 +706,7 @@ export default {
             this.sortArray(this.products, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
+            console.log('on update action PRODUCTS TABLE', action, selectionInput)
             this.$emit('updateAction', action, selectionInput)
         },
         onUpdateMultipleActions(products, newAction) {
