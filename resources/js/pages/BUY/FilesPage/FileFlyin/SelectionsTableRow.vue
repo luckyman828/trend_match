@@ -109,7 +109,7 @@
             </td>
 
             <td class="qty">
-                <span>{{ selection.total_quantity }} pcs.</span>
+                <span>{{ theSelectionQuantity | thousandSeparated }} pcs.</span>
             </td>
 
             <td class="users">
@@ -264,6 +264,11 @@ export default {
             return this.selection.type == 'Summed'
                 ? this.allSelections.reduce((total, curr) => (total += curr.budget_spend), 0)
                 : this.selection.budget_spend
+        },
+        theSelectionQuantity() {
+            return this.selection.type == 'Summed'
+                ? this.allSelections.reduce((total, curr) => (total += curr.total_quantity), 0)
+                : this.selection.total_quantity
         },
     },
     methods: {
