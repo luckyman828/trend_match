@@ -385,6 +385,8 @@ export default {
     left: 50%;
     transform: translateX(-50%);
     width: 512px;
+    max-height: 440px;
+    overflow-y: auto;
     .header {
         margin: 0 0 16px;
     }
@@ -404,7 +406,7 @@ export default {
             border: $borderEl;
             background: $bg;
             padding: 8px 12px;
-            max-height: 200px;
+            max-height: 140px;
             overflow-y: auto;
         }
     }

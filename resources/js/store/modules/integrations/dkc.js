@@ -52,6 +52,11 @@ export default {
                     company: 'DkCompany',
                 },
                 {
+                    name: 'Kaffe Curve',
+                    code: 'KC',
+                    company: 'DkCompany',
+                },
+                {
                     name: 'Cream',
                     code: 'CR',
                     company: 'DkCompany',
@@ -59,6 +64,11 @@ export default {
                 {
                     name: 'Denim Hunter',
                     code: 'DH',
+                    company: 'DkCompany',
+                },
+                {
+                    name: 'MEW',
+                    code: 'mw',
                     company: 'DkCompany',
                 },
                 {

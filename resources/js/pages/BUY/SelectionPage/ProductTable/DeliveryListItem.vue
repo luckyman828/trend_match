@@ -124,11 +124,15 @@ export default {
                         : productBrand
 
                 const brandWeights = dkcSizeSplit[brand]
+                if (!brandWeights) return { name: 'no weights found', weights: [] }
                 const sizeType = isFinite(sizes[0].size) ? 'numeric' : 'alphanumeric'
                 const sizeSubType =
                     sizeType == 'alphanumeric'
                         ? 'standard'
-                        : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
+                        : // : this.variant.product.extra_data.topBottom == 'Bottom' && brandWeights[sizeType].bottomsIn
+                        this.variant.product.extra_data.topBottom == 'Bottom' &&
+                          this.variant.product.category == 'Jeans' &&
+                          brandWeights[sizeType].bottomsIn
                         ? 'bottomsIn'
                         : 'standard'
                 const weights = brandWeights[sizeType][sizeSubType]

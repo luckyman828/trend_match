@@ -11,6 +11,9 @@ export function cleanUpDKCObj(srcObj, newObj) {
         if (key == 'variants' && !Array.isArray(keyVal.variant)) {
             keyVal = [keyVal.variant]
         }
+        if (key == 'assortment_variants' && !Array.isArray(keyVal.assortment_variant)) {
+            keyVal = [keyVal.assortment_variant]
+        }
         if (key == 'prices' && !Array.isArray(keyVal.prices)) {
             if (keyVal.price && Array.isArray(keyVal.price)) {
                 keyVal = keyVal.price
@@ -29,7 +32,7 @@ export function cleanUpDKCObj(srcObj, newObj) {
         // Flatten objects in objects
         if (!Array.isArray(keyVal) && typeof keyVal == 'object' && Object.keys(keyVal).length == 1) {
             const newKey = Object.keys(keyVal)[0]
-            if (!['variant', 'price', 'size', 'assortment'].includes(newKey)) {
+            if (!['variant', 'price', 'size', 'assortment', 'assortment_variant'].includes(newKey)) {
                 theKey = newKey
             }
             keyVal = keyVal[newKey]
@@ -81,6 +84,7 @@ export async function instantiateDKCProducts(products) {
         newProduct.extra_data.sex = product.sex
         newProduct.category = product.shop_item_group
         newProduct.extra_data.topBottom = product.top_bottom
+        // PRICES
         if (product.variants && product.variants.length > 0) {
             product.variants[0].prices.map(price => {
                 if (!!newProduct.prices.find(x => x.currency == price.currency)) return
@@ -110,6 +114,7 @@ export async function instantiateDKCProducts(products) {
                   newVariant.id = uuidv4()
                   newVariant.variant = variant.color
                   newVariant.color = variant.variant_color_name
+                  if (variant.length) newVariant.color = `L: ${variant.length} ${newVariant.color}`
                   newVariant.extra_data.colorRGB = variant.color_rgb
                   newVariant.ean_sizes = variant.ea_ns.split(';').map(sizeEan => {
                       const sizeComponents = sizeEan.split(':')
@@ -148,32 +153,37 @@ export async function instantiateDKCProducts(products) {
                   variant.assortments &&
                       variant.assortments.map(assortment => {
                           // Sort assortment sizes in a logical order
-                          const assortmentSizes = assortment.assortment_variant.sort((a, b) => {
-                              const isNumerical = isFinite(a.size_code)
-                              if (isNumerical) return parseInt(b) - parseInt(a)
+                          console.log('assortment', assortment)
+                          const assortmentSizes = !assortment.assortment_variants
+                              ? []
+                              : assortment.assortment_variants.sort((a, b) => {
+                                    const isNumerical = isFinite(a.size_code)
+                                    if (isNumerical) return parseInt(b) - parseInt(a)
 
-                              // Alphanumeric
-                              const aCode = a.size_code.toLowerCase()
-                              const bCode = b.size_code.toLowerCase()
-                              if (aCode == 'xxs') return -1
-                              if (aCode == 'xs' && !['xxs'].includes(bCode)) return -1
-                              if (aCode == 's' && !['xxs', 'xs'].includes(bCode)) return -1
-                              if (aCode == 'm' && !['xxs', 'xs', 's'].includes(bCode)) return -1
-                              if (aCode == 'l' && !['xxs', 'xs', 's', 'm'].includes(bCode)) return -1
-                              if (aCode == 'xl' && !['xxs', 'xs', 's', 'm', 'l'].includes(bCode)) return -1
-                              if (aCode == 'xxl' && !['xxs', 'xs', 's', 'm', 'l', 'xl'].includes(bCode)) return -1
-                              if (aCode == 'xxxl' && !['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'].includes(bCode))
-                                  return -1
-                              return 1
-                          })
+                                    // Alphanumeric
+                                    const aCode = a.size_code.toLowerCase()
+                                    const bCode = b.size_code.toLowerCase()
+                                    if (aCode == 'xxs') return -1
+                                    if (aCode == 'xs' && !['xxs'].includes(bCode)) return -1
+                                    if (aCode == 's' && !['xxs', 'xs'].includes(bCode)) return -1
+                                    if (aCode == 'm' && !['xxs', 'xs', 's'].includes(bCode)) return -1
+                                    if (aCode == 'l' && !['xxs', 'xs', 's', 'm'].includes(bCode)) return -1
+                                    if (aCode == 'xl' && !['xxs', 'xs', 's', 'm', 'l'].includes(bCode)) return -1
+                                    if (aCode == 'xxl' && !['xxs', 'xs', 's', 'm', 'l', 'xl'].includes(bCode)) return -1
+                                    if (aCode == 'xxxl' && !['xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'].includes(bCode))
+                                        return -1
+                                    return 1
+                                })
                           const newAssortment = {
                               variant_ids: [newVariant.id],
                               box_size: assortment.assortment_pieces,
                               box_ean: null,
                               delivery_dates: newVariant.delivery_dates,
-                              name: `${assortment.code}${assortmentSizes
-                                  .map(x => `;${x.size_code}:${x.quantity}`)
-                                  .join('')}`,
+                              name: `${assortment.code}${
+                                  assortmentSizes.length <= 0
+                                      ? ';'
+                                      : assortmentSizes.map(x => `;${x.size_code}:${x.quantity}`).join('')
+                              }`,
                           }
                           newProduct.assortments.push(newAssortment)
                       })

@@ -198,8 +198,12 @@ export default {
                             return sizes.map(size => {
                                 const sizeComponents = size.split(':')
                                 const assortmentSizeObj = {
-                                    size: sizeComponents[0],
-                                    quantity: sizeComponents[1],
+                                    size: sizeComponents[0] ? sizeComponents[0] : sizes.length == 1 ? 'one size' : null,
+                                    quantity: sizeComponents[1]
+                                        ? sizeComponents[1]
+                                        : sizes.length == 1
+                                        ? assortment.box_size
+                                        : 0,
                                 }
                                 Object.defineProperty(assortmentSizeObj, 'currentQuantity', {
                                     get() {
