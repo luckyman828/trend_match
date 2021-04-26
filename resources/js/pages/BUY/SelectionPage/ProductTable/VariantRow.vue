@@ -149,7 +149,7 @@ export default {
 .variant-row {
     padding: 8px 16px 8px 46px;
     align-items: flex-start;
-    height: 177px;
+    height: 189px;
     overflow: hidden;
     .main-section {
         overflow: hidden;
