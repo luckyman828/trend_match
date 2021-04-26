@@ -6,7 +6,7 @@
             </div>
             <BaseImageSizer fit="contain" aspect="1:1">
                 <BaseVariantImage v-if="hasImage" class="main-img" :key="variant.id" :variant="variant" size="sm" />
-                <div v-else class="color main-img" :style="imageBackground"></div>
+                <div v-else class="color main-img resize-target" :style="imageBackground"></div>
             </BaseImageSizer>
         </div>
         <div class="flex-list flex-v fill main-section">
