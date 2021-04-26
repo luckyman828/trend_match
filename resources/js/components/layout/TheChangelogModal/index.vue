@@ -1,5 +1,32 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
+        <ChangelogPost title="Jersey: Dyonysus" date="April 2021 Hotfix Release">
+            <template v-slot:body>
+                <h3>Tweaks & Fixes</h3>
+                <ul>
+                    <li>Sorting products with a search query present now works again.</li>
+                    <li>
+                        <strong>BUY:</strong> Now correctly summing quantities from sub-selection on the selection
+                        overview.
+                    </li>
+                    <li>
+                        <strong>BUY:</strong> Fixed the scrollbar not being visible when making quantity input by
+                        assortments.
+                    </li>
+                    <li>
+                        <strong>BUY:</strong> Now displaying colors as fallback when no image is available for variants.
+                    </li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
         <ChangelogPost
             title="Jersey: Blue Violet"
             date="April 2021 Tweaks Release"

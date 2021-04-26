@@ -3,7 +3,7 @@ export default {
 
     state: {
         showChangelog: false,
-        latestChangelogUpdateDate: new Date('Fri Apr 23 2021 15:15:00 GMT+0100 (Central European Standard Time)'),
+        latestChangelogUpdateDate: new Date('Mon Apr 26 2021 19:30:00 GMT+0200 (Central European Summer Time)'),
     },
 
     getters: {
