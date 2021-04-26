@@ -19,7 +19,7 @@
                 <div class="item-group">
                     <BaseSelectButtons
                         :options="availableLabels"
-                        v-model="product.labels"
+                        v-model="product.yourLabels"
                         type="select"
                         :submitOnChange="true"
                         ref="selectButtons"
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'labelList',
     props: ['product'],
@@ -54,19 +54,24 @@ export default {
         }
     },
     computed: {
+        ...mapGetters('auth', {
+            authUser: 'authUser',
+        }),
         ...mapGetters('workspaces', {
             availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
         }),
         ...mapGetters('selections', {
-            selectionRole: 'getCurrentSelectionMode',
+            selectionMode: 'getCurrentSelectionMode',
+            getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
+            selection: 'getCurrentSelection',
         }),
         ...mapGetters('files', {
             file: 'getCurrentFile',
         }),
 
         labelsSorted() {
-            const labels = this.product.labels
+            const labels = this.product.yourLabels
             const sortingArr = this.availableLabels
             // Sort by available labels
             labels.slice().sort((a, b) => {
@@ -76,35 +81,40 @@ export default {
         },
         availableLabelsFiltered() {
             // const labels = this.availableLabels.slice().filter(x => {
-            //     const alreadyAdded = this.product.labels.includes(x)
+            //     const alreadyAdded = this.product.yourLabels.includes(x)
             //     return !alreadyAdded
             // })
             return this.availableLabels
         },
         hasWriteAccess() {
-            return this.workspaceRole == 'Admin' || this.file.editable
+            const userWriteAccess = this.getUserWriteAccess(this.selection, this.product)
+            return userWriteAccess && userWriteAccess.actions
         },
     },
     methods: {
-        ...mapActions('products', ['updateProduct']),
-        onAddLabel(newLabel) {
-            this.product.labels.push(newLabel)
-            this.onUpdateProduct()
-        },
+        ...mapActions('actions', ['updateCurrentProductAction']),
+        ...mapMutations('products', ['UPDATE_FEEDBACKS', 'UPDATE_ACTIONS']),
         onRemoveLabel(index) {
-            this.product.labels.splice(index, 1)
-            this.onUpdateProduct()
+            this.product.yourLabels.splice(index, 1)
+            this.onUpdateLabels()
         },
         getLabelIndex(label) {
             return this.availableLabels.indexOf(label)
         },
-        async onUpdateProduct() {
-            const product = Object.assign({}, this.product)
-            delete product.selectionInputList
-            await this.updateProduct(product)
+        async onUpdateLabels() {
+            const labels = this.product.yourLabels
+            // Make sure the product is In/Focus
+            if (labels.length > 0 && !['Focus', 'In'].includes(this.product.yourAction)) {
+                if (this.selectionMode == 'Feedback') {
+                    this.UPDATE_FEEDBACKS({ actions: [this.product.yourAction], newAction: 'In', user: this.authUser })
+                } else {
+                    this.UPDATE_ACTIONS({ actions: [this.product.yourAction], newAction: 'In', user: this.authUser })
+                }
+            }
+            await this.updateCurrentProductAction(this.product)
         },
         onShowPopover(isOpen) {
-            if (this.isOpen) this.onUpdateProduct()
+            if (this.isOpen) this.onUpdateLabels()
             this.isOpen = isOpen
 
             // If now visible

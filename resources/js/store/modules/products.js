@@ -1095,6 +1095,20 @@ export default {
                     },
                 })
 
+                Object.defineProperty(product, 'feedbacks', {
+                    get: function() {
+                        if (!product.getActiveSelectionInput) return
+                        return product.getActiveSelectionInput.feedbacks
+                    },
+                })
+
+                Object.defineProperty(product, 'alignments', {
+                    get: function() {
+                        if (!product.getActiveSelectionInput) return
+                        return product.getActiveSelectionInput.actions
+                    },
+                })
+
                 Object.defineProperty(product, 'yourAction', {
                     get: function() {
                         if (!product.getActiveSelectionInput) return
@@ -1122,6 +1136,36 @@ export default {
                         const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
                         const selectionInput = product.getActiveSelectionInput
                         return (selectionInput[actionKey] = value)
+                    },
+                })
+
+                Object.defineProperty(product, 'yourLabels', {
+                    get: function() {
+                        if (!product.getActiveSelectionInput || !product.yourActionObject) return
+                        return product.yourActionObject.labels
+                    },
+                    set: function(value) {
+                        if (!product.getActiveSelectionInput || !product.yourActionObject) return
+                        product.yourActionObject.labels = value
+                    },
+                })
+
+                Object.defineProperty(product, 'inputLabels', {
+                    get: function() {
+                        if (!product.getActiveSelectionInput) return
+                        const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+                        const arrayKey = selectionMode == 'Feedback' ? 'feedbacks' : 'alignments'
+                        const labels = []
+                        product[arrayKey].map(action => {
+                            action.labels.map(label => {
+                                const labelInArray = labels.find(x => label.name == label)
+                                if (!labelInArray) {
+                                    labels.push({ name: label, count: 1 })
+                                } else {
+                                    labelInArray.count++
+                                }
+                            })
+                        })
                     },
                 })
 
@@ -1495,6 +1539,11 @@ export default {
                         selectionAction.action = newAction
                         selectionAction.user_id = user.id
 
+                        // If the newaction is None or Out, remove any labels
+                        if (['None', 'Out'].includes(newAction)) {
+                            selectionAction.labels = []
+                        }
+
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.action)
                         )
@@ -1551,6 +1600,11 @@ export default {
                     if (selectionAction) {
                         selectionAction.action = newAction
                         selectionAction.user_id = user.id
+
+                        // If the newaction is None or Out, remove any labels
+                        if (['None', 'Out'].includes(newAction)) {
+                            selectionAction.labels = []
+                        }
 
                         const allVariantsOut = !selectionInput.variants.find(variant =>
                             ['In', 'Focus'].includes(variant.your_feedback)
