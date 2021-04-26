@@ -53,7 +53,7 @@
                         </ProductFilters>
                         <ProductSort :currentSortKey="sortKey" @sort="onSort" v-slot="slotProps">
                             <button class="col-primary sm pill" @click="slotProps.activate()">
-                                <span>Sort by: {{ sortKey }}</span>
+                                <span>Sort by: {{ slotProps.sortItem ? slotProps.sortItem.label : 'Unnamed' }}</span>
                                 <i class="fas fa-angle-down"></i>
                             </button>
                         </ProductSort>
@@ -296,6 +296,7 @@ export default {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.localProducts, sortAsc, sortKey)
+            this.sortArray(this.productsFilteredBySearch, sortAsc, sortKey)
         },
         onViewSearchProduct() {
             if (this.productsFilteredBySearch.length > 0) {

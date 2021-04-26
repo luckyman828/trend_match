@@ -704,6 +704,7 @@ export default {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.products, sortAsc, sortKey)
+            this.sortArray(this.productsFilteredBySearch, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
             this.$emit('updateAction', action, selectionInput)

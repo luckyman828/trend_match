@@ -1,6 +1,6 @@
 <template>
     <v-popover trigger="manual" :open="show" :autoHide="false" class="product-sort">
-        <slot :activate="toggleShow" />
+        <slot :activate="toggleShow" :sortItem="availableSortItems.find(sortItem => sortItem.key == currentSortKey)" />
         <BaseContextMenu slot="popover" :inline="true" v-click-outside="onHide">
             <SortListItem
                 v-for="(sortItem, index) in availableSortItems"
