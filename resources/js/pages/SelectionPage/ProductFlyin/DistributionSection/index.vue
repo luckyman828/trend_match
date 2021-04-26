@@ -75,9 +75,16 @@
 
                         <ActionListItem
                             class="list-item"
-                            v-for="(action, index) in actionsToDisplay"
+                            v-for="(action, index) in actionsToDisplay.filter(action => !action.selection.chapter)"
                             :key="index"
                             :action="action"
+                            :showQty="showQty"
+                        />
+                        <ChapterActionGroup
+                            v-for="chunk in alignmentChapters"
+                            :key="chunk.chapter.id"
+                            :chapter="chunk.chapter"
+                            :actions="chunk.actions"
                             :showQty="showQty"
                         />
                     </div>
@@ -123,6 +130,7 @@ import { mapGetters } from 'vuex'
 import ActionDistributionBar from './ActionDistributionBar'
 import ActionListItem from './ActionListItem'
 import FeedbackListItem from './FeedbackListItem'
+import ChapterActionGroup from './ChapterActionGroup'
 import SelectionIcon from '../../../../components/common/SelectionIcon'
 import SelectionChapterPill from '../../../../components/common/SelectionChapterPill'
 
@@ -132,6 +140,7 @@ export default {
         ActionDistributionBar,
         ActionListItem,
         FeedbackListItem,
+        ChapterActionGroup,
         SelectionIcon,
         SelectionChapterPill,
     },
@@ -150,6 +159,25 @@ export default {
         }),
         actionsToDisplay() {
             return this.filterAndSortActions(this.selectionInput.actions)
+        },
+        alignmentChapters() {
+            const chapters = []
+            this.selectionInput.actions.map(action => {
+                if (!action.selection.chapter) return
+                const matchingChapter = chapters.find(chunk => chunk.chapter.id == action.selection.chapterId)
+                if (!matchingChapter) {
+                    chapters.push({
+                        chapter: action.selection.chapter,
+                        actions: [action],
+                    })
+                } else {
+                    matchingChapter.actions.push(action)
+                }
+            })
+            chapters.map(chapter => {
+                chapter.actions = this.filterAndSortActions(chapter.actions)
+            })
+            return chapters
         },
         feedbackSelections() {
             // Chunk the feedback by selections
@@ -189,18 +217,22 @@ export default {
     methods: {
         filterAndSortActions(actions) {
             if (!actions) return []
+            let actionsToReturn = actions
             // Filter and sort the actions
-            const actionsFiltered = actions.filter(action => {
+            actionsToReturn = actionsToReturn.filter(action => {
                 return this.currentTab == 'All' || this.currentTab == action.action
             })
-            const actionsSorted = actionsFiltered.sort((a, b) => {
+
+            // Sort by action
+            actionsToReturn = actionsToReturn.sort((a, b) => {
                 if (a.action == 'Focus' && !['Focus'].includes(b.action)) return -1
                 if (a.action == 'In' && !['Focus', 'In'].includes(b.action)) return -1
                 if (a.action == 'Out' && !['Focus', 'In', 'Out'].includes(b.action)) return -1
                 if (a.action == b.action && a.selection.type == 'Master') return -1
                 return 0
             })
-            return actionsSorted
+
+            return actionsToReturn
         },
     },
 }

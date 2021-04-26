@@ -267,8 +267,8 @@ export default {
     .qty-input {
         height: 100%;
         min-width: 42px;
-        background: $grey200;
         color: $fontSoft;
+        background: rgba(white, 0.8);
         &:focus-within {
             background: white;
             color: $font;

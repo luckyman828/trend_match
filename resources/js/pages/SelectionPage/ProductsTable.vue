@@ -298,7 +298,6 @@
                         "
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        hotkey="KeyI"
                         @click="onUpdateAction('In', contextSelectionInput)"
                     >
                         <span><u>I</u>n</span>
@@ -308,7 +307,6 @@
                         :iconClass="contextSelectionInput[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        hotkey="KeyO"
                         @click="onUpdateAction('Out', contextSelectionInput)"
                     >
                         <span><u>O</u>ut</span>
@@ -320,7 +318,6 @@
                         "
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        :hotkey="['KeyF', 'KeyU']"
                         @click="onUpdateAction('Focus', contextSelectionInput)"
                     >
                         <span><u>F</u>oc<u>u</u>s</span>
@@ -1003,12 +1000,12 @@ export default {
 }
 .filter-button {
     @media screen and (max-width: $screenMd) {
-        > span {
-            margin-right: 8px;
-            &:first-child {
-                margin-left: 8px;
-            }
-        }
+        // > span {
+        //     margin-right: 8px;
+        //     &:first-child {
+        //         margin-left: 8px;
+        //     }
+        // }
         .fa-chevron-down {
             display: none;
         }

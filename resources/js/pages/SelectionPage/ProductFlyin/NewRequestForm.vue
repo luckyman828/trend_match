@@ -97,13 +97,8 @@ export default {
             } else {
                 this.newRequest = this.getDefaultRequest()
             }
-            // this.newRequest.content =
-            //     this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
-            // this.newRequest.label =
-            //     this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.label : ''
         },
         getDefaultRequest() {
-            console.log('get default request', this.selectionInput)
             return {
                 content: '',
                 labels: [],

@@ -203,7 +203,7 @@
                         <i class="far fa-clipboard-check"></i>
                         <div
                             v-if="displayUnreadBullets && product.hasNewComment"
-                            class="circle xxs primary new-comment-bullet"
+                            class="circle min primary new-comment-bullet"
                         ></div>
                     </button>
 
@@ -662,14 +662,14 @@ td.title {
     position: relative;
     &:hover {
         .new-comment-bullet {
-            top: -7px;
-            right: -5px;
+            right: -3px;
+            top: -5px;
         }
     }
     .new-comment-bullet {
         position: absolute;
-        right: -4px;
-        top: -6px;
+        right: -2px;
+        top: -4px;
     }
 }
 

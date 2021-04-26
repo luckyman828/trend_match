@@ -256,7 +256,10 @@ export default {
                 return
             }
             if (this.exportType == 'dump') {
-                this.exportCsvDump()
+                this.exportTemplate = this.generateCsvDumpTemplate()
+                // console.log('Dump template', this.exportTemplate)
+                this.exportCSVByTemplate()
+                // this.exportCsvDump()
                 return
             }
             // START HEADERS
@@ -666,138 +669,223 @@ export default {
                 [headers].concat(rows)
             )
         },
-        exportCsvDump() {
-            // Instantiate headers
-            const headers = JSON.parse(JSON.stringify(this.defaultCsvDumpHeaders))
+        // exportCsvDump() {
+        //     // Instantiate headers
+        //     const headers = JSON.parse(JSON.stringify(this.defaultCsvDumpHeaders))
 
-            // Add extra data headers
-            const extraFields = this.getCustomProductFields
-            headers.push(...extraFields.filter(x => x.belong_to == 'Product').map(x => x.display_name))
+        //     // Add extra data headers
+        //     const extraFields = this.getCustomProductFields
+        //     headers.push(...extraFields.filter(x => x.belong_to == 'Product').map(x => x.display_name))
 
-            const currencies = []
-            // Find out how many different currencies we have
-            this.productsToExport.map(product => {
-                product.prices.map(price => {
-                    const alreadyAdded = currencies.find(x => x == price.currency)
-                    if (!alreadyAdded && !!price.currency) currencies.push(price.currency)
-                })
-            })
-            // Split currencies into columns
-            currencies.map(currency => {
-                headers.push(...[`WHS ${currency}`, `RRP ${currency}`, `MU ${currency}`])
-            })
+        //     const currencies = []
+        //     // Find out how many different currencies we have
+        //     this.productsToExport.map(product => {
+        //         product.prices.map(price => {
+        //             const alreadyAdded = currencies.find(x => x == price.currency)
+        //             if (!alreadyAdded && !!price.currency) currencies.push(price.currency)
+        //         })
+        //     })
+        //     // Split currencies into columns
+        //     currencies.map(currency => {
+        //         headers.push(...[`WHS ${currency}`, `RRP ${currency}`, `MU ${currency}`])
+        //     })
 
-            // Add variant headers
-            headers.push(...['Delivery', 'Variant Color', 'Variant Variant', 'Variant Sizes', 'Variant EAN'])
-            headers.push(...extraFields.filter(x => x.belong_to == 'Variant').map(x => x.display_name))
-            headers.push(...['Image URL', 'Assortment Name', 'Assortment EAN', 'Assortment Size'])
+        //     // Add variant headers
+        //     headers.push(...['Delivery', 'Variant Color', 'Variant Variant', 'Variant Sizes', 'Variant EAN'])
+        //     headers.push(...extraFields.filter(x => x.belong_to == 'Variant').map(x => x.display_name))
+        //     headers.push(...['Image URL', 'Assortment Name', 'Assortment EAN', 'Assortment Size'])
 
-            const rows = []
+        //     const rows = []
 
-            // MAP PRODUCTS
-            this.productsToExport.map(product => {
-                const productRow = this.getDefaultProductRowDumpData(product)
+        //     // MAP PRODUCTS
+        //     this.productsToExport.map(product => {
+        //         const productRow = this.getDefaultProductRowDumpData(product)
 
-                // Add prices
-                currencies.map(currency => {
-                    const productPrice = product.prices.find(x => x.currency == currency)
-                    if (!productPrice) {
-                        productRow.push(...[, , ,])
+        //         // Add prices
+        //         currencies.map(currency => {
+        //             const productPrice = product.prices.find(x => x.currency == currency)
+        //             if (!productPrice) {
+        //                 productRow.push(...[, , ,])
+        //             } else {
+        //                 productRow.push(
+        //                     ...[
+        //                         productPrice.wholesale_price,
+        //                         productPrice.recommended_retail_price,
+        //                         productPrice.mark_up,
+        //                     ]
+        //                 )
+        //             }
+        //         })
+
+        //         // Create a map of the variants
+        //         const productVariantMap = []
+        //         product.variants.map((variant, variantIndex) => {
+        //             if (variant.pictures.length <= 1) {
+        //                 productVariantMap.push({ variantIndex, pictureIndex: 0 })
+        //                 return
+        //             }
+        //             variant.pictures.map((picture, pictureIndex) => {
+        //                 productVariantMap.push({ variantIndex, pictureIndex })
+        //             })
+        //         })
+        //         const extraRowCount = Math.max(
+        //             productVariantMap.length,
+        //             product.delivery_dates.length,
+        //             product.assortments.length,
+        //             1
+        //         )
+
+        //         // Add a row for each row we need to add
+        //         for (let i = 0; i < extraRowCount; i++) {
+        //             const extraRow = JSON.parse(JSON.stringify(productRow))
+        //             // Add delivery date
+        //             extraRow.push(product.delivery_dates ? product.delivery_dates[i] : '')
+
+        //             // Add variant
+        //             const variantIndex = productVariantMap[i] ? productVariantMap[i].variantIndex : null
+
+        //             const variant = product.variants[variantIndex]
+        //             // Get the extra data
+        //             const extraFields = this.getCustomProductFields
+
+        //             if (!variant) {
+        //                 extraRow.push(
+        //                     ...['', '', '', ''].concat(
+        //                         extraFields
+        //                             .filter(x => x.belong_to == 'Variant')
+        //                             .map(x => {
+        //                                 return ''
+        //                             })
+        //                     )
+        //                 )
+        //             } else {
+        //                 // Figure out what variant we are at
+        //                 extraRow.push(
+        //                     ...[
+        //                         variant.color,
+        //                         variant.variant,
+        //                         variant.ean_sizes.map(size => size.size).join(', '),
+        //                         variant.ean,
+        //                     ].concat(
+        //                         extraFields
+        //                             .filter(x => x.belong_to == 'Variant')
+        //                             .map(extraField => {
+        //                                 const propValue = variant.extra_data[extraField.name]
+        //                                 return Array.isArray(propValue) ? propValue.join(', ') : propValue
+        //                             })
+        //                     )
+        //                 )
+        //                 const pictureIndex = productVariantMap[i] ? productVariantMap[i].pictureIndex : null
+        //                 const picture = variant.pictures[pictureIndex]
+        //                 if (!picture) {
+        //                     extraRow.push('')
+        //                 } else {
+        //                     extraRow.push(picture.url)
+        //                 }
+        //             }
+
+        //             // Add assortments
+        //             const assortment = product.assortments[i]
+        //             if (!assortment) {
+        //                 extraRow.push(...['', '', ''])
+        //             } else {
+        //                 extraRow.push(...[assortment.name, assortment.box_ean, assortment.box_size])
+        //             }
+
+        //             rows.push(extraRow)
+        //         }
+        //     })
+
+        //     let dateStr = DateTime.local().toLocaleString()
+        //     // Replace slashes with dashes in date
+        //     dateStr = dateStr.replace('/', '-')
+
+        //     this.exportToCsv(`Kollekt File Dump - ${this.currentFile.name} - ${dateStr}.csv`, [headers].concat(rows))
+        // },
+        generateCsvDumpTemplate() {
+            const template = {
+                name: 'Kollekt Dump',
+                rowKeys: [
+                    {
+                        key: 'variants',
+                        children: [
+                            {
+                                key: 'pictures',
+                            },
+                            {
+                                key: 'ean_sizes',
+                            },
+                            {
+                                key: 'delivery_dates',
+                            },
+                        ],
+                    },
+                    {
+                        key: 'prices',
+                    },
+                    {
+                        key: 'assortments',
+                    },
+                    // {
+                    //     key: 'delivery_dates',
+                    // },
+                ],
+                headers: [
+                    // Product
+                    { name: 'Name', key: 'name' },
+                    { name: 'Id', key: 'datasource_id' },
+                    { name: 'Description', key: 'sale_description' },
+                    { name: 'Order minimum', key: 'min_order' },
+                    { name: 'Variant minimum', key: 'min_variant_order' },
+                    { name: 'Brand', key: 'brand' },
+                    { name: 'Category', key: 'category' },
+                    // { name: 'Delivery', key: 'delivery_dates' }, // Use variant instead
+                    { name: 'Buying group', key: 'buying_group' },
+                    { name: 'Composition', key: 'composition' },
+                    { name: 'Sequence', key: 'sequence' },
+                    // { name: 'EAN', key: 'ean' }, // Use variant instead
+
+                    // Prices
+                    { name: 'Currency', key: 'prices.currency' },
+                    { name: 'WHS', key: 'prices.wholesale_price' },
+                    { name: 'RRP', key: 'prices.recommended_retail_price' },
+                    { name: 'Mark up', key: 'prices.mark_up' },
+
+                    // Variants
+                    { name: 'Color', key: 'variants.color' },
+                    { name: 'Variant', key: 'variants.variant' },
+                    { name: 'Delivery', key: 'variants.delivery_dates' },
+                    // { name: 'EAN', key: 'variants.ean' },
+                    // { name: 'Style option id', key: 'variants.style_option_id' },
+                    { name: 'Picture url', key: 'variants.pictures.url' },
+                    { name: 'EAN', key: 'variants.ean_sizes.ean' },
+                    { name: 'Size', key: 'variants.ean_sizes.size' },
+
+                    // Assortments
+                    { name: 'Assortment name', key: 'assortments.name' },
+                    { name: 'Assortment EAN', key: 'assortments.box_ean' },
+                    { name: 'Assortment size', key: 'assortments.box_size' },
+                ],
+            }
+
+            // Account for custom props
+            const customFieds = this.getCustomProductFields
+            customFieds.map(field => {
+                // Add array keys
+                if (field.type == 'Array') {
+                    if (field.belong_to == 'Variant') {
+                        const variantKey = template.rowKeys.find(key => key.key == 'variants')
+                        variantKey.children.push({ key: `extra_data.${field.name}` })
                     } else {
-                        productRow.push(
-                            ...[
-                                productPrice.wholesale_price,
-                                productPrice.recommended_retail_price,
-                                productPrice.mark_up,
-                            ]
-                        )
+                        template.rowKeys.push({ key: `extra_data.${field.name}` })
                     }
-                })
-
-                // Create a map of the variants
-                const productVariantMap = []
-                product.variants.map((variant, variantIndex) => {
-                    if (variant.pictures.length <= 1) {
-                        productVariantMap.push({ variantIndex, pictureIndex: 0 })
-                        return
-                    }
-                    variant.pictures.map((picture, pictureIndex) => {
-                        productVariantMap.push({ variantIndex, pictureIndex })
-                    })
-                })
-                const extraRowCount = Math.max(
-                    productVariantMap.length,
-                    product.delivery_dates.length,
-                    product.assortments.length,
-                    1
-                )
-
-                // Add a row for each row we need to add
-                for (let i = 0; i < extraRowCount; i++) {
-                    const extraRow = JSON.parse(JSON.stringify(productRow))
-                    // Add delivery date
-                    extraRow.push(product.delivery_dates ? product.delivery_dates[i] : '')
-
-                    // Add variant
-                    const variantIndex = productVariantMap[i] ? productVariantMap[i].variantIndex : null
-
-                    const variant = product.variants[variantIndex]
-                    // Get the extra data
-                    const extraFields = this.getCustomProductFields
-
-                    if (!variant) {
-                        extraRow.push(
-                            ...['', '', '', ''].concat(
-                                extraFields
-                                    .filter(x => x.belong_to == 'Variant')
-                                    .map(x => {
-                                        return ''
-                                    })
-                            )
-                        )
-                    } else {
-                        // Figure out what variant we are at
-                        extraRow.push(
-                            ...[
-                                variant.color,
-                                variant.variant,
-                                variant.ean_sizes.map(size => size.size).join(', '),
-                                variant.ean,
-                            ].concat(
-                                extraFields
-                                    .filter(x => x.belong_to == 'Variant')
-                                    .map(extraField => {
-                                        const propValue = variant.extra_data[extraField.name]
-                                        return Array.isArray(propValue) ? propValue.join(', ') : propValue
-                                    })
-                            )
-                        )
-                        const pictureIndex = productVariantMap[i] ? productVariantMap[i].pictureIndex : null
-                        const picture = variant.pictures[pictureIndex]
-                        if (!picture) {
-                            extraRow.push('')
-                        } else {
-                            extraRow.push(picture.url)
-                        }
-                    }
-
-                    // Add assortments
-                    const assortment = product.assortments[i]
-                    if (!assortment) {
-                        extraRow.push(...['', '', ''])
-                    } else {
-                        extraRow.push(...[assortment.name, assortment.box_ean, assortment.box_size])
-                    }
-
-                    rows.push(extraRow)
                 }
+                template.headers.push({
+                    name: field.name,
+                    key: `${field.belong_to == 'Variant' ? 'variants.' : ''}extra_data.${field.name}`,
+                })
             })
-
-            let dateStr = DateTime.local().toLocaleString()
-            // Replace slashes with dashes in date
-            dateStr = dateStr.replace('/', '-')
-
-            this.exportToCsv(`Kollekt File Dump - ${this.currentFile.name} - ${dateStr}.csv`, [headers].concat(rows))
+            return template
         },
         exportCSVByTemplate() {
             const rows = this.generateCSVRowsFromTemplate(

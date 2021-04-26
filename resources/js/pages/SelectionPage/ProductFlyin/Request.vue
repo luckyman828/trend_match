@@ -87,7 +87,7 @@
 
                         <div
                             v-if="displayUnreadBullets && hasNewComment"
-                            class="circle xxs primary new-comment-indicator"
+                            class="circle min primary new-comment-indicator"
                         ></div>
                     </button>
                 </div>
@@ -470,10 +470,8 @@ export default {
     position: relative;
     .new-comment-indicator {
         position: absolute;
-        right: 0;
+        right: 2px;
         top: 0;
-        height: 10px;
-        width: 10px;
     }
 }
 .request-label {

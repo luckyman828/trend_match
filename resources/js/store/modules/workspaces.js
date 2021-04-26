@@ -375,9 +375,9 @@ export default {
                 await router.push(newRoute)
             }
             commit('files/SET_CURRENT_FILE', null, { root: true })
-            commit('files/SET_CURRENT_FOLDER', null, { root: true })
             commit('selections/SET_CURRENT_SELECTION_ID', null, { root: true })
             commit('selections/SET_CURRENT_SELECTIONS', [], { root: true })
+            dispatch('files/setCurrentFolder', null, { root: true })
         },
     },
 

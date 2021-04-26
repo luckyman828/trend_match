@@ -1,10 +1,17 @@
 <template>
-    <div class="action-list-item">
-        <SelectionChapterPill
-            class="chapter"
-            :selection="action.selection"
-            v-tooltip="action.selection.chapter && action.selection.chapter.name"
-        />
+    <div class="action-list-item" @click="action.selection.type == 'Chapter' && $emit('update:expanded', !expanded)">
+        <template v-if="action.selection.chapter">
+            <div class="chapter-wrapper">
+                <SelectionChapterPill
+                    :short="action.selection.type != 'Chapter'"
+                    class="chapter"
+                    :selection="action.selection"
+                    :showCaret="action.selection.type == 'Chapter'"
+                    :caretExpanded="expanded"
+                    v-tooltip="action.selection.chapter && action.selection.chapter.name"
+                />
+            </div>
+        </template>
         <i
             v-if="action.selection.type == 'Master'"
             :selection="action.selection"
@@ -29,7 +36,7 @@ export default {
     components: {
         SelectionChapterPill,
     },
-    props: ['action', 'showQty'],
+    props: ['action', 'showQty', 'expanded'],
     computed: {
         totalQty() {
             return this.action.variants.reduce((total, variant) => {
@@ -45,13 +52,20 @@ export default {
 .action-list-item {
     display: flex;
     align-items: center;
+    padding: 4px 0 4px 8px;
+    border-bottom: $borderElSoft;
     padding-right: 0px;
     > * {
         flex: 1;
     }
-    .chapter {
+    .chapter-toggle {
+        flex: 0 1 auto;
+    }
+    .chapter-wrapper {
         margin-right: 4px;
         white-space: nowrap;
+        overflow: hidden;
+        flex: 0 1 auto;
     }
     .selection-icon {
         margin-right: 6px;

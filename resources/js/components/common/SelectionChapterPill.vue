@@ -1,8 +1,10 @@
 <template>
-    <div class="chapter pill xs chapter-pill" v-if="chapter">
-        <i class="fas fa-project-diagram"></i>
+    <div class="chapter square xs chapter-pill" v-if="chapter">
+        <i v-if="showCaret" class="fas" :class="caretExpanded ? 'fa-caret-down' : 'fa-caret-right'"></i>
+        <!-- <i class="fas fa-project-diagram"></i> -->
+
         <span>
-            {{ chapter.name }}
+            {{ nameToDisplay }}
         </span>
     </div>
 </template>
@@ -11,13 +13,23 @@
 import { mapGetters } from 'vuex'
 export default {
     name: 'selectionChapterPill',
-    props: ['selection'],
+    props: ['selection', 'short', 'showCaret', 'caretExpanded'],
     computed: {
         ...mapGetters('selections', {
             getSelectionChapter: 'getSelectionChapter',
         }),
         chapter() {
             return this.getSelectionChapter(this.selection)
+        },
+        nameToDisplay() {
+            let name = this.chapter.name
+            if (this.short && typeof name == 'string') {
+                const nameParts = name.split(' ')
+                name =
+                    nameParts.length > 1 ? `${nameParts[0].slice(0, 1)}${nameParts[1].slice(0, 1)}` : name.slice(0, 2)
+                name = name.toUpperCase()
+            }
+            return name
         },
     },
 }
