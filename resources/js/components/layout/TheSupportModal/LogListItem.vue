@@ -62,7 +62,6 @@ export default {
                 return this.getPrettyDuration(this.entry.duration)
             },
             set(newVal) {
-                console.log('new val', newVal)
                 const newNumber = parseInt(newVal)
                 if (typeof newNumber != 'number') {
                     this.SHOW_SNACKBAR({
@@ -81,12 +80,6 @@ export default {
     methods: {
         ...mapActions('supportLog', ['deleteEntry', 'insertOrUpdateLogEntry']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
-        getPrettyDuration(duration) {
-            const luxonDuration = Duration.fromObject({ minutes: duration })
-                .shiftTo('hours', 'minutes')
-                .toObject()
-            return `${luxonDuration.hours ? `${luxonDuration.hours} hrs ` : ''}${luxonDuration.minutes} min`
-        },
         onDeleteEntry() {
             this.deleteEntry(this.entry)
         },

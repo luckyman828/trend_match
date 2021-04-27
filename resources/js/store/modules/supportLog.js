@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { DateTime } from 'luxon'
 import Vue from 'vue'
 
@@ -23,11 +24,11 @@ export default {
         },
         async fetchLogEntries({ commit }, workspaceId) {
             let entries
-            const response = [
-                { id: 1, msg: 'Help upload images', duration: 45, created_at: '2021-04-27T07:04:34.566Z' },
-            ]
-            entries = response
-            commit('SET_LOG_ENTRIES', entries)
+            const apiUrl = `workspaces/${workspaceId}/support-duration/usage-logs`
+            axios.get(apiUrl).then(response => {
+                entries = response.data.data
+                commit('SET_LOG_ENTRIES', entries)
+            })
             return entries
         },
         insertOrUpdateLogEntry({}, entry) {
