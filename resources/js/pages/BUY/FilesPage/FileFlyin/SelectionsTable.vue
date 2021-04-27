@@ -748,6 +748,7 @@ export default {
                 is_presenting: null,
                 budget: 0,
                 budget_spend: 0,
+                total_quantity: 0,
             }
 
             // Push new selection to the parent
