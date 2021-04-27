@@ -20,7 +20,7 @@
                 @keydown="validateInput"
             />
             <div class="controls" v-if="!editActive">
-                <button v-tooltip.top="'Edit'" class="edit"><i class="far fa-pen"></i></button>
+                <button v-tooltip.top="'Edit'" class="edit true-square"><i class="far fa-pen"></i></button>
                 <button
                     v-if="value != oldValue"
                     v-tooltip.top="`Revert to original (${oldValue})`"
@@ -33,10 +33,10 @@
         </div>
         <div class="buttons">
             <div class="hotkey-wrapper">
-                <button class="green" @click="submit"><span>Save</span></button>
+                <button class="green sm" @click="submit"><span>Save</span></button>
                 <span class="hotkey"><span class="key">Enter</span> Enter</span>
             </div>
-            <button class="button ghost" @click="cancel"><span>Cancel</span></button>
+            <button class="button ghost sm" @click="cancel"><span>Cancel</span></button>
         </div>
     </div>
 </template>
@@ -163,7 +163,7 @@ textarea {
         display: flex;
 
         > *:not(:last-child) {
-            margin-right: 16px;
+            margin-right: 8px;
         }
         button {
             min-width: 80px;

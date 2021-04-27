@@ -35,6 +35,13 @@
             <template v-if="type != 'min'">
                 <slot name="bottom" />
                 <SidebarItem
+                    v-if="authUserWorkspaceRole == 'Admin' || getIsSystemAdmin"
+                    label="Support"
+                    iconClass="fas fa-bolt"
+                    @click.native="showSupportModal = true"
+                />
+
+                <SidebarItem
                     class="changelog-item"
                     label="News"
                     iconClass="fas fa-gift"
@@ -72,6 +79,7 @@
             </div>
         </div>
         <TheChangelogModal v-if="getShowChangelog" />
+        <TheSupportModal v-if="showSupportModal" :show="showSupportModal" @close="showSupportModal = false" />
     </div>
 </template>
 
@@ -91,12 +99,14 @@ export default {
         AuthUserIcon,
         SidebarItem,
         TheChangelogModal: () => import('./TheChangelogModal/'),
+        TheSupportModal: () => import('./TheSupportModal/'),
     },
     props: ['type'],
     data: function() {
         return {
             drawerExpanded: false,
             changelogReadDate: null,
+            showSupportModal: false,
         }
     },
     computed: {
