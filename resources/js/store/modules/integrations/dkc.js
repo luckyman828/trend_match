@@ -67,6 +67,11 @@ export default {
                     company: 'DkCompany',
                 },
                 {
+                    name: 'My Essential Wardrobe',
+                    code: 'MW',
+                    company: 'DkCompany',
+                },
+                {
                     name: 'MEW',
                     code: 'mw',
                     company: 'DkCompany',
