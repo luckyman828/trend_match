@@ -97,10 +97,6 @@ export default {
             } else {
                 this.newRequest = this.getDefaultRequest()
             }
-            // this.newRequest.content =
-            //     this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.content : ''
-            // this.newRequest.label =
-            //     this.selectionRequest && this.currentTicketMode != 'Multiple' ? this.selectionRequest.label : ''
         },
         getDefaultRequest() {
             return {
@@ -111,6 +107,7 @@ export default {
                 author: this.authUser,
                 selection_id: this.selectionInput.selection_id,
                 selection: this.selectionInput.selection,
+                product_id: this.selectionInput.product.id,
                 discussions: [],
                 completed_at: null,
                 completed_by_user: null,

@@ -53,7 +53,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        buttonClass="primary invisible"
+                        buttonClass="primary invisible ghost-hover"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="
                             authUserWorkspaceRole != 'Admin' && 'New users can only be added by a workspace admin'
@@ -319,7 +319,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import UsersTableRow from '../UsersPage/UsersTableRow'
+import UsersTableRow from './UsersTableRow'
 import sortArray from '../../mixins/sortArray'
 
 export default {

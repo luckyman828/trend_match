@@ -1,25 +1,19 @@
 <template>
     <div class="shape-wrapper">
         <div v-bind="$attrs" :class="shapeClass" class="base-shape">
-            <slot/>
+            <slot />
 
             <!-- Target Area -->
-            <div class="target-area" v-if="targetAreaPadding" 
-            :style="'padding: '+targetAreaPadding">
-
-            </div>
-
+            <div class="target-area" v-if="targetAreaPadding" :style="'padding: ' + targetAreaPadding"></div>
         </div>
+        <slot name="outside" />
     </div>
 </template>
 
 <script>
 export default {
     name: 'baseShape',
-    props: [
-        'shapeClass',
-        'targetAreaPadding',
-    ],
+    props: ['shapeClass', 'targetAreaPadding'],
 }
 </script>
 
@@ -41,6 +35,11 @@ export default {
         width: 100%;
         box-sizing: content-box;
     }
+    .top-right {
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translate(35%, -35%);
+    }
 }
-
 </style>

@@ -9,7 +9,7 @@
             <h4>
                 <button
                     v-if="index > 0"
-                    class="dark ghost"
+                    class="dark ghost true-square"
                     style="margin-left: -36px; margin-right: 4px"
                     @click="onRemovePriceMap(currencyMap[0].groupId)"
                 >
@@ -40,7 +40,7 @@
 
             <i
                 class="far fa-info-circle"
-                style="font-size: 16px;"
+                style="font-size: 14px;"
                 v-tooltip="'Use this if you have currencies spread between multiple files or columns.'"
             ></i>
         </div>

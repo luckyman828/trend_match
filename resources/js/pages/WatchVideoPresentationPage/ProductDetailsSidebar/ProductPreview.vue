@@ -1,7 +1,7 @@
 <template>
     <div class="product-preview">
         <div id="preview-spawner">
-            <v-popover placement="right" popoverClass="min dark">
+            <v-popover placement="right" popoverClass="min theme-dark">
                 <!-- Preview -->
                 <div class="preview" ref="preview">
                     <div class="header">

@@ -133,13 +133,14 @@ export default {
                 )
             })
         },
-        async insertOrUpdateRequestComment({ commit }, { request, comment }) {
+        async insertOrUpdateRequestComment({ commit, dispatch }, { request, comment }) {
             let apiUrl = `/requests/${request.id}/discussions`
             let requestMethod = 'post'
             if (comment.id) {
                 apiUrl = `/discussions/${comment.id}`
                 requestMethod = 'put'
             } else {
+                dispatch('initRequestComments', [comment])
                 commit('INSERT_OR_UPDATE_REQUEST_COMMENT', { request, comment })
             }
 
@@ -149,6 +150,7 @@ export default {
                 // data: request,
                 data: {
                     content: comment.content,
+                    selection_id: comment.selection_id,
                 },
             }).then(response => {
                 if (!comment.id) {
@@ -211,7 +213,7 @@ export default {
                 })
                 .then(response => {})
         },
-        initRequests({ rootGetters }, requests) {
+        initRequests({ rootGetters, dispatch }, requests) {
             requests.map(request => {
                 if (request.hasBeenInitialized) return
 
@@ -249,33 +251,68 @@ export default {
                 })
                 Object.defineProperty(request, 'author', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel = currentSelection.settings.anonymize_request
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+
+                        const user = rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == request.author_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, user)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return user
                     },
                 })
                 Object.defineProperty(request, 'selection', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelections'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel = currentSelection.settings.anonymize_request
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+
+                        const selection = rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == request.selection_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, selection)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return selection
                     },
                 })
 
                 // START THREAD COMMENTS
-                request.discussions.map(comment => {
-                    Object.defineProperty(comment, 'author', {
-                        get: function() {
-                            return rootGetters['selectionProducts/getSelectionUsers'].find(
-                                user => user.id == request.author_id
-                            )
-                        },
-                    })
-                })
-
+                dispatch('initRequestComments', request.discussions)
                 // END THREAD COMMENTS
 
                 request.hasBeenInitialized = true
+            })
+        },
+        initRequestComments({ rootGetters }, comments) {
+            comments.map(comment => {
+                Object.defineProperty(comment, 'author', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                            user => user.id == comment.author_id
+                        )
+                    },
+                })
+                Object.defineProperty(comment, 'selection', {
+                    get: function() {
+                        return rootGetters['selectionProducts/getSelections'].find(
+                            selection => selection.id == comment.selection_id
+                        )
+                    },
+                })
             })
         },
     },

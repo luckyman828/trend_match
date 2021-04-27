@@ -111,7 +111,7 @@
                     :descDefault="true"
                     >MU</BaseTableHeader
                 >
-                <BaseTableHeader class="currency hide-screen-xs"></BaseTableHeader>
+                <BaseTableHeader class="currency"></BaseTableHeader>
                 <BaseTableHeader
                     class="minimum"
                     :sortKey="['min_order', 'min_variant_order']"
@@ -349,9 +349,9 @@ export default {
             this.setCurrentProduct(newProduct)
             this.setSingleVisisble(true)
         },
-        onSaveOrder() {
+        async onSaveOrder() {
             const allProducts = this.products
-            const productsReOrdered = this.editOrderModeActive ? this.localProducts : this.productsFilteredBySearch
+            const productsReOrdered = this.editOrderModeActive ? [...this.localProducts] : this.productsFilteredBySearch
 
             // Sort the reordered products first
             productsReOrdered.map((reOrdered, index) => {
@@ -359,8 +359,9 @@ export default {
                 const product = allProducts.find(x => x.id == reOrdered.id)
                 product.sequence = index - productsReOrdered.length
             })
+
             // Sort by sequence
-            this.onSort(true, 'sequence')
+            await this.sortArray(allProducts, true, 'sequence')
 
             // Set the new sequence of all products
             allProducts.map((product, index) => {
@@ -372,7 +373,7 @@ export default {
             const key = e.code
             if (
                 e.target.type == 'textarea' ||
-                (e.target && e.target.tagName.toUpperCase() == 'INPUT') ||
+                (e.target.tagName && e.target.tagName.toUpperCase() == 'INPUT') ||
                 this.singleVisible
             )
                 return // Don't mess with user input

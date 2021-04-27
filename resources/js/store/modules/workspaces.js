@@ -1,5 +1,7 @@
 import axios from 'axios'
 import Compressor from 'compressorjs'
+import { triggerRouteGuards } from '../../helpers/routeGuards'
+import router from '../../router'
 
 export default {
     namespaced: true,
@@ -7,7 +9,7 @@ export default {
     state: {
         workspaces: [],
         databases: [],
-        currentWorkspaceIndex: localStorage.getItem('workspace-index') || null,
+        currentWorkspaceId: localStorage.getItem('workspace-id') || null,
         loading: true,
         availableWorkspaceRoles: [
             {
@@ -27,13 +29,15 @@ export default {
 
     getters: {
         loadingWorkspaces: state => state.loading,
+        getCurrentWorkspaceId: state => state.currentWorkspaceId,
         workspaces: state => state.workspaces,
+        getWorkspaces: state => state.workspaces,
         availableWorkspaceRoles: (state, getters, rootState, rootGetters) =>
             rootGetters['auth/getIsSystemAdmin']
                 ? state.availableWorkspaceRoles
                 : state.availableWorkspaceRoles.filter(x => x.role != 'Owner'),
-        currentWorkspaceIndex: state => state.currentWorkspaceIndex,
-        currentWorkspace: state => state.workspaces[state.currentWorkspaceIndex],
+        currentWorkspace: (state, getters) => state.workspaces.find(x => x.id == getters.getCurrentWorkspaceId),
+        getCurrentWorkspace: (state, getters) => getters.currentWorkspace,
         authUserWorkspaceRole: (state, getters) => {
             if (!getters.currentWorkspace) return 'Undefined'
             if (getters.currentWorkspace.role == 'Owner') return 'Admin'
@@ -50,11 +54,18 @@ export default {
             getters.currentWorkspace && getters.currentWorkspace.available_labels
                 ? getters.currentWorkspace.available_labels
                 : [],
+        getFeatureFlags: (state, getters) => (getters.currentWorkspace ? getters.currentWorkspace.feature_flags : []),
         getEnabledFeatures: (state, getters) => {
-            const workspace = getters.currentWorkspace
-            return {
-                style_option_api: workspace.style_option_enabled,
-            }
+            const enabledFeaturues = Object.fromEntries(getters.getFeatureFlags.map(flag => [flag, true]))
+            Object.defineProperty(enabledFeaturues, 'import_from_integration', {
+                get: () => enabledFeaturues.dkc_integration || getters.getWorkspaceDatabases.length > 0,
+            })
+            return enabledFeaturues
+        },
+        getEnabledApps: (state, getters, rootState, rootGetters) => {
+            return rootGetters['kollektApps/getApps'].filter(app => {
+                return getters.getFeatureFlags.includes(app.featureFlag)
+            })
         },
     },
 
@@ -71,11 +82,12 @@ export default {
             while (tryCount-- > 0 && !success) {
                 try {
                     const response = await axios.get(`${apiUrl}`)
+                    workspaces = response.data
+                    dispatch('initWorkspaces', workspaces)
+
                     commit('setWorkspaces', response.data)
                     commit('setLoading', false)
                     success = true
-                    workspaces = response.data
-                    // dispatch('initWorkspaces', workspaces)
                 } catch (err) {
                     console.log('API error in workspaces.js :')
                     console.log(err)
@@ -85,12 +97,8 @@ export default {
             }
             return workspaces
         },
-        async setCurrentWorkspaceIndex({ commit }, index) {
-            // Reset the current folder ID
-            commit('files/SET_CURRENT_FOLDER', null, { root: true })
-            commit('setCurrentWorkspaceIndex', index)
-        },
-        async fetchWorkspace({ state, dispatch, rootGetters }, workspaceId) {
+        async fetchWorkspace({ state, dispatch, rootGetters, commit }, workspaceId) {
+            commit('setLoading', true)
             let apiUrl = `workspaces/${workspaceId}`
             // If we are super admin, use the admin endpoint
             const isSystemAdmin = rootGetters['auth/getIsSystemAdmin']
@@ -98,12 +106,14 @@ export default {
             let workspace
             await axios.get(apiUrl).then(response => {
                 workspace = response.data
-                // dispatch('initWorkspaces', [workspace])
+                dispatch('initWorkspaces', [workspace])
+                commit('UPDATE_WORKSPACE', workspace)
                 const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
                 if (stateWorkspace) {
                     Object.assign(stateWorkspace, workspace)
                 }
             })
+            commit('setLoading', false)
             return workspace
         },
         async uploadWorkspaceCoverImage({ getters, dispatch }, image) {
@@ -295,13 +305,14 @@ export default {
             })
         },
         async initWorkspaces({}, workspaces) {
-            // workspaces.map(workspace => {
-            //     Object.defineProperty(workspace, 'logoUrl', {
-            //         get: function() {
-            //             return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`
-            //         },
-            //     })
-            // })
+            workspaces.map(workspace => {
+                if (!workspace.feature_flags) Vue.set(workspace, 'feature_flags', [])
+                // Object.defineProperty(workspace, 'logoUrl', {
+                //     get: function() {
+                //         return `${Vue.$cdnBaseUrl}/workspaces/${workspace.id}/logo.jpg`
+                //     },
+                // })
+            })
         },
         async fetchWorkspaceDatabases({ state }, workspace) {
             const apiUrl = `workspaces/${workspace.id}/databases`
@@ -327,7 +338,7 @@ export default {
                 )
             })
         },
-        async deleteWorkspace({ commit, state }, workspace) {
+        async deleteWorkspace({ commit, state, getters }, workspace) {
             const apiUrl = `admins/workspaces/${workspace.id}`
             axios.delete(apiUrl).then(response => {
                 commit(
@@ -342,8 +353,31 @@ export default {
                 // Redirect the user to another worksapce.
                 const index = state.workspaces.findIndex(x => x.id == workspace.id)
                 state.workspaces.splice(index, 1)
-                commit('setCurrentWorkspaceIndex', 0)
+                if (getters.currentWorkspaceId == workspace.id) {
+                    commit('SET_CURRENT_WORKSPACE_ID', getters.workspaces[0] && getters.workspaces[0].id)
+                }
             })
+        },
+        async changeWorkspace({ commit, dispatch, rootGetters }, workspaceId) {
+            // Fetch data for the new workspace
+            commit('SET_CURRENT_WORKSPACE_ID', workspaceId)
+            await dispatch('fetchWorkspace', workspaceId)
+            // Trigger route guards
+            const currentRoute = router.currentRoute
+            let newRoute = currentRoute
+            if (currentRoute.params.selectionId || currentRoute.params.fileId) {
+                newRoute = router.matcher.match({ name: rootGetters['kollektApps/getCurrentApp'].name })
+            }
+            // Trigger routeguards for the new route
+            const routeAfterGuards = await triggerRouteGuards(newRoute)
+            if (routeAfterGuards) newRoute = routeAfterGuards
+            if (newRoute != currentRoute) {
+                await router.push(newRoute)
+            }
+            commit('files/SET_CURRENT_FILE', null, { root: true })
+            commit('selections/SET_CURRENT_SELECTION_ID', null, { root: true })
+            commit('selections/SET_CURRENT_SELECTIONS', [], { root: true })
+            dispatch('files/setCurrentFolder', null, { root: true })
         },
     },
 
@@ -355,10 +389,14 @@ export default {
         setWorkspaces(state, workspaces) {
             state.workspaces = workspaces
         },
-        setCurrentWorkspaceIndex(state, index) {
+        SET_CURRENT_WORKSPACE_ID(state, newId) {
             // Save the current workspace index in local storage
-            localStorage.setItem('workspace-index', index)
-            state.currentWorkspaceIndex = index
+            localStorage.setItem('workspace-id', newId)
+            state.currentWorkspaceId = newId
+        },
+        UPDATE_WORKSPACE(state, workspace) {
+            const stateWorkspace = state.workspaces.find(x => x.id == workspace.id)
+            Object.assign(stateWorkspace, workspace)
         },
     },
 }

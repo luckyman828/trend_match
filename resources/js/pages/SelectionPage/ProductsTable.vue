@@ -27,21 +27,21 @@
                     <BaseTableTab
                         :label="`In`"
                         :count="
-                            allProducts.filter(x => ['In', 'Focus'].includes(getActiveSelectionInput(x)[currentAction]))
-                                .length
+                            allProducts.filter(product =>
+                                ['In', 'Focus'].includes(product.getActiveSelectionInput[currentAction])
+                            ).length
                         "
                         v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
                         :modelValue="insTabValue"
                     />
-                    <!-- <BaseTableTab :label="`In`" :count="allProducts.filter(x => insTabValue == 'ins' ? getActiveSelectionInput(x)[currentAction] == 'In' : getActiveSelectionInput(x)[currentAction] == 'Focus').length"
-                    v-model="productActionFilter" :disabled="currentSelections.length > 1"
-                    v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
-                    :modelValue="insTabValue" :toggle="'Focus only'" @toggle="onToggleFocusOnly"/> -->
                     <BaseTableTab
                         :label="`Out`"
-                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'Out').length"
+                        :count="
+                            allProducts.filter(product => product.getActiveSelectionInput[currentAction] == 'Out')
+                                .length
+                        "
                         v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -49,7 +49,10 @@
                     />
                     <BaseTableTab
                         :label="`Nds`"
-                        :count="allProducts.filter(x => getActiveSelectionInput(x)[currentAction] == 'None').length"
+                        :count="
+                            allProducts.filter(product => product.getActiveSelectionInput[currentAction] == 'None')
+                                .length
+                        "
                         v-model="productActionFilter"
                         :disabled="currentSelections.length > 1"
                         v-tooltip="currentSelections.length > 1 && 'Only available for single-selection view'"
@@ -75,7 +78,7 @@
                 <!-- Selection Selector Ends -->
             </template>
             <template v-slot:topBarLeft>
-                <ProductFilters :distributionScope="distributionScope" :ticketsEnabled="ticketsEnabled" />
+                <ProductFilters :distributionScope="distributionScope" />
                 <ProductSort :currentSortKey="sortKey" @sort="onSort" />
 
                 <!-- Temp. disabled until the functionality gets hooked up -->
@@ -295,7 +298,6 @@
                         "
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        hotkey="KeyI"
                         @click="onUpdateAction('In', contextSelectionInput)"
                     >
                         <span><u>I</u>n</span>
@@ -305,7 +307,6 @@
                         :iconClass="contextSelectionInput[currentAction] == 'Out' ? 'fas red fa-times' : 'far fa-times'"
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        hotkey="KeyO"
                         @click="onUpdateAction('Out', contextSelectionInput)"
                     >
                         <span><u>O</u>ut</span>
@@ -317,7 +318,6 @@
                         "
                         :disabled="!userWriteAccess.actions.hasAccess"
                         :disabledTooltip="userWriteAccess.actions.msg"
-                        :hotkey="['KeyF', 'KeyU']"
                         @click="onUpdateAction('Focus', contextSelectionInput)"
                     >
                         <span><u>F</u>oc<u>u</u>s</span>
@@ -428,7 +428,7 @@
             </div>
 
             <div class="item-group">
-                <BaseContextMenuItem iconClass="far fa-file-export" hotkey="KeyE">
+                <BaseContextMenuItem iconClass="far fa-file-export" hotkey="KeyE" :hasSubmenu="true">
                     <template>
                         <span><u>E</u>xport selected</span>
                     </template>
@@ -448,16 +448,16 @@
             </div>
         </BaseContextMenu>
 
-        <BaseTooltip id="action-distribution-tooltip" ref="actionDistributionTooltip" @show="showDistributionTooltip">
+        <BasePopover id="action-distribution-tooltip" ref="actionDistributionTooltip" @show="showDistributionTooltip">
             <ActionDistributionTooltip
                 :selectionInput="tooltipSelectionInput"
                 :type="distributionTooltipType"
                 :actionDistributionTooltipTab="actionDistributionTooltipTab"
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
-        </BaseTooltip>
+        </BasePopover>
 
-        <BaseTooltip id="variant-tooltip" ref="variantTooltip" @show="showVariantTooltip">
+        <BasePopover id="variant-tooltip" ref="variantTooltip" @show="showVariantTooltip">
             <VariantTooltip
                 :variant="tooltipVariant"
                 :selection="selection"
@@ -466,7 +466,7 @@
                 :actionDistributionTooltipTab="actionDistributionTooltipTab"
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
-        </BaseTooltip>
+        </BasePopover>
     </div>
 </template>
 
@@ -509,7 +509,12 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', ['currentFocusRowIndex', 'getProductsFilteredBySearch', 'singleVisible']),
+        ...mapGetters('products', [
+            'currentFocusRowIndex',
+            'getProductsFilteredBySearch',
+            'singleVisible',
+            'getProductsFiltered',
+        ]),
         ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
@@ -521,7 +526,7 @@ export default {
             'getAuthUserSelectionWriteAccess',
             'getSelectionsAvailableForInputFiltering',
         ]),
-        ...mapGetters('products', { allProducts: 'products' }),
+        ...mapGetters('selectionProducts', { allProducts: 'getProducts' }),
         ...mapGetters('auth', ['authUser']),
         userWriteAccess() {
             return this.getAuthUserSelectionWriteAccess(this.selection)
@@ -533,6 +538,11 @@ export default {
             if (!this.contextProduct) return
             return this.getActiveSelectionInput(this.contextProduct)
         },
+        // products() {
+        //     return this.allProducts.length == this.productsFilteredBySearch.length
+        //         ? this.getProductsFiltered
+        //         : this.productsFilteredBySearch
+        // },
         selectedProducts: {
             get() {
                 return this.$store.getters['products/getSelectedProducts']
@@ -694,6 +704,7 @@ export default {
             this.sortKey = sortKey
             // Sort the products in our state to make sure the sort happens everywhere in the dashboard
             this.sortArray(this.products, sortAsc, sortKey)
+            this.sortArray(this.productsFilteredBySearch, sortAsc, sortKey)
         },
         onUpdateAction(action, selectionInput) {
             this.$emit('updateAction', action, selectionInput)
@@ -729,7 +740,14 @@ export default {
         },
         hotkeyHandler(e) {
             const key = e.code
-            if (e.target.type == 'textarea' || e.target.tagName.toUpperCase() == 'INPUT' || this.singleVisible) return // Don't mess with user input
+            if (
+                !e.target ||
+                !e.target.tagName ||
+                e.target.type == 'textarea' ||
+                e.target.tagName.toUpperCase() == 'INPUT' ||
+                this.singleVisible
+            )
+                return // Don't mess with user input
 
             if (key == 'KeyS') {
                 this.$refs.tableComp.focusSearch()
@@ -983,12 +1001,12 @@ export default {
 }
 .filter-button {
     @media screen and (max-width: $screenMd) {
-        > span {
-            margin-right: 8px;
-            &:first-child {
-                margin-left: 8px;
-            }
-        }
+        // > span {
+        //     margin-right: 8px;
+        //     &:first-child {
+        //         margin-left: 8px;
+        //     }
+        // }
         .fa-chevron-down {
             display: none;
         }

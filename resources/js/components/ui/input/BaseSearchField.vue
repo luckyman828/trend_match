@@ -125,8 +125,44 @@ export default {
             }
             searchString = searchString.map(str => str.trim())
 
-            // If we have a search key, search by that
-            if (searchKey) {
+            // If no search key, search by the option itself
+            if (!searchKey || (Array.isArray(searchKey) && !searchKey.find(key => key != null))) {
+                // If we have multiple arrays to search through
+                if (this.searchMultipleArrays) {
+                    // Instantiate a copy of the multiple arrays object that we will use as the return object
+                    const arrayToReturn = []
+
+                    array.forEach(arrayObject => {
+                        // Make a copy of the array object that we can filter the options of
+                        const arrayObjectToReturn = Object.assign({}, arrayObject)
+                        arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
+                            // Convert the value to match to a string so we can search it
+                            const valueToMatch = x.toString().toLowerCase()
+                            let isMatch = false
+                            searchString.forEach(str => {
+                                if (valueToMatch.search(str) >= 0) isMatch = true
+                            })
+                            return isMatch
+                        })
+                        arrayToReturn.push(arrayObjectToReturn)
+                    })
+                    // Return the resulting arrays
+                    resultsToReturn = arrayToReturn
+                } else {
+                    resultsToReturn = array.filter(x => {
+                        // Convert the value to match to a string so we can search it
+                        const valueToMatch = x.toString().toLowerCase()
+                        let isMatch = false
+                        searchString.forEach(str => {
+                            if (valueToMatch.search(str) >= 0) isMatch = true
+                        })
+                        return isMatch
+                    })
+                }
+            }
+
+            // Ekse If we have a search key, search by that
+            else {
                 // If we have multiple arrays to search through
                 if (this.searchMultipleArrays) {
                     // Instantiate a copy of the multiple arrays object that we will use as the return object
@@ -206,41 +242,6 @@ export default {
                         }
                     })
             }
-            // Else search by the option itself
-            else {
-                // If we have multiple arrays to search through
-                if (this.searchMultipleArrays) {
-                    // Instantiate a copy of the multiple arrays object that we will use as the return object
-                    const arrayToReturn = []
-
-                    array.forEach(arrayObject => {
-                        // Make a copy of the array object that we can filter the options of
-                        const arrayObjectToReturn = Object.assign({}, arrayObject)
-                        arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
-                            // Convert the value to match to a string so we can search it
-                            const valueToMatch = x.toString().toLowerCase()
-                            let isMatch = false
-                            searchString.forEach(str => {
-                                if (valueToMatch.search(str) >= 0) isMatch = true
-                            })
-                            return isMatch
-                        })
-                        arrayToReturn.push(arrayObjectToReturn)
-                    })
-                    // Return the resulting arrays
-                    resultsToReturn = arrayToReturn
-                } else {
-                    resultsToReturn = array.filter(x => {
-                        // Convert the value to match to a string so we can search it
-                        const valueToMatch = x.toString().toLowerCase()
-                        let isMatch = false
-                        searchString.forEach(str => {
-                            if (valueToMatch.search(str) >= 0) isMatch = true
-                        })
-                        return isMatch
-                    })
-                }
-            }
 
             // Sort the results by the search array
             if (searchString.length > 2) {
@@ -260,7 +261,16 @@ export default {
         },
     },
     mounted() {
-        if (this.focusOnMount) this.setFocus()
+        if (this.focusOnMount) {
+            this.setFocus()
+            // const focusSearchTester = setInterval(() => {
+            //     if (document.activeElement.type == 'search') {
+            //         clearInterval(focusSearchTester)
+            //         return
+            //     }
+            //     this.setFocus()
+            // }, 100)
+        }
     },
     created() {
         if (this.arrayToSearch) {
@@ -276,6 +286,7 @@ export default {
 .search {
     position: relative;
     input.input-wrapper {
+        width: 100%;
         padding-right: 32px;
         box-sizing: border-box;
     }

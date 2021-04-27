@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { triggerRouteGuards } from './helpers/routeGuards'
 import store from './store'
 
 Vue.use(VueRouter)
@@ -7,103 +8,366 @@ Vue.use(VueRouter)
 // Define route components
 
 const routes = [
+    // LOGIN / AUTH ROUTES
+
     {
         path: '/login',
         name: 'login',
-        component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/LoginPage/LoginScreen'),
+        redirect: 'login/',
+        meta: {
+            root: 'login',
+            isRoot: true,
+        },
+        component: () => import(/* webpackChunkName: "LoginRoot" */ './pages/Login/'),
+        children: [
+            {
+                path: '/',
+                name: 'loginForm',
+                meta: {
+                    root: 'login',
+                },
+                component: () => import(/* webpackChunkName: "LoginScreen" */ './pages/Login/LoginPage/LoginScreen'),
+            },
+            {
+                path: 'recover-password',
+                name: 'recoverPassword',
+                meta: {
+                    root: 'login',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "RecoverPasswordScreen" */ './pages/Login/LoginPage/RecoverPasswordScreen'
+                    ),
+            },
+            {
+                path: 'verification-code',
+                name: 'verificationCode',
+                meta: {
+                    root: 'login',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "VerificationCodeScreen" */ './pages/Login/LoginPage/VerificationCodeScreen'
+                    ),
+            },
+            {
+                path: 'set-new-password',
+                name: 'setNewPassword',
+                meta: {
+                    root: 'login',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "SetNewPasswordScreen" */ './pages/Login/LoginPage/SetNewPasswordScreen'
+                    ),
+            },
+            {
+                path: 'join/:linkHash',
+                name: 'join',
+                meta: {
+                    root: 'login',
+                },
+                component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+            },
+        ],
     },
+
+    // SELECT REDIRECT ROUTES
     {
-        path: '/login/recover-password',
-        name: 'recoverPassword',
-        component: () =>
-            import(/* webpackChunkName: "RecoverPasswordScreen" */ './pages/LoginPage/RecoverPasswordScreen'),
-    },
-    {
-        path: '/login/verification-code',
-        name: 'verificationCode',
-        component: () =>
-            import(/* webpackChunkName: "VerificationCodeScreen" */ './pages/LoginPage/VerificationCodeScreen'),
-    },
-    {
-        path: '/login/set-new-password',
-        name: 'setNewPassword',
-        component: () =>
-            import(/* webpackChunkName: "SetNewPasswordScreen" */ './pages/LoginPage/SetNewPasswordScreen'),
+        path: '/files',
+        redirect: 'select/files',
     },
     {
         path: '/file/:fileId/edit',
-        name: 'editFile',
-        component: () => import(/* webpackChunkName: "EditFilePage" */ './pages/EditFilePage'),
-    },
-    {
-        path: '/files',
-        name: 'files',
-        component: () => import(/* webpackChunkName: "FilesPage" */ './pages/FilesPage'),
+        redirect: 'select/file/:fileId/edit',
     },
     {
         path: '/teams',
-        name: 'teams',
-        component: () => import(/* webpackChunkName: "TeamsPage" */ './pages/TeamsPage'),
+        redirect: 'select/teams',
     },
     {
         path: '/users',
-        name: 'users',
-        component: () => import(/* webpackChunkName: "UsersPage" */ './pages/UsersPage'),
+        redirect: 'select/users',
     },
     {
         path: '/file/:fileId/selection/:selectionId',
-        name: 'selection',
-        component: () => import(/* webpackChunkName: "SelectionPage" */ './pages/SelectionPage'),
+        redirect: 'select/file/:fileId/selection/:selectionId',
     },
     {
         path: '/file/:fileId/video/edit',
-        name: 'editVideoPresentation',
-        component: () =>
-            import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
+        redirect: 'select/file/:fileId/video/edit',
     },
     {
         path: '/file/:fileId/livestream/create',
-        name: 'createLivestream',
-        component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/CreateLivestreamPage'),
+        redirect: 'select/file/:fileId/livestream/create',
     },
     {
         path: '/file/:fileId/selection/:selectionId/video/watch',
-        name: 'watchVideoPresentation',
-        component: () =>
-            import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/WatchVideoPresentationPage'),
+        redirect: 'select/file/:fileId/selection/:selectionId/video/watch',
     },
     {
         path: '/file/:fileId/selection/:selectionId/video/watch/mobile',
-        name: 'mobileVideoPresentation',
-        component: () =>
-            import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage'),
+        redirect: 'select/file/:fileId/selection/:selectionId/video/watch/mobile',
     },
     {
         path: '/join/:linkHash',
-        name: 'joinSelection',
-        component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+        redirect: 'login/join/:linkHash',
     },
     {
         path: '/settings',
-        name: 'settings',
-        component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SettingsPage'),
+        redirect: 'select/settings',
     },
     {
         path: '/system-admin',
-        name: 'systemAdmin',
-        component: () => import(/* webpackChunkName: "settingsPage" */ './pages/SystemAdminPage'),
+        redirect: 'select/system-admin',
     },
     {
         path: '/file/:fileId/result',
-        name: 'results',
-        component: () => import(/* webpackChunkName: "resultsPage" */ './pages/ResultsPage'),
+        redirect: 'select/file/:fileId/result',
     },
     {
         path: '/file/:fileId/live-results',
-        name: 'liveResults',
-        component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
+        redirect: 'select/file/:fileId/live-results',
     },
-    { path: '*', redirect: '/files' },
+
+    // Root Routes
+    {
+        path: '/',
+        name: 'root',
+        component: () => import(/* webpackChunkName: "rootRoot" */ './pages/ROOT/'),
+        redirect: '/',
+        meta: {
+            root: 'root',
+            isRoot: true,
+        },
+        children: [
+            {
+                path: '/',
+                name: 'selectApp',
+                meta: {
+                    isFullscreen: true,
+                },
+                component: () => import(/* webpackChunkName: "selectApp" */ './pages/ROOT/KollektAppSelectorPage/'),
+                // beforeEnter: (to, from, next) => {
+                //     const availableApps = store.getters['workspaces/getEnabledApps']
+                //     if (!store.getters['auth/getIsSystemAdmin'] && availableApps.length == 1) {
+                //         next({ name: availableApps[0].name })
+                //     }
+                //     next()
+                // },
+            },
+            {
+                path: 'settings/:workspaceId',
+                name: 'workspaceSettings',
+                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/ROOT/SettingsPage'),
+            },
+            {
+                path: 'system-admin',
+                name: 'systemAdmin',
+                component: () => import(/* webpackChunkName: "settingsPage" */ './pages/ROOT/SystemAdminPage'),
+            },
+        ],
+    },
+
+    // SELECT Routes
+    {
+        path: '/select',
+        name: 'select',
+        redirect: 'select/',
+        meta: {
+            root: 'select',
+            app: 'select',
+            isRoot: true,
+        },
+        component: () => import(/* webpackChunkName: "buyRoot" */ './pages/SELECT/'),
+        children: [
+            {
+                path: 'files',
+                name: 'files',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "FilesPage" */ './pages/FilesPage'),
+            },
+            {
+                path: 'file/:fileId/edit',
+                name: 'editFile',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "EditFilePage" */ './pages/EditFilePage'),
+            },
+            {
+                path: 'teams',
+                name: 'teams',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "TeamsPage" */ './pages/TeamsPage'),
+            },
+            {
+                path: 'users',
+                name: 'users',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "UsersPage" */ './pages/UsersPage'),
+            },
+            {
+                path: 'file/:fileId/selection/:selectionId',
+                name: 'selection',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "SelectionPage" */ './pages/SelectionPage'),
+            },
+            {
+                path: 'file/:fileId/video/edit',
+                name: 'editVideoPresentation',
+                meta: {
+                    root: 'select',
+                    hideCrisp: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "EditVideoPresentationPage" */ './pages/EditVideoPresentationPage'),
+            },
+            {
+                path: 'file/:fileId/livestream/create',
+                name: 'createLivestream',
+                meta: {
+                    root: 'select',
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "createLivestreamPage" */ './pages/CreateLivestreamPage'),
+            },
+            {
+                path: 'file/:fileId/selection/:selectionId/video/watch',
+                name: 'watchVideoPresentation',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/WatchVideoPresentationPage'),
+            },
+            {
+                path: 'file/:fileId/selection/:selectionId/video/watch/mobile',
+                name: 'mobileVideoPresentation',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () =>
+                    import(/* webpackChunkName: "watchVideoPresentationPage" */ './pages/MobileVideoPresentationPage'),
+            },
+            {
+                path: 'join/:linkHash',
+                name: 'joinSelection',
+                meta: {
+                    root: 'select',
+                },
+                component: () => import(/* webpackChunkName: "joinSelectionPage" */ './pages/JoinSelectionPage'),
+            },
+            {
+                path: 'file/:fileId/result',
+                name: 'results',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "resultsPage" */ './pages/ResultsPage'),
+            },
+            {
+                path: 'file/:fileId/live-results',
+                name: 'liveResults',
+                meta: {
+                    root: 'select',
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "liveResultsPage" */ './pages/LiveResultsPage'),
+            },
+            {
+                path: '*',
+                redirect: 'files',
+            },
+        ],
+    },
+
+    // PLAY Routes
+    {
+        path: '/play',
+        name: 'play',
+        meta: {
+            root: 'play',
+            app: 'play',
+            isRoot: true,
+        },
+        component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
+        children: [
+            {
+                path: 'home',
+                name: 'playHome',
+                component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
+            },
+            {
+                path: 'watch/:videoId',
+                name: 'watchVideo',
+                meta: {
+                    isFullscreen: true,
+                    hideCrisp: true,
+                },
+                component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/WatchVideoPage/'),
+            },
+            {
+                path: '*',
+                redirect: 'home',
+            },
+        ],
+    },
+
+    // BUY Routes
+    {
+        path: '/buy',
+        name: 'buy',
+        redirect: 'buy/',
+        meta: {
+            root: 'buy',
+            app: 'buy',
+            isRoot: true,
+        },
+        component: () => import(/* webpackChunkName: "buyRoot" */ './pages/BUY/'),
+        children: [
+            {
+                path: 'files',
+                name: 'buy.files',
+                component: () => import(/* webpackChunkName: "buyFiles" */ './pages/BUY/FilesPage/'),
+            },
+            {
+                path: 'file/:fileId/edit',
+                name: 'buy.editFile',
+                component: () =>
+                    import(/* webpackChunkName: "buyEditFileProductsPage" */ './pages/BUY/EditFileProductsPage/'),
+            },
+            {
+                path: 'selection/:selectionId',
+                name: 'buy.selection',
+                component: () => import(/* webpackChunkName: "buySelectionPage" */ './pages/BUY/SelectionPage/'),
+            },
+            {
+                path: 'users',
+                name: 'buy.users',
+                component: () => import(/* webpackChunkName: "buyUsers" */ './pages/BUY/UsersPage/'),
+            },
+            {
+                path: '*',
+                redirect: 'files',
+            },
+        ],
+    },
 ]
 
 const router = new VueRouter({
@@ -118,51 +382,26 @@ router.beforeEach(async (to, from, next) => {
         // If we are not going to a file related path --> reset the current folder
         store.commit('files/SET_CURRENT_FOLDER', null)
     }
+    // GUARD SPACES
+    const nextRoute = await triggerRouteGuards(to)
+    next(nextRoute)
+    return
 
-    // if (to.name == 'login' && from && from.name) {
-    //     store.commit('routes/SET_NEXT_URL', from.fullPath)
-    // }
-
-    if (to.path.startsWith('/login') && store.getters['auth/isAuthenticated']) {
-        next({ name: 'files' })
-        return
-    }
-
-    if (to.name == 'verificationCode' && !store.getters['auth/getPasswordRecoveryEmail']) {
-        next({ name: 'login' })
-    } else if (to.name == 'setNewPassword' && !store.getters['auth/getPasswordRecoverySessionId']) {
-        next({ name: 'login' })
-    }
-
+    // Redirect PLAY
     if (to.name == 'watchVideoPresentation' && window.innerWidth < 1000) {
         next({ name: 'mobileVideoPresentation', params: to.params })
     }
     if (to.name == 'mobileVideoPresentation' && window.innerWidth >= 1000) {
         next({ name: 'watchVideoPresentation', params: to.params })
     }
-
-    // ADD USERS TO SELECTION IF THEY COME THROUGH A JOIN LINK
-    if (to.name == 'joinSelection' && to.params.linkHash) {
-        next()
-    }
-
-    // Check that the user is not going to the login page already
-    else if (!to.path.startsWith('/login') && !store.getters['auth/isAuthenticated']) {
-        store.commit('routes/SET_NEXT_URL', to.fullPath)
-        next({
-            name: 'login',
-        })
-    } else {
-        next()
-    }
 })
 
 router.afterEach((to, from) => {
     // Reset current selections on route leave
-    // const selectionRouteNames = ['selection', 'createLivestream']
-    // if (selectionRouteNames.includes(from.name)) {
     store.commit('selections/SET_CURRENT_SELECTIONS', [])
-    // }
+    store.commit('productFilters/CLEAR_PRODUCT_FILTERS')
+    store.commit('productFilters/SET_FILTER_SELECTION_IDS', [])
+    store.commit('selectionProducts/SET_SELECTIONS', [])
 })
 
 export default router

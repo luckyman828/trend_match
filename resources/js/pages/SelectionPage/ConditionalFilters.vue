@@ -1,5 +1,5 @@
 <template>
-    <div class="conditional-filters" ref="filterWrapper" v-click-outside="onClose">
+    <div class="conditional-filters" ref="filterWrapper">
         <h3>Advanced filters</h3>
 
         <template></template>
@@ -53,7 +53,7 @@
 
             <BaseInputField class="value-input" inputClass="small" v-model.number="keyFilter.value" type="number" />
 
-            <button class="ghost remove" @click="onRemoveFilter(index, 'key')">
+            <button class="ghost remove true-square" @click="onRemoveFilter(index, 'key')">
                 <i class="far fa-trash"></i>
             </button>
         </div>
@@ -137,7 +137,7 @@
                 </template>
             </v-popover>
 
-            <button class="ghost remove" @click="onRemoveFilter(index, 'author')">
+            <button class="ghost remove true-square" @click="onRemoveFilter(index, 'author')">
                 <i class="far fa-trash"></i>
             </button>
         </div>
@@ -257,8 +257,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('products', {
-            products: 'products',
+        ...mapGetters('selectionProducts', {
+            products: 'getProducts',
         }),
         ...mapGetters('selectionProducts', {
             getActiveSelectionInput: 'getActiveSelectionInput',
@@ -467,7 +467,7 @@ export default {
             )
             this.SET_ADVANCED_FILTER(JSON.parse(JSON.stringify(filtersToSet)))
         },
-        onClose() {
+        onClose(e) {
             this.$emit('close')
         },
     },

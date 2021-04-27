@@ -111,7 +111,7 @@ export default {
     width: 384px;
     right: 0;
     top: 0;
-    height: calc(100% - #{$heightPlayerControls} - 8px);
+    height: calc(100% - #{$heightPlayerControls});
     // height: 100%;
     display: flex;
     flex-direction: column;

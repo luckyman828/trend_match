@@ -2,6 +2,8 @@ import axios from 'axios'
 import sortArray from '../../mixins/sortArray'
 import Compressor from 'compressorjs'
 import { instantiateProductsFromMappedFields, parseCSVStringToRowsAndCells } from '../../helpers/workbookUtils'
+import chunkArray from '../../helpers/chunkArray'
+import getUniqueObjectValuesByKey from '../../helpers/getUniqueObjectValuesByKey'
 
 export default {
     namespaced: true,
@@ -77,126 +79,69 @@ export default {
         hideCompleted: state => state.hideCompleted,
         noImagesOnly: state => state.noImagesOnly,
         singleVisible: state => state.singleVisible,
-        products: (state, getters, rootState, rootGetters) => rootGetters['selectionProducts/getProducts'],
-        getProducts: (state, getters) => getters.products,
+        products: state => state.products,
+        getProducts: state => state.products,
         getAllProducts: (state, getters) => state.products,
-        productsFiltered(state, getters, rootState, rootGetters) {
-            // const products = getters.products
-            const products = rootGetters['selectionProducts/getProducts']
-            const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
-            // Filters
-            const categories = rootGetters['productFilters/getFilterCategories']
-            const deliveryDates = rootGetters['productFilters/getFilterDeliveryDates']
-            const buyerGroups = rootGetters['productFilters/getFilterBuyerGroups']
-            const brands = rootGetters['productFilters/getFilterBrands']
-            const productLabels = rootGetters['productFilters/getFilterProductLabels']
-            const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
+        getFilteredProducts: (state, getters, rootState, rootGetters) => products => {
+            const invertMatch = rootGetters['productFilters/getIsInverseMatch']
+            const exactMatch = rootGetters['productFilters/getIsExactMatch']
+            const filters = rootGetters['productFilters/getProductFilters']
+
+            // YE OLDE STUFF
             const unreadOnly = rootGetters['productFilters/unreadOnly']
             const openTicketsOnly = rootGetters['productFilters/openTicketsOnly']
             const hideCompleted = rootGetters['productFilters/hideCompleted']
             const noImagesOnly = rootGetters['productFilters/noImagesOnly']
             const actionFilter = rootGetters['productFilters/getProductActionFilter']
-            const customDataFilters = rootGetters['productFilters/getAllCustomValueFilters']
-            const customFields = rootGetters['workspaces/getCustomProductFields']
             const hasAdvancedFilter = rootGetters['productFilters/getHasAdvancedFilter']
             const advancedFilters = rootGetters['productFilters/getAdvancedFilter']
             // Selection Specific
+            const getSelectionInput = rootGetters['selectionProducts/getActiveSelectionInput']
             const distributionScope = rootGetters['selectionProducts/getDistributionScope']
             const currentAction = rootGetters['selections/currentSelectionModeAction']
             const selectionMode = rootGetters['selections/currentSelectionMode']
-            let productsToReturn = products
+            const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
+            // END YE OLDE STUFF
 
-            // First filter by category
-            if (categories.length > 0) {
-                const filteredByCategory = productsToReturn.filter(product => {
-                    return product.category && Array.from(categories).includes(product.category.toLowerCase())
-                })
-                productsToReturn = filteredByCategory
-            }
-            // Filter by delivery date
-            if (deliveryDates.length > 0) {
-                const filteredByDeliveryDate = productsToReturn.filter(product => {
-                    return Array.from(deliveryDates).find(date => product.delivery_dates.includes(date))
-                })
-                productsToReturn = filteredByDeliveryDate
-            }
-            // Filter by brand
-            if (brands.length > 0) {
-                const filteredByBrands = productsToReturn.filter(product => {
-                    return product.brand && Array.from(brands).includes(product.brand.toLowerCase())
-                })
-                productsToReturn = filteredByBrands
-            }
-            // Filter by buyer group
-            if (buyerGroups.length > 0) {
-                const filteredByBuyerGroups = productsToReturn.filter(product => {
-                    return product.buying_group && Array.from(buyerGroups).includes(product.buying_group.toLowerCase())
-                })
-                productsToReturn = filteredByBuyerGroups
-            }
-            // Filter by product labels
-            if (productLabels.length > 0) {
-                const filteredByProductLabels = productsToReturn.filter(product => {
-                    return productLabels.find(label => {
-                        if (label == 'no label') return product.labels.length <= 0
-                        return product.labels.includes(label)
-                    })
-                })
-                productsToReturn = filteredByProductLabels
-            }
-            // Filter by ticket labels
-            if (ticketLabels.length > 0) {
-                const filteredByTicketLabels = productsToReturn.filter(product => {
-                    return ticketLabels.find(label => {
-                        if (label == 'no label') {
-                            return product.requests.find(
-                                request => request.type == 'Ticket' && request.labels.length <= 0
-                            )
-                        } else {
-                            return product.requests.find(
-                                request => request.type == 'Ticket' && request.labels.includes(label)
-                            )
-                        }
-                    })
-                })
-                productsToReturn = filteredByTicketLabels
-            }
+            const filtersActive = rootGetters['productFilters/getFiltersAreActive']
+            let productsToReturn = [...products]
 
-            // Filter by custom values
-
-            Object.keys(customDataFilters).map(filterKey => {
-                // Get details about the key
-                const filterValues = customDataFilters[filterKey]
-                if (filterValues.length <= 0) return
-
-                const customField = customFields.find(field => field.name == filterKey)
-                const checkIfObjectShouldBeIncluded = object => {
-                    if (Array.isArray(object.extra_data[filterKey])) {
-                        if (object.extra_data[filterKey].find(x => filterValues.includes(x))) {
-                            return true
-                        }
-                    } else if (filterValues.includes(object.extra_data[filterKey])) {
-                        return true
-                    }
-                    return false
-                }
-
+            // Filter by regular filters
+            filters.map(filter => {
+                // if (filter.selected.length <= 0 || filter.scope != 'product') return true
+                if (filter.selected.length <= 0) return true
                 productsToReturn = productsToReturn.filter(product => {
-                    let include = false
-                    if (customField.belong_to == 'Variant') {
-                        product.variants.map(variant => {
-                            if (checkIfObjectShouldBeIncluded(variant)) {
-                                include = true
-                            }
-                        })
-                    } else {
-                        include = checkIfObjectShouldBeIncluded(product)
+                    const productOptions = getUniqueObjectValuesByKey(product, filter.key)
+                    const optionsToMatch = productOptions.map(option => option.toString().toLowerCase())
+
+                    const includesMatch = !!filter.selected.find(selectedOption => {
+                        // If we are looking for objects with no values
+                        if (selectedOption == 'N/A - Not set') return optionsToMatch.length <= 0
+
+                        // Else
+                        const toMatch = selectedOption.toString().toLowerCase()
+
+                        return optionsToMatch.includes(toMatch)
+                    })
+
+                    // Exact match
+                    if (exactMatch && includesMatch) {
+                        return (
+                            optionsToMatch.length == filter.selected.length &&
+                            !filter.selected.find(selectedOption => {
+                                const toMatch = selectedOption.toString().toLowerCase()
+                                return !optionsToMatch.includes(toMatch)
+                            })
+                        )
                     }
-                    return include
+
+                    return includesMatch
                 })
             })
 
-            // Filer by unread
+            // End filter by regular filters
+
+            // YE OLDE FILTERS
             if (unreadOnly) {
                 if (selectionMode == 'Approval') {
                     productsToReturn = productsToReturn.filter(
@@ -217,6 +162,22 @@ export default {
                 productsToReturn = productsToReturn.filter(x =>
                     x.requests.find(request => request.type == 'Ticket' && request.status == 'Open')
                 )
+            }
+            // Filter by ticket labels
+            if (ticketLabels.length > 0) {
+                const filteredByTicketLabels = productsToReturn.filter(product => {
+                    return ticketLabels.find(label => {
+                        if (label == 'no label') {
+                            return (
+                                product.requests.length <= 0 ||
+                                !!product.requests.find(request => request.labels.length <= 0)
+                            )
+                        } else {
+                            return product.requests.find(request => request.labels.includes(label))
+                        }
+                    })
+                })
+                productsToReturn = filteredByTicketLabels
             }
 
             // Filter by advanced filters
@@ -346,8 +307,95 @@ export default {
                 })
                 productsToReturn = filteredByAction
             }
+            // END YE OLDE FILTERS
+
+            if (invertMatch && filtersActive) {
+                // Invert the match
+                return products.filter(product => !productsToReturn.find(x => x.id == product.id))
+            }
 
             return productsToReturn
+        },
+        productsFiltered(state, getters, rootState, rootGetters) {
+            const products = getters.products
+            return getters.getFilteredProducts(products)
+        },
+        getProductsFiltered: (state, getters) => getters.productsFiltered,
+        getCurrentViewProducts: (state, getters, rootState, rootGetters) => {
+            const products = getters.products
+            const buyView = rootGetters['productFilters/getBuyView']
+            const selection = rootGetters['selections/getCurrentSelection']
+
+            if (!selection) return products
+
+            let productsToReturn = [...products]
+
+            if (selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
+            }
+
+            if (buyView == 'tbd') {
+                productsToReturn = productsToReturn.filter(
+                    product => product.quantity <= 0 && ['Focus', 'In'].includes(product.selectionAlignment.action)
+                )
+            }
+            if (buyView == 'purchase') {
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
+            }
+            return productsToReturn
+        },
+        getCurrentViewProductsFiltered: (state, getters) => {
+            const products = getters.getCurrentViewProducts
+            return getters.getFilteredProducts(products)
+        },
+        getFilteredVariants: (state, getters, rootState, rootGetters) => variants => {
+            const selection = rootGetters['selections/getCurrentSelection']
+            const filters = rootGetters['productFilters/getProductFilters']
+            const filterVariants = rootGetters['productFilters/getFilterVariants']
+
+            let variantsFiltered = [...variants]
+
+            if (filterVariants) {
+                filters.map(filter => {
+                    if (filter.selected.length <= 0 || filter.scope != 'variant') return true
+                    variantsFiltered = variantsFiltered.filter(variant => {
+                        // remove `variants` from the key
+                        const key = filter.key.slice(9)
+                        const variantOptions = getUniqueObjectValuesByKey(variant, key)
+                        const optionsToMatch = variantOptions.map(option => option.toString().toLowerCase())
+
+                        const includesMatch = !!filter.selected.find(selectedOption => {
+                            // If we are looking for objects with no values
+                            if (selectedOption == 'N/A - Not set') return optionsToMatch.length <= 0
+
+                            // Else
+                            const toMatch = selectedOption.toString().toLowerCase()
+
+                            return optionsToMatch.includes(toMatch)
+                        })
+
+                        // Exact match
+                        if (exactMatch && includesMatch) {
+                            return (
+                                optionsToMatch.length == filter.selected.length &&
+                                !filter.selected.find(selectedOption => {
+                                    const toMatch = selectedOption.toString().toLowerCase()
+                                    return !optionsToMatch.includes(toMatch)
+                                })
+                            )
+                        }
+
+                        return includesMatch
+                    })
+                })
+            }
+
+            if (selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                variantsFiltered = variantsFiltered.filter(variant => variant.quantity > 0)
+            }
+            return variantsFiltered
         },
     },
 
@@ -397,84 +445,79 @@ export default {
             // Show the single PDP
             commit('setSingleVisisble', true)
         },
-        async insertProducts({ commit, dispatch }, { file, products, addToState }) {
-            // If we have many products. Bundle them
-            const chunkSize = 500
-            if (products.length > chunkSize) {
-                const array = products
-                const chunkedArr = []
-                const size = chunkSize
-                for (let i = 0; i < array.length; i++) {
-                    const last = chunkedArr[chunkedArr.length - 1]
-                    if (!last || last.length === size) {
-                        chunkedArr.push([array[i]])
-                    } else {
-                        last.push(array[i])
-                    }
-                }
-                chunkedArr.map(async productChunk => {
-                    await dispatch('insertProducts', { file, products: productChunk, addToState })
-                })
-                return
-            }
+        async insertProducts({ commit, dispatch, getters }, { file, products, addToState }) {
+            // Chunk products to avoid too big requests
+            const productChunks = chunkArray(products, 50)
 
-            return new Promise((resolve, reject) => {
-                const apiUrl = `/files/${file.id}/products`
-                axios
-                    .post(apiUrl, {
-                        method: 'Add',
-                        products: products,
-                    })
-                    .then(async response => {
-                        // Alert the user
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: `${products.length > 1 ? products.length + ' ' : ''}Product${
-                                    products.length > 1 ? 's' : ''
-                                } created`,
-                                iconClass: 'fa-check',
-                                type: 'success',
-                            },
-                            { root: true }
-                        )
-
-                        // Add the created ID to the products
-                        products.map(product => {
-                            product.id = response.data.added_product_id_map[product.datasource_id]
+            await Promise.all(
+                productChunks.map(async productChunk => {
+                    const apiUrl = `/files/${file.id}/products`
+                    await axios
+                        .post(apiUrl, {
+                            method: 'Add',
+                            products: productChunk,
                         })
+                        .then(response => {
+                            // Add the created ID to the products
+                            products.map(product => {
+                                product.id = response.data.added_product_id_map[product.datasource_id]
+                            })
+                            // Start image sync job
+                            const syncJobId = response.data.download_image_progress_id
+                            if (syncJobId != 0) {
+                                dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
+                            }
+                        })
+                })
+            )
+                .then(async () => {
+                    // Alert the user
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: `${products.length > 1 ? products.length + ' ' : ''}Product${
+                                products.length > 1 ? 's' : ''
+                            } created`,
+                            iconClass: 'fa-check',
+                            type: 'success',
+                        },
+                        { root: true }
+                    )
 
-                        // Start image sync job
-                        const syncJobId = response.data.download_image_progress_id
-                        if (syncJobId != 0) {
-                            dispatch('backgroundJobs/startImageSyncJob', { jobId: syncJobId, file }, { root: true })
-                        }
+                    if (addToState) {
+                        let sequenceIndex = getters.products
+                            ? getters.products.reduce(
+                                  (highestSequence, product) =>
+                                      product.sequence > highestSequence ? product.sequence : highestSequence,
+                                  0
+                              )
+                            : 0
+                        products.map(product => {
+                            product.sequence = sequenceIndex + 1
+                            sequenceIndex++
+                        })
+                        commit('insertProducts', { products, method: 'add' })
+                        await dispatch('initProducts', products)
+                        commit('SORT_PRODUCTS')
+                    }
 
-                        if (addToState) {
-                            commit('insertProducts', { products, method: 'add' })
-                            await dispatch('initProducts', products)
-                            commit('SORT_PRODUCTS')
-                        }
-                        resolve(response)
-                    })
-                    .catch(err => {
-                        reject(err)
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Something went wrong when creating the product. Please try again.',
-                                iconClass: 'fa-exclamation-triangle',
-                                type: 'warning',
-                                callback: () => dispatch('insertProducts', { file, products, addToState }),
-                                callbackLabel: 'Retry',
-                                duration: 0,
-                            },
-                            { root: true }
-                        )
-                    })
-            }).catch(err => {
-                console.log(err)
-            })
+                    // SYNC IMAGES
+                    dispatch('files/syncExternalImages', { file, products }, { root: true })
+                })
+                .catch(err => {
+                    commit(
+                        'alerts/SHOW_SNACKBAR',
+                        {
+                            msg: 'Something went wrong when creating the product. Please try again.',
+                            iconClass: 'fa-exclamation-triangle',
+                            type: 'warning',
+                            callback: () => dispatch('insertProducts', { file, products, addToState }),
+                            callbackLabel: 'Retry',
+                            duration: 0,
+                        },
+                        { root: true }
+                    )
+                })
         },
         async updateFileProducts({ commit, dispatch }, { fileId, products }) {
             const apiUrl = `/files/${fileId}/products`
@@ -540,6 +583,21 @@ export default {
                 eans: [],
                 assortment_sizes: [],
                 extra_data: {},
+                labels: [],
+            }
+        },
+        instantiateNewProductVariant({ commit }) {
+            return {
+                id: null,
+                color: null,
+                variant: null,
+                delivery_dates: [],
+                ean_sizes: [],
+                extra_data: {},
+                min_order: null,
+                labels: [],
+                pictures: [],
+                style_option_id: null,
             }
         },
         setCurrentProduct({ commit }, product) {
@@ -562,15 +620,15 @@ export default {
                 axios
                     .put(apiUrl, product)
                     .then(response => {
-                        commit(
-                            'alerts/SHOW_SNACKBAR',
-                            {
-                                msg: 'Product updated',
-                                iconClass: 'fa-check',
-                                type: 'success',
-                            },
-                            { root: true }
-                        )
+                        // commit(
+                        //     'alerts/SHOW_SNACKBAR',
+                        //     {
+                        //         msg: 'Product updated',
+                        //         iconClass: 'fa-check',
+                        //         type: 'success',
+                        //     },
+                        //     { root: true }
+                        // )
 
                         commit('updateProduct', product)
                         resolve(response)
@@ -1029,6 +1087,7 @@ export default {
 
                 Object.defineProperty(product, 'getActiveSelectionInput', {
                     get: function() {
+                        // console.log('get active selection input', product, rootGetters['selections/currentSelection'])
                         if (product.selectionInputList.length <= 0) return
                         if (product.selectionInputList.length == 1) return product.selectionInputList[0]
                         const currentSelection = rootGetters['selections/currentSelection']
@@ -1130,7 +1189,7 @@ export default {
                 // SELECTION INPUT
                 Object.defineProperty(product, 'ins', {
                     get: function() {
-                        // console.log('get ins')
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).ins
@@ -1138,6 +1197,7 @@ export default {
                 })
                 Object.defineProperty(product, 'outs', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).outs
@@ -1145,6 +1205,7 @@ export default {
                 })
                 Object.defineProperty(product, 'focus', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).focus
@@ -1152,6 +1213,7 @@ export default {
                 })
                 Object.defineProperty(product, 'nds', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).nds
@@ -1159,6 +1221,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentIns', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentIns
@@ -1166,6 +1229,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentOuts', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentOuts
@@ -1173,6 +1237,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentFocus', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentFocus
@@ -1180,6 +1245,7 @@ export default {
                 })
                 Object.defineProperty(product, 'alignmentNds', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).alignmentNds
@@ -1187,6 +1253,7 @@ export default {
                 })
                 Object.defineProperty(product, 'comments', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).comments
@@ -1194,6 +1261,7 @@ export default {
                 })
                 Object.defineProperty(product, 'requests', {
                     get: function() {
+                        if (!product.getActiveSelectionInput) return []
                         return product.selectionInputList.find(
                             x => x.selection_id == rootGetters['selections/currentSelection'].id
                         ).requests
@@ -1232,12 +1300,32 @@ export default {
                 })
 
                 // VARIANTS
-                product.variants.forEach(variant => {
+                Vue.set(product, 'variantsRaw', [...product.variants])
+                Object.defineProperty(product, 'variants', {
+                    get: function() {
+                        // Filter out variants that are not in chapters
+                        if (!product.getActiveSelectionInput) return product.variantsRaw
+                        return product.variantsRaw.filter(
+                            variant => !!product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
+                        )
+                    },
+                })
+                // Object.defineProperty(product, 'variantsFiltered', {
+                //     get: function() {
+                //         return getters.getFilteredVariants(product.variants)
+                //     },
+                // })
+
+                product.variants.forEach((variant, variantIndex) => {
+                    Vue.set(variant, 'isInit', true)
                     if (variant.imageIndex == null) {
                         Vue.set(variant, 'imageIndex', 0)
                     }
+                    Vue.set(variant, 'index', variantIndex)
                     if (!variant.pictures) Vue.set(variant, 'pictures', [])
+                    if (!variant.labels) Vue.set(variant, 'labels', [])
                     if (!variant.ean_sizes) Vue.set(variant, 'ean_sizes', [])
+                    if (!variant.delivery_dates) Vue.set(variant, 'delivery_dates', [])
                     // Custom Props
                     if (!variant.extra_data) Vue.set(variant, 'extra_data', {})
 
@@ -1245,6 +1333,71 @@ export default {
                         get: function() {
                             return variant.pictures[variant.imageIndex]
                         },
+                    })
+                    Object.defineProperty(variant, 'product', {
+                        get: function() {
+                            return product
+                        },
+                    })
+                    Object.defineProperty(variant, 'yourPrice', {
+                        get: function() {
+                            return product.yourPrice
+                        },
+                    })
+                    Object.defineProperty(variant, 'getActiveSelectionInput', {
+                        get: function() {
+                            return product.getActiveSelectionInput.variants.find(x => x.id == variant.id)
+                        },
+                    })
+                    Object.defineProperty(variant, 'action', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.action
+                        },
+                    })
+                    Object.defineProperty(variant, 'selectionAction', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.selectionAction
+                        },
+                    })
+                    Object.defineProperty(variant, 'deliveries', {
+                        get: function() {
+                            return variant.getActiveSelectionInput.deliveries
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'yourAction', {
+                        get: function() {
+                            if (!variant.getActiveSelectionInput) return
+                            const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                            const selectionInput = variant.getActiveSelectionInput
+                            return selectionInput[actionKey]
+                        },
+                        set: function(value) {
+                            const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                            const selectionInput = variant.getActiveSelectionInput
+                            return (selectionInput[actionKey] = value)
+                        },
+                    })
+
+                    Object.defineProperty(variant, 'yourActionObject', {
+                        get: function() {
+                            if (!variant.getActiveSelectionInput) return
+                            const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+                            const acitonObjectKey =
+                                selectionMode == 'Feedback' ? 'yourSelectionFeedback' : 'selectionAction'
+                            const selectionInput = variant.getActiveSelectionInput
+                            return selectionInput[acitonObjectKey]
+                        },
+                        set: function(value) {
+                            const actionKey = rootGetters['selections/getCurrentSelectionModeAction']
+                            const selectionInput = variant.getActiveSelectionInput
+                            return (selectionInput[actionKey] = value)
+                        },
+                    })
+
+                    // EAN SIZES
+                    variant.ean_sizes.map(x => {
+                        Vue.set(x, 'quantity', 0)
                     })
                 })
             })
@@ -1310,6 +1463,19 @@ export default {
         },
         SET_LAST_SORT(state, { method, key }) {
             state.lastSort = { method, key }
+        },
+        SET_ALIGNMENTS(state, alignments) {
+            alignments.map(alignment => {
+                // Find the alignment object on the product
+                const product = state.products.find(product => product.id == alignment.product_id)
+                if (!product || !product.alignments) return
+                const productAlignment = product.alignments.find(
+                    productAlignment => productAlignment.selection_id == alignment.selection_id
+                )
+                delete alignment.user
+                delete alignment.selection
+                Object.assign(productAlignment, alignment)
+            })
         },
         UPDATE_ACTIONS(state, { actions, newAction, user }) {
             // DESC: Sets all actions to the value of new action
@@ -1443,6 +1609,27 @@ export default {
         },
         SET_CURRENT_PDP_VARIANT_INDEX(state, index) {
             state.pdpVariantIndex = index
+        },
+        SET_QUANTITY(state, { alignment, variantId, deliveryDate, size, assortment, quantity }) {
+            if (!alignment) return
+            const existingQuantityDetail = alignment.quantity_details.find(detail => {
+                if (variantId && detail.variant_id != variantId) return false
+                if (deliveryDate && detail.delivery_date != deliveryDate) return false
+                if (size && detail.variant_size != size) return false
+                if (assortment && detail.assortment != assortment) return false
+                return true
+            })
+            if (existingQuantityDetail) {
+                existingQuantityDetail.quantity = quantity
+            } else {
+                alignment.quantity_details.push({
+                    variant_id: variantId,
+                    delivery_date: deliveryDate,
+                    variant_size: size,
+                    assortment,
+                    quantity,
+                })
+            }
         },
     },
 }

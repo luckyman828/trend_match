@@ -184,6 +184,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         file.rows.map(row => {
             let rowCurrency = null
             let rowAssortmentName = null
+            let rowVariant = null
+            let rowDeliveries = []
 
             // Find the product corresponding to this row, or instantiate a new product if none exists
             const keyValue = row[keyField]
@@ -205,7 +207,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
             if (!options || options.fields.find(x => x.name == 'eans').enabled) baseProduct.eans = []
             if (!options || options.fields.find(x => x.name == 'assortment_sizes').enabled)
                 baseProduct.assortment_sizes = []
-            if (!options || options.fields.find(x => x.name == 'delivery_dates').enabled)
+            if (!options || options.fields.find(x => x.name == 'delivery_dates' && !x.scope).enabled)
                 baseProduct.delivery_dates = []
 
             // Add custom product data if we have any
@@ -270,6 +272,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             ean_sizes: [{ size: null, ean: null }],
                             extra_data: {},
                         }
+
+                        if (mappedFields.find(x => x.name == 'delivery_dates' && x.scope == 'variants').enabled) {
+                            baseVariant.delivery_dates = []
+                        }
                         // Add custom product data if we have any
                         mappedFields
                             .filter(x => x.customProperty && x.scope == 'variants')
@@ -296,7 +302,10 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 if (typeof fieldValue == 'number') fieldValue = Math.round((fieldValue + Number.EPSILON) * 100) / 100
 
                 // Dont have null values
-                if (fieldValue == 'null') fieldValue = null
+                if (fieldValue == 'null' || fieldValue == null) {
+                    fieldValue = null
+                    return
+                }
 
                 // Format date values
                 if (field.type == 'date' && fieldValue != null) {
@@ -313,6 +322,8 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                     if (fieldValue instanceof Date) {
                         fieldValue = DateTime.fromJSDate(fieldValue).toISODate()
                     }
+                    // Add delivery date to rowDeliveries
+                    if (!rowDeliveries.includes(fieldValue)) rowDeliveries.push(fieldValue)
                 }
 
                 // START MAP VARIANTS
@@ -338,6 +349,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                                     : row[theVariantField.fieldName]
 
                             const variant = product.variants.find(x => x.color == color && x.variant == variantVariant)
+                            rowVariant = variant
 
                             if (!variant) continue
 
@@ -465,11 +477,19 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                             name: rowAssortmentName,
                             box_ean: null,
                             box_size: null,
+                            variant_ids: [],
+                            delivery_dates: rowDeliveries,
                         }
                         product.assortments.push(assortmentGroup)
                     }
                     // Set values for the assortment group
                     assortmentGroup[field.name] = fieldValue
+
+                    // Find the variant the assortment belongs to
+                    if (rowVariant && !assortmentGroup.variant_ids.includes(rowVariant.id)) {
+                        assortmentGroup.variant_ids.push(rowVariant.id)
+                    }
+
                     return
                 }
                 // END MAP ASSORTMENTS

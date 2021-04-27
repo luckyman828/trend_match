@@ -9,8 +9,14 @@
                     size="sm"
                 />
                 <div class="sync-wrapper" :class="syncStatus" v-if="syncStatus">
-                    <i v-if="syncStatus == 'Success'" class="sync-icon success far green fa-check-circle md"></i>
-                    <i v-else-if="syncStatus == 'Failed'" class="sync-icon error far red fa-times-circle md"></i>
+                    <i
+                        v-if="syncStatus.toLowerCase() == 'success'"
+                        class="sync-icon success far green fa-check-circle md"
+                    ></i>
+                    <i
+                        v-else-if="syncStatus.toLowerCase() == 'failed'"
+                        class="sync-icon error far red fa-times-circle md"
+                    ></i>
                     <i v-else class="sync-icon syncing fad fa-sync md"></i>
                 </div>
             </div>
@@ -60,16 +66,16 @@
         </td>
 
         <!-- Start Prices -->
-        <td class="wholesale-price hide-screen-xs">
+        <td class="wholesale-price">
             <span>{{ product.yourPrice.wholesale_price }}</span>
         </td>
-        <td class="recommended-retail-price hide-screen-xs">
+        <td class="recommended-retail-price">
             <span>{{ product.yourPrice.recommended_retail_price }}</span>
         </td>
-        <td class="mark-up hide-screen-xs">
+        <td class="mark-up">
             <span>{{ product.yourPrice.mark_up }}</span>
         </td>
-        <td class="currency hide-screen-xs">
+        <td class="currency">
             <span>{{ product.yourPrice.currency }}</span>
         </td>
         <!-- End Prices -->

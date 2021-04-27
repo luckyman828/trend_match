@@ -15,7 +15,7 @@
 
         <div class="form-element" v-if="$route.name == 'selection' && exportTemplate">
             <label>Filter variants</label>
-            <BaseCheckboxInputField v-model="exportTemplate.inVariantsOnly">
+            <BaseCheckboxInputField v-model="inVariantsOnly">
                 <span>IN-variants only</span>
             </BaseCheckboxInputField>
         </div>
@@ -29,7 +29,7 @@
                         v-for="(header, index) in exportTemplate.headers"
                         :key="index"
                     >
-                        <button class="ghost handle" v-tooltip="'Drag to re-position'">
+                        <button class="ghost handle true-square" v-tooltip="'Drag to re-position'">
                             <i class="far fa-grip-vertical"></i>
                         </button>
                         <BaseInputField
@@ -60,7 +60,7 @@
                             class="header-dropdown"
                         />
                         <BaseButton
-                            buttonClass="invisible ghost-hover"
+                            buttonClass="invisible ghost-hover true-square"
                             v-tooltip="'Edit column header displayed in CSV'"
                             @click="editIndex = index"
                             :disabled="!header.key"
@@ -68,7 +68,7 @@
                         >
                             <i class="far fa-pen"></i>
                         </BaseButton>
-                        <button class="invisible ghost-hover" @click="onRemoveHeader(index)">
+                        <button class="invisible ghost-hover true-square" @click="onRemoveHeader(index)">
                             <i class="far fa-trash"></i>
                         </button>
                     </div>
@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Draggable from 'vuedraggable'
 import { mapGetters } from 'vuex'
 export default {
@@ -94,64 +95,56 @@ export default {
         return {
             editIndex: null,
             availableTemplates: [
+                // {
+                //     name: 'Test',
+                //     printRowKey: true,
+                //     rowKeys: [
+                //         {
+                //             key: 'variants',
+                //             children: [
+                //                 {
+                //                     key: 'extra_data.variant_arrray_prop',
+                //                     rowFilters: [{ values: ['BBB'], type: 'include' }],
+                //                 },
+                //             ],
+                //         },
+                //     ],
+                //     headers: [
+                //         { name: 'STYLE_NUMBER', key: 'datasource_id' },
+                //         { name: 'COLOUR_NAME', key: 'variants.color' },
+                //         { name: 'Custom Prop', key: 'variants.extra_data.variant_arrray_prop' },
+                //         { name: 'Action', key: 'variants.yourAction' },
+                //     ],
+                // },
                 {
                     name: 'Custom',
-                    rowScope: 'Variant',
-                    inVariantsOnly: false,
                     headers: [],
                 },
                 {
                     name: 'Gross list',
-                    rowScope: 'Variant',
-                    inVariantsOnly: false,
+                    rowKeys: [
+                        {
+                            key: 'variants',
+                            rowFilters: [{ key: 'yourAction', values: ['In', 'Focus'], type: 'include' }],
+                            children: [
+                                {
+                                    key: 'extra_data.sample_location_name',
+                                },
+                            ],
+                        },
+                    ],
                     headers: [
-                        { name: 'EAN_NO', key: 'variant.ean' },
+                        { name: 'EAN_NO', key: 'variants.ean' },
                         { name: 'STYLE_NUMBER', key: 'datasource_id' },
                         { name: 'STYLE_NAME', key: 'title' },
                         { name: 'COLLECTION_NAME', key: 'extra_data.collection_name' },
                         { name: 'CATEGORY', key: 'category' },
-                        { name: 'STYLE_VARIANT_NAME', key: 'variant.variant' },
-                        { name: 'COLOUR_NAME', key: 'variant.color' },
-                        {
-                            name: 'SAMPLE_LOCATION_NAME',
-                            key: 'variant.extra_data.sample_location_name',
-                            isRowKey: true,
-                        },
+                        { name: 'STYLE_VARIANT_NAME', key: 'variants.variant' },
+                        { name: 'COLOUR_NAME', key: 'variants.color' },
+                        { name: 'SAMPLE_LOCATION_NAME', key: 'variants.extra_data.sample_location_name' },
                         { name: 'DESCRIPTION', key: 'sale_description' },
                         { name: 'BRAND_NAME', key: 'brand' },
                         { name: 'COUNTRY_OF_ORIGIN', key: 'extra_data.country_of_origin' },
-                    ],
-                },
-                {
-                    name: 'Full export',
-                    rowScope: 'Variant',
-                    inVariantsOnly: false,
-                    headers: [
-                        { name: 'ID', key: 'datasource_id' },
-                        { name: 'Name', key: 'title' },
-                        { name: 'Category', key: 'category' },
-                        { name: 'Brand', key: 'brand' },
-                        { name: 'Buying Gruop', key: 'buying_group' },
-                        { name: 'Composition', key: 'composition' },
-                        { name: 'Description', key: 'sale_description' },
-                        { name: 'Product Minimum', key: 'min_order' },
-                        { name: 'Variant Minimum', key: 'min_variant_order' },
-                        { name: 'Deliveries', key: 'delivery_dates' },
-                        { name: 'Currency', key: 'price.currency' },
-                        { name: 'WHS', key: 'price.wholesale_price' },
-                        { name: 'RRP', key: 'price.recommended_retail_price' },
-                        { name: 'MU', key: 'price.mark_up' },
-                        { name: 'EANs', key: 'eans' },
-                        { name: 'Variant Color', key: 'variant.color' },
-                        { name: 'Variant Variant', key: 'variant.variant' },
-                        { name: 'Variant Sizes', key: 'variant.sizes' },
-                        { name: 'Variant EAN', key: 'variant.eans' },
-                        { name: 'Image URL', key: 'image_url' },
-                        { name: 'Assortment Name', key: 'assortments.name' },
-                        { name: 'Labels', key: 'labels' },
-
-                        // { name: 'Assortment EAN', key: 'assortments.ean' },
-                        // { name: 'Assortment Size', key: 'assortments.size' },
                     ],
                 },
             ],
@@ -161,6 +154,45 @@ export default {
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
         }),
+        inVariantsOnly: {
+            get() {
+                const isEnabled =
+                    !!this.exportTemplate.rowKeys &&
+                    !!this.exportTemplate.rowKeys.find(
+                        rowKey =>
+                            rowKey.key == 'variants' &&
+                            rowKey.rowFilters.find(filter => filter.key == 'yourAction' && filter.values.includes('In'))
+                    )
+                return isEnabled
+            },
+            set(shouldBeAdded) {
+                const filterObj = { key: 'yourAction', values: ['In', 'Focus'], type: 'include' }
+                const keyObj = { key: 'variants', rowFilters: [filterObj] }
+                const templateRowKeys = this.exportTemplate.rowKeys
+                if (shouldBeAdded) {
+                    if (!templateRowKeys || templateRowKeys.length <= 0) {
+                        Vue.set(this.exportTemplate, 'rowKeys', [keyObj])
+                        return
+                    }
+                    const variantKey = templateRowKeys.find(rowKey => rowKey.key == 'variants')
+                    if (!variantKey) {
+                        templateRowKeys.push(keyObj)
+                        return
+                    } else {
+                        if (!variantKey.rowFilters || variantKey.rowFilters.length <= 0) {
+                            Vue.set(variantKey, 'rowFilters', [filterObj])
+                        } else {
+                            variantKey.rowFilters.push(filterObj)
+                        }
+                    }
+                } else {
+                    const variantKey = templateRowKeys.find(rowKey => rowKey.key == 'variants')
+                    variantKey.rowFilters = variantKey.rowFilters.filter(
+                        filter => !(filter.key == 'yourAction' && filter.values.includes('In'))
+                    )
+                }
+            },
+        },
         availableCsvHeaders() {
             const baseHeaders = [
                 { name: 'ID', key: 'datasource_id' },
@@ -178,13 +210,14 @@ export default {
                 { name: 'RRP', key: 'price.recommended_retail_price' },
                 { name: 'MU', key: 'price.mark_up' },
                 { name: 'EANs', key: 'eans' },
-                { name: 'Variant Color', key: 'variant.color' },
-                { name: 'Variant Variant', key: 'variant.variant' },
-                { name: 'Variant Sizes', key: 'variant.sizes' },
-                { name: 'Variant EAN', key: 'variant.eans' },
+                { name: 'Variant Color', key: 'variants.color' },
+                { name: 'Variant Variant', key: 'variants.variant' },
+                { name: 'Variant Sizes', key: 'variants.sizes' },
+                { name: 'Variant EAN', key: 'variants.eans' },
                 { name: 'Image URL', key: 'image_url' },
                 { name: 'Assortment Name', key: 'assortments.name' },
                 { name: 'Labels', key: 'labels' },
+                { name: 'Action', key: 'variants.yourAction' },
             ]
 
             const customHeaders = this.customFields
@@ -193,7 +226,7 @@ export default {
                           name: field.display_name,
                           key:
                               field.belong_to == 'Variant'
-                                  ? `variant.extra_data.${field.name}`
+                                  ? `variants.extra_data.${field.name}`
                                   : `extra_data.${field.name}`,
                       }
                   })

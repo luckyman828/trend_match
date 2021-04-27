@@ -18,9 +18,9 @@ window.XLSX = require('xlsx')
 
 window.focusVisible = require('focus-visible')
 
-import { DateTime } from 'luxon'
+import { DateTime, Interval, Duration } from 'luxon'
 window.DateTime = DateTime
-import Duration from 'luxon/src/duration.js'
+window.Interval = Interval
 window.Duration = Duration
 
 import store from './store/index'
@@ -46,6 +46,8 @@ import tooltipTriggerDirective from './directives/tooltipTriggerDirective'
 Vue.use(tooltipTriggerDirective)
 import horizontalScrollDirective from './directives/horizontalScrollDirective'
 Vue.use(horizontalScrollDirective)
+import hoverDirective from './directives/hoverDirective'
+Vue.use(hoverDirective)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'
@@ -63,8 +65,13 @@ Vue.use(VueObserveVisibility)
 import VTooltip from 'v-tooltip'
 Vue.use(VTooltip, {
     defaultBoundariesElement: 'window',
+    defaultOffset: 4,
+    defaultDelay: { show: 100, hide: 0 },
+    defaultContainer: 'body',
     popover: {
         defaultTrigger: 'hover focus',
+        defaultBaseClass: 'base-popover popover',
+        defaultOffset: 0,
     },
 })
 
@@ -74,6 +81,16 @@ Vue.use(PortalVue)
 import DatePicker from 'vue2-datepicker'
 import 'vue2-datepicker/index.css'
 Vue.use(DatePicker)
+
+// Purely for testing
+window.scanTest = ean => {
+    ean = ean.toString()
+    for (let i = 0; i < ean.length; i++) {
+        // console.log(ean.substr(i, 1))
+        let keyEvent = new KeyboardEvent('keydown', { code: ean[i] })
+        document.dispatchEvent(keyEvent)
+    }
+}
 
 Vue.component('app', require('./App.vue').default)
 

@@ -51,7 +51,8 @@ dragscrollDirective.install = Vue => {
             if (!isDown) return
             e.preventDefault()
             const x = e.pageX - slider.offsetLeft
-            const walk = (x - startX) * 3 //scroll-fast
+            const scrollSpeedMultiplier = 1
+            const walk = (x - startX) * scrollSpeedMultiplier //scroll-fast
             slider.scrollLeft = scrollLeft - walk
         }
 

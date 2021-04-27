@@ -54,9 +54,12 @@ export default {
             object-fit: contain;
             object-position: center;
         }
+        + body {
+            padding-top: 0;
+        }
     }
     .body {
-        padding: 0 68px 60px 40px;
+        padding: 60px 68px 60px 40px;
         .title {
             font-size: 52px;
             font-weight: 500;

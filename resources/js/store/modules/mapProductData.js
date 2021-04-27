@@ -169,6 +169,12 @@ export default {
                 displayName: 'Custom Assortment Sizes',
                 headersToMatch: ['box size', 'assortment box size', 'ass size', 'assortment size'],
             },
+            {
+                scope: null,
+                name: 'sequence',
+                displayName: 'Sequence',
+                headersToMatch: ['^order$', 'sequence'],
+            },
             // VARIANTS
             // {
             //     scope: 'variants',
@@ -248,6 +254,21 @@ export default {
                     'variant sizes',
                     '^(?!.*box).*size.*$', // 'size' but not 'box size'
                     'variant size',
+                ],
+            },
+            {
+                scope: 'variants',
+                name: 'delivery_dates',
+                displayName: 'Delivery (date/month)',
+                type: 'date',
+                headersToMatch: [
+                    'delivery',
+                    'delivery date',
+                    'delivery month',
+                    'del. date',
+                    'del. month',
+                    'del. period',
+                    'delivery period',
                 ],
             },
             // IMAGES
@@ -348,8 +369,11 @@ export default {
             let fields = allFields.filter(x => x.scope == scope)
 
             // Filter out style_option_id if it is not enabled on the workspace
-            const enabledFeatures = rootGetters['workspaces/getEnabledFeatures']
-            if (!enabledFeatures.style_option_api) fields = fields.filter(x => x.name != 'style_option_id')
+
+            const enabledFeatures = rootGetters['workspaces/getFeatureFlags']
+            if (!enabledFeatures.includes('bestseller_style_option')) {
+                fields = fields.filter(x => x.name != 'style_option_id')
+            }
 
             return fields.map(x => {
                 x.file = null

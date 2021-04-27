@@ -11,7 +11,7 @@
         <div class="product-details">
             <div
                 v-if="displayUnreadBullets && product.hasNewComment"
-                class="unread-indicator circle xxs primary"
+                class="unread-indicator circle min primary"
                 v-tooltip.right="'A message needs a reply'"
             />
 
@@ -203,7 +203,7 @@
                         <i class="far fa-clipboard-check"></i>
                         <div
                             v-if="displayUnreadBullets && product.hasNewComment"
-                            class="circle xxs primary new-comment-bullet"
+                            class="circle min primary new-comment-bullet"
                         ></div>
                     </button>
 
@@ -229,7 +229,10 @@
                             <div class="inner">
                                 <BaseButton
                                     class=""
-                                    :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                                    :buttonClass="[
+                                        'true-square',
+                                        selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary',
+                                    ]"
                                     :disabled="!userWriteAccess.actions.hasAccess"
                                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                                     @click="onUpdateAction('Focus', selectionInput)"
@@ -659,14 +662,14 @@ td.title {
     position: relative;
     &:hover {
         .new-comment-bullet {
-            top: -7px;
-            right: -5px;
+            right: -3px;
+            top: -5px;
         }
     }
     .new-comment-bullet {
         position: absolute;
-        right: -4px;
-        top: -6px;
+        right: -2px;
+        top: -4px;
     }
 }
 
@@ -696,7 +699,7 @@ td.action {
             &:hover {
                 overflow: visible;
                 .fly-over .inner {
-                    background: $bgModuleHover;
+                    background: $bgWhiteHover;
                 }
                 button.options {
                     display: none;
@@ -724,7 +727,7 @@ td.action {
                 top: 0;
                 left: -40px;
                 width: 40px;
-                background: linear-gradient(90deg, transparent, $bgModuleHover);
+                background: linear-gradient(90deg, transparent, $bgWhiteHover);
                 pointer-events: none;
             }
         }

@@ -1,80 +1,108 @@
-name: Production DevOps
-
-on:
-    push:
-        branches:
-            - staging
-
+name: Staging DevOps
+'on':
+  push:
+    branches:
+      - staging
 jobs:
-    build:
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
-        steps:
-            - uses: actions/checkout@v1
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.CI_AWS_REGION }}
 
-            - name: Install php library
-              uses: MilesChou/composer-action@v1.0.1
-              with:
-                  args: install --no-dev
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-            - run: echo '${{ secrets.STAG_ENV }}' > .env
-            - name: Build vuejs
-              uses: actions/setup-node@v1
-              with:
-                  node-version: '12.x'
-            - run: npm install
-            - run: npm run production
-            - run: rm -rf node_modules
+    - name: Load configuration from aws
+      run: |
+        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/STAG_DEPLOYMENT_ENV DEPLOYMENT_ENV
+        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/STAG_APP_ENV .env
 
-            - uses: azure/docker-login@v1
-              with:
-                  login-server: reg.trendmatch.dk
-                  username: ${{ secrets.REGISTRY_USERNAME }}
-                  password: ${{ secrets.REGISTRY_PASSWORD }}
+    - name: Load env from dotenv
+      uses: c-py/action-dotenv-to-setenv@v2
+      with:
+        env-file: DEPLOYMENT_ENV
 
-            - name: Build the Docker
-              run: docker build . --file Dockerfile --tag reg.trendmatch.dk/kollekt/stag-${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
+    - name: Install php library
+      uses: MilesChou/composer-action@v1.0.1
+      with:
+        args: install --no-dev
 
-            - name: Push docker image
-              run: docker push reg.trendmatch.dk/kollekt/stag-${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
+    - name: Build vuejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+      
+    - name: Install nodejs packages
+      run: |
+        npm install
+        npm run production
+        rm -rf node_modules
 
-    deploy:
-        needs: build
-        runs-on: ubuntu-latest
+    - name: Build and push the Docker
+      env:
+        IMAGE_TAG: stag-${{ github.sha }}
+      run: |
+        docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
+        docker push $IMAGE_NAME:$IMAGE_TAG
 
-        steps:
-            - uses: actions/checkout@v1
+    - name: Logout of Amazon ECR
+      if: always()
+      run: docker logout ${{ steps.login-ecr.outputs.registry }}
 
-            - uses: Azure/k8s-set-context@v1
-              with:
-                  kubeconfig: ${{ secrets.KUBE_CONFIG }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
 
-            - uses: Azure/k8s-create-secret@v1
-              with:
-                  namespace: ${{ secrets.PRD_NAMESPACE }}
-                  container-registry-url: reg.trendmatch.dk
-                  container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
-                  container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-                  secret-name: dashboard-regcred
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_KEY }}
+        aws-region: ${{ secrets.CI_AWS_REGION }}
 
-            - uses: cschleiden/replace-tokens@v1
-              with:
-                  tokenPrefix: '${'
-                  tokenSuffix: '}'
-                  files: '["deploy/k8s/*.yaml"]'
-              env:
-                  CONTAINER_IMAGE: stag-${{ secrets.PRD_CONTAINER_IMAGE }}
-                  IMAGE_TAG: ${{ github.sha }}
-                  HOST_NAME: ${{ secrets.STAG_HOST_NAME }}
+    - name: Load configuration from aws
+      run: |
+        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/STAG_DEPLOYMENT_ENV DEPLOYMENT_ENV
+        aws s3 cp s3://${{ secrets.DEV_AWS_CONFIG_PATH }}/KUBE_CONFIG KUBE_CONFIG
 
-            - uses: Azure/k8s-deploy@v1
-              with:
-                  namespace: ${{ secrets.PRD_NAMESPACE }}
-                  manifests: |
-                      deploy/k8s/2-deployment.yaml
-                      deploy/k8s/3-service.yaml
-                      deploy/k8s/4-gateway.yaml
-                  images: |
-                      reg.trendmatch.dk/kollekt/stag-${{ secrets.PRD_CONTAINER_IMAGE }}:${{ github.sha }}
-                  imagePullSecrets: |
-                      dashboard-regcred
+    - name: Load env from dotenv
+      uses: c-py/action-dotenv-to-setenv@v2
+      with:
+        env-file: DEPLOYMENT_ENV
+
+    - name: Load kubeconfig file
+      run: |
+        kube_content=`cat KUBE_CONFIG`
+        echo "KUBE_CONFIG="$kube_content"" >> $GITHUB_ENV
+
+    - uses: Azure/k8s-set-context@v1
+      with:
+        kubeconfig: ${{ env.KUBE_CONFIG }}
+
+    - uses: cschleiden/replace-tokens@v1
+      with:
+        tokenPrefix: '${'
+        tokenSuffix: '}'
+        files: '["deploy/k8s/*.yaml"]'
+      env:
+        IMAGE_TAG: 'stag-${{ github.sha }}'
+
+    - uses: Azure/k8s-deploy@v1
+      with:
+        namespace: '${{ env.NAMESPACE }}'
+        manifests: |
+          deploy/k8s/2-deployment.yaml
+          deploy/k8s/3-service.yaml
+          deploy/k8s/4-gateway.yaml
+        images: |
+          ${{ env.IMAGE_NAME }}:stag-${{ github.sha }}

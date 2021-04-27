@@ -43,6 +43,7 @@ export default {
         },
         async insertOrUpdateComment({ commit, dispatch }, { selectionInput, comment }) {
             // Update our state
+            await dispatch('initComments', [comment])
             commit('INSERT_OR_UPDATE_COMMENT', { selectionInput, comment })
             let requestMethod
             let apiUrl
@@ -159,16 +160,40 @@ export default {
             comments.map(comment => {
                 Object.defineProperty(comment, 'user', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel = currentSelection.settings.anonymize_comment
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+                        const user = rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == comment.user_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, user)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return user
                     },
                 })
                 Object.defineProperty(comment, 'selection', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelections'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel = currentSelection.settings.anonymize_comment
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+                        const selection = rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == comment.selection_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, selection)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return selection
                     },
                 })
             })
@@ -183,25 +208,26 @@ export default {
         setSubmitting(state, bool) {
             state.submitting = bool
         },
-        INSERT_OR_UPDATE_COMMENT(state, { selectionInput, comment }) {
-            // console.log('insert or update comment', selectionInput, comment)
+        INSERT_OR_UPDATE_COMMENT(state, { selectionInput, comment, product }) {
+            if (!selectionInput && !product) return
+            const commentParent = selectionInput ? selectionInput.rawSelectionInput : product
+
             // First see if the comment already exists
-            const existingCommentIndex = selectionInput.rawSelectionInput.comments.findIndex(x => x.id == comment.id)
+            const existingCommentIndex = commentParent.comments.findIndex(x => x.id == comment.id)
             if (existingCommentIndex >= 0) {
-                const updatedComment = Object.assign(
-                    selectionInput.rawSelectionInput.comments[existingCommentIndex],
-                    comment
-                )
-                Vue.set(selectionInput.rawSelectionInput.comments, existingCommentIndex, updatedComment)
+                const updatedComment = Object.assign(commentParent.comments[existingCommentIndex], comment)
+                Vue.set(commentParent.comments, existingCommentIndex, updatedComment)
             }
             // Else insert the comment
             else {
-                selectionInput.rawSelectionInput.comments.push(comment)
+                commentParent.comments.push(comment)
             }
         },
-        DELETE_COMMENT(state, { selectionInput, commentId }) {
-            const commentIndex = selectionInput.rawSelectionInput.comments.findIndex(x => x.id == commentId)
-            selectionInput.rawSelectionInput.comments.splice(commentIndex, 1)
+        DELETE_COMMENT(state, { selectionInput, commentId, product }) {
+            if (!selectionInput && !product) return
+            const commentParent = selectionInput ? selectionInput.rawSelectionInput : product
+            const commentIndex = commentParent.comments.findIndex(x => x.id == commentId)
+            commentParent.comments.splice(commentIndex, 1)
         },
         alertError: state => {
             window.alert('Network error. Please check your connection')

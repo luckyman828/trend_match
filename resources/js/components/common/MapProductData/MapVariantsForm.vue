@@ -14,10 +14,14 @@
                     @show-field-context="$emit('show-field-context', $event, field)"
                 >
                     <template v-slot:right>
-                        <button class="ghost dark" v-tooltip="'Add addtional color map'" @click="onAddMap('color')">
+                        <button
+                            class="ghost dark true-square"
+                            v-tooltip="'Add addtional color map'"
+                            @click="onAddMap('color')"
+                        >
                             <i class="far fa-plus"></i>
                         </button>
-                        <button v-if="colorMapCount > 1" class="ghost dark" @click="onRemoveMap(field.id)">
+                        <button v-if="colorMapCount > 1" class="ghost dark true-square" @click="onRemoveMap(field.id)">
                             <i class="far fa-trash"></i>
                         </button>
                     </template>
@@ -32,10 +36,18 @@
                     @show-field-context="$emit('show-field-context', $event, field)"
                 >
                     <template v-slot:right>
-                        <button class="ghost dark" v-tooltip="'Add addtional variant map'" @click="onAddMap('variant')">
+                        <button
+                            class="ghost dark true-square"
+                            v-tooltip="'Add addtional variant map'"
+                            @click="onAddMap('variant')"
+                        >
                             <i class="far fa-plus"></i>
                         </button>
-                        <button v-if="variantMapCount > 1" class="ghost dark" @click="onRemoveMap(field.id)">
+                        <button
+                            v-if="variantMapCount > 1"
+                            class="ghost dark true-square"
+                            @click="onRemoveMap(field.id)"
+                        >
                             <i class="far fa-trash"></i>
                         </button>
                     </template>
@@ -59,10 +71,14 @@
                     @show-field-context="$emit('show-field-context', $event, field)"
                 >
                     <template v-slot:right>
-                        <button class="ghost dark" v-tooltip="'Add addtional image map'" @click="onAddVariantImageMap">
+                        <button
+                            class="ghost dark true-square"
+                            v-tooltip="'Add addtional image map'"
+                            @click="onAddVariantImageMap"
+                        >
                             <i class="far fa-plus"></i>
                         </button>
-                        <button v-if="imageMapCount > 1" class="ghost dark" @click="onRemoveMap(field.id)">
+                        <button v-if="imageMapCount > 1" class="ghost dark true-square" @click="onRemoveMap(field.id)">
                             <i class="far fa-trash"></i>
                         </button>
                     </template>

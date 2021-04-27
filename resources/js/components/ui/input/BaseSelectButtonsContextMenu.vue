@@ -4,7 +4,8 @@
             {{ header }}
         </template>
         <template v-slot>
-            <div class="item-group">
+            <BaseLoader v-if="loading" />
+            <div class="item-group" v-else>
                 <BaseSelectButtons
                     ref="selectButtons"
                     v-model="localValue"
@@ -22,7 +23,8 @@
                     :optionNameKey="optionNameKey"
                     :allowManualEntry="allowManualEntry"
                     :search="search"
-                    @submit="onSubmit($event)"
+                    :uniqueKey="uniqueKey"
+                    @submit="emitSubmit($event)"
                     @unset="$emit('unset')"
                 />
             </div>
@@ -34,7 +36,7 @@
                     :class="{ disabled: submitDisabled }"
                     style="margin-right: 8px;"
                     @click="
-                        submit()
+                        onSubmit()
                         slotProps.hide()
                     "
                 >
@@ -72,10 +74,12 @@ export default {
         'multipleOptionArrays',
         'optionGroupNameKey',
         'optionGroupOptionsKey',
+        'uniqueKey',
         'unsetOption',
         'unsetValue',
         'emitOnChange',
         'inline',
+        'loading',
         'allowManualEntry',
     ],
     // data: function() {return {
@@ -99,12 +103,12 @@ export default {
             this.$refs.contextMenu.hide()
         },
         onSubmit(input) {
-            this.$emit('input', input)
-            this.$emit('submit', input)
+            this.$refs.selectButtons.submit()
             this.hide()
         },
-        submit() {
-            this.$refs.selectButtons.submit()
+        emitSubmit(input) {
+            this.$emit('input', input)
+            this.$emit('submit', input)
         },
     },
 }

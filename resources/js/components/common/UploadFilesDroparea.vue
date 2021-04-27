@@ -14,7 +14,7 @@
                     <div class="files-wrapper">
                         <div class="file-to-upload" v-for="(file, index) in fileList" :key="index">
                             <span>{{ file.name }}</span>
-                            <button class="ghost" type="button" @click="removeFile(index)">
+                            <button class="ghost true-square" type="button" @click="removeFile(index)">
                                 <i class="remove far fa-trash-alt"></i>
                             </button>
                         </div>
