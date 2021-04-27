@@ -402,6 +402,8 @@ router.afterEach((to, from) => {
     store.commit('productFilters/CLEAR_PRODUCT_FILTERS')
     store.commit('productFilters/SET_FILTER_SELECTION_IDS', [])
     store.commit('selectionProducts/SET_SELECTIONS', [])
+    store.commit('files/SET_CURRENT_FOLDER', null)
+    store.commit('files/SET_CURRENT_PATH_FOLDER', null)
 })
 
 export default router
