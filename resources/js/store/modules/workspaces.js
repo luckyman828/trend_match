@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Compressor from 'compressorjs'
+import Vue from 'vue'
 import { triggerRouteGuards } from '../../helpers/routeGuards'
 import router from '../../router'
 
@@ -378,6 +379,19 @@ export default {
             commit('selections/SET_CURRENT_SELECTION_ID', null, { root: true })
             commit('selections/SET_CURRENT_SELECTIONS', [], { root: true })
             dispatch('files/setCurrentFolder', null, { root: true })
+        },
+        async fetchWorkspaceResources({}, workspace) {
+            let resources
+            const apiUrl = `workspaces/${workspace.id}/resources`
+            await axios.get(apiUrl).then(response => {
+                resources = response.data
+                Vue.set(workspace, 'resources', resources)
+            })
+            return resources
+        },
+        async updateWorkspaceResources({}, workspace) {
+            const apiUrl = `workspaces/${workspace.id}/resources`
+            await axios.put(apiUrl, workspace.resources)
         },
     },
 

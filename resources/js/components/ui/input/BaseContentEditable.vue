@@ -68,6 +68,9 @@ export default {
             sel.addRange(range)
         },
     },
+    created() {
+        this.localValue = this.value
+    },
 }
 </script>
 

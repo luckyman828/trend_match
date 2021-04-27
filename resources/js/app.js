@@ -187,6 +187,12 @@ Vue.mixin({
                 .toLocal()
                 .toFormat('HH:mm - dd MMM yyyy')
         },
+        getPrettyDuration(duration) {
+            const luxonDuration = Duration.fromObject({ minutes: duration })
+                .shiftTo('hours', 'minutes')
+                .toObject()
+            return `${luxonDuration.hours ? `${luxonDuration.hours} hrs ` : ''}${luxonDuration.minutes} min`
+        },
         chunkArray(array, chunk_size) {
             return Array(Math.ceil(array.length / chunk_size))
                 .fill()

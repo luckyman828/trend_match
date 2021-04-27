@@ -529,6 +529,9 @@ export default {
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
         }),
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getFeatureFlags',
+        }),
         ...mapGetters('selections', [
             'getCurrentSelections',
             'getSelectionsAvailableForAlignment',
@@ -780,6 +783,10 @@ export default {
         document.addEventListener('keydown', this.hotkeyHandler)
         // Preset distribution scope
         this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
+        // Check for distribution scope overwrites
+        if (this.enabledFeatures.includes('select_always_show_alignment_input')) this.distributionScope = 'Alignment'
+        if (this.enabledFeatures.includes('select_always_show_feedback_input')) this.distributionScope = 'Feedback'
+
         this.actionDistributionTooltipTab = this.distributionScope
         this.onSort(true, 'sequence')
     },
