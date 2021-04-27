@@ -73,13 +73,7 @@ export default {
 
             const apiUrl = `/selections/${actions[0].selection_id}/actions`
             const requestBody = {
-                actions: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        action: newAction,
-                        variants: action.variants.filter(x => x.feedback != 'None'),
-                    }
-                }),
+                actions: actions,
             }
 
             axios
@@ -149,13 +143,7 @@ export default {
 
             const apiUrl = `/selections/${actions[0].selection_id}/actions`
             const requestBody = {
-                actions: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        action: action.action,
-                        variants: action.variants.filter(x => x.feedback != 'None'),
-                    }
-                }),
+                actions: actions,
             }
 
             axios.post(apiUrl, requestBody).catch(err => {
@@ -193,11 +181,8 @@ export default {
             const apiUrl = `/selections/${actions[0].selection_id}/feedback`
             const requestBody = {
                 feedbacks: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        feedback: newAction,
-                        variants: action.variants.filter(x => x.feedback != 'None'),
-                    }
+                    action.feedback = action.action
+                    return action
                 }),
             }
 
@@ -255,13 +240,11 @@ export default {
             commit('products/SET_FEEDBACKS', actions, { root: true })
 
             const apiUrl = `/selections/${actions[0].selection_id}/feedback`
+
             const requestBody = {
                 feedbacks: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        feedback: action.action,
-                        variants: action.variants.filter(x => x.feedback != 'None'),
-                    }
+                    action.feedback = action.action
+                    return action
                 }),
             }
 
@@ -281,17 +264,33 @@ export default {
                 )
             })
         },
-        async updateCurrentProductAction({}, product) {
-            const actionObject = product.yourActionObject
-            const apiUrl = `/selections/${actionObject.selection_id}/actions`
-            axios.post(apiUrl, {
-                actions: [actionObject],
-            })
+        async updateCurrentProductAction({ rootGetters }, product) {
+            const actionObject = Object.assign({}, product.yourActionObject)
+            actionObject.feedback = actionObject.action
+            const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+            const inputModeUrl = selectionMode == 'Feedback' ? 'feedback' : 'actions'
+            const actionKey = selectionMode == 'Feedback' ? 'feedback' : 'action'
+            const data = {}
+            data[`${actionKey}s`] = [actionObject]
+            const apiUrl = `/selections/${actionObject.selection_id}/${inputModeUrl}`
+            axios.post(apiUrl, data)
         },
         async initActions({ rootGetters, dispatch }, { actions, type }) {
             actions.map(async action => {
                 if (!action.quantity_details) Vue.set(action, 'quantity_details', [])
                 if (!action.variants) Vue.set(action, 'variants', [])
+                if (!action.labels) Vue.set(action, 'labels', [])
+
+                // if (!action.feedback) {
+                //     Object.defineProperty(action, 'feedback', {
+                //         get: function() {
+                //             return action.action
+                //         },
+                //         set: function(value) {
+                //             action.action = value
+                //         },
+                //     })
+                // }
 
                 Object.defineProperty(action, 'user', {
                     get: function() {
