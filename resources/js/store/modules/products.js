@@ -1150,22 +1150,41 @@ export default {
                     },
                 })
 
-                Object.defineProperty(product, 'inputLabels', {
+                Object.defineProperty(product, 'labelInput', {
                     get: function() {
-                        if (!product.getActiveSelectionInput) return
+                        if (!product.getActiveSelectionInput) return []
                         const selectionMode = rootGetters['selections/getCurrentSelectionMode']
                         const arrayKey = selectionMode == 'Feedback' ? 'feedbacks' : 'alignments'
                         const labels = []
                         product[arrayKey].map(action => {
                             action.labels.map(label => {
-                                const labelInArray = labels.find(x => label.name == label)
+                                const newLabelInput = { label }
+                                const labelInArray = labels.find(x => x.label == label)
                                 if (!labelInArray) {
-                                    labels.push({ name: label, count: 1 })
-                                } else {
-                                    labelInArray.count++
+                                    labels.push(newLabelInput)
                                 }
                             })
                         })
+                        labels.map(labelInput => {
+                            Object.defineProperty(labelInput, 'votes', {
+                                get: function() {
+                                    const votes = []
+                                    product[arrayKey].map(action => {
+                                        if (action.labels.includes(labelInput.label)) {
+                                            votes.push(action)
+                                        }
+                                    })
+                                    return votes
+                                },
+                            })
+                        })
+                        // Always sort labels by available labels
+                        const sortingArr = rootGetters['workspaces/getAvailableProductLabels']
+                        // Sort by available labels
+                        const sortedLabelInput = labels.slice().sort((a, b) => {
+                            return sortingArr.indexOf(a.label) - sortingArr.indexOf(b.label)
+                        })
+                        return sortedLabelInput
                     },
                 })
 

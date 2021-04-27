@@ -384,6 +384,21 @@ input[type='submit'] {
         font-weight: 400;
     }
 
+    .hover-only {
+        display: none;
+    }
+    &:hover .hover-only {
+        display: block;
+    }
+    &:hover .no-hover {
+        display: none;
+    }
+    .hover-only,
+    .no-hover {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
     // SIZES
     // Default
     height: 32px;

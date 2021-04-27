@@ -81,6 +81,7 @@ $grey300: mix($dark, white, 12%);
 $grey400: #dfe7ea;
 $grey450: #cfd8dd;
 $grey500: #c7d3db;
+$grey550: mix($dark, white, 60%);
 $grey600: #a7b2c2;
 $grey700: #68849f;
 $grey800: #425e80;
@@ -274,7 +275,7 @@ $brand-colors: (
         'light',
         $bluegrey250,
         mix(white, $bluegrey250, $lightenAmount),
-        $fontSoft,
+        $grey550,
         mix($dark05, $bluegrey250, $darkenAmount),
         1
     ),

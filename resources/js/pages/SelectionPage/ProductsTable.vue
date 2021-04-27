@@ -275,6 +275,7 @@
                     :currentAction="currentAction"
                     :distributionTooltipRef="$refs.actionDistributionTooltip"
                     :variantTooltipRef="$refs.variantTooltip"
+                    :labelPopoverRef="$refs.labelPopover"
                     :distributionScope="distributionScope"
                     :rowComponent="rowProps.rowComponent"
                     @onViewSingle="onViewSingle"
@@ -467,6 +468,10 @@
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
         </BasePopover>
+
+        <BasePopover ref="labelPopover" @show="showLabelPopover">
+            <LabelPopover :labelInput="popoverLabelInput" :product="popoverProduct" />
+        </BasePopover>
     </div>
 </template>
 
@@ -477,6 +482,7 @@ import MultipleSelectionSelector from './MultipleSelectionSelector'
 import ActionDistributionTooltip from './ActionDistributionTooltip'
 import sortArray from '../../mixins/sortArray'
 import VariantTooltip from './VariantTooltip'
+import LabelPopover from './LabelPopover/'
 
 import ProductFilters from './ProductFilters'
 import ProductSort from './ProductSort'
@@ -490,6 +496,7 @@ export default {
         MultipleSelectionSelector,
         ActionDistributionTooltip,
         VariantTooltip,
+        LabelPopover,
         ProductFilters,
         ProductSort,
     },
@@ -505,6 +512,9 @@ export default {
             actionDistributionTooltipTab: 'Feedback',
             // showAdvancedFilters: false,
             insTabValue: 'ins',
+
+            popoverLabelInput: null,
+            popoverProduct: null,
             // showFilters: false,
         }
     },
@@ -684,6 +694,10 @@ export default {
             this.tooltipVariant = variant
             this.tooltipProduct = product
             this.tooltipSelectionInput = selectionInput
+        },
+        showLabelPopover({ labelInput, product }) {
+            this.popoverLabelInput = labelInput
+            this.popoverProduct = product
         },
         showDistributionTooltip({ selectionInput, type }) {
             this.tooltipSelectionInput = selectionInput

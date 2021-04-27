@@ -3,12 +3,16 @@
         <button
             class="list-item pill xs"
             :class="[{ 'primary-hover': hasWriteAccess }]"
-            v-for="(label, index) in labelsSorted"
-            :key="label"
-            @click="hasWriteAccess && onRemoveLabel(index)"
+            v-for="labelInput in product.labelInput"
+            :key="labelInput.label"
+            v-tooltip-trigger="{
+                tooltipRef: labelPopoverRef,
+                showArg: { labelInput, product },
+                disabled: multiSelectionMode,
+            }"
+            @click="toggleVote(labelInput.label)"
         >
-            <span>{{ getLabelIndex(label) + 1 }} - {{ label }}</span>
-            <i v-if="hasWriteAccess" class="hover-only fas fa-times-circle"></i>
+            <span>{{ getLabelIndex(labelInput.label) + 1 }} - {{ labelInput.label }}</span>
         </button>
         <v-popover ref="popover" trigger="click" v-if="hasWriteAccess" @update:open="onShowPopover">
             <button class="primary ghost pill xs add-button">
@@ -46,7 +50,7 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'labelList',
-    props: ['product'],
+    props: ['product', 'labelPopoverRef'],
     data: function() {
         return {
             isOpen: false,
@@ -65,20 +69,11 @@ export default {
             selectionMode: 'getCurrentSelectionMode',
             getUserWriteAccess: 'getAuthUserSelectionWriteAccess',
             selection: 'getCurrentSelection',
+            multiSelectionMode: 'getMultiSelectionModeIsActive',
         }),
         ...mapGetters('files', {
             file: 'getCurrentFile',
         }),
-
-        labelsSorted() {
-            const labels = this.product.yourLabels
-            const sortingArr = this.availableLabels
-            // Sort by available labels
-            labels.slice().sort((a, b) => {
-                return sortingArr.indexOf(a) - sortingArr.indexOf(b)
-            })
-            return labels
-        },
         availableLabelsFiltered() {
             // const labels = this.availableLabels.slice().filter(x => {
             //     const alreadyAdded = this.product.yourLabels.includes(x)
@@ -101,14 +96,31 @@ export default {
         getLabelIndex(label) {
             return this.availableLabels.indexOf(label)
         },
+        toggleVote(label) {
+            const labelIndex = this.product.yourLabels.findIndex(yourLabel => yourLabel == label)
+            if (labelIndex < 0) {
+                this.product.yourLabels.push(label)
+            } else {
+                this.product.yourLabels.splice(labelIndex, 1)
+            }
+            this.onUpdateLabels()
+        },
         async onUpdateLabels() {
             const labels = this.product.yourLabels
             // Make sure the product is In/Focus
             if (labels.length > 0 && !['Focus', 'In'].includes(this.product.yourAction)) {
                 if (this.selectionMode == 'Feedback') {
-                    this.UPDATE_FEEDBACKS({ actions: [this.product.yourAction], newAction: 'In', user: this.authUser })
+                    this.UPDATE_FEEDBACKS({
+                        actions: [this.product.yourActionObject],
+                        newAction: 'In',
+                        user: this.authUser,
+                    })
                 } else {
-                    this.UPDATE_ACTIONS({ actions: [this.product.yourAction], newAction: 'In', user: this.authUser })
+                    this.UPDATE_ACTIONS({
+                        actions: [this.product.yourActionObject],
+                        newAction: 'In',
+                        user: this.authUser,
+                    })
                 }
             }
             await this.updateCurrentProductAction(this.product)
@@ -150,18 +162,7 @@ export default {
     overflow-x: auto;
     cursor: default;
     .list-item {
-        padding-right: 4px;
         flex-shrink: 0;
-        .hover-only {
-            display: none;
-        }
-        &:hover {
-            padding-right: 0;
-            .hover-only {
-                display: block;
-                color: white !important;
-            }
-        }
     }
     .add-button {
         display: none;
