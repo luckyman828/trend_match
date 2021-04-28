@@ -15,23 +15,7 @@
         <link type="text/css" rel="stylesheet" href="{{ mix('css/app.css') }}">
         {{-- <link rel="stylesheet" src="{{ asset('css/vue-styles.css') }}" /> --}}
 
-        {{-- Livechat --}}
-        <script type="text/javascript">
-            window.$crisp=[];
-            window.CRISP_WEBSITE_ID="9b20bd48-3b9d-477c-8ca6-911a0c24e3a2";
-            (function(){d=document;s=d.createElement("script");
-            s.src="https://client.crisp.chat/l.js";
-            s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
-            
-            window.CRISP_READY_TRIGGER = function() {
-                setTimeout(function(){
-                    const crispChatWrapper = document.querySelector('#crisp-chatbox')
-                    if (crispChatWrapper) {
-                        crispChatWrapper.style.setProperty('z-index', '1', 'important')
-                    }
-                }, 100)
-            };
-        </script>
+        
     </head>
     <body>
         <div class="main-wrapper">
@@ -110,5 +94,26 @@
         {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
         <script src="{{ mix('js/app.js') }}"></script>
         <script src="/lib/signalr/signalr.js"></script>
+        {{-- Livechat --}}
+        <script type="text/javascript">
+            window.$crisp=[];
+            window.CRISP_WEBSITE_ID="9b20bd48-3b9d-477c-8ca6-911a0c24e3a2";
+            (function(){d=document;s=d.createElement("script");
+            s.src="https://client.crisp.chat/l.js";
+            s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+            
+            window.CRISP_READY_TRIGGER = function() {
+                setTimeout(function(){
+                    const crispChatWrapper = document.querySelector('#crisp-chatbox')
+                    if (crispChatWrapper) {
+                        crispChatWrapper.style.setProperty('z-index', '1', 'important')
+                    }
+                }, 100)
+            };
+        </script>
+
+        {{-- Feedback --}}
+        <!-- Download Canny SDK -->
+        <script>!function(w,d,i,s){function l(){if(!d.getElementById(i)){var f=d.getElementsByTagName(s)[0],e=d.createElement(s);e.type="text/javascript",e.async=!0,e.src="https://canny.io/sdk.js",f.parentNode.insertBefore(e,f)}}if("function"!=typeof w.Canny){var c=function(){c.q.push(arguments)};c.q=[],w.Canny=c,"complete"===d.readyState?l():w.attachEvent?w.attachEvent("onload",l):w.addEventListener("load",l,!1)}}(window,document,"canny-jssdk","script");</script>
     </body>
 </html>

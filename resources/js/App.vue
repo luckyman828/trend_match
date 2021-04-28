@@ -70,6 +70,7 @@ export default {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace', 'getCurrentWorkspaceId']),
         ...mapGetters('workspaces', {
             currentWorkspaceId: 'getCurrentWorkspaceId',
+            currentWorkspace: 'getCurrentWorkspace',
         }),
         ...mapGetters('auth', ['isAuthenticated', 'authUser', 'authStatus', 'getAuthUserToken']),
         ...mapGetters('selections', ['getSelectionById', 'getCurrentSelectionById']),
@@ -99,6 +100,7 @@ export default {
                 this.initCrispChat()
                 this.getActiveJobs()
                 await this.initWorkspace()
+                this.initCanny()
                 this.SET_AUTHENTICATED_INIT_DONE(true)
             }
         },
@@ -264,6 +266,29 @@ export default {
         initCrispChat() {
             $crisp.push(['set', 'user:email', this.authUser.email])
             $crisp.push(['set', 'user:nickname', this.authUser.name])
+        },
+        initCanny() {
+            Canny('identify', {
+                appID: '6086a09f2bb0b5460b28712a',
+                user: {
+                    companies: this.currentWorkspace
+                        ? [
+                              {
+                                  name: this.currentWorkspace.title,
+                                  id: this.currentWorkspace.id,
+                                  created: this.currentWorkspace.created_at,
+                              },
+                          ]
+                        : [],
+                    email: this.authUser.email,
+                    name: this.authUser.name,
+                    id: this.authUser.id,
+                    created: this.authUser.created_at,
+                    customFields: {
+                        role: this.authUser.role,
+                    },
+                },
+            })
         },
     },
     async created() {
