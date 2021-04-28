@@ -76,7 +76,14 @@ export async function triggerRouteGuards(to) {
             })
             return triggerAppRedirection()
         }
-        store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
+        // Test if we are changing workspace
+        if (workspaceId != store.getters['workspaces/getCurrentWorkspaceId']) {
+            // Fetch the new workspace's details
+            await store.dispatch('workspaces/fetchWorkspace', workspaceId)
+            store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
+        }
+
+        // store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
     }
 
     // GUARD APPS
