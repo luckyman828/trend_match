@@ -13,7 +13,21 @@
             </div>
         </router-link>
 
-        <!-- Not router link -->
+        <!-- External link -->
+        <a
+            v-else-if="href"
+            :href="href"
+            target="_blank"
+            class="inner flex-list flex-v center-h"
+            v-tooltip.right="displayTooltips && label"
+        >
+            <i v-if="iconClass" class="icon" :class="iconClass"></i>
+            <div class="pill xxs black" v-if="label">
+                <span class="label">{{ label }}</span>
+            </div>
+        </a>
+
+        <!-- Not link -->
         <div v-else class="inner flex-list flex-v center-h" v-tooltip.right="displayTooltips && label">
             <i v-if="iconClass" class="icon" :class="iconClass"></i>
             <div class="pill xxs black" v-if="label">
@@ -29,7 +43,7 @@
 <script>
 export default {
     name: 'sidebarItem',
-    props: ['label', 'to', 'iconClass'],
+    props: ['label', 'to', 'iconClass', 'href'],
     computed: {
         isActive() {
             return !!this.to && !!this.$route.matched && !!this.$route.matched.find(route => route.name == this.to.name)

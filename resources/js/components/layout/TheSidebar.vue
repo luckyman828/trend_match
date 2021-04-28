@@ -42,6 +42,13 @@
                 />
 
                 <SidebarItem
+                    class="feedback-item"
+                    label="Give feedback"
+                    iconClass="fas fa-comment-plus"
+                    href="https://kollekt.canny.io"
+                />
+
+                <SidebarItem
                     class="changelog-item"
                     label="News"
                     iconClass="fas fa-gift"
@@ -172,6 +179,13 @@ export default {
             opacity: 1;
         }
     }
+    // &.feedback-item {
+    //     &::v-deep {
+    //         .icon {
+    //             color: $primary;
+    //         }
+    //     }
+    // }
 }
 .bottom-drawer {
     transition: 0.2s;
