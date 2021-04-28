@@ -1,5 +1,5 @@
 <template>
-    <div class="conditional-filters" ref="filterWrapper">
+    <div class="conditional-filters" ref="filterWrapper" v-click-outside="onClose">
         <h3>Advanced filters</h3>
 
         <template></template>
@@ -468,6 +468,7 @@ export default {
             this.SET_ADVANCED_FILTER(JSON.parse(JSON.stringify(filtersToSet)))
         },
         onClose(e) {
+            if (e.target.classList.contains('popover') || e.target.closest('.popover')) return
             this.$emit('close')
         },
     },
