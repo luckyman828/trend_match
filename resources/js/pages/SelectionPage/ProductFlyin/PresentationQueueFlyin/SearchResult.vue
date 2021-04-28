@@ -23,7 +23,7 @@
                 <div class="actions">
                     <!-- If the product is not already in the queue -->
                     <BaseButton
-                        buttonClass="ghost"
+                        buttonClass="ghost true-square"
                         v-if="!isInQueue"
                         @click="onAddToQueue(product)"
                         targetAreaPadding="20px"
@@ -34,7 +34,7 @@
                     <!-- Else  -->
                     <BaseButton
                         v-else
-                        buttonClass="square primary red-hover added-indicator"
+                        buttonClass="true-square primary red-hover added-indicator"
                         :disabled="isCurrent"
                         v-tooltip="
                             isCurrent

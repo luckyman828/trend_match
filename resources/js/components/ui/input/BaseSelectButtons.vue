@@ -272,7 +272,7 @@ export default {
                 this.optionDescriptionKey,
                 this.optionGroupOptionsKey,
                 this.optionGroupNameKey,
-            ]
+            ].filter(x => x != null)
         },
         optionsFlat() {
             if (!this.multipleOptionArrays || !this.optionGroupOptionsKey) return this.options

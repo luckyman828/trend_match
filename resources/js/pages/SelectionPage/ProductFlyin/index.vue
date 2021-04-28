@@ -146,7 +146,7 @@
                     </button>
 
                     <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
-                        <BaseShape shapeClass="square white">
+                        <BaseShape shapeClass="true-square white">
                             <i class="far fa-images"></i>
                             <template v-slot:outside>
                                 <div class="count circle xxs dark top-right">

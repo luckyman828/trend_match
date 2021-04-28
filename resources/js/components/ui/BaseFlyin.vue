@@ -124,6 +124,7 @@ export default {
             display: block;
         }
         > .flyin {
+            overflow: hidden;
             transform: none;
         }
     }
@@ -160,12 +161,12 @@ export default {
     transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
     transition: 0.2s;
     background: $bg;
-    overflow: hidden;
     border-radius: 16px 0 0 0;
     &.placement-left {
         right: auto;
         left: 0;
         transform: translateX(-100%);
+        border-radius: 0 16px 0 0;
     }
     .body {
         padding: 16px;
