@@ -17,3 +17,7 @@ npm-debug.log
 yarn-error.log
 .deployment
 deploy.cmd
+*.woff
+*.woff2
+*.eot
+*.ttf

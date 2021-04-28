@@ -1,21 +1,22 @@
 <template>
     <BaseTableV2Row class="log-list-item">
         <td class="date">
-            <BaseEditable v-model="createdAt" v-if="isSystemAdmin" @submit="onUpdateEntry" />
-            <span v-else>{{ getPrettyTimestamp(entry.created_at) }}</span>
+            <BaseEditable v-model="startTimestamp" v-if="isSystemAdmin" @submit="onUpdateEntry" />
+            <span v-else>{{ startTimestamp }}</span>
         </td>
 
         <td class="msg">
             <div class="msg-inner">
                 <BaseEditableTextarea
+                    ref="messageInput"
                     class="msg-input"
-                    v-model="entry.msg"
-                    :oldValue="entry.msg"
+                    v-model="entry.message"
+                    :oldValue="entry.message"
                     placeholder="Write a message here.."
                     v-if="isSystemAdmin"
                     @submit="onUpdateEntry"
                 />
-                <span v-else>{{ entry.msg }}</span>
+                <span v-else>{{ entry.message }}</span>
             </div>
         </td>
         <td class="duration">
@@ -39,9 +40,12 @@ export default {
         ...mapGetters('auth', {
             isSystemAdmin: 'getIsSystemAdmin',
         }),
-        createdAt: {
+        ...mapGetters('workspaces', {
+            workspace: 'getCurrentWorkspace',
+        }),
+        startTimestamp: {
             get() {
-                return this.getPrettyTimestamp(this.entry.created_at)
+                return this.getPrettyTimestamp(this.entry.support_time)
             },
             set(newVal) {
                 // Test that the new val is valid
@@ -54,7 +58,7 @@ export default {
                     })
                     return
                 }
-                this.entry.created_at = newDate.toISO()
+                this.entry.support_time = newDate.toISO()
             },
         },
         duration: {
@@ -73,6 +77,11 @@ export default {
                 }
                 const increment = 15
                 const newDuration = Math.round(newNumber / increment) * increment
+                // Get the diff in duration
+                const durationDiff = newDuration - this.entry.duration
+                // Update the workspace support to show the correct new support remaining
+                this.workspace.resources.support.total_spend_minutes += durationDiff
+
                 this.entry.duration = newDuration
             },
         },
@@ -81,10 +90,10 @@ export default {
         ...mapActions('supportLog', ['deleteEntry', 'insertOrUpdateLogEntry']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onDeleteEntry() {
-            this.deleteEntry(this.entry)
+            this.deleteEntry({ workspace: this.workspace, entry: this.entry })
         },
         onUpdateEntry() {
-            this.insertOrUpdateLogEntry(this.entry)
+            this.insertOrUpdateLogEntry({ workspace: this.workspace, entry: this.entry })
         },
     },
 }

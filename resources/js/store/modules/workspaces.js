@@ -391,7 +391,9 @@ export default {
         },
         async updateWorkspaceResources({}, workspace) {
             const apiUrl = `workspaces/${workspace.id}/resources`
-            await axios.put(apiUrl, workspace.resources)
+            const resourcesObj = Object.assign({}, workspace.resources)
+            resourcesObj.support_minutes = resourcesObj.support.available_minutes
+            await axios.put(apiUrl, resourcesObj)
         },
     },
 
