@@ -83,7 +83,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('actions', ['updateCurrentProductAction']),
+        ...mapActions('actions', ['updateProductLabelInput']),
         ...mapMutations('products', ['UPDATE_FEEDBACKS', 'UPDATE_ACTIONS']),
         onVote() {
             const labelIndex = this.product.yourLabels.findIndex(label => label == this.labelInput.label)
@@ -95,24 +95,7 @@ export default {
             this.onUpdateLabels()
         },
         async onUpdateLabels() {
-            const labels = this.product.yourLabels
-            // Make sure the product is In/Focus
-            if (labels.length > 0 && !['Focus', 'In'].includes(this.product.yourAction)) {
-                if (this.selectionMode == 'Feedback') {
-                    this.UPDATE_FEEDBACKS({
-                        actions: [this.product.yourActionObject],
-                        newAction: 'In',
-                        user: this.authUser,
-                    })
-                } else {
-                    this.UPDATE_ACTIONS({
-                        actions: [this.product.yourActionObject],
-                        newAction: 'In',
-                        user: this.authUser,
-                    })
-                }
-            }
-            await this.updateCurrentProductAction(this.product)
+            await this.updateProductLabelInput(this.product)
         },
     },
 }

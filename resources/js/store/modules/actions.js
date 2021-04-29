@@ -275,6 +275,36 @@ export default {
             const apiUrl = `/selections/${actionObject.selection_id}/${inputModeUrl}`
             axios.post(apiUrl, data)
         },
+        async updateProductLabelInput({ rootGetters, dispatch, commit }, product) {
+            const labels = product.yourLabels
+            const authUser = rootGetters['auth/authUser']
+            const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+            // Make sure the product is In/Focus
+            if (labels.length > 0 && !['Focus', 'In'].includes(product.yourAction)) {
+                if (selectionMode == 'Feedback') {
+                    commit(
+                        'products/UPDATE_FEEDBACKS',
+                        {
+                            actions: [product.yourActionObject],
+                            newAction: 'In',
+                            user: authUser,
+                        },
+                        { root: true }
+                    )
+                } else {
+                    commit(
+                        'products/UPDATE_ACTIONS',
+                        {
+                            actions: [product.yourActionObject],
+                            newAction: 'In',
+                            user: authUser,
+                        },
+                        { root: true }
+                    )
+                }
+            }
+            await dispatch('updateCurrentProductAction', product)
+        },
         async initActions({ rootGetters, dispatch }, { actions, type }) {
             actions.map(async action => {
                 if (!action.quantity_details) Vue.set(action, 'quantity_details', [])

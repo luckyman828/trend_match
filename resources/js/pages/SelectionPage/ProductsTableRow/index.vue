@@ -393,7 +393,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+            return this.labelsEnabled && this.userWriteAccess.actions.hasAccess
         },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
@@ -447,6 +447,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'updateProduct']),
+        ...mapActions('actions', ['updateProductLabelInput']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -581,13 +582,13 @@ export default {
                     if (!label) return
 
                     // Check if the label is already added
-                    const existingIndex = this.product.labels.findIndex(x => x == label)
+                    const existingIndex = this.product.yourLabels.findIndex(x => x == label)
                     if (existingIndex >= 0) {
-                        this.product.labels.splice(existingIndex, 1)
+                        this.product.yourLabels.splice(existingIndex, 1)
                     } else {
-                        this.product.labels.push(label)
+                        this.product.yourLabels.push(label)
                     }
-                    this.onUpdateProduct()
+                    this.updateProductLabelInput(this.product)
                 }
                 // Hashtag
                 if (event.key == '#') {

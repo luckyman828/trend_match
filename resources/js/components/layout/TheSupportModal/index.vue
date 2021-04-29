@@ -29,7 +29,7 @@
                 <h4>Support log</h4>
                 <BaseButton
                     class="add-new-button"
-                    v-if="!isLoading"
+                    v-if="!isLoading && isSystemAdmin"
                     buttonClass="primary invisible ghost-hover"
                     @click="onAddEntry"
                 >

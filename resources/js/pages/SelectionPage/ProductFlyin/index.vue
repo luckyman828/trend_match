@@ -483,12 +483,13 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+            return this.labelsEnabled && this.userWriteAccess.actions.hasAccess
         },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted', 'updateProduct']),
         ...mapActions('presentation', ['broadcastProduct']),
+        ...mapActions('actions', ['updateProductLabelInput']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
@@ -640,13 +641,13 @@ export default {
                         if (!label) return
 
                         // Check if the label is already added
-                        const existingIndex = this.product.labels.findIndex(x => x == label)
+                        const existingIndex = this.product.yourLabels.findIndex(x => x == label)
                         if (existingIndex >= 0) {
-                            this.product.labels.splice(existingIndex, 1)
+                            this.product.yourLabels.splice(existingIndex, 1)
                         } else {
-                            this.product.labels.push(label)
+                            this.product.yourLabels.push(label)
                         }
-                        this.onUpdateProduct()
+                        this.updateProductLabelInput(this.product)
                     }
                     // Hashtag
                     if (e.key == '#') {
