@@ -44,8 +44,8 @@
                         targetAreaPadding="20px"
                         @click="onRemoveFromQueue(product)"
                     >
-                        <i class="default fas fa-check"></i>
-                        <i class="hover fas fa-trash"></i>
+                        <i class="hover-only fas fa-trash"></i>
+                        <i class="no-hover fas fa-check"></i>
                     </BaseButton>
                 </div>
             </div>

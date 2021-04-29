@@ -1,6 +1,6 @@
 <template>
     <BaseFlyin
-        class="product-single"
+        class="product-single product-flyin"
         :show="show"
         @close="onCloseSingle"
         :columns="4"
@@ -683,10 +683,12 @@ export default {
             .flyin-header {
                 margin-bottom: 40px;
             }
-            .flyin-inner {
-                background: white;
-                > .body {
-                    border-top: $borderModule;
+            > .flyin {
+                > .flyin-inner {
+                    background: white;
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .label-list {
@@ -714,7 +716,7 @@ export default {
         > .flyin {
             min-width: 0;
             width: calc(100vw - 242px);
-            .flyin-inner {
+            > .flyin-inner {
                 > .body {
                     grid-template-columns: 26% 26% 24% 24% !important;
                 }
@@ -730,9 +732,11 @@ export default {
             }
         }
         &.has-budget {
-            .flyin-inner {
-                > .body {
-                    border-top: $borderModule;
+            > .flyin {
+                > .flyin-inner {
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .the-budget-counter {
