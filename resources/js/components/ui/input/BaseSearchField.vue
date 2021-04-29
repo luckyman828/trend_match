@@ -184,10 +184,10 @@ export default {
             }
 
             const modifyResults = (resultArray, originalArray) => {
-                let modifiedResults = [...originalArray]
+                let modifiedResults = [...resultArray]
                 // FLIP THE RESULT IF NEEDED
                 if (modifiers.includes(':inverse') || modifiers.includes(':invert')) {
-                    modifiedResults = modifiedResults.filter(original => {
+                    modifiedResults = [...originalArray].filter(original => {
                         // Chech that the item is not in the search results
                         // Assume that the items we are searching has an ID property
                         return !resultArray.find(result => result.id == original.id)

@@ -676,11 +676,14 @@ export default {
                 .label-list {
                     top: 64px;
                 }
+                .flyin-header {
+                    margin-bottom: 48px;
+                }
             }
             .flyin-header {
                 margin-bottom: 40px;
             }
-            .flyin {
+            .flyin-inner {
                 background: white;
                 > .body {
                     border-top: $borderModule;
@@ -711,8 +714,10 @@ export default {
         > .flyin {
             min-width: 0;
             width: calc(100vw - 242px);
-            > .body {
-                grid-template-columns: 26% 26% 24% 24% !important;
+            .flyin-inner {
+                > .body {
+                    grid-template-columns: 26% 26% 24% 24% !important;
+                }
             }
             .flyin-header {
                 > .left {
@@ -725,9 +730,8 @@ export default {
             }
         }
         &.has-budget {
-            > .flyin {
+            .flyin-inner {
                 > .body {
-                    margin-top: 8px;
                     border-top: $borderModule;
                 }
             }
