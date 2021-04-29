@@ -401,7 +401,7 @@ export default {
         width: 100%;
         .scan-log {
             width: 100%;
-            height: 200px;
+            height: 120px;
             border-radius: $borderRadiusEl;
             border: $borderEl;
             background: $bg;

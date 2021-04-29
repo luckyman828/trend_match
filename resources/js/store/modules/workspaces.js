@@ -359,10 +359,13 @@ export default {
                 }
             })
         },
-        async changeWorkspace({ commit, dispatch, rootGetters }, workspaceId) {
+        async setCurrentWorkspace({ commit, dispatch }, workspaceId) {
             // Fetch data for the new workspace
             commit('SET_CURRENT_WORKSPACE_ID', workspaceId)
             await dispatch('fetchWorkspace', workspaceId)
+        },
+        async changeWorkspace({ commit, dispatch, rootGetters }, workspaceId) {
+            await dispatch('setCurrentWorkspace', workspaceId)
             // Trigger route guards
             const currentRoute = router.currentRoute
             let newRoute = currentRoute
