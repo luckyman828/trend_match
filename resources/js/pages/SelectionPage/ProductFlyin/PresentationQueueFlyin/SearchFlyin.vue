@@ -106,23 +106,26 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 
-::v-deep {
-    &.presenter-queue-search-flyin {
-        &.visible {
-            .flyin.placement-left {
-                left: 0;
-            }
-        }
-    }
-}
+// ::v-deep {
+//     &.presenter-queue-search-flyin {
+//         &.visible {
+//             .flyin.placement-left {
+//                 left: 0;
+//             }
+//         }
+//     }
+// }
 
 .presenter-queue-search-flyin {
-    ::v-deep {
-        .flyin.placement-left {
+    &::v-deep {
+        &.visible .flyin {
+            transform: translateX(0);
+        }
+        .flyin {
             width: 400px;
             min-width: 0;
-            transform: none;
-            left: -400px;
+            transform: translateX(-400px);
+            // left: -400px;
             .body {
                 background: white;
             }

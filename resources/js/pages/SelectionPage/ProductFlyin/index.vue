@@ -676,14 +676,16 @@ export default {
                 .label-list {
                     top: 64px;
                 }
-                .flyin-header {
-                    margin-bottom: 48px;
+                > .flyin {
+                    > .flyin-header {
+                        margin-bottom: 48px;
+                    }
                 }
             }
-            .flyin-header {
-                margin-bottom: 40px;
-            }
             > .flyin {
+                > .flyin-header {
+                    margin-bottom: 40px;
+                }
                 > .flyin-inner {
                     background: white;
                     > .body {
