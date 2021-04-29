@@ -52,6 +52,9 @@ export default {
     props: ['labelInput', 'product'],
     computed: {
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', {
+            selectionMode: 'getCurrentSelectionMode',
+        }),
         totalVotes() {
             return this.labelInput.votes.length
         },

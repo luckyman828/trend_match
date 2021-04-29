@@ -92,6 +92,7 @@
                 :file="currentFile"
                 :products="productsFiltered"
                 :selection="selection"
+                :labelPopoverRef="$refs.labelPopover"
                 :currentAction="currentAction"
                 @updateAction="onUpdateAction"
             />
@@ -100,6 +101,7 @@
                 :show="singleVisible"
                 :selection="selection"
                 :currentAction="currentAction"
+                :labelPopoverRef="$refs.labelPopover"
                 @close="setSingleVisisble(false)"
                 @updateAction="onUpdateAction"
             />
@@ -159,6 +161,10 @@
         </BaseDialog>
 
         <ScannerModeControls />
+
+        <BasePopover ref="labelPopover" @show="showLabelPopover">
+            <LabelPopover :labelInput="popoverLabelInput" :product="popoverProduct" />
+        </BasePopover>
     </div>
 </template>
 
@@ -169,6 +175,7 @@ import ProductsTable from './ProductsTable'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 import ProductFlyin from './ProductFlyin'
 import ScannerModeControls from './ScannerModeControls'
+import LabelPopover from './LabelPopover/'
 
 export default {
     name: 'selectionPage',
@@ -177,11 +184,14 @@ export default {
         ThePageHeader,
         ProductFlyin,
         ScannerModeControls,
+        LabelPopover,
     },
     data: function() {
         return {
             hideQuickOut: false,
             hideQuickIn: false,
+            popoverLabelInput: null,
+            popoverProduct: null,
         }
     },
     computed: {
@@ -259,6 +269,10 @@ export default {
         onViewSelectionAsRole(role) {
             this.SET_CURRENT_SELECTION_REAL_ROLE(this.selection.your_role)
             this.selection.your_role = role
+        },
+        showLabelPopover({ labelInput, product }) {
+            this.popoverLabelInput = labelInput
+            this.popoverProduct = product
         },
         async onJoinSelection(role) {
             const user = JSON.parse(JSON.stringify(this.authUser))

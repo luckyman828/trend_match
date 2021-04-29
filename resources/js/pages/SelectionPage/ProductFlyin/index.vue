@@ -27,7 +27,13 @@
                         >
                     </div>
                     <div class="item-group">
-                        <LabelList v-if="showLabels" ref="labelList" :product="product" v-horizontal-scroll />
+                        <LabelList
+                            v-if="showLabels"
+                            ref="labelList"
+                            :labelPopoverRef="labelPopoverRef"
+                            :product="product"
+                            v-horizontal-scroll
+                        />
                     </div>
                 </template>
                 <template v-slot:right>
@@ -345,7 +351,7 @@ import HotkeyHandler from '../../../components/common/HotkeyHandler'
 
 export default {
     name: 'productFlyin',
-    props: ['show'],
+    props: ['show', 'labelPopoverRef'],
     mixins: [variantImage],
     components: {
         CommentsSection,
@@ -677,16 +683,18 @@ export default {
                     top: 64px;
                 }
                 > .flyin {
-                    > .flyin-header {
-                        margin-bottom: 48px;
+                    > .flyin-inner {
+                        > .flyin-header {
+                            margin-bottom: 48px;
+                        }
                     }
                 }
             }
             > .flyin {
-                > .flyin-header {
-                    margin-bottom: 40px;
-                }
                 > .flyin-inner {
+                    > .flyin-header {
+                        margin-bottom: 40px;
+                    }
                     background: white;
                     > .body {
                         border-top: $borderModule;
