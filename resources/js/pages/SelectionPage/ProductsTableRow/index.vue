@@ -30,7 +30,7 @@
             </td>
             <td class="title">
                 <span class="clickable">
-                    <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
+                    <span class="title" v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
                     <LabelList
                         v-if="labelsEnabled || product.labels.length > 0"
                         :product="product"

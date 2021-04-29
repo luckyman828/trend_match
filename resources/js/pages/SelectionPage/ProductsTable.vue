@@ -821,7 +821,7 @@ export default {
                     align-items: center;
                     margin-right: auto;
                     padding-right: 20px;
-                    span {
+                    > span {
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         display: block;

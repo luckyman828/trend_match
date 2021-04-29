@@ -1153,8 +1153,8 @@ export default {
                 Object.defineProperty(product, 'labelInput', {
                     get: function() {
                         if (!product.getActiveSelectionInput) return []
-                        const selectionMode = rootGetters['selections/getCurrentSelectionMode']
-                        const arrayKey = selectionMode == 'Feedback' ? 'feedbacks' : 'alignments'
+                        const distributionScope = rootGetters['selectionProducts/getDistributionScope']
+                        const arrayKey = distributionScope == 'Feedback' ? 'feedbacks' : 'alignments'
                         const labels = []
                         product[arrayKey].map(action => {
                             action.labels.map(label => {

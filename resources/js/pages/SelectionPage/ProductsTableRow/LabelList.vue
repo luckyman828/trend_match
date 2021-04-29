@@ -12,7 +12,13 @@
             }"
             @click="toggleVote(labelInput.label)"
         >
-            <span>{{ getLabelIndex(labelInput.label) + 1 }} - {{ labelInput.label }}</span>
+            <span class="square xxs ghost dark">
+                <span>{{ getLabelIndex(labelInput.label) + 1 }}</span>
+            </span>
+            <span>{{ labelInput.label }}</span>
+            <span class="pill xxs white">
+                <span>{{ labelInput.votes.length }}</span>
+            </span>
         </button>
         <v-popover ref="popover" trigger="click" v-if="hasWriteAccess" @update:open="onShowPopover">
             <button class="primary ghost pill xs add-button">
