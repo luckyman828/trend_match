@@ -516,6 +516,7 @@ input[type='submit'] {
             i {
                 color: nth($color, 4);
             }
+
             &.invisible,
             &.ghost {
                 color: nth($color, 2);
@@ -550,6 +551,55 @@ input[type='submit'] {
                     color: nth($color, 2);
                 }
             }
+            // // Shapes in shapes
+            // button:not(.text-link),
+            // .button,
+            // .square,
+            // .true-square,
+            // .pill,
+            // .circle,
+            // input[type='submit'] {
+            //     border-color: nth($color, 4);
+            //     background: rgba(nth($color, 4), nth($color, 6));
+            //     color: nth($color, 2);
+            //     i {
+            //         color: nth($color, 2);
+            //     }
+            //     &.invisible,
+            //     &.ghost {
+            //         color: nth($color, 4);
+            //         i {
+            //             color: nth($color, 4);
+            //         }
+            //     }
+            //     &.ghost {
+            //         &:not(.ghost-hover):hover,
+            //         .button-hover-trigger:hover &:not(.ghost-hover) {
+            //             border-color: nth($color, 4);
+            //             background: rgba(nth($color, 4), nth($color, 6));
+            //             color: nth($color, 2);
+            //             i {
+            //                 color: nth($color, 2);
+            //             }
+            //             i.context {
+            //                 background: nth($color, 3);
+            //             }
+            //         }
+            //     }
+            //     &.ghost {
+            //         border-color: nth($color, 4);
+            //     }
+            //     &.ghost-hover:hover,
+            //     .button-hover-trigger:hover &.ghost-hover {
+            //         background: transparent;
+            //         color: nth($color, 4);
+            //         border-color: nth($color, 4);
+            //         i {
+            //             color: nth($color, 4);
+            //         }
+            //     }
+            // }
+            // // End shapes in shapes
         }
         &.#{nth($color,1)}-hover:hover,
         .button-hover-trigger:hover &.#{nth($color,1)}-hover {

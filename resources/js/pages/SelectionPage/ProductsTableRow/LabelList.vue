@@ -1,8 +1,12 @@
 <template>
     <div class="label-list flex-list" v-horizontal-scroll>
         <button
-            class="list-item pill xs"
-            :class="[{ 'primary-hover': hasWriteAccess }]"
+            class="list-item pill xs button-hover-trigger"
+            :class="[
+                { 'primary-hover': hasWriteAccess },
+                { own: product.yourLabels.includes(labelInput.label) },
+                product.yourLabels.includes(labelInput.label) ? 'dark' : '',
+            ]"
             v-for="labelInput in product.labelInput"
             :key="labelInput.label"
             v-tooltip-trigger="{
@@ -12,7 +16,10 @@
             }"
             @click="toggleVote(labelInput.label)"
         >
-            <span class="square xxs ghost dark">
+            <span
+                class="square xxs ghost white-hover ghost-hover hotkey-square"
+                :class="product.yourLabels.includes(labelInput.label) ? 'white' : 'dark'"
+            >
                 <span>{{ getLabelIndex(labelInput.label) + 1 }}</span>
             </span>
             <span>{{ labelInput.label }}</span>
@@ -170,5 +177,10 @@ export default {
             font-weight: 400;
         }
     }
+}
+</style>
+<style lang="scss">
+.product-row:not(:hover) .label-list .hotkey-square {
+    display: none;
 }
 </style>
