@@ -375,7 +375,10 @@ export default {
             // Trigger routeguards for the new route
             const routeAfterGuards = await triggerRouteGuards(newRoute)
             if (routeAfterGuards) newRoute = routeAfterGuards
-            if (newRoute != currentRoute) {
+            if (
+                newRoute != currentRoute &&
+                !(newRoute.fullPath && currentRoute.fullPath && newRoute.fullPath == currentRoute.fullPath)
+            ) {
                 await router.push(newRoute)
             }
             commit('files/SET_CURRENT_FILE', null, { root: true })
