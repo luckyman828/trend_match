@@ -1,5 +1,89 @@
 <template>
     <BaseModal :show="show" @close="SHOW_CHANGELOG(false)" header="What's new?" classes="full-body changelog">
+        <ChangelogPost
+            title="Jersey: Blush"
+            date="May 2021 Release"
+            featuredImgUrl="/images/blog/undraw_Dev_focus_re_6iwt.svg"
+        >
+            <template v-slot:body>
+                <h2>General updates</h2>
+                <h3>Support Super Powers</h3>
+                <p>Workspace admins and owners are now able to request super powers.</p>
+                <p>
+                    Workspace owners can purchase support credits, and your workspace owners and admins will be able to
+                    request assistance from a Kollekt team member.
+                </p>
+                <p>Support only needs to be payed for, in cases where you need us to set up Kollekt on your behalf.</p>
+                <p><strong>Questions, guidance, traning, etc. is still free.</strong></p>
+                <p>
+                    We still encourage you to ask us anything at all you may be in doubt of or would like to learn more
+                    about.
+                </p>
+                <p>
+                    Workspace owners and admins will get access to the new navbar item "Support" in the left-side menu.
+                    From here they can access an overview of their remaining available support hours.
+                </p>
+
+                <h3>Search modifiers: Invert</h3>
+                <p>
+                    You can now start your search query in any search-field on Kollekt, with the string ":invert"
+                    followed by a space and your search query.
+                </p>
+                <p>Kollekt will then show you any search result that did not match your query.</p>
+
+                <h2>SELECT</h2>
+
+                <h3>Labels as input</h3>
+                <p>Labels are now part of alignment and feedback.</p>
+                <p>
+                    This means that each individual user can cast votes on product labels through feedback, and in
+                    alignment a unified decision can be made.
+                </p>
+                <p>
+                    This should let you gather much more granular input, and further increase the possibilities of
+                    Kollekt SELECT.
+                </p>
+                <p>The votes cast for a specific label are visible upon hovering on the label.</p>
+                <p>
+                    You can swtich between viewing votes from feedback or alignment via the "View input from:
+                    X"-switcher.
+                </p>
+                <p>
+                    When one or more labels are voted for, that product is automatically marked as IN, if not already IN
+                    or Focus.
+                </p>
+                <p>If a product is marked as OUT or undecided, any votes cast will be removed as well.</p>
+
+                <h3>General Tweaks & Fixes</h3>
+                <ul>
+                    <li>
+                        Fixed the presenter queue from SELECT presentation mode, sometimes not showing up. Plus the
+                        animation when displaying the presentation queue search flyin should now run smoother.
+                    </li>
+                    <li>
+                        Breadcrumbs no longer persist when navigating to the Teams or Users pages.
+                    </li>
+                    <li>
+                        You can now add a default overwrite to SELECT, deciding whether you always want to view input
+                        from Alignment or Feedback, first. To enable this feature on your workspace, reach out to anyone
+                        from our Team.
+                    </li>
+                    <li>Fixed advanced filters not displaying the first time they were clicked.</li>
+                    <li>
+                        "Import selection input" now correctly imports ticket labels when importing requests/tickets.
+                    </li>
+                    <li>Various button styling fixes.</li>
+                </ul>
+            </template>
+
+            <template v-slot:signoff>
+                <SignoffPortrait
+                    imageUrl="/images/team/David-Grady-Trendmatch (Thumbnail).png"
+                    name="David"
+                    title="Co-founder & Web dev"
+                />
+            </template>
+        </ChangelogPost>
         <ChangelogPost title="Jersey: Dyonysus" date="April 2021 Hotfix Release">
             <template v-slot:body>
                 <h3>Tweaks & Fixes</h3>
