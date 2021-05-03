@@ -456,7 +456,7 @@ export default {
             },
         },
         showLabels() {
-            return this.labelsEnabled || (this.product && this.product.labels && this.product.labels.length > 0)
+            return this.labelsEnabled || (this.product && this.product.labelInput && this.product.labelInput.length > 0)
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -745,6 +745,9 @@ export default {
         &.has-budget {
             > .flyin {
                 > .flyin-inner {
+                    > .flyin-header {
+                            margin-bottom: 8px;
+                        }
                     > .body {
                         border-top: $borderModule;
                     }

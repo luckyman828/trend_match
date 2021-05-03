@@ -1,11 +1,5 @@
 <template>
-    <BaseFlyin
-        class="edit-product-single"
-        :show="show"
-        @close="onCloseSingle"
-        :columns="2"
-        :class="{ 'has-labels': showLabels }"
-    >
+    <BaseFlyin class="edit-product-single" :show="show" @close="onCloseSingle" :columns="2">
         <template v-slot:header>
             <BaseFlyinHeader
                 v-if="show"
@@ -24,14 +18,6 @@
                             of
                             {{ availableProducts.length }}</span
                         >
-                    </div>
-                    <div class="item-group">
-                        <LabelList
-                            ref="labelList"
-                            v-if="labelsEnabled || product.labels.length > 0"
-                            :product="product"
-                            v-horizontal-scroll
-                        />
                     </div>
                 </template>
                 <template v-slot:right>
@@ -783,7 +769,6 @@ import axios from 'axios'
 import variantImage from '../../mixins/variantImage'
 import VariantNameInput from './VariantNameInput'
 import CustomPropertyArray from './CustomPropertyArray'
-import LabelList from '../SelectionPage/ProductsTableRow/LabelList'
 
 export default {
     name: 'editProductFlyin',
@@ -793,7 +778,6 @@ export default {
         Draggable,
         VariantNameInput,
         CustomPropertyArray,
-        LabelList,
     },
     data: function() {
         return {
@@ -836,15 +820,11 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
-            availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
             enabledFeatures: 'getFeatureFlags',
         }),
         product() {
             return this.productToEdit
-        },
-        showLabels() {
-            return this.labelsEnabled || (this.product && this.product.labels && this.product.labels.length > 0)
         },
         originalProduct() {
             return this.currentProduct
@@ -883,12 +863,6 @@ export default {
         },
         deliveryArray() {
             return this.currentVariant ? this.currentVariant.delivery_dates : this.product.delivery_dates
-        },
-        labelsEnabled() {
-            return this.availableLabels.length > 0
-        },
-        hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
         },
     },
     methods: {
@@ -1157,30 +1131,6 @@ export default {
                 this.show
             ) {
                 if (key == 'KeyS' && this.saveActive) this.onUpdateProduct()
-
-                // Label hotkeys
-                if (this.hasLabelWriteAccess) {
-                    // Number hotkey
-                    if (parseInt(event.key)) {
-                        const pressedNumber = e.key
-                        const label = this.availableLabels[pressedNumber - 1]
-                        if (!label) return
-
-                        // Check if the label is already added
-                        const existingIndex = this.product.labels.findIndex(x => x == label)
-                        if (existingIndex >= 0) {
-                            this.product.labels.splice(existingIndex, 1)
-                        } else {
-                            this.product.labels.push(label)
-                        }
-                        this.onUpdateProduct()
-                    }
-                    // Hashtag
-                    if (event.key == '#') {
-                        // Open labels menu
-                        this.$refs.labelList.$refs.popover.show()
-                    }
-                }
             }
         },
         dragActive(e, index) {
@@ -1372,41 +1322,6 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-
-::v-deep {
-    &.has-labels {
-        .flyin-header {
-            margin-bottom: 40px;
-        }
-        .flyin {
-            background: white;
-            > .body {
-                border-top: $borderModule;
-            }
-        }
-        .label-list {
-            top: 56px;
-            left: 0;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0 16px 6px;
-            max-width: none;
-            &::after {
-                content: '';
-                display: block;
-                width: 16px;
-                height: 1px;
-                flex-shrink: 0;
-            }
-            > * {
-                flex-shrink: 0;
-            }
-            .add-button {
-                display: block;
-            }
-        }
-    }
-}
 
 .product-title-wrapper {
     flex-direction: column;
