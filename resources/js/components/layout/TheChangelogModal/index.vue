@@ -57,6 +57,9 @@
                 <h3>General Tweaks & Fixes</h3>
                 <ul>
                     <li>
+                        Fixed joining selection via link, sometimes not working for users on multiple workspaces.
+                    </li>
+                    <li>
                         Fixed the presenter queue from SELECT presentation mode, sometimes not showing up. Plus the
                         animation when displaying the presentation queue search flyin should now run smoother.
                     </li>
