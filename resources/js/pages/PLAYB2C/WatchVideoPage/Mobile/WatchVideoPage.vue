@@ -9,8 +9,8 @@
                 <div class="bottom-aligned flex-list flex-v md">
                     <PreviewList v-if="currentTiming" />
                     <div class="top flex-list justify">
-                        <button class="white lg circle"><i class="far fa-comment"></i></button>
-                        <AddToWishlistButton class="lg" v-if="currentTiming" />
+                        <button class="white lg circle comment-button"><i class="far fa-comment"></i></button>
+                        <AddToWishlistButton class="lg like-button" v-if="currentTiming" />
                     </div>
                     <div class="bottom flex-list equal-width justify center-v">
                         <div class="left">
@@ -197,6 +197,7 @@ export default {
             transform: translateY(-24px);
         }
     }
+
     .bottom-aligned {
         position: absolute;
         left: 0;
@@ -213,6 +214,150 @@ export default {
         &.active {
             i {
                 font-weight: 900;
+            }
+        }
+    }
+}
+@include desktop {
+    .watch-video-page {
+        &::v-deep {
+            button.lg {
+                min-width: 96px !important;
+                height: 96px !important;
+                i {
+                    font-size: 32px !important;
+                }
+            }
+            .bottom-aligned {
+                padding: 8px 32px 32px;
+            }
+            &.desired-paused {
+                .bottom-aligned {
+                    transform: translateY(-52px);
+                }
+                .timeline {
+                    transform: translateY(-32px);
+                }
+            }
+            // HIDE STUFF
+            .video-timing-list,
+            .timing-count,
+            .comment-button {
+                display: none;
+            }
+
+            // TIMELINE
+            .timeline {
+                bottom: 12px;
+                left: 32px;
+                width: calc(100% - 2 * 32px);
+            }
+            .timeline-wrapper {
+                background: rgba($dark100, 25%);
+                .knob {
+                    display: none;
+                }
+                .rail {
+                    background: rgba(white, 25%);
+                }
+            }
+
+            .before-start-overlay {
+                button {
+                    min-width: 128px !important;
+                    height: 128px !important;
+                    i {
+                        font-size: 32px !important;
+                    }
+                }
+            }
+
+            // PREVIEW LIST
+            .preview-list {
+                position: absolute;
+                right: 32px;
+                bottom: 16vh;
+                padding: 16px;
+                border-radius: 16px;
+                .product-preview {
+                    width: 208px;
+                    border-radius: 16px;
+                    .price-wrapper {
+                        padding: 0 16px;
+                        .price {
+                            font-size: 20px;
+                            font-weight: 700;
+                        }
+                    }
+                }
+            }
+            // VIDEO TIMER
+            .video-timer {
+                border: none !important;
+                background: rgba(255, 255, 255, 0.25) !important;
+                -webkit-backdrop-filter: blur(8px) brightness(80%) !important;
+                backdrop-filter: blur(8px) brightness(80%) !important;
+                height: 32px !important;
+                padding: 0 16px !important;
+                font-size: 14px !important;
+            }
+            // BUTTONS
+            .wishlist-count,
+            .basket-count {
+                height: 64px !important;
+                padding: 0 32px !important;
+                font-size: 20px !important;
+                i {
+                    font-size: 20px !important;
+                    margin-right: 8px !important;
+                }
+            }
+            .bottom-aligned {
+                .bottom {
+                    align-items: flex-end !important;
+                }
+            }
+            // PDP DRAWER
+            .product-details-drawer {
+                .image-rail {
+                }
+                .pagination {
+                    display: none;
+                }
+                .body-rail {
+                    padding-top: 0 !important;
+                    transform: none !important;
+                    padding-bottom: 232px !important;
+                }
+            }
+        } // End v-deep
+    }
+}
+</style>
+<style lang="scss">
+@import '~@/_variables.scss';
+@include desktop {
+    // ADD TO BASKET SELECTOR
+    .add-to-basket-selector {
+        border-radius: 32px !important;
+        padding: 32px !important;
+        height: auto !important;
+        &:not(.show) {
+            bottom: -160px !important;
+        }
+        .flex-list.equal-width {
+            margin-left: 16px;
+            .trigger {
+                width: 100%;
+                padding-right: 32px;
+            }
+        }
+        button {
+            height: 92px !important;
+            min-width: 92px !important;
+            font-size: 28px !important;
+            i {
+                font-size: 28px !important;
             }
         }
     }

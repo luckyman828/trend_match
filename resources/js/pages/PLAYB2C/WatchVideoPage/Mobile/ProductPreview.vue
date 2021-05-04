@@ -1,8 +1,8 @@
 <template>
     <div class="product-preview flex-list flex-v min" v-if="product" @click="SET_SIDEBAR_PRODUCT(product)">
-        <div class="img-wrapper">
+        <BaseImageSizer class="img-wrapper" fit="cover">
             <BaseVariantImage :variant="product.variants[0]" size="sm" />
-        </div>
+        </BaseImageSizer>
         <div class="price-wrapper">
             <span class="price">{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
         </div>
@@ -34,12 +34,6 @@ export default {
     overflow: hidden;
     .img-wrapper {
         width: 100%;
-        height: 106px;
-        img {
-            height: 100%;
-            width: 100%;
-            object-fit: contain;
-        }
     }
     .price-wrapper {
         padding: 0 4px;

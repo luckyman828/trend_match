@@ -23,8 +23,8 @@ document.body.appendChild(playerEl)
 
 // Add click listener
 document.addEventListener('click', function(e) {
-    const button = e.target
-    if (!button.getAttribute('data-kollekt-play-id')) {
+    const button = e.target.getAttribute('data-kollekt-play-id') ? e.target : e.target.closest('[data-kollekt-play-id]')
+    if (!button) {
         return
     }
     const videoId = button.getAttribute('data-kollekt-play-id')

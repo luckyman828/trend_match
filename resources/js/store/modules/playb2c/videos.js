@@ -15,13 +15,13 @@ export default {
 
             videos = [
                 {
-                    id: 12345678,
+                    id: '798189758406754304',
                     name: 'Summer 2021',
                     thumbnail:
                         'https://images.pexels.com/photos/936094/pexels-photo-936094.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
                 },
                 {
-                    id: 22345678,
+                    id: '798189758406754305',
                     name: 'Main Autumn 2021',
                     thumbnail:
                         'https://images.pexels.com/photos/2705753/pexels-photo-2705753.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',

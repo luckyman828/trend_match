@@ -301,6 +301,7 @@ const routes = [
     {
         path: '/play',
         name: 'play',
+        redirect: 'play/',
         meta: {
             root: 'play',
             app: 'play',
@@ -310,12 +311,12 @@ const routes = [
         children: [
             {
                 path: 'home',
-                name: 'playHome',
+                name: 'play.home',
                 component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
             },
             {
                 path: 'watch/:videoId',
-                name: 'watchVideo',
+                name: 'play.watch',
                 meta: {
                     isFullscreen: true,
                     hideCrisp: true,
@@ -324,7 +325,7 @@ const routes = [
             },
             {
                 path: '*',
-                redirect: 'home',
+                redirect: { name: 'play.home' },
             },
         ],
     },

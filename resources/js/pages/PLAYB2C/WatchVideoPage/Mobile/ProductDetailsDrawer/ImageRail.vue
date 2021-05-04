@@ -1,7 +1,7 @@
 <template>
     <div class="image-rail">
-        <div class="rail">
-            <div class="img-wrapper" v-for="(picture, index) in variant.pictures" :key="index">
+        <div class="rail" v-dragscroll>
+            <BaseImageSizer class="img-wrapper" fit="cover" v-for="(picture, index) in variant.pictures" :key="index">
                 <BaseVariantImage
                     class="variant-image"
                     :variant="variant"
@@ -14,7 +14,7 @@
                         },
                     }"
                 />
-            </div>
+            </BaseImageSizer>
         </div>
         <div class="pagination flex-list center-h">
             <BaseButton
@@ -56,10 +56,9 @@ export default {
         width: 100%;
         .img-wrapper {
             position: relative;
-            width: 270px;
-            min-width: 270px;
+            width: 60vw;
+            min-width: 60vw;
             flex: 1 0 auto;
-            height: 360px;
             overflow: hidden;
             margin-right: 8px;
             border-radius: 4px;

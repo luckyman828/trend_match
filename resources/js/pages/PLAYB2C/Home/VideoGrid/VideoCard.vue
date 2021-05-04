@@ -1,5 +1,8 @@
 <template>
-    <div class="video-card flex-list flex-v min">
+    <div
+        class="video-card flex-list flex-v min"
+        @click="$router.push({ name: 'play.watch', params: { videoId: video.id } })"
+    >
         <div class="img-wrapper">
             <img :src="video.thumbnail" />
         </div>
