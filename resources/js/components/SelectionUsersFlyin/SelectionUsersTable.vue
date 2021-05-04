@@ -46,6 +46,13 @@
                     @sort="sortUsers"
                     >Role</BaseTableHeader
                 >
+                <BaseTableHeader
+                    v-if="currentUsersTableTab == 'Members'"
+                    :sortKey="'job'"
+                    :currentSortKey="sortKey"
+                    @sort="sortUsers"
+                    >Job</BaseTableHeader
+                >
                 <BaseTableHeader class="action" />
             </template>
             <template v-slot:row="rowProps">
@@ -66,13 +73,16 @@
                         </button>
                         <span v-else>{{ rowProps.item.role }}</span>
                     </td>
-                    <!-- <td class="job">
-                            <button v-if="userHasEditAccess" class="ghost editable sm" 
-                            @click="showJobContext($event, user)">
-                                <span>{{user.job}}</span>
-                            </button>
-                            <span v-else>{{user.job}}</span>
-                        </td> -->
+                    <td class="job">
+                        <button
+                            v-if="userHasEditAccess"
+                            class="ghost editable sm"
+                            @click="showJobContext($event, rowProps.item)"
+                        >
+                            <span>{{ rowProps.item.job }}</span>
+                        </button>
+                        <span v-else>{{ rowProps.item.job }}</span>
+                    </td>
                     <td class="action">
                         <BaseButton
                             v-if="!rowProps.item.selectionLinkSent"
@@ -253,8 +263,8 @@
                         v-model="userToEdit.job"
                         :submitOnChange="true"
                         :optionDescriptionKey="'description'"
-                        :optionNameKey="'role'"
-                        :optionValueKey="'role'"
+                        :optionNameKey="'job'"
+                        :optionValueKey="'job'"
                         @submit="
                             onUpdateSelectionUsersJob()
                             slotProps.hide()
@@ -311,7 +321,7 @@ export default {
         },
         filteredAvailableSelectionJobs() {
             return this.availableSelectionJobs.filter(x => {
-                return this.selection.type != 'Master' ? x.role != 'Approver' : true
+                return this.selection.type != 'Master' ? x.job != 'Approval' : true
             })
         },
         availableUsers() {

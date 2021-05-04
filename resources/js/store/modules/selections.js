@@ -27,22 +27,18 @@ export default {
                 description:
                     'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
             },
-            {
-                role: 'Approver',
-                description: 'Replies to requests',
-            },
         ],
         availableSelectionJobs: [
             {
-                role: 'Feedback',
+                job: 'Feedback',
                 description: 'Gives feedback and makes comments',
             },
             {
-                role: 'Alignment',
+                job: 'Alignment',
                 description: 'Aligns the selection',
             },
             {
-                role: 'Approval',
+                job: 'Approval',
                 description: 'Replies to requests',
             },
         ],
@@ -538,6 +534,7 @@ export default {
                 selection,
                 users: users.map(user => {
                     if (ignoreRole) user.role = 'Member'
+                    if (ignoreRole) user.job = 'Feedback'
                     return user
                 }),
             })
@@ -550,7 +547,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
-                            // job: ignoreRole ? 'Feedback' : user.job,
+                            job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -667,6 +664,7 @@ export default {
                         return {
                             id: x.id,
                             role: x.role,
+                            job: x.job,
                         }
                     }),
                 })
