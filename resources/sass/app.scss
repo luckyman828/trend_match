@@ -1124,6 +1124,9 @@ i {
 }
 .tooltip {
     z-index: 99999999;
+    &:not(.popover) {
+        max-width: 260px;
+    }
     .tooltip-inner {
         font-size: 11px;
         border-radius: 6px;

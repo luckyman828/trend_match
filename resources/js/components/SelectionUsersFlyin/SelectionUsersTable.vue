@@ -74,13 +74,15 @@
                         <span v-else>{{ rowProps.item.role }}</span>
                     </td>
                     <td class="job">
-                        <button
+                        <BaseButton
                             v-if="userHasEditAccess"
-                            class="ghost editable sm"
+                            buttonClass="ghost editable sm"
+                            :disabled="selection.type != 'Master' && rowProps.item.job == 'Approval'"
+                            disabledTooltip="The Approval job is inherited by selections. To give the user another job, change their job on the master selection first."
                             @click="showJobContext($event, rowProps.item)"
                         >
                             <span>{{ rowProps.item.job }}</span>
-                        </button>
+                        </BaseButton>
                         <span v-else>{{ rowProps.item.job }}</span>
                     </td>
                     <td class="action">
@@ -152,6 +154,17 @@
                         @click="showRoleContext(contextMouseEvent, contextUser)"
                     >
                         <span><u>C</u>hange role{{ selected.length > 0 ? 's' : '' }}</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-user-shield"
+                        hotkey="KeyJ"
+                        :disabled="selection.type != 'Master' && contextUser.job == 'Approval'"
+                        disabledTooltip="The Approval job is inherited by selections. To give the user another job, change their job on the master selection first."
+                        @click="showJobContext(contextMouseEvent, contextUser)"
+                    >
+                        <span>Change <u>J</u>ob{{ selected.length > 0 ? 's' : '' }}</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
@@ -434,10 +447,15 @@ export default {
             // If so, set the currency for all the selected users
             let usersToPost
             if (this.selected.length > 0) {
-                usersToPost = this.selected.map(user => {
-                    user.job = baseUser.job
-                    return user
-                })
+                usersToPost = this.selected
+                    .filter(user => {
+                        if (this.selection.type != 'Master' && user.job == 'Approval') return false
+                        return true
+                    })
+                    .map(user => {
+                        user.job = baseUser.job
+                        return user
+                    })
             } else usersToPost = [baseUser]
             // Update users
             this.updateSelectionUsers({ selection: this.selection, users: usersToPost })
