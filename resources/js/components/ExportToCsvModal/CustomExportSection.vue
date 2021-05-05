@@ -95,29 +95,26 @@ export default {
         return {
             editIndex: null,
             availableTemplates: [
-                // {
-                //     name: 'Test',
-                //     printRowKey: true,
-                //     rowKeys: [
-                //         {
-                //             key: 'variants',
-                //             children: [
-                //                 {
-                //                     key: 'extra_data.variant_arrray_prop',
-                //                     rowFilters: [{ values: ['BBB'], type: 'include' }],
-                //                 },
-                //             ],
-                //         },
-                //     ],
-                //     headers: [
-                //         { name: 'STYLE_NUMBER', key: 'datasource_id' },
-                //         { name: 'COLOUR_NAME', key: 'variants.color' },
-                //         { name: 'Custom Prop', key: 'variants.extra_data.variant_arrray_prop' },
-                //         { name: 'Action', key: 'variants.yourAction' },
-                //     ],
-                // },
                 {
                     name: 'Custom',
+                    rowKeys: [
+                        {
+                            key: 'variants',
+                            children: [],
+                            rowFilters: [],
+                        },
+                    ],
+                    headers: [],
+                },
+                {
+                    name: 'Prices',
+                    rowKeys: [
+                        {
+                            key: 'prices',
+                            children: [],
+                            rowFilters: [],
+                        },
+                    ],
                     headers: [],
                 },
                 {
@@ -205,10 +202,10 @@ export default {
                 { name: 'Product Minimum', key: 'min_order' },
                 { name: 'Variant Minimum', key: 'min_variant_order' },
                 { name: 'Deliveries', key: 'delivery_dates' },
-                { name: 'Currency', key: 'price.currency' },
-                { name: 'WHS', key: 'price.wholesale_price' },
-                { name: 'RRP', key: 'price.recommended_retail_price' },
-                { name: 'MU', key: 'price.mark_up' },
+                { name: 'Currency', key: 'prices.currency' },
+                { name: 'WHS', key: 'prices.wholesale_price' },
+                { name: 'RRP', key: 'prices.recommended_retail_price' },
+                { name: 'MU', key: 'prices.mark_up' },
                 { name: 'EANs', key: 'eans' },
                 { name: 'Variant Color', key: 'variants.color' },
                 { name: 'Variant Variant', key: 'variants.variant' },
