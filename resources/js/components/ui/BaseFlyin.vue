@@ -146,8 +146,6 @@ export default {
     display: none;
 }
 .flyin {
-    display: flex;
-    flex-direction: column;
     right: 0;
     transform: translateX(100%);
     margin: 0;
@@ -167,6 +165,8 @@ export default {
         border-radius: 16px 0 0 0;
         height: 100%;
         width: 100%;
+        display: flex;
+        flex-direction: column;
     }
     &.placement-left {
         right: auto;
