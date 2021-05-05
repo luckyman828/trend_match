@@ -151,7 +151,6 @@ export default {
     methods: {
         ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL', 'SET_PRODUCTS_FILTERED_BY_SEARCH']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE']),
-        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
         onExport() {
             this.SET_SHOW_PDF_MODAL(true)
         },
@@ -161,10 +160,6 @@ export default {
         onToggleScannerMode() {
             const modeToSet = this.scannerModeActive ? null : 'product'
             this.SET_SCANNER_MODE(modeToSet)
-        },
-        onViewSelectionAsRole(role) {
-            this.SET_CURRENT_SELECTION_REAL_ROLE(this.currentSelection.your_role)
-            this.currentSelection.your_role = role
         },
     },
 }
