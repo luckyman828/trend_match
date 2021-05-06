@@ -27,26 +27,22 @@ export default {
                 description:
                     'Full edit rights over the selection. Can add/remove teams and users from the selection, change selection settings, and create/delete sub-selections.',
             },
-            {
-                role: 'Approver',
-                description: 'Replies to requests',
-            },
         ],
         availableSelectionJobs: [
             {
-                role: 'Feedback',
+                job: 'Feedback',
                 description: 'Gives feedback and makes comments',
             },
             {
-                role: 'Alignment',
+                job: 'Alignment',
                 description: 'Aligns the selection',
             },
             {
-                role: 'Approval',
+                job: 'Approval',
                 description: 'Replies to requests',
             },
         ],
-        currentSelectionRealRole: null,
+        currentSelectionRealJob: null,
     },
 
     getters: {
@@ -109,15 +105,7 @@ export default {
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
-            return selection.your_job && selection.your_job != 'None'
-                ? selection.your_job
-                : selection.your_roles.includes('Member')
-                ? 'Feedback'
-                : selection.your_roles.includes('Approver')
-                ? 'Approval'
-                : selection.your_roles.includes('Owner')
-                ? 'Alignment'
-                : 'No Access'
+            return selection.your_job && selection.your_job != 'None' ? selection.your_job : 'No Access'
         },
         currentSelectionModeAction: (state, getters) =>
             getters.currentSelectionMode == 'Feedback' ? 'your_feedback' : 'action',
@@ -225,13 +213,13 @@ export default {
                 actionMsg = 'Product has been marked as complete'
                 requestMsg = 'Product has been marked as complete'
             } else {
-                if (selection.your_role != 'Owner') {
+                if (selection.your_job != 'Alignment') {
                     requestAccess = false
-                    requestMsg = 'Only selection owners can make requests'
+                    requestMsg = 'Requests can only be made in Alignment'
                 }
-                if (selection.your_role == 'Approver') {
+                if (selection.your_job == 'Approval') {
                     actionAccess = false
-                    actionMsg = 'Only selection owners can decide action'
+                    actionMsg = 'Actions can only be decided from Alignment'
                 }
             }
             return {
@@ -248,67 +236,9 @@ export default {
                     msg: requestMsg,
                 },
             }
-
-            // return {
-            //     actions: {
-            //         hasAccess: selection.is_open && selection.your_role != 'Approver',
-            //         msg: !selection.is_open
-            //             ? 'Selection is locked'
-            //             : selection.your_role == 'Approver'
-            //             ? 'Only selection owners can decide action'
-            //             : '',
-            //     },
-            //     requests: {
-            //         hasAccess: selection.is_open && selection.your_role == 'Owner',
-            //         msg: !selection.is_open ? 'Selection is locked' : 'Only selection owners can make requests',
-            //     },
-            //     comments: {
-            //         hasAccess: selection.is_open,
-            //         msg: !selection.is_open && 'Selection is locked',
-            //     },
-            // }
         },
         getSelectionsAvailableForInputFiltering: (state, getters, rootState, rootGetters) => {
             return rootGetters['selectionProducts/getSelections']
-            // const products = rootGetters['products/getProducts']
-            // const activeSelections = getters.getCurrentSelections
-            // const availableSelections = []
-            // products.forEach(product => {
-            //     // Find the selection input available
-            //     const selectionInputListFiltered = product.selectionInputList.filter(
-            //         selectionInput => !!activeSelections.find(selection => selection.id == selectionInput.selection_id)
-            //     )
-
-            //     selectionInputListFiltered.forEach(selectionInput => {
-            //         // Loop through the products feedback
-            //         selectionInput.rawSelectionInput.feedbacks.forEach(feedback => {
-            //             const existsInArray = availableSelections.find(
-            //                 selection => selection.id == feedback.selection_id
-            //             )
-            //             if (!existsInArray) availableSelections.push(feedback.selection)
-            //         })
-            //         // Loop through the products alignment
-            //         selectionInput.rawSelectionInput.alignments.forEach(action => {
-            //             const existsInArray = availableSelections.find(selection => selection.id == action.selection_id)
-            //             if (!existsInArray) availableSelections.push(action.selection)
-            //         })
-            //         // Loop through the products comments
-            //         selectionInput.rawSelectionInput.comments.forEach(comment => {
-            //             const existsInArray = availableSelections.find(
-            //                 selection => selection.id == comment.selection_id
-            //             )
-            //             if (!existsInArray) availableSelections.push(comment.selection)
-            //         })
-            //         // Loop through the products requests
-            //         selectionInput.rawSelectionInput.requests.forEach(request => {
-            //             const existsInArray = availableSelections.find(
-            //                 selection => selection.id == request.selection_id
-            //             )
-            //             if (!existsInArray) availableSelections.push(request.selection)
-            //         })
-            //     })
-            // })
-            // return availableSelections
         },
         getSelectionPresentationGroups: state => {
             const groupIds = []
@@ -319,12 +249,12 @@ export default {
             })
             return groupIds
         },
-        getCurrentSelectionRealRole: state => state.currentSelectionRealRole,
+        getCurrentSelectionRealJob: state => state.currentSelectionRealJob,
         getViewingAsObserver: (state, getters) =>
             !getters.currentSelection ||
-            !getters.currentSelection.your_role ||
-            (getters.getCurrentSelectionRealRole &&
-                getters.currentSelection.your_role != getters.getCurrentSelectionRealRole),
+            !getters.currentSelection.your_job ||
+            (getters.getCurrentSelectionRealJob &&
+                getters.currentSelection.your_job != getters.getCurrentSelectionRealJob),
     },
 
     actions: {
@@ -538,6 +468,7 @@ export default {
                 selection,
                 users: users.map(user => {
                     if (ignoreRole) user.role = 'Member'
+                    if (ignoreRole) user.job = 'Feedback'
                     return user
                 }),
             })
@@ -550,7 +481,7 @@ export default {
                         return {
                             id: user.id,
                             role: ignoreRole ? 'Member' : user.role,
-                            // job: ignoreRole ? 'Feedback' : user.job,
+                            job: ignoreRole ? 'Feedback' : user.job,
                         }
                     }),
                 })
@@ -667,6 +598,7 @@ export default {
                         return {
                             id: x.id,
                             role: x.role,
+                            job: x.job,
                         }
                     }),
                 })
@@ -1539,8 +1471,8 @@ export default {
         SET_CURRENT_SELECTION_ID(state, selectionId) {
             state.currentSelectionId = selectionId
         },
-        SET_CURRENT_SELECTION_REAL_ROLE(state, role) {
-            state.currentSelectionRealRole = role
+        SET_CURRENT_SELECTION_REAL_JOB(state, job) {
+            state.currentSelectionRealJob = job
         },
     },
 }

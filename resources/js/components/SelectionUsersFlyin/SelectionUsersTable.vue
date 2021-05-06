@@ -46,6 +46,13 @@
                     @sort="sortUsers"
                     >Role</BaseTableHeader
                 >
+                <BaseTableHeader
+                    v-if="currentUsersTableTab == 'Members'"
+                    :sortKey="'job'"
+                    :currentSortKey="sortKey"
+                    @sort="sortUsers"
+                    >Job</BaseTableHeader
+                >
                 <BaseTableHeader class="action" />
             </template>
             <template v-slot:row="rowProps">
@@ -66,13 +73,18 @@
                         </button>
                         <span v-else>{{ rowProps.item.role }}</span>
                     </td>
-                    <!-- <td class="job">
-                            <button v-if="userHasEditAccess" class="ghost editable sm" 
-                            @click="showJobContext($event, user)">
-                                <span>{{user.job}}</span>
-                            </button>
-                            <span v-else>{{user.job}}</span>
-                        </td> -->
+                    <td class="job">
+                        <BaseButton
+                            v-if="userHasEditAccess"
+                            buttonClass="ghost editable sm"
+                            :disabled="selection.type != 'Master' && rowProps.item.job == 'Approval'"
+                            disabledTooltip="The Approval job is inherited by selections. To give the user another job, change their job on the master selection first."
+                            @click="showJobContext($event, rowProps.item)"
+                        >
+                            <span>{{ rowProps.item.job }}</span>
+                        </BaseButton>
+                        <span v-else>{{ rowProps.item.job }}</span>
+                    </td>
                     <td class="action">
                         <BaseButton
                             v-if="!rowProps.item.selectionLinkSent"
@@ -146,6 +158,17 @@
                 </div>
                 <div class="item-group">
                     <BaseContextMenuItem
+                        iconClass="far fa-user-shield"
+                        hotkey="KeyJ"
+                        :disabled="selection.type != 'Master' && contextUser.job == 'Approval'"
+                        disabledTooltip="The Approval job is inherited by selections. To give the user another job, change their job on the master selection first."
+                        @click="showJobContext(contextMouseEvent, contextUser)"
+                    >
+                        <span>Change <u>J</u>ob{{ selected.length > 0 ? 's' : '' }}</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
                         iconClass="far fa-paper-plane"
                         tooltip="Send the user(s) a link to join the selection on the iOS app."
                         :disabled="
@@ -161,6 +184,8 @@
                 <div class="item-group">
                     <BaseContextMenuItem
                         :hotkey="['KeyR', 'KeyE']"
+                        :disabled="contextUser.job == 'Approval' && selection.type != 'Master'"
+                        disabledTooltip="Users with job approval can only be removed on the Master selection"
                         :iconClass="
                             contextUser.inherit_from_teams || selected.length > 1
                                 ? 'far fa-user-times'
@@ -253,8 +278,8 @@
                         v-model="userToEdit.job"
                         :submitOnChange="true"
                         :optionDescriptionKey="'description'"
-                        :optionNameKey="'role'"
-                        :optionValueKey="'role'"
+                        :optionNameKey="'job'"
+                        :optionValueKey="'job'"
                         @submit="
                             onUpdateSelectionUsersJob()
                             slotProps.hide()
@@ -311,7 +336,7 @@ export default {
         },
         filteredAvailableSelectionJobs() {
             return this.availableSelectionJobs.filter(x => {
-                return this.selection.type != 'Master' ? x.role != 'Approver' : true
+                return this.selection.type != 'Master' ? x.job != 'Approval' : true
             })
         },
         availableUsers() {
@@ -374,8 +399,8 @@ export default {
         showJobContext(e, user) {
             const contextMenu = this.$refs.contextMenuJob
             this.contextUser = user
-            // this.userToEdit = JSON.parse(JSON.stringify(user))
-            this.userToEdit = user
+            this.userToEdit = JSON.parse(JSON.stringify(user)) // Make a copy of the user
+            // this.userToEdit = user
             contextMenu.show(e)
         },
         onAddUser(e) {
@@ -409,26 +434,49 @@ export default {
             const authUser = usersToPost.find(x => x.id == this.authUser.id)
             if (authUser) {
                 this.selection.your_role = authUser.role
-                if (authUser.role == 'Member') this.selection.your_job = 'Feedback'
-                else if (authUser.role == 'Owner') this.selection.your_job = 'Alignment'
-                else if (authUser.role == 'Approver') this.selection.your_job = 'Approval'
-                else this.selection.your_job == null
-
                 this.UPDATE_SELECTION(this.selection)
             }
         },
         onUpdateSelectionUsersJob() {
-            // Define the user to base the new role to set on
+            // Define the user to base the new job to set on
             const baseUser = this.userToEdit
             // Check if we have a selection of users
             // If so, set the currency for all the selected users
-            let usersToPost
-            if (this.selected.length > 0) {
-                usersToPost = this.selected.map(user => {
+            const usersToUpdate = this.selected.length > 0 ? this.selected : [this.contextUser]
+
+            const updateUserCountOnDescendants = (selection, incrementAmount) => {
+                selection.user_count += incrementAmount
+                selection.children.map(child => {
+                    updateUserCountOnDescendants(child, incrementAmount)
+                })
+            }
+
+            const usersToPost = usersToUpdate
+                .filter(user => {
+                    if (this.selection.type != 'Master' && user.job == 'Approval') return false
+                    return true
+                })
+                .map(user => {
+                    const oldJob = user.job
+                    const newJob = baseUser.job
+                    // If new job if Approval - add +1 to the user count to all descendant selections
+                    if (newJob == 'Approval' && oldJob != 'Approval') {
+                        this.selection.children.map(child => {
+                            updateUserCountOnDescendants(child, 1)
+                        })
+                    }
+                    // If the old was Approval - subtract -1 from the user count of all descendant selections
+                    if (oldJob == 'Approval' && newJob != 'Approval') {
+                        this.selection.children.map(child => {
+                            updateUserCountOnDescendants(child, -1)
+                        })
+                    }
+
+                    console.log('update job', newJob, oldJob)
                     user.job = baseUser.job
                     return user
                 })
-            } else usersToPost = [baseUser]
+
             // Update users
             this.updateSelectionUsers({ selection: this.selection, users: usersToPost })
 
@@ -464,7 +512,7 @@ export default {
         },
     },
     created() {
-        this.initData()
+        this.initData(true)
     },
 }
 </script>
