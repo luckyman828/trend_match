@@ -528,7 +528,6 @@ export default {
     },
     destroyed() {
         this.disconnectSignalR()
-        if (this.getCurrentSelectionRealJob) this.onViewSelectionAsJob(this.getCurrentSelectionRealJob)
     },
 }
 </script>
