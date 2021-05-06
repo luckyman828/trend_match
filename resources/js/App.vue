@@ -274,25 +274,12 @@ export default {
                     companies: this.currentWorkspace
                         ? [
                               {
-                                  name: this.currentWorkspace.title,
+                                  name: this.currentWorkspace.title.replaceAll(/[^\w\ ]/g, ''),
                                   id: this.currentWorkspace.id,
                                   created: this.currentWorkspace.created_at,
                               },
                           ]
                         : [],
-                    // companies: this.workspaces.map(workspace => ({
-                    //     name: workspace.title,
-                    //     id: workspace.id,
-                    //     // created: workspace.created_at,
-                    // })),
-                    // companies: [
-                    //     { name: 'hest', id: 1 },
-                    //     { name: 'hund', id: 2 },
-                    // ].map(company => ({
-                    //     created: new Date().toISOString(), // optional
-                    //     id: company.id,
-                    //     name: company.name,
-                    // })),
                     email: this.authUser.email,
                     name: this.authUser.name,
                     id: this.authUser.id,

@@ -207,7 +207,7 @@ export default {
     },
 
     actions: {
-        async fetchProducts({ commit }, { seasons, brands, progressCallback }) {
+        async fetchProducts({ rootGetters }, { seasons, brands, progressCallback }) {
             let pageCount = 0
             let pagesProcessed = 0
             let products = []
@@ -250,11 +250,13 @@ export default {
                 console.dir(err)
             })
             // Now we have the products, let's turn them into Kollekt style products.
-            const newProducts = await instantiateDKCProducts(products)
+            // Figure out what the current app is
+            const app = rootGetters['kollektApps/getCurrentApp'].name
+            const newProducts = await instantiateDKCProducts(products, app)
             console.log('pnew products', newProducts)
             return newProducts
         },
-        async fetchProductsById({}, { productIds, company, season }) {
+        async fetchProductsById({ rootGetters }, { productIds, company, season }) {
             let products = []
             await Promise.all(
                 productIds.map(async productId => {
@@ -275,10 +277,12 @@ export default {
                 console.log('error when fetching products', err.response)
             })
             // Now we have the products, let's turn them into Kollekt style products.
-            const newProducts = await instantiateDKCProducts(products)
+            // Figure out what the current app is
+            const app = rootGetters['kollektApps/getCurrentApp'].name
+            const newProducts = await instantiateDKCProducts(products, app)
             return newProducts
         },
-        async fetchProductsByEAN({ dispatch, getters }, { EANs, company, season }) {
+        async fetchProductsByEAN({ rootGetters }, { EANs, company, season }) {
             let products = []
             await Promise.all(
                 EANs.map(async ean => {
@@ -298,7 +302,9 @@ export default {
             ).catch(err => {
                 console.log('error when fetching products', err.response)
             })
-            const newProducts = await instantiateDKCProducts(products)
+            // Figure out what the current app is
+            const app = rootGetters['kollektApps/getCurrentApp'].name
+            const newProducts = await instantiateDKCProducts(products, app)
             return newProducts
         },
         async fetchAvailableSeasonsByBrand({ commit }, brands) {

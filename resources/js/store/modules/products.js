@@ -101,10 +101,17 @@ export default {
             const currentAction = rootGetters['selections/currentSelectionModeAction']
             const selectionMode = rootGetters['selections/currentSelectionMode']
             const ticketLabels = rootGetters['productFilters/getFilterTicketLabels']
+            const selection = rootGetters['selections/getCurrentSelection']
             // END YE OLDE STUFF
 
             const filtersActive = rootGetters['productFilters/getFiltersAreActive']
             let productsToReturn = [...products]
+
+            // Summed selections
+            if (selection && selection.type == 'Summed') {
+                // Filter out variats with no QTY
+                productsToReturn = productsToReturn.filter(product => product.quantity > 0)
+            }
 
             // Filter by regular filters
             filters.map(filter => {

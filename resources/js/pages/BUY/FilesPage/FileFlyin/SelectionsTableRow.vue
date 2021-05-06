@@ -80,7 +80,7 @@
                     <BaseButton
                         v-if="userHasEditAccess"
                         buttonClass="ghost pill editable sm"
-                        :disabled="selection.type == 'Summed' || !userHasEditAccess"
+                        :disabled="!selection.is_open || selection.type == 'Summed' || !userHasEditAccess"
                     >
                         <span>{{ theSelectionBudget || 'Set budget' | thousandSeparated }}</span>
                     </BaseButton>
@@ -122,8 +122,21 @@
                 </button>
                 <span v-else>-</span>
             </td>
+            <td class="status">
+                <button
+                    class="circle sm"
+                    @click="onToggleLocked(selection)"
+                    v-tooltip="`Click to ${selection.is_open ? 'lock' : 'unlock'}`"
+                >
+                    <i class="far" :class="selection.is_open ? 'fa-lock-open' : 'fa-lock'"></i>
+                </button>
+            </td>
             <td class="action">
-                <BaseButton buttonClass="invisible pill ghost-hover primary sm" @click="onGoToSelection">
+                <BaseButton
+                    :disabled="!isClickable"
+                    buttonClass="invisible pill ghost-hover primary sm"
+                    @click="onGoToSelection"
+                >
                     <span>Open</span>
                     <!-- <span v-else>Join Presentation</span> -->
                 </BaseButton>
@@ -247,9 +260,7 @@ export default {
         },
         isClickable() {
             if (this.selection.your_role == 'None') return false
-            if (this.selection.is_presenting) {
-                return this.selection.presentation.presenter.id == this.authUser.id
-            }
+            if (!this.selection.is_open && this.selection.your_role != 'Owner') return false
             return true
         },
         hasFocus() {
@@ -436,13 +447,6 @@ export default {
         cursor: pointer;
         i {
             color: $primary;
-        }
-    }
-}
-.status {
-    ::v-deep {
-        button {
-            min-width: 72px;
         }
     }
 }
