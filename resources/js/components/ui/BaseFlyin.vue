@@ -6,23 +6,25 @@
             ref="flyIn"
             :class="[{ 'has-columns': columns > 1 }, placement == 'left' ? 'placement-left' : 'placement-right']"
         >
-            <!-- Error -->
-            <BaseContentLoadError
-                v-if="status == 'error'"
-                :msg="errorMsg || 'error loading content'"
-                :callback="errorCallback"
-            />
+            <div class="flyin-inner">
+                <!-- Error -->
+                <BaseContentLoadError
+                    v-if="status == 'error'"
+                    :msg="errorMsg || 'error loading content'"
+                    :callback="errorCallback"
+                />
 
-            <!-- Loading -->
-            <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
+                <!-- Loading -->
+                <BaseLoader v-else-if="status == 'loading'" :msg="loadingMsg || 'loading content'" />
 
-            <!-- Ready -->
-            <template v-else-if="isVisible">
-                <slot name="header" :toggle="toggle" />
-                <div class="body" :style="columnStyle">
-                    <slot :toggle="toggle" />
-                </div>
-            </template>
+                <!-- Ready -->
+                <template v-else-if="isVisible">
+                    <slot name="header" :toggle="toggle" />
+                    <div class="body" :style="columnStyle">
+                        <slot :toggle="toggle" />
+                    </div>
+                </template>
+            </div>
 
             <slot name="alwaysVisible" />
         </div>
@@ -128,7 +130,7 @@ export default {
         }
     }
     &.light {
-        > .flyin {
+        .flyin-inner {
             background: white;
         }
     }
@@ -144,8 +146,6 @@ export default {
     display: none;
 }
 .flyin {
-    display: flex;
-    flex-direction: column;
     right: 0;
     transform: translateX(100%);
     margin: 0;
@@ -159,13 +159,22 @@ export default {
     box-shadow: -2px 0 10px #0000001a;
     transition-timing-function: cubic-bezier(0.06, 0.975, 0.195, 0.985);
     transition: 0.2s;
-    background: $bg;
-    overflow: hidden;
-    border-radius: 16px 0 0 0;
+    .flyin-inner {
+        background: $bg;
+        overflow: hidden;
+        border-radius: 16px 0 0 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
     &.placement-left {
         right: auto;
         left: 0;
         transform: translateX(-100%);
+        .flyin-inner {
+            border-radius: 0 16px 0 0;
+        }
     }
     .body {
         padding: 16px;

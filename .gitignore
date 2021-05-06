@@ -4,6 +4,7 @@
 /public/js
 /public/css
 /public/fonts
+/public/webfonts
 /public/mix-manifest.json
 /storage/*.key
 /vendor
@@ -16,3 +17,7 @@ npm-debug.log
 yarn-error.log
 .deployment
 deploy.cmd
+*.woff
+*.woff2
+*.eot
+*.ttf

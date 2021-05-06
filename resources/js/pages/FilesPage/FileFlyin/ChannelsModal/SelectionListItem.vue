@@ -41,7 +41,7 @@
             />
         </td>
         <td>
-            <button class="invisible ghost-button" @click="$emit('remove', index)">
+            <button class="invisible ghost-button true-square" @click="$emit('remove', index)">
                 <i class="far fa-trash"></i>
             </button>
         </td>

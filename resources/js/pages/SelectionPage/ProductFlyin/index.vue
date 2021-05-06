@@ -1,6 +1,6 @@
 <template>
     <BaseFlyin
-        class="product-single"
+        class="product-single product-flyin"
         :show="show"
         @close="onCloseSingle"
         :columns="4"
@@ -27,7 +27,13 @@
                         >
                     </div>
                     <div class="item-group">
-                        <LabelList v-if="showLabels" ref="labelList" :product="product" v-horizontal-scroll />
+                        <LabelList
+                            v-if="showLabels"
+                            ref="labelList"
+                            :labelPopoverRef="labelPopoverRef"
+                            :product="product"
+                            v-horizontal-scroll
+                        />
                     </div>
                 </template>
                 <template v-slot:right>
@@ -146,7 +152,7 @@
                     </button>
 
                     <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
-                        <BaseShape shapeClass="square white">
+                        <BaseShape shapeClass="true-square white">
                             <i class="far fa-images"></i>
                             <template v-slot:outside>
                                 <div class="count circle xxs dark top-right">
@@ -345,7 +351,7 @@ import HotkeyHandler from '../../../components/common/HotkeyHandler'
 
 export default {
     name: 'productFlyin',
-    props: ['show'],
+    props: ['show', 'labelPopoverRef'],
     mixins: [variantImage],
     components: {
         CommentsSection,
@@ -450,7 +456,7 @@ export default {
             },
         },
         showLabels() {
-            return this.labelsEnabled || (this.product && this.product.labels && this.product.labels.length > 0)
+            return this.labelsEnabled || (this.product && this.product.labelInput && this.product.labelInput.length > 0)
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -477,12 +483,13 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+            return this.labelsEnabled && this.userWriteAccess.actions.hasAccess
         },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted', 'updateProduct']),
         ...mapActions('presentation', ['broadcastProduct']),
+        ...mapActions('actions', ['updateProductLabelInput']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
@@ -634,13 +641,13 @@ export default {
                         if (!label) return
 
                         // Check if the label is already added
-                        const existingIndex = this.product.labels.findIndex(x => x == label)
+                        const existingIndex = this.product.yourLabels.findIndex(x => x == label)
                         if (existingIndex >= 0) {
-                            this.product.labels.splice(existingIndex, 1)
+                            this.product.yourLabels.splice(existingIndex, 1)
                         } else {
-                            this.product.labels.push(label)
+                            this.product.yourLabels.push(label)
                         }
-                        this.onUpdateProduct()
+                        this.updateProductLabelInput(this.product)
                     }
                     // Hashtag
                     if (e.key == '#') {
@@ -676,14 +683,23 @@ export default {
                 .label-list {
                     top: 64px;
                 }
+                > .flyin {
+                    > .flyin-inner {
+                        > .flyin-header {
+                            margin-bottom: 48px;
+                        }
+                    }
+                }
             }
-            .flyin-header {
-                margin-bottom: 40px;
-            }
-            .flyin {
-                background: white;
-                > .body {
-                    border-top: $borderModule;
+            > .flyin {
+                > .flyin-inner {
+                    > .flyin-header {
+                        margin-bottom: 40px;
+                    }
+                    background: white;
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .label-list {
@@ -711,8 +727,10 @@ export default {
         > .flyin {
             min-width: 0;
             width: calc(100vw - 242px);
-            > .body {
-                grid-template-columns: 26% 26% 24% 24% !important;
+            > .flyin-inner {
+                > .body {
+                    grid-template-columns: 26% 26% 24% 24% !important;
+                }
             }
             .flyin-header {
                 > .left {
@@ -726,9 +744,13 @@ export default {
         }
         &.has-budget {
             > .flyin {
-                > .body {
-                    margin-top: 8px;
-                    border-top: $borderModule;
+                > .flyin-inner {
+                    > .flyin-header {
+                            margin-bottom: 8px;
+                        }
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .the-budget-counter {

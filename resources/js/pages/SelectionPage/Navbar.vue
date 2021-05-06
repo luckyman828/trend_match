@@ -36,45 +36,45 @@
                 :open.sync="viewAsContextOpen"
             >
                 <button class="button primary">
-                    <i :class="roleIcon"></i>
-                    <span>View as: {{ currentSelection.your_role || 'No role' }}</span>
+                    <i :class="jobIcon"></i>
+                    <span>View as: {{ currentSelection.your_job || 'No job' }}</span>
                     <i class="far fa-angle-down"></i>
                 </button>
                 <BaseContextMenu slot="popover" :inline="true" v-if="viewAsContextOpen">
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-user"
-                            hotkey="KeyM"
+                            hotkey="KeyF"
                             @click="
                                 $refs.viewAsPopover.hide()
-                                onViewSelectionAsRole('Member')
+                                onViewSelectionAsJob('Feedback')
                             "
                         >
-                            <span><u>M</u>ember</span>
+                            <span><u>F</u>eedback</span>
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
                         <BaseContextMenuItem
                             iconClass="far fa-user-shield"
-                            hotkey="KeyO"
+                            hotkey="KeyA"
                             @click="
                                 $refs.viewAsPopover.hide()
-                                onViewSelectionAsRole('Owner')
+                                onViewSelectionAsJob('Alignment')
                             "
                         >
-                            <span><u>O</u>wner</span>
+                            <span><u>A</u>lignment</span>
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group" v-if="currentSelection.type == 'Master'">
                         <BaseContextMenuItem
                             iconClass="far fa-user-clock"
-                            hotkey="KeyA"
+                            hotkey="KeyP"
                             @click="
                                 $refs.viewAsPopover.hide()
-                                onViewSelectionAsRole('Approver')
+                                onViewSelectionAsJob('Approval')
                             "
                         >
-                            <span><u>A</u>pprover</span>
+                            <span>A<u>p</u>proval</span>
                         </BaseContextMenuItem>
                     </div>
                     <div class="item-group">
@@ -83,10 +83,10 @@
                             hotkey="KeyN"
                             @click="
                                 $refs.viewAsPopover.hide()
-                                onViewSelectionAsRole()
+                                onViewSelectionAsJob()
                             "
                         >
-                            <span><u>N</u>o role</span>
+                            <span><u>N</u>o job</span>
                         </BaseContextMenuItem>
                     </div>
                 </BaseContextMenu>
@@ -219,20 +219,20 @@ export default {
         ...mapGetters('workspaces', {
             authUserWorkspaceRole: 'authUserWorkspaceRole',
         }),
-        roleIcon() {
-            let roleIcon = 'far fa-shield'
-            if (!this.currentSelection) return roleIcon
-            const role = this.currentSelection.your_role
-            if (role == 'Owner') roleIcon = 'far fa-user-shield'
-            if (role == 'Member') roleIcon = 'far fa-user'
-            if (role == 'Approver') roleIcon = 'far fa-user-clock'
-            return roleIcon
+        jobIcon() {
+            let jobIcon = 'far fa-shield'
+            if (!this.currentSelection) return jobIcon
+            const job = this.currentSelection.your_job
+            if (job == 'Alignment') jobIcon = 'far fa-user-shield'
+            if (job == 'Feedback') jobIcon = 'far fa-user'
+            if (job == 'Approval') jobIcon = 'far fa-user-clock'
+            return jobIcon
         },
     },
     methods: {
         ...mapMutations('products', ['SET_SHOW_CSV_MODAL', 'SET_SHOW_PDF_MODAL']),
         ...mapMutations('scanner', ['SET_SCANNER_MODE']),
-        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_ROLE']),
+        ...mapMutations('selections', ['SET_CURRENT_SELECTION_REAL_JOB']),
         onExport() {
             this.SET_SHOW_PDF_MODAL(true)
         },
@@ -243,9 +243,9 @@ export default {
             const modeToSet = this.scannerModeActive ? null : 'product'
             this.SET_SCANNER_MODE(modeToSet)
         },
-        onViewSelectionAsRole(role) {
-            this.SET_CURRENT_SELECTION_REAL_ROLE(this.currentSelection.your_role)
-            this.currentSelection.your_role = role
+        onViewSelectionAsJob(job) {
+            this.SET_CURRENT_SELECTION_REAL_JOB(this.currentSelection.your_job)
+            this.currentSelection.your_job = job
         },
     },
 }

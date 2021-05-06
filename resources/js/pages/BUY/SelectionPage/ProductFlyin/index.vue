@@ -128,9 +128,11 @@ export default {
                 }
             }
             .flyin {
-                background: white;
-                > .body {
-                    border-top: $borderModule;
+                .flyin-inner {
+                    background: white;
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .label-list {
@@ -173,9 +175,11 @@ export default {
         }
         &.has-budget {
             > .flyin {
-                > .body {
-                    margin-top: 8px;
-                    border-top: $borderModule;
+                .flyin-inner {
+                    > .body {
+                        margin-top: 8px;
+                        border-top: $borderModule;
+                    }
                 }
             }
             .the-budget-counter {

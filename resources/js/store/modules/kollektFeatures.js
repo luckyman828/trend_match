@@ -8,7 +8,8 @@ export default {
             'app_performance',
             'dkc_integration',
             'bestseller_style_option',
-            'select_show_input_from_alignment',
+            'select_always_show_alignment_input',
+            'select_always_show_feedback_input',
         ],
     },
     getters: {

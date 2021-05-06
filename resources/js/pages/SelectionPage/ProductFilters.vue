@@ -51,6 +51,7 @@
 
             <div class="item-group" v-if="$route.name == 'selection'">
                 <v-popover
+                    ref="advancedFilterPopover"
                     trigger="click"
                     placement="right"
                     popoverInnerClass="tooltip-inner popover-inner"
@@ -66,10 +67,9 @@
                     </BaseContextMenuItem>
                     <template slot="popover">
                         <ConditionalFilters
-                            v-if="showAdvancedFilters"
                             :distributionScope="distributionScope"
                             :key="advancedFilterKey"
-                            @close="showAdvancedFilters = false"
+                            @close="$refs.advancedFilterPopover.hide()"
                         />
                     </template>
                 </v-popover>

@@ -398,10 +398,18 @@ router.beforeEach(async (to, from, next) => {
 
 router.afterEach((to, from) => {
     // Reset current selections on route leave
+    const realSelectionJob = store.getters['selections/getCurrentSelectionRealJob']
+    const currentSelection = store.getters['selections/getCurrentSelection']
+    if (currentSelection && realSelectionJob) {
+        currentSelection.your_job = realSelectionJob
+    }
     store.commit('selections/SET_CURRENT_SELECTIONS', [])
+    store.commit('selections/SET_CURRENT_SELECTION_REAL_JOB', null)
     store.commit('productFilters/CLEAR_PRODUCT_FILTERS')
     store.commit('productFilters/SET_FILTER_SELECTION_IDS', [])
     store.commit('selectionProducts/SET_SELECTIONS', [])
+    store.commit('files/SET_CURRENT_FOLDER', null)
+    store.commit('files/SET_CURRENT_PATH_FOLDER', null)
 })
 
 export default router

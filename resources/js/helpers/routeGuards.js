@@ -34,6 +34,7 @@ const fetchRouteWorkspace = async ({ fileId, selectionId }) => {
         const file = await store.dispatch('files/fetchFile', theFileId, { root: true })
         workspaceId = file.workspace_id
     }
+    // console.log('fetch route workspaceId', selectionId, theFileId, workspaceId)
     return workspaceId
 }
 
@@ -42,7 +43,7 @@ export async function triggerRouteGuards(to) {
     const isAuthenticated = store.getters['auth/isAuthenticated']
     const authenticatedInitDone = store.getters['persist/getAuthenticatedInitDone']
 
-    // console.log('trigger route guards', to)
+    // console.log('trigger route guards', to, isAuthenticated, store.getters['workspaces/getCurrentWorkspaceId'])
 
     // If the user is authenticated wait with applying guards until we have fetched the necessary data
     await awaitAuthInit()
@@ -62,12 +63,13 @@ export async function triggerRouteGuards(to) {
     if (to.params.fileId || to.params.selectionId) {
         const workspaceId = await fetchRouteWorkspace({ fileId: to.params.fileId, selectionId: to.params.selectionId })
 
-        // console.log('guard workspace', workspaceId)
+        // console.log('guard workspace', workspaceId, store.getters['workspaces/getCurrentWorkspaceId'])
 
         // Test that the user has access to that workspace
         const workspaces = store.getters['workspaces/getWorkspaces']
         if (!workspaces.find(workspace => workspace.id == workspaceId)) {
-            store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
+            // console.log('guard workspace', workspaceId, workspaces)
+            await store.dispatch('workspaces/setCurrentWorkspace', workspaceId)
             // Show info message
             store.commit('alerts/SHOW_SNACKBAR', {
                 type: 'info',
@@ -76,7 +78,13 @@ export async function triggerRouteGuards(to) {
             })
             return triggerAppRedirection()
         }
-        store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
+        // Test if we are changing workspace
+        if (workspaceId != store.getters['workspaces/getCurrentWorkspaceId']) {
+            // console.log('change workspace')
+            await store.dispatch('workspaces/setCurrentWorkspace', workspaceId)
+        }
+
+        // store.commit('workspaces/SET_CURRENT_WORKSPACE_ID', workspaceId)
     }
 
     // GUARD APPS
@@ -87,6 +95,7 @@ export async function triggerRouteGuards(to) {
         toRoot.meta.app &&
         !store.getters['workspaces/getEnabledApps'].find(app => app.name == toRoot.meta.app)
     ) {
+        // console.log('guard apps', store.getters['workspaces/getEnabledApps'])
         // Tell the user they are getting redirected
         store.commit('alerts/SHOW_SNACKBAR', {
             type: 'info',

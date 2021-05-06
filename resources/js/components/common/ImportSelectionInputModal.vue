@@ -16,6 +16,7 @@
                         :options="availableFiles"
                         v-model="selectedFile"
                         :descriptionKey="'parentName'"
+                        :search="true"
                     />
                 </div>
                 <template v-if="!loadingSelections">

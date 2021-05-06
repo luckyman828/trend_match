@@ -8,7 +8,7 @@
 import SearchFlyin from './SearchFlyin'
 
 export default {
-    name: 'PresentationQueueFlyin',
+    name: 'PresentationQueueWrapper',
     components: {
         SearchFlyin,
     },

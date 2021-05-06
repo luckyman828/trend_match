@@ -275,6 +275,7 @@
                     :currentAction="currentAction"
                     :distributionTooltipRef="$refs.actionDistributionTooltip"
                     :variantTooltipRef="$refs.variantTooltip"
+                    :labelPopoverRef="labelPopoverRef"
                     :distributionScope="distributionScope"
                     :rowComponent="rowProps.rowComponent"
                     @onViewSingle="onViewSingle"
@@ -467,6 +468,7 @@
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
         </BasePopover>
+
     </div>
 </template>
 
@@ -483,7 +485,7 @@ import ProductSort from './ProductSort'
 
 export default {
     name: 'productsTable',
-    props: ['products', 'file', 'selection', 'currentAction'],
+    props: ['products', 'file', 'selection', 'currentAction', 'labelPopoverRef'],
     mixins: [sortArray],
     components: {
         ProductsTableRow,
@@ -505,7 +507,6 @@ export default {
             actionDistributionTooltipTab: 'Feedback',
             // showAdvancedFilters: false,
             insTabValue: 'ins',
-            // showFilters: false,
         }
     },
     computed: {
@@ -518,6 +519,9 @@ export default {
         ...mapGetters('selectionProducts', ['getActiveSelectionInput']),
         ...mapGetters('productFilters', {
             filtersActive: 'getFiltersAreActive',
+        }),
+        ...mapGetters('workspaces', {
+            enabledFeatures: 'getFeatureFlags',
         }),
         ...mapGetters('selections', [
             'getCurrentSelections',
@@ -766,6 +770,10 @@ export default {
         document.addEventListener('keydown', this.hotkeyHandler)
         // Preset distribution scope
         this.distributionScope = this.selection.type == 'Master' ? 'Alignment' : 'Feedback'
+        // Check for distribution scope overwrites
+        if (this.enabledFeatures.includes('select_always_show_alignment_input')) this.distributionScope = 'Alignment'
+        if (this.enabledFeatures.includes('select_always_show_feedback_input')) this.distributionScope = 'Feedback'
+
         this.actionDistributionTooltipTab = this.distributionScope
         this.onSort(true, 'sequence')
     },
@@ -813,7 +821,7 @@ export default {
                     align-items: center;
                     margin-right: auto;
                     padding-right: 20px;
-                    span {
+                    > span {
                         white-space: nowrap;
                         text-overflow: ellipsis;
                         display: block;

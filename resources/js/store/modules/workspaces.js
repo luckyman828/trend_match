@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Compressor from 'compressorjs'
+import Vue from 'vue'
 import { triggerRouteGuards } from '../../helpers/routeGuards'
 import router from '../../router'
 
@@ -358,10 +359,13 @@ export default {
                 }
             })
         },
-        async changeWorkspace({ commit, dispatch, rootGetters }, workspaceId) {
+        async setCurrentWorkspace({ commit, dispatch }, workspaceId) {
             // Fetch data for the new workspace
             commit('SET_CURRENT_WORKSPACE_ID', workspaceId)
             await dispatch('fetchWorkspace', workspaceId)
+        },
+        async changeWorkspace({ commit, dispatch, rootGetters }, workspaceId) {
+            await dispatch('setCurrentWorkspace', workspaceId)
             // Trigger route guards
             const currentRoute = router.currentRoute
             let newRoute = currentRoute
@@ -371,13 +375,31 @@ export default {
             // Trigger routeguards for the new route
             const routeAfterGuards = await triggerRouteGuards(newRoute)
             if (routeAfterGuards) newRoute = routeAfterGuards
-            if (newRoute != currentRoute) {
+            if (
+                newRoute != currentRoute &&
+                !(newRoute.fullPath && currentRoute.fullPath && newRoute.fullPath == currentRoute.fullPath)
+            ) {
                 await router.push(newRoute)
             }
             commit('files/SET_CURRENT_FILE', null, { root: true })
             commit('selections/SET_CURRENT_SELECTION_ID', null, { root: true })
             commit('selections/SET_CURRENT_SELECTIONS', [], { root: true })
             dispatch('files/setCurrentFolder', null, { root: true })
+        },
+        async fetchWorkspaceResources({}, workspace) {
+            let resources
+            const apiUrl = `workspaces/${workspace.id}/resources`
+            await axios.get(apiUrl).then(response => {
+                resources = response.data
+                Vue.set(workspace, 'resources', resources)
+            })
+            return resources
+        },
+        async updateWorkspaceResources({}, workspace) {
+            const apiUrl = `workspaces/${workspace.id}/resources`
+            const resourcesObj = Object.assign({}, workspace.resources)
+            resourcesObj.support_minutes = resourcesObj.support.available_minutes
+            await axios.put(apiUrl, resourcesObj)
         },
     },
 
