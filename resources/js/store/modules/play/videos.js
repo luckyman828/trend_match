@@ -7,7 +7,7 @@ export default {
     state: {
         videos: [],
         statusCode: null,
-        uploadProgess: null,
+        uploadChannels: [],
     },
     getters: {
         // getVideos: state => state.videos,
@@ -17,10 +17,10 @@ export default {
             // return files.filter(file => file.video_count > 0)
         },
         getStatusCode: state => state.statusCode,
-        getUploadProgress: state => state.uploadProgess,
+        getUploadChannels: state => state.uploadChannels,
     },
     actions: {
-        async uploadFileVideo({ rootGetters, dispatch }, { videoFile, file }) {
+        async uploadFileVideo({ commit, rootGetters, dispatch }, { videoFile, file }) {
             if (!videoFile || !file) {
                 console.log('no file', videoFile, file)
                 return
@@ -34,8 +34,7 @@ export default {
             await axios.post(uploadChannelApiUrl).then(response => {
                 console.log('generated upload channel', response.data)
                 uploadChannel = response.data
-                // Attach the upload channel to the file
-                Vue.set(file, 'uploadChannel', uploadChannel)
+                uploadChannel.presentationId = file.id
             })
 
             // Create a fresh axios instance with no auth headers
@@ -50,8 +49,12 @@ export default {
             Vue.set(uploadChannel, 'progress', {
                 status: 'Uploading',
                 total: Math.ceil(videoFile.size / chunkSize),
-                current: chunkNumber,
+                current: 0,
+                get progressPercentage() {
+                    return Math.round((this.current / this.total) * 100) + '%'
+                },
             })
+            commit('INSERT_UPLOAD_CHANNEL', uploadChannel)
 
             for (
                 let start = 0;
@@ -64,7 +67,6 @@ export default {
                 chunkData.append('data', chunk)
 
                 // Generate a presigned URL
-                console.log('1 upload status', uploadChannel.progress.status)
                 if (uploadChannel.progress.status == 'Cancelled') {
                     return
                 }
@@ -76,7 +78,6 @@ export default {
                 })
 
                 // Upload chunk data to the presigned url
-                console.log('2 upload status', uploadChannel.progress.status)
                 if (uploadChannel.progress.status == 'Cancelled') {
                     return
                 }
@@ -88,7 +89,6 @@ export default {
                 })
 
                 // Complete the chunk
-                console.log('3 upload status', uploadChannel.progress.status)
                 if (uploadChannel.progress.status == 'Cancelled') {
                     return
                 }
@@ -98,7 +98,7 @@ export default {
                     etag,
                 })
                 chunkNumber++
-                uploadChannel.progress.current = chunkNumber
+                uploadChannel.progress.current++
             }
             // Done uploading all chunks
             // Complete the video file
@@ -107,7 +107,7 @@ export default {
             await axios.post(completeUploadURl).then(response => {
                 console.log('complete upload', response.data)
                 uploadKey = response.data.key
-                uploadChannel.progress.status = 'Success'
+                uploadChannel.progress.status = 'Uploaded'
             })
 
             const newVideoPresentation = {
@@ -173,6 +173,15 @@ export default {
         },
         INSERT_VIDEO(state, newVideo) {
             state.videos.push(newVideo)
+        },
+        INSERT_UPLOAD_CHANNEL(state, uploadChannel) {
+            const existingPresentationChannelIndex = state.uploadChannels.findIndex(
+                channel => channel.presentationId == uploadChannel.presentationId
+            )
+            if (existingPresentationChannelIndex >= 0) {
+                state.uploadChannels.splice(existingPresentationChannelIndex, 1)
+            }
+            state.uploadChannels.push(uploadChannel)
         },
     },
 }

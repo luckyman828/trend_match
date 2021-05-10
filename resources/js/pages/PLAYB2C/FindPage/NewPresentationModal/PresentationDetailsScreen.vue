@@ -1,6 +1,5 @@
 <template>
     <FlowBaseScreen class="presentation-details-screen" @next="onNext" @back="$emit('back')">
-        <p>I am secretly uploading your file in the background :3</p>
         <BaseInputField v-model="presentation.name" :selectOnFocus="true" />
         <ImageUploadArea
             :image.sync="presentation.thumbnail"
@@ -44,9 +43,10 @@ export default {
         },
     },
     async mounted() {
-        console.log('mounted')
-        await this.onImageChange(this.presentation.thumbnail_blob)
-        this.updatePresentationDetails(this.presentation)
+        if (this.presentation.thumbnail_blob) {
+            await this.onImageChange(this.presentation.thumbnail_blob)
+            this.updatePresentationDetails(this.presentation)
+        }
     },
 }
 </script>

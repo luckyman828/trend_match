@@ -1,5 +1,13 @@
 <template>
-    <div class="create-flow-screen">
+    <div class="create-flow-screen flex-list flex-v space-lg center-h">
+        <div class="flex-list flex-v center-h space-xs" v-if="header || subHeader">
+            <div class="ft-16 ft-bd" v-if="header">
+                {{ header }}
+            </div>
+            <div class="ft-12 ft-md color-grey" v-if="subHeader">
+                {{ subHeader }}
+            </div>
+        </div>
         <div class="main">
             <slot />
         </div>
@@ -17,8 +25,12 @@
 <script>
 export default {
     name: 'flowBaseScreen',
-    props: ['backText', 'nextText', 'nextDisabled'],
+    props: ['backText', 'nextText', 'nextDisabled', 'subHeader', 'header'],
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.main {
+    width: 512px;
+}
+</style>

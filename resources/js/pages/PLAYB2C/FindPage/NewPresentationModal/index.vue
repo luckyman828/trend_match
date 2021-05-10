@@ -1,30 +1,7 @@
 <template>
     <BaseModal ref="newPresentationModal" :show="show" @close="$emit('close')">
         <!-- Choose type screen -->
-        <div class="choose-type-screen" v-if="screenIndex == 0">
-            <div class="flex-list full-width equal-width space-lg">
-                <button
-                    class="primary lg"
-                    @click="
-                        createFlow = 'video'
-                        screenIndex++
-                    "
-                >
-                    <span>Upload video</span>
-                </button>
-                <BaseButton
-                    buttonClass="primary lg"
-                    :disabled="true"
-                    disabledTooltip="coming soon"
-                    @click="
-                        createFlow = 'livestream'
-                        screenIndex++
-                    "
-                >
-                    <span>Start livestream</span>
-                </BaseButton>
-            </div>
-        </div>
+        <ChooseTypeScreen v-if="screenIndex == 0" @next="onChooseFlow" />
 
         <template v-if="createFlow == 'video'">
             <UploadVideoScreen v-show="screenIndex == 1" @next="screenIndex++" @back="screenIndex--" />
@@ -38,13 +15,15 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 import UploadVideoScreen from './UploadVideoScreen'
 import PresentationDetailsScreen from './PresentationDetailsScreen'
-import { mapActions, mapGetters } from 'vuex'
+import ChooseTypeScreen from './ChooseTypeScreen'
 
 export default {
     name: 'play.newPresentationModal',
-    components: { UploadVideoScreen, PresentationDetailsScreen },
+    components: { UploadVideoScreen, PresentationDetailsScreen, ChooseTypeScreen },
     props: ['show'],
     data() {
         return {
@@ -62,6 +41,10 @@ export default {
         async onBackToUploadVideo() {
             await this.cancelUpload(this.presentation.uploadChannel)
             this.screenIndex--
+        },
+        onChooseFlow(flow) {
+            this.createFlow = flow
+            this.screenIndex++
         },
     },
 }

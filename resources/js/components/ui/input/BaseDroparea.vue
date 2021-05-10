@@ -70,7 +70,6 @@ export default {
     // outline: 2px dashed $light2;
     // outline-offset: -10px;
     border: 2px dashed $divider;
-    background: white;
     padding: 20px 16px 24px;
     min-height: 200px;
     position: relative;

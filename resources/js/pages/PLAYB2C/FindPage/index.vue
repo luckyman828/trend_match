@@ -1,20 +1,19 @@
 <template>
     <PageLoader :status="loadingData ? 'loading' : 'success'">
-        <div class="play-home">
-            <h1>Library</h1>
-            <PresentationGrid :presentations="presentations" />
-        </div>
+        <Navbar />
+        <PresentationGrid :presentations="presentations" />
     </PageLoader>
 </template>
 
 <script>
 import PresentationGrid from './PresentationGrid/'
+import Navbar from './Navbar'
 import PageLoader from '../../../components/common/PageLoader'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
     name: 'Play.FindPage',
-    components: { PresentationGrid, PageLoader },
+    components: { PresentationGrid, PageLoader, Navbar },
     data() {
         return {
             loadingData: true,
@@ -42,7 +41,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.play-home {
-}
-</style>
+<style lang="scss" scoped></style>

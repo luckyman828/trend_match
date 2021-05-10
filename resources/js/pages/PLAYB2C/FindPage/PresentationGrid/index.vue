@@ -5,17 +5,9 @@
                 <PresentationCard
                     class="presentation-card"
                     :presentation="presentation"
-                    @contextmenu.prevent.native="onShowContextmenu($event, presentation)"
+                    @contextmenu="onShowContextmenu($event, presentation)"
                     @click.native="onGoToPresentation(presentation)"
                 />
-            </div>
-            <div class="card-sizer">
-                <div class="new-presentation presentation-card flex-list center-v center-h" @click="onNewPresentation">
-                    <div class="flex-list flex-v center-v center-h">
-                        <i class="far fa-plus lg"></i>
-                        <p>New Presentation</p>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -27,29 +19,10 @@
 
         <BaseContextMenu ref="presentationContextMenu" class="context-file">
             <div class="item-group" v-if="contextPresentation">
-                <BaseContextMenuItem iconClass="far fa-file" hotkey="KeyV"> <u>V</u>iew file </BaseContextMenuItem>
+                <BaseContextMenuItem iconClass="far fa-file" hotkey="KeyV">
+                    <u>V</u>iew / Edit presentation
+                </BaseContextMenuItem>
             </div>
-            <!-- <div class="item-group">
-                <BaseContextMenuItem
-                    iconClass="far fa-pen"
-                    :disabled="authUserWorkspaceRole != 'Admin'"
-                    disabledTooltip="Only admins can rename files"
-                    hotkey="KeyR"
-                    @click="fileToEdit = contextMenuItem"
-                >
-                    <span><u>R</u>ename</span>
-                </BaseContextMenuItem>
-
-                <BaseContextMenuItem
-                    iconClass="far fa-long-arrow-alt-right"
-                    :disabled="authUserWorkspaceRole != 'Admin'"
-                    disabledTooltip="Only admins can move files"
-                    hotkey="KeyM"
-                    @click="onMoveFiles()"
-                >
-                    <span><u>M</u>ove to</span>
-                </BaseContextMenuItem>
-            </div> -->
             <div class="item-group">
                 <BaseContextMenuItem
                     iconClass="far fa-trash-alt"
@@ -58,7 +31,7 @@
                     hotkey="KeyD"
                     @click="onDeletePresentation(contextPresentation)"
                 >
-                    <span><u>D</u>elete file</span>
+                    <span><u>D</u>elete presentation</span>
                 </BaseContextMenuItem>
             </div>
         </BaseContextMenu>
@@ -102,15 +75,8 @@ export default {
         }),
     },
     methods: {
-        ...mapActions('playPresentations', ['instantiateBasePresentation']),
         ...mapActions('files', ['deleteFile', 'insertOrUpdateFile']),
         ...mapMutations('playPresentations', ['SET_CURRENT_PRESENTATION']),
-        async onNewPresentation() {
-            // Secretly create a new file
-            const newPresentation = await this.instantiateBasePresentation()
-            this.onShowNewPresentationModal(newPresentation)
-            await this.insertOrUpdateFile({ file: newPresentation })
-        },
         onShowNewPresentationModal(presentation) {
             this.SET_CURRENT_PRESENTATION(presentation)
             this.showNewPresentationModal = true
@@ -150,32 +116,14 @@ export default {
         height: 0;
         width: 100%;
         position: relative;
-        padding-top: 75%;
+        // padding-top: 75%;
+        padding-top: 100%;
         > * {
             height: 100%;
             width: 100%;
             position: absolute;
             left: 0;
             top: 0;
-        }
-    }
-    .presentation-card {
-        background: white;
-        border: $borderEl;
-        border-radius: 8px;
-        transition: 0.1s ease-out;
-        cursor: pointer;
-        &.disabled {
-            background: $bluegrey400;
-            cursor: default;
-        }
-        &:not(.disabled) {
-            &:hover {
-                // background: $dark;
-                // color: white;
-                box-shadow: 0 3px 6px 0 rgba(117, 134, 156, 0.5);
-                transform: translateY(-4px);
-            }
         }
     }
 }

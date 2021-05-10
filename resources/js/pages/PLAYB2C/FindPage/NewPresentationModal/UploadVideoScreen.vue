@@ -1,13 +1,54 @@
 <template>
-    <FlowBaseScreen class="upload-video-screen" @next="onNext" @back="$emit('back')" :nextDisabled="submitDisabled">
-        <BaseDroparea v-model="fileToUpload">
-            <template v-if="fileToUpload">
-                <div class="flex-list center-v">
-                    <div>{{ fileToUpload.name }}</div>
-                    <button class="true-square invisible ghost-hover" @click="fileToUpload = null">
-                        <i class="far fa-trash"></i>
-                    </button>
+    <FlowBaseScreen
+        class="upload-video-screen"
+        @next="onNext"
+        @back="$emit('back')"
+        :nextDisabled="submitDisabled"
+        header="Upload video"
+        subHeader="Choose how you want to present you styles"
+    >
+        <BaseDroparea
+            v-model="fileToUpload"
+            class="bg-theme-light interactable"
+            v-slot="slotProps"
+            :accept="availableExtensions.map(x => `.${x}`).join(',')"
+            @input="onFileChange"
+        >
+            <div class="flex-list flex-v space-md center-h" v-if="!fileToUpload" @click="slotProps.activate()">
+                <div class="true-square xxl white">
+                    <i class="fas fa-upload primary"></i>
                 </div>
+                <div class="ft-16 ft-md">
+                    <span>Drop your video file here</span>
+                </div>
+                <div class="flex-list flex-v space-sm center-h">
+                    <button class="pill dark">
+                        <span>Browse your computer</span>
+                    </button>
+                    <div class="color-grey ft-12 ft-md">
+                        Supported formats: .mov, .mp4, .m4v, .m2ts, .mpg, .mkv
+                    </div>
+                </div>
+            </div>
+
+            <template v-else>
+                <div class="file-to-upload">
+                    <div class="flex-list center-v">
+                        <div>{{ fileToUpload.name }}</div>
+                        <div>{{ formatBytes(fileToUpload.size) }}</div>
+                        <button class="pill invisible ghost-hover sm" @click="onCancel">
+                            <i class="far fa-times"></i>
+                            <span>Cancel</span>
+                        </button>
+                    </div>
+                    <div class="progress" v-if="presentation.uploadChannel">
+                        {{ presentation.uploadChannel.progress.status }}
+                        {{ presentation.uploadChannel.progress.progressPercentage }}
+                    </div>
+                </div>
+                <button class="dark pill choose-another-file" @click="slotProps.activate()">
+                    <span>Choose another file</span>
+                </button>
             </template>
         </BaseDroparea>
     </FlowBaseScreen>
@@ -16,6 +57,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import FlowBaseScreen from './FlowBaseScreen'
+import formatBytes from '../../../../helpers/formatBytes'
 
 export default {
     name: 'uploadVideoScreen',
@@ -41,7 +83,17 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videos', ['uploadFileVideo']),
+        ...mapActions('videos', ['uploadFileVideo', 'cancelUpload']),
+        formatBytes(value) {
+            return formatBytes(value)
+        },
+        onFileChange(newfile) {
+            this.uploadFileVideo({ videoFile: newfile, file: this.presentation })
+        },
+        onCancel() {
+            this.fileToUpload = null
+            this.cancelUpload(this.presentation.uploadChannel)
+        },
         async onNext() {
             if (this.presentation.name == 'New presentation') {
                 // Preset the name of our new file to the name of our video
@@ -55,7 +107,6 @@ export default {
 
             this.$emit('next')
             // Start uploading the video in the background
-            this.uploadFileVideo({ videoFile: this.fileToUpload, file: this.presentation })
         },
         async getFirstFrame() {
             return await new Promise(resolve => {
@@ -94,4 +145,18 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+.upload-video-screen {
+    .drop-area {
+        width: 512px;
+        height: 232px;
+        border: $borderEl;
+        border-radius: $borderRadiusEl;
+    }
+    .choose-another-file {
+        position: absolute;
+        bottom: 32px;
+    }
+}
+</style>

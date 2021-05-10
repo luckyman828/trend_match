@@ -3,6 +3,7 @@
         <RootLoader v-if="isLoading" />
         <template v-else>
             <template v-if="!$route.meta.isFullscreen">
+                <TheNavbar />
                 <TheSidebar />
             </template>
             <div class="main" id="main" ref="main" :class="{ 'hide-crisp': $route.meta.hideCrisp }">
@@ -18,6 +19,7 @@
 
 <script>
 import TheSidebar from './TheSidebar'
+import TheNavbar from './TheNavbar'
 import TheImageLightbox from '../../components/layout/TheImageLightbox'
 import TheSnackbarSpawner from '../../components/layout/TheSnackbarSpawner'
 import RootLoader from '../../components/common/RootLoader'
@@ -29,6 +31,7 @@ export default {
         TheImageLightbox,
         TheSnackbarSpawner,
         RootLoader,
+        TheNavbar,
     },
     computed: {
         ...mapGetters('workspaces', ['workspaces', 'currentWorkspace']),
