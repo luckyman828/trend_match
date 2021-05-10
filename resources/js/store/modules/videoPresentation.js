@@ -61,7 +61,7 @@ export default {
     },
 
     actions: {
-        async fetchFileVideo({ dispatch }, fileId) {
+        async fetchFileVideo({ dispatch, commit }, fileId) {
             const apiUrl = `/files/${fileId}/video`
             let video
             await axios

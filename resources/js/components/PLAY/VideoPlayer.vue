@@ -1,49 +1,19 @@
 <template>
     <div class="player-wrapper" :class="[{ 'drag-active': isDragging }, playerStatus, `desired-${desiredStatus}`]">
-        <div class="players" :key="intanceId">
-            <vimeo-player
-                v-if="provider == 'vimeo' && providerVideoId"
-                ref="player"
-                class="player"
-                :videoId="providerVideoId"
-                :videoUrl="isVimeoPrivateLink ? providerVideoId : null"
-                :controls="false"
-                :autoplay="autoplay"
-                @ready="onPlayerReady"
-                @play="onPlayingStatus"
-                @pause="SET_PLAYER_STATUS('paused')"
-                @loaded="SET_PLAYER_STATUS('buffering')"
-                @ended="onEndedStatus"
-                @timeupdate="onTimeupdate"
-                @progress="onProgress"
-            />
-
-            <youtube
-                v-else-if="provider == 'youtube'"
-                ref="player"
-                class="player"
-                tabindex="-1"
-                :videoId="providerVideoId"
-                :playerVars="{
-                    autoplay: autoplay ? 1 : 0,
-                    controls: 0,
-                    modestbranding: 1,
-                    fs: 0,
-                    cc_load_policy: 0,
-                    iv_load_policy: 3,
-                    disablekb: 0,
-                    playsinline: 1,
-                }"
-                :resize="true"
-                :fitParent="true"
-                @ready="onPlayerReady"
-                @playing="onPlayingStatus"
-                @paused="SET_PLAYER_STATUS('paused')"
-                @buffering="SET_PLAYER_STATUS('buffering')"
-                @ended="onEndedStatus"
-                @error="SET_PLAYER_STATUS('error')"
-            />
-        </div>
+        <video
+            :src="video.urls[quality ? quality : 'SD360P']"
+            ref="player"
+            class="player"
+            tabindex="-1"
+            :autoplay="autoplay"
+            :controls="false"
+            @canplay="onPlayerReady"
+            @playing="onPlayingStatus"
+            @pause="SET_PLAYER_STATUS('paused')"
+            @waiting="SET_PLAYER_STATUS('buffering')"
+            @ended="onEndedStatus"
+            @timeupdate="onTimeupdate"
+        />
 
         <div class="click-to-pause" @click="!isLive && togglePlaying()" />
         <div class="player-overlay">
@@ -63,19 +33,18 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
     name: 'videoPlayer',
-    props: ['providerVideoId', 'provider', 'autoplay', 'hideTimeline'],
+    props: ['video', 'autoplay', 'quality'],
     data: function() {
         return {
             playerReady: false,
-            intervalTimer: null,
-            lastTimestamp: 0,
-            intanceId: 0,
             liveDurationFetched: false,
             playerStartedTester: false,
+            lastTimestamp: null,
+            videoTimer: null,
         }
     },
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('player', {
             player: 'getPlayer',
             playerStatus: 'getStatus',
             currentTimestamp: 'getTimestamp',
@@ -88,102 +57,52 @@ export default {
             desiredStatus: 'getDesiredStatus',
             playerStarted: 'getPlayerStarted',
         }),
-        isVimeoPrivateLink() {
-            const url = this.providerVideoId
-            const slashCount = (url.match(/\//g) || []).length
-            return slashCount >= 4
-        },
     },
     watch: {
-        playerStatus(newStatus, oldStatus) {
-            // Fetch the duration when our video changes
-            // Buffering is our only indication that the video has changed and is done loading.
-            if (oldStatus == 'buffering') {
-                this.getVideoDuration()
-            }
-        },
-        provider(newProvider, oldProvider) {
-            // Force the compoennt to rerender in case of changing from another provider to vimeo, because of a weird vimeo player bug
-            if (newProvider == 'vimeo') {
-                this.intanceId++
-            }
-        },
         desiredStatus(newStatus) {
-            console.log('desired status changed', newStatus)
             if (newStatus == 'playing' && !this.playerStarted) {
                 this.onStartPlaying()
             }
         },
     },
     methods: {
-        ...mapActions('videoPlayer', [
-            'togglePlayerMuted',
-            'getCurrentTimestamp',
-            'togglePlaying',
-            'makeLastTimingCurrent',
-            'play',
-        ]),
-        ...mapMutations('videoPlayer', [
+        ...mapActions('player', ['togglePlayerMuted', 'getCurrentTimestamp', 'togglePlaying', 'play']),
+        ...mapMutations('player', [
             'SET_PLAYER_REFERENCE',
             'SET_CURRENT_PLAYER_TIMESTAMP',
             'SET_PLAYER_DURATION',
             'SET_PLAYER_STATUS',
-            'SET_IFRAME_REFERENCE',
             'SET_DESIRED_STATUS',
             'SET_PLAYER_STARTED',
             'SET_RECENTLY_STARTED',
             'RESET_PLAYER',
         ]),
         onStartPlaying() {
-            const interval = 200
-            this.playerStartedTester = setInterval(() => {
-                console.log('is playing', this.isPlaying, this.desiredStatus)
-                if (!this.isPlaying && this.desiredStatus == 'playing') {
-                    this.play()
-                } else {
-                    this.SET_PLAYER_STARTED(true)
-                    clearInterval(this.playerStartedTester)
-                }
-            }, interval)
+            this.lastTimestamp = Date.now()
+            this.play()
+            this.SET_PLAYER_STARTED(true)
+            this.startVideoTimer()
 
             // Add a class to the player to tell that it has recently been started
             this.SET_RECENTLY_STARTED(4000)
         },
-        onProgress(e) {
-            if (this.isLive && !this.liveDurationFetched) {
-                const newDuration = e.seconds
-                this.SET_PLAYER_DURATION(newDuration)
-                this.makeLastTimingCurrent()
-                this.liveDurationFetched = true
-            }
-        },
         onPlayerReady(e, a) {
             this.playerReady = true
-            const player = this.$refs.player.player
-            // Set player reference. Using VUEX causes trouble with the iframe
-            this.$store.state.videoPlayer.player = player
-            // this.SET_PLAYER_REFERENCE(player)
-
-            this.SET_IFRAME_REFERENCE(this.$el.getElementsByTagName('iframe')[0])
+            const player = this.$refs.player
+            this.SET_PLAYER_REFERENCE(player)
             // Pre-mute the player
             if (['editVideoPresentation'].includes(this.$route.name)) {
                 this.togglePlayerMuted(true)
             }
-            this.startTimerListener()
 
             // Save a timestamp
-            this.lastTimestamp = Date.now()
             this.getVideoDuration()
 
             this.addEventListeners()
         },
-        onPlayingStatus(e) {
-            if (this.provider == 'vimeo') {
-                this.SET_PLAYER_DURATION(e.duration)
-            }
+        onPlayingStatus() {
             this.SET_DESIRED_STATUS('playing')
             this.SET_PLAYER_STATUS('playing')
-            this.getVideoTimeStampFromProvider()
         },
         onEndedStatus() {
             this.SET_PLAYER_STATUS('ended')
@@ -191,42 +110,29 @@ export default {
             this.SET_CURRENT_PLAYER_TIMESTAMP(this.duration)
         },
         onTimeupdate(e) {
-            const timestamp = e.seconds
-            this.onSetTimestamp(timestamp)
+            // const timestamp = e.target.currentTime
+            // this.onSetTimestamp(timestamp)
         },
-        startTimerListener() {
+        startVideoTimer() {
             // Clear the current one if any
-            this.clearTimerListener()
+            this.clearVideoTimer()
 
-            // if (!this.provider == 'Vimeo') {
-            this.intervalTimer = setInterval(this.getVideoTimeStamp, 50)
-            // }
+            this.videoTimer = setInterval(this.updateVideoTimestamp, 50)
         },
-        clearTimerListener() {
-            if (this.intervalTimer) {
-                clearInterval(this.intervalTimer)
+        clearVideoTimer() {
+            if (this.videoTimer) {
+                clearInterval(this.videoTimer)
             }
         },
-        async getVideoTimeStamp() {
+        async updateVideoTimestamp() {
             const newTime = Date.now()
             const diff = newTime - this.lastTimestamp
             const timestamp = this.currentTimestamp + diff / 1000
-            // Update duration if we are live
-            if (this.isLive) {
-                const newDuration = this.duration + diff / 1000
-                this.SET_PLAYER_DURATION(newDuration)
-                this.extendCurrentTiming()
-            }
             if (!this.isSeeking && this.isPlaying && !this.isDragging) {
                 // Get the duration since last we read a timestamp
-
                 this.SET_CURRENT_PLAYER_TIMESTAMP(timestamp)
             }
             this.lastTimestamp = Date.now()
-        },
-        async getVideoTimeStampFromProvider() {
-            const timestamp = await this.getCurrentTimestamp()
-            this.onSetTimestamp(timestamp)
         },
         onSetTimestamp(timestamp) {
             if (!this.isDragging) {
@@ -249,7 +155,7 @@ export default {
             }
         },
         async getVideoDuration() {
-            const duration = await this.player.getDuration()
+            const duration = await this.player.duration
             this.SET_PLAYER_DURATION(duration)
         },
         hotkeyHandler(e) {
@@ -275,7 +181,7 @@ export default {
     },
     destroyed() {
         this.RESET_PLAYER()
-        this.clearTimerListener()
+        this.clearVideoTimer()
         this.removeEventListeners()
         if (this.playerStartedTester) clearInterval(this.playerStartedTester)
     },
@@ -289,16 +195,6 @@ export default {
     background: black;
     height: 100%;
     position: relative;
-    .players {
-        height: 100%;
-        width: 100%;
-    }
-    ::v-deep {
-        iframe {
-            height: 100%;
-            width: 100%;
-        }
-    }
     .player {
         pointer-events: none;
         height: 100%;
@@ -306,11 +202,9 @@ export default {
         position: absolute;
         left: 0;
         top: 0;
-        ::v-deep {
-            iframe {
-                height: 100%;
-                width: 100%;
-            }
+        video {
+            height: 100%;
+            width: 100%;
         }
     }
     .click-to-pause {

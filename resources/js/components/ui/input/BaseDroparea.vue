@@ -51,7 +51,8 @@ export default {
         },
         onInput(e) {
             // Emit the new files
-            this.$emit('input', e.target.files)
+            const files = e.target.files
+            this.$emit('input', this.multiple ? files : files[0])
             // Reset the file input, to allow adding the same file multiple times
             e.target.value = ''
         },

@@ -16,7 +16,7 @@ export default {
             const aspect = this.aspect
             const aspectWidth = aspect.split(':')[0]
             const aspectHeight = aspect.split(':')[1]
-            return (aspectWidth / aspectHeight) * 100 + '%'
+            return (aspectHeight / aspectWidth) * 100 + '%'
         },
     },
 }

@@ -310,10 +310,26 @@ const routes = [
         component: () => import(/* webpackChunkName: "playRoot" */ './pages/PLAYB2C/'),
         children: [
             {
-                path: 'home',
-                name: 'play.home',
-                component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
+                path: 'find',
+                name: 'play.find',
+                component: () => import(/* webpackChunkName: "playFind" */ './pages/PLAYB2C/FindPage/'),
             },
+            {
+                path: 'file/:fileId/video',
+                name: 'play.fileVideo',
+                component: () => import(/* webpackChunkName: "playFileVideoPage" */ './pages/PLAYB2C/FileVideoPage/'),
+            },
+            {
+                path: 'presentation/:presentationId/edit',
+                name: 'play.editPresentation',
+                component: () =>
+                    import(/* webpackChunkName: "playEditPresentationPage" */ './pages/PLAYB2C/EditPresentationPage/'),
+            },
+            // {
+            //     path: 'home',
+            //     name: 'play.home',
+            //     component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
+            // },
             {
                 path: 'watch/:videoId',
                 name: 'play.watch',
@@ -325,7 +341,7 @@ const routes = [
             },
             {
                 path: '*',
-                redirect: { name: 'play.home' },
+                redirect: { name: 'play.find' },
             },
         ],
     },

@@ -32,9 +32,17 @@ import productFilters from './modules/productFilters'
 import selectionProducts from './modules/selectionProducts'
 import kollektApps from './modules/kollektApps'
 import kollektFeatures from './modules/kollektFeatures'
+
+//PLAY
+import videos from './modules/play/videos'
+import playPresentations from './modules/play/presentations'
+import player from './modules/play/player'
+
+// PLAY B2C
 import wishlist from './modules/playb2c/wishlist'
 import basket from './modules/playb2c/basket'
-import videos from './modules/playb2c/videos'
+
+// BUY
 import buyProducts from './modules/buy/buyProducts'
 import integrationDkc from './modules/integrations/dkc'
 import backgroundJobs from './modules/backgroundJobs'
@@ -87,6 +95,8 @@ export const initialStoreModules = {
     backgroundJobs,
     liveUpdates,
     supportLog,
+    playPresentations,
+    player,
 }
 
 // const store = new Vuex.Store({

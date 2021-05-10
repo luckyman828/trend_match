@@ -1,261 +1,197 @@
 <template>
-    <div class="watch-video-page">
-        <h1>I am a desktop!</h1>
+    <div class="watch-video-page" :class="[`desired-${desiredStatus}`, { 'recently-started': recentlyStarted }]">
+        <VideoPlayer :providerVideoId="videoId" :provider="provider" :autoplay="false" :hideTimeline="true">
+            <template v-slot:beforeStart>
+                <BeforeStartOverlay :video="video" />
+            </template>
+
+            <VideoTitle :video="video" />
+
+            <template v-if="playerStarted">
+                <div class="bottom-aligned flex-list flex-v md">
+                    <PreviewList v-if="currentTiming" />
+                    <div class="top flex-list justify">
+                        <button class="white lg circle comment-button"><i class="far fa-comment"></i></button>
+                        <AddToWishlistButton class="lg like-button" v-if="currentTiming" />
+                    </div>
+                    <div class="bottom flex-list equal-width justify center-v">
+                        <div class="left">
+                            <div class="video-timer pill grey sm">
+                                <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <div class="timing-count pill white sm">
+                                <span>{{ currentTimingIndex + 1 }} of {{ videoTimings.length }}</span>
+                            </div>
+                        </div>
+                        <div class="flex-list">
+                            <button
+                                class="wishlist-count pill white"
+                                @click="
+                                    showSavedProductsDrawer = true
+                                    savedProductsView = 'wishlist'
+                                "
+                            >
+                                <i class="far fa-heart"></i>
+                                <span>{{ wishlist.length }}</span>
+                            </button>
+                            <button
+                                class="basket-count pill white"
+                                @click="
+                                    showSavedProductsDrawer = true
+                                    savedProductsView = 'basket'
+                                "
+                            >
+                                <i class="far fa-shopping-bag"></i>
+                                <span>{{ basket.length }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <VideoTimeline />
+
+                <ProductDetailsDrawer
+                    :show="!!sidebarProduct"
+                    :product="sidebarProduct"
+                    @close="SET_SIDEBAR_PRODUCT(null)"
+                />
+                <SavedStylesDrawer
+                    :show="!!showSavedProductsDrawer"
+                    :view.sync="savedProductsView"
+                    @close="showSavedProductsDrawer = false"
+                />
+            </template>
+        </VideoPlayer>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-// import VideoPlayer from '../../../../components/common/VideoPlayer/'
-// import PlayerControls from './PlayerControls'
-// import ProductDetailsSidebar from './ProductDetailsSidebar/'
-// import CartSidebar from './CartSidebar/'
-// import PauseOverlay from './PauseOverlay/'
-// import EndedOverlay from './EndedOverlay'
-// import ChatOverlay from './ChatOverlay'
+import VideoPlayer from '../../../../components/common/VideoPlayer/'
+import PlayerControls from '../../../../components/common/VideoPlayer/Desktop/PlayerControls'
+
+import BeforeStartOverlay from './BeforeStartOverlay'
+import VideoTitle from './VideoTitle'
+import PreviewList from './PreviewList'
+import AddToWishlistButton from './AddToWishlistButton'
+
+import ProductDetailsDrawer from './ProductDetailsDrawer/'
+import SavedStylesDrawer from './SavedStylesDrawer/'
 
 export default {
     name: 'watchVideoPage',
     components: {
-        // VideoPlayer,
-        // PlayerControls,
-        // ProductDetailsSidebar,
-        // CartSidebar,
-        // PauseOverlay,
-        // EndedOverlay,
-        // ChatOverlay,
+        VideoPlayer,
+        PlayerControls,
+        BeforeStartOverlay,
+        VideoTitle,
+        PreviewList,
+        ProductDetailsDrawer,
+        SavedStylesDrawer,
+        AddToWishlistButton,
     },
     data: function() {
         return {
-            playerStarted: false,
-            isConnectedToLiveUpdates: false,
-            playerStartedTester: null,
+            showSavedProductsDrawer: false,
+            savedProductsView: 'wishlist',
+            showControls: true,
+            showCart: false,
+            showChatInput: false,
         }
     },
     computed: {
         ...mapGetters('videoPresentation', {
             videoTimings: 'getVideoTimings',
             video: 'getCurrentVideo',
+            sidebarProduct: 'getSidebarProduct',
         }),
         ...mapGetters('videoPlayer', {
             isPlaying: 'getIsPlaying',
             videoId: 'getProviderVideoId',
             provider: 'getProvider',
             playerStatus: 'getStatus',
-            videoType: 'getVideoType',
-            videoDuration: 'getDuration',
-            isLive: 'getIsLive',
-            controlsHidden: 'getControlsHidden',
-            currentTiming: 'getCurrentTiming',
             desiredStatus: 'getDesiredStatus',
+            videoType: 'getVideoType',
+            duration: 'getDuration',
+            timestamp: 'getTimestamp',
+            currentTimingIndex: 'getCurrentTimingIndex',
+            currentTiming: 'getCurrentTiming',
+            recentlyStarted: 'getPlayerRecentlyStarted',
+            playerStarted: 'getPlayerStarted',
         }),
-        ...mapGetters('selections', {
-            selection: 'getCurrentSelection',
+        ...mapGetters('wishlist', {
+            wishlist: 'getWishlist',
         }),
-        ...mapGetters('presentation', {
-            presentedProductId: 'getCurrentProductId',
+        ...mapGetters('basket', {
+            basket: 'getBasket',
         }),
-    },
-    watch: {
-        playerStatus(newVal) {
-            if (newVal == 'playing' && this.isLive && this.videoTimings.length > 0) {
-                // Wait a little, so we have fetched the correct duration in case of a livestream
-                setTimeout(() => {
-                    // Check if a product is currently being presented. If so, make sure we make it our current
-                    const lastTiming = this.videoTimings[this.videoTimings.length - 1]
-                    if (lastTiming.product_id == this.presentedProductId) {
-                        lastTiming.end_at_ms = Math.ceil(this.videoDuration + 5000)
-                        // Make sure the last timing is the current timing
-                        if (lastTiming.start_at_ms > this.videoDuration) {
-                            lastTiming.start_at_ms = Math.floor(this.videoDuration - 5000)
-                        }
-                    }
-                }, 500)
-            }
+        currentTimingIsInWishlist() {
+            return this.currentTiming && this.wishlist.find(product => product.id == this.currentTiming.product.id)
         },
     },
     methods: {
         ...mapActions('videoPresentation', ['initTimings']),
-        ...mapActions('videoPlayer', ['togglePlaying']),
-        ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_VIDEO_TIMINGS']),
-        onEnterFullscreen() {
-            const elem = document.documentElement
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen()
-            } else if (elem.mozRequestFullScreen) {
-                /* Firefox */
-                elem.mozRequestFullScreen()
-            } else if (elem.webkitRequestFullscreen) {
-                /* Chrome, Safari and Opera */
-                elem.webkitRequestFullscreen()
-            } else if (elem.msRequestFullscreen) {
-                /* IE/Edge */
-                elem.msRequestFullscreen()
+        ...mapMutations('videoPlayer', ['SET_DESIRED_STATUS']),
+        ...mapMutations('videoPresentation', ['ADD_TIMING', 'SET_SIDEBAR_PRODUCT']),
+        onAddToWishlist() {
+            // Check if we should add or remove
+            if (this.currentTimingIsInWishlist) {
+                // Remove
+                const index = this.wishlist.findIndex(product => product.id == this.currentTiming.product.id)
+                this.wishlist.splice(index, 1)
+            } else {
+                // Add
+                this.wishlist.push(this.currentTiming.product)
             }
         },
-        onStartPlaying() {
-            this.togglePlaying()
-            // this.onEnterFullscreen()
-            this.playerStarted = true
-            const interval = 1000
-            this.playerStartedTester = setInterval(() => {
-                if (!this.isPlaying) {
-                    this.togglePlaying()
-                } else {
-                    clearInterval(this.playerStartedTester)
-                }
-            }, interval)
-        },
-        // async presentationChangeHandler(eventName, args) {
-        //     // Filter out selection not the current
-        //     if (!args.selection_ids.includes(this.selection.id)) return
-
-        //     if (eventName == 'Terminate') {
-        //         // Alert the user and then send them to their results
-        //         await this.$refs.streamEndedDialog.confirm()
-        //         this.$router.push({ name: 'selection', params: this.$route.params })
-        //     }
-        //     if (eventName == 'Begin') {
-        //         // Alert the user and then send them to their results
-        //         await this.$refs.streamStartedDialog.confirm()
-        //         this.$router.go()
-        //     }
-        // },
-        // async videoTimingsUpdatedHandler(videoId, videoTimings) {
-        //     if (this.video.id != videoId) return
-
-        //     // Replace the last 2 timings with the new timings
-        //     const newTimings = videoTimings.slice(videoTimings.length - 2)
-        //     await this.initTimings(newTimings)
-        //     this.videoTimings.splice(this.videoTimings.length - 2, 2, ...newTimings)
-        // },
-        // connectToLiveUpdates() {
-        //     const connection = this.$connection
-
-        //     // Subscribe to our selections
-        //     connection.invoke('Subscribe', this.selection.id)
-        //     connection.on('OnSelectionPresentationChanged', this.presentationChangeHandler)
-        //     connection.on('OnVideoTimingsUpdated', this.videoTimingsUpdatedHandler)
-
-        //     this.isConnectedToLiveUpdates = true
-        // },
-        // disconnectLiveUpdates() {
-        //     const connection = this.$connection
-
-        //     this.$connection.invoke('UnSubscribeAll')
-        //     connection.off('OnSelectionPresentationChanged', this.presentationChangeHandler)
-        //     connection.off('OnVideoTimingsUpdated', this.videoTimingsUpdatedHandler)
-
-        //     this.isConnectedToLiveUpdates = false
-        // },
-    },
-    created() {
-        // Check if we are in a presentation
-        // this.connectToLiveUpdates()
-    },
-    destroyed() {
-        // if (this.isConnectedToLiveUpdates) {
-        //     this.disconnectLiveUpdates()
-        // }
-        if (this.playerStartedTester) clearInterval(this.playerStartedTester)
     },
 }
 </script>
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.video-presentation-page {
+.watch-video-page {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: 100%;
     height: 100%;
-    .video-presentation-wrapper {
-        height: 100%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
+    overscroll-behavior: none;
+    z-index: 2147483646;
+    .timeline {
+        position: fixed;
+        bottom: -8px;
+        left: 16px;
+        width: calc(100% - 2 * 16px);
+        transition: $videoPauseTransition;
     }
-    &:not(.started) {
-        ::v-deep {
-            .timeline {
-                display: none;
-            }
+    &.desired-paused {
+        .bottom-aligned {
+            transform: translateY(-32px);
         }
-    }
-    ::v-deep {
         .timeline {
-            // transition: transform 0.1s ease-out;
-            // transform: translateY(-$heightPlayerControls);
-            transition: bottom 0.1s ease-out;
-            bottom: $heightPlayerControls;
+            transform: translateY(-24px);
         }
     }
-    &.controls-hidden {
-        ::v-deep {
-            .timeline {
-                // transform: none;
-                bottom: 0;
-            }
-        }
-    }
-}
-.watch-overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 2;
-    overflow: hidden;
-    pointer-events: none !important;
-    .actions-wrapper {
-        pointer-events: auto;
+
+    .bottom-aligned {
         position: absolute;
-        top: 0;
         left: 0;
+        bottom: 0;
         width: 100%;
-        margin: auto;
-        display: flex;
-        justify-content: center;
-        z-index: 1;
-        .actions {
+        padding: 12px 8px;
+        transition: $videoPauseTransition;
+        pointer-events: none;
+        > * {
             pointer-events: all;
-            transition: transform 0.1s ease-out;
-            transform: translateY(-100%);
-            padding: 32px 0 16px;
         }
-        &:hover,
-        &.show {
-            .actions {
-                transform: none;
+    }
+    .wishlist-button {
+        &.active {
+            i {
+                font-weight: 900;
             }
-        }
-    }
-}
-.play-overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 3;
-    overflow: hidden;
-    pointer-events: none;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    display: flex;
-    background: rgba(black, 0.85);
-    color: white;
-    pointer-events: all;
-    background-size: cover;
-    background-position: center;
-    h3 {
-        color: white;
-    }
-    button {
-        // cursor: pointer;
-        margin-bottom: 92px;
-        transition: 0.1s ease-out;
-        &:hover {
-            opacity: 0.9;
         }
     }
 }

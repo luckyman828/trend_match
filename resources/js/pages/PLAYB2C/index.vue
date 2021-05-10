@@ -23,7 +23,7 @@ import TheSnackbarSpawner from '../../components/layout/TheSnackbarSpawner'
 import RootLoader from '../../components/common/RootLoader'
 import { mapGetters, mapMutations } from 'vuex'
 export default {
-    name: 'BUYRoot',
+    name: 'PLAYRoot',
     components: {
         TheSidebar,
         TheImageLightbox,

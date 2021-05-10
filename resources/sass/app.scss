@@ -1695,9 +1695,9 @@ input::placeholder {
     &.equal-width {
         > * {
             flex-basis: 100%;
-            &:not(:last-child) {
-                margin-right: 0;
-            }
+            // &:not(:last-child) {
+            //     margin-right: 0;
+            // }
         }
         &.justify {
             > * {

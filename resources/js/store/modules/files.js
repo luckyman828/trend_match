@@ -33,6 +33,7 @@ export default {
         currentFolder: state => state.currentFolder,
         getCurrentFolder: state => state.currentFolder,
         files: state => state.files,
+        getFiles: state => state.files,
         allFiles: state => state.allFiles,
         getFileFlyinIsVisible: state => state.flyinVisible,
         getViewNewFile: state => state.viewNewFile,
@@ -194,7 +195,19 @@ export default {
                 Vue.set(file, 'owners', response.data)
             })
         },
-        async insertOrUpdateFile({ commit, dispatch }, { file, addToState = true }) {
+        instantiateBaseFile() {
+            return {
+                id: null,
+                name: '',
+                type: 'File',
+                video_count: 0,
+                parent_id: 0,
+                thumbnail: null,
+                children: [],
+            }
+        },
+        async insertOrUpdateFile({ commit, dispatch, rootGetters }, { file, addToState = true }) {
+            const workspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
             // Assume update
             let apiUrl = `/files/${file.id}`
             let requestMethod = 'put'
@@ -206,8 +219,8 @@ export default {
                 if (addToState) commit('INSERT_FILE', file)
                 requestMethod = 'post'
                 // Check if we are inserting in ROOT or in an existing folder
-                if (file.parent_id == 0) {
-                    apiUrl = `/workspaces/${file.workspace_id}/files`
+                if (!file.parent_id || file.parent_id == 0) {
+                    apiUrl = `/workspaces/${workspaceId}/files`
                 } else {
                     apiUrl = `/files/${file.parent_id}/children`
                     requestBody = { type: file.type, name: file.name }
@@ -237,7 +250,10 @@ export default {
                         { root: true }
                     )
                     // Set the files ID if not already set
-                    if (wasCreated) file.id = response.data.id
+                    if (wasCreated) {
+                        Object.assign(file, response.data)
+                        // file.id = response.data.id
+                    }
                 })
                 .catch(err => {
                     // Display message

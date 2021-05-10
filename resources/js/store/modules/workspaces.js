@@ -44,6 +44,7 @@ export default {
             if (getters.currentWorkspace.role == 'Owner') return 'Admin'
             return getters.currentWorkspace ? getters.currentWorkspace.role : 'Undefined'
         },
+        getAuthUserWorkspaceRole: (state, getters) => getters.authUserWorkspaceRole,
         getRealWorkspaceRole: (state, getters) => {
             if (!getters.currentWorkspace) return 'Undefined'
             return getters.currentWorkspace.role

@@ -1,7 +1,7 @@
 <template>
     <TheSidebar>
         <template slot="top">
-            <SidebarItem label="Find" :to="{ name: 'buy.home' }" iconClass="fas fa-search" />
+            <SidebarItem label="Find" :to="{ name: 'play.find' }" iconClass="fas fa-search" />
         </template>
     </TheSidebar>
 </template>
@@ -11,7 +11,7 @@ import TheSidebar from '../../components/layout/TheSidebar'
 import SidebarItem from '../../components/layout/SidebarItem'
 
 export default {
-    name: 'Buy.Sidebar',
+    name: 'Play.Sidebar',
     components: {
         TheSidebar,
         SidebarItem,

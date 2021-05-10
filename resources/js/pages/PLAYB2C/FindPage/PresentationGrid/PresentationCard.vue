@@ -1,28 +1,25 @@
 <template>
-    <div
-        class="video-card flex-list flex-v min"
-        @click="$router.push({ name: 'play.watch', params: { videoId: video.id } })"
-    >
+    <div class="presentation-card flex-list flex-v min">
         <div class="img-wrapper">
-            <img :src="video.thumbnail" />
+            <img :src="presentation.thumbnail" />
         </div>
         <div class="details">
-            <div class="name">{{ video.name }}</div>
+            <div class="name">{{ presentation.name }}</div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'videoCard',
-    props: ['video'],
+    name: 'presentationCard',
+    props: ['presentation'],
 }
 </script>
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-.video-card {
+.presentation-card {
     overflow: hidden;
     .img-wrapper {
         overflow: hidden;

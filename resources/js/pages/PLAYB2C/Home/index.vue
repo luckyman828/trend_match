@@ -1,19 +1,17 @@
 <template>
     <PageLoader>
         <div class="play-home">
-            <h1>Library</h1>
-            <VideoGrid />
+            <h1>Home</h1>
         </div>
     </PageLoader>
 </template>
 
 <script>
-import VideoGrid from './VideoGrid/'
 import PageLoader from '../../../components/common/PageLoader'
 
 export default {
     name: 'playHome',
-    components: { VideoGrid, PageLoader },
+    components: { PageLoader },
 }
 </script>
 
