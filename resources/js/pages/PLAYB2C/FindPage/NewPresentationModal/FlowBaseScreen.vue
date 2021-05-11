@@ -9,11 +9,12 @@
         <div class="main">
             <slot />
         </div>
-        <div class="navigation flex-list flex-end-h" v-if="!hideNavigation">
-            <BaseButton class="back-button" buttonClass="circle" @click="$emit('back')">
+        <div class="navigation flex-list flex-end-h" v-if="!hideBack || !hideNext">
+            <BaseButton class="back-button" buttonClass="circle" @click="$emit('back')" v-if="!hideBack">
                 <i class="far fa-arrow-left"></i>
             </BaseButton>
             <BaseButton
+                v-if="!hideNext"
                 buttonClass="pill lg dark"
                 :disabled="nextDisabled"
                 :disabledTooltip="nextDisabled"
@@ -29,7 +30,7 @@
 <script>
 export default {
     name: 'flowBaseScreen',
-    props: ['backText', 'nextText', 'nextDisabled', 'subHeader', 'header', 'hideNavigation'],
+    props: ['backText', 'nextText', 'nextDisabled', 'subHeader', 'header', 'hideBack', 'hideNext'],
 }
 </script>
 

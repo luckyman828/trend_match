@@ -1,7 +1,8 @@
 <template>
     <FlowBaseScreen
         class="choose-type-screen"
-        :hideNavigation="true"
+        :hideNext="true"
+        :hideBack="true"
         header="Create presentation"
         subHeader="Choose presentation type"
     >

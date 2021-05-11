@@ -40,7 +40,11 @@
                     <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyR" @click="onRename(contextPresentation)">
                         <u>R</u>ename
                     </BaseContextMenuItem>
-                    <BaseContextMenuItem iconClass="far fa-image" hotkey="KeyC" @click="onChangeThumbnail">
+                    <BaseContextMenuItem
+                        iconClass="far fa-image"
+                        hotkey="KeyC"
+                        @click="onChangeThumbnail(contextPresentation)"
+                    >
                         <u>C</u>hange thumbnail
                     </BaseContextMenuItem>
                 </div>
@@ -73,6 +77,10 @@
             <h3>Really delete this presentation?</h3>
             <p>It will be permanently deleted</p>
         </BaseDialog>
+
+        <BaseModal ref="editDetailsModal" :show="showEditDetailsModal" @close="showEditDetailsModal = false">
+            <PresentationDetailsScreen nextText="Save details" :hideBack="true" @next="showEditDetailsModal = false" />
+        </BaseModal>
     </div>
 </template>
 
@@ -80,14 +88,16 @@
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import PresentationCard from './PresentationCard'
 import NewPresentationModal from '../NewPresentationModal/'
+import PresentationDetailsScreen from '../NewPresentationModal/PresentationDetailsScreen'
 
 export default {
     name: 'presentationGrid',
-    components: { PresentationCard, NewPresentationModal },
+    components: { PresentationCard, NewPresentationModal, PresentationDetailsScreen },
     props: ['presentations'],
     data() {
         return {
             showNewPresentationModal: false,
+            showEditDetailsModal: false,
             contextPresentation: null,
         }
     },
@@ -127,7 +137,10 @@ export default {
         onRename(presentation) {
             this.$refs[`presentation-${presentation.id}`][0].rename()
         },
-        onChangeThumbnail(presentation) {},
+        onChangeThumbnail(presentation) {
+            this.SET_CURRENT_PRESENTATION(presentation)
+            this.showEditDetailsModal = true
+        },
     },
 }
 </script>

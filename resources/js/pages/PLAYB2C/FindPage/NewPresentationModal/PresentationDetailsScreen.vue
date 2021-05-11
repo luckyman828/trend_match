@@ -4,39 +4,17 @@
         @next="onNext"
         @back="$emit('back')"
         header="Name and thumbnail"
-        subHeader="Choose how you want to present you styles"
+        subHeader="Details"
+        v-bind="$attrs"
     >
-        <div class="upload-progess bg-theme-light flex-list center-v" v-if="presentation.uploadChannel">
-            <div class="name">{{ presentation.uploadChannel.file.name }}</div>
-            <div class="size">{{ presentation.uploadChannel.file.size }}</div>
-            <div class="progress">
-                {{ presentation.uploadChannel.progress.status }}
-                {{ presentation.uploadChannel.progress.progressPercentage }}
-            </div>
-            <button
-                class="invisible pill ghost-hover"
-                @click="onCancelUpload"
-                v-if="['Uploading'].includes(presentation.uploadChannel.progress.status)"
-            >
-                <i class="far fa-times"></i>
-                <span>Cancel</span>
-            </button>
-            <button
-                class="invisible pill ghost-hover"
-                @click="onCancelUpload"
-                v-if="['Cancelled', 'Failed'].includes(presentation.uploadChannel.progress.status)"
-            >
-                <i class="far fa-play"></i>
-                <span v-if="presentation.uploadChannel.progress.status == 'Failed'">Retry</span>
-                <span v-if="presentation.uploadChannel.progress.status == 'Cancelled'">Resume</span>
-            </button>
-            <div class="invisible pill" v-if="presentation.uploadChannel.progress.status == 'Success'">
-                <i class="far fa-check"></i>
-                <span>Success</span>
-            </div>
+        <div class="name-input-wrapper bg-theme-light">
+            <BaseInputField
+                v-model="presentation.name"
+                :selectOnFocus="true"
+                label="Presentation name"
+                @submit="onSubmitName"
+            />
         </div>
-
-        <BaseInputField v-model="presentation.name" :selectOnFocus="true" label="Presentation name" />
 
         <label>Thumbnail</label>
         <ImageUploadArea
@@ -88,8 +66,32 @@ export default {
         onResumeUpload() {
             this.uploadVideo({ videoFile: this.presentation.uploadChannel.file, file: this.presentation })
         },
+        onSubmitName() {
+            document.activeElement.blur()
+        },
     },
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+@import '~@/_variables.scss';
+.name-input-wrapper {
+    border-radius: $borderRadiusMd;
+    padding: 8px 12px;
+    width: 300px;
+    &::v-deep {
+        input {
+            line-height: 1;
+            font-weight: 700;
+            font-size: 14px;
+            &:not(:focus) {
+                border: none;
+                padding: 0;
+                height: auto;
+                min-height: 0;
+                background: none;
+            }
+        }
+    }
+}
+</style>
