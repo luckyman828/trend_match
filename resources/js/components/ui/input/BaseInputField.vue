@@ -9,6 +9,7 @@
             { 'has-label': label },
             { 'has-inner-label': innerLabel },
             { 'has-icon-right': !!$slots.default },
+            theme && `theme-${theme}`,
             inputClass,
         ]"
     >
@@ -39,7 +40,7 @@
                 @keydown="onKeydown"
             />
             <div class="icon-right">
-                <slot :onCancel="onCancel" :onSubmit="onSubmit" />
+                <slot :onCancel="onCancel" :onSubmit="onSubmit" :activate="focus" />
             </div>
         </div>
         <div class="error-msg" v-if="error && typeof error == 'string'">
@@ -76,6 +77,7 @@ export default {
         'actionOnBlur',
         'innerLabel',
         'pattern',
+        'theme',
     ],
     computed: {
         inputField() {
@@ -166,6 +168,9 @@ export default {
 
 .input-field {
     position: relative;
+    &.lg {
+        height: 48px;
+    }
     &.read-only {
         .input-wrapper {
             cursor: text;
@@ -226,6 +231,19 @@ export default {
                 font-size: 8px;
             }
         }
+        &.lg {
+            .input-wrapper {
+                padding-top: 20px;
+                padding-left: 12px;
+                border-radius: $borderRadiusMd;
+                height: 48px;
+            }
+            .inner-label {
+                left: 12px;
+                top: 8px;
+                line-height: 1;
+            }
+        }
     }
     &.error {
         .input-wrapper {
@@ -246,6 +264,22 @@ export default {
     &.has-icon-right {
         .input-wrapper {
             padding-right: 36px;
+        }
+    }
+    &.theme-light {
+        .input-wrapper {
+            background: $themeLightBg;
+            font-size: 12px;
+            font-weight: 800;
+            padding-left: 12px;
+            &:not(:focus) {
+                border-color: transparent;
+            }
+        }
+        .inner-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: $themeLightFontSoft;
         }
     }
 }
@@ -276,14 +310,13 @@ export default {
     position: absolute;
     left: 0;
     top: 0;
-    width: 40px;
-    height: 40px;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     &.icon-right {
         left: auto;
-        right: 0;
+        right: 8px;
     }
 }
 .error-msg {

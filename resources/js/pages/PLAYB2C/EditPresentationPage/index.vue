@@ -6,6 +6,7 @@
         :fitPage="true"
         :errorCallback="() => fetchData()"
     >
+        <Navbar />
         <EditPresentationPage />
     </PageLoader>
 </template>
@@ -13,6 +14,7 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import EditPresentationPage from './EditPresentationPage'
+import Navbar from './Navbar'
 import PageLoader from '../../../components/common/PageLoader'
 
 export default {
@@ -20,44 +22,38 @@ export default {
     components: {
         PageLoader,
         EditPresentationPage,
+        Navbar,
     },
     data: function() {
         return { dataReady: false }
     },
     computed: {
-        ...mapGetters('files', ['currentFile', 'filesStatus']),
-        loading() {
-            return !this.currentFile
-        },
+        ...mapGetters('playPresentation', {
+            video: 'getVideo',
+        }),
         status() {
             if (!this.dataReady) return 'loading'
-            if (this.filesStatus == 'loading' || !this.currentFile) return 'loading'
             return 'success'
         },
     },
     methods: {
-        ...mapActions('files', ['fetchFile']),
-        ...mapActions('videoPresentation', ['fetchFileVideo', 'fetchVideo']),
+        ...mapActions('playPresentation', ['fetchPresentation']),
+        ...mapActions('products', ['fetchProducts']),
         ...mapActions('videos', ['fetchVideoUrls']),
-        ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
         async fetchData() {
-            // Fetch the current file and the products
+            this.dataReady = false
+
             const presentationId = this.$route.params.presentationId
-            const presentation = await this.fetchFile(presentationId)
-            let video = null
-            if (presentation.video_count > 0) {
-                video = await this.fetchFileVideo(presentationId)
-            }
-            this.SET_CURRENT_VIDEO(video)
-            await this.fetchVideoUrls(video)
+            await this.fetchPresentation(presentationId)
+            const video = this.video
+
+            await Promise.all([this.fetchProducts({ fileId: presentationId }), this.fetchVideoUrls(video)])
+
             this.dataReady = true
         },
     },
     created() {
         this.fetchData()
-    },
-    destroyed() {
-        this.SET_CURRENT_VIDEO(null)
     },
 }
 </script>

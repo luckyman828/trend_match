@@ -10,7 +10,7 @@
     >
         <BaseDroparea
             v-model="fileToUpload"
-            class="bg-theme-light interactable"
+            theme="light"
             :accept="availableExtensions.map(x => `.${x}`).join(',')"
             @input="onFileChange"
         >
@@ -209,11 +209,6 @@ export default {
     .drop-area {
         width: 100%;
         height: 232px;
-        // border: $borderEl;
-        border-radius: $borderRadiusLg;
-        &:not(.drag-active) {
-            border: none;
-        }
     }
     .choose-another-file {
         position: absolute;

@@ -40,13 +40,9 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('videoPresentation', {
-            video: 'getCurrentVideo',
-            videoTimings: 'getVideoTimings',
-        }),
-        ...mapGetters('videoPlayer', {
-            provider: 'getProvider',
-            providerVideoId: 'getProviderVideoId',
+        ...mapGetters('playPresentation', {
+            video: 'getVideo',
+            videoTimings: 'getTimings',
         }),
         ...mapGetters('products', {
             products: 'getProducts',

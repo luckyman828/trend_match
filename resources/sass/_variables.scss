@@ -83,6 +83,7 @@ $grey450: #cfd8dd;
 $grey500: #c7d3db;
 $grey550: mix($dark, white, 60%);
 $grey600: #a7b2c2;
+$grey650: mix($dark, white, 75%);
 $grey700: #68849f;
 $grey800: #425e80;
 $grey900: #27416a;
@@ -290,6 +291,10 @@ $bgWhiteActive: $grey100;
 $bgLight: $grey100;
 $bgLightHover: $grey200;
 $bgLightActive: $grey200;
+$themeLightBg: $grey100;
+$themeLightBgHover: $grey200;
+$themeLightBgActive: $grey200;
+$themeLightFontSoft: $grey650;
 
 // Grey on white
 $bgGrey: $grey200;

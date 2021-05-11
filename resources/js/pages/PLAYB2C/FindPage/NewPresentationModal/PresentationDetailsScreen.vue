@@ -4,26 +4,66 @@
         @next="onNext"
         @back="$emit('back')"
         header="Name and thumbnail"
-        subHeader="Details"
+        subHeader="Presentation details"
         v-bind="$attrs"
     >
-        <div class="name-input-wrapper bg-theme-light">
+        <div class="name-input-wrapper">
             <BaseInputField
                 v-model="presentation.name"
+                theme="light"
+                class="lg"
                 :selectOnFocus="true"
-                label="Presentation name"
+                innerLabel="Presentation name"
+                v-slot="slotProps"
                 @submit="onSubmitName"
-            />
+            >
+                <button class="white pill" @click="slotProps.activate()">
+                    <i class="far fa-pen"></i>
+                    <span>Edit</span>
+                </button>
+            </BaseInputField>
         </div>
 
-        <label>Thumbnail</label>
-        <ImageUploadArea
-            :image.sync="presentation.thumbnail"
-            v-model="imageToUpload"
-            @input="onImageChange"
-            aspect="4:3"
-            fit="cover"
-        />
+        <div class="thumbnail-section">
+            <div class="ft-14 ft-bd label">Thumbnail</div>
+            <BaseDroparea class="thumbnail-droparea" theme="light" @input="onImageChange" accept="image/*">
+                <template v-slot="slotProps">
+                    <!-- No thumbnail -->
+                    <template v-if="!presentation.thumbnail">
+                        <img class="upload-graphic" src="images/svg/undraw_Upload_re_pasx.svg" />
+                        <div class="ft-16 ft-bd">
+                            Drop your thumbnail file here
+                        </div>
+                        <button class="bottom-action white pill" @click="slotProps.activate()">
+                            <i class="far fa-laptop"></i>
+                            <span>Browse your computer</span>
+                        </button>
+                    </template>
+
+                    <!-- Has thumbnail -->
+                    <template v-else>
+                        <div class="flex-list thumbnail-list">
+                            <BaseImageSizer aspect="16:9" fit="cover" :controlWidth="true">
+                                <img :src="presentation.thumbnail" />
+                                <div class="pill xs dark size-pill">
+                                    <span>16:9</span>
+                                </div>
+                            </BaseImageSizer>
+                            <BaseImageSizer aspect="9:16" fit="cover" :controlWidth="true">
+                                <img :src="presentation.thumbnail" />
+                                <div class="pill xs dark size-pill">
+                                    <span>9:16</span>
+                                </div>
+                            </BaseImageSizer>
+                        </div>
+                        <button class="bottom-action white pill" @click="slotProps.activate()">
+                            <i class="far fa-laptop"></i>
+                            <span>Choose another file</span>
+                        </button>
+                    </template>
+                </template>
+            </BaseDroparea>
+        </div>
     </FlowBaseScreen>
 </template>
 
@@ -37,9 +77,7 @@ export default {
     name: 'presentationDetailsScreen',
     components: { FlowBaseScreen, ImageUploadArea },
     data() {
-        return {
-            imageToUpload: null,
-        }
+        return {}
     },
     mixins: [formatBytes],
     computed: {
@@ -76,20 +114,42 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .name-input-wrapper {
-    border-radius: $borderRadiusMd;
-    padding: 8px 12px;
-    width: 300px;
-    &::v-deep {
-        input {
-            line-height: 1;
-            font-weight: 700;
-            font-size: 14px;
-            &:not(:focus) {
-                border: none;
-                padding: 0;
-                height: auto;
-                min-height: 0;
-                background: none;
+    &:focus-within {
+        button {
+            display: none;
+        }
+    }
+}
+.thumbnail-section {
+    margin-top: 32px;
+    .label {
+        margin-bottom: 16px;
+        line-height: 1;
+    }
+    .thumbnail-droparea {
+        padding-bottom: 64px;
+        .upload-graphic {
+            height: 92px;
+            width: 92px;
+            object-fit: contain;
+        }
+        .bottom-action {
+            position: absolute;
+            bottom: 16px;
+        }
+        .thumbnail-list {
+            width: 100%;
+            img {
+                border-radius: $borderRadiusMd;
+            }
+        }
+        .size-pill {
+            position: absolute;
+            right: 16px;
+            bottom: 16px;
+            opacity: 0.75;
+            &:hover {
+                opacity: 1;
             }
         }
     }

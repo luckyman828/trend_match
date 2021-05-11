@@ -2104,36 +2104,36 @@ body {
     }
 }
 
-.theme-dark {
-    background: $dark;
-    color: white;
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    button,
-    a,
-    th,
-    strong {
-        color: white;
-    }
-}
-.theme-light {
-    background: white;
-    color: $fontBody;
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    button,
-    a,
-    th,
-    strong {
-        color: $font;
-    }
-}
+// .theme-dark {
+//     background: $dark;
+//     color: white;
+//     h1,
+//     h2,
+//     h3,
+//     h4,
+//     h5,
+//     button,
+//     a,
+//     th,
+//     strong {
+//         color: white;
+//     }
+// }
+// .theme-light {
+//     background: white;
+//     color: $fontBody;
+//     h1,
+//     h2,
+//     h3,
+//     h4,
+//     h5,
+//     button,
+//     a,
+//     th,
+//     strong {
+//         color: $font;
+//     }
+// }
 
 .bg-blur {
     position: relative;

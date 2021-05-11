@@ -17,7 +17,7 @@
                     <div class="body">
                         <slot :close="close" />
                     </div>
-                    <button class="close circle" @click="close"><i class="far fa-times"></i></button>
+                    <button class="close circle" @click="close" v-if="!hideClose"><i class="far fa-times"></i></button>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
 <script>
 export default {
     name: 'Modal',
-    props: ['header', 'subHeader', 'classes', 'goBack', 'show'],
+    props: ['header', 'subHeader', 'classes', 'goBack', 'show', 'hideClose'],
     data: function() {
         return {}
     },
