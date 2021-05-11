@@ -133,17 +133,27 @@ export default {
     },
     methods: {
         ...mapActions('videos', ['uploadFileVideo', 'cancelUpload']),
+        ...mapActions('playPresentations', ['updatePresentationDetails']),
         ...mapActions('workspaces', ['uploadImageToWorkspace']),
         formatBytes(value) {
             return formatBytes(value)
         },
         async onFileChange(newfile) {
+            // Start uploading the video in the background
             this.uploadFileVideo({ videoFile: newfile, file: this.presentation })
             // Preset the video thumbnail as the first frame of the video
             const firstFrame = await this.getFirstFrame()
             // Upload the image
             const imageUrl = await this.uploadImageToWorkspace(firstFrame)
             this.presentation.thumbnail = imageUrl
+
+            // Preset the name
+            if (this.presentation.name == 'New presentation') {
+                // Preset the name of our new file to the name of our video
+                this.presentation.name = this.fileToUpload.name
+            }
+            // Save the new details
+            this.updatePresentationDetails(this.presentation)
         },
         onCancel() {
             this.fileToUpload = null
@@ -153,13 +163,7 @@ export default {
             this.$refs.contextMenu.show(e)
         },
         async onNext() {
-            if (this.presentation.name == 'New presentation') {
-                // Preset the name of our new file to the name of our video
-                this.presentation.name = this.fileToUpload.name
-            }
-
             this.$emit('next')
-            // Start uploading the video in the background
         },
         async getFirstFrame() {
             return await new Promise(resolve => {

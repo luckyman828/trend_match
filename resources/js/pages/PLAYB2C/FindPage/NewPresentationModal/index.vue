@@ -7,8 +7,9 @@
             <UploadVideoScreen v-show="screenIndex == 1" @next="screenIndex++" @back="screenIndex--" />
             <PresentationDetailsScreen
                 v-if="screenIndex == 2"
-                @next="$router.push({ name: 'play.editPresentation', params: { presentaionId: presentation.id } })"
+                @next="$router.push({ name: 'play.editPresentation', params: { presentationId: presentation.id } })"
                 @back="onBackToUploadVideo"
+                nextText="Add timings and Looks"
             />
         </template>
     </BaseModal>

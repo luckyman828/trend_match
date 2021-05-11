@@ -7,6 +7,28 @@
         subHeader="Presentation details"
         v-bind="$attrs"
     >
+        <div class="upload-progress-wrapper flex-list center-h" v-if="presentation.uploadChannel">
+            <div
+                class="upload-progress flex-list center-v space-md"
+                :class="presentation.uploadChannel.progress.status"
+            >
+                <div class="ft-10 ft-bd file-name">
+                    {{ presentation.uploadChannel.file.name }}
+                </div>
+                <div class="flex-list space-xs center-v">
+                    <div class="ft-10 color-grey">
+                        {{ presentation.uploadChannel.progress.progressPercentage }}
+                    </div>
+                    <div class="rail">
+                        <div
+                            class="current"
+                            :style="{ width: presentation.uploadChannel.progress.progressPercentage }"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="name-input-wrapper">
             <BaseInputField
                 v-model="presentation.name"
@@ -97,6 +119,7 @@ export default {
             // Upload the image
             const imageUrl = await this.uploadImageToWorkspace(newImage)
             this.presentation.thumbnail = imageUrl
+            this.updatePresentationDetails(this.presentation)
         },
         onCancelUpload() {
             this.cancelUpload(this.presentation.uploadChannel)
@@ -106,6 +129,7 @@ export default {
         },
         onSubmitName() {
             document.activeElement.blur()
+            this.updatePresentationDetails(this.presentation)
         },
     },
 }
@@ -113,6 +137,47 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
+.upload-progress-wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 20px;
+    height: 12px;
+    z-index: 1;
+    .upload-progress {
+        width: 280px;
+        overflow: hidden;
+        height: 20px;
+        background: white;
+        &.Uploaded {
+            .rail {
+                .current {
+                    background: $success;
+                }
+            }
+        }
+        .file-name {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .rail {
+            flex-shrink: 0;
+            width: 164px;
+            flex: 1;
+            background: $grey200;
+            height: 8px;
+            border-radius: 4px;
+            .current {
+                height: 100%;
+                width: 0;
+                background: $dark;
+                transition: width 0.2s;
+                border-radius: 4px;
+            }
+        }
+    }
+}
 .name-input-wrapper {
     &:focus-within {
         button {
