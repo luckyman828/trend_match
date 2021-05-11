@@ -55,7 +55,11 @@ export default {
             selection.type = 'Master'
             selection.name = 'Master'
 
-            dispatch('selections/insertSelection', { file: presentation, selection, addToState: false }, { root: true })
+            dispatch(
+                'selections/insertSelection',
+                { file: presentation, selection, addToState: false, displaySnackbar: false },
+                { root: true }
+            )
         },
         async updatePresentationDetails({}, presentation) {
             const apiUrl = `files/${presentation.id}`

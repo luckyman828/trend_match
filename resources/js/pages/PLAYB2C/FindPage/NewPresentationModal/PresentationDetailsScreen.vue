@@ -8,7 +8,7 @@
     >
         <div class="upload-progess bg-theme-light flex-list center-v" v-if="presentation.uploadChannel">
             <div class="name">{{ presentation.uploadChannel.file.name }}</div>
-            <div class="size">{{ ppresentation.uploadChannel.file.size }}</div>
+            <div class="size">{{ presentation.uploadChannel.file.size }}</div>
             <div class="progress">
                 {{ presentation.uploadChannel.progress.status }}
                 {{ presentation.uploadChannel.progress.progressPercentage }}
@@ -88,12 +88,6 @@ export default {
         onResumeUpload() {
             this.uploadVideo({ videoFile: this.presentation.uploadChannel.file, file: this.presentation })
         },
-    },
-    async mounted() {
-        if (this.presentation.thumbnail_blob) {
-            await this.onImageChange(this.presentation.thumbnail_blob)
-            this.updatePresentationDetails(this.presentation)
-        }
     },
 }
 </script>

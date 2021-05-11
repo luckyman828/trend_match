@@ -102,10 +102,13 @@ export default {
         justify-content: center;
         align-items: center;
         z-index: 1;
-        background: white;
+        // background: white;
         flex-direction: column;
     }
     &.drag-active {
+        .body {
+            visibility: hidden;
+        }
         input[type='file'] {
             z-index: 2;
         }

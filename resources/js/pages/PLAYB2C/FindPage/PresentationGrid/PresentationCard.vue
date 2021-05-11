@@ -10,8 +10,14 @@
                     <div v-if="isUploading" class="primary square xs">
                         <span>{{ presentation.uploadChannel.progress.status.toUpperCase() }}</span>
                     </div>
-                    <div class="red square xs" v-else-if="presentation.video_count <= 0">
+                    <div
+                        class="red square xs"
+                        v-else-if="presentation.uploadChannel && presentation.uploadChannel.progess.status == 'Failed'"
+                    >
                         <span>UPLOAD FAILED</span>
+                    </div>
+                    <div class="yellow square xs" v-else-if="presentation.video_count <= 0">
+                        <span>NEW</span>
                     </div>
                 </div>
                 <div class="right-items">

@@ -4,53 +4,102 @@
         @next="onNext"
         @back="$emit('back')"
         :nextDisabled="submitDisabled"
-        header="Upload video"
-        subHeader="Choose how you want to present you styles"
+        nextText="Add name and thumbnail"
+        header="Create presentation"
+        subHeader="Upload video"
     >
         <BaseDroparea
             v-model="fileToUpload"
             class="bg-theme-light interactable"
-            v-slot="slotProps"
             :accept="availableExtensions.map(x => `.${x}`).join(',')"
             @input="onFileChange"
         >
-            <div class="flex-list flex-v space-md center-h" v-if="!fileToUpload" @click="slotProps.activate()">
-                <div class="true-square xxl white">
-                    <i class="fas fa-upload primary"></i>
-                </div>
-                <div class="ft-16 ft-md">
-                    <span>Drop your video file here</span>
-                </div>
-                <div class="flex-list flex-v space-sm center-h">
-                    <button class="pill dark">
-                        <span>Browse your computer</span>
-                    </button>
-                    <div class="color-grey ft-12 ft-md">
-                        Supported formats: .mov, .mp4, .m4v, .m2ts, .mpg, .mkv
+            <template v-slot="slotProps">
+                <div class="flex-list flex-v space-md center-h" v-if="!fileToUpload" @click="slotProps.activate()">
+                    <img src="images/svg/undraw_Upload_re_pasx.svg" />
+                    <div class="ft-16 ft-bd">
+                        <span>Drop your video file here</span>
+                    </div>
+                    <div class="flex-list flex-v space-sm center-h">
+                        <button class="pill white">
+                            <i class="far fa-laptop"></i>
+                            <span>Browse your computer</span>
+                        </button>
+                        <div class="color-grey ft-12 ft-md">
+                            Supported formats: .mov, .mp4, .m4v, .m2ts, .mpg, .mkv
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <template v-else>
-                <div class="file-to-upload">
-                    <div class="flex-list center-v">
-                        <div>{{ fileToUpload.name }}</div>
-                        <div>{{ formatBytes(fileToUpload.size) }}</div>
-                        <button class="pill invisible ghost-hover sm" @click="onCancel">
-                            <i class="far fa-times"></i>
-                            <span>Cancel</span>
+                <!-- File uploading preview -->
+                <template v-else>
+                    <div class="file-to-upload bg-theme-white">
+                        <div class="flex-list center-v space-md">
+                            <BaseImageSizer aspect="1:1" fit="cover">
+                                <img :src="presentation.thumbnail" />
+                            </BaseImageSizer>
+                            <div class="flex-list flex-v lh-min space-xs name-wrapper">
+                                <div class="ft-14 ft-bd name">{{ fileToUpload.name }}</div>
+                                <div class="color-primary ft-12 ft-md">{{ formatBytes(fileToUpload.size) }}</div>
+                            </div>
+                            <div
+                                class="progress flex-list center-v space-xs"
+                                :class="presentation.uploadChannel.progress.status"
+                                v-if="presentation.uploadChannel"
+                            >
+                                <div class="ft-12">
+                                    {{ presentation.uploadChannel.progress.progressPercentage }}
+                                </div>
+                                <div class="rail">
+                                    <div
+                                        class="current"
+                                        :style="{ width: presentation.uploadChannel.progress.progressPercentage }"
+                                    ></div>
+                                </div>
+                            </div>
+                            <button class="more-button circle invisible ghost-hover sm" @click="showContext">
+                                <i class="far fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-list flex-v">
+                        <div class="ft-16 ft-bd">Success!</div>
+                        <div class="ft-12 ft-md color-grey">Your video is being uploaded</div>
+                        <button class="pill white" @click="slotProps.activate()">
+                            <i class="far fa-laptop"></i>
+                            <span>Choose another file</span>
                         </button>
                     </div>
-                    <div class="progress" v-if="presentation.uploadChannel">
-                        {{ presentation.uploadChannel.progress.status }}
-                        {{ presentation.uploadChannel.progress.progressPercentage }}
+                </template>
+            </template>
+
+            <!-- On drag over -->
+            <template v-slot:dragDisplay>
+                <div class="flex-list flex-v space-md center-h">
+                    <img src="images/svg/undraw_Upload_re_pasx.svg" />
+                    <div class="ft-16 ft-bd">
+                        <span>Let go now 🙌</span>
+                    </div>
+                    <div class="flex-list flex-v space-sm center-h">
+                        <BaseButton buttonClass="pill white" :disabled="true">
+                            <i class="far fa-laptop"></i>
+                            <span>Browse your computer</span>
+                        </BaseButton>
+                        <div class="color-grey ft-12 ft-md" style="opacity: 0">
+                            Supported formats: .mov, .mp4, .m4v, .m2ts, .mpg, .mkv
+                        </div>
                     </div>
                 </div>
-                <button class="dark pill choose-another-file" @click="slotProps.activate()">
-                    <span>Choose another file</span>
-                </button>
             </template>
         </BaseDroparea>
+
+        <BaseContextMenu ref="contextMenu">
+            <div class="item-group">
+                <BaseContextMenuItem iconClass="far fa-times" hotkey="KeyC" @click="onCancel">
+                    <u>C</u>ancel upload
+                </BaseContextMenuItem>
+            </div>
+        </BaseContextMenu>
     </FlowBaseScreen>
 </template>
 
@@ -84,26 +133,30 @@ export default {
     },
     methods: {
         ...mapActions('videos', ['uploadFileVideo', 'cancelUpload']),
+        ...mapActions('workspaces', ['uploadImageToWorkspace']),
         formatBytes(value) {
             return formatBytes(value)
         },
-        onFileChange(newfile) {
+        async onFileChange(newfile) {
             this.uploadFileVideo({ videoFile: newfile, file: this.presentation })
+            // Preset the video thumbnail as the first frame of the video
+            const firstFrame = await this.getFirstFrame()
+            // Upload the image
+            const imageUrl = await this.uploadImageToWorkspace(firstFrame)
+            this.presentation.thumbnail = imageUrl
         },
         onCancel() {
             this.fileToUpload = null
             this.cancelUpload(this.presentation.uploadChannel)
+        },
+        showContext(e) {
+            this.$refs.contextMenu.show(e)
         },
         async onNext() {
             if (this.presentation.name == 'New presentation') {
                 // Preset the name of our new file to the name of our video
                 this.presentation.name = this.fileToUpload.name
             }
-
-            // Preset the video thumbnail as the first frame of the video
-            const firstFrame = await this.getFirstFrame()
-            // this.$set(this.presentation, 'thumbnail', firstFrame.previewUrl)
-            this.$set(this.presentation, 'thumbnail_blob', firstFrame)
 
             this.$emit('next')
             // Start uploading the video in the background
@@ -148,15 +201,68 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 .upload-video-screen {
+    img {
+        height: 92px;
+        width: 92px;
+        object-fit: contain;
+    }
     .drop-area {
-        width: 512px;
+        width: 100%;
         height: 232px;
-        border: $borderEl;
-        border-radius: $borderRadiusEl;
+        // border: $borderEl;
+        border-radius: $borderRadiusLg;
+        &:not(.drag-active) {
+            border: none;
+        }
     }
     .choose-another-file {
         position: absolute;
         bottom: 32px;
+    }
+    .file-to-upload {
+        padding: 8px;
+        border-radius: 24px;
+        margin-bottom: 48px;
+        width: 100%;
+        .img-sizer {
+            width: 32px;
+            border-radius: 50px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .more-button {
+            flex-shrink: 0;
+        }
+        .name-wrapper {
+            overflow: hidden;
+            .name {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+        .progress {
+            width: 200px;
+            flex-shrink: 0;
+            &.Uploaded {
+                .current {
+                    background: $success;
+                }
+            }
+            .rail {
+                flex: 1;
+                background: $grey200;
+                height: 8px;
+                border-radius: 4px;
+                .current {
+                    height: 100%;
+                    width: 0;
+                    background: $dark;
+                    transition: width 0.2s;
+                    border-radius: 4px;
+                }
+            }
+        }
     }
 }
 </style>

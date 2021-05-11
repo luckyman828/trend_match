@@ -40,7 +40,7 @@
                     <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyR" @click="onRename(contextPresentation)">
                         <u>R</u>ename
                     </BaseContextMenuItem>
-                    <BaseContextMenuItem iconClass="far fa-image" hotkey="KeyC">
+                    <BaseContextMenuItem iconClass="far fa-image" hotkey="KeyC" @click="onChangeThumbnail">
                         <u>C</u>hange thumbnail
                     </BaseContextMenuItem>
                 </div>
@@ -127,6 +127,7 @@ export default {
         onRename(presentation) {
             this.$refs[`presentation-${presentation.id}`][0].rename()
         },
+        onChangeThumbnail(presentation) {},
     },
 }
 </script>

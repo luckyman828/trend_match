@@ -1,22 +1,22 @@
 <template>
-    <div class="choose-type-screen flex-list flex-v center-h space-lg">
-        <div class="flex-list flex-v center-h space-xs">
-            <div class="ft-16 ft-bd">
-                Add new presentation
-            </div>
-            <div class="ft-12 ft-md color-grey">
-                Choose how you want to present you styles
-            </div>
-        </div>
-
+    <FlowBaseScreen
+        class="choose-type-screen"
+        :hideNavigation="true"
+        header="Create presentation"
+        subHeader="Choose presentation type"
+    >
         <div class="flex-list full-width equal-width space-md">
             <div class="button-card" @click="$emit('next', 'video')">
-                <div class="inner flex-list flex-v center-h center-v space-md">
-                    <div class="white xxl true-square">
-                        <i class="fas fa-upload primary"></i>
-                    </div>
-                    <div class="label ft-16 ft-md">
-                        Upload video
+                <div class="inner flex-list flex-v center-h center-v space-lg">
+                    <img src="images/svg/undraw_Upload_re_pasx.svg" />
+
+                    <div class="flex-list flex-v space-sm center-h">
+                        <div class="label ft-16 ft-md">
+                            Upload a video
+                        </div>
+                        <div class="description ft-12">
+                            Add styles to a video
+                        </div>
                     </div>
                     <BaseButton buttonClass="pill dark">
                         <span>Upload video</span>
@@ -26,16 +26,19 @@
 
             <div class="button-card disabled" @click="!true && $emit('next', 'livestream')">
                 <div class="label-list">
-                    <div class="secondary square xs">
+                    <div class="primary square xs">
                         <span>COMING SOON</span>
                     </div>
                 </div>
-                <div class="inner flex-list flex-v center-h center-v space-md">
-                    <div class="white xxl true-square">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <div class="label ft-16 ft-md">
-                        Livestream
+                <div class="inner flex-list flex-v center-h center-v space-lg">
+                    <img src="images/svg/undraw_fashion_photoshoot_mtq8.svg" />
+                    <div class="flex-list flex-v space-sm center-h">
+                        <div class="label ft-16 ft-md">
+                            Livestream
+                        </div>
+                        <div class="description ft-12">
+                            Go live now, or plan for later
+                        </div>
                     </div>
                     <BaseButton buttonClass="pill dark" :disabled="true">
                         <span>Not available</span>
@@ -43,12 +46,15 @@
                 </div>
             </div>
         </div>
-    </div>
+    </FlowBaseScreen>
 </template>
 
 <script>
+import FlowBaseScreen from './FlowBaseScreen'
+
 export default {
     name: 'chooseTypeScreen',
+    components: { FlowBaseScreen },
 }
 </script>
 
@@ -57,19 +63,25 @@ export default {
 
 .button-card {
     cursor: pointer;
-    width: 248px;
-    height: 248px;
-    padding: 32px;
+    // width: 248px;
+    // min-height: 248px;
+    padding: 16px 32px 48px;
     position: relative;
     border: $borderEl;
     border-radius: $borderRadiusEl;
     background: white;
     transition: 0.2s;
+    height: 328px;
     &:hover {
         background: $bgWhiteHover;
     }
     &:active {
         background: $bgWhiteActive;
+    }
+    img {
+        height: 92px;
+        width: 92px;
+        object-fit: contain;
     }
     .label-list {
         position: absolute;
