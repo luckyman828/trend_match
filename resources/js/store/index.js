@@ -37,6 +37,7 @@ import kollektFeatures from './modules/kollektFeatures'
 import videos from './modules/play/videos'
 import playPresentations from './modules/play/presentations'
 import player from './modules/play/player'
+import playPresentation from './modules/play/presentation'
 
 // PLAY B2C
 import wishlist from './modules/playb2c/wishlist'
@@ -96,6 +97,7 @@ export const initialStoreModules = {
     liveUpdates,
     supportLog,
     playPresentations,
+    playPresentation,
     player,
 }
 

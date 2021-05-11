@@ -5,8 +5,7 @@
                 class="white circle"
                 @click="
                     $router.push({
-                        name: 'selection',
-                        params: { fileId: selection.file_id, selectionId: selection.id },
+                        name: 'play.find',
                     })
                 "
             >

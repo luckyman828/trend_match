@@ -1,5 +1,6 @@
 import axios from 'axios'
 import Vue from 'vue'
+import formatBytes from '../../../helpers/formatBytes'
 
 export default {
     namespaced: true,
@@ -35,6 +36,7 @@ export default {
                 console.log('generated upload channel', response.data)
                 uploadChannel = response.data
                 uploadChannel.presentationId = file.id
+                uploadChannel.file = videoFile
             })
 
             // Create a fresh axios instance with no auth headers

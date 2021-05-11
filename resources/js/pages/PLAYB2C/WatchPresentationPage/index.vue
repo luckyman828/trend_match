@@ -1,10 +1,10 @@
 <template>
     <PageLoader v-if="videoStatus != '404'" :status="status" loadingMsg="Loading video">
         <template v-slot:mobile>
-            <MobileWatchVideoPage />
+            <MobileWatchPresentationPage />
         </template>
         <template v-slot:desktop>
-            <DekstopWatchVideoPage />
+            <DekstopWatchPresentationPage />
         </template>
     </PageLoader>
     <div class="error-wrapper flex-list center-v center-h flex-v" v-else>
@@ -18,15 +18,15 @@
 
 <script>
 import PageLoader from '../../../components/common/PageLoader'
-import MobileWatchVideoPage from './Mobile/WatchVideoPage'
-import DekstopWatchVideoPage from './Desktop/WatchVideoPage'
+import MobileWatchPresentationPage from './Mobile/WatchPresentationPage'
+import DekstopWatchPresentationPage from './Desktop/WatchPresentationPage'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 export default {
-    name: 'watchVideoPageLoader',
+    name: 'play.watchPresentationPageLoader',
     components: {
         PageLoader,
-        MobileWatchVideoPage,
-        DekstopWatchVideoPage,
+        MobileWatchPresentationPage,
+        DekstopWatchPresentationPage,
     },
     data() {
         return {
@@ -34,7 +34,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('videoPresentation', {
+        ...mapGetters('playPresentation', {
+            video: 'getVideo',
             videoStatus: 'getStatus',
         }),
         status() {
@@ -42,22 +43,22 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPresentation', ['fetchVideo', 'fetchFileVideo']),
+        ...mapActions('playPresentation', ['fetchPresentation']),
         ...mapActions('videoComments', ['fetchVideoComments']),
         ...mapActions('products', ['fetchProducts']),
-        ...mapMutations('videoPresentation', ['SET_CURRENT_VIDEO']),
+        ...mapActions('videos', ['fetchVideoUrls']),
         async fetchData() {
             this.loadingData = true
-            // Fetch video
-            const videoId = this.$route.params.videoId
-            const video = await this.fetchVideo(videoId)
-            if (!video) return
-            const fileVideo = await this.fetchFileVideo(video.file.id)
-            this.SET_CURRENT_VIDEO(fileVideo)
+            // Fetch presentation details
+            const presentationId = this.$route.params.presentationId
+            await this.fetchPresentation(presentationId)
+            const video = this.video
 
-            // Fetch the file products
-            const fileId = video.file.id
-            await Promise.all([this.fetchProducts({ fileId }), this.fetchVideoComments({ video })])
+            await Promise.all([
+                this.fetchProducts({ fileId: presentationId }),
+                this.fetchVideoComments({ video }),
+                this.fetchVideoUrls(video),
+            ])
             this.loadingData = false
         },
     },

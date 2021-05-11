@@ -331,13 +331,14 @@ const routes = [
             //     component: () => import(/* webpackChunkName: "playHome" */ './pages/PLAYB2C/Home/'),
             // },
             {
-                path: 'watch/:videoId',
-                name: 'play.watch',
+                path: 'watch/:presentationId',
+                name: 'play.watchPresentation',
                 meta: {
                     isFullscreen: true,
                     hideCrisp: true,
                 },
-                component: () => import(/* webpackChunkName: "watchVideoPage" */ './pages/PLAYB2C/WatchVideoPage/'),
+                component: () =>
+                    import(/* webpackChunkName: "watchPresentationPage" */ './pages/PLAYB2C/WatchPresentationPage/'),
             },
             {
                 path: '*',

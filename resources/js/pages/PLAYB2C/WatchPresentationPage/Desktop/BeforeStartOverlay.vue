@@ -15,12 +15,12 @@ export default {
     name: 'beforeStartOverlay',
     props: ['video'],
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('player', {
             desiredStatus: 'getDesiredStatus',
         }),
     },
     methods: {
-        ...mapActions('videoPlayer', ['play']),
+        ...mapActions('player', ['play']),
     },
 }
 </script>

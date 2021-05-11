@@ -31,7 +31,11 @@ export default {
             })
             return presentations
         },
-        async fetchPresentationDetails() {},
+        async fetchPresentationDetails({ dispatch }, presentationId) {
+            const presentation = await dispatch('files/fetchFile', presentationId, { root: true })
+            await dispatch('initPresentations', [presentation])
+            return presentation
+        },
         async insertPresentation({ commit, rootGetters, dispatch }, presentation) {
             const workspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
             const apiUrl =

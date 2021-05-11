@@ -1,7 +1,12 @@
 <template>
-    <button class="white circle wishlist-button" :class="{ active: variantIsInWishlist }" @click="onAddToWishlist">
+    <BaseButton
+        class="wishlist-button"
+        v-bind="$attrs"
+        :class="{ active: variantIsInWishlist }"
+        @click="onAddToWishlist"
+    >
         <i class="fa-heart" :class="variantIsInWishlist ? 'fas green' : 'far dark'"></i>
-    </button>
+    </BaseButton>
 </template>
 
 <script>
@@ -21,6 +26,7 @@ export default {
             return this.variant ? this.variant : this.currentTiming.product.variants[0]
         },
         variantIsInWishlist() {
+            if (!this.currentTiming) return
             return this.getVariantIsInWishlist(this.variantToAdd)
         },
     },

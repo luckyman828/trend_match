@@ -1,12 +1,10 @@
 <template>
-    <div class="wrapper">
-        <BaseImageSizer class="image-upload-area" :aspect="aspect" :fit="fit">
-            <img class="preview" :src="image" />
-            <BaseDroparea @input="onImageChange">
-                <slot />
-            </BaseDroparea>
-        </BaseImageSizer>
-    </div>
+    <BaseImageSizer class="image-upload-area" :aspect="aspect" :fit="fit">
+        <img class="preview" :src="image" />
+        <BaseDroparea @input="onImageChange">
+            <slot />
+        </BaseDroparea>
+    </BaseImageSizer>
 </template>
 
 <script>

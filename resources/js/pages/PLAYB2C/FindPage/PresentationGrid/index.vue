@@ -3,10 +3,11 @@
         <div class="presentation-grid">
             <div class="card-sizer" v-for="presentation in presentations" :key="presentation.id">
                 <PresentationCard
+                    :ref="`presentation-${presentation.id}`"
                     class="presentation-card"
                     :presentation="presentation"
                     @contextmenu="onShowContextmenu($event, presentation)"
-                    @click.native="onGoToPresentation(presentation)"
+                    @click.native="onGoToEditPresentation(presentation)"
                 />
             </div>
         </div>
@@ -18,22 +19,43 @@
         />
 
         <BaseContextMenu ref="presentationContextMenu" class="context-file">
-            <div class="item-group" v-if="contextPresentation">
-                <BaseContextMenuItem iconClass="far fa-file" hotkey="KeyV">
-                    <u>V</u>iew / Edit presentation
-                </BaseContextMenuItem>
-            </div>
-            <div class="item-group">
-                <BaseContextMenuItem
-                    iconClass="far fa-trash-alt"
-                    :disabled="workspaceRole != 'Admin'"
-                    disabledTooltip="Only admins can delete files"
-                    hotkey="KeyD"
-                    @click="onDeletePresentation(contextPresentation)"
-                >
-                    <span><u>D</u>elete presentation</span>
-                </BaseContextMenuItem>
-            </div>
+            <template v-if="contextPresentation">
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-play"
+                        hotkey="KeyW"
+                        @click="onGoToWatchPresentation(contextPresentation)"
+                    >
+                        <u>W</u>atch presentation
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem
+                        iconClass="far fa-edit"
+                        hotkey="KeyE"
+                        @click="onGoToEditPresentation(contextPresentation)"
+                    >
+                        <span>Go to <u>E</u>dit presentation</span>
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem iconClass="far fa-pen" hotkey="KeyR" @click="onRename(contextPresentation)">
+                        <u>R</u>ename
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem iconClass="far fa-image" hotkey="KeyC">
+                        <u>C</u>hange thumbnail
+                    </BaseContextMenuItem>
+                </div>
+                <div class="item-group">
+                    <BaseContextMenuItem
+                        iconClass="far fa-trash-alt"
+                        :disabled="workspaceRole != 'Admin'"
+                        disabledTooltip="Only admins can delete files"
+                        hotkey="KeyD"
+                        @click="onDeletePresentation(contextPresentation)"
+                    >
+                        <span><u>D</u>elete presentation</span>
+                    </BaseContextMenuItem>
+                </div>
+            </template>
         </BaseContextMenu>
 
         <BaseDialog
@@ -92,12 +114,18 @@ export default {
                 this.deleteFile(presentation)
             }
         },
-        onGoToPresentation(presentation) {
+        onGoToEditPresentation(presentation) {
             if (presentation.video_count > 0) {
                 this.$router.push({ name: 'play.editPresentation', params: { presentationId: presentation.id } })
             } else {
                 this.onShowNewPresentationModal(presentation)
             }
+        },
+        onGoToWatchPresentation(presentation) {
+            this.$router.push({ name: 'play.watchPresentation', params: { presentationId: presentation.id } })
+        },
+        onRename(presentation) {
+            this.$refs[`presentation-${presentation.id}`][0].rename()
         },
     },
 }

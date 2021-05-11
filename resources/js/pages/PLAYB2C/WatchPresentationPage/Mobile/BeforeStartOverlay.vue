@@ -1,16 +1,20 @@
 <template>
     <div class="before-start-overlay" :style="video.thumbnail && `background-image: url(${video.thumbnail})`">
         <div class="overlay"></div>
-        <button class="xxl circle white invisible bg-blur" @click="$emit('start')">
+        <button class="xxl circle white invisible bg-blur" @click="play">
             <i class="fas fa-play"></i>
         </button>
     </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
     name: 'beforeStartOverlay',
     props: ['video'],
+    methods: {
+        ...mapActions('player', ['play']),
+    },
 }
 </script>
 

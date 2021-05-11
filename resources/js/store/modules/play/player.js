@@ -33,6 +33,7 @@ export default {
         getControlsHidden: (state, getters) => state.controlsHidden && !!getters.getIsPlaying,
         getPlayerStarted: state => state.isStarted,
         getPlayerRecentlyStarted: state => state.recentlyStarted,
+        getContainerEl: state => state.player,
     },
 
     actions: {

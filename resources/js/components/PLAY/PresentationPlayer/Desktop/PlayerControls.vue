@@ -1,59 +1,57 @@
 <template>
-    <div class="player-controls-wrapper">
+    <div class="player-controls" :class="{ hide: hideControls }">
         <VideoTimeline v-if="playerReady && !isLive" />
-        <div class="player-controls" :class="{ hide: hideControls }">
-            <div class="main">
-                <div class="left">
-                    <div class="button-list flex-list">
-                        <!-- PLAY / PAUSE -->
-                        <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
-                            <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
-                        </button>
-                        <span
-                            v-else
-                            class="circle invisible ghost-hover"
-                            v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
-                        >
-                            <i class="fas fa-circle red"></i>
-                        </span>
+        <div class="main flex-list equal-width center-v">
+            <div class="left flex-list center-v space-lg">
+                <div class="flex-list space-xs">
+                    <!-- PLAY / PAUSE -->
+                    <button v-if="!isLive" class="invisible white circle ghost-hover" @click="togglePlaying">
+                        <i class="fas" :class="desiredStatus == 'playing' ? 'fa-pause' : 'fa-play'"></i>
+                    </button>
+                    <span
+                        v-else
+                        class="circle invisible ghost-hover"
+                        v-tooltip="'Video is LIVE. Pause/Play controls have been disabled.'"
+                    >
+                        <i class="fas fa-circle red"></i>
+                    </span>
 
-                        <!-- MUTE / UNMUTE -->
-                        <VolumeControl />
+                    <!-- MUTE / UNMUTE -->
+                    <VolumeControl />
 
-                        <!-- FULLSCREEN MODE -->
-                        <button
-                            class="invisible white circle ghost-hover"
-                            v-tooltip="{
-                                content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
-                                delay: { show: 500 },
-                            }"
-                            ref="buttonToClick"
-                            @click="toggleFullscreenMode"
-                        >
-                            <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
-                        </button>
-                    </div>
-
-                    <div class="time" style="margin-left: 40px;">
-                        <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
-                    </div>
-
-                    <div class="product-totals" style="margin-left: 52px;">
-                        <div class="pill dark sm">
-                            <span> {{ currentTimingIndex + 1 }} / {{ timings.length }} styles </span>
-                        </div>
-                    </div>
-
-                    <slot name="left" />
+                    <!-- FULLSCREEN MODE -->
+                    <button
+                        class="invisible white circle ghost-hover"
+                        v-tooltip="{
+                            content: `${fullscreenModeActive ? 'Exit' : 'Enter'} full-screen mode`,
+                            delay: { show: 500 },
+                        }"
+                        ref="buttonToClick"
+                        @click="toggleFullscreenMode"
+                    >
+                        <i class="far" :class="fullscreenModeActive ? 'fa-compress' : 'fa-expand'"></i>
+                    </button>
                 </div>
 
-                <div class="center">
-                    <slot name="center" />
+                <div class="time">
+                    <span>{{ timestamp | timestampify }} / {{ duration | timestampify }}</span>
                 </div>
 
-                <div class="right">
-                    <slot name="right" />
+                <div class="product-totals">
+                    <div class="pill dark sm">
+                        <span> {{ currentTimingIndex + 1 }} / {{ timings.length }} styles </span>
+                    </div>
                 </div>
+
+                <slot name="left" />
+            </div>
+
+            <div class="center flex-list center-h center-v">
+                <slot name="center" />
+            </div>
+
+            <div class="right flex-list flex-end-h center-v">
+                <slot name="right" />
             </div>
         </div>
     </div>
@@ -61,7 +59,7 @@
 
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
-import VideoTimeline from '../../PresentationPlayer/VideoTimeline.vue'
+import VideoTimeline from '../VideoTimeline'
 import VolumeControl from '../VolumeControl'
 
 export default {
@@ -77,25 +75,25 @@ export default {
         VideoTimeline,
     },
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('player', {
             isMuted: 'getIsMuted',
             timestamp: 'getTimestamp',
             duration: 'getDuration',
-            currentTimingIndex: 'getCurrentTimingIndex',
-            product: 'getCurrentProduct',
             desiredStatus: 'getDesiredStatus',
             isLive: 'getIsLive',
             isPlaying: 'getIsPlaying',
             hideControls: 'getControlsHidden',
             playerReady: 'getPlayer',
         }),
-        ...mapGetters('videoPresentation', {
-            timings: 'getVideoTimings',
+        ...mapGetters('playPresentation', {
+            timings: 'getTimings',
+            currentTimingIndex: 'getCurrentTimingIndex',
+            product: 'getCurrentProduct',
         }),
     },
     methods: {
-        ...mapActions('videoPlayer', ['togglePlayerMuted', 'togglePlaying']),
-        ...mapMutations('videoPlayer', ['SET_CONTROLS_HIDDEN']),
+        ...mapActions('player', ['togglePlayerMuted', 'togglePlaying']),
+        ...mapMutations('player', ['SET_CONTROLS_HIDDEN']),
         toggleFullscreenMode() {
             if (this.fullscreenModeActive) {
                 this.onExitFullscreen()
@@ -168,15 +166,8 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.player-controls-wrapper {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    pointer-events: all;
-}
 .player-controls {
     pointer-events: all;
-    background: $dark100;
     height: $heightPlayerControls;
     width: 100%;
     z-index: 1;
@@ -188,24 +179,19 @@ export default {
     bottom: 0;
     transform: none;
     transition: transform 0.1s ease-out;
-    .main {
-        display: flex;
-        align-items: center;
-        padding: 8px 60px 8px 20px;
-        flex: 1;
-        > * {
-            display: flex;
-            align-items: center;
-            &:not(.center) {
-                flex: 1;
-            }
-        }
-        .right {
-            justify-content: flex-end;
-        }
-    }
     &.hide {
         transform: translateY(100%);
+    }
+    .timeline {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+    .main {
+        background: $dark100;
+        height: 100%;
+        padding: 8px 20px 8px;
     }
 }
 </style>

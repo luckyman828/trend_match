@@ -712,6 +712,24 @@ input[type='submit'] {
 }
 .pill {
     min-width: 32px;
+    &.w-xxs {
+        width: 32px * 1.5;
+    }
+    &.w-xs {
+        width: 32px * 1.8;
+    }
+    &.w-sm {
+        width: 32px * 2;
+    }
+    &.w-md {
+        width: 32px * 3;
+    }
+    &.w-lg {
+        width: 32px * 4;
+    }
+    &.w-xl {
+        width: 32px * 6;
+    }
     @each $size in $button-sizes {
         &.#{nth($size,1)} {
             min-width: nth($size, 2);

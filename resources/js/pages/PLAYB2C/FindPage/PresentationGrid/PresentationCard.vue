@@ -26,7 +26,21 @@
                 </div>
             </div>
             <div class="bottom-items flex-list space-lg flex-v">
-                <div class="name">{{ presentation.name }}</div>
+                <div class="name">
+                    <span v-if="!editName">{{ presentation.name }}</span>
+                    <BaseTextarea
+                        @click.native.stop
+                        v-else
+                        v-model="presentation.name"
+                        ref="nameInput"
+                        :inheritStyles="true"
+                        @blur="editName = false"
+                        @submit="
+                            updatePresentationDetails(presentation)
+                            editName = false
+                        "
+                    />
+                </div>
                 <div class="flex-list flex-end-h action-list">
                     <button class="white pill">
                         <i class="far fa-edit"></i>
@@ -42,9 +56,15 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
     name: 'presentationCard',
     props: ['presentation'],
+    data() {
+        return {
+            editName: false,
+        }
+    },
     computed: {
         isUploading() {
             return this.presentation.uploadChannel
@@ -53,6 +73,15 @@ export default {
             const uploadChannel = this.presentation.uploadChannel
             if (!uploadChannel) return
             return uploadChannel.progressPercentage
+        },
+    },
+    methods: {
+        ...mapActions('playPresentations', ['updatePresentationDetails']),
+        rename() {
+            this.editName = true
+            this.$nextTick(() => {
+                this.$refs.nameInput.focus()
+            })
         },
     },
 }
@@ -108,6 +137,7 @@ export default {
         font-weight: 800;
         color: white;
         max-width: 80%;
+        white-space: pre-wrap;
     }
     .action-list {
         opacity: 0.8;

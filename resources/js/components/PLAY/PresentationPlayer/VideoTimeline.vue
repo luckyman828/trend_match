@@ -36,15 +36,15 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('player', {
             duration: 'getDuration',
             timestamp: 'getTimestamp',
             player: 'getPlayer',
-            playerIframe: 'getIframe',
+            playerContainer: 'getContainerEl',
             isDragging: 'getTimelineKnobIsBeingDragged',
         }),
-        ...mapGetters('videoPresentation', {
-            timings: 'getVideoTimings',
+        ...mapGetters('playPresentation', {
+            timings: 'getTimings',
         }),
         ...mapGetters('products', {
             productsStatus: 'productsStatus',
@@ -65,8 +65,8 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPlayer', ['seekTo']),
-        ...mapMutations('videoPlayer', ['SET_IS_DRAGGING']),
+        ...mapActions('player', ['seekTo']),
+        ...mapMutations('player', ['SET_IS_DRAGGING']),
         addDragListeners() {
             document.addEventListener('mouseup', this.onDragEnd)
             document.body.addEventListener('mouseleave', this.onDragEnd)
@@ -112,7 +112,7 @@ export default {
             this.dragTime = null
         },
         getDragTime(mouseEvent) {
-            const playerRect = this.playerIframe.getBoundingClientRect()
+            const playerRect = this.playerContainer.getBoundingClientRect()
             const mouseX = mouseEvent.clientX - playerRect.left
             // Add an offset to allow the user to reach the extremes of each side
             const offSetX = ((mouseX - playerRect.width / 2) / playerRect.width / 2) * 200
@@ -153,6 +153,7 @@ export default {
         &:hover {
             @include desktop {
                 + .timeline-wrapper {
+                    transform: translateY(-2px);
                     .rail {
                         height: 12px;
                     }
@@ -189,6 +190,7 @@ export default {
     position: relative;
     z-index: 3;
     border-radius: 50px;
+    transition: transform $videoPauseTransition;
     .drag-active & {
         .rail,
         .knob {
@@ -200,6 +202,7 @@ export default {
         &:hover {
             .rail {
                 height: 12px;
+                transform: translateY(-2px);
             }
             .knob {
                 height: 18px;
@@ -219,7 +222,7 @@ export default {
         position: relative;
         margin-right: 14px;
         background: $primary;
-        transition: width 0.05s, height $videoPauseTransition;
+        transition: width 0.05s, height $videoPauseTransition, transform $videoPauseTransition;
         border-radius: 50px;
         @include mobile {
             height: 4px;
