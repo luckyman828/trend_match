@@ -32,7 +32,7 @@ export default {
             return presentations
         },
         async fetchPresentationDetails() {},
-        async insertPresentation({ commit, rootGetters }, presentation) {
+        async insertPresentation({ commit, rootGetters, dispatch }, presentation) {
             const workspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
             const apiUrl =
                 !presentation.parent_id || presentation.parent_id == 0
@@ -43,6 +43,15 @@ export default {
                 Object.assign(presentation, response.data)
                 commit('INSERT_PRESENTATION', presentation)
             })
+            dispatch('insertDefaultPresentationSelectionSetup', presentation)
+        },
+        async insertDefaultPresentationSelectionSetup({ dispatch }, presentation) {
+            // Create a default MASTER selection on the presentation
+            const selection = await dispatch('selections/instantiateBaseSelection', null, { root: true })
+            selection.type = 'Master'
+            selection.name = 'Master'
+
+            dispatch('selections/insertSelection', { file: presentation, selection, addToState: false }, { root: true })
         },
         async updatePresentationDetails({}, presentation) {
             const apiUrl = `files/${presentation.id}`
