@@ -9,9 +9,7 @@
         >
             <ProductSearchListItem :product="slotProps.item" />
         </SearchItemsPanel>
-        <VideoPlayer :video="video" :autoplay="false" quality="SD360P">
-            <VideoPreview />
-        </VideoPlayer>
+        <VideoPlayer :video="video" :autoplay="false" quality="SD360P" />
 
         <TimelinePanel v-if="timingsReady" />
     </div>
@@ -20,7 +18,6 @@
 <script>
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import SearchItemsPanel from '../../../components/common/SearchItemsPanel/'
-import VideoPreview from './VideoPreview/'
 import VideoPlayer from '../../../components/PLAY/VideoPlayer'
 import TimelinePanel from './TimelinePanel/'
 import ProductSearchListItem from './ProductSearchListItem'
@@ -29,7 +26,6 @@ export default {
     name: 'editVideoPresentationPage',
     components: {
         SearchItemsPanel,
-        VideoPreview,
         TimelinePanel,
         VideoPlayer,
         ProductSearchListItem,

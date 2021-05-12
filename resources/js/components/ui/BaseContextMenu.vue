@@ -61,7 +61,7 @@ export default {
     },
     methods: {
         ...mapMutations('contextMenu', ['INCREMENT_VISIBLE_AMOUNT', 'DECREMENT_VISIBLE_AMOUNT']),
-        show(e) {
+        show(e, item, clickOffset = { x: 0, y: 0 }) {
             // Increment the amount of visible context menus if this context menu is not already visible
             if (!this.visible) {
                 this.INCREMENT_VISIBLE_AMOUNT()
@@ -71,9 +71,11 @@ export default {
             e.stopPropagation()
             // Save a reference to the mouseClick event
             this.mouseEvent = e
+            this.item = item
+
             // Set the current context menu item
-            const mouseX = e.clientX
-            const mouseY = e.clientY
+            const mouseX = e.clientX + clickOffset.x
+            const mouseY = e.clientY + clickOffset.y
             // Make the context menu visisble
             this.visible = true
             // Wait for the DOM to update before we position the Context Menu

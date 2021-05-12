@@ -48,6 +48,8 @@ import horizontalScrollDirective from './directives/horizontalScrollDirective'
 Vue.use(horizontalScrollDirective)
 import hoverDirective from './directives/hoverDirective'
 Vue.use(hoverDirective)
+import showContextmenu from './directives/showContextmenu'
+Vue.use(showContextmenu)
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import VueVirtualScroller from 'vue-virtual-scroller'

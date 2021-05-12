@@ -6,12 +6,12 @@ export default {
 
     state: {
         presentations: [],
-        currentPresentation: null,
     },
 
     getters: {
         getPresentations: state => state.presentations,
-        getCurrentPresentation: state => state.currentPresentation,
+        getCurrentPresentation: (state, getters, rootState, rootGetters) =>
+            rootGetters['playPresentation/getPresentation'],
     },
 
     actions: {
@@ -87,9 +87,6 @@ export default {
         },
         INSERT_PRESENTATION(state, presentation) {
             state.presentations.push(presentation)
-        },
-        SET_CURRENT_PRESENTATION(state, presentation) {
-            state.currentPresentation = presentation
         },
     },
 }

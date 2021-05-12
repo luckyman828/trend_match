@@ -1,7 +1,7 @@
 <template>
     <TheSidebar>
         <template slot="top">
-            <SidebarItem label="Find" :to="{ name: 'play.find' }" iconClass="fas fa-search" />
+            <SidebarItem label="Find" :to="{ name: 'play.find' }" iconClass="fas fa-file" />
         </template>
     </TheSidebar>
 </template>

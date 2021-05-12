@@ -42,11 +42,11 @@ export default {
     },
     methods: {
         ...mapActions('playPresentations', ['instantiateBasePresentation', 'insertPresentation']),
-        ...mapMutations('playPresentations', ['SET_CURRENT_PRESENTATION']),
+        ...mapMutations('playPresentation', ['SET_PRESENTATION']),
         async onNewPresentation() {
             // Secretly create a new file
             const newPresentation = await this.instantiateBasePresentation()
-            this.SET_CURRENT_PRESENTATION(newPresentation)
+            this.SET_PRESENTATION(newPresentation)
             this.showNewPresentationModal = true
             await this.insertPresentation(newPresentation)
         },

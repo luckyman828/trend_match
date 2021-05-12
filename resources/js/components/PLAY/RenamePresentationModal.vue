@@ -54,6 +54,7 @@ export default {
         },
         onSubmit() {
             this.updatePresentationDetails(this.presentation)
+            this.$emit('submit')
             this.close()
         },
         onCancel() {

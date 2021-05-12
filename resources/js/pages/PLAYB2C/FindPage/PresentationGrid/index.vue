@@ -108,9 +108,9 @@ export default {
     },
     methods: {
         ...mapActions('files', ['deleteFile', 'insertOrUpdateFile']),
-        ...mapMutations('playPresentations', ['SET_CURRENT_PRESENTATION']),
+        ...mapMutations('playPresentation', ['SET_PRESENTATION']),
         onShowNewPresentationModal(presentation) {
-            this.SET_CURRENT_PRESENTATION(presentation)
+            this.SET_PRESENTATION(presentation)
             this.showNewPresentationModal = true
         },
         onShowContextmenu(e, presentation) {
@@ -138,7 +138,7 @@ export default {
             this.$refs[`presentation-${presentation.id}`][0].rename()
         },
         onChangeThumbnail(presentation) {
-            this.SET_CURRENT_PRESENTATION(presentation)
+            this.SET_PRESENTATION(presentation)
             this.showEditDetailsModal = true
         },
     },

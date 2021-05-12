@@ -23,7 +23,7 @@ export default {
     actions: {
         async uploadFileVideo({ commit, rootGetters, dispatch }, { videoFile, file }) {
             if (!videoFile || !file) {
-                console.log('no file', videoFile, file)
+                // console.log('no file', videoFile, file)
                 return
             }
             const workspaceId = rootGetters['workspaces/getCurrentWorkspaceId']
@@ -33,7 +33,7 @@ export default {
             const uploadChannelApiUrl = `upload-channel/generate?workspace_id=${workspaceId}&extension=${extension.toUpperCase()}`
             let uploadChannel
             await axios.post(uploadChannelApiUrl).then(response => {
-                console.log('generated upload channel', response.data)
+                // console.log('generated upload channel', response.data)
                 uploadChannel = response.data
                 uploadChannel.presentationId = file.id
                 uploadChannel.file = videoFile
@@ -75,7 +75,7 @@ export default {
                 const generateUrlApiUrl = `upload-channel/${uploadChannel.id}/generate-presigned-url?part_number=${chunkNumber}`
                 let uploadUrl
                 await axios.get(generateUrlApiUrl).then(response => {
-                    console.log('generated URL', response.data)
+                    // console.log('generated URL', response.data)
                     uploadUrl = response.data.presigned_url
                 })
 
@@ -87,7 +87,7 @@ export default {
                 await uploadUrlAxiosInstance.put(uploadUrl, chunk).then(response => {
                     // TRY TO READ ETAG HERE. No luck.. <----------------------------------------- ERROR HERE
                     etag = response.headers['etag']
-                    console.log('upload to presigned Url response', response.headers['etag'], response.headers)
+                    // console.log('upload to presigned Url response', response.headers['etag'], response.headers)
                 })
 
                 // Complete the chunk
@@ -107,7 +107,7 @@ export default {
             const completeUploadURl = `upload-channel/${uploadChannel.id}/complete`
             let uploadKey
             await axios.post(completeUploadURl).then(response => {
-                console.log('complete upload', response.data)
+                // console.log('complete upload', response.data)
                 uploadKey = response.data.key
                 uploadChannel.progress.status = 'Uploaded'
             })
@@ -123,19 +123,19 @@ export default {
             await dispatch('updateFileVideo', { file, videoPresentation: newVideoPresentation })
         },
         async cancelUpload({}, uploadChannel) {
-            console.log('set status cancelled')
+            // console.log('set status cancelled')
             uploadChannel.progress.status = 'Cancelled'
             const apiUrl = `upload-channel/${uploadChannel.id}/abort`
             await axios.post(apiUrl)
         },
         async updateFileVideo({}, { file, videoPresentation }) {
-            console.log('update file video', file, videoPresentation)
+            // console.log('update file video', file, videoPresentation)
             // Save to the API
             const apiUrl = `/files/${file.id}/video`
             await axios
                 .post(apiUrl, videoPresentation)
                 .then(response => {
-                    console.log('file video updated', response.data)
+                    // console.log('file video updated', response.data)
                 })
                 .catch(err => {
                     console.log('Error when updating file video', err.response)

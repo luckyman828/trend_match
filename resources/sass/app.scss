@@ -1854,6 +1854,20 @@ input::placeholder {
             }
         }
     }
+    > * {
+        &.auto-left {
+            margin-left: auto;
+        }
+        &.auto-right {
+            margin-right: auto;
+        }
+        &.auto-top {
+            margin-top: auto;
+        }
+        &.auto-bottom {
+            margin-bottom: auto;
+        }
+    }
 }
 
 // COLORS

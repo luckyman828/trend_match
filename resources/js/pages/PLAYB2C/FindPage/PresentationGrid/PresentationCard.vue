@@ -87,6 +87,7 @@ export default {
             this.editName = true
             this.$nextTick(() => {
                 this.$refs.nameInput.focus()
+                this.$refs.nameInput.select()
             })
         },
     },

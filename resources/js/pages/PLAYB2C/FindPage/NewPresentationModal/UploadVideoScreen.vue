@@ -43,7 +43,7 @@
                                 <div class="color-primary ft-12 ft-md">{{ formatBytes(fileToUpload.size) }}</div>
                             </div>
                             <div
-                                class="progress flex-list center-v space-xs"
+                                class="progress flex-list center-v space-xs auto-left"
                                 :class="presentation.uploadChannel.progress.status"
                                 v-if="presentation.uploadChannel"
                             >
@@ -57,12 +57,12 @@
                                     ></div>
                                 </div>
                             </div>
-                            <button class="more-button circle invisible ghost-hover sm" @click="showContext">
+                            <button class="more-button circle invisible ghost-hover sm auto-left" @click="showContext">
                                 <i class="far fa-ellipsis-h"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="flex-list flex-v">
+                    <div class="flex-list flex-v center-h">
                         <div class="ft-16 ft-bd">Success!</div>
                         <div class="ft-12 ft-md color-grey">Your video is being uploaded</div>
                         <button class="pill white" @click="slotProps.activate()">
@@ -244,8 +244,10 @@ export default {
             width: 200px;
             flex-shrink: 0;
             &.Uploaded {
-                .current {
-                    background: $success;
+                .rail {
+                    .current {
+                        background: $success;
+                    }
                 }
             }
             .rail {

@@ -111,7 +111,7 @@ $groupColors: (#3366ff), (#26abd6), (#20a720), (#b51f26), (#905b15);
 
 // BUTTON SIZES ($name, $height, $font-size, $padding, $icon-font-size, $inner-el-spacing, $borderRadius, $icon-bottom-padding)
 $button-sizes: ('min', 8px, 8px, 1px, 6px, 1px, 2px, 0), ('xxs', 14px, 10px, 1px, 7px, 2px, 4px, 0),
-    ('xs', 20px, 12px, 6px, 9px, 4px, 4px, 1px), ('sm', 24px, 12px, 6px, 12px, 6px, 4px, 0),
+    ('xs', 20px, 12px, 6px, 9px, 4px, 4px, 1px), ('sm', 24px, 12px, 6px, 15px, 6px, 4px, 0),
     ('md', 40px, 12px, 12px, 14px, 8px, 8px, 0), ('lg', 48px, 12px, 20px, 14px, 8px, 8px, 0),
     ('xl', 60px, 18px, 24px, 20px, 8px, 8px, 0), ('xxl', 72px, 20px, 24px, 32px, 8px, 8px, 0);
 
@@ -286,6 +286,10 @@ $brand-colors: (
 $bgWhite: white;
 $bgWhiteHover: $grey200;
 $bgWhiteActive: $grey100;
+$themeWhiteBg: white;
+$themeWhiteBgHover: $grey200;
+$themeWhiteBgActive: $grey100;
+$themeWhiteFontSoft: $bluegrey700;
 
 // Light on white
 $bgLight: $grey100;
