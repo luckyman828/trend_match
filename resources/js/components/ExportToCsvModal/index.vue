@@ -478,7 +478,8 @@ export default {
                             for (let i = -1; i < origin.labels.length; i++) {
                                 // Find the origin Request(s)
                                 const originRequestList = selectionInput.requests.filter(request => {
-                                    let isMatch = request.selection_id == origin.selection_id
+                                    if (request.selection_id != origin.selection_id) return false
+                                    let isMatch = true
                                     const originLabel = origin.labels[i]
                                     if (originLabel) {
                                         isMatch = request.labels[0] == originLabel
