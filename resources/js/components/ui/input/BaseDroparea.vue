@@ -1,7 +1,7 @@
 <template>
     <div
         class="drop-area interactable"
-        :class="[{ 'drag-active': dragActive }, theme && `theme-${theme} bg-theme-${theme}`]"
+        :class="[{ 'drag-active': dragActive }, theme && `theme-${theme} bg-theme-${theme} theme-border`]"
         @click.self="activate"
         @dragenter="dragEnter"
         @dragleave="dragLeave"
@@ -119,7 +119,7 @@ export default {
     &.theme-light {
         border-radius: $borderRadiusLg;
         &:not(.drag-active) {
-            border-color: transparent;
+            border-color: transparent !important;
         }
     }
 }

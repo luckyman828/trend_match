@@ -3,7 +3,9 @@
 $primary: #2a46ff;
 $primaryDark: mix(black, $primary, 10%);
 
-$primary300: #7f93ff; //#e0f5f9 //#c7d0ff
+$primary200: mix($primary, white, 8%); // #2A46FF14
+$primary300: mix($primary, white, 24%); // #2A46FF14
+// $primary300: #7f93ff; //#e0f5f9 //#c7d0ff
 $primary400: #5f76ff;
 $primary500: $primary;
 $primary600: #1e34db;
@@ -283,31 +285,59 @@ $brand-colors: (
     ),
     ('grey', $fontSoft, mix(white, $bluegrey250, $lightenAmount), white, mix($dark05, $bluegrey250, $darkenAmount), 1);
 
-$bgWhite: white;
-$bgWhiteHover: $grey200;
-$bgWhiteActive: $grey100;
 $themeWhiteBg: white;
-$themeWhiteBgHover: $grey200;
-$themeWhiteBgActive: $grey100;
+$themeWhiteBgHover: $primary200;
+$themeWhiteBgActive: $primary300;
 $themeWhiteFontSoft: $bluegrey700;
+$themeWhiteBorder: $bluegrey300;
+$themeWhiteBorderHover: $primary300;
+$themeWhiteBorderActive: $primary400;
 
 // Light on white
-$bgLight: $grey100;
-$bgLightHover: $grey200;
-$bgLightActive: $grey200;
 $themeLightBg: $grey100;
-$themeLightBgHover: $grey200;
-$themeLightBgActive: $grey200;
+$themeLightBgHover: $primary200;
+$themeLightBgActive: $primary300;
 $themeLightFontSoft: $grey650;
+$themeLightBorder: $bluegrey300;
+$themeLightBorderHover: $primary300;
+$themeLightBorderActive: $primary400;
 
 // Grey on white
-$bgGrey: $grey200;
-$bgGreyHover: $grey300;
-$bgGreyActive: $grey300;
+$themeGreyBg: $grey200;
+$themeGreyBgHover: $grey300;
+$themeGreyBgActive: $grey300;
+$themeGreyBorder: $bluegrey300;
+$themeGreyBorderHover: $primary300;
+$themeGreyBorderActive: $primary400;
 
-// BG THEMES ($colorName, $bg, $bgHover, $bgActive)
-$bg-themes: ('white', $bgWhite, $bgWhiteHover, $bgWhiteActive), ('light', $bgLight, $bgLightHover, $bgLightActive),
-    ('grey', $bgGrey, $bgGreyHover, $bgGreyActive);
+// BG THEMES ($colorName, $bg, $bgHover, $bgActive, $border, $borderHover, $borderActive)
+$bg-themes: (
+        'white',
+        $themeWhiteBg,
+        $themeWhiteBgHover,
+        $themeWhiteBgActive,
+        $themeWhiteBorder,
+        $themeWhiteBorderHover,
+        $themeWhiteBorderActive
+    ),
+    (
+        'light',
+        $themeLightBg,
+        $themeLightBgHover,
+        $themeLightBgActive,
+        $themeLightBorder,
+        $themeLightBorderHover,
+        $themeLightBorderActive
+    ),
+    (
+        'grey',
+        $themeGreyBg,
+        $themeGreyBgHover,
+        $themeGreyBgActive,
+        $themeGreyBorder,
+        $themeGreyBorderHover,
+        $themeGreyBorderActive
+    );
 
 // CARD SIZES ($sizeName, $padding; $borderRadius)
 $card-sizes: ('xs', 4px, 4px), ('sm', 8px, 8px), ('md', 16px, 16px);

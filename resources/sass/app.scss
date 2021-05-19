@@ -1892,20 +1892,34 @@ input::placeholder {
         &.interactable:not(.disabled) {
             transition: background 0.2s ease-in;
             cursor: pointer;
-            &:hover {
+            &:hover,
+            &.drag-active {
                 background: nth($theme, 3);
+            }
+            &.theme-border {
+                &:hover,
+                &.drag-active {
+                    border-color: nth($theme, 6);
+                }
+                &:active {
+                    border-color: nth($theme, 7);
+                }
             }
         }
         &.disabled {
             background: transparent;
         }
-        &.active {
+        &.active,
+        &:active {
             background: nth($theme, 4);
         }
         &.bg-theme-hover {
             &:hover {
                 background: nth($theme, 3);
             }
+        }
+        &.theme-border {
+            border: solid 1px nth($theme, 5);
         }
     }
 }

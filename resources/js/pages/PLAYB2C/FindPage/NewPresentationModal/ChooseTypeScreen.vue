@@ -7,7 +7,7 @@
         subHeader="Choose presentation type"
     >
         <div class="flex-list full-width equal-width space-md">
-            <div class="button-card" @click="$emit('next', 'video')">
+            <div class="button-card bg-theme-white theme-border interactable" @click="$emit('next', 'video')">
                 <div class="inner flex-list flex-v center-h center-v space-lg">
                     <img src="images/svg/undraw_Upload_re_pasx.svg" />
 
@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <div class="button-card disabled" @click="!true && $emit('next', 'livestream')">
+            <div class="button-card disabled bg-theme-white theme-border" @click="!true && $emit('next', 'livestream')">
                 <div class="label-list">
                     <div class="primary square xs">
                         <span>COMING SOON</span>
@@ -68,17 +68,9 @@ export default {
     // min-height: 248px;
     padding: 16px 32px 48px;
     position: relative;
-    border: $borderEl;
     border-radius: $borderRadiusEl;
-    background: white;
     transition: 0.2s;
     height: 328px;
-    &:hover {
-        background: $bgWhiteHover;
-    }
-    &:active {
-        background: $bgWhiteActive;
-    }
     img {
         height: 92px;
         width: 92px;

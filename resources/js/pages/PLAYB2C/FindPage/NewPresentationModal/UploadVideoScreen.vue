@@ -150,7 +150,7 @@ export default {
             // Preset the name
             if (this.presentation.name == 'New presentation') {
                 // Preset the name of our new file to the name of our video
-                this.presentation.name = this.fileToUpload.name
+                this.presentation.name = this.fileToUpload.name.split('.').shift()
             }
             // Save the new details
             this.updatePresentationDetails(this.presentation)
