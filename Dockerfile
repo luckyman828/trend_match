@@ -1,4 +1,4 @@
-FROM trafex/alpine-nginx-php7:1.3.0
+FROM trafex/alpine-nginx-php7:1.10.0
 
 USER root
 RUN apk add php7-tokenizer php7-pdo_mysql
