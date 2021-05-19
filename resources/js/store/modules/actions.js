@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -14,6 +15,34 @@ export default {
     },
 
     actions: {
+        async updateAlignments({ commit, rootGetters }, alignments) {
+            const apiUrl = `/selections/${alignments[0].selection_id}/actions`
+            await axios
+                .post(apiUrl, {
+                    actions: alignments.map(x => {
+                        x.user_id = rootGetters['auth/authUser'].id
+                        const action = Object.assign({}, x)
+                        action.variants = x.variants.filter(variantAction => variantAction.feedback != 'None')
+                        return action
+                    }),
+                })
+                .then(response => {
+                    if (alignments.length > 1) {
+                        commit(
+                            'alerts/SHOW_SNACKBAR',
+                            {
+                                msg: `Updated ${actions.length} actions`,
+                                iconClass: 'fa-check',
+                                type: 'success',
+                            },
+                            { root: true }
+                        )
+                    }
+                })
+                .catch(err => {
+                    console.log('error in update alignments', err)
+                })
+        },
         async updateActions({ commit, dispatch, rootGetters }, { actions, newAction }) {
             // Complete the product if it was IN but now is OUT
             const selection = rootGetters['selections/getCurrentSelection']
@@ -44,13 +73,7 @@ export default {
 
             const apiUrl = `/selections/${actions[0].selection_id}/actions`
             const requestBody = {
-                actions: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        action: newAction,
-                        variants: action.variants,
-                    }
-                }),
+                actions: actions,
             }
 
             axios
@@ -120,13 +143,7 @@ export default {
 
             const apiUrl = `/selections/${actions[0].selection_id}/actions`
             const requestBody = {
-                actions: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        action: action.action,
-                        variants: action.variants,
-                    }
-                }),
+                actions: actions,
             }
 
             axios.post(apiUrl, requestBody).catch(err => {
@@ -164,11 +181,8 @@ export default {
             const apiUrl = `/selections/${actions[0].selection_id}/feedback`
             const requestBody = {
                 feedbacks: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        feedback: newAction,
-                        variants: action.variants,
-                    }
+                    action.feedback = action.action
+                    return action
                 }),
             }
 
@@ -226,13 +240,11 @@ export default {
             commit('products/SET_FEEDBACKS', actions, { root: true })
 
             const apiUrl = `/selections/${actions[0].selection_id}/feedback`
+
             const requestBody = {
                 feedbacks: actions.map(action => {
-                    return {
-                        product_id: action.product_id,
-                        feedback: action.action,
-                        variants: action.variants,
-                    }
+                    action.feedback = action.action
+                    return action
                 }),
             }
 
@@ -252,28 +264,117 @@ export default {
                 )
             })
         },
-        async updateCurrentProductAction({}, product) {
-            const actionObject = product.yourActionObject
-            const apiUrl = `/selections/${actionObject.selection_id}/actions`
-            axios.post(apiUrl, {
-                actions: [actionObject],
-            })
+        async updateCurrentProductAction({ rootGetters }, product) {
+            const actionObject = Object.assign({}, product.yourActionObject)
+            actionObject.feedback = actionObject.action
+            const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+            const inputModeUrl = selectionMode == 'Feedback' ? 'feedback' : 'actions'
+            const actionKey = selectionMode == 'Feedback' ? 'feedback' : 'action'
+            const data = {}
+            data[`${actionKey}s`] = [actionObject]
+            const apiUrl = `/selections/${actionObject.selection_id}/${inputModeUrl}`
+            axios.post(apiUrl, data)
         },
-        async initActions({ rootGetters }, actions) {
-            actions.map(action => {
+        async updateProductLabelInput({ rootGetters, dispatch, commit }, product) {
+            const labels = product.yourLabels
+            const authUser = rootGetters['auth/authUser']
+            const selectionMode = rootGetters['selections/getCurrentSelectionMode']
+            // Make sure the product is In/Focus
+            if (labels.length > 0 && !['Focus', 'In'].includes(product.yourAction)) {
+                if (selectionMode == 'Feedback') {
+                    commit(
+                        'products/UPDATE_FEEDBACKS',
+                        {
+                            actions: [product.yourActionObject],
+                            newAction: 'In',
+                            user: authUser,
+                        },
+                        { root: true }
+                    )
+                } else {
+                    commit(
+                        'products/UPDATE_ACTIONS',
+                        {
+                            actions: [product.yourActionObject],
+                            newAction: 'In',
+                            user: authUser,
+                        },
+                        { root: true }
+                    )
+                }
+            }
+            await dispatch('updateCurrentProductAction', product)
+        },
+        async initActions({ rootGetters, dispatch }, { actions, type }) {
+            actions.map(async action => {
+                if (!action.quantity_details) Vue.set(action, 'quantity_details', [])
+                if (!action.variants) Vue.set(action, 'variants', [])
+                if (!action.labels) Vue.set(action, 'labels', [])
+
+                // if (!action.feedback) {
+                //     Object.defineProperty(action, 'feedback', {
+                //         get: function() {
+                //             return action.action
+                //         },
+                //         set: function(value) {
+                //             action.action = value
+                //         },
+                //     })
+                // }
+
                 Object.defineProperty(action, 'user', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelectionUsers'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel =
+                            type == 'action'
+                                ? currentSelection.settings.anonymize_action
+                                : currentSelection.settings.anonymize_feedback
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+
+                        const user = rootGetters['selectionProducts/getSelectionUsers'].find(
                             user => user.id == action.user_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, user)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return user
                     },
                 })
                 Object.defineProperty(action, 'selection', {
                     get: function() {
-                        return rootGetters['selectionProducts/getSelections'].find(
+                        // Check if the user is anonymized
+                        const currentSelection = rootGetters['selections/getCurrentSelection']
+                        const currentSelectionRole = currentSelection.your_role
+                        const anonymizeLevel =
+                            type == 'action'
+                                ? currentSelection.settings.anonymize_action
+                                : currentSelection.settings.anonymize_feedback
+                        const anonymized =
+                            anonymizeLevel == 'None' || (anonymizeLevel == 'Owner' && currentSelectionRole == 'Member')
+
+                        const selection = rootGetters['selectionProducts/getSelections'].find(
                             selection => selection.id == action.selection_id
                         )
+                        if (anonymized) {
+                            const anonymizedClone = Object.assign({}, selection)
+                            anonymizedClone.name = 'Anonymous'
+                            return anonymizedClone
+                        }
+                        return selection
                     },
+                })
+                await dispatch('initVariantActions', { productAction: action, variantActions: action.variants })
+            })
+        },
+        async initVariantActions({}, { productAction, variantActions }) {
+            variantActions.map(variantAction => {
+                Object.defineProperty(variantAction, 'productAlignment', {
+                    get: () => productAction,
                 })
             })
         },

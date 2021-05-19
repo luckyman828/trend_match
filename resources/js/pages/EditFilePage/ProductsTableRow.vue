@@ -8,6 +8,17 @@
                     :variant="product.variants[0]"
                     size="sm"
                 />
+                <div class="sync-wrapper" :class="syncStatus" v-if="syncStatus">
+                    <i
+                        v-if="syncStatus.toLowerCase() == 'success'"
+                        class="sync-icon success far green fa-check-circle md"
+                    ></i>
+                    <i
+                        v-else-if="syncStatus.toLowerCase() == 'failed'"
+                        class="sync-icon error far red fa-times-circle md"
+                    ></i>
+                    <i v-else class="sync-icon syncing fad fa-sync md"></i>
+                </div>
             </div>
         </td>
         <td class="id clickable" @click="onViewSingle">
@@ -20,7 +31,6 @@
                     v-tooltip="!!product.title && product.title.length > titleTruncateSize && product.title"
                     >{{ product.title | truncate(titleTruncateSize) }}</span
                 >
-                <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" />
                 <div class="variant-list" @click="onViewSingle">
                     <div
                         class="variant-list-item pill ghost xs"
@@ -55,16 +65,16 @@
         </td>
 
         <!-- Start Prices -->
-        <td class="wholesale-price hide-screen-xs">
+        <td class="wholesale-price">
             <span>{{ product.yourPrice.wholesale_price }}</span>
         </td>
-        <td class="recommended-retail-price hide-screen-xs">
+        <td class="recommended-retail-price">
             <span>{{ product.yourPrice.recommended_retail_price }}</span>
         </td>
-        <td class="mark-up hide-screen-xs">
+        <td class="mark-up">
             <span>{{ product.yourPrice.mark_up }}</span>
         </td>
-        <td class="currency hide-screen-xs">
+        <td class="currency">
             <span>{{ product.yourPrice.currency }}</span>
         </td>
         <!-- End Prices -->
@@ -94,13 +104,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import variantImage from '../../mixins/variantImage'
-import LabelList from '../SelectionPage/ProductsTableRow/LabelList'
 
 export default {
     name: 'productsRow',
-    components: { LabelList },
     props: ['product', 'selectedProducts', 'editOrderModeActive'],
     mixins: [variantImage],
     filters: {
@@ -115,11 +123,16 @@ export default {
     },
     computed: {
         ...mapGetters('workspaces', {
-            availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
         }),
         ...mapGetters('files', {
             currentFile: 'getCurrentFile',
+        }),
+        ...mapGetters('files', {
+            file: 'getCurrentFile',
+        }),
+        ...mapGetters('backgroundJobs', {
+            syncJobs: 'getImageSyncJobs',
         }),
         localSelectedProducts: {
             get() {
@@ -132,20 +145,12 @@ export default {
         titleTruncateSize() {
             return window.innerWidth < 1260 ? 16 : 24
         },
-        labelsEnabled() {
-            return this.availableLabels.length > 0
-        },
-        hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+        syncStatus() {
+            return this.product.imageSyncStatus
         },
     },
     methods: {
-        productImg(variant) {
-            if (!variant || (!variant.blob_id && !variant.image)) return `/images/placeholder.JPG`
-            if (variant.blob_id)
-                return `https://trendmatchb2bdev.azureedge.net/trendmatch-b2b-dev/${variant.blob_id}_thumbnail.jpg`
-            else return variant.image
-        },
+        ...mapActions('products', ['fetchProduct']),
         onViewSingle() {
             this.$emit('view-single-product', this.product)
         },
@@ -169,11 +174,28 @@ export default {
         border: $borderElSoft;
         height: 100%;
         width: 100%;
+        position: relative;
         // width: 48px;
         img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+        }
+        .sync-wrapper {
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            position: absolute;
+            &:not(.Success):not(.Error) {
+                background: rgba(white, 0.8);
+            }
+            .sync-icon {
+                margin: 8px;
+                &.syncing {
+                    animation: spin infinite 2s;
+                }
+            }
         }
     }
 }
@@ -208,6 +230,14 @@ td.title {
     cursor: grab;
     i {
         font-weight: 400 !important;
+    }
+}
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

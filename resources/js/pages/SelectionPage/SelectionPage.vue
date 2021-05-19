@@ -1,10 +1,5 @@
 <template>
-    <div class="subfile">
-        <!-- <ThePageHeader :title="`${currentFile.name}: 
-        ${!currentSelection.is_open ? '[Locked]' : ''} ${currentSelection.name || 'Untitled Selection'
-        }${currentSelections.length > 1 ? ' + '+ Math.abs(currentSelections.length -1) + ' more' : ''}: 
-        ${currentSelectionMode || 'Access Denied'}`"/> -->
-
+    <div class="selection-page">
         <h1>
             {{ currentFile.name }}: {{ !currentSelection.is_open ? '[Locked]' : '' }}
             {{ currentSelection.name || 'Untitled Selection' }}
@@ -90,9 +85,6 @@
                 >
                     <span>'OUT' styles with no IN ({{ productsNoIn.length }})</span>
                 </button>
-                <!-- <button class="invisible ghost-hover md" @click="setHideQuickIn(); setHideQuickOut()">
-                    <span>Hide quick actions</span><i class="far fa-times-circle"></i>
-                </button> -->
             </div>
 
             <ProductsTable
@@ -100,6 +92,7 @@
                 :file="currentFile"
                 :products="productsFiltered"
                 :selection="selection"
+                :labelPopoverRef="$refs.labelPopover"
                 :currentAction="currentAction"
                 @updateAction="onUpdateAction"
             />
@@ -108,6 +101,7 @@
                 :show="singleVisible"
                 :selection="selection"
                 :currentAction="currentAction"
+                :labelPopoverRef="$refs.labelPopover"
                 @close="setSingleVisisble(false)"
                 @updateAction="onUpdateAction"
             />
@@ -167,6 +161,10 @@
         </BaseDialog>
 
         <ScannerModeControls />
+
+        <BasePopover ref="labelPopover" @show="showLabelPopover">
+            <LabelPopover :labelInput="popoverLabelInput" :product="popoverProduct" />
+        </BasePopover>
     </div>
 </template>
 
@@ -177,6 +175,7 @@ import ProductsTable from './ProductsTable'
 import ThePageHeader from '../../components/layout/ThePageHeader'
 import ProductFlyin from './ProductFlyin'
 import ScannerModeControls from './ScannerModeControls'
+import LabelPopover from './LabelPopover/'
 
 export default {
     name: 'selectionPage',
@@ -185,15 +184,18 @@ export default {
         ThePageHeader,
         ProductFlyin,
         ScannerModeControls,
+        LabelPopover,
     },
     data: function() {
         return {
             hideQuickOut: false,
             hideQuickIn: false,
+            popoverLabelInput: null,
+            popoverProduct: null,
         }
     },
     computed: {
-        ...mapGetters('products', ['productsFiltered', 'singleVisible']),
+        ...mapGetters('products', ['getFilteredProducts', 'singleVisible']),
         ...mapGetters('selectionProducts', {
             products: 'getProducts',
             getActiveSelectionInput: 'getActiveSelectionInput',
@@ -212,6 +214,9 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         selection() {
             return this.currentSelection
+        },
+        productsFiltered() {
+            return this.getFilteredProducts(this.products)
         },
         currentSelections() {
             return this.getCurrentSelections
@@ -264,6 +269,10 @@ export default {
         onViewSelectionAsRole(role) {
             this.SET_CURRENT_SELECTION_REAL_ROLE(this.selection.your_role)
             this.selection.your_role = role
+        },
+        showLabelPopover({ labelInput, product }) {
+            this.popoverLabelInput = labelInput
+            this.popoverProduct = product
         },
         async onJoinSelection(role) {
             const user = JSON.parse(JSON.stringify(this.authUser))

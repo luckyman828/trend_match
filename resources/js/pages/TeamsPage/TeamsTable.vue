@@ -57,7 +57,7 @@
             <template v-slot:footer>
                 <td>
                     <BaseButton
-                        :buttonClass="'primary invisible'"
+                        :buttonClass="'primary invisible ghost-hover'"
                         :disabled="authUserWorkspaceRole != 'Admin'"
                         v-tooltip="authUserWorkspaceRole != 'Admin' && 'Only admins can create teams'"
                         @click="onNewTeam"
@@ -153,6 +153,7 @@
             header="Change Team Currency"
             v-model="teamToEdit.currency"
             type="radio"
+            :allowManualEntry="true"
             :options="availableCurrencies"
             :search="true"
             unsetOption="Clear"

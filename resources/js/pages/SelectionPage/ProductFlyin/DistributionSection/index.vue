@@ -1,29 +1,39 @@
 <template>
     <BaseFlyinColumn class="distribution">
         <template v-slot:header>
-            <div class="tab-headers">
-                <div :class="{ active: currentTab == 'All' }" class="tab" @click="currentTab = 'All'">
-                    ALL
-                    <span class="count">{{ totalInputCount }}</span>
-                </div>
-                <div :class="{ active: currentTab == 'In' }" class="tab" @click="currentTab = 'In'">
-                    IN
-                    <span class="count">{{
-                        selectionInput.ins.length +
+            <BaseSegmentedControl
+                activeClass="white"
+                sizeClass="sm"
+                countKey="count"
+                theme="light"
+                v-model="currentTab"
+                :options="[
+                    {
+                        label: 'All',
+                        count: totalInputCount,
+                        value: 'All',
+                    },
+                    {
+                        label: 'In',
+                        count:
+                            selectionInput.ins.length +
                             selectionInput.focus.length +
                             selectionInput.alignmentIns.length +
-                            selectionInput.alignmentFocus.length
-                    }}</span>
-                </div>
-                <div :class="{ active: currentTab == 'Out' }" class="tab" @click="currentTab = 'Out'">
-                    OUT
-                    <span class="count">{{ selectionInput.outs.length + selectionInput.alignmentOuts.length }}</span>
-                </div>
-                <div :class="{ active: currentTab == 'None' }" class="tab" @click="currentTab = 'None'">
-                    ND
-                    <span class="count">{{ selectionInput.nds.length + selectionInput.alignmentNds.length }}</span>
-                </div>
-            </div>
+                            selectionInput.alignmentFocus.length,
+                        value: 'In',
+                    },
+                    {
+                        label: 'Out',
+                        count: selectionInput.outs.length + selectionInput.alignmentOuts.length,
+                        value: 'Out',
+                    },
+                    {
+                        label: 'ND',
+                        count: selectionInput.nds.length + selectionInput.alignmentNds.length,
+                        value: 'None',
+                    },
+                ]"
+            />
         </template>
         <template v-slot>
             <div class="tab-body">
@@ -65,9 +75,16 @@
 
                         <ActionListItem
                             class="list-item"
-                            v-for="(action, index) in actionsToDisplay"
+                            v-for="(action, index) in actionsToDisplay.filter(action => !action.selection.chapter)"
                             :key="index"
                             :action="action"
+                            :showQty="showQty"
+                        />
+                        <ChapterActionGroup
+                            v-for="chunk in alignmentChapters"
+                            :key="chunk.chapter.id"
+                            :chapter="chunk.chapter"
+                            :actions="chunk.actions"
                             :showQty="showQty"
                         />
                     </div>
@@ -113,6 +130,7 @@ import { mapGetters } from 'vuex'
 import ActionDistributionBar from './ActionDistributionBar'
 import ActionListItem from './ActionListItem'
 import FeedbackListItem from './FeedbackListItem'
+import ChapterActionGroup from './ChapterActionGroup'
 import SelectionIcon from '../../../../components/common/SelectionIcon'
 import SelectionChapterPill from '../../../../components/common/SelectionChapterPill'
 
@@ -122,6 +140,7 @@ export default {
         ActionDistributionBar,
         ActionListItem,
         FeedbackListItem,
+        ChapterActionGroup,
         SelectionIcon,
         SelectionChapterPill,
     },
@@ -140,6 +159,25 @@ export default {
         }),
         actionsToDisplay() {
             return this.filterAndSortActions(this.selectionInput.actions)
+        },
+        alignmentChapters() {
+            const chapters = []
+            this.selectionInput.actions.map(action => {
+                if (!action.selection.chapter) return
+                const matchingChapter = chapters.find(chunk => chunk.chapter.id == action.selection.chapterId)
+                if (!matchingChapter) {
+                    chapters.push({
+                        chapter: action.selection.chapter,
+                        actions: [action],
+                    })
+                } else {
+                    matchingChapter.actions.push(action)
+                }
+            })
+            chapters.map(chapter => {
+                chapter.actions = this.filterAndSortActions(chapter.actions)
+            })
+            return chapters
         },
         feedbackSelections() {
             // Chunk the feedback by selections
@@ -179,18 +217,22 @@ export default {
     methods: {
         filterAndSortActions(actions) {
             if (!actions) return []
+            let actionsToReturn = actions
             // Filter and sort the actions
-            const actionsFiltered = actions.filter(action => {
+            actionsToReturn = actionsToReturn.filter(action => {
                 return this.currentTab == 'All' || this.currentTab == action.action
             })
-            const actionsSorted = actionsFiltered.sort((a, b) => {
+
+            // Sort by action
+            actionsToReturn = actionsToReturn.sort((a, b) => {
                 if (a.action == 'Focus' && !['Focus'].includes(b.action)) return -1
                 if (a.action == 'In' && !['Focus', 'In'].includes(b.action)) return -1
                 if (a.action == 'Out' && !['Focus', 'In', 'Out'].includes(b.action)) return -1
                 if (a.action == b.action && a.selection.type == 'Master') return -1
                 return 0
             })
-            return actionsSorted
+
+            return actionsToReturn
         },
     },
 }
@@ -199,6 +241,14 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
+::v-deep {
+    &.distribution {
+        > .header {
+            padding: 0;
+            justify-content: center;
+        }
+    }
+}
 .distribution {
     background: $bg;
     .tab-headers {

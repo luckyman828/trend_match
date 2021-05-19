@@ -169,6 +169,12 @@ export default {
                 displayName: 'Custom Assortment Sizes',
                 headersToMatch: ['box size', 'assortment box size', 'ass size', 'assortment size'],
             },
+            {
+                scope: null,
+                name: 'sequence',
+                displayName: 'Sequence',
+                headersToMatch: ['^order$', 'sequence'],
+            },
             // VARIANTS
             // {
             //     scope: 'variants',
@@ -185,6 +191,31 @@ export default {
             //         'colour_name',
             //     ],
             // },
+            {
+                scope: 'variants',
+                name: 'eans',
+                displayName: 'EANs',
+                type: 'number',
+                headersToMatch: ['eans', 'ean', 'variant ean', 'style ean', 'ean_no'],
+            },
+            {
+                scope: 'variants',
+                name: 'style_option_id',
+                displayName: 'Option ID',
+                type: 'number',
+                headersToMatch: [
+                    'style_option_id',
+                    'option_id',
+                    'variant_id',
+                    'variant id',
+                    'style option id',
+                    'option id',
+                    'style option number',
+                    'option number',
+                    'style_option_number',
+                    'option_number',
+                ],
+            },
             {
                 scope: 'variants',
                 name: 'color',
@@ -223,6 +254,21 @@ export default {
                     'variant sizes',
                     '^(?!.*box).*size.*$', // 'size' but not 'box size'
                     'variant size',
+                ],
+            },
+            {
+                scope: 'variants',
+                name: 'delivery_dates',
+                displayName: 'Delivery (date/month)',
+                type: 'date',
+                headersToMatch: [
+                    'delivery',
+                    'delivery date',
+                    'delivery month',
+                    'del. date',
+                    'del. month',
+                    'del. period',
+                    'delivery period',
                 ],
             },
             // IMAGES
@@ -320,7 +366,14 @@ export default {
                     })
                 })
 
-            const fields = allFields.filter(x => x.scope == scope)
+            let fields = allFields.filter(x => x.scope == scope)
+
+            // Filter out style_option_id if it is not enabled on the workspace
+
+            const enabledFeatures = rootGetters['workspaces/getFeatureFlags']
+            if (!enabledFeatures.includes('bestseller_style_option')) {
+                fields = fields.filter(x => x.name != 'style_option_id')
+            }
 
             return fields.map(x => {
                 x.file = null

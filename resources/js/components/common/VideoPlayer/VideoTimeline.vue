@@ -3,25 +3,14 @@
         <div
             ref="targetArea"
             class="target-area"
-            v-touch:moved="onDragStart"
-            v-touch:moving="onTouchDragMove"
-            v-touch:end="onDragEnd"
-        />
-        <div
-            class="timeline-wrapper"
             @click="onClickToTimestamp"
             v-touch:moved="onDragStart"
             v-touch:moving="onTouchDragMove"
             v-touch:end="onDragEnd"
-        >
+        />
+        <div class="timeline-wrapper">
             <div class="rail" :style="railStyle">
-                <div
-                    class="knob"
-                    @mousedown="onDragStart"
-                    v-touch:moved="onDragStart"
-                    v-touch:moving="onTouchDragMove"
-                    v-touch:end="onDragEnd"
-                ></div>
+                <div class="knob"></div>
             </div>
         </div>
         <TimelineItemList v-if="timings && productsReady" :timings="timings" class="timing-list" />
@@ -43,6 +32,7 @@ export default {
             dragTime: 0,
             stopDragTimeout: null,
             isMounted: false,
+            wasClick: false,
         }
     },
     computed: {
@@ -88,11 +78,17 @@ export default {
             document.body.removeEventListener('mouseleave', this.onDragEnd)
         },
         onClickToTimestamp(e) {
+            this.wasClick = true
+            console.log('on click')
             this.getDragTime(e)
             this.seekTo(this.dragTime)
             this.dragTime = null
         },
         onDragStart(e) {
+            if (this.wasClick) {
+                this.wasClick = false
+                return
+            }
             // alert('drag start')
             // Remove any previous drag listener - just in case
             this.removeDragListeners()
@@ -106,9 +102,11 @@ export default {
         },
         onTouchDragMove(e) {
             if (!e.touches) return
+            console.log('on touch drag move')
             this.getDragTime(e.touches[0])
         },
         onDragEnd() {
+            console.log('on drag end')
             this.seekTo(this.dragTime)
             this.removeDragListeners()
 
@@ -149,10 +147,27 @@ export default {
         position: absolute;
         top: 0;
         left: 0;
-        height: 80px;
+        height: 40px;
         width: 100%;
         width: 200%;
         transform: translate(-25%, -50%);
+        z-index: 4;
+        &:hover {
+            @include desktop {
+                + .timeline-wrapper {
+                    .rail {
+                        height: 12px;
+                    }
+                    .knob {
+                        height: 18px;
+                        width: 18px;
+                    }
+                    & + .timing-list {
+                        transform: translateY(-4px);
+                    }
+                }
+            }
+        }
     }
     @include mobile {
         bottom: 12px;
@@ -179,7 +194,6 @@ export default {
     .drag-active & {
         .rail,
         .knob {
-            pointer-events: none;
             transition: none;
             cursor: grabbing;
         }
@@ -215,6 +229,7 @@ export default {
         }
     }
     .knob {
+        pointer-events: none;
         cursor: pointer;
         transition: 0.1s;
         height: 14px;

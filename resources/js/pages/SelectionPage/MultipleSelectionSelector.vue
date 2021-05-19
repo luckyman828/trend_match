@@ -49,7 +49,7 @@
                     ></i>
                     <span>{{ theSelection.name }}</span>
                 </BaseSelectButton>
-                <div class="item-group actions">
+                <div class="action-list">
                     <BaseButton
                         buttonClass="primary"
                         v-close-popover="selectedSelections.length >= 1"
@@ -142,7 +142,11 @@ export default {
 <style scoped lang="scss">
 @import '~@/_variables.scss';
 
-button {
-    border: $borderEl;
+.action-list {
+    padding: 8px;
 }
+// button {
+//     border: $borderEl;
+//     .actions
+// }
 </style>

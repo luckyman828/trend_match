@@ -270,9 +270,9 @@ export default {
                 this.optionNameKey,
                 this.optionValueKey,
                 this.optionDescriptionKey,
-                this.optionGroupOptionsKey,
-                this.optionGroupNameKey,
-            ]
+                // this.optionGroupOptionsKey,
+                // this.optionGroupNameKey,
+            ].filter(x => x != null)
         },
         optionsFlat() {
             if (!this.multipleOptionArrays || !this.optionGroupOptionsKey) return this.options
@@ -375,7 +375,6 @@ export default {
             this.searchString = searchString
         },
         focusFirstOption() {
-            console.log('focus first option', this.$refs.option[0])
             this.$refs.option[0].focus()
         },
     },

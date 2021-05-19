@@ -1,6 +1,6 @@
 <template>
     <BaseFlyin
-        class="product-single"
+        class="product-single product-flyin"
         :show="show"
         @close="onCloseSingle"
         :columns="4"
@@ -27,7 +27,13 @@
                         >
                     </div>
                     <div class="item-group">
-                        <LabelList v-if="showLabels" ref="labelList" :product="product" v-horizontal-scroll />
+                        <LabelList
+                            v-if="showLabels"
+                            ref="labelList"
+                            :labelPopoverRef="labelPopoverRef"
+                            :product="product"
+                            v-horizontal-scroll
+                        />
                     </div>
                 </template>
                 <template v-slot:right>
@@ -61,7 +67,7 @@
                     </div>
                     <div class="item-group">
                         <v-popover>
-                            <button class="ghost">
+                            <button class="ghost true-square">
                                 <i class="far fa-ellipsis-h"></i>
                             </button>
                             <div slot="popover">
@@ -94,7 +100,10 @@
                     </div>
                     <div class="item-group">
                         <BaseButton
-                            :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                            :buttonClass="[
+                                'true-square',
+                                selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary',
+                            ]"
                             :disabled="!userWriteAccess.actions.hasAccess"
                             v-tooltip="userWriteAccess.actions.msg"
                             @click="onUpdateAction('Focus')"
@@ -126,23 +135,31 @@
         <template v-slot v-if="show">
             <BaseFlyinColumn class="details">
                 <div class="main-img" @click="cycleImage(true)">
-                    <BaseVariantImage
-                        :key="product.id + '-' + currentImgIndex"
-                        :variant="currentVariant"
-                        size="sm"
-                        :index="currentVariant ? currentVariant.imageIndex : 0"
-                    />
-                    <button class="white controls" v-tooltip="'View large images'" @click.stop="onShowLightbox">
+                    <BaseImageSizer>
+                        <BaseVariantImage
+                            :key="product.id + '-' + currentImgIndex"
+                            :variant="currentVariant"
+                            size="sm"
+                            :index="currentVariant ? currentVariant.imageIndex : 0"
+                        />
+                    </BaseImageSizer>
+                    <button
+                        class="white controls true-square"
+                        v-tooltip="'View large images'"
+                        @click.stop="onShowLightbox"
+                    >
                         <i class="far fa-search-plus"></i>
                     </button>
 
                     <div class="image-drawer" v-if="currentVariant && currentVariant.pictures.length > 1">
-                        <div class="square white trigger">
+                        <BaseShape shapeClass="true-square white">
                             <i class="far fa-images"></i>
-                            <div class="count circle xxs dark">
-                                <span>{{ currentVariant.pictures.length }}</span>
-                            </div>
-                        </div>
+                            <template v-slot:outside>
+                                <div class="count circle xxs dark top-right">
+                                    <span>{{ currentVariant.pictures.length }}</span>
+                                </div>
+                            </template>
+                        </BaseShape>
                         <div class="drawer">
                             <div
                                 class="image-wrapper"
@@ -183,14 +200,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>WHS ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Wholesale price">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Wholesale price">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.wholesale_price"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.wholesale_price" />
@@ -199,14 +216,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>RRP ({{ product.yourPrice.currency }}) <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Recommended retail price">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Recommended retail price">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.recommended_retail_price"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.recommended_retail_price" />
@@ -215,14 +232,14 @@
                         <v-popover :disabled="product.prices.length < 1">
                             <label>Mark up <i class="far fa-info-circle"></i></label>
                             <template slot="popover">
-                                <BaseTooltipList header="Mark up">
-                                    <BaseTooltipListItem
+                                <BasePopoverList header="Mark up">
+                                    <BasePopoverListItem
                                         v-for="(price, index) in product.prices"
                                         :key="index"
                                         :label="price.currency"
                                         :value="price.mark_up"
                                     />
-                                </BaseTooltipList>
+                                </BasePopoverList>
                             </template>
                         </v-popover>
                         <BaseInputField readOnly="true" :value="product.yourPrice.mark_up" />
@@ -299,7 +316,7 @@
                 <p>Press any product to access your queue again</p>
             </BaseDialog>
 
-            <BaseTooltip ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
+            <BasePopover ref="variantTooltip" @show="variant => (tooltipVariant = variant)">
                 <VariantTooltip
                     :variant="tooltipVariant"
                     :selection="selection"
@@ -308,7 +325,7 @@
                     :selectionInput="selectionInput"
                     @changeTab="tab => (actionDistributionTooltipTab = tab)"
                 />
-            </BaseTooltip>
+            </BasePopover>
 
             <BudgetCounter v-if="showQty" :hideLabel="true" class="the-budget-counter" :selection="selection" />
         </template>
@@ -334,7 +351,7 @@ import HotkeyHandler from '../../../components/common/HotkeyHandler'
 
 export default {
     name: 'productFlyin',
-    props: ['show'],
+    props: ['show', 'labelPopoverRef'],
     mixins: [variantImage],
     components: {
         CommentsSection,
@@ -439,7 +456,7 @@ export default {
             },
         },
         showLabels() {
-            return this.labelsEnabled || this.product && this.product.labels && this.product.labels.length > 0
+            return this.labelsEnabled || (this.product && this.product.labelInput && this.product.labelInput.length > 0)
         },
         broadcastActive() {
             return this.selection.is_presenting
@@ -466,12 +483,13 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+            return this.labelsEnabled && this.userWriteAccess.actions.hasAccess
         },
     },
     methods: {
         ...mapActions('products', ['showNextProduct', 'showPrevProduct', 'toggleProductCompleted', 'updateProduct']),
         ...mapActions('presentation', ['broadcastProduct']),
+        ...mapActions('actions', ['updateProductLabelInput']),
         ...mapMutations('lightbox', ['SET_LIGHTBOX_VISIBLE', 'SET_LIGHTBOX_IMAGES', 'SET_LIGHTBOX_IMAGE_INDEX']),
         ...mapMutations('requests', ['SET_CURRENT_REQUEST_THREAD']),
         ...mapMutations('products', ['SET_CURRENT_PDP_VARIANT_INDEX']),
@@ -610,8 +628,8 @@ export default {
             }
         },
         keydownHandler(e) {
-            const key = event.code
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            const key = e.code
+            if (e.target.type != 'textarea' && e.target.tagName.toUpperCase() != 'INPUT' && this.show) {
                 if (key == 'ArrowUp') e.preventDefault(), this.cycleImage(true)
                 if (key == 'ArrowDown') e.preventDefault(), this.cycleImage(false)
                 // Label hotkeys
@@ -623,13 +641,13 @@ export default {
                         if (!label) return
 
                         // Check if the label is already added
-                        const existingIndex = this.product.labels.findIndex(x => x == label)
+                        const existingIndex = this.product.yourLabels.findIndex(x => x == label)
                         if (existingIndex >= 0) {
-                            this.product.labels.splice(existingIndex, 1)
+                            this.product.yourLabels.splice(existingIndex, 1)
                         } else {
-                            this.product.labels.push(label)
+                            this.product.yourLabels.push(label)
                         }
-                        this.onUpdateProduct()
+                        this.updateProductLabelInput(this.product)
                     }
                     // Hashtag
                     if (e.key == '#') {
@@ -663,20 +681,29 @@ export default {
         &.has-labels {
             &.has-budget {
                 .label-list {
-                    top: 76px;
+                    top: 64px;
+                }
+                > .flyin {
+                    > .flyin-inner {
+                        > .flyin-header {
+                            margin-bottom: 48px;
+                        }
+                    }
                 }
             }
-            .flyin-header {
-                margin-bottom: 40px;
-            }
-            .flyin {
-                background: white;
-                > .body {
-                    border-top: $borderModule;
+            > .flyin {
+                > .flyin-inner {
+                    > .flyin-header {
+                        margin-bottom: 40px;
+                    }
+                    background: white;
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .label-list {
-                top: 68px;
+                top: 56px;
                 left: 0;
                 overflow-x: auto;
                 overflow-y: hidden;
@@ -700,8 +727,10 @@ export default {
         > .flyin {
             min-width: 0;
             width: calc(100vw - 242px);
-            > .body {
-                grid-template-columns: 26% 26% 24% 24% !important;
+            > .flyin-inner {
+                > .body {
+                    grid-template-columns: 26% 26% 24% 24% !important;
+                }
             }
             .flyin-header {
                 > .left {
@@ -715,9 +744,13 @@ export default {
         }
         &.has-budget {
             > .flyin {
-                > .body {
-                    margin-top: 8px;
-                    border-top: $borderModule;
+                > .flyin-inner {
+                    > .flyin-header {
+                            margin-bottom: 8px;
+                        }
+                    > .body {
+                        border-top: $borderModule;
+                    }
                 }
             }
             .the-budget-counter {
@@ -733,7 +766,7 @@ export default {
 
 .the-budget-counter {
     position: absolute;
-    top: 60px;
+    top: 48px;
     margin: 0;
     left: 0;
     max-width: none;
@@ -763,8 +796,8 @@ export default {
             }
             .main-img {
                 cursor: pointer;
-                width: 225px;
-                height: 300px;
+                width: 100%;
+                // height: 300px;
                 overflow: hidden;
                 border: $borderElHard;
                 border-radius: $borderRadiusEl;
@@ -817,20 +850,6 @@ export default {
                 display: none;
             }
         }
-        .trigger {
-            border: $borderElSoft;
-            margin-right: -4px;
-            margin-top: -4px;
-            position: relative;
-            .count {
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                height: 16px;
-                width: 16px;
-                font-size: 10px;
-            }
-        }
         .drawer {
             display: none;
             overflow-y: auto;
@@ -843,12 +862,13 @@ export default {
             margin-bottom: 4px;
         }
         .image-wrapper {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border: $borderElSoft;
-            border-radius: $borderRadiusEl;
+            border-radius: 4px;
             position: relative;
             cursor: pointer;
+            overflow: hidden;
             img {
                 width: 100%;
                 height: 100%;

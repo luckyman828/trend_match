@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import getUniqueObjectValuesByKey from '../../../helpers/getUniqueObjectValuesByKey'
 export default {
     name: 'searchField',
     props: {
@@ -107,9 +108,21 @@ export default {
         },
         getResult() {
             const array = this.arrayToSearch
+
             // Get the lowercase value to avoid the search being case sensitive
             let searchString = this.searchString.toLowerCase()
-            const searchKey = this.searchKey
+
+            // Look for modifiers
+            const modifiers = searchString.match(/((?:^|[^\w]):.[^ ]*)/g) || []
+            // Find the last index
+            if (modifiers && modifiers.length > 0) {
+                const lastMod = modifiers[modifiers.length - 1]
+                const lastIndexOfMod = searchString.lastIndexOf(lastMod)
+                searchString = searchString.slice(lastIndexOfMod + lastMod.length).trim()
+            }
+
+            // Make sure the searchkey is an array if it has a value
+            const searchKey = this.searchKey && !Array.isArray(this.searchKey) ? [this.searchKey] : this.searchKey
             // First test that we actually have a search string
             if (!searchString) {
                 return array
@@ -125,142 +138,119 @@ export default {
             }
             searchString = searchString.map(str => str.trim())
 
-            // If we have a search key, search by that
-            if (searchKey) {
-                // If we have multiple arrays to search through
-                if (this.searchMultipleArrays) {
-                    // Instantiate a copy of the multiple arrays object that we will use as the return object
-                    const arrayToReturn = []
+            // START Helper functions
+            const compareMatch = compareValue => {
+                // Convert the value to match to a string so we can search it
+                const valueToMatch = compareValue.toString().toLowerCase()
+                let isMatch = false
+                searchString.forEach(str => {
+                    if (valueToMatch.search(str) >= 0) isMatch = true
+                })
+                return isMatch
+            }
 
-                    array.forEach(arrayObject => {
-                        // Make a copy of the array object that we can filter the options of
-                        const arrayObjectToReturn = Object.assign({}, arrayObject)
-                        arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
-                            // If the search key is an array of keys, search for a result in each of them
-                            if (Array.isArray(searchKey)) {
-                                // Assume no match
-                                let isMatch = false
-                                searchKey.forEach(key => {
-                                    // Check if the value is an object
-                                    let valueToMatch = x
-                                    if (typeof x == 'object') {
-                                        valueToMatch = x[key]
-                                        // Check that we have a value
-                                        if (!valueToMatch) return false
-                                    }
-                                    // Convert the value to match to a string so we can search it
-                                    valueToMatch = valueToMatch.toString().toLowerCase()
-                                    // If a match is found for any of the keys, return true
-                                    searchString.forEach(str => {
-                                        if (valueToMatch.search(str) >= 0) isMatch = true
-                                    })
-                                })
-                                return isMatch
-                            } else {
-                                // Check that we have a value
-                                if (!x[searchKey]) return false
-                                // Convert the value to match to a string so we can search it
-                                const valueToMatch = x[searchKey].toString().toLowerCase()
-                                let isMatch = false
-                                searchString.forEach(str => {
-                                    if (valueToMatch.search(str) >= 0) isMatch = true
-                                })
-                                return isMatch
+            const getResults = searchArray => {
+                if (!searchKey || searchKey.length <= 0) {
+                    return searchArray.filter(x => compareMatch(x))
+                }
+                let results = searchArray.filter(arrayItem => {
+                    let isMatch = false
+                    for (const key of searchKey) {
+                        if (!key) continue
+                        const valuesToMatch = getUniqueObjectValuesByKey(arrayItem, key)
+                        // console.log('compare match', key, valuesToMatch, arrayItem)
+                        for (const valueToMatch of valuesToMatch) {
+                            if (compareMatch(valueToMatch)) {
+                                isMatch = true
+                                break
                             }
-                        })
-                        arrayToReturn.push(arrayObjectToReturn)
-                    })
-                    // Return the resulting arrays
-                    resultsToReturn = arrayToReturn
-                }
-
-                // If we don't have multiple arrays
-                else
-                    resultsToReturn = array.filter(x => {
-                        // If the search key is an array of keys, search for a result in each of them
-                        if (Array.isArray(searchKey)) {
-                            // Assume no match
-                            let isMatch = false
-                            searchKey.forEach(key => {
-                                // If a match is found for any of the keys, return true
-                                // Check that we have a value
-                                if (!x[key]) return false
-                                // Convert the value to match to a string so we can search it
-                                const valueToMatch = x[key].toString().toLowerCase()
-                                searchString.forEach(str => {
-                                    if (valueToMatch.search(str) >= 0) isMatch = true
-                                })
-                            })
-                            return isMatch
-                        } else {
-                            // Check that we have a value
-                            if (!x[searchKey]) return false
-                            // Convert the value to match to a string so we can search it
-                            const valueToMatch = x[searchKey].toString().toLowerCase()
-                            let isMatch = false
-                            searchString.forEach(str => {
-                                if (valueToMatch.search(str) >= 0) isMatch = true
-                            })
-                            return isMatch
-                            // return valueToMatch.search(searchString) >= 0
                         }
-                    })
-            }
-            // Else search by the option itself
-            else {
-                // If we have multiple arrays to search through
-                if (this.searchMultipleArrays) {
-                    // Instantiate a copy of the multiple arrays object that we will use as the return object
-                    const arrayToReturn = []
+                        if (isMatch) break
+                    }
+                    return isMatch
+                })
 
-                    array.forEach(arrayObject => {
-                        // Make a copy of the array object that we can filter the options of
-                        const arrayObjectToReturn = Object.assign({}, arrayObject)
-                        arrayObjectToReturn[this.multipleArrayKey] = arrayObject[this.multipleArrayKey].filter(x => {
-                            // Convert the value to match to a string so we can search it
-                            const valueToMatch = x.toString().toLowerCase()
-                            let isMatch = false
-                            searchString.forEach(str => {
-                                if (valueToMatch.search(str) >= 0) isMatch = true
-                            })
-                            return isMatch
-                        })
-                        arrayToReturn.push(arrayObjectToReturn)
-                    })
-                    // Return the resulting arrays
-                    resultsToReturn = arrayToReturn
-                } else {
-                    resultsToReturn = array.filter(x => {
-                        // Convert the value to match to a string so we can search it
-                        const valueToMatch = x.toString().toLowerCase()
-                        let isMatch = false
-                        searchString.forEach(str => {
-                            if (valueToMatch.search(str) >= 0) isMatch = true
-                        })
-                        return isMatch
+                // console.log('results', results)
+
+                // Modify results by modifiers
+                results = modifyResults(results, searchArray)
+                // console.log('results modified', results)
+
+                // Sort results
+                results = sortResults(results)
+                // console.log('results sorted', results)
+
+                return results
+            }
+
+            const modifyResults = (resultArray, originalArray) => {
+                let modifiedResults = [...resultArray]
+                // FLIP THE RESULT IF NEEDED
+                if (modifiers.includes(':inverse') || modifiers.includes(':invert')) {
+                    modifiedResults = [...originalArray].filter(original => {
+                        // Chech that the item is not in the search results
+                        // Assume that the items we are searching has an ID property
+                        return !resultArray.find(result => result.id == original.id)
                     })
                 }
+                return modifiedResults
             }
 
-            // Sort the results by the search array
-            if (searchString.length > 2) {
-                return resultsToReturn.sort((a, b) => {
-                    return (
-                        searchString.indexOf(a.datasource_id.toString()) -
-                        searchString.indexOf(b.datasource_id.toString())
-                    )
+            // Half-baked sort results function. It can only sort products by datasource id..
+            const sortResults = resultArray => {
+                let resultsSorted = [...resultArray]
+                // Sort the results by the search array
+                if (searchString.length > 2) {
+                    resultsSorted = resultsSorted.sort((a, b) => {
+                        if (!(a.datasource_id && b.datasource_id)) return
+                        return (
+                            searchString.indexOf(a.datasource_id.toString()) -
+                            searchString.indexOf(b.datasource_id.toString())
+                        )
+                    })
+                }
+                return resultsSorted
+            }
+            // END Helper functions
+
+            // Normal Search
+            if (!this.searchMultipleArrays) {
+                resultsToReturn = getResults(array)
+            }
+            // Search Multiple Objects
+            else {
+                array.map(searchObj => {
+                    const key = this.multipleArrayKey
+                    // Make a copy of the object
+                    const objClone = Object.assign({}, searchObj)
+                    // Get the values to search on the object
+                    const searchArray = getUniqueObjectValuesByKey(searchObj, key)
+                    // Get the results
+                    const objResults = getResults(searchArray)
+                    // console.log('obj results', objResults, searchArray)
+                    if (objResults.length > 0) {
+                        objClone[key] = objResults
+                        resultsToReturn.push(objClone)
+                    }
                 })
             }
-            if (this.searchMultipleArrays) {
-                // Only return arrays with results
-                return resultsToReturn.filter(x => x[this.multipleArrayKey].length > 0)
-            }
+
+            // console.log('getResult', resultsToReturn)
 
             return resultsToReturn
         },
     },
     mounted() {
-        if (this.focusOnMount) this.setFocus()
+        if (this.focusOnMount) {
+            this.setFocus()
+            // const focusSearchTester = setInterval(() => {
+            //     if (document.activeElement.type == 'search') {
+            //         clearInterval(focusSearchTester)
+            //         return
+            //     }
+            //     this.setFocus()
+            // }, 100)
+        }
     },
     created() {
         if (this.arrayToSearch) {
@@ -276,6 +266,7 @@ export default {
 .search {
     position: relative;
     input.input-wrapper {
+        width: 100%;
         padding-right: 32px;
         box-sizing: border-box;
     }

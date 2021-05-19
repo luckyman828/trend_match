@@ -16,6 +16,7 @@
                 >
                 </BaseDropdownInputField>
                 <BaseDropdownInputField
+                    :search="true"
                     :options="availableUsers"
                     valueKey="id"
                     type="radio"

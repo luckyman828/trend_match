@@ -1,11 +1,5 @@
 <template>
-    <BaseFlyin
-        class="edit-product-single"
-        :show="show"
-        @close="onCloseSingle"
-        :columns="2"
-        :class="{ 'has-labels': showLabels }"
-    >
+    <BaseFlyin class="edit-product-single" :show="show" @close="onCloseSingle" :columns="2">
         <template v-slot:header>
             <BaseFlyinHeader
                 v-if="show"
@@ -25,14 +19,6 @@
                             {{ availableProducts.length }}</span
                         >
                     </div>
-                    <div class="item-group">
-                        <LabelList
-                            ref="labelList"
-                            v-if="labelsEnabled || product.labels.length > 0"
-                            :product="product"
-                            v-horizontal-scroll
-                        />
-                    </div>
                 </template>
                 <template v-slot:right>
                     <div class="item-group">
@@ -44,10 +30,7 @@
                             <i class="far fa-trash-alt"></i>
                             <span>Delete</span>
                         </button>
-                        <div
-                            class="hotkey-wrapper"
-                            v-tooltip="{ content: !productToEdit.datasource_id && 'Product must have an ID' }"
-                        >
+                        <div v-tooltip="{ content: !productToEdit.datasource_id && 'Product must have an ID' }">
                             <button
                                 class="ghost save-button"
                                 :class="{ disabled: !saveActive }"
@@ -55,7 +38,6 @@
                             >
                                 <i class="far fa-save"> </i><span>Save</span>
                             </button>
-                            <span class="hotkey"><span class="key">S</span> Save</span>
                         </div>
                     </div>
                 </template>
@@ -74,7 +56,11 @@
                         :key="index"
                         :class="{ 'is-current': currentVariant && currentVariant.id == variant.id }"
                         @contextmenu.prevent="showVariantContext($event, index)"
-                        @click="currentVariant = variant"
+                        @click="
+                            currentVariant && currentVariant.id == variant.id
+                                ? (currentVariant = null)
+                                : (currentVariant = variant)
+                        "
                     >
                         <div
                             class="img-wrapper"
@@ -327,17 +313,17 @@
 
             <BaseFlyinColumn>
                 <div class="deliveries form-section">
-                    <h3>Delivery</h3>
+                    <h3>{{ currentVariant ? 'Variant' : 'Product' }} Delivery</h3>
                     <div
                         class="col-2 form-element"
-                        v-for="(delivery, index) in product.delivery_dates"
+                        v-for="(delivery, index) in deliveryArray"
                         :key="'delivery-' + index"
                     >
                         <BaseDatePicker
                             :type="'month'"
                             :formatIn="'YYYY-MM-DD'"
                             :formatOut="'MMMM YYYY'"
-                            v-model="product.delivery_dates[index]"
+                            v-model="deliveryArray[index]"
                             @submit="onSubmitField"
                         />
 
@@ -386,8 +372,8 @@
                     <h3>Prices</h3>
                     <div class="col-5 form-element">
                         <label>Currency name</label>
-                        <label>WHS <BaseTooltipButton msg="Wholesale Price"/></label>
-                        <label>RRP <BaseTooltipButton msg="Recommended Retail Price"/></label>
+                        <label>WHS <BasePopoverButton msg="Wholesale Price"/></label>
+                        <label>RRP <BasePopoverButton msg="Recommended Retail Price"/></label>
                         <label>Mark up</label>
                     </div>
                     <div class="col-5 form-element" v-for="(price, index) in product.prices" :key="index">
@@ -552,7 +538,7 @@
                 <div class="EANs form-section">
                     <h3>Variant Sizes</h3>
                     <div v-if="!currentVariant">
-                        <p>Click a variant to manage it's sizes</p>
+                        <p>Click a variant to manage it</p>
                     </div>
 
                     <div v-else>
@@ -594,10 +580,33 @@
                     </div>
                 </div>
 
+                <div
+                    class="form-section variant-custom-props"
+                    v-if="enabledFeatures.includes('bestseller_style_option')"
+                >
+                    <h3>Variant Option Id</h3>
+                    <div v-if="!currentVariant">
+                        <p>Click a variant to manage it</p>
+                    </div>
+
+                    <div class="custom-property-list" v-else>
+                        <div class="form-element">
+                            <label>Option Id</label>
+                            <BaseEditInputWrapper
+                                :value="currentVariant.style_option_id"
+                                :oldValue="currentVariant.style_option_id"
+                                v-model="currentVariant.style_option_id"
+                                :submitOnBlur="true"
+                                @submit="onSubmitField"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-section variant-custom-props">
                     <h3>Variant Custom Data</h3>
                     <div v-if="!currentVariant">
-                        <p>Click a variant to manage it's sizes</p>
+                        <p>Click a variant to manage it</p>
                     </div>
 
                     <div class="custom-property-list" v-else>
@@ -760,7 +769,6 @@ import axios from 'axios'
 import variantImage from '../../mixins/variantImage'
 import VariantNameInput from './VariantNameInput'
 import CustomPropertyArray from './CustomPropertyArray'
-import LabelList from '../SelectionPage/ProductsTableRow/LabelList'
 
 export default {
     name: 'editProductFlyin',
@@ -770,7 +778,6 @@ export default {
         Draggable,
         VariantNameInput,
         CustomPropertyArray,
-        LabelList,
     },
     data: function() {
         return {
@@ -813,14 +820,11 @@ export default {
         ...mapGetters('persist', ['availableCurrencies']),
         ...mapGetters('workspaces', {
             customFields: 'getCustomProductFields',
-            availableLabels: 'getAvailableProductLabels',
             workspaceRole: 'authUserWorkspaceRole',
+            enabledFeatures: 'getFeatureFlags',
         }),
         product() {
             return this.productToEdit
-        },
-        showLabels() {
-            return this.labelsEnabled || this.product && this.product.labels && this.product.labels.length > 0
         },
         originalProduct() {
             return this.currentProduct
@@ -857,11 +861,8 @@ export default {
             })
             return filesToDelete
         },
-        labelsEnabled() {
-            return this.availableLabels.length > 0
-        },
-        hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+        deliveryArray() {
+            return this.currentVariant ? this.currentVariant.delivery_dates : this.product.delivery_dates
         },
     },
     methods: {
@@ -903,17 +904,14 @@ export default {
                 this.idError = null
             }
         },
-        initProduct() {
+        initProduct(isSameProduct) {
             // Make a copy of the product, so we can check for changes compared to the original
             const productClone = JSON.parse(JSON.stringify(this.currentProduct))
             this.productToEdit = productClone
             this.initProducts([this.productToEdit])
-            this.currentVariant = null
-
-            // Check if the product has any currencies, else add a default currency
-            // if (this.productToEdit.prices.length < 1) {
-            //     this.productToEdit.prices.push(JSON.parse(JSON.stringify(this.defaultPriceObject)))
-            // }
+            if (!isSameProduct) {
+                this.currentVariant = null
+            }
 
             // Create an empty variant if no variants are present
             const variants = this.productToEdit.variants
@@ -963,6 +961,7 @@ export default {
             const newVariant = {
                 id: this.$uuid.v4(),
                 name: 'Unnamed',
+                style_option_id: null,
                 color: null,
                 variant: null,
                 image: null,
@@ -1100,7 +1099,7 @@ export default {
                         // Resort the products to include the new product
                         this.$emit('onSort')
                     } else {
-                        this.initProduct()
+                        this.initProduct(true)
                     }
                 })
                 .catch(err => {})
@@ -1127,32 +1126,11 @@ export default {
             const key = event.code
 
             // Only do these if the current target is not the comment box
-            if (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT' && this.show) {
+            if (
+                (!event.target || (event.target.type != 'textarea' && event.target.tagName.toUpperCase() != 'INPUT')) &&
+                this.show
+            ) {
                 if (key == 'KeyS' && this.saveActive) this.onUpdateProduct()
-
-                // Label hotkeys
-                if (this.hasLabelWriteAccess) {
-                    // Number hotkey
-                    if (parseInt(e.key)) {
-                        const pressedNumber = e.key
-                        const label = this.availableLabels[pressedNumber - 1]
-                        if (!label) return
-
-                        // Check if the label is already added
-                        const existingIndex = this.product.labels.findIndex(x => x == label)
-                        if (existingIndex >= 0) {
-                            this.product.labels.splice(existingIndex, 1)
-                        } else {
-                            this.product.labels.push(label)
-                        }
-                        this.onUpdateProduct()
-                    }
-                    // Hashtag
-                    if (e.key == '#') {
-                        // Open labels menu
-                        this.$refs.labelList.$refs.popover.show()
-                    }
-                }
             }
         },
         dragActive(e, index) {
@@ -1281,13 +1259,13 @@ export default {
             this.draggingVariantPicture = false
             // If the dragged picture was the currently active picture set the active picture index to the pictures new index
             // I.e. keep the same picure as the active one even after dragging
-            if (e.oldIndex == variant.imageIndex) {
-                variant.imageIndex = e.newIndex
-                return
-            }
-            // Keep the same position when the active picture gets "bumped"
-            if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
-            if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
+            // if (e.oldIndex == variant.imageIndex) {
+            //     variant.imageIndex = e.newIndex
+            //     return
+            // }
+            // // Keep the same position when the active picture gets "bumped"
+            // if (e.newIndex >= variant.imageIndex && e.oldIndex < variant.imageIndex) variant.imageIndex--
+            // if (e.newIndex <= variant.imageIndex && e.oldIndex > variant.imageIndex) variant.imageIndex++
         },
         removePicture(index) {
             const variant = this.product.variants[index]
@@ -1323,10 +1301,10 @@ export default {
             this.currentVariant.ean_sizes.splice(index, 1)
         },
         onAddDelivery() {
-            this.product.delivery_dates.push(new Date().toLocaleDateString({}, { month: 'long', year: 'numeric' }))
+            this.deliveryArray.push(new Date().toLocaleDateString({}, { month: 'long', year: 'numeric' }))
         },
         onRemoveDelivery(index) {
-            this.product.delivery_dates.splice(index, 1)
+            this.deliveryArray.splice(index, 1)
         },
     },
     created() {
@@ -1344,41 +1322,6 @@ export default {
 
 <style scoped lang="scss">
 @import '~@/_variables.scss';
-
-::v-deep {
-    &.has-labels {
-        .flyin-header {
-            margin-bottom: 40px;
-        }
-        .flyin {
-            background: white;
-            > .body {
-                border-top: $borderModule;
-            }
-        }
-        .label-list {
-            top: 68px;
-            left: 0;
-            overflow-x: auto;
-            overflow-y: hidden;
-            padding: 0 16px 6px;
-            max-width: none;
-            &::after {
-                content: '';
-                display: block;
-                width: 16px;
-                height: 1px;
-                flex-shrink: 0;
-            }
-            > * {
-                flex-shrink: 0;
-            }
-            .add-button {
-                display: block;
-            }
-        }
-    }
-}
 
 .product-title-wrapper {
     flex-direction: column;
@@ -1487,6 +1430,7 @@ export default {
             }
         }
         .drop-area {
+            border-radius: $borderRadiusEl;
             input[type='file'] {
                 pointer-events: none;
             }

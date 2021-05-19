@@ -60,6 +60,7 @@ export default {
         currentSelection: state => state.currentSelections[0],
         getCurrentSelectionId: state => state.currentSelectionId,
         getCurrentSelection: state => state.currentSelections[0],
+        getCurrentSelectionType: (state, getters) => getters.getCurrentSelection && getters.getCurrentSelection.type,
         getCurrentSelections: state => state.currentSelections,
         getDisplayUnreadBullets: (state, getters) => {
             return getters.getTicketModeActive && getters.getCurrentSelectionMode != 'Feedback'
@@ -104,24 +105,18 @@ export default {
             getters.currentSelection.settings && getters.currentSelection.settings.ticket_level,
         currentSelectionMode: (state, getters) => {
             const selection = getters.currentSelection
-            if (selection) {
-                return selection.your_role == 'Member'
-                    ? 'Feedback'
-                    : selection.your_role == 'Owner'
-                    ? 'Alignment'
-                    : selection.your_role == 'Approver'
-                    ? 'Approval'
-                    : 'No Access'
-            }
+            if (selection) return getters.getSelectionCurrentMode(selection)
         },
         getCurrentSelectionMode: (state, getters) => getters.currentSelectionMode,
         getSelectionCurrentMode: (state, getters) => selection => {
-            return selection.your_role == 'Member'
+            return selection.your_job && selection.your_job != 'None'
+                ? selection.your_job
+                : selection.your_roles.includes('Member')
                 ? 'Feedback'
-                : selection.your_role == 'Owner'
-                ? 'Alignment'
-                : selection.your_role == 'Approver'
+                : selection.your_roles.includes('Approver')
                 ? 'Approval'
+                : selection.your_roles.includes('Owner')
+                ? 'Alignment'
                 : 'No Access'
         },
         currentSelectionModeAction: (state, getters) =>
@@ -183,6 +178,20 @@ export default {
         },
         isFeedback: (state, getters) => {
             return getters.currentSelection.user_access == 'user'
+        },
+        getSelectionWriteAccess: (state, getters, rootState, rootGetters) => selection => {
+            const availableLabels = rootGetters['workspaces/getAvailableProductLabels']
+            const labelsEnabled = availableLabels && availableLabels.length > 0
+            const currentFile = rootGetters['files/getCurrentFile']
+            const workspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
+            return {
+                actions: selection.type != 'Summed',
+                comments: true,
+                labels: labelsEnabled && (currentFile.editable || workspaceRole == 'Admin'),
+            }
+        },
+        getCurrentSelectionWriteAccess: (state, getters) => {
+            return getters.getSelectionWriteAccess(getters.getCurrentSelection)
         },
         getAuthUserHasSelectionEditAccess: (state, getters, rootState, rootGetters) => selection => {
             const authUserWorkspaceRole = rootGetters['workspaces/authUserWorkspaceRole']
@@ -1337,7 +1346,7 @@ export default {
         },
         async importSelectionInput(
             { commit, dispatch, rootGetters },
-            { destinationSelection, sourceSelection, sourceUser, importOptions }
+            { destinationSelection, sourceSelection, sourceUser, importOptions, isCopy }
         ) {
             const workspaceId = rootGetters['workspaces/currentWorkspace'].id
             const apiUrl = `workspaces/${workspaceId}/convert-user-inputs`
@@ -1355,7 +1364,7 @@ export default {
                     source_selection_id: sourceSelection.id,
                     destination_selection_id: destinationSelection.id,
                     actions,
-                    is_copy: true,
+                    is_copy: isCopy,
                 })
                 .then(response => {
                     const showCallback = router.currentRoute.name == 'selection'
@@ -1381,13 +1390,15 @@ export default {
                             iconClass: 'fa-exclamation-triangle',
                             type: 'warning',
                             callbackLabel: 'Retry',
-                            callback: () =>
+                            callback: () => {
                                 dispatch('importSelectionInput', {
                                     destinationSelection,
                                     sourceSelection,
                                     sourceUser,
                                     importOptions,
-                                }),
+                                    isCopy,
+                                })
+                            },
                         },
                         { root: true }
                     )

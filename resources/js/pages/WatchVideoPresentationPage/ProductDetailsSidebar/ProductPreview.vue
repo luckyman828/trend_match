@@ -1,7 +1,7 @@
 <template>
     <div class="product-preview">
         <div id="preview-spawner">
-            <v-popover placement="right" popoverClass="min dark">
+            <v-popover placement="right" popoverClass="min theme-dark">
                 <!-- Preview -->
                 <div class="preview" ref="preview">
                     <div class="header">
@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="square white price sm">
-                        <span>{{ product.yourPrice.wholesale_price }} {{ product.yourPrice.currency }}</span>
+                        <span>{{ product.yourPrice.recommended_retail_price }} {{ product.yourPrice.currency }}</span>
                     </div>
                 </div>
 

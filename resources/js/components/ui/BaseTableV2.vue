@@ -15,8 +15,13 @@
                 <slot name="header" />
             </tr>
 
-            <slot />
+            <tbody>
+                <slot />
+            </tbody>
         </table>
+        <div class="last">
+            <slot name="last" />
+        </div>
 
         <div class="empty flex-list center-v center-h" v-if="items && items.length <= 0">
             <slot name="empty" />

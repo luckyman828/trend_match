@@ -87,7 +87,7 @@
 
                         <div
                             v-if="displayUnreadBullets && hasNewComment"
-                            class="circle xxs primary new-comment-indicator"
+                            class="circle min primary new-comment-indicator"
                         ></div>
                     </button>
                 </div>
@@ -205,6 +205,7 @@ export default {
             return this.request.status
         },
         hasTicketControl() {
+            if (this.request.product.is_completed) return false
             return (
                 ['Owner', 'Approver'].includes(this.request.selection.your_role) ||
                 this.currentSelection.your_role == 'Approver' ||
@@ -469,10 +470,8 @@ export default {
     position: relative;
     .new-comment-indicator {
         position: absolute;
-        right: 0;
+        right: 2px;
         top: 0;
-        height: 10px;
-        width: 10px;
     }
 }
 .request-label {

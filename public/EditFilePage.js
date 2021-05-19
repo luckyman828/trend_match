@@ -5280,7 +5280,7 @@
                                                                       'label',
                                                                       [
                                                                           _vm._v('WHS '),
-                                                                          _c('BaseTooltipButton', {
+                                                                          _c('BasePopoverButton', {
                                                                               attrs: { msg: 'Wholesale Price' },
                                                                           }),
                                                                       ],
@@ -5291,7 +5291,7 @@
                                                                       'label',
                                                                       [
                                                                           _vm._v('RRP '),
-                                                                          _c('BaseTooltipButton', {
+                                                                          _c('BasePopoverButton', {
                                                                               attrs: {
                                                                                   msg: 'Recommended Retail Price',
                                                                               },

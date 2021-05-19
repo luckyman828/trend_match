@@ -268,13 +268,29 @@ export default {
                             let keysToMatch = Object.keys(existingArrayItem)
                             if (key == 'variants') {
                                 keysToMatch = ['name']
+                                // if the src product's variants have no variant, only look at color, and vice versa
+                                if (!srcProduct.variants.find(x => x.variant)) keysToMatch.push('color')
+                                if (!srcProduct.variants.find(x => x.color)) keysToMatch.push('variant')
                             }
                             return keysToMatch.find(itemKey => {
-                                let isMatching =
-                                    existingArrayItem[itemKey] != null &&
-                                    typeof existingArrayItem[itemKey] == 'string' &&
-                                    typeof newArrayItem[itemKey] == 'string' &&
-                                    existingArrayItem[itemKey].toLowerCase() == newArrayItem[itemKey].toLowerCase()
+                                const singleKeyAvailable = !(
+                                    keysToMatch.includes('color') && keysToMatch.includes('variant')
+                                )
+                                if (
+                                    existingArrayItem[itemKey] == null ||
+                                    typeof existingArrayItem[itemKey] != 'string' ||
+                                    typeof newArrayItem[itemKey] != 'string'
+                                ) {
+                                    return
+                                }
+
+                                const existingVal = existingArrayItem[itemKey].toLowerCase()
+                                const newVal = newArrayItem[itemKey].toLowerCase()
+
+                                const isMatching =
+                                    existingVal == newVal ||
+                                    (singleKeyAvailable &&
+                                        (existingVal.search(newVal) >= 0 || newVal.search(existingVal) >= 0))
 
                                 return isMatching
                             })
@@ -282,12 +298,20 @@ export default {
 
                         // If we found an existing match, we want to update that match
                         if (existingArrayItem) {
+                            // Only update existing variants if the setting is set
+                            if (key == 'variants' && !this.uploadStrategy.updateExistingVariants) {
+                                return
+                            }
+
                             Object.keys(existingArrayItem).map(itemKey => {
                                 // Call this function recursively (it doens't matter that it isnt actually a product)
                                 this.setKeyValue(newArrayItem, existingArrayItem, itemKey, strategy)
                             })
                             return
                         }
+                        // Check if we are adding variants, and want to add extra variants
+                        if (key == 'variants' && !this.uploadStrategy.createNewVariants) return
+
                         // If we have no existing array item, but we have a new one - push it!
                         productArray.push(newArrayItem)
                     }

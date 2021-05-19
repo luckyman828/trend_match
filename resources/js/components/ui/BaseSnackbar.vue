@@ -1,28 +1,34 @@
 <template>
-    <div class="snackbar" @mouseenter="onEnter" @mouseleave="onLeave"
-    @click.exact="onDeleteSnackbar">
+    <div class="snackbar" @mouseenter="onEnter" @mouseleave="onLeave" @click.exact="onDeleteSnackbar">
         <!-- <div class="count circle" v-if="snackbar.count">{{snackbar.count}}</div> -->
         <div class="icon-wrapper" :class="snackbar.type">
             <i class="fas" :class="snackbar.iconClass"></i>
         </div>
         <div class="body">
             <div class="msg">
-                <span><span v-html="snackbar.msg"></span> <span v-if="snackbar.count > 1">({{snackbar.count}})</span></span>
+                <span
+                    ><span v-html="snackbar.msg"></span>
+                    <span v-if="snackbar.count > 1">({{ snackbar.count }})</span></span
+                >
             </div>
             <div class="callback" v-if="snackbar.callback">
-                <BaseButton buttonClass="invisible primary ghost-hover"
-                @click.stop="snackbar.callback(); onDeleteSnackbar()">
-                    <span>{{snackbar.callbackLabel}}</span>
+                <BaseButton
+                    buttonClass="invisible primary ghost-hover"
+                    @click.stop="
+                        snackbar.callback()
+                        onDeleteSnackbar()
+                    "
+                >
+                    <span>{{ snackbar.callbackLabel }}</span>
                 </BaseButton>
             </div>
-            <button class="invisible ghost-hover"
-            @click.stop="onDeleteSnackbar">
+            <button class="invisible ghost-hover" @click.stop="onDeleteSnackbar">
                 <span>Dismiss</span>
             </button>
 
             <div class="timer" v-if="duration">
                 <svg>
-                    <rect class="animate" ref="countdown" height="4px" :style="animationDuration"/>
+                    <rect class="animate" ref="countdown" height="4px" :style="animationDuration" />
                 </svg>
             </div>
         </div>
@@ -34,13 +40,13 @@ import { mapMutations } from 'vuex'
 
 export default {
     name: 'baseSnackbar',
-    props: [
-        'snackbar'
-    ],
-    data: function() { return {
-        timer: null,
-        lastReset: null
-    }},
+    props: ['snackbar'],
+    data: function() {
+        return {
+            timer: null,
+            lastReset: null,
+        }
+    },
     computed: {
         duration() {
             return this.snackbar.duration != null ? this.snackbar.duration : 5000
@@ -50,7 +56,7 @@ export default {
         },
         count() {
             return this.snackbar.count
-        }
+        },
     },
     watch: {
         count(newVal, oldVal) {
@@ -60,7 +66,7 @@ export default {
                 }
                 this.lastReset = Date.now()
             }
-        }
+        },
     },
     methods: {
         ...mapMutations('alerts', ['DELETE_SNACKBAR']),
@@ -84,24 +90,31 @@ export default {
                 el.classList.remove('animate')
                 setTimeout(() => {
                     el.classList.add('animate')
-                },100)
+                }, 100)
             })
-        }
+        },
     },
     created() {
         // Automatically hide the snackbar
         if (this.duration) {
-            this.timer = new Timer(() => this.onDeleteSnackbar(), this.duration, () => this.resetTimerAnimation())
+            this.timer = new Timer(
+                () => this.onDeleteSnackbar(),
+                this.duration,
+                () => this.resetTimerAnimation()
+            )
         }
     },
     destroyed() {
         this.onTimeout()
-    }
+    },
 }
 
 // Helper Function
 var Timer = function(callback, delay, resetCallback) {
-    var timerId, start, remaining = delay, lastReset
+    var timerId,
+        start,
+        remaining = delay,
+        lastReset
 
     this.pause = function() {
         window.clearTimeout(timerId)
@@ -115,11 +128,11 @@ var Timer = function(callback, delay, resetCallback) {
     }
 
     this.reset = function() {
-            start = Date.now()
-            remaining = delay
-            window.clearTimeout(timerId)
-            timerId = window.setTimeout(callback, remaining)
-            resetCallback()
+        start = Date.now()
+        remaining = delay
+        window.clearTimeout(timerId)
+        timerId = window.setTimeout(callback, remaining)
+        resetCallback()
     }
 
     this.resume()
@@ -133,15 +146,15 @@ var Timer = function(callback, delay, resetCallback) {
     width: 400px;
     display: flex;
     margin-top: 32px;
-    box-shadow: 0 3px 30px rgba(0,0,0,.4);
-    animation: flyin .1s;
-    border-radius: 4px;
+    box-shadow: 0 3px 30px rgba(0, 0, 0, 0.4);
+    animation: flyin 0.1s;
+    border-radius: $borderRadiusEl;
     position: relative;
     .count {
         position: absolute;
         left: -12px;
         top: -12px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     }
     .icon-wrapper {
         width: 44px;
@@ -149,7 +162,7 @@ var Timer = function(callback, delay, resetCallback) {
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 4px 0 0 4px;
+        border-radius: $borderRadiusEl 0 0 $borderRadiusEl;
         &.success {
             background: $success;
             i {
@@ -220,13 +233,20 @@ var Timer = function(callback, delay, resetCallback) {
     }
 }
 @keyframes animateWidth {
-    from {width: 0;}
-    to {width: 100%;}
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
 }
 
 @keyframes flyin {
-    from {transform: translateX(calc(100% + 16px));}
-    to {transform: none;}
+    from {
+        transform: translateX(calc(100% + 16px));
+    }
+    to {
+        transform: none;
+    }
 }
-
 </style>

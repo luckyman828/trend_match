@@ -11,7 +11,7 @@
         <div class="product-details">
             <div
                 v-if="displayUnreadBullets && product.hasNewComment"
-                class="unread-indicator circle xxs primary"
+                class="unread-indicator circle min primary"
                 v-tooltip.right="'A message needs a reply'"
             />
 
@@ -30,8 +30,13 @@
             </td>
             <td class="title">
                 <span class="clickable">
-                    <span v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
-                    <LabelList v-if="labelsEnabled || product.labels.length > 0" :product="product" ref="labelList" />
+                    <span class="title" v-tooltip="product.title" @click="onViewSingle">{{ product.title }}</span>
+                    <LabelList
+                        v-if="labelsEnabled || product.labels.length > 0"
+                        :product="product"
+                        :labelPopoverRef="labelPopoverRef"
+                        ref="labelList"
+                    />
                     <div class="variant-list" @click="onViewSingle">
                         <!-- <div class="variant-list-item pill ghost xs" v-for="(variant, index) in product.variants.slice(0,5)" :key="index">
                         <span>{{variant.name || 'Unnamed' | truncate(variantNameTruncateLength(product))}}</span>
@@ -203,7 +208,7 @@
                         <i class="far fa-clipboard-check"></i>
                         <div
                             v-if="displayUnreadBullets && product.hasNewComment"
-                            class="circle xxs primary new-comment-bullet"
+                            class="circle min primary new-comment-bullet"
                         ></div>
                     </button>
 
@@ -229,7 +234,10 @@
                             <div class="inner">
                                 <BaseButton
                                     class=""
-                                    :buttonClass="selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary'"
+                                    :buttonClass="[
+                                        'true-square',
+                                        selectionInput[currentAction] != 'Focus' ? 'ghost' : 'primary',
+                                    ]"
                                     :disabled="!userWriteAccess.actions.hasAccess"
                                     v-tooltip="!userWriteAccess.actions.hasAccess && userWriteAccess.actions.msg"
                                     @click="onUpdateAction('Focus', selectionInput)"
@@ -333,6 +341,7 @@ export default {
         'index',
         'distributionTooltipRef',
         'variantTooltipRef',
+        'labelPopoverRef',
         'distributionScope',
     ],
     components: {
@@ -384,7 +393,7 @@ export default {
             return this.availableLabels.length > 0
         },
         hasLabelWriteAccess() {
-            return this.labelsEnabled && (this.currentFile.editable || this.workspaceRole == 'Admin')
+            return this.labelsEnabled && this.userWriteAccess.actions.hasAccess
         },
         selectionInput() {
             return this.getActiveSelectionInput(this.product)
@@ -438,6 +447,7 @@ export default {
     },
     methods: {
         ...mapActions('products', ['showSelectionProductPDP', 'toggleProductCompleted', 'updateProduct']),
+        ...mapActions('actions', ['updateProductLabelInput']),
         ...mapMutations('products', ['setCurrentFocusRowIndex']),
         variantNameTruncateLength(product) {
             const amount = product.variants.length
@@ -572,13 +582,13 @@ export default {
                     if (!label) return
 
                     // Check if the label is already added
-                    const existingIndex = this.product.labels.findIndex(x => x == label)
+                    const existingIndex = this.product.yourLabels.findIndex(x => x == label)
                     if (existingIndex >= 0) {
-                        this.product.labels.splice(existingIndex, 1)
+                        this.product.yourLabels.splice(existingIndex, 1)
                     } else {
-                        this.product.labels.push(label)
+                        this.product.yourLabels.push(label)
                     }
-                    this.onUpdateProduct()
+                    this.updateProductLabelInput(this.product)
                 }
                 // Hashtag
                 if (event.key == '#') {
@@ -659,14 +669,14 @@ td.title {
     position: relative;
     &:hover {
         .new-comment-bullet {
-            top: -7px;
-            right: -5px;
+            right: -3px;
+            top: -5px;
         }
     }
     .new-comment-bullet {
         position: absolute;
-        right: -4px;
-        top: -6px;
+        right: -2px;
+        top: -4px;
     }
 }
 
@@ -696,7 +706,7 @@ td.action {
             &:hover {
                 overflow: visible;
                 .fly-over .inner {
-                    background: $bgModuleHover;
+                    background: $bgWhiteHover;
                 }
                 button.options {
                     display: none;
@@ -724,7 +734,7 @@ td.action {
                 top: 0;
                 left: -40px;
                 width: 40px;
-                background: linear-gradient(90deg, transparent, $bgModuleHover);
+                background: linear-gradient(90deg, transparent, $bgWhiteHover);
                 pointer-events: none;
             }
         }

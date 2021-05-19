@@ -142,6 +142,7 @@ export default {
                 'Escape',
                 'Tab',
             ]
+            if (e.key == 'A' && e.ctrlKey) return
             const passesPattern = !this.pattern || this.pattern.test(key)
             // If we fail the check
             if (!allowedKeys.includes(key) && !passesPattern) {
@@ -196,7 +197,7 @@ export default {
     }
     &.has-inner-label {
         .input-wrapper {
-            padding-top: 14px;
+            padding-top: 16px;
             input {
                 font-weight: 700;
                 font-size: 12px;
@@ -206,6 +207,7 @@ export default {
         .inner-label {
             color: $primary;
             position: absolute;
+            left: 8px;
             top: 2px;
             z-index: 1;
             font-size: 10px;
@@ -250,6 +252,7 @@ export default {
 .input-wrapper {
     position: relative;
     text-overflow: ellipsis;
+    width: 100%;
     input {
         border: none;
         background: inherit;

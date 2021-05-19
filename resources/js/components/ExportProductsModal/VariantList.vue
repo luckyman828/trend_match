@@ -11,7 +11,7 @@
                         class="image"
                         style="height: 48px; display: inline-block; width: 38px;
                     background-size: contain; background-position: center; background-repeat: no-repeat; background-color: #e4e4e4;"
-                        :style="{ backgroundImage: `url(${variantImage(variant)})` }"
+                        :style="{ backgroundImage: `url(${variantImage(variant, { size: 'sm' })})` }"
                     ></div>
                     <!-- <img :src="variantImage(variant)" style="height: 48px; display: inline-block; min-width: 38px; width: 38px"> -->
                     <span style="display: block; font-size: 10px; margin-top: 4px; font-weight: 500; color: #3c3b54;">{{

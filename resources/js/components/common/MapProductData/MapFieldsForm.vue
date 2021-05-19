@@ -1,7 +1,7 @@
 <template>
     <div class="table-wrapper map-variant-fields">
         <h3 v-html="title"></h3>
-        <slot name="after"/>
+        <slot name="after" />
 
         <table class="map-fields-table">
             <tr class="header">
@@ -11,16 +11,12 @@
                 <th><label>Key to map</label></th>
                 <th><label>Example</label></th>
             </tr>
-            <slot name="rows"/>
+            <slot name="rows" />
         </table>
 
-        <slot name="after"/>
+        <slot name="after" />
 
-        <button class="dark" 
-            style="margin-top: 12px"
-            type=button
-            @click="onAddVariantImageMap"
-        >
+        <button class="dark true-square" style="margin-top: 12px" type="button" @click="onAddVariantImageMap">
             <i class="fas fa-plus"></i><span>Add variant image map</span>
         </button>
     </div>
@@ -29,12 +25,8 @@
 <script>
 export default {
     name: 'mapFieldsForm',
-    props: [
-        'title'
-    ]
+    props: ['title'],
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

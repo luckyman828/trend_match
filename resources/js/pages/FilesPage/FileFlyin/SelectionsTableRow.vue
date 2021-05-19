@@ -1,7 +1,7 @@
 <template>
     <div class="selections-table-row">
         <tr
-            class="selection"
+            class="selection bg-theme-white bg-theme-hover"
             :class="[
                 { 'is-hidden': isHidden },
                 `presentation-group-${presentationGroupIndex}`,
@@ -106,9 +106,9 @@
                     @click="$event => $emit('showSelectionCurrencyContext', { selection, e: $event })"
                     v-if="userHasEditAccess"
                 >
-                    <span>{{ selection.currency || 'Set currency' }}</span>
+                    <span>{{ selection.currency || 'Set' }}</span>
                 </button>
-                <span v-else>{{ selection.currency || 'No currency set' }}</span>
+                <span v-else>{{ selection.currency || 'Not set' }}</span>
             </td>
             <!-- <td class="teams">
                 <button class="ghost editable sm" v-if="userHasEditAccess"
@@ -457,7 +457,7 @@ export default {
 }
 .expand {
     i {
-        font-size: 16px;
+        font-size: 14px;
         color: $dark2;
     }
     &.active {
@@ -482,10 +482,15 @@ export default {
 }
 .budget-input-wrapper {
     position: relative;
+    ::v-deep {
+        .input-wrapper {
+            border-radius: $borderRadiusEl;
+        }
+    }
     .currency {
         position: absolute;
         right: 8px;
-        bottom: 5px;
+        bottom: 7px;
     }
 }
 .budget-spend {
