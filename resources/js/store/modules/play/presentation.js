@@ -96,9 +96,18 @@ export default {
     actions: {
         async fetchPresentation({ dispatch, commit }, presentationId) {
             const presentation = await dispatch('files/fetchFile', presentationId, { root: true })
+            console.log('presentation', JSON.parse(JSON.stringify(presentation)))
             await dispatch('playPresentations/initPresentations', [presentation], { root: true })
             commit('SET_PRESENTATION', presentation)
 
+            if (presentation.video_count > 0) {
+                await dispatch('fetchPresentationVideo', presentationId)
+            }
+
+            return presentation
+        },
+
+        async fetchPresentationVideo({ dispatch, commit }, presentationId) {
             // Fetch presentation video
             const apiUrl = `/files/${presentationId}/video`
             let video
@@ -117,7 +126,7 @@ export default {
                 .catch(err => {
                     commit('SET_STATUS', err.status)
                 })
-            return presentation
+            return video
         },
 
         // OLD

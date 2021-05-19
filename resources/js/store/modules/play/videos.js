@@ -128,24 +128,44 @@ export default {
             const apiUrl = `upload-channel/${uploadChannel.id}/abort`
             await axios.post(apiUrl)
         },
-        async updateFileVideo({}, { file, videoPresentation }) {
+        async updateFileVideo({ dispatch }, { file, videoPresentation }) {
             // console.log('update file video', file, videoPresentation)
             // Save to the API
             const apiUrl = `/files/${file.id}/video`
             await axios
                 .post(apiUrl, videoPresentation)
-                .then(response => {
+                .then(async response => {
+                    file.video_count = 1
                     // console.log('file video updated', response.data)
+                    if (file.uploadChannel) {
+                        file.uploadChannel.progress.status = 'Processing'
+                        // Start process that checks for status
+                        await dispatch('startVideoStatusCheckJob', videoPresentation.video)
+                        file.uploadChannel.progress.status = 'Available'
+                    }
                 })
                 .catch(err => {
                     console.log('Error when updating file video', err.response)
                 })
         },
+        async startVideoStatusCheckJob({ dispatch }, video) {
+            return new Promise(async resolve => {
+                const intervalDuration = 10000 // 10 sec
+                const statusInterval = setInterval(async () => {
+                    const newStatus = await dispatch('checkVideoStatus', video)
+                    if (newStatus == 'Available') {
+                        clearInterval(statusInterval)
+                        resolve(newStatus)
+                    }
+                }, intervalDuration)
+            })
+        },
         async checkVideoStatus({}, video) {
             let status
             const apiUrl = `upload-channel/check-status`
             await axios.post(apiUrl, { key: video.identifier }).then(response => {
-                status = response.data
+                status = response.data.status
+                Vue.set(video, 'status', status)
             })
             return status
         },

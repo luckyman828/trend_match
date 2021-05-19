@@ -12,9 +12,19 @@
                     </div>
                 </div>
                 <div class="item-right flex-list center-v">
-                    <div class="upload-status pill sm yellow">
+                    <div
+                        class="upload-status pill sm yellow"
+                        v-if="presentation.uploadChannel && presentation.uploadChannel.progress.status == 'Uploading'"
+                    >
                         <i class="far fa-exclamation-triangle"></i>
                         <span>Keep Kollekt open while uploading</span>
+                    </div>
+                    <div
+                        class="upload-status pill sm primary"
+                        v-if="presentation.uploadChannel && presentation.uploadChannel.progress.status == 'Processing'"
+                    >
+                        <i class="far fa-info-circle"></i>
+                        <span>Video is being processed. You may close Kollekt now.</span>
                     </div>
                     <div class="save-status pill sm" :class="saveStatus.theme">
                         <i class="far" :class="saveStatus.icon"></i>
@@ -31,7 +41,11 @@
                 </div>
             </div>
 
-            <div class="upload-progress rail" v-if="presentation.uploadChannel">
+            <div
+                class="upload-progress rail"
+                v-if="presentation.uploadChannel"
+                :class="{ success: presentation.uploadChannel.progress.status != 'Uploading' }"
+            >
                 <div class="current" :style="{ width: presentation.uploadChannel.progress.progressPercentage }"></div>
             </div>
 
@@ -179,10 +193,16 @@ export default {
     position: absolute;
     bottom: 0;
     left: 0;
+    &.success {
+        .current {
+            background: $green;
+        }
+    }
     .current {
         height: 100%;
-        border-radius: 2px;
+        border-radius: 0 2px 2px 0;
         background: $primary;
+        transition: 0.2s;
     }
 }
 </style>

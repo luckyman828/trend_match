@@ -30,26 +30,52 @@ export default {
     computed: {
         ...mapGetters('playPresentation', {
             video: 'getVideo',
+            presentation: 'getPresentation',
         }),
         status() {
             if (!this.dataReady) return 'loading'
             return 'success'
         },
+        videoStatus() {
+            console.log('get video status', this.presentation, this.presentation && this.presentation.video)
+            return this.presentation && this.presentation.video && this.presentation.video.status
+        },
+    },
+    watch: {
+        videoStatus(newStatus, oldStatus) {
+            console.log('video status changes', newStatus, oldStatus, this.video)
+            if (!this.video && newStatus == 'Available') {
+                // Start process to check if the video is ready
+                this.initVideo()
+            }
+        },
     },
     methods: {
-        ...mapActions('playPresentation', ['fetchPresentation']),
+        ...mapActions('playPresentation', ['fetchPresentation', 'fetchPresentationVideo']),
         ...mapActions('products', ['fetchProducts']),
-        ...mapActions('videos', ['fetchVideoUrls']),
+        ...mapActions('videos', ['fetchVideoUrls', 'checkVideoStatus', 'startVideoStatusCheckJob']),
         async fetchData() {
             this.dataReady = false
 
             const presentationId = this.$route.params.presentationId
             await this.fetchPresentation(presentationId)
             const video = this.video
+            if (video) {
+                const status = await this.checkVideoStatus(this.video)
+                if (status == 'Available') {
+                    await this.fetchVideoUrls(video)
+                } else {
+                    this.startVideoStatusCheckJob(this.video)
+                }
+            }
 
-            await Promise.all([this.fetchProducts({ fileId: presentationId }), this.fetchVideoUrls(video)])
+            this.fetchProducts({ fileId: presentationId })
 
             this.dataReady = true
+        },
+        async initVideo() {
+            await this.fetchPresentationVideo(this.presentation.id)
+            await this.fetchVideoUrls(this.video)
         },
     },
     created() {

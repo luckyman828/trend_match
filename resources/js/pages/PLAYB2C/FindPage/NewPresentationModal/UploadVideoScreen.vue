@@ -44,7 +44,7 @@
                             </div>
                             <div
                                 class="progress flex-list center-v space-xs auto-left"
-                                :class="presentation.uploadChannel.progress.status"
+                                :class="{ success: presentation.uploadChannel.progress.status != 'Uploading' }"
                                 v-if="presentation.uploadChannel"
                             >
                                 <div class="ft-12">
@@ -243,7 +243,7 @@ export default {
         .progress {
             width: 200px;
             flex-shrink: 0;
-            &.Uploaded {
+            &.success {
                 .rail {
                     .current {
                         background: $success;

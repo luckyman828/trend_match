@@ -7,14 +7,12 @@
         <div class="inner flex-list flex-v min justify">
             <div class="top-items flex-list justify">
                 <div class="left-items">
-                    <div v-if="isUploading" class="primary square xs">
-                        <span>{{ presentation.uploadChannel.progress.status.toUpperCase() }}</span>
-                    </div>
                     <div
-                        class="red square xs"
-                        v-else-if="presentation.uploadChannel && presentation.uploadChannel.progess.status == 'Failed'"
+                        v-if="presentation.uploadChannel"
+                        class="square xs"
+                        :class="presentation.uploadChannel.progress.status == 'Available' ? 'secondary' : 'primary'"
                     >
-                        <span>UPLOAD FAILED</span>
+                        <span>{{ presentation.uploadChannel.progress.status.toUpperCase() }}</span>
                     </div>
                     <div class="yellow square xs" v-else-if="presentation.video_count <= 0">
                         <span>NEW</span>
@@ -73,12 +71,12 @@ export default {
     },
     computed: {
         isUploading() {
-            return this.presentation.uploadChannel
+            return this.presentation.uploadChannel && this.presentation.uploadChannel.progress.status == 'Uploading'
         },
         uploadPercentage() {
             const uploadChannel = this.presentation.uploadChannel
             if (!uploadChannel) return
-            return uploadChannel.progressPercentage
+            return uploadChannel.progress.progressPercentage
         },
     },
     methods: {

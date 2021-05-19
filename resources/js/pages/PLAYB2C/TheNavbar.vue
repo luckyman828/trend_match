@@ -23,6 +23,7 @@ export default {
     background: $bgModule;
     border-bottom: $borderModule;
     box-shadow: $shadowModule;
+    position: relative;
     @media screen and (max-width: $screenSm) {
         padding: 0 20px;
     }

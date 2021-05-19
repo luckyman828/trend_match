@@ -10,7 +10,7 @@
         <div class="upload-progress-wrapper flex-list center-h" v-if="presentation.uploadChannel">
             <div
                 class="upload-progress flex-list center-v space-md"
-                :class="presentation.uploadChannel.progress.status"
+                :class="{ success: presentation.uploadChannel.progress.status != 'Uploading' }"
             >
                 <div class="ft-10 ft-bd file-name">
                     {{ presentation.uploadChannel.file.name }}
@@ -149,7 +149,7 @@ export default {
         overflow: hidden;
         height: 20px;
         background: white;
-        &.Uploaded {
+        &.success {
             .rail {
                 .current {
                     background: $success;

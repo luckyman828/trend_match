@@ -9,7 +9,25 @@
         >
             <ProductSearchListItem :product="slotProps.item" />
         </SearchItemsPanel>
-        <VideoPlayer :video="video" :autoplay="false" quality="SD360P" />
+        <div
+            class="video-area"
+            :style="{ backgroundImage: presentation.thumbnail && `url(${presentation.thumbnail})` }"
+        >
+            <VideoPlayer v-if="video && video.urls" :video="video" :autoplay="false" quality="SD360P" />
+            <div class="placeholder bg-blur" v-else>
+                <div class="message flex-list flex-v center-h center-h bg-blur">
+                    <div class="color-white ft-16 ft-bd">Timeline and preview is unavailable while uploading</div>
+                    <div class="color-white ft-12 ft-md">
+                        Create looks or favorite styles while your video is being uploaded.
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="test"
+                :style="{ backgroundImage: presentation.thumbnail && `url(${presentation.thumbnail})` }"
+            ></div>
+        </div>
 
         <TimelinePanel v-if="timingsReady" />
     </div>
@@ -39,6 +57,7 @@ export default {
         ...mapGetters('playPresentation', {
             video: 'getVideo',
             videoTimings: 'getTimings',
+            presentation: 'getPresentation',
         }),
         ...mapGetters('products', {
             products: 'getProducts',
@@ -88,6 +107,28 @@ export default {
     .search-products-panel {
         height: calc(100vh - #{$navbarHeight});
         grid-area: sidebar;
+    }
+    .video-area {
+        grid-area: main;
+        background-size: cover;
+        background-position: center;
+        .bg-blur::before {
+            backdrop-filter: blur(25px);
+            background: rgba(white, 15%);
+        }
+    }
+    .placeholder {
+        height: 100%;
+        width: 100%;
+        background: rgba(black, 75%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .message {
+            padding: 24px 32px;
+            z-index: 1;
+            border-radius: $borderRadiusMd;
+        }
     }
 }
 </style>
