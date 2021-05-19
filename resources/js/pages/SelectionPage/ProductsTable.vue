@@ -468,7 +468,6 @@
                 @changeTab="tab => (actionDistributionTooltipTab = tab)"
             />
         </BasePopover>
-
     </div>
 </template>
 
