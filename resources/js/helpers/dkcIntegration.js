@@ -14,6 +14,9 @@ export function cleanUpDKCObj(srcObj, newObj) {
         if (key == 'assortment_variants' && !Array.isArray(keyVal.assortment_variant)) {
             keyVal = [keyVal.assortment_variant]
         }
+        if (key == 'delivery_windows' && !Array.isArray(keyVal.delivery_window)) {
+            keyVal = [keyVal.delivery_window]
+        }
         if (key == 'prices' && !Array.isArray(keyVal.prices)) {
             if (keyVal.price && Array.isArray(keyVal.price)) {
                 keyVal = keyVal.price
@@ -32,7 +35,7 @@ export function cleanUpDKCObj(srcObj, newObj) {
         // Flatten objects in objects
         if (!Array.isArray(keyVal) && typeof keyVal == 'object' && Object.keys(keyVal).length == 1) {
             const newKey = Object.keys(keyVal)[0]
-            if (!['variant', 'price', 'size', 'assortment', 'assortment_variant'].includes(newKey)) {
+            if (!['variant', 'price', 'size', 'assortment', 'assortment_variant', 'delivery_window'].includes(newKey)) {
                 theKey = newKey
             }
             keyVal = keyVal[newKey]
@@ -124,26 +127,29 @@ async function instantiateSelectProducts(products) {
                   ]
 
                   // DELIVERY
-                  if (variant.delivery_window) {
-                      const fromDate = DateTime.fromISO(variant.delivery_window.shipment_from).startOf('month')
-                      const toDate = DateTime.fromISO(variant.delivery_window.shipment_to).endOf('month')
-                      let dateInterval = Interval.fromDateTimes(fromDate, toDate)
-                      let monthCount = Math.ceil(dateInterval.length('month'))
-                      for (let i = 0; i < monthCount; i++) {
-                          const deliveryDate = fromDate.set({ month: fromDate.get('month') + i }).toFormat('yyyy-MM-dd')
-                          newVariant.delivery_dates.push(deliveryDate)
-                          // Check if we should also add the delivery date to the product
-                          if (!newProduct.delivery_dates.includes(deliveryDate)) {
-                              newProduct.delivery_dates.push(deliveryDate)
+                  if (variant.delivery_windows) {
+                      variant.delivery_windows.map(deliveryWindow => {
+                          const fromDate = DateTime.fromISO(deliveryWindow.shipment_from).startOf('month')
+                          const toDate = DateTime.fromISO(deliveryWindow.shipment_to).endOf('month')
+                          let dateInterval = Interval.fromDateTimes(fromDate, toDate)
+                          let monthCount = Math.ceil(dateInterval.length('month'))
+                          for (let i = 0; i < monthCount; i++) {
+                              const deliveryDate = fromDate
+                                  .set({ month: fromDate.get('month') + i })
+                                  .toFormat('yyyy-MM-dd')
+                              newVariant.delivery_dates.push(deliveryDate)
+                              // Check if we should also add the delivery date to the product
+                              if (!newProduct.delivery_dates.includes(deliveryDate)) {
+                                  newProduct.delivery_dates.push(deliveryDate)
+                              }
                           }
-                      }
+                      })
                   }
 
                   // ASSORTMENTS
                   variant.assortments &&
                       variant.assortments.map(assortment => {
                           // Sort assortment sizes in a logical order
-                          console.log('assortment', assortment)
                           const assortmentSizes = !assortment.assortment_variants
                               ? []
                               : assortment.assortment_variants.sort((a, b) => {
@@ -259,19 +265,23 @@ async function instantiateBuyProducts(products) {
                   ]
 
                   // DELIVERY
-                  if (variant.delivery_window) {
-                      const fromDate = DateTime.fromISO(variant.delivery_window.shipment_from).startOf('month')
-                      const toDate = DateTime.fromISO(variant.delivery_window.shipment_to).endOf('month')
-                      let dateInterval = Interval.fromDateTimes(fromDate, toDate)
-                      let monthCount = Math.ceil(dateInterval.length('month'))
-                      for (let i = 0; i < monthCount; i++) {
-                          const deliveryDate = fromDate.set({ month: fromDate.get('month') + i }).toFormat('yyyy-MM-dd')
-                          newVariant.delivery_dates.push(deliveryDate)
-                          // Check if we should also add the delivery date to the product
-                          if (!newProduct.delivery_dates.includes(deliveryDate)) {
-                              newProduct.delivery_dates.push(deliveryDate)
+                  if (variant.delivery_windows) {
+                      variant.delivery_windows.map(deliveryWindow => {
+                          const fromDate = DateTime.fromISO(deliveryWindow.shipment_from).startOf('month')
+                          const toDate = DateTime.fromISO(deliveryWindow.shipment_to).endOf('month')
+                          let dateInterval = Interval.fromDateTimes(fromDate, toDate)
+                          let monthCount = Math.ceil(dateInterval.length('month'))
+                          for (let i = 0; i < monthCount; i++) {
+                              const deliveryDate = fromDate
+                                  .set({ month: fromDate.get('month') + i })
+                                  .toFormat('yyyy-MM-dd')
+                              newVariant.delivery_dates.push(deliveryDate)
+                              // Check if we should also add the delivery date to the product
+                              if (!newProduct.delivery_dates.includes(deliveryDate)) {
+                                  newProduct.delivery_dates.push(deliveryDate)
+                              }
                           }
-                      }
+                      })
                   }
 
                   // ASSORTMENTS

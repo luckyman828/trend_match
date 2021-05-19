@@ -391,7 +391,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                                 if (!variant.ean) variant.ean = fieldValue
 
                                 // Add the EAN to the products EANs
-                                if (product.eans) {
+                                if (product.eans && Array.isArray(product.eans)) {
                                     const existsInArray = product.eans.find(x => x == fieldValue)
                                     if (!existsInArray) product.eans.push(fieldValue)
                                 }

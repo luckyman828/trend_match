@@ -78,6 +78,11 @@
                                 <span>Comments</span>
                             </BaseCheckboxInputField>
                         </div>
+                        <div class="form-element" v-if="exportAlignment || exportFeedback">
+                            <BaseCheckboxInputField v-model="exportInputLabels">
+                                <span>Input labels</span>
+                            </BaseCheckboxInputField>
+                        </div>
                         <div class="form-element" v-if="quantityEnabled">
                             <BaseCheckboxInputField v-model="exportQuantity">
                                 <span>Quantity</span>
@@ -160,6 +165,7 @@ export default {
             exportComments: true,
             exportQuantity: false,
             exportVariants: false,
+            exportInputLabels: false,
 
             excludeNoQtyVariants: false,
 
@@ -177,7 +183,7 @@ export default {
                 'RRP',
                 'MU',
                 'Product EANs',
-                'Labels',
+                // 'Labels',
             ],
             defaultCsvDumpHeaders: [
                 'Product ID',
@@ -364,6 +370,9 @@ export default {
                     const chapterName = chapter ? `[${chapter.name}] ` : ''
                     if (this.exportAlignment) {
                         headers.push(`${chapterName}${origin.selection.name} (Alignment)`)
+                        if (this.exportInputLabels) {
+                            headers.push(`${chapterName}${origin.selection.name} (Labels)`)
+                        }
                         // if (this.exportQuantity) {
                         //     headers.push(`${chapterName}${origin.selection.name} (QTY)`)
                         //     headers.push(`${chapterName}${origin.selection.name} (Spend)`)
@@ -390,6 +399,13 @@ export default {
                                 origin.user ? origin.user.name : 'Anonymous'
                             } (Feedback)`
                         )
+                        if (this.exportInputLabels) {
+                            headers.push(
+                            `${chapterName}${origin.selection.name} - ${
+                                origin.user ? origin.user.name : 'Anonymous'
+                            } (Labels)`
+                        )
+                        }
                         // if (this.exportQuantity) {
                         //     headers.push(
                         //         `${chapterName}${origin.selection.name} - ${
@@ -463,6 +479,14 @@ export default {
                             )
                             currentRow.push(originAction ? originAction.action : 'None')
 
+                            if (this.exportInputLabels) {
+                                if (!originAction) {
+                                    currentRow.push('')
+                                } else {
+                                    currentRow.push(originAction.labels.join(', '))
+                                }
+                            }
+
                             // if (this.exportQuantity) {
                             //     if (!originAction) {
                             //         currentRow.push(...['', ''])
@@ -519,6 +543,14 @@ export default {
                                     feedback.selection_id == origin.selection_id && feedback.user_id == origin.user_id
                             )
                             currentRow.push(originFeedback ? originFeedback.action : 'None')
+
+                            if (this.exportInputLabels) {
+                                if (!originAction) {
+                                    currentRow.push('')
+                                } else {
+                                    currentRow.push(originAction.labels.join(', '))
+                                }
+                            }
 
                             // if (this.exportQuantity) {
                             //     if (!originFeedback) {
@@ -918,7 +950,7 @@ export default {
                 priceToReturn.recommended_retail_price || '',
                 priceToReturn.mark_up || '',
                 product.eans.join(', '),
-                product.labels.join(', '),
+                // product.labels.join(', '),
             ]
             // Get the extra data
             const extraFields = this.getCustomProductFields
