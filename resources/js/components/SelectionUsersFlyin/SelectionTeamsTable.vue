@@ -200,7 +200,7 @@ export default {
                     // Check if the user already exists
                     team.users.map(user => {
                         if (
-                            user.role != 'Member' &&
+                            (user.role != 'Member' || user.job != 'Feedback') &&
                             !this.selection.users.find(x => x.id == user.id) &&
                             !usersAddedFromTeams.find(x => x.id == user.id)
                         ) {

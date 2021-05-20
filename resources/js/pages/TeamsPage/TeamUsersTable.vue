@@ -32,12 +32,16 @@
                 <BaseTableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers"
                     >Team Role</BaseTableHeader
                 >
+                <BaseTableHeader :sortKey="'teamRoleId'" :currentSortKey="sortKey" :sortAsc="sortAsc" @sort="sortUsers"
+                    >Team Job</BaseTableHeader
+                >
             </template>
             <template v-slot:row="rowProps">
                 <TeamUsersTableRow
                     :team="team"
                     :user="rowProps.item"
                     @edit-role="onEditUserRole"
+                    @edit-job="onEditUserJob"
                     @editCurrency="onEditUserCurrency"
                 />
             </template>
@@ -64,6 +68,13 @@
                 >
                     <span>Change Team <u>R</u>ole</span>
                 </BaseContextMenuItem>
+                <BaseContextMenuItem
+                    iconClass="far fa-user-shield"
+                    hotkey="KeyJ"
+                    @click="onEditUserJob(contextMouseEvent, contextUser)"
+                >
+                    <span>Change Team <u>J</u>ob</span>
+                </BaseContextMenuItem>
             </div>
             <div class="item-group">
                 <BaseContextMenuItem
@@ -88,6 +99,13 @@
                         @click="onEditUserRole(slotProps.mouseEvent, selectedUsers[0])"
                     >
                         <span>Change Team <u>R</u>oles</span>
+                    </BaseContextMenuItem>
+                    <BaseContextMenuItem
+                        iconClass="far fa-key"
+                        hotkey="KeyJ"
+                        @click="onEditUserJob(slotProps.mouseEvent, selectedUsers[0])"
+                    >
+                        <span>Change Team <u>J</u>obs</span>
                     </BaseContextMenuItem>
                 </div>
                 <div class="item-group">
@@ -126,7 +144,31 @@
                         :optionNameKey="'role'"
                         :optionValueKey="'role'"
                         @submit="
-                            onUpdateUsersRole()
+                            onUpdateUsers()
+                            slotProps.hide()
+                        "
+                    />
+                </div>
+            </template>
+        </BaseContextMenu>
+
+        <BaseContextMenu ref="contextMenuTeamJob" class="context-job">
+            <template v-slot:header>
+                Change Team Job
+            </template>
+            <template v-slot="slotProps">
+                <div class="item-group">
+                    <BaseSelectButtons
+                        type="radio"
+                        ref="userTeamJobSelector"
+                        :options="availableTeamJobs"
+                        v-model="userToEdit.job"
+                        :submitOnChange="true"
+                        :optionDescriptionKey="'description'"
+                        :optionNameKey="'job'"
+                        :optionValueKey="'job'"
+                        @submit="
+                            onUpdateUsers()
                             slotProps.hide()
                         "
                     />
@@ -185,6 +227,9 @@ export default {
         ...mapGetters('workspaces', ['authUserWorkspaceRole']),
         ...mapGetters('users', ['users']),
         ...mapGetters('auth', ['authUser']),
+        ...mapGetters('selections', {
+            availableTeamJobs: 'getAvailableSelectionJobs',
+        }),
         readyStatus() {
             return this.currentTeamStatus
         },
@@ -267,7 +312,7 @@ export default {
                 this.$refs.userCurrencySelector.focusSearch()
             })
         },
-        onUpdateUsersRole() {
+        onUpdateUsers() {
             // Define the user to base the new role to set on
             const baseUser = this.userToEdit
             // Check if we have a selection of users
@@ -276,6 +321,7 @@ export default {
             if (this.selectedUsers.length > 0) {
                 usersToPost = this.selectedUsers.map(user => {
                     user.role = baseUser.role
+                    user.job = baseUser.job ? baseUse.job : 'Feedback'
                     return user
                 })
             } else usersToPost = [baseUser]
@@ -298,6 +344,14 @@ export default {
             this.contextUser = user
             this.originalUser = JSON.parse(JSON.stringify(user))
             const contextMenu = this.$refs.contextMenuTeamRole
+            contextMenu.item = user
+            contextMenu.show(mouseEvent)
+        },
+        onEditUserJob(mouseEvent, user) {
+            this.userToEdit = user
+            this.contextUser = user
+            this.originalUser = JSON.parse(JSON.stringify(user))
+            const contextMenu = this.$refs.contextMenuTeamJob
             contextMenu.item = user
             contextMenu.show(mouseEvent)
         },
