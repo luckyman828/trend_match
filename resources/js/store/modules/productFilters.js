@@ -168,7 +168,7 @@ export default {
                     icon: 'far fa-tag',
                     type: 'array',
                     scope: 'product',
-                    apps: ['select', 'buy'],
+                    apps: ['buy'],
                 },
                 {
                     key: 'variants.labels',
@@ -177,6 +177,14 @@ export default {
                     type: 'array',
                     scope: 'variant',
                     apps: ['buy'],
+                },
+                {
+                    key: 'selectionInputList.actions.labels',
+                    displayName: 'Action label',
+                    icon: 'far fa-tag',
+                    type: 'array',
+                    scope: 'product',
+                    apps: ['select'],
                 },
             ]
             // Filter our filters
