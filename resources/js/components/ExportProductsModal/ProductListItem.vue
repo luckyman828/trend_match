@@ -138,6 +138,12 @@
                                     }}
                                 </span>
                             </div>
+                            <div
+                                v-if="includeDistribution"
+                                style="font-size: 10px; max-width: 60px; min-width: 60px; margin-left: 4px;"
+                            >
+                                <span class="label">{{ action.labels.join(', ') }}</span>
+                            </div>
                             <!-- Requests -->
                             <div
                                 v-if="exportComments"
@@ -205,6 +211,12 @@
                                 </span>
                             </div>
                             <div
+                                v-if="includeDistribution"
+                                style="font-size: 10px; max-width: 60px; min-width: 60px; margin-left: 4px;"
+                            >
+                                <span class="label">{{ feedback.labels.join(', ') }}</span>
+                            </div>
+                            <div
                                 v-if="exportComments"
                                 style="font-size: 10px; flex: 1; margin-left: 16px; padding: 1px;"
                             >
@@ -260,6 +272,7 @@ export default {
                     selection: feedback.selection,
                     selection_id: feedback.selection_id,
                     action: feedback.action,
+                    labels: action.labels,
                     comments: [],
                 })
             })
@@ -279,11 +292,12 @@ export default {
                             selection_id: comment.selection_id,
                             action: 'None',
                             comments: [comment],
+                            labels: [],
                         })
                     }
                 })
             }
-            return usersToReturn
+            return usersToReturn.sort((a, b) => parseInt(a.selection.parent_id) - parseInt(b.selection.parent_id))
         },
         alignmentListUsers() {
             const usersToReturn = []
@@ -299,6 +313,7 @@ export default {
                     selection_id: action.selection_id,
                     action: action.action,
                     requests: [],
+                    labels: action.labels,
                 })
             })
             // Find users from comments
@@ -315,18 +330,21 @@ export default {
                             selection_id: request.selection_id,
                             action: 'None',
                             requests: [request],
+                            labels: [],
                         })
                     }
                 })
             }
 
             // Sort by chapter
-            const usersSorted = usersToReturn.sort((a, b) => {
-                const aVal = parseInt(a.selection.chapterId) || 0
-                const bVal = parseInt(b.selection.chapterId) || 0
+            const usersSorted = usersToReturn
+                .sort((a, b) => parseInt(a.selection.parent_id) - parseInt(b.selection.parent_id))
+                .sort((a, b) => {
+                    const aVal = parseInt(a.selection.chapterId) || 0
+                    const bVal = parseInt(b.selection.chapterId) || 0
 
-                return aVal - bVal
-            })
+                    return aVal - bVal
+                })
             return usersSorted
         },
     },
