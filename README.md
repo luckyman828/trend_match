@@ -3,6 +3,6 @@
 Our readme. Mostly used for forcing redeploys.
 Redeploy with live DB
 rss.redeploy
-bukd
+sbukd
 Redeploy v1.1
 snew env

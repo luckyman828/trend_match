@@ -8,7 +8,7 @@
             <SortListItem
                 v-if="enabledSortKeys.includes('labels')"
                 icon="far fa-tag"
-                :sortKey="'labels'"
+                sortKey="labelInput"
                 label="Labels"
                 :currentSortKey="currentSortKey"
                 @sort="onSort"
