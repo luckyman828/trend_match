@@ -232,15 +232,15 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
                 field =>
                     field.name == 'color' &&
                     field.file &&
-                    field.file.fileName == file.fileName &&
-                    (!!field.enabled || !!field.customEntry)
+                    field.file.fileName == file.fileName
+                    // && (!!field.enabled || !!field.customEntry)
             )
             const variantFields = fieldsToInstantiateFrom.filter(
                 field =>
                     field.name == 'variant' &&
                     field.file &&
-                    field.file.fileName == file.fileName &&
-                    (!!field.enabled || !!field.customEntry)
+                    field.file.fileName == file.fileName
+                    // && (!!field.enabled || !!field.customEntry)
             )
 
             if (product.variants && (variantFields.length > 0 || colorFields.length > 0)) {
@@ -523,6 +523,7 @@ export function instantiateProductsFromMappedFields(mappedFields, files, options
         // Generate the product variant name
         if (product.variants) {
             product.variants.map(variant => {
+
                 // Calculate the new name
                 const nameComponents = []
                 if (variant.color) nameComponents.push(variant.color)
