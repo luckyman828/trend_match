@@ -14,12 +14,12 @@ import { mapGetters, mapMutations } from 'vuex'
 export default {
     name: 'productPreview',
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('playPresentation', {
             product: 'getCurrentProduct',
         }),
     },
     methods: {
-        ...mapMutations('videoPresentation', ['SET_SIDEBAR_PRODUCT']),
+        ...mapMutations('playPresentation', ['SET_SIDEBAR_PRODUCT']),
     },
 }
 </script>
@@ -28,7 +28,7 @@ export default {
 @import '~@/_variables.scss';
 
 .product-preview {
-    width: 80px;
+    width: 100%;
     background: white;
     border-radius: 2px;
     overflow: hidden;

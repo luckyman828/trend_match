@@ -21,9 +21,10 @@ export default {
             alert(msg)
         },
         addToBasket({ getters, commit }, { variant, size, qty = 1 }) {
-            // const targetWindow = window.opener
-            // const targetOrigin = `https://kollektteststore.myshopify.com`
-            // targetWindow.postMessage('addToBasket', targetOrigin)
+            console.log('add to basket postmessage')
+            const targetWindow = window.parent
+            const targetOrigin = `https://kollektteststore.myshopify.com`
+            targetWindow.postMessage({ action: 'addToBasket', variantId: variant.extra_data.shopid, quantity: qty }, targetOrigin)
             const newBasketItem = { variant, size, qty }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {

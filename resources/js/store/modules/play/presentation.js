@@ -181,7 +181,7 @@ export default {
             // First find out what index to give the new timing, so we insert it at it's correct spot
             // We will insert the new timing at the current timestamp
             let index = 0
-            const timestamp = rootGetters['videoPlayer/getTimestamp']
+            const timestamp = rootGetters['player/getTimestamp']
             // Set the desired `start` time equal to the timestamp
             const desiredDuration = Math.ceil((newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom))
             console.log('desired duration', desiredDuration, newTiming.end, newTiming.start, getters.getTimelineZoom)
@@ -340,7 +340,7 @@ export default {
                 })
                 Object.defineProperty(timing, 'isCurrent', {
                     get() {
-                        const currentTiming = rootGetters['videoPlayer/getCurrentTiming']
+                        const currentTiming = rootGetters['player/getCurrentTiming']
                         if (!currentTiming) return false
                         return currentTiming.id == timing.id
                     },
@@ -354,7 +354,7 @@ export default {
             const railRect = rail.getBoundingClientRect()
             const adjustedX = mouseX - railRect.left + rail.scrollLeft
             const durationPerc = adjustedX / railRect.width
-            const timestamp = rootGetters['videoPlayer/getDuration'] * durationPerc
+            const timestamp = rootGetters['player/getDuration'] * durationPerc
             return timestamp
         },
     },

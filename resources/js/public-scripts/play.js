@@ -1,5 +1,5 @@
 // Kollekt PLAY
-const version = `0.0.0 - (1)`
+const version = `0.0.0 - (4)`
 console.log('Init PLAY embed script. Version: ' + version)
 
 // Create Player
@@ -34,12 +34,32 @@ document.addEventListener('click', function(e) {
     const videoId = button.getAttribute('data-kollekt-play-id')
     const iFrameBaseUrl = 'https://branchtest.kollekt.dk/#/play/watch/'
     // iframeEl.src = `${iFrameBaseUrl}${videoId}`
-    iframeEl.src = `https://kollekt_feature.test/#/?timestamp=${new Date().getTime()}`
+    // iframeEl.src = `https://kollekt_feature.test/#/?timestamp=${new Date().getTime()}`
+    iframeEl.src = `https://kollekt_feature.test/#/play/watch/846335067609235456?timestamp=${new Date().getTime()}`
     playerEl.style.display = 'block'
     iframeEl.contentWindow.location.href = iframeEl.src
 })
 
 // Interact with shopify
-iframeEl.addEventListener('message', message => {
-    console.log('message received', message)
+window.addEventListener('message', event => {
+    console.log('window message received', event)
+    const testOrigins = ['https://kollekt_feature.test', 'https://kollekt_release.test'] // REMOVE BEFORE GOING PRODUCTION!!
+    const acceptedOrigins = ['https://app.kollekt.dk', 'https://branchtest.kollekt.dk', 'https://dev.kollekt.dk', 'https://staging.kollekt.dk']
+    if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
+    const msgData = event.data
+    if (msgData.action == 'addToBasket') {
+        const formData = {
+            'items': [{
+                'id': msgData.variantId,
+                'quantity': msgData.quantity
+            }]
+        }
+        fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+    }
 })

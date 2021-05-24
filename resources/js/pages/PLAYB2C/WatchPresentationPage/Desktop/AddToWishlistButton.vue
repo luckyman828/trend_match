@@ -15,7 +15,7 @@ export default {
     name: 'addToWishlistButton',
     props: ['variant'],
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('playPresentation', {
             currentTiming: 'getCurrentTiming',
         }),
         ...mapGetters('wishlist', {
@@ -33,6 +33,9 @@ export default {
     methods: {
         ...mapMutations('wishlist', ['REMOVE_ITEM', 'ADD_ITEM']),
         onAddToWishlist() {
+            // const targetWindow = window.parent
+            // const targetOrigin = `https://kollektteststore.myshopify.com`
+            // targetWindow.postMessage({ action: 'addToWishlist', variantId: this.variantToAdd.id }, targetOrigin)
             // Check if we should add or remove
             if (this.variantIsInWishlist) {
                 // Remove

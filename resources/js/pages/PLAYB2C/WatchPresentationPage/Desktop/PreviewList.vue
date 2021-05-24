@@ -11,7 +11,7 @@ export default {
     name: 'preview-list',
     components: { ProductPreview },
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('playPresentation', {
             timing: 'getCurrentTiming',
         }),
         timingProducts() {
@@ -24,8 +24,15 @@ export default {
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
 .preview-list {
-    margin-left: auto;
+    top: 8px;
+    left: 16px;
     padding: 8px;
     border-radius: 8px;
+    width: 128px;
+    transition: transform $videoPauseTransition;
+    .desired-paused &,
+    .recently-started & {
+        transform: translateY(60px);
+    }
 }
 </style>

@@ -51,7 +51,6 @@ export default {
         ...mapMutations('playPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
         ...mapActions('playPresentation', ['addTiming']),
         onAddTiming() {
-            console.log('no add timing', this.videoDuration)
             const newTiming = {
                 id: null,
                 start_at_ms: 0,

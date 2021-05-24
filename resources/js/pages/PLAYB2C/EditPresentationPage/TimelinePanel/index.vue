@@ -282,7 +282,6 @@ export default {
 
             if (timingConflictList.length > 0) {
                 const timingConflict = timingConflictList[0]
-                console.log('timings conflict', timingConflict, conflictThreshold, snapThreshold)
                 // Check if we are within our snap threshold. If so, simply snap. Else report an error
                 const snapToEnd =
                     desiredStart < timingConflict.end + conflictThreshold &&
