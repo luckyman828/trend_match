@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 
 export default {
     namespaced: true,
@@ -8,6 +9,7 @@ export default {
         video: null,
         timings: [],
         sidebarProduct: null,
+        timingsReady: false,
 
         // OLD
         status: 'success',
@@ -27,6 +29,7 @@ export default {
         getTimings: state => state.timings,
         getSidebarProduct: state => state.sidebarProduct,
         getIsLive: state => false,
+        getTimingsReady: state => state.timingsReady,
 
         // TIMING SPECIFIC
         getCurrentTimingIndex: (state, getters, rootState, rootGetters) => {
@@ -73,7 +76,6 @@ export default {
         getStatus: state => state.status,
         getTimingStatus: state => state.timingStatus,
         getSearchItemDragActive: state => state.searchItemDragActive,
-        getVideoTimings: state => state.currentVideo && state.currentVideo.timings,
         getTimelineZoom: state => state.timelineZoom,
         getTimelineRail: state => state.timelineRail,
         getTimelineEl: state => state.timelineEl,
@@ -108,6 +110,7 @@ export default {
         },
 
         async fetchPresentationVideo({ dispatch, commit }, presentationId) {
+            commit('SET_TIMINGS_READY', false)
             // Fetch presentation video
             const apiUrl = `/files/${presentationId}/video`
             let video
@@ -122,38 +125,38 @@ export default {
                     // Init the videos timings
                     await dispatch('initTimings', timings)
                     commit('SET_TIMINGS', timings)
+                    commit('SET_TIMINGS_READY', true)
                 })
                 .catch(err => {
                     commit('SET_STATUS', err.status)
                 })
             return video
         },
-
-        // OLD
-
         async updatePresentation({ getters, rootGetters, commit }) {
             const file = rootGetters['files/currentFile']
-            const video = getters.getCurrentVideo
+            const video = getters.getVideo
+            const timings = getters.getTimings
             const apiUrl = `/files/${file.id}/video`
 
             // Set the curent video status
             commit('SET_STATUS', 'saving')
 
             // Clean the timings end and start by flooring to whole Integers
-            video.timings.map(timing => {
+            timings.map(timing => {
                 timing.start = Math.round(timing.start)
                 timing.end = Math.round(timing.end)
             })
 
             // Sort the timings by start
-            video.timings.sort((a, b) => {
+            timings.sort((a, b) => {
                 return a.start > b.start ? 1 : -1
             })
+
 
             await axios
                 .post(apiUrl, {
                     video,
-                    timings: video.timings,
+                    timings: timings,
                 })
                 .then(response => {
                     commit('SET_STATUS', 'success')
@@ -162,6 +165,9 @@ export default {
                     commit('SET_STATUS', 'error')
                 })
         },
+
+        // OLD
+
         async updateVideoThumbnail({}, video) {
             const apiUrl = `/videos/${video.id}`
             await axios.put(apiUrl, {
@@ -171,13 +177,14 @@ export default {
         async addTiming({ getters, commit, dispatch, rootGetters }, { newTiming }) {
             commit('SET_TIMING_STATUS', 'adding')
             await dispatch('initTimings', [newTiming])
-            const allTimings = getters.getVideoTimings
+            const allTimings = getters.getTimings
             // First find out what index to give the new timing, so we insert it at it's correct spot
             // We will insert the new timing at the current timestamp
             let index = 0
             const timestamp = rootGetters['videoPlayer/getTimestamp']
             // Set the desired `start` time equal to the timestamp
             const desiredDuration = Math.ceil((newTiming.end - newTiming.start) * (1 / getters.getTimelineZoom))
+            console.log('desired duration', desiredDuration, newTiming.end, newTiming.start, getters.getTimelineZoom)
             newTiming.start = timestamp
             newTiming.end = newTiming.start + desiredDuration
 
@@ -232,13 +239,13 @@ export default {
             commit('ADD_TIMING', { timing: newTiming, index })
             await dispatch('bumpConflictingTimings', newTiming)
             // Done bumping
-            await dispatch('updateCurrentVideo')
+            await dispatch('updatePresentation')
             commit('SET_TIMING_STATUS', 'success')
         },
         bumpConflictingTimings({ getters, dispatch }, newTiming) {
             // This function recursively bumps timings until there is space for all of them
             // It does nothing if my conflictin timings are found
-            const conflictingTimings = getters.getVideoTimings.filter(
+            const conflictingTimings = getters.getTimings.filter(
                 x => x.id != newTiming.id && x.end > newTiming.start && x.start < newTiming.end
             )
             conflictingTimings.map(timing => {
@@ -251,18 +258,24 @@ export default {
         },
         removeTiming({ getters, commit, dispatch }, index) {
             commit('REMOVE_TIMING', index)
-            dispatch('updateCurrentVideo')
+            dispatch('updatePresentation')
         },
         initTimings({ state, getters, rootGetters }, timings) {
             timings.map(timing => {
                 // Give the timing an ID
                 Vue.set(timing, 'id', state.timingId)
                 state.timingId++
+                if (!timing.product_ids) Vue.set(timing, 'product_ids', [])
 
-                Object.defineProperty(timing, 'product', {
+                Object.defineProperty(timing, 'products', {
                     get() {
                         const products = rootGetters['products/products']
-                        return products.find(x => x.id == timing.product_id)
+                        return products.filter(product => timing.product_ids.includes(product.id))
+                    },
+                })
+                Object.defineProperty(timing, 'product', {
+                    get() {
+                        return timing.products[0]
                     },
                 })
                 Object.defineProperty(timing, 'start', {
@@ -302,26 +315,26 @@ export default {
                 })
                 Object.defineProperty(timing, 'index', {
                     get() {
-                        const allTimings = getters.getVideoTimings
+                        const allTimings = getters.getTimings
                         return allTimings.findIndex(x => x.id == timing.id)
                     },
                 })
                 Object.defineProperty(timing, 'nextTiming', {
                     get() {
-                        const allTimings = getters.getVideoTimings
+                        const allTimings = getters.getTimings
                         return allTimings[timing.index + 1]
                     },
                 })
                 Object.defineProperty(timing, 'prevTiming', {
                     get() {
-                        const allTimings = getters.getVideoTimings
+                        const allTimings = getters.getTimings
                         return allTimings[timing.index - 1]
                     },
                 })
                 Object.defineProperty(timing, 'timeToPrev', {
                     get() {
                         if (!timing.prevTiming) return 0
-                        const allTimings = getters.getVideoTimings
+                        const allTimings = getters.getTimings
                         return timing.start - timing.prevTiming.end
                     },
                 })
@@ -353,10 +366,23 @@ export default {
             state.video = video
         },
         SET_TIMINGS(state, timings) {
-            state.timings = timings
+            state.timings = timings ? timings : []
+        },
+        ADD_TIMING(state, { timing, index }) {
+            if (index != null) {
+                state.timings.splice(index, 0, timing)
+            } else {
+                state.timings.push(timing)
+            }
+        },
+        REMOVE_TIMING(state, index) {
+            state.timings.splice(index, 1)
         },
         SET_SIDEBAR_PRODUCT(state, product) {
             state.sidebarProduct = product
+        },
+        SET_TIMINGS_READY(state, payload) {
+            state.timingsReady = payload
         },
 
         // OLD
@@ -370,16 +396,6 @@ export default {
         SET_VIDEO_TIMINGS(state, timings) {
             if (!state.currentVideo) return
             state.currentVideo.timings = timings
-        },
-        ADD_TIMING(state, { timing, index }) {
-            if (index != null) {
-                state.currentVideo.timings.splice(index, 0, timing)
-            } else {
-                state.currentVideo.timings.push(timing)
-            }
-        },
-        REMOVE_TIMING(state, index) {
-            state.currentVideo.timings.splice(index, 1)
         },
         SET_TIMELINE_ZOOM(state, zoom) {
             state.timelineZoom = zoom

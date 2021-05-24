@@ -422,6 +422,12 @@ router.afterEach((to, from) => {
     store.commit('selectionProducts/SET_SELECTIONS', [])
     store.commit('files/SET_CURRENT_FOLDER', null)
     store.commit('files/SET_CURRENT_PATH_FOLDER', null)
+
+    // PLAY
+    store.commit('playPresentation/SET_PRESENTATION', null)
+    store.commit('playPresentation/SET_VIDEO', null)
+    store.commit('playPresentation/SET_TIMINGS', [])
+    store.commit('playPresentation/SET_TIMINGS_READY', false)
 })
 
 export default router

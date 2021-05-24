@@ -44,6 +44,7 @@ export default {
     methods: {
         close() {
             this.$emit('close')
+            this.$emit('update:show', false)
         },
         hotkeyHandler(event) {
             const key = event.code

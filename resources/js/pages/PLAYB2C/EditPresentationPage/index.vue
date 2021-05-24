@@ -18,7 +18,7 @@ import Navbar from './Navbar'
 import PageLoader from '../../../components/common/PageLoader'
 
 export default {
-    name: 'editPresentationPageLoader',
+    name: 'play.editPresentationPageLoader',
     components: {
         PageLoader,
         EditPresentationPage,
@@ -38,7 +38,9 @@ export default {
         },
         videoStatus() {
             console.log('get video status', this.presentation, this.presentation && this.presentation.video)
-            return this.presentation && this.presentation.video && this.presentation.video.status
+            return (
+                this.presentation && this.presentation.uploadChannel && this.presentation.uploadChannel.progress.status
+            )
         },
     },
     watch: {

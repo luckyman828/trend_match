@@ -51,7 +51,12 @@
 
             <BaseContextMenu ref="moreContext" class="more-context">
                 <div class="item-group">
-                    <BaseContextMenuItem iconClass="far fa-file-video" hotkey="KeyC">
+                    <BaseContextMenuItem
+                        iconClass="far fa-file-video"
+                        hotkey="KeyC"
+                        :disabled="true"
+                        disabledTooltip="Coming soon. Create a new video for now."
+                    >
                         <u>C</u>hange video
                     </BaseContextMenuItem>
                     <BaseContextMenuItem

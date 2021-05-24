@@ -64,7 +64,7 @@ export default {
                 start += chunkSize
             ) {
                 // Generate a blob chunk to be posted
-                const chunk = videoFile.slice(start, start + chunkSize + 1)
+                const chunk = videoFile.slice(start, start + chunkSize)
                 const chunkData = new FormData()
                 chunkData.append('data', chunk)
 

@@ -386,6 +386,7 @@ export default {
             }
         },
         REMOVE_TIMING(state, index) {
+            console.log('remove timing')
             state.currentVideo.timings.splice(index, 1)
         },
         SET_TIMELINE_ZOOM(state, zoom) {

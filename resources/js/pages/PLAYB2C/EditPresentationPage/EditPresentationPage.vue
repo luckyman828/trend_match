@@ -41,7 +41,7 @@ import TimelinePanel from './TimelinePanel/'
 import ProductSearchListItem from './ProductSearchListItem'
 
 export default {
-    name: 'editVideoPresentationPage',
+    name: 'play.EditPresentationPage',
     components: {
         SearchItemsPanel,
         TimelinePanel,
@@ -49,48 +49,59 @@ export default {
         ProductSearchListItem,
     },
     data: function() {
-        return {
-            timingsReady: true,
-        }
+        return {}
     },
     computed: {
         ...mapGetters('playPresentation', {
             video: 'getVideo',
             videoTimings: 'getTimings',
             presentation: 'getPresentation',
+            timingsReady: 'getTimingsReady',
         }),
         ...mapGetters('products', {
             products: 'getProducts',
+            productStatus: 'getStatus',
         }),
+        timingAndProductsReady() {
+            return this.productStatus == 'success' && this.timingsReady
+        },
+    },
+    watch: {
+        timingAndProductsReady(isReady) {
+            if (isReady) this.onTimingsReady()
+        },
     },
     methods: {
-        ...mapActions('videoPresentation', ['updateCurrentVideo']),
-        ...mapMutations('videoPresentation', ['REMOVE_TIMING']),
+        ...mapActions('playPresentation', ['updatePresentation']),
+        ...mapMutations('playPresentation', ['REMOVE_TIMING']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),
-    },
-    created() {
-        // Remove timings that no longer have a matching product
-        if (this.videoTimings && this.videoTimings.length > 0) {
-            let removedCount = 0
-            for (let i = this.videoTimings.length - 1; i >= 0; i--) {
-                const timing = this.videoTimings[i]
-                if (!timing.product) {
-                    this.REMOVE_TIMING(i)
-                    removedCount++
+        onTimingsReady() {
+            // Remove timings that no longer have a matching product
+            if (this.videoTimings && this.videoTimings.length > 0) {
+                let removedCount = 0
+                for (let i = this.videoTimings.length - 1; i >= 0; i--) {
+                    const timing = this.videoTimings[i]
+                    if (!timing.product) {
+                        this.REMOVE_TIMING(i)
+                        removedCount++
+                    }
+                }
+                if (removedCount > 0) {
+                    this.SHOW_SNACKBAR({
+                        msg: `Removed ${removedCount} timing${
+                            removedCount > 1 ? 's' : ''
+                        }, whose product no longer exists.`,
+                        iconClass: 'fa-info',
+                        type: 'info',
+                        duration: 10000, // 10 seconds
+                    })
+                    this.updatePresentation()
                 }
             }
-            if (removedCount > 0) {
-                this.SHOW_SNACKBAR({
-                    msg: `Removed ${removedCount} timing${
-                        removedCount > 1 ? 's' : ''
-                    }, whose product no longer exists.`,
-                    iconClass: 'fa-info',
-                    type: 'info',
-                    duration: 10000, // 10 seconds
-                })
-                this.updateCurrentVideo()
-            }
-        }
+        },
+    },
+    created() {
+        if (this.timingAndProductsReady) this.onTimingsReady()
     },
 }
 </script>

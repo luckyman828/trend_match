@@ -37,25 +37,27 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import Draggable from 'vuedraggable'
 
 export default {
-    name: 'productSearchListItem',
+    name: 'play.productSearchListItem',
     components: {
         Draggable,
     },
     props: ['product', 'focusIndex'],
     computed: {
-        ...mapGetters('videoPlayer', {
+        ...mapGetters('player', {
             videoDuration: 'getDuration',
         }),
     },
     methods: {
-        ...mapMutations('videoPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
-        ...mapActions('videoPresentation', ['addTiming']),
+        ...mapMutations('playPresentation', ['SET_SEARCH_ITEM_DRAG_ACTIVE', 'SET_TIMING_CLONE']),
+        ...mapActions('playPresentation', ['addTiming']),
         onAddTiming() {
+            console.log('no add timing', this.videoDuration)
             const newTiming = {
                 id: null,
                 start_at_ms: 0,
+                note: 'single',
                 end_at_ms: this.videoDuration / 12,
-                product_id: this.product.id,
+                product_ids: [this.product.id],
             }
             this.addTiming({ newTiming })
         },

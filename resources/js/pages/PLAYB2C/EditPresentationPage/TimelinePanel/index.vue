@@ -84,8 +84,8 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('videoPresentation', {
-            getVideoTimings: 'getVideoTimings',
+        ...mapGetters('playPresentation', {
+            timings: 'getTimings',
             zoom: 'getTimelineZoom',
             timelineRail: 'getTimelineRail',
             timelineEl: 'getTimelineEl',
@@ -98,7 +98,7 @@ export default {
         }),
         videoTimings: {
             get() {
-                return this.getVideoTimings
+                return this.timings
             },
             set(value) {
                 this.SET_VIDEO_TIMINGS(value)

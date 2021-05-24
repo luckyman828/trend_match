@@ -32,6 +32,7 @@ export default {
         loadingProducts: state => state.loading,
         getPdpVariantIndex: state => state.pdpVariantIndex,
         productsStatus: state => state.status,
+        getStatus: state => state.status,
         currentProduct: state => state.currentProduct,
         currentFocusRowIndex: state => state.currentFocusRowIndex,
         getPDFModalVisible: state => state.showPDFModal,
