@@ -272,7 +272,7 @@ export default {
                     selection: feedback.selection,
                     selection_id: feedback.selection_id,
                     action: feedback.action,
-                    labels: action.labels,
+                    labels: feedback.labels,
                     comments: [],
                 })
             })
