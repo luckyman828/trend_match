@@ -60,7 +60,10 @@ export default {
             this.dataReady = false
 
             const presentationId = this.$route.params.presentationId
-            await this.fetchPresentation(presentationId)
+            await Promise.all([
+                await this.fetchPresentation(presentationId),
+                await this.fetchProducts({ fileId: presentationId }),
+            ])
             const video = this.video
             if (video) {
                 const status = await this.checkVideoStatus(this.video)
@@ -70,8 +73,6 @@ export default {
                     this.startVideoStatusCheckJob(this.video)
                 }
             }
-
-            this.fetchProducts({ fileId: presentationId })
 
             this.dataReady = true
         },

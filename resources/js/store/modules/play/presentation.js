@@ -81,7 +81,7 @@ export default {
         getTimelineEl: state => state.timelineEl,
         // getSnapThreshold: (state, getters) => state.snapThreshold / getters.getTimelineZoom, // Manually set snap threshold
         getSnapThreshold: (state, getters, rootState, rootGetters) =>
-            rootGetters['videoPlayer/getDuration'] / 32 / getters.getTimelineZoom, // Threshold relative to video length
+            rootGetters['player/getDuration'] / 32 / getters.getTimelineZoom, // Threshold relative to video length
         getZoomLevels: (state, getters, rootState, rootGetters) => {
             // const arr = [1]
             // const duration = rootGetters['videoPlayer/getDuration']
@@ -345,6 +345,7 @@ export default {
                         return currentTiming.id == timing.id
                     },
                 })
+                timing.initDone = true
             })
         },
         getTimestampFromMouseEvent({ getters, rootGetters }, mouseEvent) {
@@ -389,13 +390,6 @@ export default {
 
         SET_SEARCH_ITEM_DRAG_ACTIVE(state, bool) {
             state.searchItemDragActive = bool
-        },
-        SET_CURRENT_VIDEO(state, video) {
-            state.currentVideo = video
-        },
-        SET_VIDEO_TIMINGS(state, timings) {
-            if (!state.currentVideo) return
-            state.currentVideo.timings = timings
         },
         SET_TIMELINE_ZOOM(state, zoom) {
             state.timelineZoom = zoom

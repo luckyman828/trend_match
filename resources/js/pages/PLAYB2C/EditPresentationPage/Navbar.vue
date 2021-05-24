@@ -26,7 +26,7 @@
                         <i class="far fa-info-circle"></i>
                         <span>Video is being processed. You may close Kollekt now.</span>
                     </div>
-                    <div class="save-status pill sm" :class="saveStatus.theme">
+                    <div class="save-status pill sm w-xl" :class="saveStatus.theme">
                         <i class="far" :class="saveStatus.icon"></i>
                         <span>{{ saveStatus.msg }}</span>
                     </div>
@@ -128,21 +128,53 @@ export default {
         return {
             showRenamePresentationModal: false,
             showEditDetailsModal: false,
+            currentStatus: 'success',
+            statusUpdateTimeout: null,
         }
     },
     computed: {
         ...mapGetters('playPresentation', {
             presentation: 'getPresentation',
+            status: 'getStatus',
         }),
         saveStatus() {
-            return {
-                icon: 'fa-check-circle',
-                msg: 'Changes auto saved',
-                theme: 'secondary',
+            if (this.currentStatus == 'saving') {
+                return {
+                    icon: 'fa-save',
+                    msg: 'Saving changes..',
+                    theme: 'primary',
+                }
+            }
+            if (this.currentStatus == 'error') {
+                return {
+                    icon: 'fa-exclamation-triangle',
+                    msg: 'Error saving',
+                    theme: 'yellow',
+                }
+            } else {
+                return {
+                    icon: 'fa-check-circle',
+                    msg: 'Changes auto saved',
+                    theme: 'secondary',
+                }
             }
         },
     },
-    watch: {},
+    watch: {
+        status(newVal) {
+            // Make sure we show that we are saving for a little while to affirm the user
+            const delay = 500
+            if (newVal == 'saving') this.currentStatus = newVal
+            else {
+                if (this.statusUpdateTimeout) {
+                    clearTimeout(this.statusUpdateTimeout)
+                }
+                this.statusUpdateTimeout = setTimeout(() => {
+                    this.currentStatus = newVal
+                }, delay)
+            }
+        },
+    },
     methods: {
         ...mapActions('files', ['deleteFile']),
         ...mapMutations('alerts', ['SHOW_SNACKBAR']),

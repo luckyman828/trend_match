@@ -74,7 +74,7 @@ export default {
             cursorTimestamp: 'getTimestamp',
             currentTiming: 'getCurrentTiming',
         }),
-        ...mapGetters('videoPresentation', {
+        ...mapGetters('playPresentation', {
             zoom: 'getTimelineZoom',
             rail: 'getTimelineRail',
             snapThreshold: 'getSnapThreshold',
@@ -101,7 +101,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions('videoPresentation', ['removeTiming', 'updateCurrentVideo']),
+        ...mapActions('playPresentation', ['removeTiming', 'updatePresentation']),
         onRemoveTiming() {
             this.removeTiming(this.index)
         },
@@ -127,11 +127,6 @@ export default {
         },
         onDragMove(e) {
             const railRect = this.rail.getBoundingClientRect()
-            const elRect = this.$el.getBoundingClientRect()
-
-            const width = elRect.width
-            const left = elRect.left
-            const railPadding = 16
 
             const railWidth = railRect.width
             const offsetAmount = 8
@@ -189,7 +184,7 @@ export default {
             this.isDragging = false
 
             // Save the new duration / start
-            this.updateCurrentVideo()
+            this.updatePresentation()
         },
         addDragListeners() {
             document.addEventListener('mouseup', this.onDragEnd)

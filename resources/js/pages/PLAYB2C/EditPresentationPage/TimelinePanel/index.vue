@@ -154,14 +154,14 @@ export default {
         },
     },
     methods: {
-        ...mapMutations('videoPresentation', [
+        ...mapMutations('playPresentation', [
             'SET_VIDEO_TIMINGS',
             'ADD_TIMING',
             'SET_TIMELINE_RAIL',
             'SET_TIMELINE_EL',
             'SET_TIMELINE_ZOOM',
         ]),
-        ...mapActions('videoPresentation', ['addTiming', 'getTimestampFromMouseEvent', 'updateCurrentVideo']),
+        ...mapActions('playPresentation', ['addTiming', 'getTimestampFromMouseEvent', 'updatePresentation']),
         ...mapActions('player', ['seekTo']),
         onTimelineMousedown(e) {
             this.timelineClickOrigin = true
@@ -282,6 +282,7 @@ export default {
 
             if (timingConflictList.length > 0) {
                 const timingConflict = timingConflictList[0]
+                console.log('timings conflict', timingConflict, conflictThreshold, snapThreshold)
                 // Check if we are within our snap threshold. If so, simply snap. Else report an error
                 const snapToEnd =
                     desiredStart < timingConflict.end + conflictThreshold &&
@@ -353,7 +354,7 @@ export default {
             })
 
             // Save the change to the API
-            this.updateCurrentVideo()
+            this.updatePresentation()
         },
         getTimestampFromMouseX(mouseX) {
             // Get timestamp that corresponds to the drag position
