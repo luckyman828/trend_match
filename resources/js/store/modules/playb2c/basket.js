@@ -20,11 +20,10 @@ export default {
         fetchBasket({ state }, msg) {
             alert(msg)
         },
-        addToBasket({ getters, commit }, { variant, size, qty = 1 }) {
-            console.log('add to basket postmessage')
-            const targetWindow = window.parent
-            const targetOrigin = `https://kollektteststore.myshopify.com`
-            targetWindow.postMessage({ action: 'addToBasket', variantId: variant.extra_data.shopid, quantity: qty }, targetOrigin)
+        addToBasket({ getters, commit, dispatch }, { variant, size, qty = 1 }) {
+            
+            dispatch('playEmbed/postMessage', { action: 'addToBasket', items: [{id: variant.extra_data.shopid, quantity: qty}] }, {root: true})
+
             const newBasketItem = { variant, size, qty }
             const alreadyAdded = getters.getItemIsInBasket(newBasketItem)
             if (alreadyAdded) {

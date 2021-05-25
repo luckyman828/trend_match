@@ -38,6 +38,7 @@ import videos from './modules/play/videos'
 import playPresentations from './modules/play/presentations'
 import player from './modules/play/player'
 import playPresentation from './modules/play/presentation'
+import playEmbed from './modules/play/embed'
 
 // PLAY B2C
 import wishlist from './modules/playb2c/wishlist'
@@ -99,6 +100,7 @@ export const initialStoreModules = {
     playPresentations,
     playPresentation,
     player,
+    playEmbed,
 }
 
 // const store = new Vuex.Store({

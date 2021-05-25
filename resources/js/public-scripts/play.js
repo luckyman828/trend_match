@@ -1,3 +1,5 @@
+import {addToBasket as shopifyAddToBasket} from './play-shopify'
+
 // Kollekt PLAY
 const version = `0.0.0 - (4)`
 console.log('Init PLAY embed script. Version: ' + version)
@@ -48,18 +50,7 @@ window.addEventListener('message', event => {
     if (![...testOrigins, ...acceptedOrigins].includes(event.origin)) return
     const msgData = event.data
     if (msgData.action == 'addToBasket') {
-        const formData = {
-            'items': [{
-                'id': msgData.variantId,
-                'quantity': msgData.quantity
-            }]
-        }
-        fetch('/cart/add.js', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
-        })
+        shopifyAddToBasket(msgData.items)
+        
     }
 })
