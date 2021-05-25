@@ -34,7 +34,7 @@
                         <i class="far fa-ellipsis-h"></i>
                         <span>More</span>
                     </button>
-                    <button class="pill dark">
+                    <button class="pill dark" @click="showPublishModal = true">
                         <i class="far fa-paper-plane"></i>
                         <span>Publish</span>
                     </button>
@@ -89,6 +89,8 @@
                 @submit="onSubmitRename"
             />
 
+            <PublishModal :show.sync="showPublishModal" v-if="showPublishModal" />
+
             <BaseModal ref="editDetailsModal" :show.sync="showEditDetailsModal">
                 <PresentationDetailsScreen nextText="Save details" :hideBack="true" @next="onSubmitDetails" />
             </BaseModal>
@@ -113,9 +115,9 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mapActions, mapGetters, mapMutations } from 'vuex'
 import RenamePresentationModal from '../../../components/PLAY/RenamePresentationModal'
+import PublishModal from '../../../components/PLAY/PublishModal'
 import PresentationDetailsScreen from '../FindPage/NewPresentationModal/PresentationDetailsScreen'
 
 export default {
@@ -123,10 +125,12 @@ export default {
     components: {
         RenamePresentationModal,
         PresentationDetailsScreen,
+        PublishModal,
     },
     data() {
         return {
             showRenamePresentationModal: false,
+            showPublishModal: false,
             showEditDetailsModal: false,
             currentStatus: 'success',
             statusUpdateTimeout: null,

@@ -46,10 +46,14 @@ import basket from './modules/playb2c/basket'
 
 // BUY
 import buyProducts from './modules/buy/buyProducts'
-import integrationDkc from './modules/integrations/dkc'
 import backgroundJobs from './modules/backgroundJobs'
 import liveUpdates from './modules/liveUpdates'
 import supportLog from './modules/supportLog'
+
+// INTERGRATIONS
+import integrationDkc from './modules/integrations/dkc'
+import bonaparte from './modules/integrations/dkc/bonaparte'
+
 const cloneDeep = require('clone-deep')
 
 // Load Vuex
@@ -101,6 +105,7 @@ export const initialStoreModules = {
     playPresentation,
     player,
     playEmbed,
+    bonaparte,
 }
 
 // const store = new Vuex.Store({

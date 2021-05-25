@@ -37,7 +37,6 @@ export default {
             return 'success'
         },
         videoStatus() {
-            console.log('get video status', this.presentation, this.presentation && this.presentation.video)
             return (
                 this.presentation && this.presentation.uploadChannel && this.presentation.uploadChannel.progress.status
             )
@@ -45,7 +44,6 @@ export default {
     },
     watch: {
         videoStatus(newStatus, oldStatus) {
-            console.log('video status changes', newStatus, oldStatus, this.video)
             if (!this.video && newStatus == 'Available') {
                 // Start process to check if the video is ready
                 this.initVideo()

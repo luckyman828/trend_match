@@ -98,7 +98,6 @@ export default {
     actions: {
         async fetchPresentation({ dispatch, commit }, presentationId) {
             const presentation = await dispatch('files/fetchFile', presentationId, { root: true })
-            console.log('presentation', JSON.parse(JSON.stringify(presentation)))
             await dispatch('playPresentations/initPresentations', [presentation], { root: true })
             commit('SET_PRESENTATION', presentation)
 

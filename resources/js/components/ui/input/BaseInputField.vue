@@ -3,7 +3,7 @@
         class="input-field"
         :class="[
             type,
-            { 'read-only': readOnly },
+            { 'read-only': readOnly || type == 'copy' },
             { error: error || errorTooltip },
             status,
             { 'has-label': label },
@@ -28,7 +28,7 @@
                 :placeholder="placeholder"
                 :autocomplete="autocomplete"
                 :value="value"
-                :disabled="disabled || readOnly"
+                :disabled="disabled || readOnly || type == 'copy'"
                 v-bind="$attrs"
                 :class="[{ 'input-wrapper': type != 'select' }, inputClass]"
                 @input="$emit('input', $event.target.value)"
@@ -40,7 +40,7 @@
                 @keydown="onKeydown"
             />
             <div class="icon-right">
-                <slot :onCancel="onCancel" :onSubmit="onSubmit" :activate="focus" />
+                <slot :onCancel="onCancel" :onSubmit="onSubmit" :activate="focus" :copy="onCopy" />
             </div>
         </div>
         <div class="error-msg" v-if="error && typeof error == 'string'">
@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     name: 'inputField',
     data: function() {
@@ -90,9 +91,13 @@ export default {
         },
     },
     methods: {
+        ...mapMutations('alerts', ['SHOW_SNACKBAR']),
         onClick(e) {
             if (this.type == 'select') {
                 this.$emit('click', e)
+            }
+            if (this.type == 'copy') {
+                this.onCopy()
             }
         },
         focus() {
@@ -125,6 +130,10 @@ export default {
             this.initialValue = this.value
             this.$emit('input', this.initialValue)
             this.$emit('submit', this.initialValue)
+        },
+        onCopy() {
+            this.copyToClipboard(this.value)
+            this.SHOW_SNACKBAR({ iconClass: 'fa-copy', type: 'info', msg: 'Copied to clipboard' })
         },
         onKeydown(e) {
             if (!this.pattern) return
@@ -168,6 +177,20 @@ export default {
 
 .input-field {
     position: relative;
+    &.copy {
+        cursor: pointer;
+        &.theme-light {
+            input {
+                border: solid 2px transparent;
+                cursor: pointer;
+            }
+            &:hover {
+                input {
+                    border-color: $themeLightBorderHover;
+                }
+            }
+        }
+    }
     &.lg {
         height: 48px;
     }
