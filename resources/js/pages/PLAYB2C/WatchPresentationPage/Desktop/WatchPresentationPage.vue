@@ -42,7 +42,7 @@
             </PlayerControls>
 
             <ProductDetailsFlyin :show="!!sidebarItem" @close="SET_SIDEBAR_ITEM(null)" />
-            <SavedStylesDrawer
+            <SavedStylesFlyin
                 :show="!!showSavedProductsDrawer"
                 :view.sync="savedProductsView"
                 @close="showSavedProductsDrawer = false"
@@ -62,7 +62,7 @@ import PreviewList from './PreviewList'
 import AddToWishlistButton from './AddToWishlistButton'
 
 import ProductDetailsFlyin from './ProductDetailsFlyin/'
-import SavedStylesDrawer from './SavedStylesDrawer/'
+import SavedStylesFlyin from './SavedStylesFlyin/'
 
 export default {
     name: 'watchVideoPage',
@@ -73,7 +73,7 @@ export default {
         VideoTitle,
         PreviewList,
         ProductDetailsFlyin,
-        SavedStylesDrawer,
+        SavedStylesFlyin,
         AddToWishlistButton,
     },
     data: function() {

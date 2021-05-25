@@ -1,7 +1,7 @@
 <template>
-    <BaseDrawer position="bottom" :show="show" class="product-details-drawer" @close="$emit('close')">
+    <BaseFlyin position="right" :show="show" class="saved-styles-flyin" @close="$emit('close')">
         <template v-slot:header v-if="show">
-            <div class="inner-header flex-list justify">
+            <div class="header-inner flex-list justify">
                 <div class="flex-list flex-v">
                     <h3 v-if="view == 'wishlist'">Your Wishlist</h3>
                     <h3 v-else>Your Basket</h3>
@@ -36,7 +36,7 @@
                         v-for="item in wishlistSnapshot"
                         :key="item.id"
                         :variant="item"
-                        @add-to-basket="$event => (addToBasketItem = $event)"
+                        @add-to-basket="$event => (addToBasketVariant = $event)"
                     />
                 </template>
                 <template v-else>
@@ -45,14 +45,14 @@
             </div>
         </template>
         <AddToBasketSelector
-            :item="addToBasketItem"
-            :show="addToBasketItem"
+            class="add-to-basket-selector"
+            :class="{ show: !!addToBasketVariant }"
+            :variant="addToBasketVariant"
             :hideWishlist="true"
             :autoHide="true"
-            @hide="addToBasketItem = null"
-            @click.native="addToBasketItem = null"
+            @hide="addToBasketVariant = null"
         />
-        <BaseFloatyBar v-if="view == 'basket'" :show="show" pos="bottom">
+        <div class="cta-wrapper">
             <BaseButton
                 class="checkout-button full-width"
                 buttonClass="dark full-width rounded lg checkout-button"
@@ -63,8 +63,8 @@
                 </template>
                 <span>Go to Checkout</span>
             </BaseButton>
-        </BaseFloatyBar>
-    </BaseDrawer>
+        </div>
+    </BaseFlyin>
 </template>
 
 <script>
@@ -74,13 +74,13 @@ import BasketItem from './BasketItem'
 import AddToBasketSelector from '../AddToBasketSelector'
 
 export default {
-    name: 'savedStylesDrawer',
+    name: 'savedStylesFlyin',
     components: { BasketItem, WishlistItem, AddToBasketSelector },
     props: ['view', 'show'],
     data() {
         return {
             wishlistSnapshot: [],
-            addToBasketItem: null,
+            addToBasketVariant: null,
         }
     },
     computed: {
@@ -116,17 +116,25 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/_variables.scss';
-.header {
-    h3 {
-        margin-bottom: 0;
+.saved-styles-flyin {
+    &::v-deep {
+        .flyin {
+            min-width: 0;
+            width: 352px;
+        }
     }
-    .total-price {
-        font-weight: 500;
+    .header-inner {
+        padding: 8px 8px 0 16px;
     }
-    ::v-deep {
-        .checkout-button {
-            font-size: 12px;
-            font-weight: 500;
+    .add-to-basket-selector {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        transform: translateY(calc(100% + 8px));
+        transition: transform 0.2s ease-out;
+        &.show {
+            transform: none;
         }
     }
 }
